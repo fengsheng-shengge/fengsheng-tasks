@@ -17,7 +17,7 @@ jobs:
       - name: Check HTML files for common issues
         run: |
           echo "=== 检查 1: 所有 HTML 文件存在 ==="
-          for page in index breeder care-test quality-test assessment s1-report knowledge reply shuowenjiedao guide privacy dashboard 404; do
+          for page in index breeder care-test quality-test assessment s1-report knowledge reply shuowenjiedao guide privacy about dashboard 404; do
             if [ -f "$page.html" ]; then
               echo "  ✓ $page.html 存在"
             else

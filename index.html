@@ -32,7 +32,7 @@ a:hover{text-decoration:underline}
 .nav a{color:#2A2825;padding:6px 10px;border-radius:8px}
 .nav a:hover{background:#F5F1E8;text-decoration:none;color:#2D5A3D}
 .nav .sep{color:#B8B1A4}
-.hero{padding:72px 0 56px;text-align:center;position:relative;overflow:hidden}
+.hero{padding:72px 0 56px;text-align:center;position:relative;overflow:hidden}.hero::before{content:'';position:absolute;top:-100px;right:-100px;width:300px;height:300px;border-radius:50%;background:#E8EDE3;opacity:.3}.hero::after{content:'';position:absolute;bottom:-80px;left:-80px;width:240px;height:240px;border-radius:50%;background:#FBEDE5;opacity:.3}
 .hero h1{font-size:clamp(32px,6vw,54px);line-height:1.25;margin:0 0 18px;color:#2A2825;font-weight:700}
 .hero h1 em{font-style:normal;color:#D97757}
 .hero p.lead{font-size:clamp(16px,2.2vw,20px);color:#5E5952;max-width:640px;margin:0 auto 28px}
@@ -48,8 +48,7 @@ a:hover{text-decoration:underline}
 .section h2{font-size:clamp(24px,4vw,34px);margin:0 0 8px;color:#2A2825}
 .section .sub{color:#5E5952;margin-bottom:36px}
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.card{background:#fff;border-radius:16px;padding:28px 24px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);transition:transform .2s ease,box-shadow .2s ease;display:flex;flex-direction:column}
-.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(42,40,37,.08)}
+.card{background:#fff;border-radius:16px;padding:28px 24px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);transition:transform .2s ease,box-shadow .2s ease,display:flex;flex-direction:column;position:relative;overflow:hidden}.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#2D5A3D,#D97757,#2D5A3D);opacity:0;transition:opacity .2s}.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(42,40,37,.08)}.card:hover::before{opacity:1}
 .card .tag{display:inline-block;font-size:12px;color:#D97757;background:#FBEDE5;padding:3px 10px;border-radius:999px;font-weight:600;margin-bottom:10px;align-self:flex-start}
 .card h3{margin:0 0 10px;font-size:20px;color:#2A2825}
 .card p{margin:0 0 18px;color:#5E5952;font-size:15px;flex:1}
@@ -81,7 +80,7 @@ a:hover{text-decoration:underline}
     <nav class="nav" aria-label="主导航">
       <a href="index.html">首页</a><span class="sep">·</span>
       <a href="#products">产品</a><span class="sep">·</span>
-      <a href="#about">关于</a><span class="sep">·</span>
+      <a href="about.html">关于</a><span class="sep">·</span>
       <a href="reply.html">帮助</a>
     </nav>
   </div>
@@ -174,22 +173,6 @@ a:hover{text-decoration:underline}
     </div>
   </section>
 
-  <section id="about" class="section" aria-labelledby="about-title">
-    <div class="wrap">
-      <h2 id="about-title">关于风声</h2>
-      <p class="sub">我们相信：服务被看见，专业才有意义。</p>
-      <div class="cards">
-        <article class="card" aria-label="我们的理念">
-          <h3>我们的理念</h3>
-          <p>好服务不只是"不出错"，而是让客户感觉到被认真对待。我们把那些难以量化的"用心"变成可练习、可反馈、可重复的能力。</p>
-        </article>
-        <article class="card" aria-label="谁在用">
-          <h3>谁在用</h3>
-          <p>房产经纪人、租赁顾问、整装家居顾问、家政管家。以及愿意把每一次服务做得更好的一线同事。</p>
-        </article>
-      </div>
-    </div>
-  </section>
 </main>
 
 <footer class="footer" role="contentinfo">
