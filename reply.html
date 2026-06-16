@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta name="description" content="帮助与反馈 — 风声 fengsheng.tech">
+<meta name="theme-color" content="#2D5A3D">
+<title>帮助与反馈 — 风声 fengsheng.tech</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#F5F1E8;color:#2A2825;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:#2D5A3D;text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:48px 20px}
+.skip-nav{position:absolute;left:-9999px;top:0;background:#2D5A3D;color:#fff;padding:10px 16px;border-radius:8px;z-index:999}
+.skip-nav:focus{left:1rem;top:1rem;text-decoration:none}
+.header{background:#fff;border-bottom:1px solid #EFE8DB;padding:14px 0}
+.header-inner{max-width:760px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:700;font-size:20px;color:#2D5A3D;letter-spacing:1px}
+.brand span{color:#D97757}
+.nav a{color:#2A2825;padding:6px 10px;border-radius:8px;font-size:15px}
+.nav a:hover{background:#F5F1E8;text-decoration:none;color:#2D5A3D}
+h1{font-size:28px;margin:0 0 8px;color:#2A2825}
+.muted{color:#6B665E;font-size:15px;margin:0 0 28px}
+h2{font-size:18px;margin:24px 0 8px;color:#2D5A3D}
+.card{background:#fff;border-radius:16px;padding:24px 28px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);margin-bottom:22px}
+label{display:block;font-weight:600;margin:14px 0 6px;font-size:15px}
+input,select,textarea{width:100%;padding:12px 14px;border:2px solid #EFE8DB;border-radius:12px;font-family:inherit;font-size:15px;background:#F5F1E8;color:#2A2825}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#2D5A3D;background:#fff}
+textarea{min-height:140px;resize:vertical}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:14px 28px;font-size:16px;font-weight:600;font-family:inherit;background:#2D5A3D;color:#fff;box-shadow:0 4px 12px rgba(45,90,61,.22);margin-top:16px}
+.btn:hover{background:#234a31;text-decoration:none}
+.required{color:#D97757}
+.thanks{background:#E8EDE3;color:#2D5A3D;border-radius:16px;padding:22px 26px;margin-top:20px;display:none}
+.thanks.show{display:block}
+ul{padding-left:22px}
+.footer{border-top:1px solid #EFE8DB;background:#fff;padding:24px 0;margin-top:40px;font-size:14px;color:#6B665E;text-align:center}
+.footer a{color:#6B665E}
+@media (max-width:640px){
+  .wrap{padding:32px 16px}
+  .card{padding:20px 18px}
+}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav" aria-label="跳到主要内容">跳到主要内容</a>
+<header class="header" role="banner">
+  <div class="header-inner">
+    <a href="index.html" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
+    <nav class="nav" aria-label="主导航"><a href="index.html" aria-label="返回首页">首页</a> · <a href="privacy.html" aria-label="查看隐私政策">隐私政策</a> · <a href="guide.html" aria-label="查看使用指南">使用指南</a></nav>
+  </div>
+</header>
+<main id="main" role="main">
+  <div class="wrap">
+    <h1>帮助与反馈</h1>
+    <p class="muted">您的每一条反馈都会被认真阅读，并直接影响我们下一步的改进方向。</p>
+
+    <div class="card" aria-labelledby="faq">
+      <h2 id="faq">常见问题</h2>
+      <ul>
+        <li><strong>为什么我的测评结果没有保存？</strong> 为了最大程度保护您的隐私，我们不在服务端关联您的身份。测评结果仅在当前页面展示。</li>
+        <li><strong>客户解码器是 AI 生成的吗？</strong> 当前版本为本地模拟分析，用于让您先感受产品思路。生产环境将接入更严谨的模型。</li>
+        <li><strong>我能删除浏览器中保存的匿名 ID 吗？</strong> 可以。在浏览器设置中"清除站点数据"或使用无痕模式即可。</li>
+        <li><strong>我想作为企业接入，该怎么做？</strong> 请在下方反馈中说明您的组织与场景，我们会在 10 个工作日内联系。</li>
+      </ul>
+    </div>
+
+    <div class="card" aria-labelledby="feedback">
+      <h2 id="feedback">给我们留言</h2>
+      <p style="color:#5E5952;margin:0 0 4px">我们不会主动收集您的联系方式 — 如需我们回复，请在正文中告知。</p>
+      <form id="reply-form" onsubmit="return submitReply(event)">
+        <label for="topic">主题 <span class="required" aria-hidden="true">*</span></label>
+        <select id="topic" name="topic" aria-label="反馈主题" required>
+          <option value="">请选择…</option>
+          <option value="bug">产品使用问题</option>
+          <option value="feature">功能建议</option>
+          <option value="business">商务合作</option>
+          <option value="privacy">隐私相关</option>
+          <option value="other">其他</option>
+        </select>
+        <label for="page">您现在在哪个页面</label>
+        <input id="page" name="page" type="text" aria-label="当前页面" placeholder="例如：Agent培养师">
+        <label for="feedback">反馈内容 <span class="required" aria-hidden="true">*</span></label>
+        <textarea id="feedback" name="feedback" aria-label="反馈内容" placeholder="请尽量具体地描述场景，例如：在客户解码器中输入 xxx 后，希望得到 yyy…" required></textarea>
+        <button class="btn" type="submit" aria-label="提交反馈">提交反馈 →</button>
+        <div class="thanks" id="thanks" role="status">
+          <strong>已收到，谢谢 🙏</strong>
+          <p style="margin:6px 0 0">我们会认真阅读。如果您在反馈中留下了联系方式，我们会尽快回复。</p>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+<footer class="footer" role="contentinfo">
+  <div class="wrap" style="padding:0 20px">
+    <div><a href="index.html" aria-label="返回风声首页">← 返回首页</a> · <a href="privacy.html" aria-label="查看隐私政策">隐私政策</a> · <a href="guide.html" aria-label="查看使用指南">使用指南</a> · © 风声 fengsheng.tech</div>
+  </div>
+</footer>
+<script src="tracker.js" defer></script>
+<script>
+function submitReply(e){
+  e.preventDefault();
+  var topic = document.getElementById('topic').value;
+  var feedback = document.getElementById('feedback').value.trim();
+  if (!topic || !feedback) return false;
+  var t = document.getElementById('thanks');
+  t.classList.add('show');
+  t.scrollIntoView({behavior:'smooth',block:'center'});
+  if (typeof window.fsTrack === 'function') {
+    window.fsTrack('reply_submit', {topic: topic, length: feedback.length});
+  }
+  document.getElementById('reply-form').reset();
+  return false;
+}
+</script>
+</body>
+</html>

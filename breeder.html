@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta name="description" content="Agent培养师：从新手到资深，陪你走完整条路 — 风声 fengsheng.tech">
+<meta name="theme-color" content="#2D5A3D">
+<meta property="og:title" content="Agent培养师 🔥 — 风声 fengsheng.tech">
+<meta property="og:description" content="从新手到资深，陪你走完整条路。测评 → 学习 → 练习 → 考评。">
+<meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%23F5F1E8'/><text x='100' y='280' font-family='sans-serif' font-size='72' fill='%232D5A3D' font-weight='700'>Agent 培养师</text><text x='100' y='360' font-family='sans-serif' font-size='36' fill='%23D97757'>从新手到资深，陪你走完整条路</text></svg>">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<title>Agent培养师 — 风声 fengsheng.tech</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#F5F1E8;color:#2A2825;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:#2D5A3D;text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+.skip-nav{position:absolute;left:-9999px;top:0;background:#2D5A3D;color:#fff;padding:10px 16px;border-radius:8px;z-index:999}
+.skip-nav:focus{left:1rem;top:1rem;text-decoration:none}
+.header{background:#fff;border-bottom:1px solid #EFE8DB}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.brand{font-weight:700;font-size:20px;color:#2D5A3D;letter-spacing:1px}
+.brand span{color:#D97757}
+.nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:15px;color:#6B665E}
+.nav a{color:#2A2825;padding:6px 10px;border-radius:8px}
+.nav a:hover{background:#F5F1E8;text-decoration:none;color:#2D5A3D}
+.nav .sep{color:#B8B1A4}
+.hero{padding:56px 0 24px;text-align:center}
+.hero h1{font-size:clamp(30px,5vw,44px);line-height:1.3;margin:0 0 14px;color:#2A2825}
+.hero h1 em{font-style:normal;color:#D97757}
+.hero p.lead{font-size:clamp(16px,2.2vw,19px);color:#5E5952;max-width:620px;margin:0 auto 22px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:14px 28px;font-size:16px;font-weight:600;font-family:inherit;transition:transform .15s ease,box-shadow .15s ease,background-color .2s}
+.btn-primary{background:#2D5A3D;color:#fff;box-shadow:0 6px 16px rgba(45,90,61,.25)}
+.btn-primary:hover{background:#234a31;text-decoration:none;transform:translateY(-1px)}
+.btn-orange{background:#D97757;color:#fff;box-shadow:0 6px 16px rgba(217,119,87,.25)}
+.btn-orange:hover{background:#c06649;text-decoration:none}
+.btn-ghost{background:transparent;color:#2D5A3D;border:2px solid #2D5A3D}
+.btn-ghost:hover{background:#2D5A3D;color:#fff;text-decoration:none}
+.section{padding:40px 0}
+.section h2{font-size:clamp(22px,3.5vw,28px);margin:0 0 16px;color:#2A2825}
+.steps{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:8px}
+.step{background:#fff;border-radius:16px;padding:22px;border:1px solid #EFE8DB;position:relative;box-shadow:0 2px 6px rgba(42,40,37,.04)}
+.step .num{position:absolute;top:-14px;left:22px;background:#D97757;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;box-shadow:0 4px 10px rgba(217,119,87,.3)}
+.step h3{margin:4px 0 8px;font-size:18px;color:#2D5A3D}
+.step p{margin:0;color:#5E5952;font-size:15px}
+.interact{background:#fff;border-radius:16px;padding:28px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);margin-top:16px}
+.interact h2{margin-top:0}
+.q{padding:18px 0;border-top:1px dashed #EFE8DB}
+.q:first-of-type{border-top:0}
+.q-title{font-weight:600;font-size:17px;margin:0 0 12px;color:#2A2825}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{background:#F5F1E8;border:2px solid transparent;color:#2A2825;padding:12px 16px;border-radius:12px;cursor:pointer;font-size:15px;text-align:left;font-family:inherit;transition:all .15s}
+.opt:hover{background:#EFE8DB}
+.opt[aria-pressed="true"]{border-color:#2D5A3D;background:#E8EDE3;color:#2D5A3D;font-weight:600}
+.opt.right[aria-pressed="true"]{border-color:#2D5A3D;background:#E8EDE3}
+.opt.wrong[aria-pressed="true"]{border-color:#D97757;background:#FBEDE5;color:#8A3A22}
+.fb{margin-top:10px;padding:12px 14px;border-radius:10px;font-size:14px;display:none}
+.fb.show{display:block}
+.fb.good{background:#E8EDE3;color:#2D5A3D}
+.fb.hint{background:#FBEDE5;color:#8A3A22}
+.footer{border-top:1px solid #EFE8DB;background:#fff;padding:30px 0 24px;margin-top:48px;font-size:14px;color:#6B665E}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer a{color:#6B665E}
+.footer .tiny{font-size:12px;color:#B8B1A4}
+.btn-back{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;background:#fff;color:#2D5A3D;border:1px solid #EFE8DB;font-size:14px;text-decoration:none}
+.btn-back:hover{background:#F5F1E8;text-decoration:none}
+.score{display:inline-block;margin-top:8px;padding:6px 14px;background:#FBEDE5;color:#D97757;font-weight:700;border-radius:999px;font-size:14px}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .hero{padding:40px 0 16px}
+  .section{padding:32px 0}
+  .steps{grid-template-columns:1fr}
+  .nav{font-size:14px}
+  .nav a{padding:5px 8px}
+  .brand{font-size:18px}
+}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav" aria-label="跳到主要内容">跳到主要内容</a>
+<header class="header" role="banner">
+  <div class="wrap header-inner">
+    <a href="index.html" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
+    <nav class="nav" aria-label="面包屑">
+      <a href="index.html">首页</a><span class="sep">·</span>
+      <a href="breeder.html">Agent培养师</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" role="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <h1 id="hero-title">Agent 培养师 <em>🔥</em></h1>
+      <p class="lead">从新手到资深，陪你走完整条路 — 先摸清自己在哪里，再一步一步扎实成长。</p>
+      <a href="#start" class="btn btn-orange" aria-label="开始测评">开始测评 →</a>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="flow-title">
+    <div class="wrap">
+      <h2 id="flow-title">你会经历什么</h2>
+      <div class="steps">
+        <div class="step"><span class="num">1</span><h3>测评</h3><p>通过结构化场景问卷，识别你当前在专业度、沟通、客户理解等维度的基线水平。</p></div>
+        <div class="step"><span class="num">2</span><h3>学习</h3><p>针对识别出的薄弱项，推荐最短路径的可练习课程与案例阅读。</p></div>
+        <div class="step"><span class="num">3</span><h3>练习</h3><p>在真实或模拟场景中反复练习，系统给你即时反馈并记录进步轨迹。</p></div>
+        <div class="step"><span class="num">4</span><h3>考评</h3><p>达到新的能力基线时完成一次考评，让成长有刻度、有证书、被组织看见。</p></div>
+        <div class="step"><span class="num">5</span><h3>同行</h3><p>加入同岗位服务者的成长圈，互相出题、互相点评，一起把事情做扎实。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="start" class="section" aria-labelledby="quiz-title">
+    <div class="wrap">
+      <div class="interact">
+        <h2 id="quiz-title">先做三道小题，感觉一下</h2>
+        <p style="color:#5E5952;margin:0 0 8px">这不是考试 — 只是让你体会一下"被认真提问"的感觉。</p>
+        <div class="q" id="q1">
+          <p class="q-title">1. 一位客户初次到店，你首先会？</p>
+          <div class="opts" role="radiogroup" aria-label="题目一选项">
+            <button class="opt" type="button" data-correct="0" aria-pressed="false">直接介绍最新、最有性价比的产品</button>
+            <button class="opt" type="button" data-correct="1" aria-pressed="false">先问清客户当下想解决什么、遇到了什么</button>
+            <button class="opt" type="button" data-correct="0" aria-pressed="false">先介绍门店和品牌，建立信任再说</button>
+          </div>
+          <div class="fb" role="status"></div>
+        </div>
+        <div class="q" id="q2">
+          <p class="q-title">2. 客户说"我再考虑考虑"，你最恰当的回应是？</p>
+          <div class="opts" role="radiogroup" aria-label="题目二选项">
+            <button class="opt" type="button" data-correct="0" aria-pressed="false">"没问题，您考虑好了联系我"（留下联系方式结束）</button>
+            <button class="opt" type="button" data-correct="0" aria-pressed="false">"今天有特别优惠，再不下单就没了"</button>
+            <button class="opt" type="button" data-correct="1" aria-pressed="false">"方便告诉我是什么让您还在犹豫吗？我帮您一起想清楚"</button>
+          </div>
+          <div class="fb" role="status"></div>
+        </div>
+        <div class="q" id="q3">
+          <p class="q-title">3. 服务一位客户之后，你最想做的复盘是？</p>
+          <div class="opts" role="radiogroup" aria-label="题目三选项">
+            <button class="opt" type="button" data-correct="0" aria-pressed="false">看一下自己这一单最终有没有成交</button>
+            <button class="opt" type="button" data-correct="1" aria-pressed="false">记录客户在对话中真实的痛点、顾虑与决策线索</button>
+            <button class="opt" type="button" data-correct="0" aria-pressed="false">把客户资料录入 CRM，按规则跟进</button>
+          </div>
+          <div class="fb" role="status"></div>
+        </div>
+        <div id="result" style="margin-top:12px;display:none;background:#E8EDE3;color:#2D5A3D;padding:18px 20px;border-radius:16px">
+          <strong id="result-title">测评完成</strong>
+          <div id="result-text" style="margin-top:6px"></div>
+          <button class="btn btn-primary" type="button" id="reset" style="margin-top:14px" aria-label="重新测评">再做一次</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" role="contentinfo">
+  <div class="wrap footer-inner">
+    <div>© 2026 风声 · fengsheng.tech</div>
+    <div>
+      <a href="privacy.html" aria-label="查看隐私政策">隐私政策</a> ·
+      <a href="reply.html" aria-label="帮助与反馈">帮助</a>
+    </div>
+  </div>
+</footer>
+
+<script src="tracker.js" defer></script>
+<script>
+(function(){
+  var state = {correct:0, answered:0, total:3};
+  var feedbacks = {
+    right: '这个选择很贴近"以客户为中心"的思路 — 先理解客户，再提供帮助。',
+    wrong: '这是个常见选择，但我们可以再进一步：先理解客户真正想解决什么，而不是急于给出答案。'
+  };
+  var resultTexts = [
+    {score:'新手起步', text:'继续保持好奇。后面的学习路径会帮你把"直觉"变成"可重复的方法论"。'},
+    {score:'摸到门路', text:'你已经能在关键时刻做出较好的选择，下一阶段是系统化地练习这些能力。'},
+    {score:'准资深', text:'你的判断很贴近资深服务者的思路。可以开始在更复杂的真实场景里做精细化练习。'}
+  ];
+
+  document.querySelectorAll('.q').forEach(function(q){
+    var opts = q.querySelectorAll('.opt');
+    var fb = q.querySelector('.fb');
+    opts.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (q.dataset.done) return;
+        opts.forEach(function(o){
+          o.setAttribute('aria-pressed', o === btn ? 'true' : 'false');
+          o.disabled = true;
+          if (o.dataset.correct === '1') o.classList.add('right');
+          else o.classList.add('wrong');
+        });
+        var isRight = btn.dataset.correct === '1';
+        if (isRight) state.correct++;
+        state.answered++;
+        fb.textContent = isRight ? feedbacks.right : feedbacks.wrong;
+        fb.className = 'fb show ' + (isRight ? 'good' : 'hint');
+        q.dataset.done = '1';
+        if (typeof window.fsTrack === 'function') {
+          window.fsTrack('breeder_answer', {q: q.id, correct: isRight});
+        }
+        if (state.answered === state.total) showResult();
+      });
+    });
+  });
+
+  function showResult(){
+    var box = document.getElementById('result');
+    var t = document.getElementById('result-title');
+    var r = document.getElementById('result-text');
+    var level = state.correct === 3 ? 2 : (state.correct >= 2 ? 1 : 0);
+    var lv = resultTexts[level];
+    t.textContent = '完成！' + lv.score + '（' + state.correct + '/' + state.total + '）';
+    r.textContent = lv.text;
+    box.style.display = 'block';
+    box.scrollIntoView({behavior:'smooth', block:'center'});
+    if (typeof window.fsTrack === 'function') {
+      window.fsTrack('breeder_finish', {score: state.correct, level: level});
+    }
+  }
+
+  document.getElementById('reset').addEventListener('click', function(){
+    state = {correct:0, answered:0, total:3};
+    document.querySelectorAll('.q').forEach(function(q){
+      delete q.dataset.done;
+      q.querySelectorAll('.opt').forEach(function(o){
+        o.setAttribute('aria-pressed','false');
+        o.disabled = false;
+        o.classList.remove('right','wrong');
+      });
+      var fb = q.querySelector('.fb');
+      fb.className = 'fb';
+      fb.textContent = '';
+    });
+    var box = document.getElementById('result');
+    box.style.display = 'none';
+    if (typeof window.fsTrack === 'function') window.fsTrack('breeder_reset', {});
+  });
+})();
+</script>
+</body>
+</html>

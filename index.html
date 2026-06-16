@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta name="description" content="风声：帮服务者配得上被客户好好对待。Agent培养师、客户解码器、六维品质测评等工具">
+<meta name="theme-color" content="#2D5A3D">
+<meta property="og:title" content="风声 fengsheng.tech — 帮服务者配得上被客户好好对待">
+<meta property="og:description" content="Agent培养师、客户解码器、六维品质测评，为房产、家居、家政服务者打造的数字化成长工具">
+<meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%23F5F1E8'/><text x='100' y='280' font-family='sans-serif' font-size='72' fill='%232D5A3D' font-weight='700'>风声 fengsheng</text><text x='100' y='360' font-family='sans-serif' font-size='36' fill='%23D97757'>帮服务者配得上被客户好好对待</text></svg>">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fengsheng.tech/">
+<meta name="twitter:card" content="summary_large_image">
+<title>风声 fengsheng.tech — 帮服务者配得上被客户好好对待</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#F5F1E8;color:#2A2825;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:#2D5A3D;text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+.skip-nav{position:absolute;left:-9999px;top:0;background:#2D5A3D;color:#fff;padding:10px 16px;border-radius:8px;z-index:999}
+.skip-nav:focus{left:1rem;top:1rem;text-decoration:none}
+.header{background:#fff;border-bottom:1px solid #EFE8DB}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.brand{font-weight:700;font-size:20px;color:#2D5A3D;letter-spacing:1px}
+.brand span{color:#D97757}
+.nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:15px;color:#6B665E}
+.nav a{color:#2A2825;padding:6px 10px;border-radius:8px}
+.nav a:hover{background:#F5F1E8;text-decoration:none;color:#2D5A3D}
+.nav .sep{color:#B8B1A4}
+.hero{padding:72px 0 56px;text-align:center;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(32px,6vw,54px);line-height:1.25;margin:0 0 18px;color:#2A2825;font-weight:700}
+.hero h1 em{font-style:normal;color:#D97757}
+.hero p.lead{font-size:clamp(16px,2.2vw,20px);color:#5E5952;max-width:640px;margin:0 auto 28px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:14px 28px;font-size:16px;font-weight:600;font-family:inherit;transition:transform .15s ease,box-shadow .15s ease,background-color .2s}
+.btn-primary{background:#2D5A3D;color:#fff;box-shadow:0 6px 16px rgba(45,90,61,.25)}
+.btn-primary:hover{background:#234a31;text-decoration:none;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:#2D5A3D;border:2px solid #2D5A3D}
+.btn-ghost:hover{background:#2D5A3D;color:#fff;text-decoration:none}
+.btn-orange{background:#D97757;color:#fff;box-shadow:0 6px 16px rgba(217,119,87,.25)}
+.btn-orange:hover{background:#c06649;text-decoration:none}
+.hero-ill{margin:36px auto 0;max-width:560px;padding:0 20px}
+.section{padding:56px 0}
+.section h2{font-size:clamp(24px,4vw,34px);margin:0 0 8px;color:#2A2825}
+.section .sub{color:#5E5952;margin-bottom:36px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.card{background:#fff;border-radius:16px;padding:28px 24px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);transition:transform .2s ease,box-shadow .2s ease;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(42,40,37,.08)}
+.card .tag{display:inline-block;font-size:12px;color:#D97757;background:#FBEDE5;padding:3px 10px;border-radius:999px;font-weight:600;margin-bottom:10px;align-self:flex-start}
+.card h3{margin:0 0 10px;font-size:20px;color:#2A2825}
+.card p{margin:0 0 18px;color:#5E5952;font-size:15px;flex:1}
+.card .btn{padding:10px 20px;font-size:14px;align-self:flex-start}
+.card-ill{height:64px;margin-bottom:14px;color:#2D5A3D}
+.footer{border-top:1px solid #EFE8DB;background:#fff;padding:36px 0 28px;margin-top:48px;font-size:14px;color:#6B665E}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer a{color:#6B665E}
+.footer .tiny{font-size:12px;color:#B8B1A4}
+.footer .tiny a{color:#B8B1A4}
+.btn-back{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;background:#fff;color:#2D5A3D;border:1px solid #EFE8DB;font-size:14px;text-decoration:none}
+.btn-back:hover{background:#F5F1E8;text-decoration:none}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .hero{padding:48px 0 32px}
+  .section{padding:40px 0}
+  .cards{grid-template-columns:1fr;gap:16px}
+  .nav{font-size:14px}
+  .nav a{padding:5px 8px}
+  .brand{font-size:18px}
+}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav" aria-label="跳到主要内容">跳到主要内容</a>
+<header class="header" role="banner">
+  <div class="wrap header-inner">
+    <a href="index.html" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
+    <nav class="nav" aria-label="主导航">
+      <a href="index.html">首页</a><span class="sep">·</span>
+      <a href="#products">产品</a><span class="sep">·</span>
+      <a href="#about">关于</a><span class="sep">·</span>
+      <a href="reply.html">帮助</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" role="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <h1 id="hero-title">帮<em>服务者</em>配得上被客户好好对待</h1>
+      <p class="lead">我们为房产、家居、家政服务者打造一套简单、可靠的成长工具 — 让专业看得见、让服务可感知、让口碑自然生长。</p>
+      <a href="#products" class="btn btn-primary" aria-label="滚动到产品区">用起来 →</a>
+    </div>
+    <div class="hero-ill" aria-hidden="true">
+      <svg viewBox="0 0 560 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="服务者与客户">
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#FBEDE5"/>
+            <stop offset="1" stop-color="#E8EDE3"/>
+          </linearGradient>
+          <circle id="leaf" cx="0" cy="0" r="4" fill="#2D5A3D" opacity=".35"/>
+        </defs>
+        <rect width="560" height="280" rx="24" fill="url(#bg)"/>
+        <g fill="none" stroke="#2A2825" stroke-width="3" stroke-linecap="round">
+          <circle cx="170" cy="110" r="28" fill="#FFFFFF"/>
+          <path d="M135 180 C135 145, 205 145, 205 180 L205 230 L135 230 Z" fill="#FFFFFF"/>
+          <circle cx="390" cy="110" r="28" fill="#FFFFFF"/>
+          <path d="M355 180 C355 145, 425 145, 425 180 L425 230 L355 230 Z" fill="#FFFFFF"/>
+        </g>
+        <path d="M220 160 Q280 110 340 160" stroke="#D97757" stroke-width="3" fill="none" stroke-dasharray="4 6" stroke-linecap="round"/>
+        <circle cx="280" cy="135" r="10" fill="#D97757"/>
+        <text x="280" y="139" text-anchor="middle" font-size="14" fill="#FFFFFF" font-family="sans-serif" font-weight="700">✨</text>
+        <rect x="215" y="200" width="130" height="22" rx="11" fill="#2D5A3D"/>
+        <text x="280" y="215" text-anchor="middle" font-size="12" fill="#FFFFFF" font-family="sans-serif" font-weight="600">用心 · 专业 · 被信任</text>
+        <circle cx="80" cy="60" r="4" fill="#2D5A3D" opacity=".5"/>
+        <circle cx="490" cy="50" r="3" fill="#D97757" opacity=".6"/>
+        <circle cx="520" cy="220" r="5" fill="#2D5A3D" opacity=".4"/>
+        <circle cx="60" cy="230" r="3" fill="#D97757" opacity=".5"/>
+      </svg>
+    </div>
+  </section>
+
+  <section id="products" class="section" aria-labelledby="products-title">
+    <div class="wrap">
+      <h2 id="products-title">产品</h2>
+      <p class="sub">从个人成长到服务现场，6 个小工具，够用就好。</p>
+      <div class="cards">
+        <article class="card" aria-label="Agent培养师">
+          <svg class="card-ill" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="22" r="10" fill="none" stroke="#2D5A3D" stroke-width="3"/><path d="M14 52 C14 38 50 38 50 52" fill="none" stroke="#2D5A3D" stroke-width="3" stroke-linecap="round"/><path d="M32 32 L32 42 M26 38 L38 38" stroke="#D97757" stroke-width="3" stroke-linecap="round"/></svg>
+          <span class="tag">热门 🔥</span>
+          <h3>Agent 培养师</h3>
+          <p>从新手到资深，陪你走完整条路。测评 → 学习 → 练习 → 考评，系统化地补齐短板。</p>
+          <a href="breeder.html" class="btn btn-primary" aria-label="进入 Agent 培养师">立即使用</a>
+        </article>
+        <article class="card" aria-label="客户解码器">
+          <svg class="card-ill" viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="12" width="44" height="40" rx="6" fill="none" stroke="#2D5A3D" stroke-width="3"/><circle cx="32" cy="32" r="6" fill="#D97757"/><path d="M20 20 H44 M20 48 H36" stroke="#2D5A3D" stroke-width="3" stroke-linecap="round"/></svg>
+          <span class="tag">30秒读懂</span>
+          <h3>客户解码器</h3>
+          <p>输入一段客户场景，快速拆解需求与顾虑，生成个性化沟通话术。</p>
+          <a href="care-test.html" class="btn btn-primary" aria-label="进入客户解码器">立即使用</a>
+        </article>
+        <article class="card" aria-label="六维品质测评">
+          <svg class="card-ill" viewBox="0 0 64 64" aria-hidden="true"><polygon points="32,6 56,20 50,48 14,48 8,20" fill="none" stroke="#2D5A3D" stroke-width="3"/><polygon points="32,18 46,27 42,42 22,42 18,27" fill="#D97757" opacity=".7"/></svg>
+          <span class="tag">能力基线</span>
+          <h3>六维品质测评</h3>
+          <p>专业度、主动性、同理心、诚信、学习力、团队协作 — 六个维度的服务品质基线。</p>
+          <a href="quality-test.html" class="btn btn-primary" aria-label="进入六维品质测评">立即使用</a>
+        </article>
+        <article class="card" aria-label="能力测评">
+          <svg class="card-ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 52 L8 16 L20 28 L32 12 L44 28 L56 16 L56 52 Z" fill="none" stroke="#2D5A3D" stroke-width="3" stroke-linejoin="round"/><circle cx="32" cy="40" r="6" fill="#D97757"/></svg>
+          <span class="tag">岗位</span>
+          <h3>能力测评</h3>
+          <p>岗位胜任力扫描，帮助你定位当前水平与下一个可达成的目标。</p>
+          <a href="assessment.html" class="btn btn-primary" aria-label="进入能力测评">立即使用</a>
+        </article>
+        <article class="card" aria-label="带看报告">
+          <svg class="card-ill" viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="10" width="40" height="44" rx="4" fill="none" stroke="#2D5A3D" stroke-width="3"/><path d="M20 24 H44 M20 34 H44 M20 44 H32" stroke="#D97757" stroke-width="3" stroke-linecap="round"/></svg>
+          <span class="tag">现场工具</span>
+          <h3>带看报告</h3>
+          <p>结构化记录每一次带看，沉淀对客户的理解，让下次见面更贴近客户。</p>
+          <a href="s1-report.html" class="btn btn-primary" aria-label="进入带看报告">立即使用</a>
+        </article>
+        <article class="card" aria-label="知识底座">
+          <svg class="card-ill" viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="14" width="18" height="36" rx="3" fill="none" stroke="#2D5A3D" stroke-width="3"/><rect x="34" y="14" width="18" height="36" rx="3" fill="none" stroke="#2D5A3D" stroke-width="3"/><path d="M40 22 H46 M40 32 H46" stroke="#D97757" stroke-width="3" stroke-linecap="round"/></svg>
+          <span class="tag">内部化</span>
+          <h3>知识底座</h3>
+          <p>企业知识库 + 作业标准，让每一个一线同事都能"就地问、就地答"。</p>
+          <a href="knowledge.html" class="btn btn-primary" aria-label="进入知识底座">立即使用</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="section" aria-labelledby="about-title">
+    <div class="wrap">
+      <h2 id="about-title">关于风声</h2>
+      <p class="sub">我们相信：服务被看见，专业才有意义。</p>
+      <div class="cards">
+        <article class="card" aria-label="我们的理念">
+          <h3>我们的理念</h3>
+          <p>好服务不只是"不出错"，而是让客户感觉到被认真对待。我们把那些难以量化的"用心"变成可练习、可反馈、可重复的能力。</p>
+        </article>
+        <article class="card" aria-label="谁在用">
+          <h3>谁在用</h3>
+          <p>房产经纪人、租赁顾问、整装家居顾问、家政管家。以及愿意把每一次服务做得更好的一线同事。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" role="contentinfo">
+  <div class="wrap footer-inner">
+    <div>© 2026 风声 · fengsheng.tech</div>
+    <div>
+      <a href="privacy.html" aria-label="查看隐私政策">隐私政策</a> ·
+      <a href="reply.html" aria-label="帮助与反馈">帮助</a> ·
+      <span class="tiny"><a href="dashboard.html" aria-label="管理入口">管理</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="tracker.js" defer></script>
+</body>
+</html>

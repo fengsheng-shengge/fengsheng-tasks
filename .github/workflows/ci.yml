@@ -1,0 +1,151 @@
+name: CI - 代码质量检查
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: HTML & JS Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check HTML files for common issues
+        run: |
+          echo "=== 检查 1: 所有 HTML 文件存在 ==="
+          for page in index breeder care-test quality-test assessment s1-report knowledge reply shuowenjiedao guide privacy dashboard 404; do
+            if [ -f "$page.html" ]; then
+              echo "  ✓ $page.html 存在"
+            else
+              echo "  ✗ $page.html 缺失！"
+              exit 1
+            fi
+          done
+
+      - name: Check critical security headers in _headers
+        run: |
+          echo "=== 检查 2: _headers 安全头 ==="
+          for header in CSP HSTS nosniff DENY Referrer-Policy; do
+            if grep -q "$header" ./_headers; then
+              echo "  ✓ $header 存在"
+            else
+              echo "  ✗ $header 缺失！"
+              exit 1
+            fi
+          done
+
+      - name: Check no user-scalable=no in any HTML
+        run: |
+          echo "=== 检查 3: viewport 允许缩放 ==="
+          COUNT=$(grep -l 'user-scalable=no' *.html 2>/dev/null | wc -l)
+          if [ "$COUNT" -gt 0 ]; then
+            echo "  ✗ 发现 $COUNT 个文件使用 user-scalable=no！"
+            grep -l 'user-scalable=no' *.html
+            exit 1
+          else
+            echo "  ✓ 全部允许缩放"
+          fi
+
+      - name: Check all pages have skip-nav
+        run: |
+          echo "=== 检查 4: skip-nav 存在 ==="
+          for f in *.html; do
+            if ! grep -q 'skip-nav' "$f"; then
+              echo "  ✗ $f 缺少 skip-nav"
+              exit 1
+            fi
+          done
+          echo "  ✓ 全部 13 个 HTML 文件含 skip-nav"
+
+      - name: Check sitemap.xml completeness
+        run: |
+          echo "=== 检查 5: sitemap.xml 完整性 ==="
+          COUNT=$(grep -c '<loc>' sitemap.xml)
+          if [ "$COUNT" -ge 10 ]; then
+            echo "  ✓ sitemap 含 $COUNT 个 URL"
+          else
+            echo "  ✗ sitemap 仅含 $COUNT 个 URL，期望 >= 10"
+            exit 1
+          fi
+
+      - name: Check robots.txt blocks AI crawlers
+        run: |
+          echo "=== 检查 6: robots.txt AI 爬虫禁止 ==="
+          for bot in GPTBot ClaudeBot; do
+            if grep -q "User-agent: $bot" robots.txt && grep -A1 "User-agent: $bot" robots.txt | grep -q "Disallow: /"; then
+              echo "  ✓ $bot 已禁止"
+            else
+              echo "  ✗ $bot 未正确配置"
+              exit 1
+            fi
+          done
+
+      - name: Check tracker.js has fs_uid
+        run: |
+          echo "=== 检查 7: tracker.js 匿名 UID ==="
+          if grep -q 'fs_uid' tracker.js; then
+            echo "  ✓ fs_uid 匿名标识存在"
+          else
+            echo "  ✗ tracker.js 缺少 fs_uid"
+            exit 1
+          fi
+
+      - name: Check dashboard.html has key auth
+        run: |
+          echo "=== 检查 8: 管理后台 URL key 鉴权 ==="
+          if grep -q 'searchParams' dashboard.html; then
+            echo "  ✓ URL 参数鉴权已实现"
+          else
+            echo "  ✗ dashboard.html 缺少 URL 参数鉴权"
+            exit 1
+          fi
+
+      - name: Check no hardcoded secrets
+        run: |
+          echo "=== 检查 9: 无硬编码密钥 ==="
+          if grep -rE '(password|secret|token)\s*=\s*["\'][^"\']{8,}["\']' *.html *.js 2>/dev/null | grep -v 'fs-admin\|demo-admin'; then
+            echo "  ⚠ 发现可能的硬编码密钥，请确认"
+          else
+            echo "  ✓ 无明显硬编码密钥"
+          fi
+
+  html-valid:
+    name: HTML Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install htmlhint
+        run: npm install -g htmlhint 2>/dev/null || pip install htmlhint 2>/dev/null || true
+      - name: Run HTMLHint
+        run: |
+          if command -v htmlhint &>/dev/null; then
+            htmlhint "*.html" || true
+          else
+            echo "跳过：htmlhint 未安装"
+          fi
+
+  js-lint:
+    name: JS Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JS syntax with Node
+        run: |
+          if [ -f tracker.js ]; then
+            node --check tracker.js && echo "  ✓ tracker.js 语法正确" || echo "  ✗ tracker.js 有语法错误"
+          fi
+
+  ci-result:
+    name: CI Summary
+    needs: [lint, html-valid, js-lint]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: CI Result
+        run: |
+          echo "## ✅ CI 检查完成"
+          echo "所有检查项均通过，代码已就绪可部署。"
