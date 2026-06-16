@@ -94,9 +94,20 @@ jobs:
             exit 1
           fi
 
+      - name: Check _redirects file exists
+        run: |
+          echo "=== 检查 6: _redirects 路由配置 ==="
+          if [ -f "_redirects" ]; then
+            echo "  ✓ _redirects 存在"
+            echo "  包含 $(wc -l < _redirects) 条路由规则"
+          else
+            echo "  ✗ _redirects 缺失！"
+            exit 1
+          fi
+
       - name: Check robots.txt blocks AI crawlers
         run: |
-          echo "=== 检查 6: robots.txt AI 爬虫禁止 ==="
+          echo "=== 检查 7: robots.txt AI 爬虫禁止 ==="
           for bot in GPTBot ClaudeBot; do
             if grep -q "User-agent: $bot" robots.txt && grep -A1 "User-agent: $bot" robots.txt | grep -q "Disallow: /"; then
               echo "  ✓ $bot 已禁止"
@@ -108,7 +119,7 @@ jobs:
 
       - name: Check tracker.js has fs_uid
         run: |
-          echo "=== 检查 7: tracker.js 匿名 UID ==="
+          echo "=== 检查 8: tracker.js 匿名 UID ==="
           if grep -q 'fs_uid' tracker.js; then
             echo "  ✓ fs_uid 匿名标识存在"
           else
@@ -118,7 +129,7 @@ jobs:
 
       - name: Check dashboard.html has key auth
         run: |
-          echo "=== 检查 8: 管理后台 URL key 鉴权 ==="
+          echo "=== 检查 9: 管理后台 URL key 鉴权 ==="
           if grep -q 'searchParams' dashboard.html; then
             echo "  ✓ URL 参数鉴权已实现"
           else
@@ -128,7 +139,7 @@ jobs:
 
       - name: Check no hardcoded secrets
         run: |
-          echo "=== 检查 9: 无硬编码密钥 ==="
+          echo "=== 检查 10: 无硬编码密钥 ==="
           SECRET_MATCHES=$(grep -riE 'password|secret|token' *.html *.js 2>/dev/null | grep -E '=[[:space:]]*["'"'"'][^"'"'"']{8,}["'"'"']' || true)
           if [ -n "$SECRET_MATCHES" ]; then
             FILTERED=$(echo "$SECRET_MATCHES" | grep -vE 'fs-admin|fengsheng-ops|demo-admin' || true)
