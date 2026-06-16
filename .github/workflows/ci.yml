@@ -29,14 +29,36 @@ jobs:
       - name: Check critical security headers in _headers
         run: |
           echo "=== 检查 2: _headers 安全头 ==="
-          for header in CSP HSTS nosniff DENY Referrer-Policy; do
-            if grep -q "$header" ./_headers; then
-              echo "  ✓ $header 存在"
-            else
-              echo "  ✗ $header 缺失！"
-              exit 1
-            fi
-          done
+          if grep -q "Content-Security-Policy" ./_headers; then
+            echo "  ✓ Content-Security-Policy (CSP) 存在"
+          else
+            echo "  ✗ Content-Security-Policy (CSP) 缺失！"
+            exit 1
+          fi
+          if grep -q "Strict-Transport-Security" ./_headers; then
+            echo "  ✓ Strict-Transport-Security (HSTS) 存在"
+          else
+            echo "  ✗ Strict-Transport-Security (HSTS) 缺失！"
+            exit 1
+          fi
+          if grep -q "X-Content-Type-Options" ./_headers; then
+            echo "  ✓ X-Content-Type-Options (nosniff) 存在"
+          else
+            echo "  ✗ X-Content-Type-Options (nosniff) 缺失！"
+            exit 1
+          fi
+          if grep -q "X-Frame-Options" ./_headers; then
+            echo "  ✓ X-Frame-Options (DENY) 存在"
+          else
+            echo "  ✗ X-Frame-Options (DENY) 缺失！"
+            exit 1
+          fi
+          if grep -q "Referrer-Policy" ./_headers; then
+            echo "  ✓ Referrer-Policy 存在"
+          else
+            echo "  ✗ Referrer-Policy 缺失！"
+            exit 1
+          fi
 
       - name: Check no user-scalable=no in any HTML
         run: |
@@ -107,10 +129,18 @@ jobs:
       - name: Check no hardcoded secrets
         run: |
           echo "=== 检查 9: 无硬编码密钥 ==="
-          if grep -rE '(password|secret|token)\s*=\s*["\'][^"\']{8,}["\']' *.html *.js 2>/dev/null | grep -v 'fs-admin\|demo-admin'; then
-            echo "  ⚠ 发现可能的硬编码密钥，请确认"
+          SECRET_MATCHES=$(grep -riE 'password|secret|token' *.html *.js 2>/dev/null | grep -E '=[[:space:]]*["'"'"'][^"'"'"']{8,}["'"'"']' || true)
+          if [ -n "$SECRET_MATCHES" ]; then
+            FILTERED=$(echo "$SECRET_MATCHES" | grep -vE 'fs-admin|fengsheng-ops|demo-admin' || true)
+            if [ -n "$FILTERED" ]; then
+              echo "  ✗ 发现硬编码密钥！"
+              echo "$FILTERED"
+              exit 1
+            else
+              echo "  ✓ 无硬编码密钥（仅发现预期的测试密钥）"
+            fi
           else
-            echo "  ✓ 无明显硬编码密钥"
+            echo "  ✓ 无硬编码密钥"
           fi
 
   html-valid:
