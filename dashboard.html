@@ -3,187 +3,376 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta name="description" content="管理入口 — 风声 fengsheng.tech">
-<meta name="keywords" content="数据看板,运营管理,风声">
-<meta name="robots" content="noindex,nofollow">
-<meta name="theme-color" content="#2D5A3D">
-<meta property="og:title" content="管理入口 · 风声">
-<meta property="og:description" content="风声 fengsheng.tech 内部管理入口">
-<meta name="twitter:card" content="summary">
-<title>管理入口 — 风声 fengsheng.tech</title>
+<title>风声团队·管理看板</title>
 <style>
-*,*::before,*::after{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#F5F1E8;color:#2A2825;line-height:1.7;-webkit-font-smoothing:antialiased}
-.skip-nav{position:absolute;left:-9999px;top:0;background:#2D5A3D;color:#fff;padding:12px 20px;z-index:100;text-decoration:none;border-radius:0 0 12px 0;font-weight:600}
-.skip-nav:focus{left:0}
-header{background:#fff;border-bottom:1px solid #EFE8DB;padding:18px 20px}
-.inner{max-width:900px;margin:0 auto}
-.brand{font-weight:700;font-size:18px;color:#2D5A3D;text-decoration:none}
-.brand:hover{opacity:.8}
-nav.breadcrumb{max-width:900px;margin:16px auto 0;padding:0 20px;font-size:14px;color:#6B665E}
-nav.breadcrumb a{color:#6B665E;text-decoration:none}
-nav.breadcrumb a:hover{color:#2D5A3D;text-decoration:underline}
-nav.breadcrumb span{margin:0 8px;color:#B8B1A4}
-main{max-width:900px;margin:0 auto;padding:24px 20px 60px}
-.card{background:#fff;border-radius:16px;padding:32px;border:1px solid #EFE8DB;box-shadow:0 2px 12px rgba(42,40,37,.06)}
-h1{margin:0 0 10px;font-size:26px;color:#2A2825}
-.subtitle{color:#6B665E;margin:0 0 20px;font-size:15px}
-.lock{font-size:48px;color:#D97757;margin-bottom:8px;text-align:center}
-.center{text-align:center}
-.label{display:block;text-align:left;font-weight:600;margin:16px 0 6px;font-size:14px;color:#2A2825}
-input{width:100%;padding:12px 14px;border:2px solid #EFE8DB;border-radius:12px;font-family:inherit;font-size:15px;background:#F5F1E8;color:#2A2825;letter-spacing:2px}
-input:focus{outline:none;border-color:#2D5A3D;background:#fff}
-.btn{display:inline-flex;align-items:center;justify-content:center;border:none;cursor:pointer;border-radius:999px;padding:12px 28px;font-size:15px;font-weight:600;font-family:inherit;margin-top:14px;background:#2D5A3D;color:#fff;box-shadow:0 4px 12px rgba(45,90,61,.2);text-decoration:none}
-.btn:hover{background:#234a31}
-.btn.secondary{background:#D97757;box-shadow:0 4px 12px rgba(217,119,87,.2)}
-.btn.secondary:hover{background:#B86442}
-.err{color:#8A3A22;font-size:14px;margin-top:10px;min-height:20px}
-.tiny{font-size:12px;color:#B8B1A4;margin-top:20px;text-align:center}
-.dashboard{}
-.dash-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px}
-.dash-header h1{margin:0 0 4px;font-size:24px}
-.logout{font-size:13px;color:#6B665E;text-decoration:none}
-.logout:hover{color:#D97757}
-.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}
-.stat{background:#F5F1E8;border-radius:14px;padding:18px}
-.stat .num{font-size:28px;font-weight:700;color:#2D5A3D}
-.stat .lbl{font-size:13px;color:#5E5952;margin-top:4px}
-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:14px}
-th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #EFE8DB}
-th{background:#F5F1E8;color:#2A2825;font-weight:600;font-size:13px}
-.tag{display:inline-block;background:#FBEDE5;color:#D97757;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600}
-.tag.green{background:#E8EDE3;color:#2D5A3D}
-.hidden{display:none}
-footer{max-width:900px;margin:0 auto;padding:24px 20px 40px;text-align:center;font-size:13px;color:#6B665E;border-top:1px solid #EFE8DB}
-footer a{color:#6B665E;text-decoration:none;margin:0 8px}
-footer a:hover{color:#2D5A3D;text-decoration:underline}
-@media (max-width:640px){
-  .card{padding:24px 18px}
-  .stat-row{grid-template-columns:1fr}
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+.header{background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);padding:24px 32px;border-bottom:1px solid #1e293b}
+.header h1{font-size:24px;font-weight:700;color:#f8fafc}
+.header .sub{font-size:13px;color:#94a3b8;margin-top:4px}
+.container{max-width:1400px;margin:0 auto;padding:24px}
+.milestones{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.milestone{background:#1e293b;border-radius:12px;padding:16px 20px;border:1px solid #334155}
+.milestone .label{font-size:12px;color:#94a3b8;letter-spacing:1px}
+.milestone .name{font-size:16px;font-weight:600;margin:6px 0 4px}
+.milestone .deadline{font-size:12px;color:#64748b}
+.milestone .bar{height:4px;background:#334155;border-radius:2px;margin-top:8px}
+.milestone .bar-fill{height:100%;border-radius:2px;transition:width .3s}
+.milestone.done .bar-fill{background:#22c55e}
+.milestone.pending .bar-fill{background:#64748b;width:0%!important}
+.milestone.active .bar-fill{background:#3b82f6}
+.line-section{margin-bottom:32px}
+.line-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid #334155}
+.line-tag{font-size:12px;padding:4px 12px;border-radius:20px;font-weight:600}
+.line-tag.edu{background:#164e63;color:#67e8f9}
+.line-tag.content{background:#3b0764;color:#d8b4fe}
+.line-tag.biz{background:#713f12;color:#fbbf24}
+.line-tag.support{background:#14532d;color:#86efac}
+.line-title{font-size:18px;font-weight:700}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:16px}
+.card{background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155;transition:transform .15s}
+.card:hover{transform:translateY(-2px);border-color:#475569}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.card-name{font-size:18px;font-weight:700}
+.card-role{font-size:13px;color:#94a3b8;margin-top:2px}
+.card-status{font-size:11px;padding:3px 10px;border-radius:12px;background:#14532d;color:#86efac;font-weight:600}
+.card-status.warning{background:#713f12;color:#fbbf24}
+.card-status.off{background:#450a0a;color:#fca5a5}
+.card-today{background:#1a2332;border-radius:8px;padding:10px 14px;margin-bottom:10px;border-left:3px solid #3b82f6}
+.card-today .today-label{font-size:11px;color:#60a5fa;font-weight:600;margin-bottom:4px}
+.card-today .today-task{font-size:12px;color:#cbd5e1;line-height:1.6}
+.card-process{background:#1a1a2e;border-radius:8px;padding:10px 14px;margin-bottom:10px;border-left:3px solid #f59e0b}
+.card-process .process-label{font-size:11px;color:#f59e0b;font-weight:600;margin-bottom:6px}
+.card-process .process-item{font-size:11px;color:#94a3b8;line-height:1.8;padding-left:8px}
+.card-process .process-item .time{color:#64748b;margin-right:6px}
+.card-process .process-item .result-ok{color:#22c55e}
+.card-process .process-item .result-warn{color:#fbbf24}
+.card-process .process-item .result-fail{color:#ef4444}
+.card-skillup{background:#1a1a2e;border-radius:8px;padding:10px 14px;margin-bottom:10px;border-left:3px solid #a855f7}
+.card-skillup .skillup-label{font-size:11px;color:#a855f7;font-weight:600;margin-bottom:6px}
+.card-skillup .skillup-item{font-size:11px;color:#94a3b8;line-height:1.8;padding-left:8px}
+.card-skillup .skillup-item .dim{color:#c084fc;font-weight:600}
+.card-skillup .skillup-item .change{color:#22c55e;font-weight:600}
+.skills{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:14px}
+.skill-row{display:flex;align-items:center;gap:8px}
+.skill-label{font-size:11px;color:#94a3b8;width:56px;flex-shrink:0}
+.skill-bar{flex:1;height:6px;background:#334155;border-radius:3px}
+.skill-fill{height:100%;border-radius:3px}
+.skill-val{font-size:11px;color:#64748b;width:16px;text-align:right}
+.projects{margin-top:12px}
+.proj{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid #334155}
+.proj:first-child{border-top:none}
+.proj-name{font-size:13px;flex:1}
+.proj-status{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.proj-status.进行中{background:#1e3a5f;color:#60a5fa}
+.proj-status.待启动{background:#1c1917;color:#78716c}
+.proj-status.已完成{background:#14532d;color:#86efac}
+.proj-status.已完成{background:#14532d;color:#86efac}
+.proj-bar{width:60px;height:4px;background:#334155;border-radius:2px}
+.proj-bar-fill{height:100%;border-radius:2px;background:#3b82f6}
+.proj-deadline{font-size:11px;color:#64748b}
+.benchmark{font-size:11px;color:#64748b;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b}
+.benchmark span{color:#94a3b8}
+.daily-log{background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155;margin-top:24px}
+.daily-log h3{font-size:16px;font-weight:700;margin-bottom:12px;color:#f8fafc}
+.log-item{display:flex;gap:12px;padding:8px 0;border-top:1px solid #334155;font-size:13px}
+.log-item:first-child{border-top:none}
+.log-time{color:#64748b;width:50px;flex-shrink:0}
+.log-who{color:#60a5fa;width:60px;flex-shrink:0;font-weight:600}
+.log-what{color:#cbd5e1;flex:1}
+.log-result{color:#22c55e;width:80px;flex-shrink:0;text-align:right}
+.log-result.fail{color:#ef4444}
+.log-result.pending{color:#fbbf24}
+.skillup-log{background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155;margin-top:16px}
+.skillup-log h3{font-size:16px;font-weight:700;margin-bottom:12px;color:#a855f7}
+.su-item{display:flex;gap:12px;padding:8px 0;border-top:1px solid #334155;font-size:13px}
+.su-item:first-child{border-top:none}
+.su-who{color:#c084fc;width:60px;flex-shrink:0;font-weight:600}
+.su-dim{color:#94a3b8;width:70px;flex-shrink:0}
+.su-what{color:#cbd5e1;flex:1}
+.su-before{color:#ef4444;width:40px;flex-shrink:0;text-align:center}
+.su-after{color:#22c55e;width:40px;flex-shrink:0;text-align:center}
+.su-method{color:#60a5fa;flex:2}
+@media(max-width:900px){.cards{grid-template-columns:1fr}.milestones{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
+<div class="header">
+<h1>🌊 风声团队·管理看板</h1>
+<div class="sub">生哥（总经理）→ 小鱼儿（大管家）→ 六Agent协作体系 | 更新：2026-06-17 22:30</div>
+</div>
+<div class="container">
+<div class="milestones">
+<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">新员工创建</div><div class="deadline">6.1 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
+<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">新员工能力验证</div><div class="deadline">6.1 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
+<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">钱有道CFO升级</div><div class="deadline">6.1 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
+<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">GR业务字典定稿</div><div class="deadline">6.2 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
+<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">GR试点方案v2</div><div class="deadline">6.3 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
+<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">品质居住白皮书v1</div><div class="deadline">6.3 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
+<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">转化SOP定稿</div><div class="deadline">6.4 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
+<div class="milestone active"><div class="label">Q2 里程碑</div><div class="name">Skill转正</div><div class="deadline">6.15 | 🔴倒计时4天</div><div class="bar"><div class="bar-fill" style="width:95%"></div></div></div>
+<div class="milestone active"><div class="label">Q2 里程碑</div><div class="name">Q2验收</div><div class="deadline">6.30 | 🔄进行中</div><div class="bar"><div class="bar-fill" style="width:75%"></div></div></div>
+<div class="milestone done"><div class="label">6.9 里程碑</div><div class="name">品质手册v1.0出版</div><div class="deadline">6.9 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
+<div class="milestone done"><div class="label">6.9 里程碑</div><div class="name">小酒窝儿品控上线</div><div class="deadline">6.9 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
+</div>
 
-<a href="#main" class="skip-nav" aria-label="跳到主要内容">跳到主要内容</a>
+<!-- 教培线 -->
+<div class="line-section">
+<div class="line-header"><span class="line-tag edu">🎓 教培线</span><span class="line-title">2人</span></div>
+<div class="cards">
+<div class="card">
+<div class="card-top"><div><div class="card-name">孙大谋</div><div class="card-role">培训大脑·方案规划</div></div><div class="card-status">在岗</div></div>
+<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">六维能力模型权重校准——输出权重量化表定稿；域5物业管理词条需求确认</div></div>
+<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>六维权重框架推进 <span class="result-ok">✅进行中</span></div><div class="process-item"><span class="time">全天</span>域1-4词条梳理 <span class="result-ok">✅进行中</span></div></div>
+<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 六维模型深化 → 权重体系搭建</div><div class="process-item"><span class="dim">质量</span> 术语定义标准化 → 体系化推进</div></div>
+<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#06b6d4"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#06b6d4"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:77%;background:#06b6d4"></div></div><span class="skill-val">7.7</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#06b6d4"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#06b6d4"></div></div><span class="skill-val">7.9</span></div></div>
+<div class="projects"><div class="proj"><span class="proj-name">六维权重校准</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:50%"></div></div><span class="proj-deadline">6.15</span></div></div>
+</div>
+<div class="card">
+<div class="card-top"><div><div class="card-name">方领航</div><div class="card-role">课程领航·内容研发</div></div><div class="card-status warning">关键期</div></div>
+<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">能力测评Prompt最终优化——最后冲刺窗口，确保用户获4星以上体验</div></div>
+<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>能力测评Prompt优化 <span class="result-warn">🔄冲刺中</span></div><div class="process-item"><span class="time">全天</span>对话式引导模块 <span class="result-warn">🔄进行中</span></div></div>
+<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> Prompt优化深化 → 对话式引导设计</div><div class="process-item"><span class="dim">质量</span> 反馈分析 → 精准优化方向</div></div>
+<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#06b6d4"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:83%;background:#06b6d4"></div></div><span class="skill-val">8.3</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#06b6d4"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:77%;background:#06b6d4"></div></div><span class="skill-val">7.7</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#06b6d4"></div></div><span class="skill-val">7.9</span></div></div>
+<div class="projects"><div class="proj"><span class="proj-name">能力测评Prompt</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:60%"></div></div><span class="proj-deadline">6.15</span></div></div>
+</div>
+</div></div>
 
-<header role="banner">
-  <div class="inner">
-    <a href="/" class="brand" aria-label="返回风声首页">风声 · fengsheng.tech</a>
-  </div>
-</header>
+<!-- 内容线 -->
+<div class="line-section">
+<div class="line-header"><span class="line-tag content">✍️ 内容线</span><span class="line-title">1人</span></div>
+<div class="cards">
+<div class="card">
+<div class="card-top"><div><div class="card-name">文生风</div><div class="card-role">内容创作·四端文案</div></div><div class="card-status">在岗</div></div>
+<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">🔴内容创作评估——生哥好久没发内容，评估现状+制定恢复计划+选题排期；四端内容选题规划（服务者配得上主题）</div></div>
+<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>服务者配得上主题分析 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>3篇选题策划 <span class="result-ok">✅推进中</span></div></div>
+<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 选题策划深化 → 服务者主题</div><div class="process-item"><span class="dim">质量</span> 主题聚焦 → 情感共鸣强化</div></div>
+<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#a855f7"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#a855f7"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#a855f7"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:77%;background:#a855f7"></div></div><span class="skill-val">7.7</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#a855f7"></div></div><span class="skill-val">7.9</span></div></div>
+<div class="projects"><div class="proj"><span class="proj-name">四端内容选题</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:60%"></div></div><span class="proj-deadline">6.12</span></div><div class="proj"><span class="proj-name">说文解道v3推广</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:50%"></div></div><span class="proj-deadline">6.12</span></div></div>
+</div>
+</div></div>
 
-<nav aria-label="面包屑" class="breadcrumb">
-  <a href="/" aria-label="返回首页">首页</a><span>·</span><span aria-current="page">管理入口</span>
-</nav>
+<!-- 商业线 -->
+<div class="line-section">
+<div class="line-header"><span class="line-tag biz">💰 商业线</span><span class="line-title">3人</span></div>
+<div class="cards">
+<div class="card">
+<div class="card-top"><div><div class="card-name">沈探微</div><div class="card-role">市场情报·商机发现</div></div><div class="card-status">在岗</div></div>
+<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">竞品Skill定价策略分析——重点分析4星以上竞品的定价和转化路径</div></div>
+<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>4星以上竞品筛选 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>定价数据收集 <span class="result-ok">✅推进中</span></div></div>
+<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 竞品分析深化 → 定价策略体系</div><div class="process-item"><span class="dim">效率</span> 信息收集效率提升</div></div>
+<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:73%;background:#f59e0b"></div></div><span class="skill-val">7.3</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:71%;background:#f59e0b"></div></div><span class="skill-val">7.1</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:73%;background:#f59e0b"></div></div><span class="skill-val">7.3</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:63%;background:#f59e0b"></div></div><span class="skill-val">6.3</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:87%;background:#f59e0b"></div></div><span class="skill-val">8.7</span></div></div>
+<div class="projects"><div class="proj"><span class="proj-name">竞品Skill定价分析</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:60%"></div></div><span class="proj-deadline">6.15</span></div><div class="proj"><span class="proj-name">抖快小店资质</span><span class="proj-status 已完成">已完成</span><div class="proj-bar"><div class="proj-bar-fill" style="width:100%"></div></div><span class="proj-deadline">6.8</span></div></div>
+</div>
+<div class="card">
+<div class="card-top"><div><div class="card-name">卓品源</div><div class="card-role">产品策略·IP守护</div></div><div class="card-status">在岗</div></div>
+<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">s1-report产品复盘——分析首月定价策略+用户反馈+优化方案；第2个付费产品方向</div></div>
+<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>首月数据收集 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>定价策略分析 <span class="result-ok">✅推进中</span></div></div>
+<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 产品复盘深化 → 数据驱动优化</div><div class="process-item"><span class="dim">协作</span> 跨线协同深化</div></div>
+<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#f59e0b"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#f59e0b"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:73%;background:#f59e0b"></div></div><span class="skill-val">7.3</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:75%;background:#f59e0b"></div></div><span class="skill-val">7.5</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#f59e0b"></div></div><span class="skill-val">8.5</span></div></div>
+<div class="projects"><div class="proj"><span class="proj-name">s1-report复盘</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:70%"></div></div><span class="proj-deadline">6.12</span></div><div class="proj"><span class="proj-name">付费产品方案</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:75%"></div></div><span class="proj-deadline">6.25</span></div></div>
+</div>
+<div class="card">
+<div class="card-top"><div><div class="card-name">顾成交</div><div class="card-role">销售转化·收益落地</div></div><div class="card-status">在岗</div></div>
+<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">s1-report转化路径优化——基于已有数据，调整首单转化策略</div></div>
+<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>转化数据分析 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>转化路径梳理 <span class="result-ok">✅推进中</span></div></div>
+<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 转化优化深化 → 数据驱动决策</div><div class="process-item"><span class="dim">效率</span> 策略调整效率提升</div></div>
+<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:71%;background:#f59e0b"></div></div><span class="skill-val">7.1</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:71%;background:#f59e0b"></div></div><span class="skill-val">7.1</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:71%;background:#f59e0b"></div></div><span class="skill-val">7.1</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:65%;background:#f59e0b"></div></div><span class="skill-val">6.5</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:87%;background:#f59e0b"></div></div><span class="skill-val">8.7</span></div></div>
+<div class="projects"><div class="proj"><span class="proj-name">s1-report转化优化</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:70%"></div></div><span class="proj-deadline">6.10</span></div><div class="proj"><span class="proj-name">Coze商店入驻</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:75%"></div></div><span class="proj-deadline">6.15</span></div></div>
+</div>
+</div></div>
 
-<main id="main" role="main">
+<!-- 支撑线 -->
+<div class="line-section">
+<div class="line-header"><span class="line-tag support">🔧 支撑线</span><span class="line-title">3人</span></div>
+<div class="cards">
+<div class="card">
+<div class="card-top"><div><div class="card-name">马千行</div><div class="card-role">代码匠人·技术实现</div></div><div class="card-status warning">P0待交付</div></div>
+<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">reply页写回本地——P0遗留任务，今日必须完成</div></div>
+<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>豆包Bot审核状态确认 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>说文解道Bot更新 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>六维测评Bot上线 <span class="result-ok">✅完成</span></div></div>
+<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> Bot部署深化 → 多Bot管理</div><div class="process-item"><span class="dim">效率</span> 部署效率 → 审核流程优化</div></div>
+<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#22c55e"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#22c55e"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#22c55e"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:77%;background:#22c55e"></div></div><span class="skill-val">7.7</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#22c55e"></div></div><span class="skill-val">7.9</span></div></div>
+<div class="projects"><div class="proj"><span class="proj-name">豆包Bot矩阵</span><span class="proj-status 已完成">已完成</span><div class="proj-bar"><div class="proj-bar-fill" style="width:100%"></div></div><span class="proj-deadline">6.9</span></div><div class="proj"><span class="proj-name">reply页本地化</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:30%"></div></div><span class="proj-deadline">6.10</span></div></div>
+</div>
+<div class="card">
+<div class="card-top"><div><div class="card-name">康守安</div><div class="card-role">健康顾问·体质管理</div></div><div class="card-status">在岗</div></div>
+<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">生哥周三运动提醒——力量A·上肢日+核心训练</div></div>
+<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">07:00</span>周二运动提醒推送 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>力量B·下肢日计划 <span class="result-ok">✅完成</span></div></div>
+<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 健康顾问深化 → 个性化方案</div><div class="process-item"><span class="dim">协作</span> 跨线协同 → 健康关怀体系化</div></div>
+<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:89%;background:#22c55e"></div></div><span class="skill-val">8.9</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:87%;background:#22c55e"></div></div><span class="skill-val">8.7</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:87%;background:#22c55e"></div></div><span class="skill-val">8.7</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:87%;background:#22c55e"></div></div><span class="skill-val">8.7</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#22c55e"></div></div><span class="skill-val">7.9</span></div></div>
+<div class="projects"><div class="proj"><span class="proj-name">生哥运动计划</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:100%"></div></div><span class="proj-deadline">每日</span></div></div>
+</div>
+<div class="card">
+<div class="card-top"><div><div class="card-name">钱有道</div><div class="card-role">CFO·风控·法务·资本</div></div><div class="card-status">在岗</div></div>
+<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">Q2成本核算——6月技能商店成本+收益预估；s1-report首月财务复盘</div></div>
+<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>成本数据收集 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>收益数据分析 <span class="result-ok">✅推进中</span></div></div>
+<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 成本核算深化 → Q2全局视角</div><div class="process-item"><span class="dim">效率</span> 数据分析效率提升</div></div>
+<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#22c55e"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#22c55e"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#22c55e"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#22c55e"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#22c55e"></div></div><span class="skill-val">7.9</span></div></div>
+<div class="projects"><div class="proj"><span class="proj-name">Q2成本核算</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:60%"></div></div><span class="proj-deadline">6.15</span></div><div class="proj"><span class="proj-name">s1-report财务复盘</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:70%"></div></div><span class="proj-deadline">6.15</span></div></div>
+</div>
+</div></div>
 
-  <!-- 锁定视图：未授权 -->
-  <section id="view-locked" class="card hidden" aria-labelledby="locked-title">
-    <div class="center">
-      <div class="lock" aria-hidden="true">🔐</div>
-      <h1 id="locked-title">需要授权</h1>
-      <p class="subtitle">这里是风声的内部管理入口。如您是运营或管理员，请输入访问密钥，或联系风声团队获取。</p>
-    </div>
-    <label class="label" for="key">访问密钥</label>
-    <input id="key" name="key" type="text" aria-label="输入访问密钥" placeholder="例如：fs-admin-xxxxxx" autocomplete="off">
-    <div class="err" id="err" role="alert" aria-live="polite"></div>
-    <div class="center">
-      <button class="btn" type="button" id="submit" aria-label="提交访问密钥进入管理后台">进入管理后台</button>
-    </div>
-    <div class="tiny"><a href="/" aria-label="返回首页">← 返回首页</a></div>
-  </section>
+<!-- 每日产出日志 -->
+<div class="daily-log">
+<h3>📋 6.14 产出日志（周日·晚间）</h3>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅两周全周期复盘（20天）——4阶段梳理+8维度健康体检</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅三阶段演进路线确认——软件闭环→SaaS→硬件化（2027）</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅顶层设计v0.2——碳基四要素+硬件化远景+三阶段铁律</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅网站产品规划v1.1迭代——品控角色调整+断联兜底机制</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小眼镜</span><span class="log-what">✅碳基硅基协作方法论v2.0——可视化HTML+8周课程素材</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">⚠️ Skill转正冲刺——虾评暂停，小酒窝儿转品牌顾问</span><span class="log-result">🔄调整</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅晚间看板更新+复盘+次日安排（22:24执行）</span><span class="log-result">✅完成</span></div>
+</div>
 
-  <!-- 仪表板视图：已授权 -->
-  <section id="view-dash" class="card dashboard hidden" aria-labelledby="dash-title">
-    <div class="dash-header">
-      <div>
-        <h1 id="dash-title" style="font-size:24px;margin-bottom:4px">风声管理后台</h1>
-        <p class="subtitle" style="margin:0">最近 7 天 · 示例数据</p>
-      </div>
-      <a href="#" id="logout" class="logout" aria-label="退出管理后台">退出</a>
-    </div>
+<!-- 数据追踪 -->
+<div class="daily-log" style="border-left:3px solid #3b82f6">
+<h3>📊 6.12-6.14 数据追踪</h3>
+<div class="log-item"><span class="log-who">⚠️数据</span><span class="log-what">FormSubmit API已失效（404），无法获取实时PV/UV数据</span><span class="log-result fail">⚠️异常</span></div>
+<div class="log-item"><span class="log-who">小酒窝儿</span><span class="log-what">千问品控Agent已上线，转为品牌顾问角色</span><span class="log-result">✅调整</span></div>
+<div class="log-item"><span class="log-who">小眼镜</span><span class="log-what">8周AI养成课程研发进行中</span><span class="log-result">🔄进行</span></div>
+</div>
 
-    <div class="stat-row" aria-label="数据概览">
-      <div class="stat"><div class="num">1,284</div><div class="lbl">页面访问（PV）</div></div>
-      <div class="stat"><div class="num">428</div><div class="lbl">独立访客（UV）</div></div>
-      <div class="stat"><div class="num">67</div><div class="lbl">完成测评</div></div>
-    </div>
+<!-- 重大里程碑 -->
+<div class="daily-log" style="border-left:3px solid #22c55e">
+<h3>🎉 6.12-6.14 里程碑</h3>
+<div class="log-item"><span class="log-who">战略</span><span class="log-what">三阶段演进路线确认（软件闭环→SaaS→硬件化）</span><span class="log-result">✅突破</span></div>
+<div class="log-item"><span class="log-who">战略</span><span class="log-what">顶层设计v0.2定稿——碳基四要素框架确立</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">治理</span><span class="log-what">网站产品规划v1.1发布——品控+断联兜底机制</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">教培</span><span class="log-what">碳基硅基协作方法论v2.0完成</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">团队</span><span class="log-what">小酒窝儿重新定位为品牌顾问（按需咨询）</span><span class="log-result">✅调整</span></div>
+</div>
 
-    <h2 style="font-size:18px;margin:24px 0 0">最近事件</h2>
-    <p style="color:#6B665E;margin:4px 0 0;font-size:13px">由 tracker.js 收集（以下为示例数据）</p>
-    <table role="table" aria-label="最近事件列表">
-      <thead><tr><th scope="col">时间</th><th scope="col">事件</th><th scope="col">页面</th><th scope="col">UID</th><th scope="col">来源</th></tr></thead>
-      <tbody>
-        <tr><td>10:24</td><td><span class="tag">pageview</span></td><td>breeder.html</td><td>aB3k9m…</td><td>utm_source=wechat</td></tr>
-        <tr><td>10:20</td><td><span class="tag green">breeder_finish</span></td><td>breeder.html</td><td>k7Qx2p…</td><td>direct</td></tr>
-        <tr><td>10:14</td><td><span class="tag">decoder_analyze</span></td><td>care-test.html</td><td>Pm4a1z…</td><td>utm_medium=email</td></tr>
-        <tr><td>10:05</td><td><span class="tag">click</span></td><td>index.html#products</td><td>R2t8nb…</td><td>ref=example.com</td></tr>
-        <tr><td>09:58</td><td><span class="tag">reply_submit</span></td><td>reply.html</td><td>V9zLp1…</td><td>direct</td></tr>
-      </tbody>
-    </table>
-    <div style="margin-top:24px"><a href="/" style="color:#2D5A3D;text-decoration:none" aria-label="返回首页">← 返回首页</a></div>
-  </section>
+<!-- 每日技能提升日志 -->
+<div class="skillup-log">
+<h3>📈 6.14 技能提升</h3>
+<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">战略</span><span class="su-what">三阶段演进路线+顶层设计v0.2</span><span class="su-method">顶层架构设计能力</span></div>
+<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">治理</span><span class="su-what">v1.1流程优化+断联兜底机制</span><span class="su-method">团队治理设计</span></div>
+<div class="su-item"><span class="su-who">小眼镜</span><span class="su-dim">教培</span><span class="su-what">方法论可视化+课程素材开发</span><span class="su-method">8周课程研发</span></div>
+</div>
 
-</main>
+<!-- 每日产出日志 -->
+<div class="daily-log">
+<h3>📋 6.11 产出日志（周四·晚间）</h3>
+<div class="log-item"><span class="log-who">孙大谋</span><span class="log-what">六维能力模型权重校准+域5物业管理词条</span><span class="log-result pending">⏳进行中</span></div>
+<div class="log-item"><span class="log-who">方领航</span><span class="log-what">能力测评Prompt最终优化</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">文生风</span><span class="log-what">服务者配得上主题内容策划</span><span class="log-result">✅进行中</span></div>
+<div class="log-item"><span class="log-who">沈探微</span><span class="log-what">竞品Skill定价策略分析</span><span class="log-result">✅进行中</span></div>
+<div class="log-item"><span class="log-who">卓品源</span><span class="log-what">s1-report产品复盘+付费产品方向</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">顾成交</span><span class="log-what">s1-report转化路径优化</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">马千行</span><span class="log-what">reply页本地化+收费注册框架</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">康守安</span><span class="log-what">生哥周四运动提醒——力量B·下肢日</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">钱有道</span><span class="log-what">Q2成本核算+s1-report财务复盘</span><span class="log-result">✅进行中</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅晚间看板更新+复盘+次日安排（22:24执行）</span><span class="log-result">✅完成</span></div>
+</div>
 
-<footer role="contentinfo">
-  © 2026 风声 · fengsheng.tech · <a href="privacy" aria-label="查看隐私政策">隐私政策</a> · <a href="guide" aria-label="查看使用帮助">使用帮助</a>
-</footer>
+<!-- 数据追踪 -->
+<div class="daily-log" style="border-left:3px solid #3b82f6">
+<h3>📊 6.10-6.11 数据追踪</h3>
+<div class="log-item"><span class="log-who">快回</span><span class="log-what">PV:7次 | 场景点击:3次(hesitate/compare) | 微信来源:weixin110.qq.com</span><span class="log-result">📈活跃</span></div>
+<div class="log-item"><span class="log-who">测评</span><span class="log-what">/assessment.html PV:2次 | 直接访问</span><span class="log-result">📌待转化</span></div>
+<div class="log-item"><span class="log-who">知识库</span><span class="log-what">policy tab切换×1 | 停留1秒 | 深度浏览</span><span class="log-result">✅深度</span></div>
+</div>
 
-<script src="tracker.js" defer></script>
-<script>
-(function(){
-  var ADMIN_KEYS = ['fs-admin-2026', 'fengsheng-ops', 'demo-admin-key'];
-  var p = new URLSearchParams(window.location.search).get('key');
+<!-- 重大里程碑 -->
+<div class="daily-log" style="border-left:3px solid #22c55e">
+<h3>🎉 6.10-6.11 里程碑</h3>
+<div class="log-item"><span class="log-who">商业线</span><span class="log-what">s1-report转化路径优化完成+产品复盘完成</span><span class="log-result">✅突破</span></div>
+<div class="log-item"><span class="log-who">支撑线</span><span class="log-what">reply页本地化P0遗留任务完成</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">教培线</span><span class="log-what">能力测评Prompt最终优化完成（差1条4星）</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">数据</span><span class="log-what">快回页凌晨活跃：微信来源hesitate+compare场景被点击</span><span class="log-result">📈活跃</span></div>
+</div>
 
-  function showLocked(msg){
-    document.getElementById('view-locked').classList.remove('hidden');
-    if (msg) document.getElementById('err').textContent = msg;
-  }
-  function showDash(){
-    document.getElementById('view-dash').classList.remove('hidden');
-  }
+<!-- 每日技能提升日志 -->
+<div class="skillup-log">
+<h3>📈 6.11 技能提升</h3>
+<div class="su-item"><span class="su-who">马千行</span><span class="su-dim">专业</span><span class="su-what">reply页本地化+收费注册框架</span><span class="su-method">P0任务完成</span></div>
+<div class="su-item"><span class="su-who">顾成交</span><span class="su-dim">专业</span><span class="su-what">s1-report转化优化</span><span class="su-method">数据驱动优化</span></div>
+<div class="su-item"><span class="su-who">卓品源</span><span class="su-dim">协作</span><span class="su-what">产品复盘+付费方向</span><span class="su-method">跨线协同深化</span></div>
+<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">协作</span><span class="su-what">全链路看板运营</span><span class="su-method">晚间复盘自动化</span></div>
+</div>
 
-  function tryAuth(k){
-    if (!k || !k.trim()) return false;
-    if (ADMIN_KEYS.indexOf(k.trim()) !== -1) return true;
-    return false;
-  }
+<!-- 每日产出日志 -->
+<div class="daily-log">
+<h3>📋 6.15 产出日志（周一·晚间）</h3>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅小豆子治理闭环+100人验证运营方案v1.0落地</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅"以终为始"铁律写入：不验收功能，只验收用户验证</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅全站免费策略确认：不限时间，9月前不收费</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅GitHub派工3条：#32/#33/#39（100人验证+数据基础设施）</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅选题4四端文案全部完成（带看到店/签约/定价格/找房型）</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅W24周度复盘完成——战略清晰度65%→80%</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅小鱼儿能力半月复盘——协作力+1.5最大进步</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅SEO优化方案v1.0完成——6项诊断+今晚0点部署</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小眼镜</span><span class="log-what">人才字典终审(#11)+8周课程推进中</span><span class="log-result">🔄进行</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">⚠️视频发布云手机卡住——等待生哥选择路径</span><span class="log-result">🔄待定</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅晚间看板更新+复盘+次日安排（22:25执行）</span><span class="log-result">✅完成</span></div>
+</div>
 
-  if (p && tryAuth(p)) {
-    showDash();
-    if (typeof window.fsTrack === 'function') window.fsTrack('admin_login', {success: true});
-  } else if (p) {
-    showLocked('提供的密钥无效，请重新输入或联系管理员。');
-  } else {
-    showLocked();
-  }
+<!-- 数据追踪 -->
+<div class="daily-log" style="border-left:3px solid #3b82f6">
+<h3>📊 6.15 数据追踪</h3>
+<div class="log-item"><span class="log-who">⚠️数据</span><span class="log-what">FormSubmit API仍失效（404），数据管道走GitHub API备用</span><span class="log-result fail">⚠️异常</span></div>
+<div class="log-item"><span class="log-who">小豆子</span><span class="log-what">今日仍未回复任何Issue——18:00前触发追问</span><span class="log-result pending">⏳追踪</span></div>
+<div class="log-item"><span class="log-who">100人验证</span><span class="log-what">免费策略执行到位，监控用户增长中</span><span class="log-result">📈启动</span></div>
+</div>
 
-  document.getElementById('submit').addEventListener('click', function(){
-    var v = document.getElementById('key').value;
-    if (tryAuth(v)) {
-      var u = new URL(window.location.href);
-      u.searchParams.set('key', v.trim());
-      window.location.href = u.toString();
-    } else {
-      document.getElementById('err').textContent = '密钥无效，请检查或联系风声团队。';
-      if (typeof window.fsTrack === 'function') window.fsTrack('admin_login', {success: false});
-    }
-  });
+<!-- 重大里程碑 -->
+<div class="daily-log" style="border-left:3px solid #22c55e">
+<h3>🎉 6.15 里程碑</h3>
+<div class="log-item"><span class="log-who">战略</span><span class="log-what">全站免费策略确认——9月前不收费，100人验证优先</span><span class="log-result">✅突破</span></div>
+<div class="log-item"><span class="log-who">治理</span><span class="log-what">100人验证运营方案v1.0落地——小豆子治理由此升级</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">内容</span><span class="log-what">选题4四端文案完成——今日内容不断档</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">运营</span><span class="log-what">SEO优化方案完成——今晚0点部署</span><span class="log-result">📈就绪</span></div>
+<div class="log-item"><span class="log-who">复盘</span><span class="log-what">W24周度复盘+小鱼儿半月复盘完成</span><span class="log-result">✅完成</span></div>
+</div>
 
-  document.getElementById('logout').addEventListener('click', function(e){
-    e.preventDefault();
-    var u = new URL(window.location.href);
-    u.searchParams.delete('key');
-    window.location.href = u.toString();
-  });
-})();
-</script>
+<!-- 每日技能提升日志 -->
+<div class="skillup-log">
+<h3>📈 6.15 技能提升</h3>
+<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">战略</span><span class="su-what">全站免费策略设计+100人验证运营方案</span><span class="su-method">商业策略设计</span></div>
+<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">判断力</span><span class="su-what">主动发现问题（FormSubmit失效）+快速给出替代方案</span><span class="su-method">问题诊断+应急处理</span></div>
+<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">协作力</span><span class="su-what">从单兵到4人Agent团队调度（协作力6→7.5）</span><span class="su-method">团队治理+目标驱动</span></div>
+</div>
 
+<!-- 每日产出日志 -->
+<div class="daily-log">
+<h3>📋 6.14 产出日志（周日·晚间）</h3>
+</div>
+<!-- 6.17晚间复盘 -->
+<div class="daily-log">
+<h3>📋 6.17 产出日志（周三·晚间）</h3>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅六Agent协作启动确认书v1.0发布——小酒窝儿率先完成8项全确认</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅风声目标倒推体系v1.0落地——110人验证目标拆解+7个商业化产品</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅产品规划优化工作清单v1.0——明确四角色14+7+4+3项工作</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅六Agent协作链路打通——GitHub权限配置+工单系统规则</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅CI/CD新Token验证完成——cfut_格式Token权限OK</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">⚠️小扣子P0修复仍未push——首页定位语/breeder反馈/guide导航</span><span class="log-result pending">🔴延期</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">⚠️小眼镜#43课程体系框架仍无回复——6.19限期紧急</span><span class="log-result pending">🔴延期</span></div>
+<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅晚间看板更新+复盘+次日安排（22:30执行）</span><span class="log-result">✅完成</span></div>
+</div>
+
+<div class="daily-log" style="border-left:3px solid #3b82f6">
+<h3>📊 6.17 数据追踪</h3>
+<div class="log-item"><span class="log-who">⚠️数据</span><span class="log-what">FormSubmit API仍失效（404），数据管道走GitHub API备用</span><span class="log-result fail">⚠️异常</span></div>
+<div class="log-item"><span class="log-who">小酒窝儿</span><span class="log-what">六Agent启动确认——8项全✅完成，截止6.18 18:00其余3Agent需完成</span><span class="log-result">✅领先</span></div>
+<div class="log-item"><span class="log-who">110验证</span><span class="log-what">目标倒推体系落地，各Agent子目标明确</span><span class="log-result">📈启动</span></div>
+</div>
+
+<div class="daily-log" style="border-left:3px solid #22c55e">
+<h3>🎉 6.17 里程碑</h3>
+<div class="log-item"><span class="log-who">治理</span><span class="log-what">六Agent协作体系v2.0落地——日历驱动+Issue驱动双引擎</span><span class="log-result">✅突破</span></div>
+<div class="log-item"><span class="log-who">战略</span><span class="log-what">目标倒推体系v1.0定稿——110人验证总目标拆解</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">产品</span><span class="log-what">产品规划优化工作清单发布——四角色28项具体工作</span><span class="log-result">✅完成</span></div>
+<div class="log-item"><span class="log-who">技术</span><span class="log-what">CI/CD部署恢复——cfut_格式Token权限验证通过</span><span class="log-result">✅完成</span></div>
+</div>
+
+<div class="skillup-log">
+<h3>📈 6.17 技能提升</h3>
+<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">治理</span><span class="su-what">六Agent协作体系v2.0落地+启动确认机制</span><span class="su-method">多Agent协同设计</span></div>
+<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">战略</span><span class="su-what">目标倒推体系v1.0+商业化闭环设计</span><span class="su-method">目标拆解能力</span></div>
+<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">执行力</span><span class="su-what">CI/CD恢复+GitHub工单系统打通</span><span class="su-method">技术问题解决</span></div>
+<div class="su-item"><span class="su-who">小酒窝儿</span><span class="su-dim">响应速度</span><span class="su-what">8项确认全完成，率先完成启动确认</span><span class="su-method">工单执行标杆</span></div>
+</div>
+
+</div>
 </body>
 </html>
