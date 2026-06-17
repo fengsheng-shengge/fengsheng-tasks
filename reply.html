@@ -7,6 +7,7 @@
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta name="description" content="帮助与反馈 — 风声 fengsheng.tech">
+<meta name="keywords" content="帮助中心,反馈,风声,技术支持">
 <meta name="theme-color" content="#2D5A3D">
 <title>帮助与反馈 — 风声 fengsheng.tech</title>
 <style>
@@ -109,7 +110,7 @@ function submitReply(e){
   var feedback = document.getElementById('feedback').value.trim();
   if (!topic || !feedback) return false;
 
-  // 本地保存反馈内容（静态站没有后端API）
+  // 先本地备份
   var record = {
     topic: topic,
     page: page || '未填写',
@@ -128,7 +129,19 @@ function submitReply(e){
   var t = document.getElementById('thanks');
   t.classList.add('show');
 
-  // 显示本地保存的反馈摘要
+  // 异步提交到 API（Cloudflare Function → D1）
+  try {
+    fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic: topic, page: page, content: feedback })
+    }).then(function(r) {
+      if (r.status === 201 && t) {
+        t.innerHTML = '<strong>已收到，谢谢 🙏</strong><p style="margin:6px 0 0">反馈已成功提交到服务器。我们会认真阅读并尽快回复。</p>';
+      }
+    }).catch(function() {});
+  } catch (e) {}
+
   var summary = document.getElementById('local-summary');
   if (summary) {
     var div = document.createElement('div');
@@ -146,14 +159,13 @@ function submitReply(e){
   return false;
 }
 
-// 显示本地反馈列表（让用户确认自己的反馈已记录）
 (function showFeedback(){
   try {
     var key = 'fs_feedback_list';
     var list = localStorage.getItem(key);
     if (!list) return;
     list = JSON.parse(list);
-    if (!list.length) {
+    if (list.length > 0) {
       var el = document.getElementById('local-summary');
       if (el) {
         el.style.display = 'block';
