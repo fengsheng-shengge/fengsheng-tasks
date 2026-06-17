@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.github.com">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta name="description" content="帮助与反馈 — 风声 fengsheng.tech">
@@ -90,6 +90,7 @@ ul{padding-left:22px}
           <strong>已收到，谢谢 🙏</strong>
           <p style="margin:6px 0 0">我们会认真阅读。如果您在反馈中留下了联系方式，我们会尽快回复。</p>
         </div>
+        <div id="local-summary" style="margin-top:16px;padding:16px;border:1px dashed #EFE8DB;border-radius:12px;font-size:13px;color:#6B665E"></div>
       </form>
     </div>
   </div>
@@ -104,17 +105,63 @@ ul{padding-left:22px}
 function submitReply(e){
   e.preventDefault();
   var topic = document.getElementById('topic').value;
+  var page = document.getElementById('page').value.trim();
   var feedback = document.getElementById('feedback').value.trim();
   if (!topic || !feedback) return false;
+
+  // 本地保存反馈内容（静态站没有后端API）
+  var record = {
+    topic: topic,
+    page: page || '未填写',
+    feedback: feedback,
+    ts: new Date().toISOString(),
+    url: window.location.href
+  };
+  try {
+    var key = 'fs_feedback_list';
+    var existing = localStorage.getItem(key);
+    var list = existing ? JSON.parse(existing) : [];
+    list.push(record);
+    localStorage.setItem(key, JSON.stringify(list));
+  } catch (e) {}
+
   var t = document.getElementById('thanks');
   t.classList.add('show');
+
+  // 显示本地保存的反馈摘要
+  var summary = document.getElementById('local-summary');
+  if (summary) {
+    var div = document.createElement('div');
+    div.style.padding = '12px 0';
+    div.innerHTML = '<div style="font-size:14px;color:#6B665E">已保存：' + record.topic + ' / ' + record.feedback.slice(0, 60) + '…</div>';
+    summary.appendChild(div);
+  }
+
   t.scrollIntoView({behavior:'smooth',block:'center'});
+
   if (typeof window.fsTrack === 'function') {
     window.fsTrack('reply_submit', {topic: topic, length: feedback.length});
   }
   document.getElementById('reply-form').reset();
   return false;
 }
+
+// 显示本地反馈列表（让用户确认自己的反馈已记录）
+(function showFeedback(){
+  try {
+    var key = 'fs_feedback_list';
+    var list = localStorage.getItem(key);
+    if (!list) return;
+    list = JSON.parse(list);
+    if (!list.length) {
+      var el = document.getElementById('local-summary');
+      if (el) {
+        el.style.display = 'block';
+        el.innerHTML = '共有 ' + list.length + ' 条反馈已记录';
+      }
+    }
+  } catch (e) {}
+})();
 </script>
 </body>
 </html>
