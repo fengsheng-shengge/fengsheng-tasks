@@ -75,6 +75,9 @@
 |------------|------|---------|
 | `CLOUDFLARE_API_TOKEN` | Cloudflare API Token | Cloudflare Dashboard → Profile → API Tokens → Create Token |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Account ID | Cloudflare Dashboard → 任意域名 Overview 右侧 |
+| `GH_REPO_PAT` | 仓库级 PAT（需 `repo` 全权限，用于 Issue-#42 流水线写入 Secrets） | https://github.com/settings/tokens → Generate new token → 勾选 `repo` |
+
+> **Issue-#42 自动流水线工作原理**：小扣子会在每小时通过 `issue-42-hourly-check.yml` 扫描 Issue #42，一旦检测到小鱼儿在评论中提供了 `Account ID` + `API Token`，即自动加密写入 `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_API_TOKEN`，并触发 `deploy.yml` 完成部署。因此，**无需手动在 Settings 中填 Cloudflare 凭证**，只需要保证 `GH_REPO_PAT` 存在即可。
 
 ---
 
