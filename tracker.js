@@ -1,3 +1,17 @@
+// ============================================================
+// tracker.js v2.0 · 风声埋点 SDK
+// 对应作战方案 v1.2 · 110人验证线
+// 小扣子（技术侧）
+//
+// 功能：
+//   - 自动识别产品（根据 URL path）
+//   - 自动上报 pageview（sendBeacon 优先，XHR 兜底）
+//   - 滚动深度追踪（25%/50%/75%/100%）
+//   - 点击事件追踪（data-fs-track 属性）
+//   - utm_source/medium/campaign/ref 来源归因
+//   - 离线队列 + 恢复后补发
+//   - 暴露 window.fsTrack / fsGetUid / fsSetProduct
+// ============================================================
 (function () {
   'use strict';
 
@@ -6,7 +20,38 @@
   var STORAGE_PENDING = 'fs_pending_events';
   var ENDPOINT = '/api/event';
   var MAX_PENDING = 100;
+  var BATCH_SIZE = 10;
 
+  // ---- 产品路径映射 ----
+  var PRODUCT_MAP = [
+    { rx: /\/breeder/,       name: 'breeder' },
+    { rx: /\/knowledge/,     name: 'knowledge' },
+    { rx: /\/shuowenjiedao/, name: 'shuowenjiedao' },
+    { rx: /\/dashboard/,     name: 'dashboard' },
+    { rx: /\/reply/,         name: 'reply' },
+    { rx: /\/goals/,         name: 'goals' },
+    { rx: /\/assessment/,    name: 'assessment' },
+    { rx: /\/care-test/,     name: 'care-test' },
+    { rx: /\/quality-test/,  name: 'quality-test' },
+    { rx: /\/s1-report/,     name: 's1-report' },
+    { rx: /\/about/,         name: 'about' },
+    { rx: /\/privacy/,       name: 'privacy' },
+    { rx: /\/guide/,         name: 'guide' },
+    { rx: /\/index|\/$/,     name: 'index' }
+  ];
+
+  var _customProduct = '';
+
+  function detectProduct() {
+    if (_customProduct) return _customProduct;
+    var path = window.location.pathname;
+    for (var i = 0; i < PRODUCT_MAP.length; i++) {
+      if (PRODUCT_MAP[i].rx.test(path)) return PRODUCT_MAP[i].name;
+    }
+    return 'other';
+  }
+
+  // ---- UID ----
   function genUid() {
     var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
     var arr = new Uint8Array(8);
@@ -29,205 +74,239 @@
       }
       return uid;
     } catch (e) {
-      return 'anon-' + genUid();
+      return genUid();
     }
   }
 
-  function readSource() {
+  // ---- 来源归因 ----
+  function parseUtm() {
     try {
-      var existing = sessionStorage.getItem(STORAGE_SOURCE);
-      if (existing) return JSON.parse(existing);
-    } catch (e) {}
+      var cached = localStorage.getItem(STORAGE_SOURCE);
+      if (cached) return JSON.parse(cached);
+    } catch (_) {}
 
+    var params = new URLSearchParams(window.location.search);
     var source = {
-      utm_source: null,
-      utm_medium: null,
-      utm_campaign: null,
-      ref: null,
-      source: null,
-      raw: null
+      utm_source: params.get('utm_source') || '',
+      utm_medium: params.get('utm_medium') || '',
+      utm_campaign: params.get('utm_campaign') || '',
+      ref: document.referrer || ''
     };
 
-    try {
-      var params = new URLSearchParams(window.location.search);
-      source.utm_source = params.get('utm_source');
-      source.utm_medium = params.get('utm_medium');
-      source.utm_campaign = params.get('utm_campaign');
-      source.ref = params.get('ref');
-      source.source = params.get('source');
-
-      if (!source.ref && document.referrer) {
-        try {
-          var host = new URL(document.referrer).hostname;
-          if (host && host.indexOf(window.location.hostname) === -1) {
-            source.ref = host;
-          }
-        } catch (e) {}
-      }
-      source.raw = window.location.search || null;
-
-      if (source.utm_source || source.utm_medium || source.utm_campaign || source.ref || source.source) {
-        try { sessionStorage.setItem(STORAGE_SOURCE, JSON.stringify(source)); } catch (e) {}
-      }
-    } catch (e) {}
-
+    if (source.utm_source || source.utm_campaign || source.ref) {
+      try { localStorage.setItem(STORAGE_SOURCE, JSON.stringify(source)); } catch (_) {}
+    }
     return source;
   }
 
-  function getSource() {
-    try {
-      var s = sessionStorage.getItem(STORAGE_SOURCE);
-      if (s) return JSON.parse(s);
-    } catch (e) {}
-    return readSource();
-  }
+  var _source = parseUtm();
 
+  // ---- 离线队列 ----
   function getPending() {
     try {
       var raw = localStorage.getItem(STORAGE_PENDING);
       return raw ? JSON.parse(raw) : [];
-    } catch (e) {
-      return [];
+    } catch (_) { return []; }
+  }
+
+  function savePending(list) {
+    try { localStorage.setItem(STORAGE_PENDING, JSON.stringify(list)); } catch (_) {}
+  }
+
+  function enqueue(event) {
+    var list = getPending();
+    if (list.length >= MAX_PENDING) list.shift();
+    list.push(event);
+    savePending(list);
+  }
+
+  function dequeue(n) {
+    var list = getPending();
+    if (list.length === 0) return [];
+    var batch = list.splice(0, n);
+    savePending(list);
+    return batch;
+  }
+
+  // ---- 发送 ----
+  function sendViaBeacon(payload) {
+    try {
+      var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+      return navigator.sendBeacon(ENDPOINT, blob);
+    } catch (_) { return false; }
+  }
+
+  function sendViaXHR(payload) {
+    return new Promise(function (resolve) {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', ENDPOINT, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) resolve(xhr.status >= 200 && xhr.status < 300);
+        };
+        xhr.onerror = function () { resolve(false); };
+        xhr.timeout = 5000;
+        xhr.ontimeout = function () { resolve(false); };
+        xhr.send(JSON.stringify(payload));
+      } catch (_) { resolve(false); }
+    });
+  }
+
+  function trySend(events) {
+    if (!events || events.length === 0) return;
+    var payload = events.length === 1 ? events[0] : events;
+    if (!navigator.onLine) {
+      events.forEach(function (e) { enqueue(e); });
+      return;
+    }
+    var ok = sendViaBeacon(payload);
+    if (!ok) {
+      sendViaXHR(payload).then(function (success) {
+        if (!success) events.forEach(function (e) { enqueue(e); });
+      });
     }
   }
 
-  function setPending(list) {
-    try {
-      if (list.length > MAX_PENDING) list = list.slice(list.length - MAX_PENDING);
-      localStorage.setItem(STORAGE_PENDING, JSON.stringify(list));
-    } catch (e) {}
+  function flushPending() {
+    if (!navigator.onLine) return;
+    var batch = dequeue(BATCH_SIZE);
+    if (batch.length === 0) return;
+    var payload = batch.length === 1 ? batch[0] : batch;
+    if (!sendViaBeacon(payload)) {
+      sendViaXHR(payload).then(function (success) {
+        if (!success) batch.forEach(function (e) { enqueue(e); });
+      });
+    }
   }
 
-  function buildPayload(type, data) {
-    var source = getSource();
-    return {
-      type: type,
-      url: window.location.href,
-      title: document.title,
-      referrer: document.referrer,
+  // ---- 构建事件 ----
+  function buildPayload(eventType, data) {
+    var product = detectProduct();
+    var payload = {
+      event_type: eventType,
       uid: getUid(),
-      source: source,
-      ts: Date.now(),
-      ua: navigator.userAgent,
-      screen: (window.screen ? window.screen.width + 'x' + window.screen.height : null),
-      vp: (window.innerWidth + 'x' + window.innerHeight),
-      locale: (navigator.language || null),
+      product: product,
+      page: window.location.pathname,
+      utm_source: _source.utm_source,
+      utm_medium: _source.utm_medium,
+      utm_campaign: _source.utm_campaign,
+      ref: _source.ref,
       data: data || {}
     };
+    return payload;
   }
 
-  function trySend(list) {
-    if (!list || !list.length) return;
-    if (!navigator.onLine) return;
-    try {
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', ENDPOINT, true);
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.timeout = 5000;
-      var snapshot = list.slice();
-      var body = JSON.stringify(snapshot);
-
-      xhr.onload = function () {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          var current = getPending();
-          var remaining = [];
-          var sSent = JSON.stringify(snapshot);
-          for (var i = 0; i < current.length; i++) {
-            var s = JSON.stringify(current[i]);
-            if (sSent.indexOf(s) === -1) remaining.push(current[i]);
-          }
-          setPending(remaining);
-        }
-      };
-      xhr.onerror = function () {};
-      xhr.send(body);
-    } catch (e) {}
+  // ---- 公开 API ----
+  function fsTrack(eventType, data) {
+    var payload = buildPayload(eventType, data);
+    trySend([payload]);
   }
 
-  function queue(event) {
-    var list = getPending();
-    list.push(event);
-    setPending(list);
-    try {
-      setTimeout(function () { trySend(list); }, 0);
-    } catch (e) {}
+  function fsGetUid() {
+    return getUid();
   }
 
-  function flushPending() {
-    trySend(getPending());
+  function fsSetProduct(name) {
+    _customProduct = String(name);
   }
 
-  window.fsTrack = function fsTrack(name, data) {
-    try {
-      queue(buildPayload(name || 'event', data || {}));
-    } catch (e) {}
-  };
+  window.fsTrack = fsTrack;
+  window.fsGetUid = fsGetUid;
+  window.fsSetProduct = fsSetProduct;
 
-  function trackClick(el) {
-    if (!el) return;
-    var label = el.getAttribute('aria-label') || el.getAttribute('data-track') || el.textContent || el.name || '';
-    label = (label || '').toString().trim().slice(0, 100);
-    var role = el.getAttribute('data-role') || el.tagName.toLowerCase();
-    var href = el.getAttribute('href') || '';
-    queue(buildPayload('click', {
-      label: label,
-      role: role,
-      href: href ? href.slice(0, 200) : null
-    }));
+  // ---- 自动上报 ----
+  // 1) pageview
+  var pageSent = false;
+  function sendPageview() {
+    if (pageSent) return;
+    pageSent = true;
+    fsTrack('pageview', { title: document.title });
   }
 
-  function setupAutoClick() {
-    document.addEventListener('click', function (e) {
-      var el = e.target;
-      while (el && el !== document) {
-        if (el.tagName === 'A' || el.tagName === 'BUTTON' || el.getAttribute('data-track') || el.hasAttribute('role')) {
-          trackClick(el);
-          return;
-        }
-        el = el.parentElement;
-      }
-    }, true);
-  }
-
-  function setupCozeBot() {
-    try {
-      var chatBox = document.getElementById('coze-chat');
-      if (chatBox) {
-        chatBox.addEventListener('click', function () {
-          queue(buildPayload('coze_chat_open', {}));
-        });
-      }
-    } catch (e) {}
-  }
-
-  function setupReplyForm() {
-    try {
-      var form = document.getElementById('reply-form');
-      if (!form) return;
-      form.addEventListener('submit', function () {
-        var feedback = '';
-        try { feedback = (form.querySelector('[name="feedback"]') || {}).value || ''; } catch (e) {}
-        queue(buildPayload('reply_submit', {
-          length: feedback.length,
-          has_content: !!feedback.trim()
-        }));
-      });
-    } catch (e) {}
-  }
-
-  function init() {
-    readSource();
-    queue(buildPayload('pageview', {}));
-    setupAutoClick();
-    setupCozeBot();
-    setupReplyForm();
-    flushPending();
-    window.addEventListener('online', flushPending);
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(sendPageview, 1);
   } else {
-    init();
+    document.addEventListener('DOMContentLoaded', sendPageview);
   }
+
+  // 2) 滚动深度（25/50/75/100）
+  var scrollFired = {};
+  var scrollTicking = false;
+  function checkScrollDepth() {
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    if (docH <= 0) return;
+    var pct = Math.round((window.scrollY / docH) * 100);
+    var levels = [25, 50, 75, 100];
+    for (var i = 0; i < levels.length; i++) {
+      var lv = levels[i];
+      if (pct >= lv && !scrollFired[lv]) {
+        scrollFired[lv] = true;
+        fsTrack('scroll_depth', { depth: lv });
+      }
+    }
+  }
+
+  window.addEventListener('scroll', function () {
+    if (!scrollTicking) {
+      requestAnimationFrame(function () {
+        checkScrollDepth();
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, { passive: true });
+
+  // 3) data-fs-track 点击
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-fs-track]');
+    if (!el) return;
+    var name = el.getAttribute('data-fs-track');
+    var label = el.getAttribute('data-fs-label') || el.textContent.trim().slice(0, 100);
+    fsTrack('click', { name: name, label: label });
+  }, true);
+
+  // 4) 回复表单提交
+  document.addEventListener('submit', function (e) {
+    var form = e.target;
+    if (!form.closest) return;
+    var isReply = form.closest('#reply-form') || form.closest('.reply-form') || form.id === 'reply-form';
+    if (isReply) {
+      fsTrack('reply_submit', {});
+    }
+  }, true);
+
+  // 5) Coze 聊天打开
+  var cozeObserver = new MutationObserver(function (mutations) {
+    for (var i = 0; i < mutations.length; i++) {
+      var added = mutations[i].addedNodes;
+      for (var j = 0; j < added.length; j++) {
+        var node = added[j];
+        if (node.nodeType === 1) {
+          if (node.querySelector && node.querySelector('[class*="coze"]')) {
+            fsTrack('coze_chat_open', {});
+            cozeObserver.disconnect();
+            return;
+          }
+        }
+      }
+    }
+  });
+  cozeObserver.observe(document.body, { childList: true, subtree: true });
+
+  // 6) 离线/在线恢复
+  window.addEventListener('online', function () {
+    flushPending();
+  });
+
+  // 7) 页面离开时 flush pending
+  window.addEventListener('beforeunload', function () {
+    var batch = dequeue(BATCH_SIZE);
+    if (batch.length === 0) return;
+    sendViaBeacon(batch);
+  });
+
+  // 8) 定期 flush（每 30 秒）
+  setInterval(flushPending, 30000);
+
 })();
