@@ -48,9 +48,11 @@ a:hover{text-decoration:underline}
 .card h3{margin:0 0 18px;font-size:20px;color:#2A2825}
 .card h4{margin:24px 0 10px;font-size:16px;color:#2D5A3D}
 label{display:block;font-weight:600;margin:14px 0 6px;font-size:15px}
-input[type="text"],input[type="date"],input[type="email"],textarea,select{width:100%;padding:12px 14px;border:2px solid #EFE8DB;border-radius:12px;font-family:inherit;font-size:15px;background:#F5F1E8;color:#2A2825}
+input[type="text"],input[type="date"],input[type="email"],input[type="tel"],textarea,select{width:100%;padding:12px 14px;border:2px solid #EFE8DB;border-radius:12px;font-family:inherit;font-size:15px;background:#F5F1E8;color:#2A2825}
 input:focus,textarea:focus,select:focus{outline:none;border-color:#2D5A3D;background:#fff}
-textarea{min-height:120px;resize:vertical}
+textarea{min-height:100px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px}
 .radio-group,.checkbox-group{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0}
 .radio-group label,.checkbox-group label{display:inline-flex;align-items:center;gap:6px;font-weight:400;margin:0;padding:10px 16px;border:2px solid #EFE8DB;border-radius:999px;background:#F5F1E8;cursor:pointer;font-size:14px}
 .radio-group input[type="radio"],.checkbox-group input[type="checkbox"]{width:auto;margin:0}
@@ -64,11 +66,23 @@ textarea{min-height:120px;resize:vertical}
 .btn-ghost{background:transparent;color:#2D5A3D;border:2px solid #2D5A3D}
 .btn-ghost:hover{background:#2D5A3D;color:#fff;text-decoration:none}
 .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+/* Report Preview */
+.report-preview{display:none}
+.report-preview.show{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .report-section{background:#F5F1E8;border-radius:16px;padding:28px;margin-top:8px;border:1px solid #EFE8DB}
 .report-section h3{margin:0 0 14px;font-size:18px;color:#2D5A3D;border-bottom:1px solid #EFE8DB;padding-bottom:10px}
 .report-section h4{margin:20px 0 8px;font-size:16px;color:#2A2825}
 .report-section p{margin:6px 0}
 .report-section .meta{color:#6B665E;font-size:14px}
+.report-header-card{background:linear-gradient(135deg,#2D5A3D,#3A6B4A);color:#fff;border-radius:16px 16px 0 0;padding:24px 28px;margin:-28px -28px 0 -28px}
+.report-header-card h3{color:#fff;border-bottom:1px solid rgba(255,255,255,.2);margin:0 0 12px;padding-bottom:10px;font-size:20px}
+.report-header-card .report-meta-row{display:flex;gap:32px;flex-wrap:wrap;font-size:14px;opacity:.9}
+.report-header-card .report-meta-row span{display:inline-flex;align-items:center;gap:6px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin:8px 0}
+.info-grid .info-item{display:flex;flex-direction:column}
+.info-grid .info-label{font-size:13px;color:#8A857B;font-weight:600}
+.info-grid .info-value{font-size:15px;color:#2A2825}
 .tag{display:inline-block;font-size:12px;color:#D97757;background:#FBEDE5;padding:3px 10px;border-radius:999px;font-weight:600;margin-right:6px;margin-bottom:4px}
 .hidden{display:none}
 .footer{border-top:1px solid #EFE8DB;background:#fff;padding:36px 0 28px;margin-top:48px;font-size:14px;color:#6B665E}
@@ -77,19 +91,39 @@ textarea{min-height:120px;resize:vertical}
 .required{color:#D97757}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#2D5A3D;color:#fff;padding:12px 24px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:999}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+/* Saved Reports List */
+.saved-list{display:none;margin-top:24px}
+.saved-list.show{display:block}
+.saved-item{background:#fff;border-radius:14px;padding:16px 20px;border:1px solid #EFE8DB;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;cursor:pointer;transition:box-shadow .15s}
+.saved-item:hover{box-shadow:0 4px 12px rgba(42,40,37,.08)}
+.saved-item .saved-info{flex:1;min-width:0}
+.saved-item .saved-name{font-weight:600;color:#2A2825;font-size:15px}
+.saved-item .saved-date{font-size:13px;color:#8A857B;margin-top:2px}
+.saved-item .saved-address{font-size:13px;color:#6B665E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.saved-item .btn-sm{font-size:13px;padding:8px 16px;border-radius:999px;border:none;cursor:pointer;font-weight:600;font-family:inherit}
+.saved-item .btn-sm-view{background:#E8EDE3;color:#2D5A3D}
+.saved-item .btn-sm-view:hover{background:#2D5A3D;color:#fff}
+.saved-item .btn-sm-del{background:#FBEDE5;color:#D97757}
+.saved-item .btn-sm-del:hover{background:#D97757;color:#fff}
 @media (max-width:640px){
   .wrap{padding:0 16px}
   .hero{padding:40px 0 28px}
   .section{padding:32px 0}
   .steps{grid-template-columns:1fr;gap:16px}
   .card{padding:22px 20px}
+  .form-row,.form-row-3{grid-template-columns:1fr}
+  .info-grid{grid-template-columns:1fr}
+  .report-header-card{margin:-22px -20px 0 -20px;padding:18px 20px}
+  .report-header-card .report-meta-row{flex-direction:column;gap:6px}
   .footer-inner{flex-direction:column;text-align:center}
+  .btn-row{flex-direction:column}
 }
 @media print{
-  .header,.breadcrumb,.hero,.section:not(.report-only),.btn-row,.skip-nav,.footer,.toast{display:none!important}
+  .header,.breadcrumb,.hero,.section:not(.report-only),.btn-row,.skip-nav,.footer,.toast,.saved-list{display:none!important}
   body{background:#fff}
   .card{border:none;box-shadow:none;padding:0;margin:0}
   .report-section{border:none;background:#fff}
+  .report-header-card{background:#2D5A3D!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 </head>
@@ -127,13 +161,13 @@ textarea{min-height:120px;resize:vertical}
         </div>
         <div class="step" aria-label="第二步">
           <div class="num">2</div>
-          <h3>描述房源</h3>
+          <h3>记录反馈</h3>
           <p>描述客户关注点与反应</p>
         </div>
         <div class="step" aria-label="第三步">
           <div class="num">3</div>
           <h3>生成报告</h3>
-          <p>一键生成专业带看报告</p>
+          <p>一键生成并保存专业带看报告</p>
         </div>
       </div>
     </section>
@@ -142,19 +176,46 @@ textarea{min-height:120px;resize:vertical}
       <h2 id="form-title">带看信息</h2>
       <p class="sub">以下信息仅在您的浏览器中处理，不会上传到服务器。</p>
 
-      <div class="card" aria-label="带看信息表单">
-        <h3>带看信息</h3>
+      <div class="card" aria-label="带看信息表单" id="formCard">
+        <h3>客户信息</h3>
+        <div class="form-row">
+          <div>
+            <label for="customer-name">客户姓名 <span class="required">*</span></label>
+            <input id="customer-name" type="text" aria-label="客户姓名" placeholder="例如：张先生">
+          </div>
+          <div>
+            <label for="customer-contact">联系方式</label>
+            <input id="customer-contact" type="text" aria-label="联系方式" placeholder="手机号或微信">
+          </div>
+        </div>
 
-        <label for="customer-name">客户姓名</label>
-        <input id="customer-name" type="text" aria-label="客户姓名" placeholder="例如：张先生">
+        <h4>房源信息</h4>
+        <div class="form-row">
+          <div>
+            <label for="property-address">房源地址 <span class="required">*</span></label>
+            <input id="property-address" type="text" aria-label="房源地址" placeholder="例如：北京市朝阳区 xx 小区 xx 号楼">
+          </div>
+          <div>
+            <label for="visit-date">带看日期 <span class="required">*</span></label>
+            <input id="visit-date" type="date" aria-label="带看日期">
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div>
+            <label for="property-layout">户型</label>
+            <input id="property-layout" type="text" aria-label="户型" placeholder="例如：三室两厅">
+          </div>
+          <div>
+            <label for="property-area">面积 (m²)</label>
+            <input id="property-area" type="text" aria-label="面积" placeholder="例如：120">
+          </div>
+          <div>
+            <label for="property-price">价格 (万元)</label>
+            <input id="property-price" type="text" aria-label="价格" placeholder="例如：850">
+          </div>
+        </div>
 
-        <label for="visit-date">带看日期</label>
-        <input id="visit-date" type="date" aria-label="带看日期">
-
-        <label for="property-address">房源地址</label>
-        <input id="property-address" type="text" aria-label="房源地址" placeholder="例如：北京市朝阳区 xx 小区 xx 号楼">
-
-        <label>房源类型</label>
+        <label>房源类型 <span class="required">*</span></label>
         <div class="radio-group" id="property-type" role="radiogroup" aria-label="房源类型">
           <label><input type="radio" name="property-type" value="新房" aria-label="新房">新房</label>
           <label><input type="radio" name="property-type" value="二手房" aria-label="二手房">二手房</label>
@@ -171,14 +232,18 @@ textarea{min-height:120px;resize:vertical}
           <label><input type="checkbox" value="装修" aria-label="关注装修">装修</label>
         </div>
 
-        <label for="customer-reaction">客户反应</label>
-        <textarea id="customer-reaction" aria-label="客户的真实反应" placeholder="请描述客户在看房过程中的真实反应，例如：客户对客厅采光表示满意，但对厨房大小有顾虑……"></textarea>
-
-        <label for="next-step">下一步建议</label>
-        <textarea id="next-step" aria-label="下一步建议" placeholder="例如：建议 3 天后电话跟进，同时准备 2 套同户型对比方案……"></textarea>
+        <h4>服务记录</h4>
+        <div>
+          <label for="customer-feedback">客户反馈 <span class="required">*</span></label>
+          <textarea id="customer-feedback" aria-label="客户反馈" placeholder="请描述客户在看房过程中的真实反应，例如：客户对客厅采光表示满意，但对厨房大小有顾虑……"></textarea>
+        </div>
+        <div>
+          <label for="followup-plan">跟进计划 <span class="required">*</span></label>
+          <textarea id="followup-plan" aria-label="跟进计划" placeholder="例如：建议 3 天后电话跟进，同时准备 2 套同户型对比方案……"></textarea>
+        </div>
 
         <div class="btn-row">
-          <button class="btn btn-primary" onclick="generateReport()" aria-label="生成带看报告">生成带看报告 →</button>
+          <button class="btn btn-primary" id="btnGenerate" aria-label="生成带看报告">生成带看报告</button>
         </div>
       </div>
     </section>
@@ -187,12 +252,22 @@ textarea{min-height:120px;resize:vertical}
       <h2 id="report-title">带看报告</h2>
       <p class="sub" id="report-sub">填写完上面的信息后，报告将在这里显示。</p>
 
-      <div class="card hidden" id="report-card" aria-live="polite" aria-label="带看报告内容">
-        <div class="report-section" id="report-content"></div>
-        <div class="btn-row">
-          <button class="btn btn-orange" onclick="copyReport()" aria-label="复制报告到剪贴板">复制报告</button>
-          <button class="btn btn-ghost" onclick="printReport()" aria-label="打印报告">打印报告</button>
+      <div class="report-preview" id="reportPreview" aria-live="polite" aria-label="带看报告预览">
+        <div class="card" style="overflow:hidden">
+          <div class="report-header-card" id="reportHeader"></div>
+          <div class="report-section" id="reportContent"></div>
+          <div class="btn-row" style="padding:0 28px 28px">
+            <button class="btn btn-orange" id="btnSave" aria-label="保存报告">保存报告</button>
+            <button class="btn btn-ghost" id="btnNew" aria-label="新建报告">新建报告</button>
+            <button class="btn btn-ghost" onclick="printReport()" aria-label="打印报告">打印报告</button>
+          </div>
         </div>
+      </div>
+
+      <!-- Saved Reports -->
+      <div class="saved-list" id="savedList">
+        <h3 style="margin:24px 0 12px;font-size:18px;color:#2A2825">已保存的报告</h3>
+        <div id="savedItems"></div>
       </div>
     </section>
   </div>
@@ -212,161 +287,347 @@ textarea{min-height:120px;resize:vertical}
 
 <script src="tracker.js" defer></script>
 <script>
-function generateReport() {
-  const name = document.getElementById('customer-name').value.trim();
-  const date = document.getElementById('visit-date').value;
-  const address = document.getElementById('property-address').value.trim();
-  const typeEl = document.querySelector('input[name="property-type"]:checked');
-  const type = typeEl ? typeEl.value : '';
-  const concerns = Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(i => i.value);
-  const reaction = document.getElementById('customer-reaction').value.trim();
-  const nextStep = document.getElementById('next-step').value.trim();
+(function(){
+  var STORAGE_KEY = 's1-reports';
 
-  if (!name || !date || !address || !type || concerns.length === 0 || !reaction || !nextStep) {
-    showToast('请先填写完整信息');
-    return;
+  // DOM refs
+  var formCard = document.getElementById('formCard');
+  var reportPreview = document.getElementById('reportPreview');
+  var reportHeader = document.getElementById('reportHeader');
+  var reportContent = document.getElementById('reportContent');
+  var reportSub = document.getElementById('report-sub');
+  var btnGenerate = document.getElementById('btnGenerate');
+  var btnSave = document.getElementById('btnSave');
+  var btnNew = document.getElementById('btnNew');
+  var savedList = document.getElementById('savedList');
+  var savedItems = document.getElementById('savedItems');
+  var toast = document.getElementById('toast');
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
   }
 
-  const dateObj = new Date(date);
-  const followDate = new Date(dateObj.getTime() + 3 * 24 * 60 * 60 * 1000);
-  const followDateStr = followDate.getFullYear() + '-' + String(followDate.getMonth()+1).padStart(2,'0') + '-' + String(followDate.getDate()).padStart(2,'0');
+  // Collect form data
+  function getFormData() {
+    return {
+      customerName: document.getElementById('customer-name').value.trim(),
+      customerContact: document.getElementById('customer-contact').value.trim(),
+      propertyAddress: document.getElementById('property-address').value.trim(),
+      propertyLayout: document.getElementById('property-layout').value.trim(),
+      propertyArea: document.getElementById('property-area').value.trim(),
+      propertyPrice: document.getElementById('property-price').value.trim(),
+      visitDate: document.getElementById('visit-date').value,
+      propertyType: (function(){
+        var el = document.querySelector('input[name="property-type"]:checked');
+        return el ? el.value : '';
+      })(),
+      concerns: Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(function(i){ return i.value; }),
+      customerFeedback: document.getElementById('customer-feedback').value.trim(),
+      followupPlan: document.getElementById('followup-plan').value.trim()
+    };
+  }
 
-  const concernAnalysis = {
-    '采光': '客户对自然光线有明确要求，说明在意居住舒适度，推荐时优先考虑南向/高楼层房源。',
-    '安静': '客户对居住环境的安静度敏感，可能有老人/孩子/居家办公需求，需关注小区噪音情况。',
-    '学区': '客户有学龄儿童或计划有，需详细了解学区划分、学校口碑、入学政策。',
-    '交通': '客户通勤便利性是核心决策因素，需关注地铁/公交/驾车便利性。',
-    '价格': '客户对预算敏感，性价比是关键，需准备多套预算内方案对比。',
-    '装修': '客户在意入住时间和装修成本，需区分精装/毛坯/装修状态。'
+  function validateForm(data) {
+    var missing = [];
+    if (!data.customerName) missing.push('客户姓名');
+    if (!data.propertyAddress) missing.push('房源地址');
+    if (!data.visitDate) missing.push('带看日期');
+    if (!data.propertyType) missing.push('房源类型');
+    if (!data.customerFeedback) missing.push('客户反馈');
+    if (!data.followupPlan) missing.push('跟进计划');
+    return missing;
+  }
+
+  // Generate report
+  btnGenerate.addEventListener('click', function(){
+    var data = getFormData();
+    var missing = validateForm(data);
+    if (missing.length > 0) {
+      showToast('请填写：' + missing.join('、'));
+      return;
+    }
+    renderReport(data);
+    if (typeof window.fsTrack === 'function') {
+      window.fsTrack('s1_report_generate', {concerns: data.concerns.length});
+    }
+  });
+
+  function renderReport(data) {
+    var dateObj = new Date(data.visitDate);
+    var followDate = new Date(dateObj.getTime() + 3 * 24 * 60 * 60 * 1000);
+    var followDateStr = followDate.getFullYear() + '-' + String(followDate.getMonth()+1).padStart(2,'0') + '-' + String(followDate.getDate()).padStart(2,'0');
+
+    var concernAnalysis = {
+      '采光': '客户对自然光线有明确要求，说明在意居住舒适度，推荐时优先考虑南向/高楼层房源。',
+      '安静': '客户对居住环境的安静度敏感，可能有老人/孩子/居家办公需求，需关注小区噪音情况。',
+      '学区': '客户有学龄儿童或计划有，需详细了解学区划分、学校口碑、入学政策。',
+      '交通': '客户通勤便利性是核心决策因素，需关注地铁/公交/驾车便利性。',
+      '价格': '客户对预算敏感，性价比是关键，需准备多套预算内方案对比。',
+      '装修': '客户在意入住时间和装修成本，需区分精装/毛坯/装修状态。'
+    };
+
+    var typeDesc = {
+      '新房': '新房 · 关注交付时间、开发商品牌、样板间与交付标准',
+      '二手房': '二手房 · 关注房龄、产权情况、装修保养状况',
+      '租房': '租房 · 关注租期灵活性、押金政策、家具家电配置'
+    }[data.propertyType] || data.propertyType;
+
+    // Header
+    var headerHtml = '';
+    headerHtml += '<h3>带看报告 · ' + data.customerName + '</h3>';
+    headerHtml += '<div class="report-meta-row">';
+    headerHtml += '<span>带看日期：' + data.visitDate + '</span>';
+    headerHtml += '<span>报告生成：' + new Date().toLocaleString('zh-CN') + '</span>';
+    headerHtml += '</div>';
+    reportHeader.innerHTML = headerHtml;
+
+    // Content
+    var html = '';
+
+    // 1. Customer info
+    html += '<h4>客户信息</h4>';
+    html += '<div class="info-grid">';
+    html += '<div class="info-item"><span class="info-label">客户姓名</span><span class="info-value">' + data.customerName + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">联系方式</span><span class="info-value">' + (data.customerContact || '未填写') + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">带看日期</span><span class="info-value">' + data.visitDate + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">房源类型</span><span class="info-value">' + typeDesc + '</span></div>';
+    html += '</div>';
+
+    // 2. Property info
+    html += '<h4>房源概况</h4>';
+    html += '<div class="info-grid">';
+    html += '<div class="info-item"><span class="info-label">房源地址</span><span class="info-value">' + data.propertyAddress + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">户型</span><span class="info-value">' + (data.propertyLayout || '未填写') + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">面积</span><span class="info-value">' + (data.propertyArea ? data.propertyArea + ' m²' : '未填写') + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">价格</span><span class="info-value">' + (data.propertyPrice ? data.propertyPrice + ' 万元' : '未填写') + '</span></div>';
+    html += '</div>';
+    html += '<p class="meta">本次带看房源为' + data.propertyType + '，位于' + data.propertyAddress + '。带看过程中与客户就户型、采光、周边配套等方面进行了深入沟通。</p>';
+
+    // 3. Concerns
+    html += '<h4>客户关注点分析</h4>';
+    if (data.concerns.length > 0) {
+      for (var i = 0; i < data.concerns.length; i++) {
+        var c = data.concerns[i];
+        html += '<p><span class="tag">' + c + '</span>' + (concernAnalysis[c] || '') + '</p>';
+      }
+    } else {
+      html += '<p class="meta">未记录客户关注点。</p>';
+    }
+
+    // 4. Customer feedback
+    html += '<h4>客户反馈</h4>';
+    html += '<p>' + data.customerFeedback + '</p>';
+    html += '<p class="meta">从客户反馈来看，需要在后续跟进中重点关注客户明确表达的偏好与顾虑。</p>';
+
+    // 5. Follow-up plan
+    html += '<h4>跟进计划</h4>';
+    html += '<p>' + data.followupPlan + '</p>';
+    html += '<p class="meta"><strong>建议跟进日期：</strong>' + followDateStr + '（带看后 3 天内跟进，保持联系热度）</p>';
+
+    html += '<p class="meta" style="margin-top:20px;border-top:1px dashed #B8B1A4;padding-top:14px">—— 风声 fengsheng.tech · 带看报告 S1 · 生成时间：' + new Date().toLocaleString('zh-CN') + '</p>';
+
+    reportContent.innerHTML = html;
+    reportPreview.classList.add('show');
+    reportSub.textContent = '报告已生成，可保存、打印或新建。';
+    reportPreview.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  // Save report
+  btnSave.addEventListener('click', function(){
+    var data = getFormData();
+    var missing = validateForm(data);
+    if (missing.length > 0) {
+      showToast('请先完成表单再保存');
+      return;
+    }
+    try {
+      var reports = [];
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try { reports = JSON.parse(raw); } catch(e) { reports = []; }
+      }
+      var record = {
+        id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+        date: new Date().toISOString(),
+        customerName: data.customerName,
+        customerContact: data.customerContact,
+        propertyAddress: data.propertyAddress,
+        propertyLayout: data.propertyLayout,
+        propertyArea: data.propertyArea,
+        propertyPrice: data.propertyPrice,
+        visitDate: data.visitDate,
+        propertyType: data.propertyType,
+        concerns: data.concerns,
+        customerFeedback: data.customerFeedback,
+        followupPlan: data.followupPlan
+      };
+      reports.unshift(record);
+      // Keep max 50 reports
+      if (reports.length > 50) reports = reports.slice(0, 50);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+      showToast('报告已保存到本地');
+      renderSavedList();
+      if (typeof window.fsTrack === 'function') window.fsTrack('s1_report_save');
+    } catch(e) {
+      showToast('保存失败，请检查浏览器存储空间');
+    }
+  });
+
+  // New report
+  btnNew.addEventListener('click', function(){
+    // Clear form
+    document.getElementById('customer-name').value = '';
+    document.getElementById('customer-contact').value = '';
+    document.getElementById('property-address').value = '';
+    document.getElementById('property-layout').value = '';
+    document.getElementById('property-area').value = '';
+    document.getElementById('property-price').value = '';
+    document.getElementById('visit-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('customer-feedback').value = '';
+    document.getElementById('followup-plan').value = '';
+    // Clear radio
+    var radios = document.querySelectorAll('input[name="property-type"]');
+    for (var i = 0; i < radios.length; i++) radios[i].checked = false;
+    // Clear checkboxes
+    var checks = document.querySelectorAll('.checkbox-group input');
+    for (var j = 0; j < checks.length; j++) checks[j].checked = false;
+    // Reset labels
+    document.querySelectorAll('.radio-group label, .checkbox-group label').forEach(function(l){ l.classList.remove('checked'); });
+    // Hide report
+    reportPreview.classList.remove('show');
+    reportSub.textContent = '填写完上面的信息后，报告将在这里显示。';
+    reportHeader.innerHTML = '';
+    reportContent.innerHTML = '';
+    formCard.scrollIntoView({behavior:'smooth', block:'start'});
+    if (typeof window.fsTrack === 'function') window.fsTrack('s1_report_new');
+  });
+
+  // Print
+  window.printReport = function() {
+    window.print();
+    if (typeof window.fsTrack === 'function') window.fsTrack('s1_report_print');
   };
 
-  let concernHtml = concerns.map(c => '<p><span class="tag">' + c + '</span>' + (concernAnalysis[c] || '') + '</p>').join('');
+  // Saved reports list
+  function renderSavedList() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      var reports = raw ? JSON.parse(raw) : [];
+      if (reports.length === 0) {
+        savedList.classList.remove('show');
+        return;
+      }
+      savedList.classList.add('show');
+      var html = '';
+      for (var i = 0; i < reports.length; i++) {
+        var r = reports[i];
+        var dateStr = new Date(r.date).toLocaleString('zh-CN');
+        html += '<div class="saved-item" data-id="' + r.id + '">';
+        html += '<div class="saved-info">';
+        html += '<div class="saved-name">' + r.customerName + ' · ' + r.propertyType + '</div>';
+        html += '<div class="saved-address">' + r.propertyAddress + '</div>';
+        html += '<div class="saved-date">保存于 ' + dateStr + '</div>';
+        html += '</div>';
+        html += '<div style="display:flex;gap:8px">';
+        html += '<button class="btn-sm btn-sm-view" data-action="view" data-id="' + r.id + '">查看</button>';
+        html += '<button class="btn-sm btn-sm-del" data-action="delete" data-id="' + r.id + '">删除</button>';
+        html += '</div>';
+        html += '</div>';
+      }
+      savedItems.innerHTML = html;
 
-  let typeDesc = {
-    '新房': '新房 · 关注交付时间、开发商品牌、样板间与交付标准',
-    '二手房': '二手房 · 关注房龄、产权情况、装修保养状况',
-    '租房': '租房 · 关注租期灵活性、押金政策、家具家电配置'
-  }[type] || type;
+      // Bind events
+      savedItems.querySelectorAll('[data-action="view"]').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          var id = btn.getAttribute('data-id');
+          var raw2 = localStorage.getItem(STORAGE_KEY);
+          var reports2 = raw2 ? JSON.parse(raw2) : [];
+          var found = null;
+          for (var k = 0; k < reports2.length; k++) {
+            if (reports2[k].id === id) { found = reports2[k]; break; }
+          }
+          if (found) {
+            // Fill form
+            document.getElementById('customer-name').value = found.customerName || '';
+            document.getElementById('customer-contact').value = found.customerContact || '';
+            document.getElementById('property-address').value = found.propertyAddress || '';
+            document.getElementById('property-layout').value = found.propertyLayout || '';
+            document.getElementById('property-area').value = found.propertyArea || '';
+            document.getElementById('property-price').value = found.propertyPrice || '';
+            document.getElementById('visit-date').value = found.visitDate || '';
+            document.getElementById('customer-feedback').value = found.customerFeedback || '';
+            document.getElementById('followup-plan').value = found.followupPlan || '';
+            // Set radio
+            var radios = document.querySelectorAll('input[name="property-type"]');
+            for (var m = 0; m < radios.length; m++) {
+              radios[m].checked = (radios[m].value === found.propertyType);
+            }
+            // Set checkboxes
+            var checks = document.querySelectorAll('.checkbox-group input');
+            var concerns = found.concerns || [];
+            for (var n = 0; n < checks.length; n++) {
+              checks[n].checked = (concerns.indexOf(checks[n].value) >= 0);
+            }
+            // Update label styles
+            document.querySelectorAll('.radio-group label').forEach(function(l){
+              var inp = l.querySelector('input');
+              l.classList.toggle('checked', inp && inp.checked);
+            });
+            document.querySelectorAll('.checkbox-group label').forEach(function(l){
+              var inp = l.querySelector('input');
+              l.classList.toggle('checked', inp && inp.checked);
+            });
+            // Render report
+            renderReport(getFormData());
+            formCard.scrollIntoView({behavior:'smooth', block:'start'});
+          }
+        });
+      });
 
-  const html =
-    '<h3>📋 带看报告 · ' + name + ' · ' + date + '</h3>' +
-    '<h4>① 客户信息摘要</h4>' +
-    '<p><strong>客户姓名：</strong>' + name + '</p>' +
-    '<p><strong>带看日期：</strong>' + date + '</p>' +
-    '<p><strong>房源类型：</strong>' + typeDesc + '</p>' +
-    '<h4>② 房源概况</h4>' +
-    '<p><strong>房源地址：</strong>' + address + '</p>' +
-    '<p class="meta">本次带看房源为' + type + '，位于' + address + '。带看过程中与客户就户型、采光、周边配套等方面进行了深入沟通。</p>' +
-    '<h4>③ 客户关注点分析</h4>' +
-    concernHtml +
-    '<h4>④ 客户反应解读</h4>' +
-    '<p>' + reaction + '</p>' +
-    '<p class="meta">从客户反应来看，整体态度积极/中性，需在后续跟进中重点关注客户明确表达的偏好与顾虑。</p>' +
-    '<h4>⑤ 下一步行动建议</h4>' +
-    '<p>' + nextStep + '</p>' +
-    '<p class="meta"><strong>跟进日期建议：</strong>' + followDateStr + '（带看后 3 天内电话跟进，保持联系热度。</p>' +
-    '<p class="meta" style="margin-top:20px;border-top:1px dashed #B8B1A4;padding-top:14px">—— 风声 fengsheng.tech · 带看报告 S1 · 生成时间：' + new Date().toLocaleString('zh-CN') + '</p>';
-
-  document.getElementById('report-content').innerHTML = html;
-  document.getElementById('report-card').classList.remove('hidden');
-  document.getElementById('report-sub').textContent = '报告已生成，可复制或打印。';
-  document.getElementById('report-card').scrollIntoView({behavior:'smooth',block:'start'});
-
-  if (typeof window.fsTrack === 'function') {
-    window.fsTrack('s1_report_generate', {concerns: concerns.length});
+      savedItems.querySelectorAll('[data-action="delete"]').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          var id = btn.getAttribute('data-id');
+          var raw3 = localStorage.getItem(STORAGE_KEY);
+          var reports3 = raw3 ? JSON.parse(raw3) : [];
+          reports3 = reports3.filter(function(r){ return r.id !== id; });
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(reports3));
+          renderSavedList();
+          showToast('报告已删除');
+        });
+      });
+    } catch(e) {
+      savedList.classList.remove('show');
+    }
   }
-}
 
-function getReportText() {
-  const name = document.getElementById('customer-name').value.trim();
-  const date = document.getElementById('visit-date').value;
-  const address = document.getElementById('property-address').value.trim();
-  const typeEl = document.querySelector('input[name="property-type"]:checked');
-  const type = typeEl ? typeEl.value : '';
-  const concerns = Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(i => i.value).join('、');
-  const reaction = document.getElementById('customer-reaction').value.trim();
-  const nextStep = document.getElementById('next-step').value.trim();
-  const dateObj = new Date(date);
-  const followDate = new Date(dateObj.getTime() + 3 * 24 * 60 * 1000);
-  const followDateStr = followDate.getFullYear() + '-' + String(followDate.getMonth()+1).padStart(2,'0') + '-' + String(followDate.getDate()).padStart(2,'0');
-  return '【带看报告 S1】\n' +
-    '客户：' + name + '\n' +
-    '带看日期：' + date + '\n' +
-    '房源地址：' + address + '\n' +
-    '房源类型：' + type + '\n' +
-    '客户关注点：' + concerns + '\n\n' +
-    '客户反应：\n' + reaction + '\n\n' +
-    '下一步建议：\n' + nextStep + '\n\n' +
-    '跟进日期：' + followDateStr + '\n' +
-    '—— 风声 fengsheng.tech';
-}
-
-function copyReport() {
-  const text = getReportText();
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(function() {
-      showToast('已复制到剪贴板 ✓');
-    }).catch(function() {
-      fallbackCopy(text);
+  // Radio & checkbox styling
+  document.querySelectorAll('.radio-group label').forEach(function(label) {
+    var input = label.querySelector('input');
+    input.addEventListener('change', function() {
+      label.parentElement.querySelectorAll('label').forEach(function(l) { l.classList.remove('checked'); });
+      if (input.checked) label.classList.add('checked');
     });
-  } else {
-    fallbackCopy(text);
-  }
-  if (typeof window.fsTrack === 'function') window.fsTrack('s1_report_copy');
-}
-
-function fallbackCopy(text) {
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.opacity = '0';
-  document.body.appendChild(ta);
-  ta.select();
-  try {
-    document.execCommand('copy');
-    showToast('已复制到剪贴板 ✓');
-  } catch (e) {
-    showToast('复制失败，请手动选择文本');
-  }
-  document.body.removeChild(ta);
-}
-
-function printReport() {
-  window.print();
-  if (typeof window.fsTrack === 'function') window.fsTrack('s1_report_print');
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 2000);
-}
-
-document.querySelectorAll('.radio-group input[type="radio"], .checkbox-group input[type="checkbox"]').forEach(function(input) {
-  input.addEventListener('change', function() {
-    const group = input.closest('.radio-group, .checkbox-group');
-    if (!group) return;
   });
-});
 
-document.querySelectorAll('.radio-group label').forEach(function(label) {
-  const input = label.querySelector('input');
-  input.addEventListener('change', function() {
-    label.parentElement.querySelectorAll('label').forEach(function(l) { l.classList.remove('checked'); });
-    if (input.checked) label.classList.add('checked');
+  document.querySelectorAll('.checkbox-group label').forEach(function(label) {
+    var input = label.querySelector('input');
+    input.addEventListener('change', function() {
+      if (input.checked) label.classList.add('checked');
+      else label.classList.remove('checked');
+    });
   });
-});
 
-document.querySelectorAll('.checkbox-group label').forEach(function(label) {
-  const input = label.querySelector('input');
-  input.addEventListener('change', function() {
-    if (input.checked) label.classList.add('checked');
-    else label.classList.remove('checked');
-  });
-});
+  // Default date
+  document.getElementById('visit-date').value = new Date().toISOString().split('T')[0];
 
-document.getElementById('visit-date').value = new Date().toISOString().split('T')[0];
+  // Load saved reports on init
+  renderSavedList();
+})();
 </script>
 </body>
 </html>
