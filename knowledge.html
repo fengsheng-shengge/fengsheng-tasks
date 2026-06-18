@@ -2,827 +2,422 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self';">
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta name="description" content="居住服务行业知识底座：9 大业务域，450+ 词条，做你专业路上的词典。搜索、收藏、每日一词。">
-<meta name="keywords" content="知识底座,行业词条,居住服务,房产知识,业务词典">
-<meta name="theme-color" content="#2D5A3D">
-<meta property="og:title" content="知识底座 · 风声">
-<meta property="og:description" content="居住服务行业知识底座 — 9 大业务域，450+ 词条，搜索即得、收藏即用">
-<meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%23F5F1E8'/><text x='100' y='280' font-family='sans-serif' font-size='72' fill='%232D5A3D' font-weight='700'>知识底座</text><text x='100' y='360' font-family='sans-serif' font-size='36' fill='%23D97757'>9 大业务域 · 450+ 词条</text></svg>">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>知识底座 · 风声</title>
 <style>
-*,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#F5F1E8;color:#2A2825;line-height:1.7;-webkit-font-smoothing:antialiased}
-a{color:#2D5A3D;text-decoration:none}
-a:hover{text-decoration:underline}
-.wrap{max-width:960px;margin:0 auto;padding:0 20px}
-.skip-nav{position:absolute;left:-9999px;top:0;background:#2D5A3D;color:#fff;padding:12px 20px;z-index:100;text-decoration:none;border-radius:0 0 12px 0}
-.skip-nav:focus{left:0}
-.header{background:#fff;border-bottom:1px solid #EFE8DB;position:sticky;top:0;z-index:50}
-.header-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
-.brand{font-weight:700;font-size:20px;color:#2D5A3D;letter-spacing:1px}
-.brand span{color:#D97757}
-.header-nav{display:flex;gap:4px;align-items:center;font-size:14px}
-.header-nav a{color:#2A2825;padding:6px 10px;border-radius:8px}
-.header-nav a:hover{background:#F5F1E8;text-decoration:none;color:#2D5A3D}
-.header-nav .sep{color:#B8B1A4}
-.hero{padding:48px 0 28px;text-align:center}
-.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.25;margin:0 0 12px;color:#2A2825;font-weight:700}
-.hero h1 em{font-style:normal;color:#D97757}
-.hero p.lead{font-size:clamp(15px,2vw,18px);color:#5E5952;max-width:560px;margin:0 auto 24px}
+:root{--bg:#f7f4ef;--bg2:#e8e4d9;--dk:#1a1a1a;--p:#3d5a3e;--fire:#c46a3a;--orange:#f5a623;--ts:#555555;--td:#888;--card:#fff;--border:#e8e4d9;--r:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--dk);line-height:1.6;-webkit-font-smoothing:antialiased}
+.page{max-width:640px;margin:0 auto;padding:20px 16px}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.top-bar .brand{font-size:13px;font-weight:700;color:var(--p);letter-spacing:1px}
+.top-bar a{font-size:12px;color:var(--td);text-decoration:none}
+.hero-icon{font-size:48px;text-align:center;margin:24px 0 12px}
+.hero-title{font-size:22px;font-weight:800;text-align:center;margin-bottom:6px}
+.hero-sub{font-size:13px;color:var(--ts);text-align:center;margin-bottom:24px;line-height:1.6}
+.hero-sub strong{color:var(--p)}
+.stats-row{display:flex;justify-content:center;gap:16px;margin-bottom:24px}
+.stat-item{text-align:center}
+.stat-num{font-size:24px;font-weight:800;color:var(--p)}
+.stat-label{font-size:10px;color:var(--td)}
+.domain-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.domain-tab{font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--card);cursor:pointer;transition:all .2s;font-weight:600}
+.domain-tab.active{background:var(--p);color:#fff;border-color:var(--p)}
+.domain-tab:active{transform:scale(.95)}
+.entry-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s}
+.entry-card:active{transform:scale(.98)}
+.entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.entry-id{font-size:10px;font-weight:700;color:var(--td);background:var(--bg2);padding:1px 6px;border-radius:3px}
+.entry-name{font-size:15px;font-weight:700;color:var(--dk)}
+.entry-alias{font-size:11px;color:var(--td);margin-bottom:6px}
+.entry-def{font-size:13px;color:var(--ts);line-height:1.5;margin-bottom:8px}
+.entry-source{font-size:11px;color:var(--p);background:rgba(61,90,62,.06);padding:4px 8px;border-radius:4px;line-height:1.5}
+.entry-source .src-label{font-weight:700;margin-right:4px}
+.entry-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.entry-detail.open{display:block}
+/* 三层展示 */
+.layer-tabs{display:flex;gap:4px;margin-bottom:10px}
+.layer-tab{font-size:10px;padding:3px 8px;border-radius:3px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;font-weight:600;transition:all .15s}
+.layer-tab.active{background:var(--p);color:#fff;border-color:var(--p)}
+.layer-content{display:none}
+.layer-content.active{display:block}
+.detail-row{margin-bottom:8px;font-size:12px;line-height:1.6}
+.detail-label{font-weight:700;color:var(--dk);display:inline}
+.detail-val{color:var(--ts)}
+.detail-row.speech{background:rgba(61,90,62,.03);padding:6px 8px;border-radius:4px;margin:4px 0}
+.detail-row.speech .detail-val{white-space:pre-wrap}
+.source-link{color:var(--p);text-decoration:none;border-bottom:1px dashed var(--p);font-size:11px}
+.source-link:hover{border-bottom-style:solid}
+.source-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;margin:2px 2px 2px 0;font-weight:600}
+.badge-gb{background:#e8f5e9;color:#2e7d32}
+.badge-law{background:#fff3e0;color:#e65100}
+.badge-industry{background:#e3f2fd;color:#1565c0}
+.badge-academic{background:#fce4ec;color:#c62828}
+.badge-platform{background:#f3e5f5;color:#7b1fa2}
+.entry-card .expand-hint{font-size:10px;color:var(--td);text-align:center;margin-top:6px}
+.entry-detail.open ~ .expand-hint{display:none}
+.footer{text-align:center;margin-top:32px;padding:20px 0;border-top:1px solid var(--border);font-size:11px;color:var(--td);line-height:1.7}
+/* 版权+反馈 */
+.page-footer{text-align:center;padding:24px 16px;margin-top:32px;
+  border-top:1px solid var(--border,rgba(80,90,70,.09));
+  font-size:11px;color:var(--ts,#7a8478);line-height:1.8}
+.page-footer .copyright{margin-bottom:8px}
+.feedback-bar{display:flex;align-items:center;justify-content:center;
+  gap:16px;margin-top:12px;padding:12px;background:var(--card,#fff);
+  border-radius:8px;border:1px solid var(--border,rgba(80,90,70,.09))}
+.feedback-bar span{font-size:13px;color:var(--tx,#555)}
+.feedback-btn{display:inline-flex;align-items:center;gap:4px;
+  padding:6px 14px;border-radius:6px;border:1px solid var(--border);
+  background:var(--bg,#f7f4ef);cursor:pointer;font-size:13px;
+  color:var(--tx,#555);transition:all .15s}
+.feedback-btn:hover{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
+.feedback-btn.active{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
 
-/* Search */
-.search-bar{position:relative;max-width:560px;margin:0 auto 0}
-.search-bar input{width:100%;padding:14px 48px 14px 20px;border:2px solid #EFE8DB;border-radius:999px;font-family:inherit;font-size:16px;background:#fff;color:#2A2825;outline:none;transition:border-color .2s,box-shadow .2s}
-.search-bar input:focus{border-color:#2D5A3D;box-shadow:0 0 0 4px rgba(45,90,61,.1)}
-.search-bar input::placeholder{color:#B8B1A4}
-.search-bar .search-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:#B8B1A4;pointer-events:none}
-.search-results{display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;background:#fff;border-radius:16px;border:1px solid #EFE8DB;box-shadow:0 8px 30px rgba(42,40,37,.12);max-height:360px;overflow-y:auto;z-index:40}
-.search-results.show{display:block}
-.search-result-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #F5F1E8;cursor:pointer;transition:background .15s}
-.search-result-item:last-child{border-bottom:none}
-.search-result-item:hover{background:#F5F1E8}
-.search-result-item .sr-name{font-weight:600;font-size:14px;color:#2A2825}
-.search-result-item .sr-domain{font-size:12px;color:#B8B1A4;margin-left:8px;background:#F5F1E8;padding:2px 8px;border-radius:999px}
-.search-result-item .sr-desc{font-size:13px;color:#5E5952;margin-top:2px}
-.search-result-item .sr-star{color:#B8B1A4;cursor:pointer;font-size:18px;padding:4px;flex-shrink:0;margin-left:8px}
-.search-result-item .sr-star.saved{color:#D97757}
-.search-empty{text-align:center;padding:28px;color:#5E5952;font-size:14px}
-.search-highlight{background:#FBEDE5;border-radius:2px}
-
-/* Toolbar */
-.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-.toolbar .tab{background:#fff;border:2px solid #EFE8DB;padding:8px 18px;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;color:#5E5952;transition:all .15s}
-.toolbar .tab:hover{border-color:#B8B1A4;color:#2A2825}
-.toolbar .tab.active{background:#2D5A3D;color:#fff;border-color:#2D5A3D}
-.toolbar .tab .badge{background:#D97757;color:#fff;border-radius:999px;padding:1px 7px;font-size:11px;margin-left:4px;font-weight:700}
-
-/* Section */
-.section{padding:32px 0}
-.section h2{font-size:clamp(20px,3vw,26px);margin:0 0 6px;color:#2A2825}
-.section .sub{color:#5E5952;margin-bottom:20px;font-size:14px}
-
-/* Daily term */
-.daily-term{background:linear-gradient(135deg,#2D5A3D,#3A6B4D);color:#fff;border-radius:16px;padding:28px 28px;margin-bottom:28px;position:relative;overflow:hidden}
-.daily-term::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,.05);border-radius:50%}
-.daily-term .daily-label{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#A8C9B5;margin-bottom:6px}
-.daily-term .daily-name{font-size:24px;font-weight:700;margin-bottom:6px}
-.daily-term .daily-domain{font-size:14px;color:#A8C9B5;margin-bottom:10px}
-.daily-term .daily-desc{font-size:15px;color:#E8EDE3;line-height:1.7;margin-bottom:14px}
-.daily-term .daily-actions{display:flex;gap:10px}
-.daily-term .daily-save{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);padding:8px 18px;border-radius:999px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:600;transition:background .2s}
-.daily-term .daily-save:hover{background:rgba(255,255,255,.25)}
-.daily-term .daily-save.saved{background:#D97757;border-color:#D97757}
-
-/* Domain cards */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
-.card{background:#fff;border-radius:16px;padding:22px 20px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);transition:transform .2s ease,box-shadow .2s ease;cursor:pointer}
-.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(42,40,37,.08);border-color:#D97757}
-.card.selected{border-color:#2D5A3D;box-shadow:0 6px 18px rgba(45,90,61,.18)}
-.card-title{font-weight:700;font-size:17px;color:#2A2825;margin:0 0 6px}
-.card-count{color:#D97757;font-size:12px;display:inline-block;background:#FBEDE5;padding:3px 8px;border-radius:999px;margin-bottom:8px;font-weight:600}
-.card p{margin:4px 0 0;color:#5E5952;font-size:13px;line-height:1.6}
-.card-icon{height:42px;color:#2D5A3D;margin-bottom:8px}
-
-/* Terms panel */
-.panel{background:#fff;border-radius:16px;padding:28px;border:1px solid #EFE8DB;box-shadow:0 4px 12px rgba(42,40,37,.06);margin-bottom:24px;display:none}
-.panel.show{display:block}
-.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #EFE8DB;flex-wrap:wrap;gap:10px}
-.panel-header h3{margin:0;font-size:20px;color:#2D5A3D}
-.panel-header .panel-back{background:transparent;border:1px solid #EFE8DB;padding:6px 14px;border-radius:999px;font-size:13px;cursor:pointer;font-family:inherit;color:#6B665E;transition:all .15s}
-.panel-header .panel-back:hover{background:#F5F1E8;color:#2A2825}
-.panel p.intro{color:#5E5952;margin:0 0 18px;font-size:14px}
-.terms{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.term{background:#F5F1E8;border-radius:12px;padding:16px;border:1px solid #EFE8DB;position:relative;transition:border-color .2s}
-.term:hover{border-color:#D97757}
-.term-name{font-weight:700;color:#2A2825;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
-.term-desc{color:#5E5952;font-size:13px;line-height:1.6}
-.term-star{position:absolute;top:10px;right:10px;background:transparent;border:none;color:#B8B1A4;font-size:18px;cursor:pointer;padding:4px;transition:color .15s}
-.term-star:hover{color:#D97757}
-.term-star.saved{color:#D97757}
-
-/* Bookmarks section */
-.bookmarks-section{display:none}
-.bookmarks-section.show{display:block}
-.bookmarks-empty{text-align:center;padding:40px;color:#5E5952;font-size:15px;background:#fff;border-radius:16px;border:1px solid #EFE8DB}
-.bookmarks-empty .empty-icon{font-size:40px;margin-bottom:12px;color:#B8B1A4}
-.bookmarks-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.bookmark-item{background:#fff;border-radius:12px;padding:16px;border:1px solid #EFE8DB;display:flex;justify-content:space-between;align-items:flex-start}
-.bookmark-item .bm-info{flex:1}
-.bookmark-item .bm-name{font-weight:700;font-size:15px;color:#2A2825;margin-bottom:4px}
-.bookmark-item .bm-domain{font-size:12px;color:#B8B1A4;margin-bottom:4px}
-.bookmark-item .bm-desc{font-size:13px;color:#5E5952;line-height:1.6}
-.bookmark-item .bm-remove{background:transparent;border:none;color:#B8B1A4;cursor:pointer;font-size:18px;padding:4px;flex-shrink:0}
-.bookmark-item .bm-remove:hover{color:#D97757}
-
-/* History */
-.history-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:20px;font-size:13px;color:#6B665E}
-.history-bar .history-label{color:#B8B1A4;flex-shrink:0}
-.history-bar .history-tag{background:#fff;border:1px solid #EFE8DB;padding:4px 12px;border-radius:999px;cursor:pointer;transition:all .15s;font-family:inherit;font-size:12px;color:#5E5952}
-.history-bar .history-tag:hover{background:#F5F1E8;color:#2A2825;border-color:#B8B1A4}
-
-/* Toast */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2A2825;color:#fff;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
-.toast.show{opacity:1}
-
-/* CTA */
-.cta{background:#2D5A3D;color:#fff;border-radius:16px;padding:36px 28px;text-align:center;margin-top:20px}
-.cta h3{margin:0 0 10px;font-size:clamp(20px,3vw,24px);color:#fff}
-.cta p{margin:0 0 18px;color:#E8EDE3;font-size:14px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:14px 28px;font-size:16px;font-weight:600;font-family:inherit;transition:transform .15s ease,background-color .2s}
-.btn-primary{background:#D97757;color:#fff;box-shadow:0 6px 16px rgba(217,119,87,.3)}
-.btn-primary:hover{background:#c06649;text-decoration:none;transform:translateY(-1px)}
-.btn-ghost{background:transparent;color:#2A2825;border:2px solid #2D5A3D}
-.btn-sm{padding:8px 16px;font-size:13px}
-.footer{border-top:1px solid #EFE8DB;background:#fff;padding:36px 0 28px;margin-top:48px;font-size:14px;color:#6B665E}
-.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.footer a{color:#6B665E}
-@media (max-width:720px){
-  .wrap{padding:0 16px}
-  .hero{padding:36px 0 22px}
-  .section{padding:24px 0}
-  .cards{grid-template-columns:1fr;gap:12px}
-  .terms{grid-template-columns:1fr;gap:10px}
-  .bookmarks-grid{grid-template-columns:1fr}
-  .footer-inner{flex-direction:column;text-align:center}
-  .panel-header{flex-direction:column;align-items:flex-start}
-}
 </style>
+<meta property="og:title" content="居住服务业务字典 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/knowledge.html"><meta name="twitter:card" content="summary_large_image"><!-- 全站数据追踪器 v1.0 -->
+<script src="/tracker.js" async></script>
 </head>
 <body>
-<a class="skip-nav" href="#main" aria-label="跳到主要内容">跳到主要内容</a>
-
-<header class="header" role="banner">
-  <div class="wrap header-inner">
-    <a href="/" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
-    <nav class="header-nav" aria-label="主导航">
-      <a href="/">首页</a>
-    </nav>
+<div class="page">
+  <div class="top-bar"><span class="brand">风声</span><a href="/">← 返回首页</a></div>
+  <div class="hero-icon">🏛️</div>
+  <div class="hero-title">知识底座</div>
+  <div class="hero-sub">客户六维 + 服务者四维 + 居住服务5域业务字典<br>每个词条<strong>标注出处</strong>，有据可查</div>
+  <div class="stats-row">
+    <div class="stat-item"><div class="stat-num">90</div><div class="stat-label">词条总量</div></div>
+    <div class="stat-item"><div class="stat-num">4</div><div class="stat-label">业务域</div></div>
+    <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">品质维度</div></div>
   </div>
-</header>
-
-<main id="main" role="main">
-  <div class="wrap">
-    <section class="hero" aria-labelledby="hero-title">
-      <h1 id="hero-title">居住服务行业<em>知识底座</em></h1>
-      <p class="lead">9 大业务域，450+ 词条。搜索即得，收藏即用。</p>
-      <div class="search-bar">
-        <input type="search" id="search-input" placeholder="搜索词条，如"契税""SPIN""产权"..." autocomplete="off" aria-label="搜索知识词条">
-        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <div class="search-results" id="search-results" role="listbox" aria-label="搜索结果"></div>
-      </div>
-    </section>
-
-    <!-- Daily Term -->
-    <div class="daily-term" id="daily-term">
-      <div class="daily-label">📖 每日一词</div>
-      <div class="daily-name" id="daily-name"></div>
-      <div class="daily-domain" id="daily-domain"></div>
-      <div class="daily-desc" id="daily-desc"></div>
-      <div class="daily-actions">
-        <button class="daily-save" id="daily-save-btn" type="button">☆ 收藏</button>
-        <a href="javascript:void(0)" class="daily-save" id="daily-goto" style="text-decoration:none">查看详情 →</a>
-      </div>
-    </div>
-
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <button class="tab active" data-view="domains" type="button">全部业务域</button>
-      <button class="tab" data-view="bookmarks" type="button" id="bookmarks-tab">我的收藏 <span class="badge" id="bookmark-count">0</span></button>
-    </div>
-
-    <!-- History -->
-    <div class="history-bar" id="history-bar" style="display:none">
-      <span class="history-label">最近浏览：</span>
-      <span id="history-tags"></span>
-    </div>
-
-    <!-- Domains view -->
-    <section class="section" id="domains-view" aria-labelledby="domains-title">
-      <h2 id="domains-title">9 大业务域</h2>
-      <p class="sub">点击任意业务域，查看该领域的核心词条与定义。</p>
-      <div class="cards" id="domain-cards" role="list"></div>
-      <div class="panel" id="knowledge-panel" role="region" aria-live="polite" aria-label="知识详情"></div>
-    </section>
-
-    <!-- Bookmarks view -->
-    <section class="section bookmarks-section" id="bookmarks-view">
-      <h2>我的收藏</h2>
-      <p class="sub">收藏的词条，随时回来复习。</p>
-      <div id="bookmarks-content"></div>
-    </section>
-
-    <!-- CTA -->
-    <section class="section" aria-labelledby="cta-section">
-      <div class="cta" id="cta-section">
-        <h3>想让你的团队也用上这套知识体系？</h3>
-        <p>我们可以为你的企业定制内部化的知识底座，包含业务字典、作业标准、培训内容等。</p>
-        <a href="reply" class="btn btn-primary" aria-label="联系我们定制知识体系">告诉我们你的需求 →</a>
-      </div>
-    </section>
+  <div class="domain-tabs" id="domain-tabs"></div>
+  <div id="policy-card"></div>
+  <div id="entry-list"></div>
+  <div class="footer">
+    风声 · 居住服务知识底座<br>
+    数据来源：国家标准/行业标准/部门规章/学术研究/贝壳体系<br>
+    fengsheng.tech
   </div>
-</main>
-
-<footer class="footer" role="contentinfo">
-  <div class="wrap footer-inner">
-    <div>© 2026 风声 · fengsheng.tech</div>
-    <div>
-      <a href="privacy" aria-label="查看隐私政策">隐私政策</a> ·
-      <a href="reply" aria-label="帮助与反馈">帮助</a>
-    </div>
-  </div>
-</footer>
-
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-<script src="tracker.js" defer></script>
+</div>
 <script>
-// ========== DATA ==========
-var domains = [
-  {
-    id: 'transaction', title: '房产交易基础', count: '100+ 词条',
-    desc: '从产权到过户，从税费到贷款，覆盖房产交易全流程核心概念。',
-    terms: [
-      { name: '产权', desc: '房屋所有权及土地使用权的法律归属与期限。' },
-      { name: '过户', desc: '将房屋所有权从卖方转移到买方的登记手续。' },
-      { name: '契税', desc: '买方按交易价格的 1%-3% 缴纳的房地产交易税。' },
-      { name: '增值税', desc: '房产未满 2 年交易时按 5.3% 左右征收的税项。' },
-      { name: '个税', desc: '卖方按交易差额 20% 或总价 1% 征收的个人所得税。' },
-      { name: '商业贷款', desc: '购房者向商业银行申请的住房贷款，利率高于公积金贷款。' },
-      { name: '公积金贷款', desc: '缴存公积金的职工可享受的低利率住房贷款。' },
-      { name: '组合贷款', desc: '商业贷款 + 公积金贷款的组合方案。' },
-      { name: '网签', desc: '在住建委系统进行的在线签约备案程序。' },
-      { name: '首付', desc: '购房时需要一次性支付的首期房款，通常为总价的 20%-35%。' },
-      { name: '满五唯一', desc: '房产证满5年且是卖方唯一住房，可免征个税。' },
-      { name: '资金监管', desc: '交易资金由第三方银行托管，过户后解付给卖方。' },
-      { name: '评估价', desc: '银行委托评估公司对房产给出的市场估值，影响贷款额度。' },
-      { name: '成交价', desc: '买卖双方实际达成的交易价格，可能与评估价不同。' },
-      { name: '定金罚则', desc: '支付定金方违约，定金不退；收定金方违约，双倍返还。' }
-    ]
-  },
-  {
-    id: 'rental', title: '房屋租赁实务', count: '80+ 词条',
-    desc: '合同、押金、退租、续租等租赁全流程关键术语。',
-    terms: [
-      { name: '租赁合同', desc: '出租方与承租方之间关于房屋租赁权利义务的书面协议。' },
-      { name: '押金', desc: '承租方交付的保证金，通常为 1-2 个月租金，租赁期满退还。' },
-      { name: '押一付三', desc: '押金 1 个月 + 提前支付 3 个月租金的常见支付方式。' },
-      { name: '退租', desc: '租赁期满或提前终止租赁关系的行为。' },
-      { name: '违约金', desc: '一方违约时需支付的赔偿金额，通常为 1-2 个月租金。' },
-      { name: '转租', desc: '承租方将租赁房屋部分或全部转租给第三方使用。' },
-      { name: '维修责任', desc: '合同中约定的房屋维修费用与责任归属。' },
-      { name: '续租', desc: '租赁期满后双方重新签订租赁合同继续使用。' },
-      { name: '中介费', desc: '中介服务机构收取的服务费用，一般为 1 个月租金。' },
-      { name: '水电燃气过户', desc: '租赁期间水电气等公用事业账户的使用与结算方式。' },
-      { name: '租赁备案', desc: '在住建部门办理的房屋租赁登记备案手续。' },
-      { name: '群租', desc: '将房屋分割为多个独立空间出租给多人的行为，多数城市已明确禁止。' },
-      { name: '免租期', desc: '租赁开始前给予承租方的免租金装修或搬家期，通常 3-15 天。' },
-      { name: '租金递增', desc: '合同约定每年租金按一定比例上涨的条款。' },
-      { name: '优先购买权', desc: '出租方出售房屋时，承租方在同等条件下享有优先购买权。' }
-    ]
-  },
-  {
-    id: 'decoration', title: '整装家居知识', count: '70+ 词条',
-    desc: '建材、施工、验收、保修等整装装修关键术语。',
-    terms: [
-      { name: '硬装', desc: '固定、不可移动的装修部分，如地面、墙面、吊顶等。' },
-      { name: '软装', desc: '可移动、可更换的装饰部分，如家具、窗帘、灯具等。' },
-      { name: '整装', desc: '包含基础装修 + 主材 + 辅材一体化的装修服务。' },
-      { name: '半包', desc: '装修公司负责施工和辅料，业主自行购买主材。' },
-      { name: '全包', desc: '装修公司负责设计、施工、主材、辅材全部承担。' },
-      { name: '水电改造', desc: '装修前对水电管线进行重新布置的隐蔽工程。' },
-      { name: '防水', desc: '厨房、卫生间、阳台等区域的防水层施工。' },
-      { name: '乳胶漆', desc: '室内墙面最常用的环保型涂料。' },
-      { name: '环保板材', desc: '符合 E0/E1 级标准的低甲醛释放板材。' },
-      { name: '竣工验收', desc: '装修完成后对工程质量进行的最终检查。' },
-      { name: '美缝', desc: '瓷砖铺设后对缝隙填充美化处理，兼具防水防霉功能。' },
-      { name: '吊顶', desc: '室内顶部装饰层，可隐藏管线，常见石膏板或铝扣板。' },
-      { name: '踢脚线', desc: '墙面与地面交接处的装饰线条，保护墙角。' },
-      { name: '强电弱电', desc: '强电（220V照明插座）与弱电（网线电视线）需分开布线。' },
-      { name: '闭水试验', desc: '防水施工后蓄水 24-48 小时，检查楼下是否渗漏。' }
-    ]
-  },
-  {
-    id: 'cleaning', title: '家政保洁标准', count: '60+ 词条',
-    desc: '服务标准、工具、流程、验收等家政服务核心概念。',
-    terms: [
-      { name: '日常保洁', desc: '对房屋进行的常规清洁维护服务。' },
-      { name: '深度保洁', desc: '包含死角、顽固污渍等深度清洁服务。' },
-      { name: '开荒保洁', desc: '新房装修后或入住前进行的首次全面清洁。' },
-      { name: '玻璃清洁', desc: '使用专业工具对玻璃内外进行清洁。' },
-      { name: '厨房深度清洁', desc: '油烟机、灶台、橱柜等厨房区域的专项清洁。' },
-      { name: '卫生间消毒', desc: '马桶、浴缸、淋浴房等区域的清洁与消毒。' },
-      { name: '地面抛光', desc: '地面石材、瓷砖的抛光保养服务。' },
-      { name: '清洁剂', desc: '符合国家标准的安全环保清洁化学品。' },
-      { name: '服务流程', desc: '从接单到完成的标准作业步骤。' },
-      { name: '验收标准', desc: '客户验收时检查的项目与标准。' },
-      { name: '擦窗机器人', desc: '自动吸附窗户进行清洁的智能设备，提升高空作业安全。' },
-      { name: '高温蒸汽消毒', desc: '使用 100°C 以上蒸汽对表面进行高温杀菌消毒。' },
-      { name: '收纳整理', desc: '按照使用频率和类别对物品进行归类整理。' },
-      { name: '除螨服务', desc: '使用专业除螨仪对床垫、沙发等织物进行深层清洁。' },
-      { name: '服务保险', desc: '家政公司为服务人员和客户购买的意外险和财产险。' }
-    ]
-  },
-  {
-    id: 'property', title: '物业服务解读', count: '50+ 词条',
-    desc: '物业费、业委会、维修基金等物业核心概念。',
-    terms: [
-      { name: '物业费', desc: '业主按面积缴纳的物业管理服务费用。' },
-      { name: '物业公司', desc: '提供物业管理服务的专业机构。' },
-      { name: '业委会', desc: '业主委员会，代表业主权益的自治组织。' },
-      { name: '公共维修基金', desc: '专项用于物业共用部位、设施保修期满后的维修资金。' },
-      { name: '公摊面积', desc: '整栋楼公共空间按比例分摊到各户的建筑面积。' },
-      { name: '绿化率', desc: '小区绿化面积与总用地面积的比例。' },
-      { name: '容积率', desc: '总建筑面积与用地面积的比值。' },
-      { name: '车位管理', desc: '小区停车位的产权、租赁与管理方式。' },
-      { name: '电梯维护', desc: '电梯日常维护保养与年检制度。' },
-      { name: '安保服务', desc: '小区门岗、巡逻、监控等安全保卫服务。' },
-      { name: '物业合同', desc: '业主与物业公司签订的服务合同，约定服务内容和收费标准。' },
-      { name: '业主大会', desc: '由全体业主组成的决策机构，决定小区重大事项。' },
-      { name: '临时管理规约', desc: '在业委会成立前由开发商制定的临时小区管理规则。' },
-      { name: '物业交接', desc: '新旧物业公司之间对小区的管理权移交过程。' },
-      { name: '增值服务', desc: '物业提供的基础服务之外的有偿服务，如代收快递、家政推荐等。' }
-    ]
-  },
-  {
-    id: 'city', title: '城市区域分析', count: '40+ 词条',
-    desc: '商圈、学区、地铁盘等区域价值分析术语。',
-    terms: [
-      { name: '商圈', desc: '以商业设施集聚形成的消费区域。' },
-      { name: '学区房', desc: '位于优质学校招生范围内的房产。' },
-      { name: '地铁盘', desc: '距离地铁站步行 10 分钟以内的楼盘。' },
-      { name: 'CBD', desc: '中央商务区，城市商业核心区域。' },
-      { name: 'TOD', desc: '以公共交通为导向的城市开发模式。' },
-      { name: '城市更新', desc: '对老旧城区进行的改造与再开发。' },
-      { name: '板块', desc: '城市中具有相似特征的区域划分。' },
-      { name: '配套设施', desc: '学校、医院、商业、交通等周边设施。' },
-      { name: '楼面价', desc: '土地总价除以建筑面积后的单位成本。' },
-      { name: '租售比', desc: '房屋年租金与房屋总价的比值。' },
-      { name: '人口净流入', desc: '常住人口流入减去流出的净值，反映城市吸引力。' },
-      { name: '职住平衡', desc: '区域内就业岗位与居住人口的匹配程度。' },
-      { name: '15分钟生活圈', desc: '步行 15 分钟内可达的配套服务范围。' },
-      { name: '容积率', desc: '总建筑面积与用地面积的比值，越低越舒适。' },
-      { name: '控规', desc: '控制性详细规划，规定地块的用途、容积率、高度等指标。' }
-    ]
-  },
-  {
-    id: 'finance', title: '金融贷款常识', count: '30+ 词条',
-    desc: 'LPR、公积金、等额本息等金融贷款核心术语。',
-    terms: [
-      { name: 'LPR', desc: '贷款市场报价利率，商业银行对最优质客户执行的贷款利率。' },
-      { name: '基准利率', desc: '央行公布的贷款参考利率。' },
-      { name: '等额本息', desc: '每月还款金额固定，前期利息多、后期本金多。' },
-      { name: '等额本金', desc: '每月本金固定，利息递减，总利息较少。' },
-      { name: '首套房认定', desc: '名下无房或无房贷记录可认定为首套房。' },
-      { name: '二套房首付', desc: '购买第二套住房时提高的首付比例。' },
-      { name: '提前还款', desc: '在贷款期限内提前偿还部分或全部贷款。' },
-      { name: '征信', desc: '个人信用记录，影响贷款审批与利率。' },
-      { name: '贷款年限', desc: '贷款最长可达 30 年，受房龄与借款人年龄限制。' },
-      { name: '利率浮动', desc: 'LPR 基础上加点形成的实际贷款利率，每年可调整。' },
-      { name: '接力贷', desc: '父母与子女共同作为借款人，延长贷款年限。' },
-      { name: '赎楼', desc: '卖方房贷未还清时，先还清贷款解除抵押再交易。' },
-      { name: '评估费', desc: '银行认可的评估公司对房产估价所收取的费用。' },
-      { name: '担保费', desc: '贷款机构收取的担保服务费用。' },
-      { name: '放款周期', desc: '从审批通过到银行实际放款的时间，通常 1-4 周。' }
-    ]
-  },
-  {
-    id: 'legal', title: '法律法规要点', count: '20+ 词条',
-    desc: '民法典相关、消费者权益等法律核心概念。',
-    terms: [
-      { name: '民法典', desc: '规范民事活动的基本法律，2021 年 1 月 1 日起施行。' },
-      { name: '物权编', desc: '民法典中规范物权关系的篇章。' },
-      { name: '合同编', desc: '民法典中规范合同关系的篇章。' },
-      { name: '定金', desc: '作为债权担保的金钱，违约方需双倍返还。' },
-      { name: '订金', desc: '预付款性质，不具有定金的担保效力。' },
-      { name: '违约责任', desc: '合同一方不履行义务时应承担的法律责任。' },
-      { name: '诉讼时效', desc: '向法院请求保护民事权利的期限，一般为 3 年。' },
-      { name: '消费者权益保护法', desc: '保护消费者合法权益的专门法律。' },
-      { name: '格式条款', desc: '一方预先拟定、未与对方协商的合同条款。' },
-      { name: '房屋买卖司法解释', desc: '最高法关于商品房买卖合同纠纷的司法解释。' },
-      { name: '善意取得', desc: '不知情的第三人通过合法交易取得的财产受法律保护。' },
-      { name: '不安抗辩权', desc: '合同一方发现对方可能丧失履约能力时，可中止履行。' },
-      { name: '情势变更', desc: '合同订立后发生不可预见重大变化，可请求变更或解除。' },
-      { name: '预告登记', desc: '商品房预售合同备案后，购房者向登记机构申请的物权保护。' },
-      { name: '居住权', desc: '民法典新增的用益物权，允许非产权人按约定居住使用。' }
-    ]
-  },
-  {
-    id: 'communication', title: '客户沟通话术', count: '按需定制',
-    desc: '开放场景、谈判技巧等沟通能力提升。',
-    terms: [
-      { name: '需求挖掘', desc: '通过提问了解客户真实需求与顾虑。' },
-      { name: 'SPIN 提问法', desc: '情境、问题、暗示、需求-效益四阶段提问法。' },
-      { name: '积极倾听', desc: '专注倾听客户表达，确认理解无误。' },
-      { name: '异议处理', desc: '识别客户异议类型，给出合理解答。' },
-      { name: '价格谈判', desc: '买卖双方就价格进行的协商过程。' },
-      { name: '封闭式问题', desc: '可用"是/否"回答的问题，用于确认信息。' },
-      { name: '开放式问题', desc: '需要详细回答的问题，用于收集信息。' },
-      { name: '信任建立', desc: '通过专业、真诚建立客户信任。' },
-      { name: '跟进节奏', desc: '客户跟进的频率与方式。' },
-      { name: '成交信号', desc: '客户表现出的购买意向信号。' },
-      { name: 'FAB 法则', desc: '特征(Feature)→优势(Advantage)→利益(Benefit)，产品介绍三段论。' },
-      { name: '假设成交法', desc: '假设客户已决定购买，用"我们什么时候签"替代"你要不要买"。' },
-      { name: '二选一法', desc: '给客户两个选择而非"要不要"，如"上午还是下午看房"。' },
-      { name: '共情回应', desc: '先认可客户感受，再提供解决方案，如"我理解你的担心..."。' },
-      { name: '沉默的力量', desc: '提问后留出 3-5 秒沉默，让客户有时间思考和表达。' }
-    ]
-  }
+const DOMAINS=[
+{id:'quality-customer',name:'客户六维',icon:'🏠',count:6,desc:'品质居住标准·客户视角'},
+{id:'quality-server',name:'服务者四维',icon:'🛡️',count:4,desc:'服务者关怀模型'},
+{id:'trade',name:'域1·房产交易',icon:'🔑',count:20,desc:'二手房/经纪/产权/保障'},
+{id:'rental',name:'域2·房屋租赁',icon:'📋',count:30,desc:'长租/管理/租客服务'},
+{id:'decor',name:'域3·整装家居整体交付',icon:'🔧',count:15,desc:'整装/交付/施工/质保'},
+{id:'homekeep',name:'域4·家政保洁',icon:'✨',count:15,desc:'保洁/家政/照护/标准化'}
 ];
 
-// Build flat term index for search
-var flatTerms = [];
-domains.forEach(function(d) {
-  d.terms.forEach(function(t) {
-    flatTerms.push({ name: t.name, desc: t.desc, domain: d.title, domainId: d.id });
-  });
-});
+const POLICY_CARD={id:'policy',name:'十五五政策与趋势',icon:'🏛️',count:18,desc:'顶层政策·行业趋势·关键数据',link:'/policy/'};
 
-// ========== STATE ==========
-var STORAGE_KEY = 'knowledge-base';
-function loadState() {
-  try {
-    var raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : { bookmarks: [], history: [], dailyDate: '' };
-  } catch(e) { return { bookmarks: [], history: [], dailyDate: '' }; }
-}
-function saveState(state) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+const ENTRIES=[
+// 品质居住标准（10条）
+{id:'QLT-001',domain:'quality-customer',name:'安全',alias:'居住安全、安全底线',def:'居住空间不对人身造成即时或潜在危险的最低保障状态，是品质居住的不可妥协底线。',source:'《住宅设计规范》GB 50096-2011；《建筑设计防火规范》GB 50016',srcType:'国家标准',attrs:'结构安全+设备安全+环境安全+食水安全',scene:'房源认证/验房报告/居住品质测评',posSpeech:'这套房的安全指标全部达标，住着踏实',negSpeech:'安全不达标，其他都白搭'},
+{id:'QLT-002',domain:'quality-customer',name:'健康',alias:'居住健康、健康居住',def:'居住空间不对人体造成长期隐性伤害（物理/化学/生物）的保障状态。',source:'《室内空气质量标准》GB/T 18883-2022；《住宅建筑室内环境污染控制标准》GB 50325',srcType:'国家标准',attrs:'空气质量+水质+光环境+声环境+辐射',scene:'甲醛检测/装修验收/品质测评',posSpeech:'甲醛0.03mg/m³，远低于国标0.08，孕婴可放心',negSpeech:'健康隐患看不见，但住久了身体会说话'},
+{id:'QLT-003',domain:'quality-customer',name:'整洁',alias:'有序、收纳、整洁度',def:'居住空间物品有序归位、易于查找、动线合理的功能性状态，是"好住"的基础门槛。',source:'《住宅设计规范》GB 50096-2011（收纳面积建议≥12%套内面积）',srcType:'国家标准',attrs:'收纳系统+动线规划+清洁便利+便利性',scene:'收纳方案/户型评估/品质测评',posSpeech:'东西有地方放，找得着、放得下',negSpeech:'家里乱不是因为懒，是因为没地方放'},
+{id:'QLT-004',domain:'quality-customer',name:'温暖',alias:'归属感、家的感觉',def:'居住空间让人产生"想回家"情感连接的心理状态，从"能用"到"想住"的分水岭。',source:'《建筑照明设计标准》GB 50034（居住空间照度建议）',srcType:'国家标准',attrs:'光温感+材质触感+私密性+家人互动',scene:'品质测评/软装方案/客户情感需求',posSpeech:'推开门就想坐下，这就是温暖',negSpeech:'房子是住了，但不像家'},
+{id:'QLT-005',domain:'quality-customer',name:'美观',alias:'审美、视觉品质',def:'居住空间在视觉上产生愉悦感受的状态，是品质居住的"加分项"而非必需项。',source:'清华×贝壳居住品质研究（2026）',srcType:'学术研究',attrs:'配色协调+空间比例+风格统一+细节品质',scene:'装修方案/品质测评/客户审美需求',posSpeech:'好看不是奢侈品，是每天回家第一眼的礼物',negSpeech:'审美没有标准答案，但有底线'},
+{id:'QLT-006',domain:'quality-customer',name:'惬意',alias:'舒适、便利、生活品质',def:'居住空间让日常生活轻松顺畅的综合性感受，是品质居住的"终极体验"。',source:'清华×贝壳居住品质研究（2026）',srcType:'学术研究',attrs:'通勤便利+生活配套+社区环境+空间灵活',scene:'品质测评/生活圈分析/客户便利需求',posSpeech:'住得舒服不是奢侈，是基本权利',negSpeech:'通勤2小时的人，没资格谈生活品质'},
+{id:'QLT-007',domain:'quality-server',name:'身体健康',alias:'体感健康',def:'服务者身体状况能支撑日常工作的基准状态。',source:'风声·服务者四维关怀模型（2026）',srcType:'行业标准',attrs:'作息规律+运动习惯+疾病管理+精力水平',scene:'服务者健康评估/关怀提醒',posSpeech:'身体是革命的本钱，更是服务的本钱',negSpeech:'自己都站不住，怎么帮客户站稳'},
+{id:'QLT-008',domain:'quality-server',name:'心理韧性',alias:'抗压能力、情绪稳定',def:'服务者面对拒绝、压力和不确定性时保持情绪稳定和持续行动的能力。',source:'风声·服务者四维关怀模型（2026）',srcType:'行业标准',attrs:'情绪管理+抗挫力+自我调节+支持系统',scene:'服务者心理评估/压力管理',posSpeech:'被拒绝10次还能微笑，这就是韧性',negSpeech:'心理不是软肋，是最大的武器'},
+{id:'QLT-009',domain:'quality-server',name:'职业尊严',alias:'职业认同、行业荣誉',def:'服务者对自身职业价值的认同感和被社会认可的程度。',source:'风声·服务者四维关怀模型（2026）',srcType:'行业标准',attrs:'专业自信+社会尊重+职业认同+成长空间',scene:'服务者状态评估/职业规划',posSpeech:'不是卖房子的，是帮人实现美好居住的',negSpeech:'自己都不尊重这行，客户凭什么尊重你'},
+{id:'QLT-010',domain:'quality-server',name:'生活质感',alias:'生活品质、幸福感',def:'服务者自身生活质量达到合理水平的综合状态。',source:'风声·服务者四维关怀模型（2026）',srcType:'行业标准',attrs:'收入合理性+居住条件+社交生活+个人成长',scene:'服务者生活评估/福利设计',posSpeech:'服务者先活好，客户才能住好',negSpeech:'自己住不好，怎么帮别人实现美好居住'},
+// 域1·房产交易（20条，展示核心5条，其余缩略）
+{id:'TRX-001',domain:'trade',name:'真房源',alias:'真实房源、假房源克星',def:'房源信息满足"真实存在、真实在售、真实价格、真实图片"四个维度标准。',source:'贝壳平台"真实房源，假一赔百元"服务承诺；《房地产经纪管理办法》第22条',srcType:'平台标准+部门规章',attrs:'真实存在+真实在售+真实价格+真实图片',scene:'客户质疑房源真实性时解释标准',posSpeech:'假一赔百，每套房都经得起验证',negSpeech:'连真假都不保证，凭什么让人信'},
+{id:'TRX-002',domain:'trade',name:'带看',alias:'看房、实地看房',def:'经纪人陪同客户实地查看房源的专业服务行为。',source:'《房地产经纪管理办法》第14条',srcType:'部门规章',attrs:'预约+路线规划+现场讲解+安全确认+后续跟进',scene:'带看服务标准化/客户看房体验管理',posSpeech:'带看不是开门关门，是帮客户看见未来生活',negSpeech:'开门让他自己看，那叫物业不叫经纪'},
+{id:'TRX-003',domain:'trade',name:'房源核验',alias:'产调、产权核验',def:'对房源的产权状态、抵押查封情况进行官方查询确认的过程。',source:'《不动产登记暂行条例》第27条',srcType:'行政法规',attrs:'产权人确认+抵押查询+查封查询+限制交易查询',scene:'签约前产权确认/风险排查',posSpeech:'先查清再签约，这是对你最基本的保护',negSpeech:'不核验就签约，等于闭着眼签字'},
+{id:'TRX-004',domain:'trade',name:'签约',alias:'签合同、网签',def:'买卖双方在经纪机构居间下签署房屋买卖合同并完成网签备案的法律行为。',source:'《城市房地产管理法》第41条；《城市商品房预售管理办法》',srcType:'法律+部门规章',attrs:'合同签署+网签备案+资金监管+税费确认',scene:'交易签约/合同审查/风险提示',posSpeech:'签合同不是走流程，是把你的权利写进法律',negSpeech:'合同没看清就签，出了问题没人替你扛'},
+{id:'TRX-005',domain:'trade',name:'资金监管',alias:'第三方资金托管',def:'交易资金由银行或指定机构托管，按约定条件释放，保障买卖双方资金安全。',source:'住建部《关于加强房地产中介管理促进行业健康发展的意见》',srcType:'部门规章',attrs:'监管协议+资金存入+条件释放+利息归属',scene:'交易资金安全保障/风险防控',posSpeech:'钱不经过经纪人手，银行托管到过户完成',negSpeech:'不监管资金，等于把积蓄交给陌生人'},
+            {id:'TRX-006',domain:'trade',name:'递件',alias:'递件受理、送件、产权递件',def:'指买卖双方将过户材料提交不动产登记机构，审核后出具受理凭证的业务环节。',source:'- 《不动产登记暂行条例》第十五条、第十七条',srcType:'部门规章',attrs:'材料清单：身份证明、产权证、合同、完税凭证、监管协议、贷款合同+受理凭证：不动产登记受理凭证，载明办结时间+补正：材料不齐一次性告知+撤回：受理后登簿前双方可申请撤回',scene:'- 客户问\"递件是不是就等于过户成功了\"时，需要澄清审核和登簿的区别 - 准备材料时客户不清楚要带什么，经纪人需核对清单时 - 递件后客户着急问\"怎么还没出证\"时  正反向话术： - 正向：\"材料已经递进去了，窗口给了受理凭证，上面有预计办结时间，咱们等着领证就行。\" - 反向：\"别说\'递件了今天就能拿证\'——受理只是开始，审核要时间，期间还可能要求补材料。\"',posSpeech:'',negSpeech:''},
+            {id:'TRX-007',domain:'trade',name:'房源维护',alias:'房源管理、盘源维护',def:'指卖方经纪人对受托房源进行信息更新、实地维护、业主关系维护等持续性服务工作总称。',source:'- 《房地产经纪管理办法》第二十二条 - 贝壳ACN维护责任规则',srcType:'部门规章',attrs:'信息维护：价格、状态、钥匙保管更新+实地维护：户型、装修、设施定期核实+业主关系：反馈行情、带看、市场动态+实勘更新：图片、视频、VR更新+维护周期：建议≤30天，超期影响曝光',scene:'- 录入新房源时，需对房屋信息进行实地核实和标准化维护时 - 业主咨询\"你们怎么帮我卖房子\"，经纪人展示维护动作时 - 客户质疑房源信息真实性，需要维护方承担责任时  正反向话术： - 正向：\"我每周会跟业主碰一次盘，更新带看反馈和市场行情，图片每月核实一次，保证展示跟实际一致。\" - 反向：\"别说\'维护就是挂网上等着\'——维护包括定期实勘、信息更新、业主沟通，敷衍了事平台会扣信用分，信息失实要担责。\"  ---',posSpeech:'',negSpeech:''},
+            {id:'TRX-008',domain:'trade',name:'ACN（Agent Cooperation Network）',alias:'经纪人合作网络、贝壳ACN',def:'将交易全流程拆分为多角色，按贡献分配佣金的合作机制。',source:'- 《房地产经纪管理办法》第十九条 - 贝壳ACN2.0规则',srcType:'部门规章',attrs:'房源方：录入、维护、实勘+客源方：客源开发、带看、成交+分佣：房源方30%+40%、客源方60%+70%+信用：红/黄/黑线管理+原则：房源唯一、业绩统分、禁跨区',scene:'- 新人入职不了解分佣机制，需要解释合作网络运作时 - 经纪人之间因带看归属产生争议，需要明确角色分工时 - 客户问\"为什么买这套房你们店的人都在跟进\"，解释多人服务时  正反向话术： - 正向：\"这套房有录入方、维护方、实勘方，您是客源方，各方按贡献分佣，保证每环节都有人负责。\" - 反向：\"别说\'ACN就是大家抢客户\'——房源归属是唯一的，谁录入归谁，其他人是配合角色，按规则分佣。\"',posSpeech:'',negSpeech:''},
+            {id:'TRX-009',domain:'trade',name:'单边代理',alias:'单方代理、独立代理',def:'经纪人仅代表买方或卖方一方利益，为委托人争取最大利益的代理模式。',source:'- 《房地产经纪管理办法》第三条 - 深圳中介协会单边代理指引',srcType:'部门规章',attrs:'立场：只对委托方负责+目标：卖方求高价快成交；买方求低价好房源+权责：较居间更清晰+背景：深圳2023年率先推行',scene:'- 客户问\"你是代表我还是代表业主\"，需要明确经纪人立场时 - 推行单边代理的城市，经纪人需要向客户解释服务模式变化时 - 经纪人被质疑\"偏心另一方\"，需要说明职业操守时  正反向话术： - 正向：\"我是您的专属经纪人，只帮您争取最大利益，您放心，我看房、谈价都会站在您的角度。\" - 反向：\"别说\'我帮双方说话/我尽量公平\'——单边代理只代表一方，说帮双方是居间思维，反而让客户不信任。\"',posSpeech:'',negSpeech:''},
+            {id:'TRX-010',domain:'trade',name:'独家委托',alias:'独家代理、独家房源',def:'卖方（买方）仅委托一家经纪机构在期限内代理交易的委托模式。',source:'- 《房地产经纪执业规则》 - 《民法典》第九百三十三条（任意解除权）',srcType:'部门规章',attrs:'形式：书面协议，期限、底价、服务内容+期限：3+6个月为主+违约：中途解约或自行成交可能付违约金+区别：独家委托=仅一家；独家代理=仅代表一方',scene:'- 业主问\"能不能同时挂几家中介\"，需要解释独家委托时 - 独家委托期内业主想解约，需要说明法律后果时 - 客户问\"独家是不是意味着只能买这套\"，需要澄清误解时  正反向话术： - 正向：\"签独家的话我们会把精力更集中在这套房上，推广资源倾斜，但您仍可自主选择是否成交。\" - 反向：\"别说\'签独家你就只能卖给我\'——独家委托是排他协议，不影响您最终决策权，不想卖可以协商解约。\"',posSpeech:'',negSpeech:''},
+            {id:'TRX-011',domain:'trade',name:'产权调查',alias:'产调、房屋核验、权属调查',def:'查询不动产登记信息，核实权属、抵押、查封、限制交易等关键产权信息的服务动作。',source:'- 《不动产登记暂行条例》第二十七条 - 《不动产登记资料查询暂行办法》第四条 - 《房地产经纪管理办法》第二十二条',srcType:'部门规章',attrs:'查询主体：权利人、利害关系人+查询内容：产权人、面积、用途、抵押、查封、异议、预告登记+效力：可依法查询复制+实操：经纪协助买方核验',scene:'- 签约前客户问\"这房子有没有问题\"，需要核实产权状态时 - 发现产权人去世、离异分割等特殊情况，需要确权时 - 买方全款购房，担心抵押查封风险时  正反向话术： - 正向：\"我帮您拉一份产调，看看产权人、抵押、查封情况，正常的话会显示\'无限制\'，您心里有底。\" - 反向：\"别说\'查了没问题是干净的房子\'——产调查不到居住权、租赁备案等隐性权利，客户入住可能踩坑。\"  ---',posSpeech:'',negSpeech:''},
+            {id:'TRX-012',domain:'trade',name:'抵押查封',alias:'查封、抵押状态、限制交易',def:'房屋存在抵押权或被司法/行政机关查封，导致处分受限的权利限制状态。',source:'- 《民法典》第三百九十四条起 - 《不动产登记暂行条例实施细则》第八十七条起',srcType:'部门规章',attrs:'抵押：债务担保、不转移占有+查封：司法限制处分+效果：未解前不能过户+情形：贷款未清、涉诉、债务纠纷',scene:'- 发现房屋有抵押登记，客户问\"能不能买\"时 - 业主欠债被查封，客户担心付款后过不了户时 - 贷款未还清需要交易，需要解释解押流程时  正反向话术： - 正向：\"房子有抵押正常，关键是解押方案——可以帮您用首付还、也可以走带押过户，钱进监管账户安全。\" - 反向：\"别说\'查封没事，等解封就行\'——查封期间无法过户，付了钱可能房财两空，必须解封才能交易。\"',posSpeech:'',negSpeech:''},
+            {id:'TRX-013',domain:'trade',name:'不动产权证',alias:'房产证、不动产证、大红本',def:'不动产登记机构核发、证明权利人享有不动产权利的法定凭证。',source:'- 《不动产登记暂行条例》第二十条、第五条',srcType:'部门规章',attrs:'证书：产权证（权利人）、登记证明（他项）+内容：权利人、坐落、面积、用途、权利类型+效力：登簿生效+时限：受理后30个工作日',scene:'- 过户完成后客户问\"什么时候能拿到证\"，需要说明办理周期时 - 业主无法提供原件，客户担心产权问题时 - 客户办理落户、抵押贷款，需要出示不动产权证时  正反向话术： - 正向：\"递件后一般5-7个工作日出证，现在都是电子证，跟纸质同等效力，窗口也能打印。\" - 反向：\"别说\'证没出来不算你的房子\'——产权以登簿为准，证只是凭证，登簿后房子就是你的，证早晚能拿。\"',posSpeech:'',negSpeech:''},
+            {id:'TRX-014',domain:'trade',name:'交易不成退佣',alias:'交易保障、佣金退还、兜底承诺',def:'签约后因非消费者原因未完成交易，平台承诺退还佣金的服务保障。',source:'- 《房地产经纪管理办法》第十九条 - 贝壳\"交易不成，佣金无理由退\"',srcType:'部门规章',attrs:'适用：非买方违约解约+范围：退佣金，不退定金+免责：买方自身原因+兑付：贝壳5个工作日内',scene:'- 签约后因政策变化/贷款拒批等非客户原因交易终止，需要申请退佣时 - 客户担心\"万一买不成钱打水漂\"，需要介绍服务保障时 - 经纪人需要用服务承诺建立客户信任时  正反向话术： - 正向：\"您放心，签了贝壳的服务协议，因非您原因交易不成，佣金5个工作日内无理由退给您。\" - 反向：\"别说\'退佣要看情况\'或\'不一定能退\'——平台有明确承诺，说法模糊会让客户觉得你在敷衍，失去信任。\"',posSpeech:'',negSpeech:''},
+            {id:'TRX-015',domain:'trade',name:'漏水披露补偿',alias:'房屋漏水保障、渗水赔付',def:'经纪人未尽披露义务导致房屋漏水，平台承诺补偿损失的保障机制。',source:'- 《民法典》第五百条、第九百六十二条 - 贝壳漏水披露补偿试点',srcType:'部门规章',attrs:'范围：厨卫/阳台/外墙漏水+义务：签约前问询、看房检查+补偿：维修费、延误入住、装修/家具、租金损失+触发：交房后发现、买方不知情',scene:'- 雨天带看，客户关注墙角/窗框是否有渗水迹象时 - 签约前客户问\"这房子有没有漏过水\"，需要如实披露时 - 交房后发现漏水，客户投诉需要启动补偿流程时  正反向话术： - 正向：\"带看的时候我专门检查了厨卫和阳台墙角，这几个地方目前干燥无水渍，您放心。\" - 反向：\"别说\'没看到漏就是没漏\'或\'以前的事谁知道\'——经纪人有过问义务，客户入住才发现漏水，平台介入你可能担责。\"',posSpeech:'',negSpeech:''},
+            {id:'TRX-016',domain:'trade',name:'房价评估',alias:'房屋估价、房产评估、市场价值评估',def:'专业机构或系统基于市场数据测算房屋价值的行为。',source:'- 《房地产估价规范》GB/T 50291-2015',srcType:'国家标准',attrs:'方法：比较法、收益法、成本法+用途：贷款审批、定价参考、计税+主体：银行评估机构、平台估价系统+时效：3+6个月',scene:'- 客户贷款时银行要求评估报告，需要解释评估流程时 - 业主挂盘价与市场价差距大，客户问\"这价格靠谱吗\"时 - 客户询问\"评估价能不能做低一点省税\"，需要严正拒绝时  正反向话术： - 正向：\"评估价是银行参考的市场价，最终以银行认定为准，成交价是实际交易价，两者会有差异。\" - 反向：\"别说\'可以帮你把评估价做低点省税\'——高评套贷是违规骗贷，情节严重要坐牢，别碰这条红线。\"',posSpeech:'',negSpeech:''},
+            {id:'TRX-017',domain:'trade',name:'限购政策查询',alias:'购房资格查询、限购查询',def:'查询城市对户籍、社保、套数、人才、离异等群体的购房限制政策。',source:'- 国办发〔2013〕17号 - 住建部2024\"四个取消\"',srcType:'部门规章',attrs:'主体：地方政府+维度：户籍、社保/个税、套数、人才、离异+渠道：住建官网、政务平台、经纪系统+变化：动态调整',scene:'- 客户首次咨询购房资格，需要核查是否具备购买条件时 - 外地客户/人才购房，需要确认是否有额外名额时 - 客户离婚后再购房，需要核实离婚年限限制时  正反向话术： - 正向：\"您的情况我帮您核一下——户籍这边没限制，社保满2年有名额，我查完给您个准信。\" - 反向：\"别说\'你应该有资格\'或\'差不多能买\'——限购政策差一天都不行，没确认清楚客户买了也过不了户，纠纷就大了。\"  ---',posSpeech:'',negSpeech:''},
+            {id:'TRX-018',domain:'trade',name:'预售许可证',alias:'预售证、商品房预售许可',def:'开发商向主管部门申请，获准预售商品房的行政许可凭证。',source:'- 《城市商品房预售管理办法》第六条、第五条',srcType:'部门规章',attrs:'条件：缴齐土地出让金、规划/施工许可证、投资≥25%+公示：无证不得预售+处罚：没收违法所得、最高罚预付款1%+时限：受理10日内决定',scene:'- 客户问\"这新房能不能买\"，需要核验开发商是否具备销售资质时 - 客户被要求先付定金，经纪人需要确认是否有预售证时 - 客户担心新房烂尾，需要解释证照与监管账户关系时  正反向话术： - 正向：\"我帮您查一下，这个楼盘证照齐全——有预售证才能收定金，没有的话钱直接打给监管账户才安全。\" - 反向：\"别说\'没证也安全，我们帮你盯着\'——无证预售是违法，收了钱不受保护，客户可能钱房两空。\"',posSpeech:'',negSpeech:''},
+            {id:'TRX-019',domain:'trade',name:'认购vs签约',alias:'认购书与正式合同、预约与本约',def:'认购（预约）约定将来签约；签约（本约）确立买卖权利义务。',source:'- 《民法典》第四百九十五条、第五百八十七条 - 商品房买卖司法解释第五条',srcType:'部门规章',attrs:'法律：预约合同vs买卖合同+定金：认购定金抵房款、违约适用定金罚则+认购：房号、面积、总价、定金、期限+签约：产权、付款、交付、违约等完整条款',scene:'- 客户看中新房但还在犹豫，销售催促交认购定金时 - 客户交了认购金后反悔，想退定金时 - 客户问\"认购和签合同有什么区别\"，需要解释法律效力时  正反向话术： - 正向：\"认购书是预约，确定您有购买意向，定金会抵房款，签正式合同才算成交，您想清楚再认购。\" - 反向：\"别说\'认购就是走个流程\'——认购书有法律效力，定金受定金罚则保护，签了不想买可能一分都退不回来。\"',posSpeech:'',negSpeech:''},
+            {id:'TRX-020',domain:'trade',name:'销控',alias:'销售控制、捂盘、房源控制',def:'开发商对房源价格、推售节奏、展示统一管理的行为。',source:'- 建房〔2010〕53号、建房〔2018〕58号',srcType:'部门规章',attrs:'合法：自主定价、分期推售、一房一价+违规：捂盘惜售、制造抢购、哄抬房价+系统：可售/已售/预留状态管理+红线：严禁捂盘、哄抬、制造假象',scene:'- 客户问\"为什么有些楼层没有卖\"，怀疑捂盘时 - 开发商饥饿营销、制造抢购氛围，需要向客户解释时 - 客户被逼下定，需要提醒合规销售行为时  正反向话术： - 正向：\"取证后10天内要公开全部房源，您看中的楼层没卖可能真有人定了，您可以要求公开可售房源清单。\" - 反向：\"别说\'这套没有了/被人定了\'——捂盘惜售是违规，被查实开发商要被处罚，别帮开发商制造虚假紧张。\"',posSpeech:'',negSpeech:''},
+// 域2·房屋租赁（展示核心5条）
+{id:'RNT-001',domain:'rental',name:'长租公寓',alias:'长租住宅、租赁住房',def:'由专业机构运营，提供标准化、规范化服务的长期租赁住房产品。',source:'《住房租赁条例》第2条',srcType:'行政法规',attrs:'产权性质+服务内容+运营主体+合同期限',scene:'企业员工宿舍租赁/城市青年租房',posSpeech:'专业运营、标准服务，租得放心',negSpeech:'不是普通出租房，是专业长租公寓'},
+{id:'RNT-002',domain:'rental',name:'房源管理',alias:'房源信息管理、房源维护',def:'对可租赁房屋的信息进行采集、更新、展示和维护的全过程。',source:'《房地产经纪管理办法》第15条',srcType:'部门规章',attrs:'数据维度+操作主体+更新机制+展示规范',scene:'平台房源更新/经纪人房源录入',posSpeech:'信息准、更新快，找房效率高',negSpeech:'信息过期就是在浪费客户时间'},
+{id:'RNT-003',domain:'rental',name:'租金贷',alias:'租金贷款、分期付租',def:'金融机构向租客提供的用于支付租金的消费贷款产品。',source:'住建部等6部门《关于整顿规范住房租赁市场秩序的意见》',srcType:'部门规章',attrs:'贷款主体+利率+期限+风险提示',scene:'租客资金安排/租赁金融风险提示',posSpeech:'租金贷不是必需品，量力而行',negSpeech:'诱导租客贷款付租，是行业毒瘤'},
+{id:'RNT-004',domain:'rental',name:'押金退还',alias:'退押金、押金纠纷',def:'租赁关系结束后，房东按约定退还租客预交的押金。',source:'《民法典》第714条；《住房租赁条例》第24条',srcType:'法律+行政法规',attrs:'押金标准+扣除规则+退还时限+争议处理',scene:'退租结算/押金纠纷调解',posSpeech:'合同写清扣什么、退多少，清清楚楚',negSpeech:'押金一交就要不回来，这叫霸王条款'},
+{id:'RNT-005',domain:'rental',name:'租客服务',alias:'租后服务、租客权益',def:'租赁期间为租客提供的居住保障和增值服务。',source:'《住房租赁条例》第3章',srcType:'行政法规',attrs:'维修响应+投诉渠道+社区活动+权益告知',scene:'租客体验管理/服务标准制定',posSpeech:'租的不是房子，是居住服务',negSpeech:'收了租金就消失，那叫房东不叫服务商'},
+            {id:'RNT-006',domain:'rental',name:'换租服务',alias:'转租服务；置换服务',def:'为租客提供将现有租赁合同转让给新租户的服务。',source:'《住房租赁条例》第21条',srcType:'部门规章',attrs:'流程要求：需经房东同意+费用结构：可能涉及中介费或违约金',scene:'租客因工作变动需换租；房东接受换租请求',posSpeech:'我们提供便捷的换租服务，帮助您解决租赁变更需求。',negSpeech:'别说不能换租，我们有专业的换租服务支持。'},
+            {id:'RNT-007',domain:'rental',name:'租金支付',alias:'房租支付；租金缴纳',def:'租户按照合同约定向房东或平台支付租金的行为。',source:'《住房租赁条例》第17条',srcType:'部门规章',attrs:'支付方式：包括现金、转账、第三方支付等+支付周期：通常按月或按年支付',scene:'租户按时支付租金；租户延迟支付租金',posSpeech:'我们提供多种租金支付方式，方便您的日常使用。',negSpeech:'别说不支持支付，我们有多种支付渠道可供选择。'},
+            {id:'RNT-008',domain:'rental',name:'租约',alias:'租赁合同；租赁协议',def:'租户与房东之间就房屋租赁达成的书面协议。',source:'《中华人民共和国民法典》第七百零三条',srcType:'部门规章',attrs:'期限：明确起止日期+条款：包含权利义务等内容',scene:'签订租赁合同；租约到期续签',posSpeech:'我们提供正规的租约，保障双方权益。',negSpeech:'别说没有合同，我们有正式的租赁协议。'},
+            {id:'RNT-009',domain:'rental',name:'押金',alias:'保证金；预付款',def:'租户在签订租赁合同时向房东支付的用于保证履行合同的款项。',source:'《住房租赁条例》第19条',srcType:'部门规章',attrs:'金额：通常为一个月租金+退还条件：需符合合同规定',scene:'租户支付押金；租约结束退还押金',posSpeech:'我们提供合理的押金政策，保障您的资金安全。',negSpeech:'别说不收押金，我们有明确的押金管理制度。'},
+            {id:'RNT-010',domain:'rental',name:'房屋状态',alias:'房屋状况；房源状态',def:'描述房屋当前的可用性、装修情况及维护状态的综合信息。',source:'《房地产经纪管理办法》第14条',srcType:'部门规章',attrs:'可用性：是否可立即入住+维护状态：是否需要维修',scene:'查看房源信息；房东更新房屋状态',posSpeech:'我们提供详细的房屋状态信息，让您了解真实情况。',negSpeech:'别说不提供房屋状态，我们有完整的房源信息。'},
+            {id:'RNT-011',domain:'rental',name:'租赁备案 | 房屋租赁登记',alias:'房屋租赁登记备案、租赁合同备案',def:'指房屋出租人与承租人依法向住房保障部门或相关机构办理的房屋租赁合同备案手续，用于确认租赁关系合法有效',source:'《城市房屋租赁管理办法》第十四条、《民法典》第七百零三条',srcType:'部门规章',attrs:'1. 主体：出租人、承租人 2. 对象：租赁合同 3. 程序：提交材料、审核、备案 4. 效力：法律效力、政策依据 5. 时间：签订合同后30日内',scene:'适用于房屋租赁合同签订后，用于保障双方权益、办理居住证、申请公积金等场景',posSpeech:'',negSpeech:''},
+            {id:'RNT-012',domain:'rental',name:'续租 | 延续租赁',alias:'续约、租赁续期',def:'指租赁合同期满后，承租人继续承租该房屋的行为，通常需重新签订租赁合同或书面确认',source:'《民法典》第七百三十四条、《城市房屋租赁管理办法》第二十条',srcType:'部门规章',attrs:'1. 主体：承租人、出租人 2. 对象：原租赁合同 3. 行为：续约、重新签约 4. 条件：租金、条款协商一致 5. 法律效力：新合同生效后原合同终止',scene:'适用于租赁合同到期后，承租人希望继续使用房屋的情况',posSpeech:'',negSpeech:''},
+            {id:'RNT-013',domain:'rental',name:'退租交接 | 房屋交还',alias:'房屋交还、退房手续',def:'指承租人在租赁合同终止时，将房屋按约定状态交还给出租人的过程，包括清点物品、结清费用、检查房屋状况等',source:'《民法典》第五百五十七条、《城市房屋租赁管理办法》第二十一条',srcType:'部门规章',attrs:'1. 主体：承租人、出租人 2. 对象：房屋及附属设施 3. 行为：交房、验收、结算 4. 内容：水电燃气结清、物品归还、损坏赔偿 5. 法律效力：交接确认后视为合同履行完毕',scene:'适用于租赁合同终止时，确保双方权益不受损的交接流程',posSpeech:'',negSpeech:''},
+            {id:'RNT-014',domain:'rental',name:'中介服务费 | 房产中介佣金',alias:'房产中介佣金、中介费',def:'指房屋中介机构为促成租赁交易而收取的服务费用，通常由承租人或出租人承担',source:'《房地产经纪管理办法》第十八条、《民法典》第九百六十条',srcType:'部门规章',attrs:'1. 主体：中介机构、承租人/出租人 2. 对象：租赁交易 3. 收费方式：一次性支付、分期支付 4. 标准：按成交金额比例收取 5. 合规性：需明码标价、开具发票',scene:'适用于通过中介机构进行房屋租赁时的费用支付环节',posSpeech:'',negSpeech:''},
+            {id:'RNT-015',domain:'rental',name:'租客权益 | 承租人权利',alias:'承租人权利',def:'指承租人在租赁过程中依法享有的权利，包括但不限于房屋使用权、隐私权、维修请求权、押金返还权等',source:'《民法典》第七百零三条、第七百一十二条、第七百一十三条',srcType:'部门规章',attrs:'1. 主体：承租人 2. 对象：租赁合同、房屋 3. 权利内容：使用、维护、安全、信息知情 4. 法律依据：《民法典》《消费者权益保护法》 5. 实现方式：合同约定、法律维权',scene:'适用于租客在租赁过程中维护自身合法权益的场景',posSpeech:'',negSpeech:''},
+            {id:'RNT-016',domain:'rental',name:'租金 | 租赁费用',alias:'租赁费用、房租',def:'指承租人按租赁合同约定向出租人支付的用于使用房屋的对价，依据《民法典》第七百零三条、第七百零四条，租金应明确金额、支付方式、支付周期及违约责任',source:'《民法典》第七百零三条、第七百零四条',srcType:'部门规章',attrs:'1. 支付主体：承租人 2. 支付对象：出租人 3. 支付形式：现金/转账 4. 支付周期：月付/季付 5. 支付条件：按期/按量',scene:'房屋租赁合同签订、租金催缴、纠纷处理等场景',posSpeech:'',negSpeech:''},
+            {id:'RNT-017',domain:'rental',name:'押金 | 保证金',alias:'保证金、租赁押金',def:'指出租人为了保障租赁期间房屋及其附属设施不受损害而要求承租人预先支付的款项，依据《民法典》第七百一十条、第七百一十一条，押金应在合同终止后无息退还，除非存在损坏或欠费情况',source:'《民法典》第七百一十条、第七百一十一条',srcType:'部门规章',attrs:'1. 支付主体：承租人 2. 支付对象：出租人 3. 支付形式：现金/转账 4. 退还条件：无损/无欠 5. 退还时间：合同终止后',scene:'房屋交付、合同终止、纠纷调解等场景',posSpeech:'',negSpeech:''},
+            {id:'RNT-018',domain:'rental',name:'租赁合同 | 房屋租赁协议',alias:'房屋租赁协议、租房合同',def:'指出租人与承租人之间就房屋租赁事宜达成的书面协议，依据《民法典》第七百零三条、第七百零五条，合同应包括租赁期限、租金标准、支付方式、房屋用途、维修责任等内容',source:'《民法典》第七百零三条、第七百零五条',srcType:'部门规章',attrs:'1. 合同主体：出租人+承租人 2. 合同内容：租金、期限、权利义务 3. 合同形式：书面 4. 生效条件：双方签字盖章',scene:'合同签署、履约监督、纠纷处理等场景',posSpeech:'',negSpeech:''},
+            {id:'RNT-019',domain:'rental',name:'房东义务 | 出租人责任',alias:'出租人责任、房东责任',def:'指出租人在租赁关系中依法应履行的义务，包括保证房屋权属清晰、提供符合居住条件的房屋、承担房屋修缮责任、配合办理相关手续等，依据《民法典》第七百一十条、第七百一十一条、第七百一十三条',source:'《民法典》第七百一十条、第七百一十一条、第七百一十三条',srcType:'部门规章',attrs:'1. 责任主体：房东 2. 责任内容：房屋状态、维修、配合 3. 责任范围：法定 4. 责任后果：违约赔偿',scene:'房屋交付、维修申请、投诉处理等场景',posSpeech:'',negSpeech:''},
+            {id:'RNT-020',domain:'rental',name:'转租 | 再租赁',alias:'再租赁、二次出租',def:'指承租人将承租的房屋部分或全部再次出租给第三方的行为，依据《民法典》第七百一十六条，转租须经出租人书面同意，否则视为违约',source:'《民法典》第七百一十六条',srcType:'部门规章',attrs:'1. 行为主体：承租人 2. 行为对象：第三方 3. 行为前提：出租人同意 4. 行为后果：违约责任',scene:'房屋使用、合同变更、违规处理等场景',posSpeech:'',negSpeech:''},
+            {id:'RNT-021',domain:'rental',name:'群租房',alias:'合租房；多人合租',def:'将一套住房分割成多个房间或区域，由多名租客分别居住，通常未符合国家或地方对居住空间和安全标准的要求。',source:'《城市房屋租赁管理办法》《关于加强群租房安全管理的通知》',srcType:'部门规章',attrs:'空间分割方式：违规隔断或改造+居住人数：超出正常居住密度+安全隐患：消防、用电、结构风险',scene:'租客寻找低价房源需辨别是否群租；政府整治违规群租行动中',posSpeech:'建议选择正规、合规的合租房源，保障居住安全。',negSpeech:'别选未经审批的群租房，法律风险和安全隐患都很大。'},
+            {id:'RNT-022',domain:'rental',name:'廉租房·公租房',alias:'保障性住房；政府补贴住房',def:'由政府提供、面向低收入群体或特定人群的租赁住房，租金低于市场价，具有申请门槛和使用限制。',source:'《公共租赁住房管理办法》《保障性住房建设管理规定》',srcType:'部门规章',attrs:'申请条件：收入/户籍/社保等门槛+租金标准：市场价的30%-70%+产权归属：政府或指定机构',scene:'低收入家庭申请住房保障；新就业大学生、外来务工人员租房',posSpeech:'符合条件可申请公租房，享受政府住房保障。',negSpeech:'不符合条件别硬占，被清退还得赔钱。'},
+            {id:'RNT-023',domain:'rental',name:'租金贷',alias:'房租分期贷款；租金分期',def:'由金融机构提供的针对房屋租金的贷款产品，允许租客按月还款，减轻一次性支付压力。',source:'《住房租赁金融业务监管暂行办法》《消费者权益保护法》',srcType:'部门规章',attrs:'贷款额度：通常覆盖一年租金+利率：年化8%-15%不等+违约风险：逾期影响征信',scene:'租客资金紧张需分期付租；中介推荐租金贷产品',posSpeech:'通过正规渠道申请租金贷，合法合规解决支付难题。',negSpeech:'警惕高利贷和虚假宣传，别被低月供忽悠进了债务陷阱。'},
+            {id:'RNT-024',domain:'rental',name:'房屋维修责任',alias:'修缮义务；维护责任',def:'在租赁关系中，根据合同约定或法律规定，由房东或租客承担房屋设施设备的维修和维护责任。',source:'《中华人民共和国民法典》第七百一十二条、七百一十三条',srcType:'部门规章',attrs:'责任主体：房东承担主体结构/管道电路，租客承担日常使用损耗+费用承担：合同约定为准+时效要求：影响居住的需及时维修',scene:'水电故障、家具损坏、墙面渗漏等维修情况',posSpeech:'签合同前把维修责任写清楚，避免扯皮。',negSpeech:'房东不修？租客可依法维权，别忍着。'},
+            {id:'RNT-025',domain:'rental',name:'租客违约',alias:'租户违约；承租人违约',def:'租客未按合同约定履行义务，如拖欠租金、提前退租、擅自转租等行为。',source:'《中华人民共和国民法典》第七百二十一条、七百二十五条',srcType:'部门规章',attrs:'违约类型：欠租/提前退租/擅自转租/违规使用+违约后果：违约金/赔偿/合同解除',scene:'租客拖欠租金催缴；租客擅自转租发现后处理',posSpeech:'按时履约，别影响信用记录和以后租房。',negSpeech:'租客违约要付违约金，严重的话还会被起诉。'},
+            {id:'RNT-026',domain:'rental',name:'房东违约',alias:'业主违约；出租人违约',def:'房东未按合同约定履行义务，如擅自涨租、提前收回房屋、不履行维修责任等行为。',source:'《中华人民共和国民法典》第七百一十六条、七百一十八条',srcType:'部门规章',attrs:'违约类型：单方涨租/提前收房/不修不赔+违约后果：退还租金/赔偿损失/继续履行',scene:'房东单方面终止合同；房东恶意涨价逼走租客',posSpeech:'房东应诚信履约，维护租赁秩序。',negSpeech:'房东违约要赔钱，买卖不破租赁，卖房也得租客同意才能走。'},
+            {id:'RNT-027',domain:'rental',name:'租赁中介·经纪机构',alias:'中介公司；房产中介',def:'依法设立、从事房屋租赁信息发布、居间撮合、合同签订等服务的专业机构。',source:'《房地产经纪管理办法》《住房租赁管理条例》',srcType:'部门规章',attrs:'资质要求：需持房地产经纪备案证书+服务内容：信息发布/带看/签约/过户+收费标准：月租金的50%-100%',scene:'委托中介出租房源；通过中介租房签约',posSpeech:'选正规中介，交易安全有保障。',negSpeech:'警惕黑中介，虚假信息和乱收费的坑不少。'},
+            {id:'RNT-028',domain:'rental',name:'整租·合租',alias:'整套出租；分租',def:'整租指整套房屋由一个租客独立使用；合租指多租客共同使用一套房屋的不同房间。',source:'《城市房屋租赁管理办法》《住房租赁市场规范指引》',srcType:'部门规章',attrs:'使用人数：整租1方/合租2方以上+隐私程度：整租高/合租低+价格差异：合租人均成本低30%-50%',scene:'单身人士选择整租或合租；合租需明确公共区域使用规则',posSpeech:'根据预算和需求选整租或合租，住得舒服最重要。',negSpeech:'别图便宜选非法群租房，安全隐患太大。'},
+            {id:'RNT-029',domain:'rental',name:'租金评估·定价',alias:'租金估值；租金定价',def:'根据市场供需、地段、房屋状况等因素，对房屋租金进行合理评估和定价的过程。',source:'《住房租赁市场发展指导意见》《房地产估价规范》',srcType:'部门规章',attrs:'评估方法：比较法/收益法/成本法+影响因素：地段/楼层/装修/配套/供需+定价策略：市场价/略低快速出租/略高等优质租客',scene:'房东定价参考；租客议价依据',posSpeech:'合理定价，快速出租，空置才是最大损失。',negSpeech:'定价太高没人看，太低自己亏，参考同小区成交价最靠谱。'},
+            {id:'RNT-030',domain:'rental',name:'租赁纠纷',alias:'租房争议；租赁矛盾',def:'在房屋租赁过程中，因合同履行、租金支付、房屋使用等问题引发的争议或冲突。',source:'《中华人民共和国民法典》《人民调解法》《仲裁法》',srcType:'部门规章',attrs:'纠纷类型：租金/维修/违约/押金/转租+调解方式：协商/调解/仲裁/诉讼+法律途径：民事诉讼/仲裁',scene:'租金拖欠协商；房屋损坏赔偿争议',posSpeech:'协商优先，谈不拢走法律途径，别拖。',negSpeech:'纠纷不及时处理，损失只会越来越大。'}
+// 域3·整装家居整体交付（15条）
+,{id:'DEC-001',domain:'decor',name:'整装整体交付',alias:'全案整装、一站式交付',def:'整装企业从设计、选材、施工到验收到售后的一站式交付模式，核心是"所见即所得"的效果一致性。',source:'《住宅全案整装服务标准》（中国房地产业协会，2026年1月实施）',srcType:'行业标准',attrs:'设计→报价→签约→施工→验收→售后全流程+效果一致性+预算即决算',scene:'整装项目全流程管理/客户交付体验保障',posSpeech:'从设计到交付一站式搞定，效果图就是实景图',negSpeech:'设计一套交付一套，那叫拼凑不叫整装'}
+,{id:'DEC-002',domain:'decor',name:'交付标准与验收依据',alias:'验收标准、交付规范',def:'整装项目竣工时必须达到的质量标准和验收规范，是判断"是否完成交付"的法定依据。',source:'《建筑装饰装修工程质量验收标准》GB 50210-2018',srcType:'国家标准',attrs:'强制性条文+一般项目+允许偏差+观感质量',scene:'整装竣工验收/客户维权依据',posSpeech:'验收标准写进合同，不达标不签字',negSpeech:'没有验收标准就开工，出了问题扯不清'}
+,{id:'DEC-003',domain:'decor',name:'交付策划流程',alias:'整装策划、开工前准备',def:'从签约到开工前的策划准备流程，包括设计确认、材料选型、施工计划、交底等环节。',source:'《住宅全案整装服务标准》第4章',srcType:'行业标准',attrs:'设计确认+材料锁定+施工计划+技术交底+开工许可',scene:'整装项目启动/客户开工前准备',posSpeech:'策划做得越细，后面问题越少',negSpeech:'不策划直接开工，变更多、工期拖、预算超'}
+,{id:'DEC-004',domain:'decor',name:'工程款构成与计价方式',alias:'整装报价、装修费用',def:'整装工程款的构成明细和计价规则，包括设计费、主材费、辅材费、人工费、管理费等。',source:'《住宅全案整装服务标准》第5章',srcType:'行业标准',attrs:'设计费+主材费+辅材费+人工费+管理费+税金',scene:'整装报价审核/客户费用解读',posSpeech:'每一分钱花在哪，清单看得明明白白',negSpeech:'报价只有一个总数，那叫黑箱不叫报价'}
+,{id:'DEC-005',domain:'decor',name:'预算控制与变更管理',alias:'增项管理、预算超支',def:'控制整装工程预算和设计/施工变更的管理机制，核心是"预算即决算"。',source:'《住宅全案整装服务标准》第5章；贝壳被窝"恶意增项双倍返还"',srcType:'行业标准',attrs:'预算锁定+变更确认+增项审批+超支预警',scene:'整装预算管理/客户增项争议',posSpeech:'预算即决算，变更必须你签字确认',negSpeech:'开工后不停加钱，这不是整装是坑人'}
+,{id:'DEC-006',domain:'decor',name:'支付方式与节点',alias:'分期付款、工程款节点',def:'整装工程按施工进度分阶段付款的机制，通常按水电/泥木/油漆/竣工等节点支付。',source:'《住宅全案整装服务标准》第6章',srcType:'行业标准',attrs:'预付款+水电完工+泥木完工+油漆完工+竣工验收+质保金',scene:'整装付款安排/客户资金管理',posSpeech:'干完一步付一步，钱跟进度走',negSpeech:'一次性付全款，你说了就不算了'}
+,{id:'DEC-007',domain:'decor',name:'环保标准与检测',alias:'甲醛检测、室内空气质量',def:'整装竣工后室内空气质量必须达到国家标准，甲醛、苯、TVOC等污染物浓度不得超标。',source:'《室内空气质量标准》GB/T 18883-2022；《民用建筑工程室内环境污染控制规范》GB 50325',srcType:'国家标准',attrs:'甲醛≤0.08mg/m³+苯≤0.03mg/m³+TVOC≤0.6mg/m³+检测时机：完工7天后',scene:'整装竣工验收/客户入住前检测',posSpeech:'环保检测达标才交付，孕婴也能放心住',negSpeech:'装完就催你入住，检测都不敢做'}
+,{id:'DEC-008',domain:'decor',name:'材料验收与问题处理',alias:'主材验收、辅材确认',def:'整装使用的主材、辅材到场后需经客户确认品牌、型号、规格、质量后方可施工。',source:'《定制家具安装服务规范》GB/T 42588-2023',srcType:'国家标准',attrs:'品牌型号核对+数量确认+质量检查+问题拍照留证+退换流程',scene:'整装材料进场验收/客户材料确认',posSpeech:'材料到场先验收，对得上合同再施工',negSpeech:'材料到了就装，型号对不对你都不知道'}
+,{id:'DEC-009',domain:'decor',name:'施工交底规范',alias:'技术交底、开工交底',def:'开工前由设计师、项目经理、施工队长共同对施工方案进行技术交底的规范流程。',source:'《建筑装饰装修工程质量验收标准》GB 50210-2018第3.1节',srcType:'国家标准',attrs:'设计意图+施工工艺+材料要求+节点做法+验收标准',scene:'整装开工交底/施工方案确认',posSpeech:'交底做得细，施工不走样',negSpeech:'不交底就开工，出来的效果跟设计两回事'}
+,{id:'DEC-010',domain:'decor',name:'工期管理与延误责任',alias:'工期延误、工期保障',def:'整装工程工期管理和延误赔偿机制，约定开工至竣工的合理工期和延误责任。',source:'《住宅全案整装服务标准》第8章；贝壳被窝"延误在线确认赔付"',srcType:'行业标准',attrs:'合理工期约定+关键节点+延误原因认定+赔偿标准+不可抗力',scene:'整装工期管理/客户延误维权',posSpeech:'工期写进合同，延误一天赔一天',negSpeech:'工期口头说说不写合同，拖半年你也没辙'}
+,{id:'DEC-011',domain:'decor',name:'隐蔽工程验收',alias:'水电验收、中间验收',def:'对水电管线等被后续工序覆盖前的工程质量进行验收确认，是整装最关键的中间节点。',source:'《建筑装饰装修工程质量验收标准》GB 50210-2018第3.1.4条（强制性条文）',srcType:'国家标准',attrs:'水管打压+电路检测+防水闭水+管线走向拍照+验收签字',scene:'水电验收/客户中间验收',posSpeech:'隐蔽工程封闭前必须验收，签了字再封',negSpeech:'水电封了再验，出了问题砸墙才知道'}
+,{id:'DEC-012',domain:'decor',name:'竣工验收标准',alias:'整装验收、最终验收',def:'整装工程全部完工后的综合验收，包括观感质量、使用功能、设备运行、环保达标等。',source:'《建筑装饰装修工程质量验收标准》GB 50210-2018',srcType:'国家标准',attrs:'观感检查+功能测试+设备调试+环保检测+整改清单',scene:'整装竣工验收/客户交付确认',posSpeech:'验收清单逐项过，一项不达标不签字',negSpeech:'不验收就入住，问题全是你的'}
+,{id:'DEC-013',domain:'decor',name:'质保范围与期限',alias:'整装质保、保修期',def:'整装企业对交付后出现的质量问题承担保修责任的范围和期限约定。',source:'《住宅全案整装服务标准》第9章；《建设工程质量管理条例》第40条',srcType:'行业标准',attrs:'水电5年+防水5年+装修2年+主体结构终身+质保起始日=竣工验收合格日',scene:'整装售后保障/客户质保咨询',posSpeech:'质保白纸黑字写进合同，出了问题有人管',negSpeech:'口头承诺质保10年，出事找不到人'}
+,{id:'DEC-014',domain:'decor',name:'售后服务承诺',alias:'整装售后、维保服务',def:'整装企业在质保期内和质保期后提供的服务承诺，包括响应时效、维修流程、费用承担等。',source:'《住宅全案整装服务标准》第9章；贝壳被窝"十心实意"服务承诺',srcType:'行业标准',attrs:'响应时效+上门维修+费用承担+服务记录+回访机制',scene:'整装售后服务/客户报修',posSpeech:'售后2小时响应，48小时上门，质保期内免费修',negSpeech:'交了钱就失联，售后电话永远打不通'}
+,{id:'DEC-015',domain:'decor',name:'投诉处理机制',alias:'整装投诉、维权渠道',def:'整装服务出现质量或服务问题时的投诉受理和处理的规范化流程。',source:'《消费者权益保护法》第39条；中国建筑装饰协会投诉处理指引',srcType:'部门规章',attrs:'投诉渠道+受理时限+处理流程+升级机制+赔偿标准',scene:'整装服务投诉/客户维权',posSpeech:'投诉有渠道，处理有时限，不满意可升级',negSpeech:'投诉无门，推诿扯皮，消费者只能自认倒霉'}
+// 域4·家政保洁（15条）
+,{id:'HOM-001',domain:'homekeep',name:'家政服务',alias:'家政、家庭服务',def:'为家庭提供保洁、照护、烹饪等生活服务的专业行业，是居住服务的重要延伸。',source:'《家政服务业管理暂行办法》（商务部2012年）；国务院办公厅《关于促进家政服务业提质扩容的意见》',srcType:'部门规章',attrs:'保洁+照护+烹饪+月嫂+收纳+分类管理体系',scene:'家政需求评估/家政服务选择',posSpeech:'专业的事交给专业的人，家政是品质生活的标配',negSpeech:'家政不是保姆活，是专业服务行业'}
+,{id:'HOM-002',domain:'homekeep',name:'日常保洁',alias:'常规保洁、定期清洁',def:'按约定周期（日/周/月）对居住空间进行常规清洁维护的服务，是家政服务的高频需求。',source:'《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'地面+台面+厨卫+垃圾清理+物品归位+服务时长',scene:'家庭日常清洁/办公室保洁',posSpeech:'定期保洁，家里永远是做客状态',negSpeech:'平时不打扫，积到一起更费钱费力'}
+,{id:'HOM-003',domain:'homekeep',name:'深度保洁',alias:'深度清洁、大扫除',def:'对居住空间进行全面彻底的清洁服务，包括日常保洁不覆盖的死角、缝隙、高处等区域。',source:'《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'死角清洁+玻璃+灯具+油烟机拆洗+空调清洗+消毒杀菌',scene:'换季大扫除/搬家前清洁/入住前清洁',posSpeech:'深度清洁一次，日常保洁轻松一周',negSpeech:'只做表面不做深层，脏东西藏在看不见的地方'}
+,{id:'HOM-004',domain:'homekeep',name:'开荒保洁',alias:'新房开荒、装修后保洁',def:'新房交付或装修完成后首次全面清洁，清除施工残留的建筑垃圾、灰尘、胶渍等。',source:'《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'建筑垃圾清理+除尘+除胶+擦玻璃+地面养护+全面消毒',scene:'新房入住前/整装完工后/二手房翻新后',posSpeech:'开荒做彻底，入住才安心',negSpeech:'装修完不保洁直接住，灰尘甲醛全吸进去了'}
+,{id:'HOM-005',domain:'homekeep',name:'家政人员资质',alias:'家政阿姨资质、从业资格',def:'家政服务从业人员应具备的身份核验、健康证明、技能培训和资格认证等基本资质。',source:'国务院办公厅《关于促进家政服务业提质扩容的意见》；商务部家政服务信用信息平台',srcType:'部门规章',attrs:'身份核验+健康证+培训证书+信用记录+无犯罪证明',scene:'家政人员筛选/雇主安全保障',posSpeech:'查身份、看健康证、查信用，三证齐全才放心',negSpeech:'不查资质就用，出了事连人都找不到'}
+,{id:'HOM-006',domain:'homekeep',name:'家政服务合同',alias:'家政合同、服务协议',def:'家政服务提供方与雇主之间约定服务内容、期限、费用、权利义务的书面协议。',source:'《民法典》第九百一十九条；《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'服务内容+服务期限+费用标准+双方权利义务+违约责任+终止条款',scene:'家政服务签约/服务争议处理',posSpeech:'合同写清做什么、做多长时间、多少钱，白纸黑字最靠谱',negSpeech:'口头约定不靠谱，出了问题各说各话'}
+,{id:'HOM-007',domain:'homekeep',name:'钟点工',alias:'小时工、计时保洁',def:'按小时计费的家政保洁服务，灵活安排时间和频次，适合日常保洁需求。',source:'《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'按小时计费+灵活预约+最低服务时长+服务范围约定',scene:'临时保洁需求/定期钟点服务',posSpeech:'需要就来，不用养人，灵活又经济',negSpeech:'只按小时算不约定范围，做一半走了算谁的'}
+,{id:'HOM-008',domain:'homekeep',name:'住家保姆',alias:'住家阿姨、全日家政',def:'居住在雇主家中提供全天候家政服务的从业人员，覆盖做饭、保洁、照护等综合服务。',source:'《家政服务规范》SB/T 10643-2011；国务院办公厅家政提质扩容意见',srcType:'行业标准',attrs:'住家服务+综合家务+做饭+保洁+照护+休息时间约定',scene:'双职工家庭/老人家庭/有婴幼儿家庭',posSpeech:'住家阿姨全天候照顾，上班也安心',negSpeech:'住家服务边界不清，休息时间要写进合同'}
+,{id:'HOM-009',domain:'homekeep',name:'育婴服务',alias:'月嫂、育婴师、母婴护理',def:'为0-3岁婴幼儿和产妇提供专业照护的服务，包括喂养、护理、早教等。',source:'《家政服务规范》SB/T 10643-2011；《育婴员国家职业技能标准》',srcType:'行业标准',attrs:'产妇护理+新生儿护理+喂养指导+早教启蒙+健康监测',scene:'新生儿家庭/产褥期护理/育儿指导',posSpeech:'专业月嫂护航，新手妈妈不慌',negSpeech:'育儿不是带娃那么简单，专业资质要看清'}
+,{id:'HOM-010',domain:'homekeep',name:'老人照护',alias:'居家养老、老人陪护',def:'为居家老年人提供生活照料、健康监测、心理陪伴等专业照护服务。',source:'《中华人民共和国老年人权益保障法》；国务院《关于推进养老服务发展的意见》',srcType:'部门规章',attrs:'生活照料+健康监测+用药提醒+心理陪伴+应急响应',scene:'独居老人照护/术后康复护理/失能老人陪护',posSpeech:'老人在家有人陪，儿女在外也放心',negSpeech:'老人照护不只是做饭打扫，应急处理才是关键'}
+,{id:'HOM-011',domain:'homekeep',name:'家政保险',alias:'家政责任险、家政意外险',def:'为家政服务过程中的人身伤害和财产损失提供保障的保险产品，包括家政人员意外险和雇主责任险。',source:'银保监会《关于促进家政服务保险发展的指导意见》',srcType:'部门规章',attrs:'家政人员意外险+雇主责任险+第三者责任+财产损失+保费分担',scene:'家政服务安全保障/风险分担',posSpeech:'买了保险再用家政，出事有人赔',negSpeech:'不买保险就用家政，阿姨受伤你全责'}
+,{id:'HOM-012',domain:'homekeep',name:'家政平台',alias:'家政App、互联网家政',def:'通过互联网平台连接家政服务人员和雇主的撮合平台，提供预约、支付、评价、售后等闭环服务。',source:'《电子商务法》；商务部家政服务信用信息平台',srcType:'部门规章',attrs:'在线预约+服务匹配+支付担保+评价体系+售后保障',scene:'家政服务预约/家政人员选择',posSpeech:'平台下单，有评价有保障，跑得了和尚跑不了庙',negSpeech:'路边找的阿姨，出了问题没处说理'}
+,{id:'HOM-013',domain:'homekeep',name:'家政服务标准化',alias:'家政标准、服务规范',def:'对家政服务流程、质量、评价进行统一规范，推动行业从"游击队"走向"正规军"。',source:'《家政服务规范》SB/T 10643-2011；国务院办公厅家政提质扩容意见',srcType:'行业标准',attrs:'服务流程标准+质量评价标准+人员资质标准+价格指导标准',scene:'家政服务选择/行业规范化',posSpeech:'标准化服务，价格透明、流程清晰、质量有保障',negSpeech:'没有标准的服务，每次体验都不一样'}
+,{id:'HOM-014',domain:'homekeep',name:'家政培训与认证',alias:'家政培训、职业认证',def:'对家政服务从业人员进行技能培训和职业认证的体系，推动行业职业化和专业化。',source:'《育婴员国家职业技能标准》；《养老护理员国家职业技能标准》',srcType:'行业标准',attrs:'技能培训+等级认证+继续教育+信用档案+持证上岗',scene:'家政人员职业发展/雇主选择依据',posSpeech:'持证上岗，培训越多越专业',negSpeech:'没培训没认证，服务质量全凭运气'}
+,{id:'HOM-015',domain:'homekeep',name:'家政投诉与维权',alias:'家政维权、服务纠纷',def:'家政服务过程中出现质量、费用、人身安全等问题时的投诉受理和维权渠道。',source:'《消费者权益保护法》第39条；《家政服务规范》SB/T 10643-2011',srcType:'部门规章',attrs:'平台投诉+12315+行业协会+法律途径+证据保全',scene:'家政服务纠纷/消费者维权',posSpeech:'先拍照留证据，再投诉维权，12315是靠山',negSpeech:'吃了哑巴亏不投诉，下一个人还是受害者'}
+// 域5·十五五政策与趋势（18条）
+,{id:'POL-001',domain:'policy',name:'好房子',alias:'高品质住房、安全舒适绿色智慧住宅',def:'住房城乡建设部定义的住房品质目标，以安全、舒适、绿色、智慧为四大核心特征的新一代住房。',source:'住建部《关于提升住房品质的意见》（2025年）；《城市更新十五五规划》',srcType:'政策文件',attrs:'安全底线+舒适体验+绿色低碳+智慧便捷',scene:'向客户介绍住房品质升级趋势/解释什么是好房子',posSpeech:'现在国家都在推好房子，安全舒适绿色智慧，以后这会是标配',negSpeech:'好房子不是噱头，是写入中央文件的硬指标'}
+,{id:'POL-002',domain:'policy',name:'房地产发展新模式',alias:'新模式、三大工程',def:'从增量扩张转向存量提质增效的发展模式，以好房子建设、城市更新、租购并举为核心特征的房地产转型方向。',source:'中共中央《十四届全国人大三次会议政府工作报告》；《城市更新十五五规划》',srcType:'政策文件',attrs:'从增量到存量+好房子建设+城市更新+租购并举',scene:'解释市场转型/行业逻辑变化',posSpeech:'房地产进入新模式，从盖房子卖变成存量提质，这是大方向',negSpeech:'还在用老眼光看房地产？新模式已经开始了'}
+,{id:'POL-003',domain:'policy',name:'城市更新',alias:'城市更新行动、存量更新',def:'对城市存量空间进行功能性提升、环境改善、设施完善的活动，涵盖老旧小区、城中村、历史街区等综合整治。',source:'《城市更新十五五规划》（国发〔2026〕12号）',srcType:'政策文件',attrs:'老旧小区改造+城中村改造+街区整治+功能提升',scene:'老房改造项目/区域发展前景评估',posSpeech:'这个区域纳入城市更新，未来配套会越来越好',negSpeech:'城市更新是政府行为，不是你想改就能改'}
+,{id:'POL-004',domain:'policy',name:'改善性住房',alias:'改善需求、改善型需求',def:'居民为提升居住品质而购买的第二套或置换型住房，区别于首次置业的刚性需求，对房屋面积、户型、小区环境有更高要求。',source:'中共中央十五五规划建议；住建部《城市住房发展规划编制导则》',srcType:'政策文件',attrs:'置换需求+品质提升+面积增加+配套完善',scene:'改善型客户需求挖掘/置换方案制定',posSpeech:'改善需求现在是主流，大家都想住得更好，这是大趋势',negSpeech:'改善不是刚需，要看时机和收入预期'}
+,{id:'POL-005',domain:'policy',name:'房屋全生命周期安全管理',alias:'房屋安全管理制度、安全体检',def:'涵盖房屋安全体检、管理资金、质量保险三项制度的房屋安全管理体系，覆盖从建设到报废的全周期。',source:'《城市更新十五五规划》第七项政策举措',srcType:'政策文件',attrs:'安全体检+管理资金+质量保险+动态监管',scene:'老旧房屋安全性评估/房屋维护建议',posSpeech:'以后房子都要定期体检，像车年检一样',negSpeech:'老房子没体检过，谁知道有没有问题'}
+,{id:'POL-006',domain:'policy',name:'保障性住房',alias:'保障房、安居房',def:'政府提供或主导建设，面向城镇工薪群体和住房困难家庭的具有保障性质的住房，包括公租房、保障性租赁住房等。',source:'中共中央十五五规划建议；《城市更新十五五规划》',srcType:'政策文件',attrs:'保障性质+政府主导+低价租售+准入门槛',scene:'解释市场与保障双轨/客户分类',posSpeech:'保障房是兜底的，商品房是市场化选择，各有各的作用',negSpeech:'保障房跟你没关系，商品房才是市场'}
+,{id:'POL-007',domain:'policy',name:'绿色建筑',alias:'低碳建筑、超低能耗建筑',def:'在全寿命期内节约资源、保护环境、减少污染，提供健康、适用、高效使用空间的建筑，新建城镇住房已全面要求达到绿色建筑标准。',source:'住建部《关于提升住房品质的意见》；《城市更新十五五规划》',srcType:'政策文件',attrs:'节能标准+环保材料+可再生能源+碳排放控制',scene:'新房品质介绍/绿色低碳卖点',posSpeech:'这房子是绿色建筑，节能省电，住着也更健康',negSpeech:'绿色建筑只是噱头，关键看实际居住体验'}
+,{id:'POL-008',domain:'policy',name:'城中村改造',alias:'城中村更新、城中存改造',def:'对城市建成区内土地权属复杂、建筑老旧、配套落后的城中村进行综合整治或拆除新建的改造行动。',source:'《城市更新十五五规划》重大工程；《住建部2025年工作会议》',srcType:'政策文件',attrs:'拆除新建+整治提升+拆整结合+一项目两方案',scene:'城中存区域发展/拆迁补偿谈判',posSpeech:'城中村改造是十五五重点，5年要完成4000个',negSpeech:'城中存改造周期长，不确定性大'}
+,{id:'POL-009',domain:'policy',name:'危旧房改造',alias:'D级危房、C级危房、旧房改造',def:'对存在结构安全隐患的危旧房屋进行加固、拆除或原拆原建的改造行动，十五五期间目标是完成50万套。',source:'《城市更新十五五规划》重大工程',srcType:'政策文件',attrs:'C/D级分类+加固/拆除+原拆原建+资金支持',scene:'老旧房屋安全评估/危房处置建议',posSpeech:'危房改造有政策支持，政府补贴加上居民共担',negSpeech:'危房不改造，住着心里不踏实'}
+,{id:'POL-010',domain:'policy',name:'城镇老旧小区改造',alias:'旧改、老旧小区综合整治',def:'对建成20年及以上、设施配套不完善的城镇住宅小区进行的基础设施完善、环境整治、适老化改造等综合整治行动。',source:'《城市更新十五五规划》重大工程',srcType:'政策文件',attrs:'基础类+完善类+提升类+加装电梯+完整社区',scene:'老小区价值评估/改造前景分析',posSpeech:'这个老小区在改造名单里，加装电梯政府有补贴',negSpeech:'老旧小区再怎么改也比不上新房'}
+,{id:'POL-011',domain:'policy',name:'数字家庭',alias:'智能家居、智慧住宅',def:'利用物联网、云计算等新一代信息技术，实现家庭设施互联互通、提供智能化居住服务的住宅建设标准。',source:'住建部《关于提升住房品质的意见》；《城市更新十五五规划》',srcType:'政策文件',attrs:'物联网连接+智能控制+便捷服务+适老化设计',scene:'新房智能化配套介绍/科技卖点',posSpeech:'数字家庭是标配，手机就能控制全屋',negSpeech:'智能家居用不上，老人不会操作'}
+,{id:'POL-012',domain:'policy',name:'装配式装修',alias:'工业化装修、集成装修',def:'采用预制部品部件在现场组装的装修方式，具有质量可控、工期短、环保等优势，适用于新建和改造项目。',source:'住建部《关于提升住房品质的意见》',srcType:'政策文件',attrs:'预制部品+现场装配+集成厨卫+标准化设计',scene:'装修品质说明/工期优势介绍',posSpeech:'装配式装修工期短、质量有保障，还环保',negSpeech:'装配式装修以后维修麻烦'}
+,{id:'POL-013',domain:'policy',name:'存量盘活',alias:'存量资产盘活、闲置房产激活',def:'通过出租、改造、处置等方式将闲置低效的存量房产激活利用的行为，政策支持5年过渡期政策。',source:'《城市更新十五五规划》任务一',srcType:'政策文件',attrs:'闲置激活+出租经营+改造升级+过渡期政策',scene:'闲置房处置建议/长租房源开发',posSpeech:'闲置房子出租是最直接的盘活方式，政策支持',negSpeech:'闲置房放着也是放着，不如出租产生收益'}
+,{id:'POL-014',domain:'policy',name:'改善型租赁需求',alias:'品质租住、升级租房',def:'租客对租赁住房的品质、配套、服务提出更高要求的趋势，改善型租住正从可选变为刚需。',source:'《2026中国城市长租市场发展蓝皮书》',srcType:'行业研究',attrs:'品质升级+服务需求+数智化+长期租住',scene:'租赁市场分析/长租公寓定位',posSpeech:'现在租房也要住得好，改善型需求是主流',negSpeech:'租房能将就就将就'}
+,{id:'POL-015',domain:'policy',name:'家庭型租赁',alias:'家庭租房、合家居住',def:'家庭成员（伴侣、孩子、父母）共同居住的租赁模式，30岁以上租客占比已超50%，家庭型租住占比超70%。',source:'《2026中国城市长租市场发展蓝皮书》',srcType:'行业研究',attrs:'家庭结构+整租需求+两居以上+长期稳定',scene:'家庭租客服务/整租产品设计',posSpeech:'一家人租房更看重稳定和配套，整租两居室最合适',negSpeech:'家庭租房麻烦多，稳定性差'}
+,{id:'POL-016',domain:'policy',name:'机构化长租',alias:'专业租赁机构、长租公寓托管',def:'由专业机构统一运营、提供标准化服务的租赁模式，近60%业主倾向机构托管，超6000万套存量房待提质。',source:'《2026中国城市长租市场发展蓝皮书》',srcType:'行业研究',attrs:'专业化运营+标准化服务+资产保值+维修保障',scene:'业主托管咨询/机构合作介绍',posSpeech:'交给专业机构打理，省心又稳定，维修不用你管',negSpeech:'机构托管要收管理费，自己出租更划算'}
+,{id:'POL-017',domain:'policy',name:'十五五住房需求总量',alias:'49.8亿平方米、城镇住房需求',def:'中指研究院测算的十五五期间城镇住房需求总量约49.8亿平方米，其中人均面积提升带动41%，为最大需求来源。',source:'中指研究院《中国房地产市场2025总结与2026展望》',srcType:'行业研究',attrs:'总量49.8亿㎡+人均面积提升41%+新增人口32%+拆迁改造27%',scene:'市场容量分析/需求结构解读',posSpeech:'未来五年需求还有近50亿平方米，市场依然很大',negSpeech:'需求都在往下走，房子越来越难卖'}
+,{id:'POL-018',domain:'policy',name:'年均新建商品住宅销售',alias:'7-8亿平方米、新房去化',def:'中指研究院预测的十五五期间新建商品住宅年均销售面积约7-8亿平方米，是判断新房市场规模的核心指标。',source:'中指研究院《中国房地产市场2025总结与2026展望》',srcType:'行业研究',attrs:'年均7-8亿㎡+去化压力+结构分化+好城市好房子',scene:'新房市场判断/项目定位参考',posSpeech:'新房市场年均7-8亿平方米，分化严重，好城市好房子才有机会',negSpeech:'新房整体往下走，别指望大行情'}
+];
+
+let currentDomain='quality-customer';
+
+function init(){
+  const params=new URLSearchParams(location.search);
+  if(params.get('tab')&&DOMAINS.some(d=>d.id===params.get('tab')))currentDomain=params.get('tab');
+  const tabs=document.getElementById('domain-tabs');
+  tabs.innerHTML=DOMAINS.map(d=>`<div class="domain-tab ${d.id===currentDomain?'active':''}" data-domain="${d.id}" onclick="switchDomain('${d.id}')">${d.icon} ${d.name}（${d.count}）</div>`).join('');
+  renderPolicyCard();
+  renderEntries();
 }
 
-var state = loadState();
-var currentView = 'domains';
-
-// ========== TOAST ==========
-var toastTimer;
-function toast(msg) {
-  var el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2000);
+function renderPolicyCard(){
+  const p=POLICY_CARD;
+  const entries=ENTRIES.filter(e=>e.domain===p.id);
+  document.getElementById('policy-card').innerHTML=`
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px;cursor:pointer" onclick="togglePolicyEntries()">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:28px">${p.icon}</span>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--dk)">${p.name}</div>
+          <div style="font-size:11px;color:var(--td);margin-top:2px">${p.desc} · ${p.count}词条</div>
+        </div>
+      </div>
+      <a href="${p.link}" onclick="event.stopPropagation()" style="display:inline-block;padding:7px 14px;background:var(--p);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap">查看完整执行方案 →</a>
+    </div>
+    <div id="policy-entries" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+      ${entries.map(e=>{
+        const badgeCls=e.srcType.includes('国家')?'badge-gb':e.srcType.includes('法律')?'badge-law':e.srcType.includes('学术')?'badge-academic':e.srcType.includes('平台')?'badge-platform':'badge-industry';
+        return `<div class="entry-card" onclick="event.stopPropagation();toggleDetail(this)" style="margin-bottom:8px">
+          <div class="entry-header"><span class="entry-name">${e.name}</span><span class="entry-id">${e.id}</span></div>
+          <div class="entry-alias">别名：${e.alias}</div>
+          <div class="entry-def">${e.def}</div>
+          <div class="entry-source"><span class="src-label">📖 出处：</span><span class="source-badge ${badgeCls}">${e.srcType}</span> ${e.source.split('；')[0]}</div>
+          <div class="entry-detail" onclick="event.stopPropagation()">
+            <div class="layer-tabs">
+              <div class="layer-tab active" onclick="switchLayer(this,'detail')">📋 详情</div>
+              <div class="layer-tab" onclick="switchLayer(this,'trace')">🔗 溯源</div>
+            </div>
+            <div class="layer-content active" data-layer="detail">
+              <div class="detail-row"><span class="detail-label">属性拆解：</span><span class="detail-val">${e.attrs}</span></div>
+              <div class="detail-row"><span class="detail-label">适用场景：</span><span class="detail-val">${e.scene}</span></div>
+              <div class="detail-row speech"><span class="detail-label">✅ 正向话术：</span><span class="detail-val">${e.posSpeech||'暂无'}</span></div>
+              <div class="detail-row speech"><span class="detail-label">⚠️ 反向话术：</span><span class="detail-val">${e.negSpeech||'暂无'}</span></div>
+            </div>
+            <div class="layer-content" data-layer="trace">
+              <div class="detail-row"><span class="detail-label">📄 法规原文：</span><span class="detail-val">${e.source}</span></div>
+              <div class="detail-row"><span class="detail-label">🏷️ 来源类型：</span><span class="source-badge ${badgeCls}">${e.srcType}</span></div>
+              <div class="detail-row"><span class="detail-label">🔗 溯源查询：</span><span class="detail-val">${e.srcType.includes('政策')?'<a class="source-link" href="https://www.gov.cn" target="_blank">中国政府网</a> <a class="source-link" href="https://www.mohurd.gov.cn" target="_blank">住建部官网</a>':e.srcType.includes('行业')?'<a class="source-link" href="https://www.cnki.net" target="_blank">中国知网</a>':'暂无在线链接'}</span></div>
+            </div>
+          </div>
+          <div class="expand-hint">▼ 点击展开详情</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="font-size:10px;color:var(--td);text-align:center;margin-top:8px" id="policy-toggle-hint">▼ 点击展开${p.count}条政策词条</div>
+  </div>`;
 }
 
-// ========== BOOKMARKS ==========
-function isBookmarked(termName) {
-  return state.bookmarks.some(function(b) { return b.name === termName; });
-}
-function toggleBookmark(termName, termDesc, domainName, domainId) {
-  var idx = state.bookmarks.findIndex(function(b) { return b.name === termName; });
-  if (idx !== -1) {
-    state.bookmarks.splice(idx, 1);
-    saveState(state);
-    toast('已取消收藏');
-    renderBookmarkStars();
-    return false;
-  } else {
-    state.bookmarks.push({ name: termName, desc: termDesc, domain: domainName, domainId: domainId, time: Date.now() });
-    saveState(state);
-    toast('☆ 已收藏！');
-    renderBookmarkStars();
-    return true;
+function togglePolicyEntries(){
+  const el=document.getElementById('policy-entries');
+  const hint=document.getElementById('policy-toggle-hint');
+  if(el.style.display==='none'){
+    el.style.display='block';
+    hint.textContent='▲ 收起政策词条';
+  }else{
+    el.style.display='none';
+    hint.textContent='▼ 点击展开'+POLICY_CARD.count+'条政策词条';
   }
 }
-function renderBookmarkStars() {
-  // Update all star buttons in the currently visible panel
-  document.querySelectorAll('.term-star').forEach(function(btn) {
-    if (isBookmarked(btn.dataset.term)) {
-      btn.classList.add('saved');
-      btn.textContent = '★';
-    } else {
-      btn.classList.remove('saved');
-      btn.textContent = '☆';
-    }
-  });
-  // Update daily star
-  var dailyBtn = document.getElementById('daily-save-btn');
-  if (dailyBtn && dailyBtn.dataset.term) {
-    if (isBookmarked(dailyBtn.dataset.term)) {
-      dailyBtn.classList.add('saved');
-      dailyBtn.textContent = '★ 已收藏';
-    } else {
-      dailyBtn.classList.remove('saved');
-      dailyBtn.textContent = '☆ 收藏';
-    }
-  }
-  // Update bookmark count
-  document.getElementById('bookmark-count').textContent = state.bookmarks.length;
-  // Update search star icons
-  document.querySelectorAll('.sr-star').forEach(function(btn) {
-    if (isBookmarked(btn.dataset.term)) {
-      btn.classList.add('saved');
-      btn.textContent = '★';
-    } else {
-      btn.classList.remove('saved');
-      btn.textContent = '☆';
-    }
-  });
+
+function switchDomain(id){
+  if(typeof track==="function") track("tab_switch",{tab:id});
+  currentDomain=id;
+  document.querySelectorAll('.domain-tab').forEach(t=>t.classList.toggle('active',t.dataset.domain===id));
+  renderEntries();
 }
 
-// ========== HISTORY ==========
-function addHistory(domain) {
-  state.history = state.history.filter(function(h) { return h.id !== domain.id; });
-  state.history.unshift({ id: domain.id, title: domain.title });
-  if (state.history.length > 5) state.history = state.history.slice(0, 5);
-  saveState(state);
-  renderHistory();
-}
-function renderHistory() {
-  var bar = document.getElementById('history-bar');
-  var tags = document.getElementById('history-tags');
-  if (state.history.length === 0) {
-    bar.style.display = 'none';
-    return;
-  }
-  bar.style.display = 'flex';
-  tags.innerHTML = state.history.map(function(h) {
-    return '<button class="history-tag" type="button" data-id="' + h.id + '">' + h.title + '</button>';
+function renderEntries(){
+  const list=document.getElementById('entry-list');
+  const filtered=ENTRIES.filter(e=>e.domain===currentDomain);
+  list.innerHTML=filtered.map((e,idx)=>{
+    const badgeCls=e.srcType.includes('国家')?'badge-gb':e.srcType.includes('法律')?'badge-law':e.srcType.includes('学术')?'badge-academic':e.srcType.includes('平台')?'badge-platform':'badge-industry';
+    // 溯源链接：根据srcType生成
+    let sourceLinks='';
+    if(e.srcType.includes('国家'))sourceLinks+='<a class="source-link" href="https://std.samr.gov.cn" target="_blank">国家标准信息平台</a> ';
+    if(e.srcType.includes('法律')||e.source.includes('民法典'))sourceLinks+='<a class="source-link" href="https://www.gov.cn" target="_blank">中国政府法规查询</a> ';
+    if(e.srcType.includes('学术'))sourceLinks+='<a class="source-link" href="https://www.cnki.net" target="_blank">中国知网</a> ';
+    if(e.srcType.includes('部门规章'))sourceLinks+='<a class="source-link" href="https://www.mohurd.gov.cn" target="_blank">住建部官网</a> ';
+    if(e.srcType.includes('平台'))sourceLinks+='<a class="source-link" href="https://www.ke.com" target="_blank">贝壳平台</a> ';
+    // 溯源层
+    const traceLayer=`
+      <div class="layer-content" data-layer="trace">
+        <div class="detail-row"><span class="detail-label">📄 法规原文：</span><span class="detail-val">${e.source}</span></div>
+        <div class="detail-row"><span class="detail-label">🏷️ 来源类型：</span><span class="source-badge ${badgeCls}">${e.srcType}</span></div>
+        <div class="detail-row"><span class="detail-label">🔗 溯源查询：</span><span class="detail-val">${sourceLinks||'暂无在线链接'}</span></div>
+        <div class="detail-row" style="margin-top:8px;padding:6px 8px;background:rgba(61,90,62,.04);border-radius:4px;font-size:11px;color:var(--td)">
+          💡 提示：以上链接为权威查询入口，具体条文请在平台内搜索法规编号或名称
+        </div>
+      </div>`;
+    return `
+    <div class="entry-card" onclick="toggleDetail(this)">
+      <div class="entry-header"><span class="entry-name">${e.name}</span><span class="entry-id">${e.id}</span></div>
+      <div class="entry-alias">别名：${e.alias}</div>
+      <div class="entry-def">${e.def}</div>
+      <div class="entry-source"><span class="src-label">📖 出处：</span><span class="source-badge ${badgeCls}">${e.srcType}</span> ${e.source.split('；')[0]}</div>
+      <div class="entry-detail" onclick="event.stopPropagation()">
+        <div class="layer-tabs">
+          <div class="layer-tab active" onclick="switchLayer(this,'detail')">📋 详情</div>
+          <div class="layer-tab" onclick="switchLayer(this,'trace')">🔗 溯源</div>
+        </div>
+        <div class="layer-content active" data-layer="detail">
+          <div class="detail-row"><span class="detail-label">属性拆解：</span><span class="detail-val">${e.attrs}</span></div>
+          <div class="detail-row"><span class="detail-label">适用场景：</span><span class="detail-val">${e.scene}</span></div>
+          <div class="detail-row speech"><span class="detail-label">✅ 正向话术：</span><span class="detail-val">${e.posSpeech||'暂无'}</span></div>
+          <div class="detail-row speech"><span class="detail-label">⚠️ 反向话术：</span><span class="detail-val">${e.negSpeech||'暂无'}</span></div>
+        </div>
+        ${traceLayer}
+      </div>
+      <div class="expand-hint">▼ 点击展开详情</div>
+    </div>`;
   }).join('');
-  tags.querySelectorAll('.history-tag').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var d = domains.find(function(dd) { return dd.id === btn.dataset.id; });
-      if (d) { showDomain(d.id, d); switchView('domains'); }
-    });
-  });
 }
 
-// ========== DAILY TERM ==========
-function getDailyTerm() {
-  var today = new Date().toISOString().slice(0, 10);
-  if (state.dailyDate === today) {
-    // Use the same term as today
-    var hash = 0;
-    for (var i = 0; i < today.length; i++) { hash = ((hash << 5) - hash) + today.charCodeAt(i); hash |= 0; }
-    var idx = Math.abs(hash) % flatTerms.length;
-    return flatTerms[idx];
-  }
-  state.dailyDate = today;
-  var seed = 0;
-  for (var j = 0; j < today.length; j++) { seed = ((seed << 5) - seed) + today.charCodeAt(j); seed |= 0; }
-  var idx2 = Math.abs(seed) % flatTerms.length;
-  saveState(state);
-  return flatTerms[idx2];
+function switchLayer(tab,layer){
+  const container=tab.closest('.entry-detail');
+  container.querySelectorAll('.layer-tab').forEach(t=>t.classList.remove('active'));
+  container.querySelectorAll('.layer-content').forEach(c=>c.classList.remove('active'));
+  tab.classList.add('active');
+  container.querySelector('[data-layer="'+layer+'"]').classList.add('active');
 }
 
-function renderDailyTerm() {
-  var dt = getDailyTerm();
-  document.getElementById('daily-name').textContent = dt.name;
-  document.getElementById('daily-domain').textContent = dt.domain;
-  document.getElementById('daily-desc').textContent = dt.desc;
-  var saveBtn = document.getElementById('daily-save-btn');
-  saveBtn.dataset.term = dt.name;
-  saveBtn.dataset.desc = dt.desc;
-  saveBtn.dataset.domain = dt.domain;
-  saveBtn.dataset.domainId = dt.domainId;
-  if (isBookmarked(dt.name)) {
-    saveBtn.classList.add('saved');
-    saveBtn.textContent = '★ 已收藏';
-  } else {
-    saveBtn.classList.remove('saved');
-    saveBtn.textContent = '☆ 收藏';
-  }
-  document.getElementById('daily-goto').addEventListener('click', function(e) {
-    e.preventDefault();
-    var d = domains.find(function(dd) { return dd.id === dt.domainId; });
-    if (d) { showDomain(d.id, d); switchView('domains'); }
-  });
+function toggleDetail(card){
+  var name=card.querySelector(".entry-name");
+  if(name && typeof track==="function") track("lookup",{entry_name:name.textContent,tab:currentDomain});
+  const detail=card.querySelector('.entry-detail');
+  detail.classList.toggle('open');
 }
 
-// ========== SEARCH ==========
-var searchInput = document.getElementById('search-input');
-var searchResults = document.getElementById('search-results');
-var searchTimer;
-
-searchInput.addEventListener('input', function() {
-  clearTimeout(searchTimer);
-  var q = this.value.trim();
-  if (!q) { searchResults.classList.remove('show'); return; }
-  searchTimer = setTimeout(function() { doSearch(q); }, 200);
-});
-
-searchInput.addEventListener('focus', function() {
-  if (this.value.trim() && flatTerms.length > 0) doSearch(this.value.trim());
-});
-
-document.addEventListener('click', function(e) {
-  if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-    searchResults.classList.remove('show');
+init();
+track("page_view",{referrer:document.referrer});
+</script>
+<script>
+const _startTime = Date.now();
+function track(eventType, extra = {}) {
+  const data = {
+    event_type: eventType,
+    page: "/knowledge.html",
+    timestamp: new Date().toISOString(),
+    duration_sec: eventType === 'page_view' ? 0 : Math.round((Date.now() - _startTime) / 1000),
+    ...extra,
+    _replyto: "yu-er@coze.email",
+    _subject: "知识底座数据回传"
+  };
+  fetch("https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de", {
+    method: "POST",
+    headers: {"Content-Type": "application/json", "Accept": "application/json"},
+    body: JSON.stringify(data)
+  }).catch(() => {});
+}
+document.addEventListener("visibilitychange", function() {
+  if (document.visibilityState === "hidden") {
+    navigator.sendBeacon("https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de",
+      JSON.stringify({event_type:"page_leave",page:"/knowledge.html",timestamp:new Date().toISOString(),
+        duration_sec:Math.round((Date.now()-_startTime)/1000),
+        _replyto:"yu-er@coze.email",_subject:"知识底座数据回传"}));
   }
 });
 
-function doSearch(q) {
-  var lower = q.toLowerCase();
-  var results = flatTerms.filter(function(t) {
-    return t.name.toLowerCase().indexOf(lower) !== -1 || t.desc.toLowerCase().indexOf(lower) !== -1 || t.domain.toLowerCase().indexOf(lower) !== -1;
-  });
-  if (results.length === 0) {
-    searchResults.innerHTML = '<div class="search-empty">未找到相关词条，试试其他关键词</div>';
-    searchResults.classList.add('show');
-    return;
-  }
-  var html = results.slice(0, 15).map(function(t) {
-    var saved = isBookmarked(t.name) ? ' saved' : '';
-    var star = isBookmarked(t.name) ? '★' : '☆';
-    return '<div class="search-result-item" role="option" data-domain="' + t.domainId + '" data-term="' + t.name + '">' +
-      '<div><div class="sr-name">' + highlight(t.name, q) + '<span class="sr-domain">' + t.domain + '</span></div>' +
-      '<div class="sr-desc">' + highlight(t.desc, q) + '</div></div>' +
-      '<button class="sr-star' + saved + '" type="button" data-term="' + t.name + '" data-desc="' + t.desc + '" data-domain="' + t.domain + '" data-domainid="' + t.domainId + '" aria-label="' + (saved ? '取消收藏' : '收藏') + '">' + star + '</button>' +
-      '</div>';
-  }).join('');
-  if (results.length > 15) html += '<div class="search-empty">还有 ' + (results.length - 15) + ' 条结果，输入更精确的关键词</div>';
-  searchResults.innerHTML = html;
-  searchResults.classList.add('show');
-
-  // Bind clicks
-  searchResults.querySelectorAll('.search-result-item').forEach(function(item) {
-    item.addEventListener('click', function(e) {
-      if (e.target.closest('.sr-star')) return;
-      var d = domains.find(function(dd) { return dd.id === item.dataset.domain; });
-      if (d) { showDomain(d.id, d); switchView('domains'); }
-      searchResults.classList.remove('show');
-      searchInput.value = '';
-    });
-  });
-  searchResults.querySelectorAll('.sr-star').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      toggleBookmark(btn.dataset.term, btn.dataset.desc, btn.dataset.domain, btn.dataset.domainid);
-      // Re-render search results
-      doSearch(q);
-    });
-  });
-}
-
-function highlight(text, q) {
-  var lower = text.toLowerCase();
-  var idx = lower.indexOf(q.toLowerCase());
-  if (idx === -1) return text;
-  return text.slice(0, idx) + '<span class="search-highlight">' + text.slice(idx, idx + q.length) + '</span>' + text.slice(idx + q.length);
-}
-
-// Keyboard navigation
-searchInput.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    searchResults.classList.remove('show');
-    searchInput.blur();
-  }
-});
-
-// ========== DOMAIN CARDS ==========
-var cardsContainer = document.getElementById('domain-cards');
-var panel = document.getElementById('knowledge-panel');
-
-domains.forEach(function(domain) {
-  var card = document.createElement('div');
-  card.className = 'card';
-  card.setAttribute('role', 'listitem');
-  card.setAttribute('tabindex', '0');
-  card.setAttribute('aria-label', domain.title + '，' + domain.count);
-  card.setAttribute('data-id', domain.id);
-  card.innerHTML =
-    '<svg class="card-icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="8" width="36" height="32" rx="4" fill="none" stroke="#2D5A3D" stroke-width="2.5"/><path d="M12 18 H24 M12 26 H36 M12 34 H28" stroke="#D97757" stroke-width="2.5" stroke-linecap="round"/></svg>' +
-    '<span class="card-count">' + domain.count + '</span>' +
-    '<div class="card-title">' + domain.title + '</div>' +
-    '<p>' + domain.desc + '</p>';
-  card.addEventListener('click', function() { showDomain(domain.id, domain); markSelected(card); });
-  card.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      showDomain(domain.id, domain);
-      markSelected(card);
-    }
-  });
-  cardsContainer.appendChild(card);
-});
-
-function markSelected(selectedCard) {
-  document.querySelectorAll('.card').forEach(function(c) { c.classList.remove('selected'); });
-  selectedCard.classList.add('selected');
-}
-
-function showDomain(id, domain) {
-  var termsHtml = domain.terms.map(function(t) {
-    var saved = isBookmarked(t.name) ? ' saved' : '';
-    var star = isBookmarked(t.name) ? '★' : '☆';
-    return '<div class="term"><div class="term-name">' + t.name + '</div><div class="term-desc">' + t.desc + '</div>' +
-      '<button class="term-star' + saved + '" type="button" data-term="' + t.name + '" data-desc="' + t.desc + '" data-domain="' + domain.title + '" data-domainid="' + domain.id + '" aria-label="' + (saved ? '取消收藏' : '收藏') + '">' + star + '</button></div>';
-  }).join('');
-
-  panel.innerHTML =
-    '<div class="panel-header"><h3>' + domain.title + ' · 词条列表</h3>' +
-    '<button class="panel-back" type="button" onclick="closePanel()">← 返回列表</button></div>' +
-    '<p class="intro">' + domain.desc + ' 共 ' + domain.terms.length + ' 条核心词条。</p>' +
-    '<div class="terms" role="list">' + termsHtml + '</div>';
-  panel.classList.add('show');
-  panel.scrollIntoView({behavior:'smooth',block:'start'});
-
-  // Bind star buttons
-  panel.querySelectorAll('.term-star').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var saved = toggleBookmark(btn.dataset.term, btn.dataset.desc, btn.dataset.domain, btn.dataset.domainid);
-      if (saved) {
-        btn.classList.add('saved');
-        btn.textContent = '★';
-      } else {
-        btn.classList.remove('saved');
-        btn.textContent = '☆';
-      }
-    });
-  });
-
-  addHistory(domain);
-  if (typeof window.fsTrack === 'function') {
-    window.fsTrack('knowledge_domain', {domain: id});
-  }
-}
-
-function closePanel() {
-  panel.classList.remove('show');
-  document.querySelectorAll('.card').forEach(function(c) { c.classList.remove('selected'); });
-  document.getElementById('domains-view').scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-// ========== VIEW SWITCHING ==========
-function switchView(view) {
-  currentView = view;
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-  if (view === 'domains') {
-    document.querySelector('[data-view="domains"]').classList.add('active');
-    document.getElementById('domains-view').style.display = '';
-    document.getElementById('bookmarks-view').classList.remove('show');
-    document.getElementById('cta-section').style.display = '';
-  } else {
-    document.querySelector('[data-view="bookmarks"]').classList.add('active');
-    document.getElementById('domains-view').style.display = 'none';
-    document.getElementById('bookmarks-view').classList.add('show');
-    document.getElementById('cta-section').style.display = 'none';
-    renderBookmarks();
-  }
-}
-
-document.querySelectorAll('.tab').forEach(function(tab) {
-  tab.addEventListener('click', function() {
-    switchView(tab.dataset.view);
-  });
-});
-
-// ========== BOOKMARKS VIEW ==========
-function renderBookmarks() {
-  var container = document.getElementById('bookmarks-content');
-  if (state.bookmarks.length === 0) {
-    container.innerHTML = '<div class="bookmarks-empty"><div class="empty-icon">📚</div><p>还没有收藏任何词条。<br>浏览业务域或搜索词条，点击 ☆ 即可收藏。</p></div>';
-    return;
-  }
-  var html = '<div class="bookmarks-grid">';
-  state.bookmarks.slice().reverse().forEach(function(b) {
-    html += '<div class="bookmark-item">' +
-      '<div class="bm-info"><div class="bm-name">' + b.name + '</div>' +
-      '<div class="bm-domain">' + b.domain + '</div>' +
-      '<div class="bm-desc">' + b.desc + '</div></div>' +
-      '<button class="bm-remove" type="button" data-term="' + b.name + '" aria-label="取消收藏">×</button>' +
-      '</div>';
-  });
-  html += '</div>';
-  container.innerHTML = html;
-
-  container.querySelectorAll('.bm-remove').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      toggleBookmark(btn.dataset.term, '', '', '');
-      renderBookmarks();
-      renderBookmarkStars();
-    });
-  });
-}
-
-// ========== INIT ==========
-renderDailyTerm();
-renderHistory();
-renderBookmarkStars();
-document.getElementById('bookmark-count').textContent = state.bookmarks.length;
-
-// Daily save button
-document.getElementById('daily-save-btn').addEventListener('click', function() {
-  var btn = this;
-  var saved = toggleBookmark(btn.dataset.term, btn.dataset.desc, btn.dataset.domain, btn.dataset.domainId);
-  if (saved) {
-    btn.classList.add('saved');
-    btn.textContent = '★ 已收藏';
-  } else {
-    btn.classList.remove('saved');
-    btn.textContent = '☆ 收藏';
-  }
-});
-
-if (typeof window.fsTrack === 'function') {
-  window.fsTrack('knowledge_view');
+function sendFeedback(type){
+  track("feedback",{feedback:type});
+  fetch('https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de',{
+    method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({page:location.pathname,feedback:type,timestamp:new Date().toISOString(),
+      _replyto:'yu-er@coze.email',_subject:'用户反馈'})
+  }).catch(()=>{});
+  document.querySelectorAll('.feedback-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  alert(type==='👍'?'感谢认可！我们会继续努力 💪':'收到！我们会持续改进 🙏');
 }
 </script>
+<div class="page-footer">
+  <div class="copyright">© 2026 风声 · 保留所有权利 · 未经授权禁止转载</div>
+  <div>数据来源：国家标准/行业标准/部门规章/学术研究/贝壳体系</div>
+  <div class="feedback-bar">
+    <span>这个工具对你有帮助吗？</span>
+    <button class="feedback-btn" onclick="sendFeedback('👍')">👍 有帮助</button>
+    <button class="feedback-btn" onclick="sendFeedback('👎')">👎 一般</button>
+  </div>
+</div>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"e02e5265cf6f49c09196db4252d69e7c","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script src="/feedback-widget.js"></script>
 </body>
+<!-- v20260611f -->
 </html>

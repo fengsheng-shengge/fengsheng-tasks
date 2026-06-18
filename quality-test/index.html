@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>风声·六维品质测评</title>
+<meta property="og:title" content="六维品质测评 · 风声">
+<meta property="og:description" content="2分钟测测你的居住品质偏好，发现你真正在意的居住体验。">
+<meta property="og:image" content="https://fengsheng.tech/og-image.png">
+<meta property="og:url" content="https://fengsheng.tech/quality-test/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<!-- 微信分享优化 -->
+<meta name="description" content="2分钟测测你的居住品质偏好，发现你真正在意的居住体验">
+<meta itemprop="name" content="风声·六维品质测评">
+<meta itemprop="description" content="专业房产顾问邀请你做一次品质居住测评">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif; background: linear-gradient(135deg, #3d5a3e 0%, #c46a3a 100%); min-height: 100vh; margin: 0; padding: 0; }
+  .container { background: white; border-radius: 20px; max-width: 420px; width: 100%; margin: 16px auto; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+
+  /* ========== 经纪人设置页（首页） ========== */
+  .broker-setup { padding: 0; }
+  .setup-header { background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; padding: 36px 24px 24px; text-align: center; }
+  .setup-header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .setup-header p { font-size: 13px; opacity: 0.9; line-height: 1.5; }
+  .setup-body { padding: 24px; }
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 13px; color: #555; margin-bottom: 4px; display: block; font-weight: 500; }
+  .form-input { width: 100%; padding: 12px 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.2s; font-family: inherit; }
+  .form-input:focus { border-color: #3d5a3e; box-shadow: 0 0 0 3px rgba(61,90,62,0.15); }
+  .form-hint { font-size: 11px; color: #aaa; margin-top: 2px; }
+
+  /* 生成链接区域 */
+  .share-result { margin-top: 20px; display: none; }
+  .share-result.show { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+  .share-url-box { background: #f8f9ff; border: 2px solid #3d5a3e; border-radius: 12px; padding: 14px; margin-bottom: 14px; position: relative; word-break: break-all; }
+  .share-url-text { font-size: 12px; color: #333; line-height: 1.5; }
+  .share-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .share-btn { flex: 1; min-width: 120px; padding: 11px; border-radius: 10px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+  .share-btn-copy { background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; }
+  .share-btn-copy:hover { opacity: 0.9; transform: translateY(-1px); }
+  .share-btn-preview { background: white; color: #3d5a3e; border: 2px solid #3d5a3e; }
+  .share-btn-preview:hover { background: #f0f5ee; }
+  .share-tips { margin-top: 16px; background: #fff8e1; border-radius: 10px; padding: 14px; }
+  .share-tips h4 { font-size: 13px; color: #f57c00; margin-bottom: 6px; }
+  .share-tips p { font-size: 12px; color: #888; line-height: 1.6; }
+  .share-success-toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0.8); background: rgba(0,0,0,0.75); color: white; padding: 14px 28px; border-radius: 12px; font-size: 15px; z-index: 9999; opacity: 0; pointer-events: none; transition: all 0.25s ease; }
+  .share-success-toast.show { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+
+  /* ========== 客户入口页（带经纪人信息） ========== */
+  .client-entry { padding: 0; }
+  .entry-header { background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; padding: 28px 24px 20px; text-align: center; position: relative; }
+  .entry-header h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .entry-header p { font-size: 12px; opacity: 0.9; }
+  .from-agent-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 6px 14px; margin-top: 12px; font-size: 12px; backdrop-filter: blur(4px); }
+  .from-agent-avatar { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .entry-body { padding: 24px; }
+  .start-btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 14px; background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; font-size: 17px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(61,90,62,0.35); }
+  .start-btn:active { transform: scale(0.98); }
+  .entry-info { text-align: center; font-size: 12px; color: #aaa; }
+  .entry-info span { color: #3d5a3e; font-weight: 600; }
+
+  /* ========== 题目通用样式 ========== */
+  .step { padding: 32px 24px; }
+  .header { background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; padding: 28px 24px 18px; text-align: center; }
+  .header h1 { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
+  .header p { font-size: 12px; opacity: 0.85; }
+  .step-title { font-size: 16px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; line-height: 1.5; }
+  .step-subtitle { font-size: 12px; color: #888; margin-bottom: 18px; line-height: 1.4; }
+  .progress-bar { height: 4px; background: #eee; border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #3d5a3e, #c46a3a); border-radius: 2px; transition: width 0.4s ease; }
+  .option-btn { display: block; width: 100%; padding: 13px 15px; margin-bottom: 9px; border: 2px solid #e8e8e8; border-radius: 12px; background: white; text-align: left; font-size: 14px; color: #333; cursor: pointer; transition: all 0.2s; line-height: 1.5; }
+  .option-btn:hover { border-color: #3d5a3e; background: #f0f5ee; }
+  .option-btn.selected { border-color: #3d5a3e; background: #f0f5ee; box-shadow: 0 2px 8px rgba(61,90,62,0.15); }
+  .checkbox-btn { display: flex; align-items: center; padding: 11px 13px; border: 2px solid #e8e8e8; border-radius: 10px; cursor: pointer; transition: all 0.2s; font-size: 14px; color: #333; margin-bottom: 7px; }
+  .checkbox-btn:hover { border-color: #3d5a3e; background: #f0f5ee; }
+  .checkbox-btn.checked { border-color: #3d5a3e; background: #f0f5ee; }
+  .checkbox-icon { width: 20px; height: 20px; border: 2px solid #ccc; border-radius: 4px; margin-right: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; font-size: 12px; }
+  .checkbox-btn.checked .checkbox-icon { background: #3d5a3e; border-color: #3d5a3e; color: white; }
+  .next-btn { display: block; width: 100%; padding: 14px; margin-top: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .next-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .next-btn:not(:disabled):hover { opacity: 0.9; }
+  .next-btn-red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
+  /* ========== 报告页 ========== */
+  .report-page { padding: 0; }
+  .report-header { background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; padding: 28px 24px; text-align: center; }
+  .report-header h2 { font-size: 19px; margin-bottom: 2px; }
+  .report-header .subtitle { font-size: 12px; opacity: 0.85; }
+  .score-display { font-size: 52px; font-weight: 800; margin: 14px 0 2px; }
+  .score-label { font-size: 13px; opacity: 0.85; }
+  .report-body { padding: 20px; }
+  .radar-section { text-align: center; margin-bottom: 20px; }
+  .radar-section h3 { font-size: 14px; color: #333; margin-bottom: 10px; }
+  .radar-svg { width: 220px; height: 220px; }
+  .profile-card { background: linear-gradient(135deg, #f8f9ff, #f0f5ee); border-radius: 12px; padding: 16px; margin-bottom: 16px; border-left: 4px solid #3d5a3e; }
+  .profile-card h4 { font-size: 14px; color: #333; margin-bottom: 5px; }
+  .profile-card p { font-size: 13px; color: #666; line-height: 1.55; }
+  .dim-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+  .dim-item:last-child { border-bottom: none; }
+  .dim-dot { width: 9px; height: 9px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
+  .dim-name { font-size: 13px; color: #333; width: 54px; flex-shrink: 0; }
+  .dim-bar-wrap { flex: 1; height: 7px; background: #f0f0f0; border-radius: 3.5px; margin: 0 10px; overflow: hidden; }
+  .dim-bar { height: 100%; border-radius: 3.5px; transition: width 0.6s ease; }
+  .dim-score { font-size: 12px; font-weight: 600; color: #333; width: 30px; text-align: right; }
+  .redline-box { background: linear-gradient(135deg, #fff5f5, #ffebee); border: 2px solid #ffcdd2; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .redline-box h4 { font-size: 14px; color: #c62828; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+  .redline-tag { display: inline-block; padding: 5px 10px; background: #ffebee; color: #c62828; border-radius: 16px; font-size: 12px; margin: 3px 3px 3px 0; border: 1px dashed #ef9a9a; }
+  .suggestion-box { background: #f8f9ff; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .suggestion-box h4 { font-size: 14px; color: #333; margin-bottom: 10px; }
+  .sug-item { display: flex; align-items: flex-start; margin-bottom: 8px; }
+  .sug-item:last-child { margin-bottom: 0; }
+  .sug-icon { width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; color: white; }
+  .sug-text { font-size: 12.5px; color: #555; line-height: 1.5; }
+  .agent-contact-box { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 12px; padding: 18px; margin-bottom: 16px; text-align: center; }
+  .agent-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; font-size: 21px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; }
+  .agent-name { font-size: 17px; font-weight: 700; color: #1a237e; margin-bottom: 2px; }
+  .agent-title { font-size: 11.5px; color: #3949ab; margin-bottom: 12px; }
+  .agent-info-row { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 6px; font-size: 13px; color: #1565c0; }
+  .agent-info-icon { width: 20px; height: 20px; border-radius: 5px; background: white; display: flex; align-items: center; justify-content: center; font-size: 11px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .cta-box { background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 12px; padding: 16px; text-align: center; }
+  .cta-box p { font-size: 13.5px; color: #e65100; font-weight: 500; margin-bottom: 10px; }
+  .cta-btn { display: inline-block; padding: 10px 26px; background: #ff8f00; color: white; border-radius: 20px; text-decoration: none; font-size: 14px; font-weight: 600; }
+  .restart-btn { display: block; width: 100%; padding: 11px; margin-top: 14px; border: 2px solid #ddd; border-radius: 12px; background: white; color: #666; font-size: 13px; cursor: pointer; }
+  .restart-btn:hover { border-color: #3d5a3e; color: #3d5a3e; }
+  .hidden { display: none !important; }
+  .question-counter { font-size: 11.5px; color: #999; margin-bottom: 14px; }
+  .redline-question { background: #fff5f5; border-left: 3px solid #e74c3c; padding: 14px; border-radius: 0 12px 12px 0; margin-bottom: 14px; }
+  .redline-question .step-title { color: #c62828; font-size: 15px; }
+
+  /* 分享提示浮层 */
+  .share-guide-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9998; display: none; align-items: flex-start; justify-content: flex-end; padding: 20px; }
+  .share-guide-overlay.show { display: flex; }
+  .share-guide-bubble { background: white; border-radius: 14px; padding: 18px 20px; margin-top: 30px; margin-right: 10px; max-width: 280px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+  .share-guide-bubble h4 { font-size: 15px; color: #333; margin-bottom: 6px; }
+  .share-guide-bubble p { font-size: 13px; color: #666; line-height: 1.5; }
+
+  /* ========== 身份识别 & 使用统计 ========== */
+  .remember-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; margin-bottom: 6px; font-size: 13px; color: #555; cursor: pointer; }
+  .remember-row input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+  .welcome-back { background: linear-gradient(135deg,#e8f5e9,#c8e6c9); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: none; align-items: center; gap: 10px; }
+  .welcome-back.show { display: flex; }
+  .welcome-back-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#3d5a3e,#c46a3a); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; flex-shrink: 0; }
+  .welcome-back-text { font-size: 13px; color: #2e7d32; line-height: 1.5; }
+  .welcome-back-change { font-size: 12px; color: #666; margin-left: auto; white-space: nowrap; cursor: pointer; text-decoration: underline; flex-shrink: 0; }
+  .stats-box { background: #f8f9ff; border-radius: 12px; padding: 16px; margin-top: 16px; display: none; }
+  .stats-box.show { display: block; }
+  .stats-box h4 { font-size: 14px; color: #333; margin-bottom: 10px; }
+  .stats-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #e8e8f0; font-size: 13px; color: #555; }
+  .stats-row:last-child { border-bottom: none; }
+  .stats-val { font-weight: 700; color: #3d5a3e; }
+</style>
+<!-- 全站数据追踪器 v1.0 -->
+<script src="/tracker.js" async></script>
+</head>
+<body>
+<!-- 风声统一导航栏 -->
+<nav class="fs-nav">
+  <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
+  <div class="fs-nav-links">
+    <a href="/">首页</a>
+    <a href="/quality-test/">品质测评</a>
+    <a href="/care-test/">关怀测评</a>
+    <a href="/s1-report/">带看报告</a>
+    <a href="/breeder">培养师</a>
+  </div>
+  <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
+</nav>
+<style>
+.fs-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 52px; background: #fff; border-bottom: 1px solid rgba(80,90,70,.09); position: sticky; top: 0; z-index: 100; }
+.fs-nav-brand { font-size: 16px; font-weight: 700; color: #3d5a3e; text-decoration: none; display: flex; align-items: center; gap: 4px; }
+.fs-nav-links { display: flex; gap: 6px; }
+.fs-nav-links a { padding: 5px 10px; font-size: 12px; color: #555; text-decoration: none; border-radius: 6px; transition: all .15s; white-space: nowrap; }
+.fs-nav-links a:hover { background: rgba(61,90,62,.06); color: #3d5a3e; }
+.fs-nav-menu { display: none; background: none; border: none; font-size: 20px; cursor: pointer; color: #3d5a3e; padding: 8px; }
+@media (max-width: 767px) {
+  .fs-nav-links { display: none; position: absolute; top: 52px; left: 0; right: 0; background: #fff; flex-direction: column; padding: 10px; border-bottom: 1px solid rgba(80,90,70,.09); box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+  .fs-nav.open .fs-nav-links { display: flex; }
+  .fs-nav-menu { display: block; }
+}
+</style>
+
+<div class="container" id="app">
+
+  <!-- ==================== PAGE A: 经纪人设置页 ==================== -->
+  <div class="broker-setup" id="page-setup">
+    <div class="setup-header">
+      <h1>🏠 风声·六维品质测评</h1>
+      <p>填写你的信息，生成专属分享链接<br>发给客户，让客户自己完成测评，报告自动带你的联系方式</p>
+    </div>
+    <div class="setup-body">
+    <!-- 欢迎回来横幅（身份已记住时显示） -->
+    <div class="welcome-back" id="welcome-back">
+      <div class="welcome-back-avatar" id="wb-avatar">?</div>
+      <div class="welcome-back-text">欢迎回来，<strong id="wb-name"></strong>！已自动填充你的信息<br><span style="font-size:11px;color:#888;">身份：<span id="wb-phone"></span> · <span id="wb-company"></span></span></div>
+      <div class="welcome-back-change" onclick="forgetIdentity()">切换身份</div>
+    </div>
+
+      <div class="form-group">
+        <label class="form-label">你的名字 *</label>
+        <input type="text" class="form-input" id="setup-name" placeholder="例如：张经理 / 李姐" maxlength="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label">手机号 *</label>
+        <input type="tel" class="form-input" id="setup-phone" placeholder="客户可以直接拨打">
+      </div>
+      <div class="form-group">
+        <label class="form-label">微信号</label>
+        <input type="text" class="form-input" id="setup-wechat" placeholder="方便客户加微信">
+        <div class="form-hint">客户可复制微信号添加</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">一句话介绍</label>
+        <input type="text" class="form-input" id="setup-bio" placeholder='例如："从业8年，服务过200+家庭"' maxlength="30">
+      </div>
+      <div class="form-group">
+        <label class="form-label">门店名称</label>
+        <input type="text" class="form-input" id="setup-company" placeholder="增加信任背书">
+      </div>
+
+      <!-- 记住我 -->
+      <label class="remember-row">
+        <input type="checkbox" id="remember-me" checked> 记住我的身份（下次自动填充）
+      </label>
+
+      <button class="start-btn" style="margin-top:8px;border-radius:12px;padding:15px;font-size:16px;" onclick="generateShareLink()">
+        🔗 生成我的专属分享链接
+      </button>
+
+      <!-- 生成的链接和按钮 -->
+      <div class="share-result" id="share-result">
+        <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:10px;text-align:center;">📋 你的专属链接（点击复制）</div>
+        <div class="share-url-box" onclick="copyLink()" style="cursor:pointer;">
+          <div class="share-url-text" id="share-url-text"></div>
+          <div style="font-size:11px;color:#999;margin-top:6px;">👆 点击上方链接即可复制</div>
+        </div>
+        <div class="share-btns">
+          <button class="share-btn share-btn-copy" onclick="copyLink()">📋 复制链接</button>
+          <button class="share-btn share-btn-preview" onclick="previewAsClient()">👁️ 预览客户视角</button>
+        </div>
+        <div class="share-tips">
+          <h4>💡 如何使用？</h4>
+          <p>
+            ① 复制上面的链接<br>
+            ② 发到微信群、朋友圈、或直接发给客户<br>
+            ③ 客户点开就能答题，完成后报告自动带你的联系卡<br><br>
+            ✅ 微信、QQ、短信、任何平台都能发<br>
+            ✅ 每个客户的报告都有你的联系方式<br>
+            ✅ 客户答完后可以直接打电话给你
+          </p>
+        </div>
+      </div>
+      <!-- 使用统计 -->
+      <div class="stats-box" id="stats-box">
+        <h4>📈 使用统计</h4>
+        <div class="stats-row"><span>累计生成链接</span><span class="stats-val" id="stats-links">0</span></div>
+        <div class="stats-row"><span>累计完成测评</span><span class="stats-val" id="stats-completions">0</span></div>
+        <div class="stats-row"><span>本月生成链接</span><span class="stats-val" id="stats-month-links">0</span></div>
+        <div class="stats-row"><span>本月完成测评</span><span class="stats-val" id="stats-month-completions">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PAGE B: 客户入口页 ==================== -->
+  <div class="client-entry hidden" id="page-entry">
+    <div class="entry-header">
+      <h1>🏠 风声·六维品质测评</h1>
+      <p>2分钟搞清你的居住品质偏好</p>
+      <div class="from-agent-badge" id="from-agent-badge">
+        <div class="from-agent-avatar" id="entry-avatar">?</div>
+        <span id="entry-from-text"></span>
+      </div>
+    </div>
+    <div class="entry-body">
+      <button class="start-btn" onclick="startAssessment()">开始测评 →</button>
+      <p class="entry-info">共 <span>18+4</span> 题 · 约 <span>2</span> 分钟 · 免费</p>
+      <div style="margin-top:20px;background:#f8f9ff;border-radius:12px;padding:14px;">
+        <p style="font-size:12px;color:#666;line-height:1.6;">✨ 测评后你将获得：<br>
+          📊 六维雷达图 + 居住画像<br>
+          🖼️ 你的理想居住画面分析<br>
+          🚫 帮你避开不喜欢的房子<br>
+          💡 TOP3 改善建议</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 场景选择 ==================== -->
+  <div class="step hidden" id="step-scenario">
+    <div class="header">
+      <h1>🏠 六维品质测评</h1>
+      <p>了解你的居住品质认知</p>
+    </div>
+    <div style="padding: 24px;">
+      <div class="step-title">你目前是哪种情况？</div>
+      <div class="step-subtitle">不同场景，六维权重不同，结果更准</div>
+      <button class="option-btn" onclick="selectScenario('rent')">🏙️ <b>租房</b><br><small style="color:#999">目前在租房，想换更好的</small></button>
+      <button class="option-btn" onclick="selectScenario('first')">🔑 <b>首次购房</b><br><small style="color:#999">第一次买房，不太清楚要什么</small></button>
+      <button class="option-btn" onclick="selectScenario('improve')">🏡 <b>改善置换</b><br><small style="color:#999">已有住房，想换更好的</small></button>
+      <button class="option-btn" onclick="selectScenario('invest')">💰 <b>投资购房</b><br><small style="color:#999">主要考虑保值增值</small></button>
+      <button class="option-btn" onclick="selectScenario('elderly')">👴 <b>养老居住</b><br><small style="color:#999">为父母或自己养老准备</small></button>
+      <button class="option-btn" onclick="selectScenario('single')">✨ <b>单身独居</b><br><small style="color:#999">一个人住，注重个人感受</small></button>
+    </div>
+  </div>
+
+  <!-- ==================== 题目 ==================== -->
+  <div class="step hidden" id="step-question">
+    <div class="header">
+      <h1>🏠 六维品质测评</h1>
+      <p id="header-subtitle">了解你的居住品质认知</p>
+    </div>
+    <div style="padding: 24px;">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="question-counter" id="question-counter"></div>
+      <div class="step-title" id="q-title"></div>
+      <div class="step-subtitle" id="q-subtitle"></div>
+      <div id="q-options"></div>
+      <button class="next-btn" id="next-btn" disabled onclick="nextQuestion()">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- ==================== 居住画面感 ==================== -->
+  <div class="step hidden" id="step-scene-desc">
+    <div class="header">
+      <h1>🖼️ 你的理想居住画面</h1>
+      <p>帮我们更懂你的生活偏好</p>
+    </div>
+    <div style="padding: 24px;">
+      <div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>
+      <div class="question-counter">生活偏好 · 第19/22题</div>
+      <div class="step-title">想象一下：周末下午你在家里最舒服的状态是什么？</div>
+      <div class="step-subtitle">这个答案能帮我们理解你最在意的居住体验</div>
+      <div id="scene-opts">
+        <button class="option-btn" onclick="selectScene(this,'sofa')">
+          🛋️ <b>窝在客厅沙发里</b><br><small style="color:#999">看电视、听音乐、或者发发呆</small>
+        </button>
+        <button class="option-btn" onclick="selectScene(this,'kitchen')">
+          🍳 <b>在厨房里做饭</b><br><small style="color:#999">干净整洁的台面，阳光照进来，做顿好吃的</small>
+        </button>
+        <button class="option-btn" onclick="selectScene(this,'balcony')">
+          🌿 <b>坐在阳台或飘窗上</b><br><small style="color:#999">喝杯茶/咖啡，看看风景，晒太阳</small>
+        </button>
+        <button class="option-btn" onclick="selectScene(this,'bedroom')">
+          📚 <b>窝在卧室床上</b><br><small style="color:#999">看书、刷手机、追剧，关上门就是自己的小世界</small>
+        </button>
+        <button class="option-btn" onclick="selectScene(this,'dining')">
+          👨‍👩‍👧‍👦 <b>和家人们一起在餐厅</b><br><small style="color:#999">吃饭聊天，孩子跑来跑去，热闹又温馨</small>
+        </button>
+        <button class="option-btn" onclick="selectScene(this,'work')">
+          💻 <b>在家有个工作角落</b><br><small style="color:#999">书桌前专注做事，累了抬头看看窗外</small>
+        </button>
+      </div>
+      <button class="next-btn" id="scene-next-btn" disabled onclick="goToRedline()">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- ==================== 最忌讳（红线） ==================== -->
+  <div class="step hidden" id="step-redline">
+    <div class="header" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">
+      <h1>🚫 你的居住底线</h1>
+      <p>了解你绝对不能接受的是什么</p>
+    </div>
+    <div style="padding: 24px;">
+      <div class="progress-bar"><div class="progress-fill" style="width:97%"></div></div>
+      <div class="question-counter" style="color:#e74c3c;font-weight:600;">⚠️ 关键信息 · 第20-22题</div>
+      <div class="redline-question">
+        <div class="step-title" style="margin-bottom:8px">选房时，以下哪些是你<strong>绝对不能接受</strong>的？（多选）</div>
+        <div class="step-subtitle" style="color:#c62828">这些是硬性排除项，我们会帮你避开</div>
+        <div id="redline-opts"></div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="step-title">除了以上选项，还有什么特别在意或不能接受的？</div>
+        <div class="step-subtitle">比如：离地铁超过500米不行 / 楼层不能太高</div>
+        <textarea id="redline-extra" placeholder="可以写具体要求，也可以留空跳过..." rows="3"
+          style="width:100%;padding:12px;border:2px solid #e8e8e8;border-radius:10px;font-size:14px;resize:none;font-family:inherit;"></textarea>
+      </div>
+      <button class="next-btn next-btn-red" onclick="goToReport()">查看报告 →</button>
+    </div>
+  </div>
+
+  <!-- ==================== 报告页 ==================== -->
+  <div class="report-page hidden" id="step-report">
+    <div class="report-header">
+      <h2>📊 你的居住品质报告</h2>
+      <div class="subtitle" id="report-scenario"></div>
+      <div class="score-display" id="report-score">--</div>
+      <div class="score-label" id="report-grade">评估中...</div>
+    </div>
+    <div class="report-body">
+      <div class="radar-section"><h3>六维雷达图</h3><svg class="radar-svg" id="radar-svg" viewBox="0 0 240 240"></svg></div>
+      <div class="profile-card"><h4>🏷️ 居住画像</h4><p id="profile-text">加载中...</p></div>
+      <div class="profile-card" style="border-left-color:#ff8f00;background:linear-gradient(135deg,#fff8e1,#ffecb3)" id="scene-card">
+        <h4 style="color:#e65100">🖼️ 理想居住画面</h4><p id="scene-text" style="color:#bf360c"></p>
+      </div>
+      <div id="dim-list" style="margin-bottom:16px;"></div>
+      <div class="redline-box" id="redline-result"><h4>🚫 绝对不能接受的</h4><div id="redline-tags"></div></div>
+      <div class="suggestion-box"><h4>💡 TOP 3 改善建议</h4><div id="suggestions"></div></div>
+      <div class="agent-contact-box" id="agent-contact">
+        <div class="agent-avatar" id="agent-avatar-text">?</div>
+        <div class="agent-name" id="display-agent-name">--</div>
+        <div class="agent-title" id="display-agent-bio"></div>
+        <div class="agent-info-row" id="display-phone-row"><span class="agent-info-icon">📱</span><span id="display-phone"></span></div>
+        <div class="agent-info-row" id="display-wechat-row" style="display:none"><span class="agent-info-icon">💬</span><span>微信：<span id="display-wechat"></span></span></div>
+        <div class="agent-info-row" id="display-company-row" style="display:none"><span class="agent-info-icon">🏢</span><span id="display-company"></span></div>
+      </div>
+      <div class="cta-box" id="cta-box">
+        <p>🎯 想看看符合你标准的房子吗？</p>
+        <a class="cta-btn" href="#" id="cta-call-btn">立即咨询 →</a>
+      </div>
+      <button class="restart-btn" onclick="restart()">🔄 重新测评</button>
+      <button class="restart-btn" style="border-color:#3d5a3e;color:#3d5a3e;margin-top:8px;" onclick="shareReport()">📤 转发这份报告</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="share-success-toast" id="toast"></div>
+
+<script>
+// ============ 18道维度题目 ============
+const QUESTIONS=[
+  // ---- 安全 3题 ----
+  {id:'s1',dim:'安全',dimColor:'#e74c3c',title:'你目前住的地方，晚上一个人回家敢走楼道吗？',subtitle:'安全意识是最基础的居住需求',type:'radio',
+    options:[{text:'敢，楼道灯亮、监控清晰，很有安全感',score:5},{text:'还可以，但有些角落还是有点怕',score:3},{text:'不太敢，尽量早点回家或叫人接送',score:1}]},
+  {id:'s2',dim:'安全',dimColor:'#e74c3c',title:'回想近5年，有没有因为房子的安全因素搬过家？',subtitle:'真实经历比理论认知更能说明问题',type:'radio',
+    options:[{text:'有，安全出过问题就果断搬了',score:5},{text:'想过但没搬，忍了',score:3},{text:'没遇到过，不太关注这方面',score:1}]},
+  {id:'s3',dim:'安全',dimColor:'#e74c3c',title:'选房时你对「安全」愿意投入多少？',subtitle:'安全是花钱就能解决的，还是必须有的',type:'radio',
+    options:[{text:'宁可多花10%以上预算，安全第一',score:5},{text:'会在预算内优先考虑安全配置',score:3},{text:'差不多就行，不是决定因素',score:1}]},
+  // ---- 健康 3题 ----
+  {id:'h1',dim:'健康',dimColor:'#2ecc71',title:'回想近5年住过的地方，有没有哪个让你觉得"身体变好了或变差了"？',subtitle:'空气、噪音、采光真的会影响健康',type:'radio',
+    options:[{text:'明显感觉！搬家后睡眠和精神状态完全不同',score:5},{text:'有一点感觉，但不确定是不是房子的问题',score:3},{text:'没感觉，身体和房子关系不大',score:1}]},
+  {id:'h2',dim:'健康',dimColor:'#2ecc71',title:'以下健康相关因素，你最在意哪些？（最多选3项）',subtitle:'空气、噪音、采光、水质...',type:'checkbox',max:3,
+    options:[{text:'空气质量（新风/无异味/低甲醛）',score:5},{text:'噪音控制（临街/楼上/隔音差）',score:5},{text:'自然采光（朝向/无遮挡）',score:5},{text:'水质和饮水安全',score:3},{text:'温湿度调节能力',score:3}]},
+  {id:'h3',dim:'健康',dimColor:'#2ecc71',title:'家里有没有成员对居住环境比较敏感？',subtitle:'老人、小孩、过敏体质等',type:'radio',
+    options:[{text:'有，老人或小孩对环境很敏感',score:5},{text:'有轻微过敏或呼吸道敏感',score:3},{text:'没有特殊需求',score:1}]},
+  // ---- 整洁 3题 ----
+  {id:'t1',dim:'整洁',dimColor:'#3498db',title:'你现在的住处，会主动邀请朋友来做客吗？',subtitle:'整洁不只是卫生，更是面子+归属感',type:'radio',
+    options:[{text:'经常邀请，家里随时都能见人',score:5},{text:'偶尔邀请，但要提前收拾很久',score:3},{text:'很少邀请，不想让人看到家里',score:1}]},
+  {id:'t2',dim:'整洁',dimColor:'#3498db',title:'你理想中家里的收纳空间应该是什么样的？',subtitle:'东西有地方放=整洁的基础',type:'radio',
+    options:[{text:'越多越好！玄关柜/衣帽间/储物间都要有',score:5},{text:'够用就行，不囤太多东西',score:3},{text:'不太在意，乱一点也有生活感',score:1}]},
+  {id:'t3',dim:'整洁',dimColor:'#3498db',title:'你觉得"干净整洁的家"，最重要的三个空间是？（多选3项）',subtitle:'不同人的整洁优先级不同',type:'checkbox',max:3,
+    options:[{text:'客厅——进门的第一印象',score:5},{text:'厨房——做饭的地方要干净',score:5},{text:'卫生间——每天用很多次',score:4},{text:'卧室——私人空间的舒适度',score:4},{text:'阳台/玄关——细节见品味',score:3}]},
+  // ---- 温暖 3题 ----
+  {id:'w1',dim:'温暖',dimColor:'#e67e22',title:'搬到现在这个地方，多久才有了"到家了"的感觉？',subtitle:'归属感是最温暖的居住体验',type:'radio',
+    options:[{text:'一搬进来就有，很安心',score:5},{text:'住了1-2个月慢慢有了',score:3},{text:'住了很久还觉得只是个睡觉的地方',score:1}]},
+  {id:'w2',dim:'温暖',dimColor:'#e67e22',title:'你希望家里多一些哪种温暖的感觉？',subtitle:'温暖是主观感受，每个人的定义都不同',type:'radio',
+    options:[{text:'☀️ 阳光洒进来的暖洋洋',score:5},{text:'👨‍👩‍👧 家人在身边的热闹',score:5},{text:'🎨 自己布置的温馨质感',score:4},{text:'🐱 宠物陪伴的安心',score:4}]},
+  {id:'w3',dim:'温暖',dimColor:'#e67e22',title:'你选房时会特意确认哪些"温暖指标"？（多选2项）',subtitle:'哪些条件让你觉得"这是个有温度的房子"',type:'checkbox',max:2,
+    options:[{text:'朝南日照充足',score:5},{text:'小区邻里氛围好',score:5},{text:'户型方正通透',score:4},{text:'周边生活配套齐全',score:4}]},
+  // ---- 美观 3题 ----
+  {id:'a1',dim:'美观',dimColor:'#9b59b6',title:'你选住处时，会为了"看着舒服"多花多少钱？',subtitle:'审美溢价意愿反映重视程度',type:'radio',
+    options:[{text:'愿意多花10%以上，好看很重要',score:5},{text:'多花5%以内可以考虑',score:3},{text:'实用为主，好看是加分项不是必需',score:1}]},
+  {id:'a2',dim:'美观',dimColor:'#9b59b6',title:'你看房时第一眼会先看哪里？',subtitle:'第一眼反映审美优先级',type:'radio',
+    options:[{text:'整体色调和风格是否统一协调',score:5},{text:'采光和视野是否开阔明亮',score:5},{text:'空间布局是否合理好用',score:4},{text:'装修细节和材质质感',score:4}]},
+  {id:'a3',dim:'美观',dimColor:'#9b59b6',title:'如果只能改造一个地方让它更好看，你会选？',subtitle:'测审美偏好的具体指向',type:'radio',
+    options:[{text:'客厅——这是家的门面',score:5},{text:'卧室——每天待最久的地方',score:4},{text:'厨房卫生间——现代感的体现',score:4},{text:'阳台/户外空间——休闲放松区',score:3}]},
+  // ---- 惬意 3题 ----
+  {id:'c1',dim:'惬意',dimColor:'#1abc9c',title:'你理想中下班回到家最舒服的状态是什么？',subtitle:'惬意是居住品质的终极目标',type:'radio',
+    options:[{text:'🛋️ 窝沙发听音乐/看剧/发呆',score:5},{text:'🌿 在阳台喝茶/咖啡看风景',score:5},{text:'🍳 做一顿喜欢的饭菜',score:4},{text:'📖 看书/玩游戏/做自己的事',score:4}]},
+  {id:'c2',dim:'惬意',dimColor:'#1abc9c',title:'你选房时会不会专门考虑"休闲空间"？',subtitle:'阳台/露台/大飘窗/独立书房',type:'radio',
+    options:[{text:'必须有！没休闲空间不考虑',score:5},{text:'有最好，没有也能接受',score:3},{text:'在家时间不多，不需要',score:1}]},
+  {id:'c3',dim:'惬意',dimColor:'#1abc9c',title:'以下哪个"惬意元素"对你最重要？（多选2项）',subtitle:'什么让你觉得"住着真舒服"',type:'checkbox',max:2,
+    options:[{text:'安静——听不到外面噪音',score:5},{text:'视野好——能看到风景',score:5},{text:'私密性——不被打扰',score:4},{text:'通风透气——空气新鲜',score:4}]},
+];
+
+// ============ 红线选项 ============
+const REDLINE_OPTIONS=[
+  {tag:'临街噪音',icon:'🔊'}, {tag:'采光不好',icon:'☁️'}, {tag:'无电梯/楼层高',icon:'🪜'},
+  {tag:'周边杂乱脏乱',icon:'🗑️'}, {tag:'离地铁远',icon:'🚇'}, {tag:'物业差劲',icon:'👮'},
+  {tag:'户型奇葩不通透',icon:'📐'}, {tag:'停车位紧张',icon:'🅿️'}, {tag:'邻居素质差',icon:'👤'},
+  {tag:'学区不好/无学校',icon:'🎒'}, {tag:'房龄太老',icon:'🏚️'}, {tag:'价格超预算',icon:'💸'},
+];
+
+// ============ 场景画面映射 ============
+const SCENE_MAP={
+  sofa:'喜欢窝在客厅沙发里放松，享受家庭影音娱乐时光，需要一个舒适的客厅空间',
+  kitchen:'享受下厨的乐趣，喜欢干净明亮的厨房，烹饪是生活中重要的一部分',
+  balcony:'热爱阳台/飘窗上的悠闲时刻，看重景观和自然光线，需要一处安静的独处空间',
+  bedroom:'卧室是个人最重要的领地，注重私密性和舒适度，需要能让人彻底放松的休息环境',
+  dining:'非常重视家人共处的时光，餐厅是家的核心，热闹温馨的家庭氛围最重要',
+  work:'需要一个专注的工作/学习角落，居家办公是日常，书房或工作区的功能性很重要',
+};
+
+// ============ 全局状态 ============
+let currentScenario='',currentQ=0,answers={},checkboxStates={};
+let selectedScene='',selectedRedlines=[];
+const SCENARIO_NAMES={rent:'租房',first:'首次购房',improve:'改善置换',invest:'投资购房',elderly:'养老居住',single:'单身独居'};
+const SCENARIO_WEIGHTS={
+  rent:{安全:1.0,健康:1.0,整洁:1.2,温暖:1.0,美观:0.9,惬意:0.9},
+  first:{安全:1.2,健康:1.2,整洁:1.0,温暖:1.0,美观:0.9,惬意:0.8},
+  improve:{安全:1.0,健康:1.2,整洁:1.0,温暖:1.2,美观:1.1,惬意:1.2},
+  invest:{安全:1.2,健康:0.8,整洁:0.9,温暖:0.7,美观:1.0,惬意:0.7},
+  elderly:{安全:1.5,健康:1.5,整洁:1.0,温暖:1.2,美观:0.8,惬意:1.0},
+  single:{安全:0.8,健康:1.0,整洁:1.2,温暖:0.8,美观:1.2,惬意:1.3},
+};
+
+// ============ URL 参数解析 ============
+function getAgentFromURL(){
+  const p=new URLSearchParams(window.location.search);
+  return {
+    name:p.get('agent')||'',phone:p.get('phone')||'',
+    wechat:p.get('wechat')||'',bio:p.get('bio')||'',
+    company:p.get('company')||'',
+  };
+}
+function hasAgentParams(){
+  const p=new URLSearchParams(window.location.search);
+  return !!p.get('agent')&&!!p.get('phone');
+}
+
+// ============ 页面初始化 ============
+(function init(){
+  if(hasAgentParams()){
+    // 有参数 = 客户模式 → 显示客户入口页
+    window.agentInfo=getAgentFromURL();
+    showClientEntry();
+  }else{
+    // 无参数 = 经纪人模式 → 显示设置页
+    showBrokerSetup();
+  }
+})();
+
+// ============ 经纪人模式 ============
+function showBrokerSetup(){
+  document.getElementById('page-setup').classList.remove('hidden');
+}
+
+function generateShareLink(){
+  const name=document.getElementById('setup-name').value.trim();
+  const phone=document.getElementById('setup-phone').value.trim();
+  if(!name||!phone){ showToast('请至少填写名字和手机号'); return; }
+
+  const wechat=document.getElementById('setup-wechat').value.trim();
+  const bio=document.getElementById('setup-bio').value.trim();
+  const company=document.getElementById('setup-company').value.trim();
+
+  // 构建当前URL作为基础，加上参数
+  let baseUrl=window.location.href.split('?')[0];
+  // 如果是file://协议，保持原样；如果是http，使用当前域名
+  const params=new URLSearchParams();
+  params.set('agent',name);
+  params.set('phone',phone);
+  if(wechat) params.set('wechat',wechat);
+  if(bio) params.set('bio',bio);
+  if(company) params.set('company',company);
+
+  const shareUrl=baseUrl+'?'+params.toString();
+
+  // 保存到全局供后续报告使用
+  window.agentInfo={name,phone,wechat,bio,company};
+
+  // 显示结果
+  document.getElementById('share-url-text').textContent=shareUrl;
+  document.getElementById('share-result').classList.add('show');
+
+  // 自动滚动到底部
+  setTimeout(()=>document.getElementById('share-result').scrollIntoView({behavior:'smooth'}),100);
+}
+
+function copyLink(){
+  const url=document.getElementById('share-url-text').textContent;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(()=>showToast('✅ 链接已复制！快去发给客户吧'));
+  } else {
+    // fallback for non-secure contexts (file://)
+    const ta=document.createElement('textarea');
+    ta.value=url; ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ 链接已复制！快去发给客户吧');
+  }
+}
+
+function previewAsClient(){
+  // 用当前生成的链接在新标签打开（模拟客户视角）
+  const url=document.getElementById('share-url-text').textContent;
+  window.open(url,'_blank');
+}
+
+// ============ 客户模式 ============
+function showClientEntry(){
+  const a=window.agentInfo;
+  document.getElementById('page-setup').classList.add('hidden');
+  document.getElementById('page-entry').classList.remove('hidden');
+  document.getElementById('entry-avatar').textContent=a.name.charAt(0);
+  document.getElementById('entry-from-text').textContent=
+    `${a.name} 邀请你做一次品质居住测评`;
+  if(a.company){
+    document.getElementById('entry-from-text').textContent+=` · ${a.company}`;
+  }
+}
+
+function startAssessment(){
+  document.getElementById('page-entry').classList.add('hidden');
+  document.getElementById('step-scenario').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ============ 题目逻辑 ============
+function selectScenario(s){
+  currentScenario=s; currentQ=0; answers={}; checkboxStates={};
+  selectedScene=''; selectedRedlines=[];
+  document.getElementById('step-scenario').classList.add('hidden');
+  document.getElementById('step-question').classList.remove('hidden');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q=QUESTIONS[currentQ]; const total=QUESTIONS.length;
+  document.getElementById('header-subtitle').textContent=`${q.dim}维度 · 第${currentQ+1}/${total}题`;
+  document.getElementById('progress-fill').style.width=`${(currentQ/total)*100}%`;
+  document.getElementById('question-counter').textContent=`维度 ${q.dim}（${q.dimColor}●）· ${currentQ+1}/${total}`;
+  document.getElementById('q-title').textContent=q.title;
+  document.getElementById('q-subtitle').textContent=q.subtitle;
+  const optDiv=document.getElementById('q-options'); optDiv.innerHTML='';
+  if(q.type==='radio'){
+    q.options.forEach((opt,i)=>{
+      const btn=document.createElement('button');
+      btn.className='option-btn'; btn.innerHTML=`${opt.text}`;
+      btn.onclick=()=>selectRadio(q.id,i,opt.score,q.options.length,btn);
+      optDiv.appendChild(btn);
+    });
+  } else if(q.type==='checkbox'){
+    const hint=document.createElement('div');
+    hint.style.cssText='font-size:12px;color:#999;margin-bottom:10px;';
+    hint.textContent=`（最多选${q.max}项，已选 ${(checkboxStates[q.id]||[]).length}/${q.max}）`;
+    optDiv.appendChild(hint);
+    q.options.forEach((opt,i)=>{
+      const checked=(checkboxStates[q.id]||[]).includes(i);
+      const btn=document.createElement('label');
+      btn.className='checkbox-btn'+(checked?' checked':'');
+      btn.innerHTML=`<span class="checkbox-icon">${checked?'✓':''}</span><span>${opt.text}</span>`;
+      btn.onclick=()=>toggleCheckbox(q.id,i,q.max,hint);
+      optDiv.appendChild(btn);
+    });
+  }
+  document.getElementById('next-btn').disabled=!isAnswered(q);
+}
+
+function selectRadio(qId,optIdx,score,totalBtns,btnEl){
+  answers[qId]=score;
+  document.querySelectorAll('#q-options .option-btn').forEach(b=>b.classList.remove('selected'));
+  btnEl.classList.add('selected');
+  document.getElementById('next-btn').disabled=false;
+}
+
+function toggleCheckbox(qId,optIdx,max,hintEl){
+  if(!checkboxStates[qId]) checkboxStates[qId]=[];
+  const arr=checkboxStates[qId]; const idx=arr.indexOf(optIdx);
+  if(idx>=0) arr.splice(idx,1);
+  else if(arr.length<max) arr.push(optIdx);
+  else return;
+  const q=QUESTIONS.find(x=>x.id===qId);
+  answers[qId]=arr.length>0?Math.max(...arr.map(i=>q.options[i].score)):0;
+  renderQuestion();
+}
+
+function isAnswered(q){ return q.type==='radio'?(answers[q.id]!==undefined):(checkboxStates[q.id]||[]).length>0; }
+function nextQuestion(){ currentQ++; if(currentQ>=QUESTIONS.length){ goToSceneDesc(); return; } renderQuestion(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+// 画面感
+function goToSceneDesc(){
+  document.getElementById('step-question').classList.add('hidden');
+  document.getElementById('step-scene-desc').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function selectScene(btn,key){
+  document.querySelectorAll('#scene-opts .option-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected'); selectedScene=key;
+  document.getElementById('scene-next-btn').disabled=false;
+}
+
+// 红线
+function goToRedline(){
+  if(!selectedScene){ alert('请先选择一个场景'); return; }
+  document.getElementById('step-scene-desc').classList.add('hidden');
+  document.getElementById('step-redline').classList.remove('hidden');
+  const rlDiv=document.getElementById('redline-opts'); rlDiv.innerHTML='';
+  REDLINE_OPTIONS.forEach((opt,i)=>{
+    const label=document.createElement('label');
+    label.className='checkbox-btn'+(selectedRedlines.includes(i)?' checked':'');
+    label.innerHTML=`<span class="checkbox-icon">${selectedRedlines.includes(i)?'✓':''}</span><span>${opt.icon} <b>${opt.tag}</b></span>`;
+    label.onclick=function(){
+      this.classList.toggle('checked');
+      this.querySelector('.checkbox-icon').textContent=this.classList.contains('checked')?'✓':'';
+      const idx=selectedRedlines.indexOf(i);
+      if(idx>=0) selectedRedlines.splice(idx,1); else selectedRedlines.push(i);
+    };
+    rlDiv.appendChild(label);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// 直接出报告（跳过经纪人表单）
+function goToReport(){
+  document.getElementById('step-redline').classList.add('hidden');
+  showReport();
+}
+
+// ============ 评分 & 报告 ============
+function calcScores(){
+  const dims={'安全':[],'健康':[],'整洁':[],'温暖':[],'美观':[],'惬意':[]};
+  QUESTIONS.forEach(q=>{ if(answers[q.id]) dims[q.dim].push(answers[q.id]); });
+  const avg={}, weights=SCENARIO_WEIGHTS[currentScenario]||SCENARIO_WEIGHTS.rent;
+  for(const d of Object.keys(dims)){
+    const arr=dims[d];
+    avg[d]=arr.length>0?Math.min(100,Math.round(arr.reduce((a,b)=>a+b,0)/arr.length*20*(weights[d]||1))):0;
+  }
+  return {avg,total:Math.round(Object.values(avg).reduce((a,b)=>a+b,0)/6)};
+}
+
+function showReport(){
+  document.getElementById('step-report').classList.remove('hidden');
+  const {avg,total}=calcScores();
+  const a=window.agentInfo;
+
+  document.getElementById('report-scenario').textContent=`场景：${SCENARIO_NAMES[currentScenario]} · 完成18+4题测评`;
+  document.getElementById('report-score').textContent=total;
+
+  const gradeEl=document.getElementById('report-grade');
+  if(total>=85){gradeEl.textContent='A+ 居住品质意识超强';gradeEl.style.color='#2ecc71';}
+  else if(total>=70){gradeEl.textContent='A 居住品质意识良好';gradeEl.style.color='#3498db';}
+  else if(total>=55){gradeEl.textContent='B 居住品质意识一般';gradeEl.style.color='#f39c12';}
+  else if(total>=40){gradeEl.textContent='C 居住品质意识待提升';gradeEl.style.color='#e67e22';}
+  else{gradeEl.textContent='D 居住品质意识需关注';gradeEl.style.color='#e74c3c';}
+
+  // 画像
+  const high=Object.entries(avg).sort((a,b)=>b[1]-a[1]).slice(0,2).map(x=>x[0]);
+  const low=Object.entries(avg).sort((a,b)=>a[1]-b[1]).slice(0,2).map(x=>x[0]);
+  document.getElementById('profile-text').textContent=
+    `你最在意「${high[0]}」和「${high[1]}」，对「${low[0]}」和「${low[1]}」相对没那么敏感。在${SCENARIO_NAMES[currentScenario]}场景下，你的居住品质认知偏向注重${high[0]}感。`;
+
+  // 理想画面
+  document.getElementById('scene-text').textContent=SCENE_MAP[selectedScene]||'';
+
+  // 雷达图
+  const svg=document.getElementById('radar-svg'),cx=120,cy=120,r=90;
+  const dims=['安全','健康','整洁','温暖','美观','惬意'];
+  const angles=dims.map((_,i)=>(Math.PI*2*i/6)-Math.PI/2);
+  const toCoord=(angle,val)=>[cx+r*val/100*Math.cos(angle),cy+r*val/100*Math.sin(angle)];
+  const toV=(a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];
+  let h='';
+  for(let s=1;s<=4;s++){const f=s/4,p=angles.map(a=>`${cx+r*f*Math.cos(a)},${cy+r*f*Math.sin(a)}`).join(' ');h+=`<polygon points="${p}" fill="none" stroke="#e0e0e0" stroke-width="0.5" opacity="0.6"/>`;}
+  angles.forEach(a=>{h+=`<line x1="${cx}" y1="${cy}" x2="${toV(a)[0]}" y2="${toV(a)[1]}" stroke="#e0e0e0" stroke-width="0.5"/>`;});
+  const dp=angles.map((a,d)=>toCoord(a,avg[dims[d]]).join(',')).join(' ');
+  h+=`<polygon points="${dp}" fill="rgba(61,90,62,0.25)" stroke="#3d5a3e" stroke-width="2"/>`;
+  angles.forEach((a,d)=>{const[x,y]=toCoord(a,avg[dims[d]]);h+=`<circle cx="${x}" cy="${y}" r="4" fill="#3d5a3e"/>`;});
+  angles.forEach((a,d)=>{const[x,y]=[cx+(r+18)*Math.cos(a),cy+(r+18)*Math.sin(a)];h+=`<text x="${x}" y="${y}" font-size="11" fill="#555" text-anchor="middle" dominant-baseline="middle">${dims[d]}</text>`;});
+  svg.innerHTML=h;
+
+  // 维度条
+  const colors={安全:'#e74c3c',健康:'#2ecc71',整洁:'#3498db',温暖:'#e67e22',美观:'#9b59b6',惬意:'#1abc9c'};
+  const list=document.getElementById('dim-list');
+  list.innerHTML='<div style="font-size:13px;font-weight:600;color:#333;margin-bottom:8px;">各维度得分</div>';
+  Object.entries(avg).forEach(([dim,score])=>{
+    const c=colors[dim]||'#999';
+    list.innerHTML+=`<div class="dim-item"><div class="dim-dot" style="background:${c}"></div><div class="dim-name">${dim}</div>`+
+      `<div class="dim-bar-wrap"><div class="dim-bar" style="width:${score}%;background:${c}"></div></div>`+
+      `<div class="dim-score">${score}</div></div>`;
+  });
+
+  // 红线
+  const rlDiv=document.getElementById('redline-tags'); rlDiv.innerHTML='';
+  const extraText=(document.getElementById('redline-extra')?.value||'').trim();
+  if(selectedRedlines.length===0&&!extraText){
+    rlDiv.innerHTML='<p style="font-size:12.5px;color:#999;text-align:center;padding:6px 0">暂无特别忌讳项</p>';
+  }else{
+    selectedRedlines.forEach(i=>{
+      rlDiv.innerHTML+=`<span class="redline-tag">${REDLINE_OPTIONS[i].icon} ${REDLINE_OPTIONS[i].tag}</span>`;
+    });
+    if(extraText) rlDiv.innerHTML+=`<p style="font-size:12.5px;color:#c62828;margin-top:8px;line-height:1.5;">📝 其他要求：${extraText}</p>`;
+  }
+
+  // 建议
+  const sugDiv=document.getElementById('suggestions'); sugDiv.innerHTML='';
+  const sugs={
+    安全:{icon:'🔒',color:'#e74c3c',text:'优先确认房源的门禁、监控、消防通道，安全是底线。'},
+    健康:{icon:'🌿',color:'#2ecc71',text:'关注空气质量、噪音和采光，长期健康的关键。'},
+    整洁:{icon:'✨',color:'#3498db',text:'优先考虑收纳空间充足的户型，住久了才舒服。'},
+    温暖:{icon:'☀️',color:'#e67e22',text:'日照和朝向非常重要，朝南的房子住着心情就是不一样。'},
+    美观:{icon:'🎨',color:'#9b59b6',text:'在预算范围内，优先保证客厅和卧室的视觉舒适度。'},
+    惬意:{icon:'🛋️',color:'#1abc9c',text:'阳台、飘窗、安静度——这些决定每天的幸福感。'},
+  };
+  low.forEach((dim,i)=>{
+    const s=sugs[dim];if(!s)return;
+    sugDiv.innerHTML+=`<div class="sug-item"><div class="sug-icon" style="background:${s.color}">${s.icon}</div>`+
+      `<div class="sug-text"><b>${i===0?'🔴 优先改善':'🟡 重点考虑'} · ${dim}（${avg[dim]}分）</b><br>${s.text}</div></div>`;
+  });
+  const highDim=Object.entries(avg).sort((a,b)=>b[1]-a[1])[0];
+  sugDiv.innerHTML+=`<div class="sug-item"><div class="sug-icon" style="background:#3d5a3e">✅</div>`+
+    `<div class="sug-text"><b>确认优势维度 · ${highDim[0]}（${highDim[1]}分）</b><br>看房时重点感受这个维度，不要妥协。</div></div>`;
+
+  // 经纪人联系卡（从URL参数读取）
+  if(a&&a.name){
+    document.getElementById('agent-avatar-text').textContent=a.name.charAt(0).toUpperCase();
+    document.getElementById('display-agent-name').textContent=a.name;
+    document.getElementById('display-agent-bio').textContent=a.bio||'专业房产顾问';
+    document.getElementById('display-phone').textContent=a.phone;
+    document.getElementById('display-phone-row').style.display='flex';
+    if(a.wechat){ document.getElementById('display-wechat').textContent=a.wechat; document.getElementById('display-wechat-row').style.display='flex'; }
+    else{ document.getElementById('display-wechat-row').style.display='none'; }
+    if(a.company){ document.getElementById('display-company').textContent=a.company; document.getElementById('display-company-row').style.display='flex'; }
+    else{ document.getElementById('display-company-row').style.display='none'; }
+    document.getElementById('cta-call-btn').href=`tel:${a.phone}`;
+  } else {
+    // 无经纪人信息时隐藏联系卡
+    document.getElementById('agent-contact').style.display='none';
+    document.getElementById('cta-box').style.display='none';
+  }
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ============ 重置 & 分享 ============
+function restart(){
+  currentScenario='';currentQ=0;answers={};checkboxStates={};
+  selectedScene='';selectedRedlines=[];
+  document.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('.checkbox-btn').forEach(b=>b.classList.remove('checked'));
+  if(document.getElementById('redline-extra')) document.getElementById('redline-extra').value='';
+  document.getElementById('step-report').classList.add('hidden');
+  if(hasAgentParams()||window.agentInfo?.name){
+    document.getElementById('page-entry').classList.remove('hidden');
+  }else{
+    document.getElementById('step-scenario').classList.remove('hidden');
+  }
+}
+
+function shareReport(){
+  // 尝试调用 Web Share API 或复制当前URL
+  if(navigator.share && navigator.canShare){
+    navigator.share({title:'我的居住品质报告','url':window.location.href}).catch(()=>{});
+  } else {
+    copyCurrentUrl();
+  }
+}
+
+function copyCurrentUrl(){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(window.location.href).then(()=>showToast('✅ 已复制报告链接'));
+  } else {
+    const ta=document.createElement('textarea');
+    ta.value=window.location.href; ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); showToast('✅ 已复制报告链接');
+  }
+}
+
+// ============ Toast ============
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2000);
+}
+
+// ============ 身份识别 & 使用追踪 ============
+const IDENTITY_KEY='fengsheng_broker_identity';
+const USAGE_KEY='fengsheng_broker_usage';
+
+function loadIdentity(){
+  try{
+    const d=JSON.parse(localStorage.getItem(IDENTITY_KEY));
+    if(d&&d.phone&&d.company) return d;
+  }catch(e){}
+  return null;
+}
+function saveIdentity(info){
+  if(!info.remember) { localStorage.removeItem(IDENTITY_KEY); return; }
+  localStorage.setItem(IDENTITY_KEY, JSON.stringify(info));
+}
+function loadUsage(){
+  try{ return JSON.parse(localStorage.getItem(USAGE_KEY))||{}; }catch(e){ return {}; }
+}
+function saveUsage(u){ localStorage.setItem(USAGE_KEY, JSON.stringify(u)); }
+
+// ============ 页面切换 ============
+function showPage(pageId){
+  // 隐藏所有页面
+  ['page-setup','page-entry','step-scenario','step-question',
+   'step-scene-desc','step-redline','step-report','page-stats'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.classList.add('hidden');
+  });
+  // 显示目标页面
+  var target = document.getElementById(pageId);
+  if(target) target.classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function forgetIdentity(){
+  localStorage.removeItem(IDENTITY_KEY);
+  localStorage.removeItem(USAGE_KEY);
+  document.getElementById('welcome-back')?.classList.remove('show');
+  showPage('page-setup');
+}
+
+// 填充表单
+function fillBrokerForm(info){
+  if(!info) return;
+  if(info.name) document.getElementById('setup-name').value=info.name;
+  if(info.phone) document.getElementById('setup-phone').value=info.phone;
+  if(info.wechat) document.getElementById('setup-wechat').value=info.wechat;
+  if(info.bio) document.getElementById('setup-bio').value=info.bio;
+  if(info.company) document.getElementById('setup-company').value=info.company;
+  document.getElementById('remember-me').checked=true;
+}
+
+// 显示欢迎横幅
+function showWelcome(info){
+  const wb=document.getElementById('welcome-back');
+  if(!wb||!info) return;
+  document.getElementById('wb-avatar').textContent=(info.name||'?').charAt(0);
+  document.getElementById('wb-name').textContent=info.name||'';
+  document.getElementById('wb-phone').textContent=info.phone||'';
+  document.getElementById('wb-company').textContent=info.company||'';
+  wb.classList.add('show');
+}
+
+// 事件追踪
+function trackEvent(type, data){
+  const identity=loadIdentity();
+  const usage=loadUsage();
+  const key=identity?identity.phone:'anonymous';
+  if(!usage[key]) usage[key]={totalLinks:0,totalCompletions:0,month:null,monthLinks:0,monthCompletions:0,history:[]};
+  const u=usage[key];
+  const now=new Date(), ym=now.getFullYear()*100+now.getMonth();
+  if(u.month!==ym){ u.month=ym; u.monthLinks=0; u.monthCompletions=0; }
+  if(type==='link_generated'){ u.totalLinks++; u.monthLinks++; }
+  if(type==='assessment_completed'){ u.totalCompletions++; u.monthCompletions++; }
+  u.history.push({type,time:now.toISOString(),data});
+  saveUsage(usage);
+  // 上报到 formsubmit（与 assessment.html 共用通道）
+  fetch('https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de', {
+    method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body: JSON.stringify({type,identity,data,_subject:'六维品质测评数据',_replyto:'yu-er@coze.email'})
+  }).catch(()=>{});
+  updateStatsDisplay(key);
+}
+
+function updateStatsDisplay(phone){
+  const usage=loadUsage();
+  const u=usage[phone]; if(!u) return;
+  const el=id=>document.getElementById(id);
+  if(el('stats-links')) el('stats-links').textContent=u.totalLinks||0;
+  if(el('stats-completions')) el('stats-completions').textContent=u.totalCompletions||0;
+  if(el('stats-month-links')) el('stats-month-links').textContent=u.monthLinks||0;
+  if(el('stats-month-completions')) el('stats-month-completions').textContent=u.monthCompletions||0;
+}
+
+// 修改 generateShareLink：保存身份 + 追踪事件
+const _origGen=generateShareLink;
+generateShareLink=function(){
+  const name=document.getElementById('setup-name').value.trim();
+  const phone=document.getElementById('setup-phone').value.trim();
+  const company=document.getElementById('setup-company').value.trim();
+  if(!name||!phone||!company){ showToast('请填写名字、手机号和门店名称'); return; }
+  const remember=document.getElementById('remember-me')?.checked;
+  if(remember){
+    saveIdentity({name,phone,wechat:document.getElementById('setup-wechat').value.trim(),bio:document.getElementById('setup-bio').value.trim(),company,remember});
+  }
+  // 调用原始逻辑（不重复执行，直接跳转）
+  _origGen.call(this);
+  // 追踪事件
+  trackEvent('link_generated',{name,phone,company});
+};
+
+
+
+
+// 在 showReport 中追踪「测评完成」事件（客户视角）
+const _origShowReport=showReport;
+showReport=function(){
+  _origShowReport.call(this);
+  // 如果有 agent 参数，说明是经纪人分享的链接，追踪完成事件
+  if(hasAgentParams()){
+    const p=new URLSearchParams(window.location.search);
+    trackEvent('assessment_completed',{agentPhone:p.get('phone'),scenario:currentScenario});
+  }
+};
+
+console.log('[六维测评] 身份识别+使用追踪模块已加载');
+
+// 页面加载完毕后初始化身份（比改 IIFE 更可靠）
+document.addEventListener('DOMContentLoaded', function(){
+  const identity=loadIdentity();
+  if(identity&&!hasAgentParams()){
+    fillBrokerForm(identity);
+    showWelcome(identity);
+    updateStatsDisplay(identity.phone);
+    document.getElementById('stats-box')?.classList.add('show');
+  }
+});
+// ============ 结束身份识别 ============
+
+</script>
+<script src="/feedback-widget.js"></script>
+  <!-- 详细解读（反馈后解锁） -->
+  <div id="detail-interpretation" style="display:none;max-width:640px;margin:32px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(44,95,58,0.10)">
+    <h3 style="font-size:18px;color:#2C5F3A;margin-bottom:12px">📖 详细解读已解锁</h3>
+    <p style="font-size:14px;color:#555;line-height:1.8">感谢你的反馈！以下是基于你测评结果的详细解读：</p>
+    <div id="detail-content" style="margin-top:16px;font-size:14px;color:#333;line-height:1.8"></div>
+  </div>
+  <div id="share-hint" style="display:none;max-width:640px;margin:16px auto;text-align:center;font-size:13px;color:#888">
+    💡 觉得测评有用？<a href="#" style="color:#2C5F3A;text-decoration:underline">点击分享给同事</a>
+  </div>
+</body>
+</html>

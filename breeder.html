@@ -3,756 +3,302 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta name="description" content="Agent培养师：8周课程体系，从新手到资深，陪你走完整条路 — 风声 fengsheng.tech">
-<meta name="keywords" content="Agent培养师,能力测评,服务者成长,AI培养,8周课程">
-<meta name="theme-color" content="#2D5A3D">
-<meta property="og:title" content="Agent培养师 🔥 — 风声 fengsheng.tech">
-<meta property="og:description" content="8周课程 · 互动练习 · 即时反馈 · 进度追踪。从新手到资深，陪你走完整条路。">
-<meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%23F5F1E8'/><text x='100' y='280' font-family='sans-serif' font-size='72' fill='%232D5A3D' font-weight='700'>Agent 培养师</text><text x='100' y='360' font-family='sans-serif' font-size='36' fill='%23D97757'>8周课程 · 从新手到资深</text></svg>">
-<meta property="og:type" content="website">
+<meta name="description" content="培养你的专属AI助理，关怀陪伴、销售教练、全能助理，一键生成Prompt即插即用。">
+<title>Agent 培养师 | 风声</title>
+<meta property="og:title" content="Agent 培养师 · 风声">
+<meta property="og:description" content="培养你的专属AI助理，让他帮你搞定重复工作、照顾你的身心状态。">
+<meta property="og:image" content="https://fengsheng.tech/og-image.png">
+<meta property="og:url" content="https://fengsheng.tech/breeder.html">
 <meta name="twitter:card" content="summary_large_image">
-<title>Agent培养师 — 风声 fengsheng.tech</title>
 <style>
-*,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#F5F1E8;color:#2A2825;line-height:1.7;-webkit-font-smoothing:antialiased}
-a{color:#2D5A3D;text-decoration:none}
-a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:0 20px}
-.skip-nav{position:absolute;left:-9999px;top:0;background:#2D5A3D;color:#fff;padding:10px 16px;border-radius:8px;z-index:999}
-.skip-nav:focus{left:1rem;top:1rem;text-decoration:none}
-.header{background:#fff;border-bottom:1px solid #EFE8DB}
-.header-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
-.brand{font-weight:700;font-size:20px;color:#2D5A3D;letter-spacing:1px}
-.brand span{color:#D97757}
-.nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:15px;color:#6B665E}
-.nav a{color:#2A2825;padding:6px 10px;border-radius:8px}
-.nav a:hover{background:#F5F1E8;text-decoration:none;color:#2D5A3D}
-.nav .sep{color:#B8B1A4}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:14px 28px;font-size:16px;font-weight:600;font-family:inherit;transition:transform .15s ease,box-shadow .15s ease,background-color .2s}
-.btn-primary{background:#2D5A3D;color:#fff;box-shadow:0 6px 16px rgba(45,90,61,.25)}
-.btn-primary:hover{background:#234a31;text-decoration:none;transform:translateY(-1px)}
-.btn-orange{background:#D97757;color:#fff;box-shadow:0 6px 16px rgba(217,119,87,.25)}
-.btn-orange:hover{background:#c06649;text-decoration:none}
-.btn-ghost{background:transparent;color:#2D5A3D;border:2px solid #2D5A3D}
-.btn-ghost:hover{background:#2D5A3D;color:#fff;text-decoration:none}
-.btn-sm{padding:8px 18px;font-size:14px}
-.btn[disabled]{opacity:.5;cursor:not-allowed}
-.section{padding:40px 0}
-.section h2{font-size:clamp(22px,3.5vw,28px);margin:0 0 8px;color:#2A2825}
-.section .sub{color:#5E5952;margin:0 0 24px;font-size:15px}
-.hero{padding:56px 0 24px;text-align:center}
-.hero h1{font-size:clamp(30px,5vw,44px);line-height:1.3;margin:0 0 14px;color:#2A2825}
-.hero h1 em{font-style:normal;color:#D97757}
-.hero p.lead{font-size:clamp(16px,2.2vw,19px);color:#5E5952;max-width:620px;margin:0 auto 22px}
-.steps{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:8px}
-.step{background:#fff;border-radius:16px;padding:22px;border:1px solid #EFE8DB;position:relative;box-shadow:0 2px 6px rgba(42,40,37,.04)}
-.step .num{position:absolute;top:-14px;left:22px;background:#D97757;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;box-shadow:0 4px 10px rgba(217,119,87,.3)}
-.step h3{margin:4px 0 8px;font-size:18px;color:#2D5A3D}
-.step p{margin:0;color:#5E5952;font-size:15px}
-
-/* Progress bar */
-.progress-bar{background:#fff;border-radius:14px;padding:18px 22px;border:1px solid #EFE8DB;margin-bottom:24px;display:flex;align-items:center;gap:16px}
-.progress-track{flex:1;height:8px;background:#EFE8DB;border-radius:4px;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,#2D5A3D,#4B7A5C);border-radius:4px;transition:width .4s ease}
-.progress-text{font-weight:700;color:#2D5A3D;font-size:15px;white-space:nowrap}
-
-/* Course cards */
-.course-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.course-card{background:#fff;border-radius:14px;padding:20px;border:2px solid #EFE8DB;cursor:pointer;transition:all .2s;position:relative}
-.course-card:hover{border-color:#2D5A3D;box-shadow:0 4px 14px rgba(42,40,37,.08)}
-.course-card.completed{border-color:#2D5A3D;background:#E8EDE3}
-.course-card.active{border-color:#D97757;background:#FFFCF5}
-.course-num{font-size:12px;color:#B8B1A4;font-weight:600;text-transform:uppercase;letter-spacing:1px}
-.course-title{font-size:17px;font-weight:700;color:#2A2825;margin:4px 0 6px}
-.course-desc{font-size:13px;color:#5E5952;line-height:1.5}
-.course-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;margin-top:8px}
-.course-badge.done{background:#E8EDE3;color:#2D5A3D}
-.course-badge.ongoing{background:#FBEDE5;color:#D97757}
-.course-badge.locked{background:#EFE8DB;color:#B8B1A4}
-
-/* Lesson panel */
-.lesson-panel{background:#fff;border-radius:16px;padding:28px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);margin-top:16px;display:none}
-.lesson-panel.show{display:block;animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.lesson-panel h3{font-size:22px;color:#2D5A3D;margin:0 0 8px}
-.lesson-panel .goal{background:#FBEDE5;color:#8A3A22;padding:12px 16px;border-radius:12px;margin:16px 0;font-size:14px;line-height:1.6}
-
-/* Quiz inside lesson */
-.ex-q{padding:16px 0;border-top:1px dashed #EFE8DB}
-.ex-q:first-of-type{border-top:0}
-.ex-q-title{font-weight:600;font-size:15px;margin:0 0 10px;color:#2A2825}
-.ex-opts{display:flex;flex-direction:column;gap:6px}
-.ex-opt{background:#F5F1E8;border:2px solid transparent;color:#2A2825;padding:12px 16px;border-radius:12px;cursor:pointer;font-size:14px;text-align:left;font-family:inherit;transition:all .15s;width:100%}
-.ex-opt:hover{background:#EFE8DB}
-.ex-opt.chosen{border-color:#2D5A3D;background:#E8EDE3;color:#2D5A3D;font-weight:600}
-.ex-fb{margin-top:8px;padding:10px 14px;border-radius:10px;font-size:13px;display:none}
-.ex-fb.show{display:block}
-.ex-fb.good{background:#E8EDE3;color:#2D5A3D}
-.ex-fb.hint{background:#FBEDE5;color:#8A3A22}
-
-/* Textarea exercise */
-.ex-textarea{width:100%;min-height:80px;border:2px solid #EFE8DB;border-radius:10px;padding:12px;font-size:14px;font-family:inherit;resize:vertical;outline:none;transition:border-color .2s;margin:12px 0}
-.ex-textarea:focus{border-color:#2D5A3D}
-
-/* Completion toast */
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#2D5A3D;color:#fff;padding:14px 28px;border-radius:999px;font-weight:700;font-size:16px;box-shadow:0 8px 28px rgba(45,90,61,.3);z-index:100;animation:toastIn .4s ease,toastOut .4s ease 2s forwards;pointer-events:none}
-@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-@keyframes toastOut{from{opacity:1}to{opacity:0}}
-
-/* Warm-up quiz */
-.interact{background:#fff;border-radius:16px;padding:28px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);margin-top:16px}
-.interact h2{margin-top:0}
-.q{padding:18px 0;border-top:1px dashed #EFE8DB}
-.q:first-of-type{border-top:0}
-.q-title{font-weight:600;font-size:17px;margin:0 0 12px;color:#2A2825}
-.opts{display:flex;flex-direction:column;gap:8px}
-.opt{background:#F5F1E8;border:2px solid transparent;color:#2A2825;padding:16px 20px;border-radius:14px;cursor:pointer;font-size:16px;text-align:left;font-family:inherit;transition:all .15s;min-height:56px;line-height:1.6;width:100%}
-.opt:hover{background:#EFE8DB}
-.opt[aria-pressed="true"]{border-color:#2D5A3D;background:#E8EDE3;color:#2D5A3D;font-weight:600}
-.opt.right[aria-pressed="true"]{border-color:#2D5A3D;background:#E8EDE3}
-.opt.wrong[aria-pressed="true"]{border-color:#D97757;background:#FBEDE5;color:#8A3A22}
-.fb{margin-top:10px;padding:12px 14px;border-radius:10px;font-size:14px;display:none}
-.fb.show{display:block}
-.fb.good{background:#E8EDE3;color:#2D5A3D}
-.fb.hint{background:#FBEDE5;color:#8A3A22}
-
-.footer{border-top:1px solid #EFE8DB;background:#fff;padding:30px 0 24px;margin-top:48px;font-size:14px;color:#6B665E}
-.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.footer a{color:#6B665E}
-.footer .tiny{font-size:12px;color:#B8B1A4}
-
-@media (max-width:640px){
-  .wrap{padding:0 16px}
-  .hero{padding:40px 0 16px}
-  .section{padding:32px 0}
-  .steps{grid-template-columns:1fr}
-  .course-grid{grid-template-columns:1fr}
-  .nav{font-size:14px}
-  .nav a{padding:5px 8px}
-  .brand{font-size:18px}
-  .progress-bar{flex-direction:column;gap:8px;text-align:center}
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif; background: #f5f7fa; min-height: 100vh; }
+  .header { background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; padding: 32px 24px 24px; text-align: center; }
+  .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .header p { font-size: 13px; opacity: 0.85; line-height: 1.5; }
+  .container { max-width: 640px; margin: 0 auto; padding: 24px 16px 60px; }
+  .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .card-title { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tpl-card { border: 2px solid #eee; border-radius: 12px; padding: 14px 12px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .tpl-card:hover, .tpl-card.active { border-color: #3d5a3e; background: #f0f5ee; }
+  .tpl-icon { font-size: 28px; margin-bottom: 6px; }
+  .tpl-name { font-size: 13px; font-weight: 600; color: #333; }
+  .tpl-desc { font-size: 11px; color: #999; margin-top: 4px; line-height: 1.4; }
+  label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
+  input, textarea, select { width: 100%; padding: 10px 14px; border: 2px solid #e8e8e8; border-radius: 10px; font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+  input:focus, textarea:focus { border-color: #3d5a3e; }
+  textarea { resize: vertical; min-height: 80px; }
+  .btn-primary { display: block; width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 16px; font-family: inherit; box-shadow: 0 4px 15px rgba(61,90,62,0.35); transition: all 0.2s; }
+  .btn-primary:active { transform: scale(0.98); }
+  .result-box { background: linear-gradient(135deg, #f0f7ff, #e8f0fe); border-radius: 14px; padding: 18px; margin-top: 16px; border-left: 4px solid #3d5a3e; }
+  .result-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
+  .result-content { font-size: 13px; color: #555; line-height: 1.7; white-space: pre-wrap; cursor: pointer; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 6px; }
+  .badge-care { background: #e8f5ea; color: #2e7d32; }
+  .hidden { display: none !important; }
+  .param-info { background: #fff8e1; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 12.5px; color: #f57c00; line-height: 1.6; border-left: 3px solid #f57c00; }
+  .care-label { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 4px; display: block; }
 </style>
+<!-- 全站数据追踪器 v1.0 -->
+<script src="/tracker.js" async></script>
 </head>
 <body>
-<a href="#main" class="skip-nav" aria-label="跳到主要内容">跳到主要内容</a>
-<header class="header" role="banner">
-  <div class="wrap header-inner">
-    <a href="/" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
-    <nav class="nav" aria-label="面包屑">
-      <a href="/">首页</a><span class="sep">·</span>
-      <a href="breeder">Agent培养师</a>
-    </nav>
+<!-- 风声统一导航栏 -->
+<nav class="fs-nav">
+  <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
+  <div class="fs-nav-links">
+    <a href="/">首页</a>
+    <a href="/quality-test/">品质测评</a>
+    <a href="/care-test/">关怀测评</a>
+    <a href="/s1-report/">带看报告</a>
+    <a href="/breeder">培养师</a>
   </div>
-</header>
+  <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
+</nav>
+<style>
+.fs-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 52px; background: #fff; border-bottom: 1px solid rgba(80,90,70,.09); position: sticky; top: 0; z-index: 100; }
+.fs-nav-brand { font-size: 16px; font-weight: 700; color: #3d5a3e; text-decoration: none; display: flex; align-items: center; gap: 4px; }
+.fs-nav-links { display: flex; gap: 6px; }
+.fs-nav-links a { padding: 5px 10px; font-size: 12px; color: #555; text-decoration: none; border-radius: 6px; transition: all .15s; white-space: nowrap; }
+.fs-nav-links a:hover { background: rgba(61,90,62,.06); color: #3d5a3e; }
+.fs-nav-menu { display: none; background: none; border: none; font-size: 20px; cursor: pointer; color: #3d5a3e; padding: 8px; }
+@media (max-width: 767px) {
+  .fs-nav-links { display: none; position: absolute; top: 52px; left: 0; right: 0; background: #fff; flex-direction: column; padding: 10px; border-bottom: 1px solid rgba(80,90,70,.09); box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+  .fs-nav.open .fs-nav-links { display: flex; }
+  .fs-nav-menu { display: block; }
+}
+</style>
 
-<main id="main" role="main">
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="wrap">
-      <h1 id="hero-title">Agent 培养师 <em>🔥</em></h1>
-      <p class="lead">8周课程 · 互动练习 · 即时反馈 · 进度追踪。从新手到资深，陪你走完整条路。</p>
-      <a href="#courses" class="btn btn-orange" aria-label="开始学习">开始学习 →</a>
-    </div>
-  </section>
 
-  <section class="section" aria-labelledby="flow-title">
-    <div class="wrap">
-      <h2 id="flow-title">你会经历什么</h2>
-      <div class="steps">
-        <div class="step"><span class="num">1</span><h3>测评</h3><p>通过结构化场景问卷，识别你当前在专业度、沟通、客户理解等维度的基线水平。</p></div>
-        <div class="step"><span class="num">2</span><h3>学习</h3><p>针对识别出的薄弱项，推荐最短路径的可练习课程与案例阅读。</p></div>
-        <div class="step"><span class="num">3</span><h3>练习</h3><p>在真实或模拟场景中反复练习，系统给你即时反馈并记录进步轨迹。</p></div>
-        <div class="step"><span class="num">4</span><h3>考评</h3><p>达到新的能力基线时完成一次考评，让成长有刻度、有证书、被组织看见。</p></div>
-        <div class="step"><span class="num">5</span><h3>同行</h3><p>加入同岗位服务者的成长圈，互相出题、互相点评，一起把事情做扎实。</p></div>
+<div class="header">
+  <h1>🤖 Agent 培养师</h1>
+  <p>培养你的专属AI助理<br>让他帮你搞定重复工作、照顾你的身心状态</p>
+</div>
+
+<div class="container">
+
+  <!-- 参数提示（如果从关怀测评跳过来） -->
+  <div class="param-info hidden" id="param-info"></div>
+
+  <!-- 选择模板 -->
+  <div class="card">
+    <div class="card-title">① 选择助理类型</div>
+    <div class="template-grid">
+      <div class="tpl-card" onclick="selectTemplate(this, 'general')">
+        <div class="tpl-icon">🧠</div>
+        <div class="tpl-name">全能助理</div>
+        <div class="tpl-desc">通用型，啥都能帮上忙</div>
       </div>
-    </div>
-  </section>
-
-  <section id="courses" class="section" aria-labelledby="courses-title">
-    <div class="wrap">
-      <h2 id="courses-title">8 周课程体系</h2>
-      <p class="sub">点击课程卡片开始学习。已完成课程会自动标记，进度即时保存。</p>
-      <div class="progress-bar" id="progress-bar">
-        <span style="font-size:14px;color:#5E5952">学习进度</span>
-        <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-        <span class="progress-text" id="progress-text">0/8</span>
+      <div class="tpl-card active" id="tpl-care" onclick="selectTemplate(this, 'care')">
+        <div class="tpl-icon">🩹</div>
+        <div class="tpl-name">关怀陪伴官<span class="badge badge-care">推荐</span></div>
+        <div class="tpl-desc">专治身心透支，陪你慢慢好起来</div>
       </div>
-      <div class="course-grid" id="course-grid"></div>
-    </div>
-  </section>
-
-  <section id="lesson-area" class="section" aria-labelledby="lesson-title" style="display:none">
-    <div class="wrap">
-      <a href="#courses" class="btn-ghost btn-sm" style="margin-bottom:16px;display:inline-flex;align-items:center;gap:6px">← 返回课程列表</a>
-      <div id="lesson-content"></div>
-    </div>
-  </section>
-
-  <section id="quiz" class="section" aria-labelledby="quiz-title">
-    <div class="wrap">
-      <div class="interact">
-        <h2 id="quiz-title">先做三道小题，感觉一下</h2>
-        <p style="color:#5E5952;margin:0 0 8px">这不是考试 — 只是让你体会一下"被认真提问"的感觉。</p>
-        <div class="q" id="q1">
-          <p class="q-title">1. 一位客户初次到店，你首先会？</p>
-          <div class="opts" role="radiogroup" aria-label="题目一选项">
-            <button class="opt" type="button" data-correct="0" aria-pressed="false">直接介绍最新、最有性价比的产品</button>
-            <button class="opt" type="button" data-correct="1" aria-pressed="false">先问清客户当下想解决什么、遇到了什么</button>
-            <button class="opt" type="button" data-correct="0" aria-pressed="false">先介绍门店和品牌，建立信任再说</button>
-          </div>
-          <div class="fb" role="status"></div>
-        </div>
-        <div class="q" id="q2">
-          <p class="q-title">2. 客户说"我再考虑考虑"，你最恰当的回应是？</p>
-          <div class="opts" role="radiogroup" aria-label="题目二选项">
-            <button class="opt" type="button" data-correct="0" aria-pressed="false">没问题，您考虑好了联系我</button>
-            <button class="opt" type="button" data-correct="0" aria-pressed="false">今天有特别优惠，再不下单就没了</button>
-            <button class="opt" type="button" data-correct="1" aria-pressed="false">方便告诉我是什么让您还在犹豫吗？我帮您一起想清楚</button>
-          </div>
-          <div class="fb" role="status"></div>
-        </div>
-        <div class="q" id="q3">
-          <p class="q-title">3. 服务一位客户之后，你最想做的复盘是？</p>
-          <div class="opts" role="radiogroup" aria-label="题目三选项">
-            <button class="opt" type="button" data-correct="0" aria-pressed="false">看一下自己这一单最终有没有成交</button>
-            <button class="opt" type="button" data-correct="1" aria-pressed="false">记录客户在对话中真实的痛点、顾虑与决策线索</button>
-            <button class="opt" type="button" data-correct="0" aria-pressed="false">把客户资料录入 CRM，按规则跟进</button>
-          </div>
-          <div class="fb" role="status"></div>
-        </div>
-        <div id="result" style="margin-top:12px;display:none;background:#E8EDE3;color:#2D5A3D;padding:18px 20px;border-radius:16px">
-          <strong id="result-title">测评完成</strong>
-          <div id="result-text" style="margin-top:6px"></div>
-          <a href="#courses" class="btn btn-primary" style="margin-top:14px;text-decoration:none" aria-label="进入课程学习">进入课程学习 →</a>
-        </div>
+      <div class="tpl-card" onclick="selectTemplate(this, 'sales')">
+        <div class="tpl-icon">📈</div>
+        <div class="tpl-name">销售教练</div>
+        <div class="tpl-desc">陪练话术、分析客户、跟进提醒</div>
       </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="wrap" style="text-align:center">
-      <p style="color:#5E5952;font-size:14px;margin:0">这个页面有什么让你觉得不好用的？</p>
-      <a href="reply" class="btn btn-orange btn-sm" style="margin-top:10px">提交反馈</a>
-    </div>
-  </section>
-</main>
-
-<footer class="footer" role="contentinfo">
-  <div class="wrap footer-inner">
-    <div>© 2026 风声 · fengsheng.tech</div>
-    <div>
-      <a href="privacy" aria-label="查看隐私政策">隐私政策</a> ·
-      <a href="reply" aria-label="帮助与反馈">帮助</a>
+      <div class="tpl-card" onclick="selectTemplate(this, 'custom')">
+        <div class="tpl-icon">✏️</div>
+        <div class="tpl-name">自定义</div>
+        <div class="tpl-desc">自己定义助理的能力和性格</div>
+      </div>
     </div>
   </div>
-</footer>
 
-<script src="tracker.js" defer></script>
+  <!-- 配置助理 -->
+  <div class="card">
+    <div class="card-title">② 配置你的助理</div>
+    <div style="margin-bottom:14px;">
+      <label>助理名字</label>
+      <input type="text" id="agent-name" placeholder="给你的助理起个名字" value="小暖">
+    </div>
+    <div style="margin-bottom:14px;">
+      <label>核心能力（关怀陪伴官专属）</label>
+      <div id="care-abilities">
+        <label class="care-label">☑ 每日关怀问候（早/晚安，问今天状态）</label>
+        <label class="care-label">☑ 情绪疏导（听你吐槽，给你疏导，不评断）</label>
+        <label class="care-label">☑ 健康提醒（喝水/休息/运动提醒）</label>
+        <label class="care-label">☑ 成就感记录（每天帮你记录一件「今天做得不错」的事）</label>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label>性格设定</label>
+      <select id="agent-personality">
+        <option value="warm">温暖型——像老朋友一样关心你</option>
+        <option value="rational">理性型——给你事实和可行建议</option>
+        <option value="humor">幽默型——用轻松方式化解压力</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label>补充指令（可选）</label>
+      <textarea id="agent-extra" placeholder="比如：我睡眠质量差，请每天晚上9点提醒我放下手机..."></textarea>
+    </div>
+  </div>
+
+  <!-- 生成 -->
+  <div class="card">
+    <div class="card-title">③ 生成你的助理</div>
+    <p style="font-size:12.5px;color:#888;line-height:1.6;margin-bottom:14px;">点击下方按钮，系统会根据你的配置，生成专属AI助理的 Prompt（提示词）。复制后可用于任意 AI 工具（ChatGPT / 文心 / 通义等）。</p>
+    <button class="btn-primary" onclick="generateAgent()">🚀 生成我的专属助理</button>
+    <div class="result-box hidden" id="result-box">
+      <div class="result-title">✅ 你的专属助理 Prompt（点击复制）</div>
+      <div class="result-content" id="result-content" onclick="copyPrompt()"></div>
+      <p style="font-size:11.5px;color:#999;margin-top:8px;">💡 点击上方文字即可复制，然后粘贴到任意AI对话框开始使用</p>
+    </div>
+    <div class="card" id="doubao-cta" style="display:none;margin-top:12px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;">
+      <div class="card-title" style="color:#166534">🚀 下一步：直接去豆包体验</div>
+      <p style="font-size:13px;color:#166534;line-height:1.7;margin-bottom:14px;">不想手动配置？直接点击下面的按钮，在豆包上跟已经训练好的「AI培养师」对话，手把手教你从零开始养一个懂你的AI助手。</p>
+      <a href="https://doubao.com/bot/S7hm68Qv" target="_blank" class="btn-primary" style="text-align:center;text-decoration:none;display:block;background:linear-gradient(135deg,#16a34a,#22c55e);box-shadow:0 4px 15px rgba(22,163,74,0.35);">🎯 前往豆包体验 AI培养师 →</a>
+    </div>
+  </div>
+
+</div>
+
 <script>
 // ============================================================
-// Agent培养师 · 课程系统 + 进度追踪
+//  读取 URL 参数（从关怀测评跳过来）
 // ============================================================
+var urlParams = new URLSearchParams(window.location.search);
+var tplFromUrl = urlParams.get("template");
+var weaknessFromUrl = urlParams.get("weakness");
+var scoresFromUrl = urlParams.get("scores");
 
-// --- Course data ---
-var COURSES = [
-  {id:1, title:'懂你的优势', desc:'让AI认识你是谁——建立AI身份设定，从"你是谁"开始让AI理解你的专业背景。', status:'available'},
-  {id:2, title:'懂你的情绪', desc:'让AI读懂你的状态——配置情绪记忆，让AI在你不同状态下用不同方式回应。', status:'available'},
-  {id:3, title:'懂你的学习方法', desc:'让AI用你接受的方式教你——识别学习风格，设计自主闭环任务。', status:'available'},
-  {id:4, title:'定规矩', desc:'让AI守你的底线——建立铁律体系，边界内做事不越线。', status:'available'},
-  {id:5, title:'懂你的人际关系', desc:'让AI知道你的协作网络——多Agent协作，让AI懂你身边的人。', status:'locked'},
-  {id:6, title:'懂你整合资源', desc:'让AI帮你调配资源——资源调用SOP，让AI成为你的资源调度中心。', status:'locked'},
-  {id:7, title:'懂你提升领导力', desc:'让AI成为你的决策杠杆——从做事到带人，AI帮你做决策过滤。', status:'locked'},
-  {id:8, title:'进化+踩坑', desc:'让AI和你一起成长——踩坑档案，L1→L5成长里程碑。', status:'locked'}
-];
+// 页面加载时处理参数
+window.addEventListener("DOMContentLoaded", function() {
+  if (tplFromUrl === "care") {
+    // 自动选中「关怀陪伴官」模板
+    selectTemplate(document.getElementById("tpl-care"), "care");
 
-// --- Lesson 3 exercises ---
-var LESSON3_EXERCISES = [
-  {
-    q:'当你学一个新技能时，你第一反应是什么？',
-    opts:[
-      {text:'找文档、看资料，先搞清楚原理', score:'文档型'},
-      {text:'找个视频或教程，跟着一步步做', score:'动手型'},
-      {text:'找懂的人聊，边问边学', score:'对话型'}
-    ],
-    fb:{good:'你偏向文档型学习——喜欢先理解框架再深入。AI应该给你结构化的文字输出。', hint:'你偏向动手型/对话型学习——AI应该给你分步骤的操作指南，或者用问答方式引导你。'}
-  },
-  {
-    q:'你收到一个方案，最希望是什么形式？',
-    opts:[
-      {text:'Word文档，有背景有分析有建议', score:'文档型'},
-      {text:'Excel清单，第一步做什么第二步做什么', score:'动手型'},
-      {text:'PPT，边讲边演示', score:'对话型'}
-    ],
-    fb:{good:'文档型偏好确认——AI输出时应该给你完整的分析报告格式。', hint:'非文档型偏好——AI输出时应该给你清单式或对话式格式。'}
-  },
-  {
-    q:'AI给了你一个方案，你第一反应是什么？',
-    opts:[
-      {text:'写得很详细，我再看看', score:'文档型'},
-      {text:'步骤很清楚，我试试', score:'动手型'},
-      {text:'等等，我有几个问题想探讨', score:'对话型'}
-    ],
-    fb:{good:'文档型确认——你习惯先消化再行动。', hint:'动手型/对话型确认——你习惯边做边调整。'}
-  }
-];
-
-// --- Lesson 4 exercises ---
-var LESSON4_EXERCISES = [
-  {
-    q:'AI做了什么会让你"炸"？',
-    opts:[
-      {text:'替我做决定，不经过我确认', correct:true},
-      {text:'回答不够详细', correct:false},
-      {text:'格式不太对', correct:false}
-    ],
-    fb:{good:'对——AI替你做决定是最危险的。铁律1（决策权归属）就是防这个。', hint:'其实"替你做决定"才是最危险的。AI格式不对可以改，但替你做了决定可能造成不可逆的后果。'}
-  },
-  {
-    q:'AI说了什么会让你"崩"？',
-    opts:[
-      {text:'用词不够专业', correct:false},
-      {text:'编造不确定的信息，假装自己知道', correct:true},
-      {text:'回复太短', correct:false}
-    ],
-    fb:{good:'对——AI编造信息（幻觉）是铁律2（不确定性标注）要防的核心问题。', hint:'编造信息（幻觉）才是致命问题。AI不确定的时候必须标注，不能瞎编。'}
-  },
-  {
-    q:'AI没做什么会让你"慌"？',
-    opts:[
-      {text:'没主动打招呼', correct:false},
-      {text:'执行长任务不汇报进度，你不知道做到哪了', correct:true},
-      {text:'没记住你的偏好', correct:false}
-    ],
-    fb:{good:'对——铁律3（重要行动必须汇报）就是解决这个。AI做长任务时必须主动汇报。', hint:'长任务不汇报进度最让人慌。铁律3规定：任务超过30分钟或多步骤，AI必须主动汇报。'}
-  }
-];
-
-// --- State ---
-var progress = loadProgress();
-var currentLesson = null;
-
-function loadProgress(){
-  try {
-    return JSON.parse(localStorage.getItem('breeder-progress') || '{"completed":[],"lesson3":null,"lesson4":null}');
-  } catch(e){ return {completed:[], lesson3:null, lesson4:null}; }
-}
-
-function saveProgress(){
-  try { localStorage.setItem('breeder-progress', JSON.stringify(progress)); } catch(e){}
-}
-
-function isCompleted(lessonId){ return progress.completed.indexOf(lessonId) !== -1; }
-
-function toast(msg){
-  var t = document.createElement('div');
-  t.className = 'toast'; t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(function(){ t.remove(); }, 2500);
-}
-
-// --- Render course grid ---
-function renderCourses(){
-  var grid = document.getElementById('course-grid');
-  var done = progress.completed.length;
-  var html = '';
-  COURSES.forEach(function(c){
-    var cls = '', badge = '';
-    if (isCompleted(c.id)) { cls = 'completed'; badge = '<span class="course-badge done">已完成</span>'; }
-    else if (c.status === 'locked') { cls = ''; badge = '<span class="course-badge locked">待解锁</span>'; }
-    else if (done === c.id - 1) { cls = 'active'; badge = '<span class="course-badge ongoing">可开始</span>'; }
-    else if (c.id <= done) { cls = 'completed'; badge = '<span class="course-badge done">已完成</span>'; }
-    html += '<div class="course-card '+cls+'" data-lesson="'+c.id+'" '+(c.status==='locked'?'':'tabindex="0"')+'>';
-    html += '<div class="course-num">第'+c.id+'课</div>';
-    html += '<div class="course-title">'+c.title+'</div>';
-    html += '<div class="course-desc">'+c.desc+'</div>';
-    html += badge;
-    html += '</div>';
-  });
-  grid.innerHTML = html;
-
-  // Update progress bar
-  document.getElementById('progress-fill').style.width = (done/8*100)+'%';
-  document.getElementById('progress-text').textContent = done+'/8';
-
-  // Click handlers
-  grid.querySelectorAll('.course-card').forEach(function(card){
-    card.addEventListener('click', function(){
-      var id = parseInt(card.dataset.lesson);
-      if (COURSES[id-1].status === 'locked') { toast('这门课还没解锁，请先完成前面的课程'); return; }
-      openLesson(id);
-    });
-  });
-}
-
-// --- Open lesson ---
-function openLesson(id){
-  currentLesson = id;
-  document.getElementById('courses').style.display = 'none';
-  document.getElementById('quiz').style.display = 'none';
-  var area = document.getElementById('lesson-area');
-  area.style.display = 'block';
-  var content = document.getElementById('lesson-content');
-  var c = COURSES[id-1];
-
-  if (id === 3) {
-    content.innerHTML = renderLesson3();
-    bindLesson3();
-  } else if (id === 4) {
-    content.innerHTML = renderLesson4();
-    bindLesson4();
-  } else if (id <= 2) {
-    content.innerHTML = renderLessonPlaceholder(id, c);
-    bindPlaceholder(id, c);
-  } else {
-    content.innerHTML = renderLessonPlaceholder(id, c);
-  }
-
-  area.scrollIntoView({behavior:'smooth', block:'start'});
-  if (typeof window.fsTrack === 'function') window.fsTrack('breeder_lesson_open', {lesson: id});
-}
-
-// --- Lesson 3: 懂你的学习方法 ---
-function renderLesson3(){
-  var h = '<div class="interact">';
-  h += '<h3>第3课：懂你的学习方法</h3>';
-  h += '<p style="color:#5E5952;font-size:14px">从被动应答到自主闭环 — AI得知道你怎么学最快</p>';
-  h += '<div class="goal"><strong>本课目标：</strong>识别自己的学习风格，设计一个自主闭环任务，让AI按你习惯的方式输出。<br><strong>交付物：</strong>学习风格确认 + 1个闭环任务设计</div>';
-
-  h += '<div style="margin-top:20px"><strong style="color:#2D5A3D">Part 1：识别你的学习风格</strong></div>';
-  LESSON3_EXERCISES.forEach(function(ex, i){
-    h += '<div class="ex-q" id="l3q'+i+'">';
-    h += '<p class="ex-q-title">'+(i+1)+'. '+ex.q+'</p>';
-    h += '<div class="ex-opts" role="radiogroup">';
-    ex.opts.forEach(function(o, j){
-      h += '<button class="ex-opt" type="button" data-idx="'+j+'" data-q="'+i+'">'+o.text+'</button>';
-    });
-    h += '</div><div class="ex-fb" role="status"></div></div>';
-  });
-
-  h += '<div style="margin-top:20px;border-top:1px dashed #EFE8DB;padding-top:16px">';
-  h += '<strong style="color:#2D5A3D">Part 2：你的学习风格</strong>';
-  h += '<div id="l3-style-result" style="margin-top:10px;padding:14px;background:#F5F1E8;border-radius:12px;color:#5E5952;font-size:14px">完成上面3道题后自动出结果</div>';
-  h += '</div>';
-
-  h += '<div style="margin-top:20px;border-top:1px dashed #EFE8DB;padding-top:16px">';
-  h += '<strong style="color:#2D5A3D">Part 3：设计你的第一个闭环任务</strong>';
-  h += '<p style="font-size:14px;color:#5E5952;margin:8px 0">在下面写出一个你想让AI自动完成的任务（输入→处理→输出→验证，一次说清楚）</p>';
-  h += '<textarea class="ex-textarea" id="l3-task" placeholder="例如：我要一个装修方案，业主情况：80平/15万/中年夫妻。要求：①控制在15万内 ②列出主材品牌和价格 ③给出3个备选方案。按表格输出..."></textarea>';
-  h += '<button class="btn btn-primary btn-sm" type="button" id="l3-submit">提交任务设计</button>';
-  h += '<div id="l3-task-fb" style="margin-top:10px;display:none"></div>';
-  h += '</div>';
-
-  if (isCompleted(3)) h += '<div style="margin-top:20px;padding:14px;background:#E8EDE3;border-radius:12px;color:#2D5A3D;font-weight:600">✅ 你已完成本课！</div>';
-  h += '</div>';
-  return h;
-}
-
-function bindLesson3(){
-  var answers = progress.lesson3 ? progress.lesson3.answers : [null,null,null];
-  var taskDone = progress.lesson3 && progress.lesson3.taskDone;
-
-  // Restore answers
-  LESSON3_EXERCISES.forEach(function(ex, i){
-    if (answers[i] !== null) {
-      var q = document.getElementById('l3q'+i);
-      var btns = q.querySelectorAll('.ex-opt');
-      btns.forEach(function(b, j){
-        if (j === answers[i]) b.classList.add('chosen');
-        b.disabled = true;
-      });
-      var fb = q.querySelector('.ex-fb');
-      fb.className = 'ex-fb show ' + (ex.opts[answers[i]].score === '文档型' ? 'good' : 'hint');
-      fb.textContent = ex.opts[answers[i]].score === '文档型' ? ex.fb.good : ex.fb.hint;
+    var info = document.getElementById("param-info");
+    var msg = "🩹 检测到你从【四维关怀测评】跳过来，已自动选中「关怀陪伴官」模板。";
+    if (weaknessFromUrl) {
+      msg += " 你的薄弱环节：" + weaknessFromUrl.replace(/,/g, "、") + "，助理会重点关注这些方面。";
     }
-  });
-  if (answers.every(function(a){ return a !== null; })) showStyleResult(answers);
-  if (taskDone) {
-    document.getElementById('l3-task').value = progress.lesson3.task || '';
-    document.getElementById('l3-task').disabled = true;
-    document.getElementById('l3-submit').disabled = true;
-    document.getElementById('l3-submit').textContent = '已提交';
-    var fb = document.getElementById('l3-task-fb');
-    fb.style.display = 'block';
-    fb.innerHTML = '<div style="padding:12px;background:#E8EDE3;border-radius:10px;color:#2D5A3D;font-size:14px">✅ 任务设计已保存。你的闭环任务包含4要素（输入→处理→输出→验证），可以开始让AI执行了。</div>';
-  }
-
-  // Bind new clicks
-  document.querySelectorAll('#lesson-content .ex-opt').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var qIdx = parseInt(btn.dataset.q);
-      if (answers[qIdx] !== null) return;
-      var idx = parseInt(btn.dataset.idx);
-      answers[qIdx] = idx;
-      var q = document.getElementById('l3q'+qIdx);
-      var btns = q.querySelectorAll('.ex-opt');
-      btns.forEach(function(b, j){
-        if (j === idx) b.classList.add('chosen');
-        b.disabled = true;
-      });
-      var ex = LESSON3_EXERCISES[qIdx];
-      var fb = q.querySelector('.ex-fb');
-      fb.className = 'ex-fb show ' + (ex.opts[idx].score === '文档型' ? 'good' : 'hint');
-      fb.textContent = ex.opts[idx].score === '文档型' ? ex.fb.good : ex.fb.hint;
-      progress.lesson3 = progress.lesson3 || {};
-      progress.lesson3.answers = answers;
-      saveProgress();
-      if (answers.every(function(a){ return a !== null; })) showStyleResult(answers);
-    });
-  });
-
-  function showStyleResult(answers){
-    var scores = answers.map(function(i){ return LESSON3_EXERCISES[answers.indexOf(i) === -1 ? 0 : answers.indexOf(i)]; });
-    var counts = {'文档型':0,'动手型':0,'对话型':0};
-    answers.forEach(function(i){ counts[LESSON3_EXERCISES[answers.indexOf(i) === -1 ? 0 : answers.indexOf(i)].opts[i].score]++; });
-    var style = Object.keys(counts).reduce(function(a,b){ return counts[a] > counts[b] ? a : b; });
-    var desc = {
-      '文档型':'你习惯先看文字再理解。AI应该给你：结构化文档、完整分析、背景+结论。',
-      '动手型':'你习惯边做边学。AI应该给你：分步骤清单、操作指南、模板可填空。',
-      '对话型':'你习惯通过交流来理解。AI应该给你：短句回应、多问问题引导你思考。'
-    };
-    document.getElementById('l3-style-result').innerHTML = '<strong style="color:#2D5A3D">你的学习风格：'+style+'</strong><br>'+desc[style]+'<br><span style="font-size:12px;color:#B8B1A4">（已更新到你的AI设定中）</span>';
-  }
-
-  document.getElementById('l3-submit').addEventListener('click', function(){
-    if (taskDone) return;
-    var task = document.getElementById('l3-task').value.trim();
-    if (!task) { toast('请先写一个闭环任务再提交'); return; }
-    progress.lesson3 = progress.lesson3 || {answers: answers};
-    progress.lesson3.task = task;
-    progress.lesson3.taskDone = true;
-    markLessonComplete(3);
-    document.getElementById('l3-task').disabled = true;
-    document.getElementById('l3-submit').disabled = true;
-    document.getElementById('l3-submit').textContent = '已提交';
-    var fb = document.getElementById('l3-task-fb');
-    fb.style.display = 'block';
-    fb.innerHTML = '<div style="padding:12px;background:#E8EDE3;border-radius:10px;color:#2D5A3D;font-size:14px">✅ 任务设计已保存。你的闭环任务包含4要素（输入→处理→输出→验证），可以开始让AI执行了。</div>';
-    saveProgress();
-  });
-}
-
-// --- Lesson 4: 定规矩 ---
-function renderLesson4(){
-  var h = '<div class="interact">';
-  h += '<h3>第4课：定规矩 — 铁律体系怎么建</h3>';
-  h += '<p style="color:#5E5952;font-size:14px">AI懂你了、会干活了，但不能乱来。铁律是边界，让AI在懂你的前提下不越线。</p>';
-  h += '<div class="goal"><strong>本课目标：</strong>识别你的"绝对不可"清单，把底线写成铁律（5条），部署到AI执行层。<br><strong>交付物：</strong>5条铁律 + 部署清单</div>';
-
-  LESSON4_EXERCISES.forEach(function(ex, i){
-    h += '<div class="ex-q" id="l4q'+i+'">';
-    h += '<p class="ex-q-title">'+(i+1)+'. '+ex.q+'</p>';
-    h += '<div class="ex-opts" role="radiogroup">';
-    ex.opts.forEach(function(o, j){
-      h += '<button class="ex-opt" type="button" data-idx="'+j+'" data-q="'+i+'">'+o.text+'</button>';
-    });
-    h += '</div><div class="ex-fb" role="status"></div></div>';
-  });
-
-  h += '<div style="margin-top:20px;border-top:1px dashed #EFE8DB;padding-top:16px">';
-  h += '<strong style="color:#2D5A3D">你的铁律清单</strong>';
-  h += '<p style="font-size:14px;color:#5E5952;margin:8px 0">下面是5条核心铁律模板，你可以直接采用，也可以修改后保存。</p>';
-
-  var rules = [
-    {name:'决策权归属', rule:'AI只提供信息、分析、建议，最终决策权永远在用户', trigger:'任何涉及判断、选择、决定的情境', penalty:'AI说"我的建议是...，最终由你决定"而不是"你应该..."'},
-    {name:'不确定性标注', rule:'AI不能编造不确定的信息，查不到就说查不到', trigger:'用户问"是不是"、"能不能"、"有没有"这类确认性问题', penalty:'输出内容必须标注[已确认]或[未确认/无法核实]'},
-    {name:'重要行动必须汇报', rule:'AI帮我做事时，阶段性结果必须汇报', trigger:'任务执行超过30分钟或涉及多个步骤', penalty:'AI主动输出进度汇报，不等用户问'},
-    {name:'触及底线必须停', rule:'AI觉得我的要求有问题时，必须先停并说明原因', trigger:'我的要求可能涉及风险、违规、不合理', penalty:'AI输出"停，这里可能有问题：[原因]，请确认是否继续"'},
-    {name:'外部沟通必须我审', rule:'任何发给外部的信息，必须先让我审核', trigger:'任何对外输出的内容（邮件、消息、文件）', penalty:'AI输出"建议内容如下，请审核后发送"，不直接发送'}
-  ];
-
-  rules.forEach(function(r, i){
-    h += '<div style="background:#F5F1E8;border-radius:10px;padding:14px;margin:10px 0">';
-    h += '<strong style="color:#2D5A3D">铁律'+(i+1)+'：'+r.name+'</strong>';
-    h += '<div style="font-size:13px;color:#5E5952;margin-top:4px">规则：'+r.rule+'<br>触发：'+r.trigger+'<br>违反：'+r.penalty+'</div>';
-    h += '</div>';
-  });
-
-  h += '<textarea class="ex-textarea" id="l4-rules" placeholder="在这里修改或补充你的铁律（可选）"></textarea>';
-  h += '<button class="btn btn-primary btn-sm" type="button" id="l4-submit">确认铁律，完成本课</button>';
-  h += '<div id="l4-task-fb" style="margin-top:10px;display:none"></div>';
-  h += '</div>';
-
-  if (isCompleted(4)) h += '<div style="margin-top:20px;padding:14px;background:#E8EDE3;border-radius:12px;color:#2D5A3D;font-weight:600">✅ 你已完成本课！</div>';
-  h += '</div>';
-  return h;
-}
-
-function bindLesson4(){
-  var answers = progress.lesson4 ? progress.lesson4.answers : [null,null,null];
-  var done = progress.lesson4 && progress.lesson4.done;
-
-  LESSON4_EXERCISES.forEach(function(ex, i){
-    if (answers[i] !== null) {
-      var q = document.getElementById('l4q'+i);
-      var btns = q.querySelectorAll('.ex-opt');
-      btns.forEach(function(b, j){
-        if (j === answers[i]) b.classList.add('chosen');
-        b.disabled = true;
-      });
-      var fb = q.querySelector('.ex-fb');
-      fb.className = 'ex-fb show ' + (ex.opts[answers[i]].correct ? 'good' : 'hint');
-      fb.textContent = ex.opts[answers[i]].correct ? ex.fb.good : ex.fb.hint;
+    if (scoresFromUrl) {
+      var sc = scoresFromUrl.split(",");
+      var dimNames = ["身体","心理","尊严","质感"];
+      msg += "\n你的四维得分：";
+      for (var i = 0; i < dimNames.length && i < sc.length; i++) {
+        msg += dimNames[i] + " " + sc[i] + "分  ";
+      }
     }
-  });
-
-  if (done) {
-    document.getElementById('l4-submit').disabled = true;
-    document.getElementById('l4-submit').textContent = '已完成';
-    document.getElementById('l4-rules').disabled = true;
-    var fb = document.getElementById('l4-task-fb');
-    fb.style.display = 'block';
-    fb.innerHTML = '<div style="padding:12px;background:#E8EDE3;border-radius:10px;color:#2D5A3D;font-size:14px">✅ 铁律已确认，本课完成。你的5条铁律已部署到AI执行层。</div>';
+    info.textContent = msg;
+    info.classList.remove("hidden");
   }
-
-  document.querySelectorAll('#lesson-content .ex-opt').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var qIdx = parseInt(btn.dataset.q);
-      if (answers[qIdx] !== null) return;
-      var idx = parseInt(btn.dataset.idx);
-      answers[qIdx] = idx;
-      var q = document.getElementById('l4q'+qIdx);
-      var btns = q.querySelectorAll('.ex-opt');
-      btns.forEach(function(b, j){
-        if (j === idx) b.classList.add('chosen');
-        b.disabled = true;
-      });
-      var ex = LESSON4_EXERCISES[qIdx];
-      var fb = q.querySelector('.ex-fb');
-      fb.className = 'ex-fb show ' + (ex.opts[idx].correct ? 'good' : 'hint');
-      fb.textContent = ex.opts[idx].correct ? ex.fb.good : ex.fb.hint;
-      progress.lesson4 = progress.lesson4 || {};
-      progress.lesson4.answers = answers;
-      saveProgress();
-    });
-  });
-
-  document.getElementById('l4-submit').addEventListener('click', function(){
-    if (done) return;
-    if (answers.indexOf(null) !== -1) { toast('请先完成上面3道题'); return; }
-    progress.lesson4 = progress.lesson4 || {answers: answers};
-    progress.lesson4.done = true;
-    markLessonComplete(4);
-    document.getElementById('l4-submit').disabled = true;
-    document.getElementById('l4-submit').textContent = '已完成';
-    document.getElementById('l4-rules').disabled = true;
-    var fb = document.getElementById('l4-task-fb');
-    fb.style.display = 'block';
-    fb.innerHTML = '<div style="padding:12px;background:#E8EDE3;border-radius:10px;color:#2D5A3D;font-size:14px">✅ 铁律已确认，本课完成。你的5条铁律已部署到AI执行层。</div>';
-    saveProgress();
-  });
-}
-
-// --- Placeholder for lessons 1,2,5-8 ---
-function renderLessonPlaceholder(id, c){
-  var h = '<div class="interact">';
-  h += '<h3>第'+id+'课：'+c.title+'</h3>';
-  h += '<p style="color:#5E5952;font-size:14px">'+c.desc+'</p>';
-  if (id <= 2) {
-    h += '<div style="margin-top:20px;padding:20px;background:#F5F1E8;border-radius:12px;text-align:center">';
-    h += '<p style="color:#5E5952;font-size:14px;margin:0 0 12px">本课内容由小眼镜（教培研发）正在编写中。<br>第1-4课升级版 v2.0 预计 6.22 交付。</p>';
-    h += '<button class="btn btn-primary btn-sm" type="button" id="l'+id+'-mark">标记为已完成（跳过）</button>';
-    h += '</div>';
-  } else {
-    h += '<div style="margin-top:20px;padding:20px;background:#F5F1E8;border-radius:12px;text-align:center">';
-    h += '<p style="color:#5E5952;font-size:14px;margin:0">本课内容正在开发中，预计 7 月上线。<br>完成第4课后，第5课将自动解锁。</p>';
-    h += '</div>';
-  }
-  if (isCompleted(id)) h += '<div style="margin-top:20px;padding:14px;background:#E8EDE3;border-radius:12px;color:#2D5A3D;font-weight:600">✅ 你已完成本课！</div>';
-  h += '</div>';
-  return h;
-}
-
-function bindPlaceholder(id, c){
-  if (id <= 2) {
-    var btn = document.getElementById('l'+id+'-mark');
-    if (btn) {
-      btn.addEventListener('click', function(){
-        markLessonComplete(id);
-        btn.disabled = true;
-        btn.textContent = '已标记';
-        toast('第'+id+'课已标记为完成！');
-      });
-    }
-  }
-}
-
-// --- Mark lesson complete ---
-function markLessonComplete(id){
-  if (isCompleted(id)) return;
-  progress.completed.push(id);
-  progress.completed.sort(function(a,b){ return a-b; });
-  saveProgress();
-  renderCourses();
-  toast('🎉 第'+id+'课完成！AI 能力 +1');
-  if (typeof window.fsTrack === 'function') window.fsTrack('breeder_lesson_complete', {lesson: id});
-}
-
-// --- Back to course list ---
-document.querySelector('#lesson-area .btn-ghost').addEventListener('click', function(e){
-  e.preventDefault();
-  document.getElementById('courses').style.display = '';
-  document.getElementById('quiz').style.display = '';
-  document.getElementById('lesson-area').style.display = 'none';
-  currentLesson = null;
-  document.getElementById('courses').scrollIntoView({behavior:'smooth', block:'start'});
 });
 
-// --- Warm-up quiz (original) ---
-(function(){
-  var state = {correct:0, answered:0, total:3};
-  var feedbacks = {
-    right: '这个选择很贴近"以客户为中心"的思路 — 先理解客户，再提供帮助。',
-    wrong: '这是个常见选择，但我们可以再进一步：先理解客户真正想解决什么，而不是急于给出答案。'
-  };
-  var resultTexts = [
-    {score:'新手起步', text:'继续保持好奇。后面的学习路径会帮你把"直觉"变成"可重复的方法论"。'},
-    {score:'摸到门路', text:'你已经能在关键时刻做出较好的选择，下一阶段是系统化地练习这些能力。'},
-    {score:'准资深', text:'你的判断很贴近资深服务者的思路。可以开始在更复杂的真实场景里做精细化练习。'}
-  ];
+// ============================================================
+//  模板选择
+// ============================================================
+var currentTpl = "care";
 
-  document.querySelectorAll('#quiz .q').forEach(function(q){
-    var opts = q.querySelectorAll('.opt');
-    var fb = q.querySelector('.fb');
-    opts.forEach(function(btn){
-      btn.addEventListener('click', function(){
-        if (q.dataset.done) return;
-        opts.forEach(function(o){
-          o.setAttribute('aria-pressed', o === btn ? 'true' : 'false');
-          o.disabled = true;
-          if (o.dataset.correct === '1') o.classList.add('right');
-          else o.classList.add('wrong');
-        });
-        var isRight = btn.dataset.correct === '1';
-        if (isRight) state.correct++;
-        state.answered++;
-        fb.textContent = isRight ? feedbacks.right : feedbacks.wrong;
-        fb.className = 'fb show ' + (isRight ? 'good' : 'hint');
-        q.dataset.done = '1';
-        if (typeof window.fsTrack === 'function') window.fsTrack('breeder_answer', {q: q.id, correct: isRight});
-        if (state.answered === state.total) showResult();
-      });
-    });
-  });
+function selectTemplate(el, type) {
+  var cards = document.querySelectorAll(".tpl-card");
+  for (var i = 0; i < cards.length; i++) cards[i].classList.remove("active");
+  el.classList.add("active");
+  currentTpl = type;
 
-  function showResult(){
-    var box = document.getElementById('result');
-    var t = document.getElementById('result-title');
-    var r = document.getElementById('result-text');
-    var level = state.correct === 3 ? 2 : (state.correct >= 2 ? 1 : 0);
-    var lv = resultTexts[level];
-    t.textContent = '完成！' + lv.score + '（' + state.correct + '/' + state.total + '）';
-    r.textContent = lv.text;
-    box.style.display = 'block';
-    if (typeof window.fsTrack === 'function') window.fsTrack('breeder_finish', {score: state.correct, level: level});
+  var abEl = document.getElementById("care-abilities");
+  if (type === "care") {
+    document.getElementById("agent-name").value = "小暖";
+    abEl.innerHTML =
+      '<label class="care-label">☑ 每日关怀问候（早/晚安，问今天状态）</label>' +
+      '<label class="care-label">☑ 情绪疏导（听你吐槽，给你疏导，不评断）</label>' +
+      '<label class="care-label">☑ 健康提醒（喝水/休息/运动提醒）</label>' +
+      '<label class="care-label">☑ 成就感记录（每天帮你记录一件「今天做得不错」的事）</label>';
+  } else if (type === "sales") {
+    document.getElementById("agent-name").value = "小销";
+    abEl.innerHTML =
+      '<label class="care-label">☑ 话术陪练（模拟客户提问，帮你练应答）</label>' +
+      '<label class="care-label">☑ 客户分析（根据聊天记录分析客户意图）</label>' +
+      '<label class="care-label">☑ 跟进提醒（定期提醒你跟进哪些客户）</label>';
+  } else if (type === "general") {
+    document.getElementById("agent-name").value = "小风";
+    abEl.innerHTML = '<label style="font-size:12px;color:#999;">全能助理会根据你的补充指令自动调整能力范围</label>';
+  } else {
+    document.getElementById("agent-name").value = "";
+    abEl.innerHTML = '<label style="font-size:12px;color:#999;">请在下方补充指令里描述你想要的助理能力</label>';
   }
-})();
+}
 
-// --- Init ---
-renderCourses();
+// ============================================================
+//  生成 Prompt
+// ============================================================
+function generateAgent() {
+  var name = document.getElementById("agent-name").value.trim() || "小暖";
+  var pers = document.getElementById("agent-personality").value;
+  var extra = document.getElementById("agent-extra").value.trim();
+  var weakness = weaknessFromUrl ? weaknessFromUrl.split(",") : [];
+
+  var persMap = {
+    warm: "温暖耐心，像老朋友一样关怀对方，说话柔和但不啰嗦",
+    rational: "理性冷静，给建议直接可行，不煽情不鸡汤",
+    humor: "幽默轻松，用玩笑化解压力，但关键时刻很靠谱"
+  };
+  var persText = persMap[pers] || "温暖耐心";
+
+  var prompt = "";
+  prompt += "你叫" + name + "，是我的专属AI助理。\n\n";
+  prompt += "【你的性格】\n" + persText + "\n\n";
+
+  if (currentTpl === "care") {
+    prompt += "【你的核心职责】\n";
+    prompt += "1. 每日关怀：早上和晚上主动问候我，问我今天状态怎么样\n";
+    prompt += "2. 情绪疏导：当我吐槽工作/生活时，先倾听，再给疏导，不评断不指责\n";
+    prompt += "3. 健康提醒：定期提醒我喝水、休息、运动，不要让我一直忙\n";
+    prompt += "4. 成就感记录：每天帮我找到一件「今天做得不错」的事，记下来\n\n";
+
+    if (weakness.length > 0) {
+      prompt += "【重点关注】\n";
+      prompt += "我从关怀测评中发现自己的薄弱环节是：" + weakness.join("、") + "。\n";
+      prompt += "请你在对话中特别关注这些方面，主动问我、提醒我、帮我改善。\n\n";
+    }
+
+    prompt += "【重要原则】\n";
+    prompt += "- 不要催我做事，要陪我慢慢好起来\n";
+    prompt += "- 我吐槽的时候，先听，别急着给建议\n";
+    prompt += "- 每天至少帮我找到一件值得肯定的事\n";
+    prompt += "- 用简短的话，不要写小作文\n";
+  } else if (currentTpl === "sales") {
+    prompt += "【你的核心职责】\n";
+    prompt += "1. 话术陪练：模拟客户可能的提问，帮我练习应答话术\n";
+    prompt += "2. 客户分析：根据我描述的客户行为，分析其意图和关注点\n";
+    prompt += "3. 跟进提醒：帮我记录客户跟进计划，到期提醒我\n\n";
+  } else {
+    prompt += "【你的核心职责】\n根据我的需要，灵活提供帮助。\n\n";
+  }
+
+  if (extra) {
+    prompt += "【额外要求】\n" + extra + "\n\n";
+  }
+
+  prompt += "【输出格式】\n每次回复控制在3-5句话以内，除非我在问复杂问题。用「你」称呼我。";
+
+  var rc = document.getElementById("result-content");
+  rc.textContent = prompt;
+  document.getElementById("result-box").classList.remove("hidden");
+  document.getElementById("doubao-cta").style.display = "block";
+  rc.scrollIntoView({behavior: "smooth"});
+}
+
+// ============================================================
+//  复制 Prompt
+// ============================================================
+function copyPrompt() {
+  var text = document.getElementById("result-content").textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      var rc = document.getElementById("result-content");
+      var prev = rc.textContent;
+      rc.textContent = "✅ 已复制到剪贴板！";
+      setTimeout(function(){ rc.textContent = prev; }, 1500);
+    });
+  }
+}
 </script>
+
 </body>
 </html>
