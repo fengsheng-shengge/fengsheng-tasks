@@ -1,11 +1,6 @@
-// ============================================================
-// Cloudflare Pages Function: /api/event  v2.0
-// 对应作战方案 v1.1 · 110人验证线
-// 小扣子（技术侧）
-//
+// Cloudflare Pages Function: /api/event  v2.1
 // POST /api/event  — 提交埋点事件（公开，支持单条或批量数组）
 // GET  /api/event?key=fs-admin-2026&product=xxx — 管理查询
-// ============================================================
 
 const EVENT_WHITELIST = new Set([
   'pageview', 'click', 'reply_submit', 'coze_chat_open',
@@ -69,9 +64,9 @@ function errJson(code, msg) {
   });
 }
 
-function okJson(obj, status = 200) {
+function okJson(obj, status) {
   return new Response(JSON.stringify(obj), {
-    status,
+    status: status || 200,
     headers: {
       'Content-Type': 'application/json',
       'Cache-Control': 'no-store',
@@ -81,33 +76,23 @@ function okJson(obj, status = 200) {
 }
 
 function normalizeEvent(raw, request, url) {
-  let event_type = raw.event_type || raw.type || '';
-  let product = raw.product || '';
-  let page = raw.page || '';
-  let uid = raw.uid || '';
-  let utm_source = raw.utm_source || '';
-  let utm_medium = raw.utm_medium || '';
-  let utm_campaign = raw.utm_campaign || '';
-  let ref = raw.ref || '';
-  let data = raw.data;
-
-  event_type = event_type.toString().slice(0, 50);
+  let event_type = (raw.event_type || raw.type || '').toString().slice(0, 50);
   if (!EVENT_WHITELIST.has(event_type)) event_type = 'action';
 
-  product = product.toString().slice(0, 50);
+  let product = (raw.product || '').toString().slice(0, 50);
   if (product && !PRODUCT_WHITELIST.has(product)) product = 'other';
 
-  page = (page || url.pathname || '').toString().slice(0, 200);
-  uid = uid.toString().slice(0, 100);
-  utm_source = utm_source.toString().slice(0, 100);
-  utm_medium = utm_medium.toString().slice(0, 100);
-  utm_campaign = utm_campaign.toString().slice(0, 100);
-  ref = ref.toString().slice(0, 200);
+  const page = (raw.page || url.pathname || '').toString().slice(0, 200);
+  const uid = (raw.uid || '').toString().slice(0, 100);
+  const utm_source = (raw.utm_source || '').toString().slice(0, 100);
+  const utm_medium = (raw.utm_medium || '').toString().slice(0, 100);
+  const utm_campaign = (raw.utm_campaign || '').toString().slice(0, 100);
+  const ref = (raw.ref || '').toString().slice(0, 200);
 
   let dataStr = '{}';
-  if (data !== undefined && data !== null) {
+  if (raw.data !== undefined && raw.data !== null) {
     try {
-      dataStr = (typeof data === 'string' ? data : JSON.stringify(data)).slice(0, 4000);
+      dataStr = (typeof raw.data === 'string' ? raw.data : JSON.stringify(raw.data)).slice(0, 4000);
     } catch (_) { dataStr = '{}'; }
   }
 
@@ -154,7 +139,7 @@ export async function onRequest(context) {
         return errJson(429, 'too many requests');
       }
 
-      let prepared = events.map(raw => normalizeEvent(raw, request, url));
+      const prepared = events.map(raw => normalizeEvent(raw, request, url));
 
       let inserted = 0;
       for (const ev of prepared) {
@@ -191,8 +176,8 @@ export async function onRequest(context) {
       const product = url.searchParams.get('product');
       const uid = url.searchParams.get('uid');
 
-      let where = [];
-      let params = [];
+      const where = [];
+      const params = [];
       if (eventType) { where.push('event_type = ?'); params.push(eventType); }
       if (product) { where.push('product = ?'); params.push(product); }
       if (uid) { where.push('uid = ?'); params.push(uid); }
