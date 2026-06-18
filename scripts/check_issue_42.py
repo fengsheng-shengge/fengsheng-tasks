@@ -93,13 +93,16 @@ def list_comments():
 
 
 def pick_candidate(comments):
-    """返回最新一条作者名/内容匹配小鱼儿的评论体（字符串）。"""
+    """返回最新一条作者名/内容匹配小鱼儿的评论体（字符串）。跳过脚本自己的自动化回复。"""
     # 按创建时间正序，取最新命中
     hit = None
     for c in comments:
         author = (c.get("user") or {}).get("login", "") or ""
         body = c.get("body", "") or ""
         text = f"{author}\n{body}"
+        # 跳过脚本自己的自动化回复
+        if any(kw in body for kw in ["已写入 Secrets", "已写入仓库 Secrets", "小扣子已收到凭证并触发部署"]):
+            continue
         if any(k in text for k in AUTHOR_KEYWORDS):
             hit = c
         # 另外: 任何包含 "Account ID" + "Token" 的就算是小鱼儿回复
@@ -126,6 +129,14 @@ def extract_credentials(body):
     if not api_token:
         found = [t for t in SIMPLE_TOKEN_RE.findall(body) if t != account_id]
         api_token = found[0] if found else None
+
+    # 验证 Token 格式：必须是 cfut_ 前缀（Cloudflare API Token），拒绝 cfat_ 前缀（Global API Key）
+    if api_token:
+        if api_token.startswith("cfat_"):
+            print(f"[WARN] 检测到 cfat_ 前缀 Token（Global API Key），此格式不被 Cloudflare API 接受，已忽略。", file=sys.stderr)
+            return account_id, None
+        if not api_token.startswith("cfut_"):
+            print(f"[WARN] Token 格式异常（非 cfut_ 前缀），可能无效。", file=sys.stderr)
 
     return account_id, api_token
 
