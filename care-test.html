@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta name="description" content="客户解码器：30秒读懂客户，个性化话术生成 — 风声 fengsheng.tech">
 <meta name="keywords" content="客户解码器,客户分析,话术生成,房产销售,服务者工具">
 <meta name="theme-color" content="#2D5A3D">
 <meta property="og:title" content="客户解码器 — 风声 fengsheng.tech">
-<meta property="og:description" content="30秒读懂客户，个性化话术生成。房产、租赁、整装、家政。">
+<meta property="og:description" content="30秒读懂客户，个性化话术生成。先理解客户，再选择怎么说。">
 <meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%23F5F1E8'/><text x='100' y='280' font-family='sans-serif' font-size='72' fill='%232D5A3D' font-weight='700'>客户解码器</text><text x='100' y='360' font-family='sans-serif' font-size='36' fill='%23D97757'>30秒读懂客户</text></svg>">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -32,8 +32,8 @@ a:hover{text-decoration:underline}
 .nav a{color:#2A2825;padding:6px 10px;border-radius:8px}
 .nav a:hover{background:#F5F1E8;text-decoration:none;color:#2D5A3D}
 .nav .sep{color:#B8B1A4}
-.hero{padding:56px 0 20px;text-align:center}
-.hero h1{font-size:clamp(30px,5vw,44px);line-height:1.3;margin:0 0 14px;color:#2A2825}
+.hero{padding:56px 0 28px;text-align:center}
+.hero h1{font-size:clamp(30px,5vw,44px);line-height:1.3;margin:0 0 14px;color:#2A2825;font-weight:700}
 .hero h1 em{font-style:normal;color:#D97757}
 .hero p.lead{font-size:clamp(16px,2.2vw,19px);color:#5E5952;max-width:620px;margin:0 auto 22px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:14px 28px;font-size:16px;font-weight:600;font-family:inherit;transition:transform .15s ease,box-shadow .15s ease,background-color .2s}
@@ -41,56 +41,100 @@ a:hover{text-decoration:underline}
 .btn-primary:hover{background:#234a31;text-decoration:none;transform:translateY(-1px)}
 .btn-orange{background:#D97757;color:#fff;box-shadow:0 6px 16px rgba(217,119,87,.25)}
 .btn-orange:hover{background:#c06649;text-decoration:none}
-.btn-ghost{background:transparent;color:#2D5A3D;border:2px solid #2D5A3D}
-.btn-ghost:hover{background:#2D5A3D;color:#fff;text-decoration:none}
+.btn-secondary{background:#fff;color:#2D5A3D;border:1px solid #EFE8DB;padding:12px 20px;font-size:14px}
+.btn-secondary:hover{background:#F5F1E8;border-color:#D97757;text-decoration:none}
+.btn-ghost{background:transparent;color:#2A2825;border:1px solid #EFE8DB;padding:10px 18px;font-size:13px}
+.btn-ghost:hover{background:#F5F1E8;text-decoration:none}
+.btn-sm{padding:8px 16px;font-size:13px}
 .section{padding:32px 0}
+.section h2{font-size:clamp(22px,3.5vw,28px);margin:0 0 8px;color:#2A2825}
+.section .sub{color:#5E5952;margin-bottom:20px;font-size:14px}
+
+/* Domain cards — from earliest version */
+.domains{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.domain{background:#fff;border-radius:16px;padding:22px;border:2px solid transparent;cursor:pointer;box-shadow:0 2px 6px rgba(42,40,37,.04);font-family:inherit;text-align:left;transition:all .2s;width:100%}
+.domain:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(42,40,37,.08);border-color:#D97757}
+.domain[aria-pressed="true"]{border-color:#2D5A3D;background:#E8EDE3}
+.domain h3{margin:0 0 6px;font-size:17px;color:#2A2825;font-weight:700}
+.domain p{margin:0;color:#5E5952;font-size:13px;line-height:1.6}
+.domain .domain-icon{height:36px;color:#2D5A3D;margin-bottom:8px}
+
+/* Toolbox — from earliest version */
 .toolbox{background:#fff;border-radius:16px;padding:26px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);margin-top:24px}
-.toolbox label{display:block;font-weight:600;margin-bottom:8px;color:#2A2825;font-size:15px}
-.toolbox .form-group{margin-bottom:18px}
-.toolbox select{width:100%;padding:12px 16px;border:2px solid #EFE8DB;border-radius:12px;font-family:inherit;font-size:15px;background:#F5F1E8;color:#2A2825;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232A2825' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px;transition:border-color .2s}
-.toolbox select:focus{outline:none;border-color:#2D5A3D;background:#fff}
-.toolbox input[type="text"],.toolbox input[type="number"]{width:100%;padding:12px 16px;border:2px solid #EFE8DB;border-radius:12px;font-family:inherit;font-size:15px;background:#F5F1E8;color:#2A2825;transition:border-color .2s}
-.toolbox input:focus{outline:none;border-color:#2D5A3D;background:#fff}
-textarea{width:100%;min-height:100px;padding:14px 16px;border:2px solid #EFE8DB;border-radius:12px;font-family:inherit;font-size:15px;background:#F5F1E8;color:#2A2825;resize:vertical;transition:border-color .2s}
+.toolbox h3{margin:0 0 4px;font-size:20px;color:#2A2825}
+.toolbox .hint{font-size:13px;color:#6B665E;margin:4px 0 16px}
+.toolbox label{display:block;font-weight:600;margin-bottom:8px;color:#2A2825;font-size:14px}
+textarea{width:100%;min-height:120px;padding:14px 16px;border:2px solid #EFE8DB;border-radius:12px;font-family:inherit;font-size:15px;background:#F5F1E8;color:#2A2825;resize:vertical;transition:border-color .2s,background-color .2s;line-height:1.7}
 textarea:focus{outline:none;border-color:#2D5A3D;background:#fff}
-.hint{font-size:13px;color:#6B665E;margin:6px 0 14px}
-.result{background:#E8EDE3;border-radius:16px;padding:20px 22px;margin-top:20px;display:none;color:#2A2825}
-.result.show{display:block;animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.result h4{margin:0 0 8px;color:#2D5A3D;font-size:17px}
-.result h4 .icon{margin-right:4px}
-.result .block{margin-bottom:16px}
-.result .block:last-child{margin-bottom:0}
-.result .tag{display:inline-block;background:#FBEDE5;color:#D97757;font-size:13px;padding:4px 10px;border-radius:999px;margin:2px 4px 2px 0;font-weight:600}
-.result .strategy-list{margin:0;padding:0 0 0 20px;color:#2A2825;font-size:15px;line-height:1.8}
-.result .strategy-list li{margin-bottom:4px}
-.result .warn{background:#FFF3E0;border-left:4px solid #D97757;padding:10px 14px;border-radius:0 8px 8px 0;font-size:14px;color:#8A3A22;margin-top:6px}
-.result-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-.toast{position:fixed;left:50%;top:32px;transform:translateX(-50%) translateY(-20px);background:#2D5A3D;color:#fff;padding:12px 22px;border-radius:999px;font-size:14px;opacity:0;transition:all .25s;z-index:200;pointer-events:none;box-shadow:0 8px 24px rgba(45,90,61,.3)}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.footer{border-top:1px solid #EFE8DB;background:#fff;padding:30px 0 24px;margin-top:48px;font-size:14px;color:#6B665E}
+textarea.copied{border-color:#D97757;background:#FBEDE5}
+
+/* Sample chips */
+.sample-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;margin-bottom:16px}
+.sample-chip{background:#E8EDE3;color:#2D5A3D;border:none;padding:6px 14px;border-radius:999px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;transition:all .15s}
+.sample-chip:hover{background:#2D5A3D;color:#fff}
+.sample-chip:active{transform:scale(.97)}
+
+/* Action row */
+.action-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.selected-tag{font-size:13px;color:#6B665E;background:#E8EDE3;padding:6px 14px;border-radius:999px;font-weight:500}
+.selected-tag strong{color:#2D5A3D}
+
+/* Result — from earliest version, enhanced */
+.result{background:#E8EDE3;border-radius:16px;padding:24px 26px;margin-top:20px;display:none;color:#2A2825}
+.result.show{display:block;animation:fadeSlide .35s ease}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.result h4{margin:0 0 10px;color:#2D5A3D;font-size:17px;font-weight:700}
+.result h4.reply{color:#D97757}
+.result .kw{display:inline-block;background:#FBEDE5;color:#D97757;font-size:13px;padding:5px 12px;border-radius:999px;margin:3px 6px 3px 0;font-weight:600}
+.result p{margin:6px 0 0;font-size:15px;line-height:1.75}
+.result .reply-box{background:#fff;border-radius:12px;padding:16px 18px;margin-top:8px;border:1px solid #EFE8DB;position:relative}
+.result .reply-box p{font-size:15px;line-height:1.8;color:#2A2825;margin:0}
+.result .copy-btn{position:absolute;top:10px;right:10px;background:#F5F1E8;border:1px solid #EFE8DB;border-radius:999px;padding:6px 14px;font-size:12px;cursor:pointer;color:#6B665E;font-family:inherit;font-weight:600;transition:all .15s}
+.result .copy-btn:hover{background:#2D5A3D;color:#fff;border-color:#2D5A3D}
+.result .copy-btn.copied{background:#D97757;color:#fff;border-color:#D97757}
+
+/* History section — enhancement */
+.history-section{margin-top:32px;padding-top:28px;border-top:1px solid #EFE8DB;display:none}
+.history-section.show{display:block}
+.history-list{display:grid;gap:12px;margin-top:14px}
+.history-item{background:#fff;border-radius:12px;padding:16px 18px;border:1px solid #EFE8DB;cursor:pointer;transition:all .15s}
+.history-item:hover{border-color:#D97757;transform:translateY(-1px)}
+.history-item .h-meta{font-size:12px;color:#B8B1A4;margin-bottom:6px;display:flex;gap:10px;align-items:center}
+.history-item .h-domain{color:#2D5A3D;background:#E8EDE3;padding:2px 10px;border-radius:999px;font-weight:600}
+.history-item .h-scene{font-size:14px;color:#5E5952;margin:4px 0 6px;line-height:1.5;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.history-item .h-reply{font-size:13px;color:#2A2825;background:#F5F1E8;padding:8px 12px;border-radius:8px;line-height:1.6;margin-top:6px}
+.history-empty{text-align:center;padding:32px 20px;color:#6B665E;font-size:14px;background:#fff;border-radius:12px;border:1px solid #EFE8DB}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2A2825;color:#fff;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+.footer{border-top:1px solid #EFE8DB;background:#fff;padding:36px 0 28px;margin-top:48px;font-size:14px;color:#6B665E}
 .footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 .footer a{color:#6B665E}
-.btn-back{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;background:#fff;color:#2D5A3D;border:1px solid #EFE8DB;font-size:14px;text-decoration:none}
-.btn-back:hover{background:#F5F1E8;text-decoration:none}
+
 @media (max-width:640px){
   .wrap{padding:0 16px}
-  .hero{padding:40px 0 16px}
+  .hero{padding:40px 0 20px}
   .section{padding:28px 0}
+  .domains{grid-template-columns:1fr;gap:10px}
   .nav{font-size:14px}
   .nav a{padding:5px 8px}
   .brand{font-size:18px}
+  .toolbox{padding:20px}
+  .result{padding:20px}
 }
 </style>
 </head>
 <body>
 <a href="#main" class="skip-nav" aria-label="跳到主要内容">跳到主要内容</a>
+
 <header class="header" role="banner">
   <div class="wrap header-inner">
-    <a href="/" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
-    <nav class="nav" aria-label="面包屑">
-      <a href="/">首页</a><span class="sep">·</span>
-      <a href="care-test">客户解码器</a>
+    <a href="index.html" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
+    <nav class="nav" aria-label="主导航">
+      <a href="index.html">首页</a><span class="sep">·</span>
+      <a href="care-test.html">客户解码器</a>
     </nav>
   </div>
 </header>
@@ -104,66 +148,74 @@ textarea:focus{outline:none;border-color:#2D5A3D;background:#fff}
     </div>
   </section>
 
+  <section class="section" aria-labelledby="d-title">
+    <div class="wrap">
+      <h2 id="d-title">选一个你熟悉的业务域</h2>
+      <p class="sub">选择后下方会出现对应场景示例，也可以直接输入你自己遇到的客户。</p>
+      <div class="domains" role="radiogroup" aria-label="业务域">
+        <button class="domain" type="button" data-domain="realestate" aria-pressed="false">
+          <svg class="domain-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M8 24 L24 10 L40 24 M12 22 L12 40 L22 40 L22 28 L26 28 L26 40 L36 40 L36 22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>房产交易</h3>
+          <p>二手房、新房、改善型、学区房、首套等典型客户画像。</p>
+        </button>
+        <button class="domain" type="button" data-domain="rental" aria-pressed="false">
+          <svg class="domain-icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="12" width="28" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M16 18 H28 M16 24 H28 M16 30 H22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="38" cy="20" r="5" fill="none" stroke="#D97757" stroke-width="2.5"/><text x="38" y="24" text-anchor="middle" font-size="9" fill="#D97757" font-weight="700">￥</text></svg>
+          <h3>房屋租赁</h3>
+          <p>长租、短租、置换、预算敏感型租客的决策线索。</p>
+        </button>
+        <button class="domain" type="button" data-domain="home" aria-pressed="false">
+          <svg class="domain-icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="20" width="32" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M14 20 L14 14 L34 14 L34 20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="24" cy="28" r="2" fill="#D97757"/></svg>
+          <h3>整装家居</h3>
+          <p>装修风格、施工质量、预算、交房时间等客户关注点。</p>
+        </button>
+        <button class="domain" type="button" data-domain="service" aria-pressed="false">
+          <svg class="domain-icon" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M12 40 C12 30, 36 30, 36 40" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="36" cy="22" r="3" fill="#D97757"/><circle cx="14" cy="26" r="2.5" fill="#D97757"/></svg>
+          <h3>家政保洁</h3>
+          <p>首次咨询、长期服务、老人/儿童等特殊场景客户需求。</p>
+        </button>
+      </div>
+    </div>
+  </section>
+
   <section id="tool" class="section" aria-labelledby="t-title">
     <div class="wrap">
       <div class="toolbox">
-        <h2 id="t-title" style="margin:0 0 4px;font-size:22px">客户场景输入</h2>
-        <p class="hint">填写客户的基本信息和场景，系统将生成个性化的客户画像与建议策略。</p>
+        <h3 id="t-title">输入一段客户场景</h3>
+        <p class="hint" id="hint">用一两句话描述客户在电话、到店或现场说过的话。</p>
 
-        <div class="form-group">
-          <label for="houseType">户型</label>
-          <select id="houseType" aria-label="选择户型">
-            <option value="">-- 请选择 --</option>
-            <option value="1">一居</option>
-            <option value="2">两居</option>
-            <option value="3">三居</option>
-            <option value="4">四居及以上</option>
-          </select>
+        <div id="sample-chips-wrap" style="display:none">
+          <label style="font-size:13px;color:#6B665E">试试这些场景 →</label>
+          <div class="sample-chips" id="sample-chips"></div>
         </div>
 
-        <div class="form-group">
-          <label for="budget">预算（万元）</label>
-          <input type="number" id="budget" placeholder="例如：300" aria-label="客户预算" min="0" step="1">
-        </div>
+        <label for="scene">客户场景描述</label>
+        <textarea id="scene" name="scene" aria-label="客户场景描述" placeholder="例如：客户说预算有限，但希望房子看起来不错，对小区环境也很在意…"></textarea>
 
-        <div class="form-group">
-          <label for="needs">客户需求</label>
-          <textarea id="needs" placeholder="例如：希望靠近地铁站，周边有学校和商超，采光要好…" aria-label="客户需求"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="painPoints">客户痛点</label>
-          <textarea id="painPoints" placeholder="例如：之前看过的房子采光太差，担心贷款压力大，上班通勤时间长…" aria-label="客户痛点"></textarea>
-        </div>
-
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <button class="btn btn-primary" type="button" id="analyze" aria-label="开始分析">开始分析</button>
-          <button class="btn" type="button" id="sample" style="background:#fff;border:1px solid #EFE8DB;color:#2D5A3D;padding:12px 20px" aria-label="给我一个示例">给我示例</button>
+        <div class="action-row">
+          <button class="btn btn-primary" type="button" id="analyze" aria-label="分析客户">分析 →</button>
+          <button class="btn btn-secondary" type="button" id="sample" aria-label="给我一个示例">给我示例</button>
+          <button class="btn btn-ghost" type="button" id="clear" aria-label="清空">清空</button>
+          <span class="selected-tag" id="sel-domain" style="display:none">已选：<strong id="sel-domain-name">—</strong></span>
         </div>
 
         <div class="result" id="result" role="status" aria-live="polite">
-          <div class="block">
-            <h4>客户画像摘要</h4>
-            <div id="profileTags"></div>
-            <p id="profileSummary" style="margin:8px 0 0"></p>
+          <h4>🔍 客户解读</h4>
+          <div id="keywords"></div>
+          <p id="read"></p>
+          <h4 class="reply" style="margin-top:20px">💬 一段可以考虑的回应</h4>
+          <div class="reply-box">
+            <p id="reply"></p>
+            <button class="copy-btn" type="button" id="copy-reply" aria-label="复制回应话术">复制</button>
           </div>
-          <div class="block">
-            <h4>关键需求梳理</h4>
-            <p id="keyNeeds" style="margin:0"></p>
-          </div>
-          <div class="block">
-            <h4>建议策略</h4>
-            <ol class="strategy-list" id="strategies"></ol>
-          </div>
-          <div class="block">
-            <h4>注意事项</h4>
-            <div class="warn" id="warnings"></div>
-          </div>
-          <div class="result-actions">
-            <button class="btn btn-primary" type="button" id="saveBtn" aria-label="保存结果">保存结果</button>
-            <button class="btn btn-ghost" type="button" id="shareBtn" aria-label="分享结果">分享</button>
-          </div>
+          <h4 style="margin-top:20px">✅ 下一步建议</h4>
+          <p id="next"></p>
         </div>
+      </div>
+
+      <div class="history-section" id="history-section">
+        <h3 style="margin:0 0 8px;font-size:18px;color:#2A2825">最近的解读</h3>
+        <p class="sub">点击任一条可快速恢复到输入框</p>
+        <div class="history-list" id="history-list"></div>
       </div>
     </div>
   </section>
@@ -173,237 +225,288 @@ textarea:focus{outline:none;border-color:#2D5A3D;background:#fff}
   <div class="wrap footer-inner">
     <div>© 2026 风声 · fengsheng.tech</div>
     <div>
-      <a href="privacy" aria-label="查看隐私政策">隐私政策</a> ·
-      <a href="reply" aria-label="帮助与反馈">帮助</a>
+      <a href="privacy.html" aria-label="查看隐私政策">隐私政策</a> ·
+      <a href="reply.html" aria-label="帮助与反馈">帮助</a>
     </div>
   </div>
 </footer>
 
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <script src="tracker.js" defer></script>
 <script>
 (function(){
-  var sampleData = {
-    '1': {budget:'200', needs:'希望靠近地铁站，最好步行10分钟内，周边有便利店和餐馆，一个人住求安静。', painPoints:'之前看过的房子隔音太差，楼上有小孩晚上吵闹，担心安全问题和物业不作为。'},
-    '2': {budget:'350', needs:'夫妻两人住，想要一个书房，离公司不要太远，小区环境好有绿化。', painPoints:'看过几个小区感觉密度太高，电梯等太久，担心未来升值空间不大。'},
-    '3': {budget:'500', needs:'一家三口加老人，需要三房，孩子要上学，附近要有好学校，客厅要大一些。', painPoints:'学区房太贵压力大，二手房的装修质量参差不齐，怕买到问题房。'},
-    '4': {budget:'800', needs:'四口之家加父母，需要大户型，最好有保姆间，社区高端配套齐全，有车位。', painPoints:'看过的楼盘要么位置偏要么太贵，担心交房延期，配套兑现慢。'}
+  // ============ DATA ============
+  var domainLabels = {
+    realestate: '房产交易',
+    rental: '房屋租赁',
+    home: '整装家居',
+    service: '家政保洁'
   };
 
-  var profileDB = {
-    '1': {tags:['单身/独居','通勤优先','品质敏感','安静需求'], summary:'客户为单身或独居状态，注重个人生活品质和通勤效率。对居住环境的安静程度和安全有较高要求，预算相对有限但愿意为品质付费。'},
-    '2': {tags:['年轻夫妻','功能分区','环境优先','成长型家庭'], summary:'客户为年轻夫妻，处于家庭组建初期。对空间功能分区（如书房）有明确需求，同时关注小区环境和通勤便利性，属于功能实用型客户。'},
-    '3': {tags:['三口之家','教育优先','多代同住','改善型需求'], summary:'客户为有孩家庭，兼顾老人同住需求。教育资源和空间布局是核心关注点，属于典型的改善型需求，对品质和性价比有双重考量。'},
-    '4': {tags:['大家庭','高端改善','配套导向','品质生活'], summary:'客户为多代同住的大家庭，经济实力较强。追求高端社区配套和居住品质，对车位、保姆间等功能性配套有刚性需求，属于高端改善型客户。'}
+  // Multiple sample scenes per domain — enhancement over earliest version
+  var domainScenes = {
+    realestate: [
+      '客户 30 岁，已婚带小孩，第一次买房，预算紧，希望靠近学校，担心贷款压力。',
+      '客户是改善型，住了 10 年的老房子想换大一点的，手里有 200 万预算，纠结是买新房还是二手。',
+      '客户是投资客，手上有闲钱想投一套小户型，关心租金回报和未来涨幅。',
+      '客户父母老了，想在同一个小区再买一套给老人住，预算有限，希望户型方正。'
+    ],
+    rental: [
+      '客户刚换工作，需要在公司附近租一套房子，预算 4000，希望安静、有网络，能随时入住。',
+      '客户是两个女生合租，预算 5000，担心安全和房东好不好说话。',
+      '客户一家三口从外地过来，想租一个带家具的两居室，能签 1 年以上。',
+      '客户是短期出差 3 个月，想找一个能短租、随时入住的公寓。'
+    ],
+    home: [
+      '客户家里有老人，想重新装修卫生间和厨房，担心施工影响生活，对建材安全特别在意。',
+      '客户刚买了一套 90 平的毛坯，预算 15 万想装完入住，不知道风格怎么选。',
+      '客户想给孩子重新装一个房间，孩子过敏体质，特别担心环保和甲醛问题。',
+      '客户看了几家装修公司都不满意，主要担心增项和施工质量，怕被坑。'
+    ],
+    service: [
+      '客户家有刚上小学的孩子和老人，每周需要两次深度保洁，希望阿姨稳定、做事细心。',
+      '客户是一个年轻人刚搬新家，想找定期做日常保洁，价格便宜点就好。',
+      '客户家里有宠物，做开荒保洁，担心毛发处理和地板消毒。',
+      '客户想找一个长期钟点工，除了打扫还能简单做做饭，要求阿姨人好、不八卦。'
+    ]
   };
 
-  var needsDB = {
-    '1': '通勤效率第一，对距离地铁站步行时间的敏感度极高；需要基本生活配套（便利店、餐饮）；对室内隔音、物业服务和安全有明确要求。',
-    '2': '需要明确的功能分区（书房/办公区）；关注小区整体密度和居住舒适度；对通勤时间有容忍但不应过长；关注资产保值增值潜力。',
-    '3': '学区资源是核心刚性需求；需要足够的卧室数量满足多代同住；客厅空间要大以满足家庭互动；对装修质量的可靠性和二手房的潜在问题非常关注。',
-    '4': '大户型空间是基本要求；保姆间和车位等高端配套是刚需；社区品质和配套兑现能力是决策关键；对交房时间和开发商信誉度高度关注。'
+  // Full analyses with multiple reply styles — enhancement
+  var analyses = {
+    realestate: {
+      keywords: ['预算敏感','首套焦虑','教育优先级','贷款压力'],
+      read: '客户把"家"看作孩子成长的起点，但对长期还款能力有明显顾虑。他同时在权衡价格、位置和生活舒适度 — 真正在问的不是"这个房子贵不贵"，而是"这个选择对我未来的生活意味着什么"。',
+      reply: '"我先帮您把预算范围内、步行能到学校的小区挑出来，再一起看看贷款方案里哪种对您现在最轻松 — 我们不追求最大的房子，追求最合适的家。"',
+      next: '下一步建议：做一次"预算 + 学区 + 通勤"的三线对比表，给客户 2~3 个真实可对比的选项，而不是泛泛地推荐。'
+    },
+    rental: {
+      keywords: ['通勤优先','预算有上限','入住确定性','生活基础设施'],
+      read: '客户的决策优先级是：先解决通勤，再解决预算。他其实在问"我每天的生活能不能稳定下来" — 只要让他看到几件事是确定的（入住时间、房东意图、周边配套），决策会很快。',
+      reply: '"我先挑离公司步行或一趟车的房子，按您的预算筛出 3 套能马上入住的，再一起看 — 每一套我都提前确认过房东近期的意图。"',
+      next: '下一步建议：带看前做一次"30 分钟通勤半径"地图，同时准备一套稍超出预算但能显著改善生活品质的对照房源，让客户自己做权衡。'
+    },
+    home: {
+      keywords: ['家人健康','工期焦虑','施工打扰','建材与工艺信任'],
+      read: '客户真正在问的不是价格，而是"你们能不能让我家的日常生活不被打乱"。对安全、稳定的优先级高于一切 — 他在筛选一个"靠谱的人"，而不是"便宜的方案"。',
+      reply: '"我先安排设计师和您一起，把老人的使用动线、卫浴安全细节和厨房操作区做一次实景沟通，同时给您一个分阶段的施工计划 — 每一步都让您提前知道家里会发生什么。"',
+      next: '下一步建议：准备一份"对家中老人友好的工艺清单"，并强调施工期间的分阶段保护和日常清洁恢复，建立确定性。'
+    },
+    service: {
+      keywords: ['稳定性','与老人/孩子相处','服务可预期','长期安排'],
+      read: '客户希望的不是"偶尔一次干净"，而是"家里有人能长期、稳定、靠谱地帮忙"。他在筛选可托付的人 — 第一印象不是价格，而是"这个阿姨会不会和我家人合得来"。',
+      reply: '"我先给您介绍一位在相似家庭场景中长期服务的阿姨，我们第一次上门做一次试服务 — 您当场感受节奏和细节，再决定是否长期。"',
+      next: '下一步建议：在第一次服务前和客户做一次 15 分钟的"家庭节奏问卷"，了解孩子作息、老人使用习惯，让阿姨提前做好准备。'
+    }
   };
 
-  var strategiesDB = {
-    '1': ['优先推荐地铁沿线步行10分钟以内的房源，用"通勤时间地图"直观展示优势', '准备隔音实测数据或安静时段体验方案，消除客户对噪音的顾虑', '推荐配套成熟的社区，强调物业口碑和安全管理措施'],
-    '2': ['筛选带书房或可改造出书房的户型，在带看时现场演示功能分区方案', '准备小区容积率、绿化率等数据对比，突出低密度社区的优势', '提供周边同类小区近3年的价格走势，帮助客户建立升值信心'],
-    '3': ['制作学区对比表，包含学校排名、入学政策、步行距离等信息，让客户一目了然', '准备"三代同堂"空间方案，展示如何利用户型满足老人和孩子的不同需求', '联合同小区已成交业主的装修案例，提供可参考的改造方案和预算'],
-    '4': ['提供开发商品牌实力和过往项目交付记录，建立客户对交房的信心', '制作"配套兑现时间表"，将社区规划中的配套与实际交付时间清晰对应', '推荐同级别高端社区进行横向对比，突出本项目的稀缺性和差异化优势']
-  };
+  // ============ STATE ============
+  var state = {domain: null};
+  var STORAGE_KEY = 'decoder-history';
 
-  var warningsDB = {
-    '1': '注意客户预算上限，不要过度推荐超出预算的房源；关注客户对安全的敏感度，带看时注意时间安排和路线选择。',
-    '2': '客户对"未来升值"有期待但不宜过度承诺；注意客户对小区密度的偏好，避免推荐高容积率楼盘。',
-    '3': '学区政策可能变化，需提醒客户关注最新入学政策；二手房的潜在问题要充分披露，建立信任。',
-    '4': '高端客户对服务质量要求高，需全程保持专业度和响应速度；配套兑现时间需以开发商官方信息为准，不可轻信口头承诺。'
-  };
-
-  function showToast(msg){
-    var t = document.createElement('div');
-    t.className = 'toast';
-    t.textContent = msg;
-    document.body.appendChild(t);
-    requestAnimationFrame(function(){ t.classList.add('show'); });
-    setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 250); }, 2000);
+  function loadHistory(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){ return []; }
+  }
+  function saveHistory(list){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }catch(e){}
   }
 
-  function fallbackCopy(text){
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.left = '-9999px';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); showToast('链接已复制，可粘贴分享'); } catch(e){ showToast('复制失败，请手动复制浏览器地址栏'); }
-    document.body.removeChild(ta);
+  // ============ TOAST ============
+  var toastEl = document.getElementById('toast');
+  var toastTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2000);
   }
 
-  document.getElementById('sample').addEventListener('click', function(){
-    var ht = document.getElementById('houseType').value;
-    if (!ht) {
-      alert('请先选择户型');
-      return;
-    }
-    var s = sampleData[ht];
-    document.getElementById('budget').value = s.budget;
-    document.getElementById('needs').value = s.needs;
-    document.getElementById('painPoints').value = s.painPoints;
-    if (typeof window.fsTrack === 'function') {
-      window.fsTrack('care_test_sample', {houseType: ht});
-    }
+  // ============ DOMAIN CARDS ============
+  document.querySelectorAll('.domain').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.domain').forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+      btn.setAttribute('aria-pressed','true');
+      state.domain = btn.dataset.domain;
+      document.getElementById('sel-domain').style.display = 'inline-block';
+      document.getElementById('sel-domain-name').textContent = domainLabels[state.domain];
+      renderSampleChips();
+      if (typeof window.fsTrack === 'function') {
+        window.fsTrack('decoder_select_domain', {domain: state.domain});
+      }
+    });
   });
 
-  function getAnalysis(houseType, budget, needs, painPoints){
-    var type = houseType || '1';
-    var profile = profileDB[type] || profileDB['1'];
-    var needsText = needsDB[type] || needsDB['1'];
-    var strategies = strategiesDB[type] || strategiesDB['1'];
-    var warnings = warningsDB[type] || warningsDB['1'];
-
-    var budgetHint = '';
-    var b = parseInt(budget, 10) || 0;
-    if (type === '1' && b > 0 && b < 200) { budgetHint = '预算偏紧，需重点关注性价比。'; }
-    else if (type === '1' && b >= 200 && b < 400) { budgetHint = '预算适中，有一定选择空间。'; }
-    else if (type === '1' && b >= 400) { budgetHint = '预算充裕，可考虑品质升级。'; }
-    else if (type === '2' && b > 0 && b < 300) { budgetHint = '预算偏紧，两居选择范围有限。'; }
-    else if (type === '2' && b >= 300 && b < 600) { budgetHint = '预算适中，可覆盖大部分两居房源。'; }
-    else if (type === '2' && b >= 600) { budgetHint = '预算充裕，可考虑高品质社区。'; }
-    else if (type === '3' && b > 0 && b < 400) { budgetHint = '预算偏紧，三居选择压力较大。'; }
-    else if (type === '3' && b >= 400 && b < 800) { budgetHint = '预算适中，可覆盖主流三居房源。'; }
-    else if (type === '3' && b >= 800) { budgetHint = '预算充裕，可考虑学区或高端社区。'; }
-    else if (type === '4' && b > 0 && b < 600) { budgetHint = '预算偏紧，大面积户型选择有限。'; }
-    else if (type === '4' && b >= 600 && b < 1200) { budgetHint = '预算适中，可覆盖大多数改善型房源。'; }
-    else if (type === '4' && b >= 1200) { budgetHint = '预算充裕，可考虑高端豪宅。'; }
-
-    if (budgetHint) {
-      profile.summary = profile.summary + ' ' + budgetHint;
-    }
-
-    var painSummary = '';
-    if (painPoints && painPoints.trim()) {
-      var painLen = painPoints.trim().length;
-      if (painLen > 30) {
-        painSummary = '客户已明确表达具体痛点，沟通中注意先共情再提供解决方案，避免直接否定客户的担忧。';
-      } else {
-        painSummary = '客户痛点表述较简短，建议在沟通中进一步深挖具体场景和顾虑。';
-      }
-    }
-
-    return {
-      tags: profile.tags,
-      summary: profile.summary,
-      needs: needsText,
-      strategies: strategies,
-      warnings: warnings + (painSummary ? ' ' + painSummary : ''),
-      houseType: type,
-      budget: b,
-      needsRaw: needs || '',
-      painPointsRaw: painPoints || ''
-    };
+  function renderSampleChips(){
+    var chips = document.getElementById('sample-chips');
+    var wrap = document.getElementById('sample-chips-wrap');
+    if (!state.domain){ wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    var scenes = domainScenes[state.domain].slice(0, 3);
+    chips.innerHTML = scenes.map(function(s, i){
+      return '<button class="sample-chip" type="button" data-idx="' + i + '">' + s.slice(0, 18) + '…' + '</button>';
+    }).join('');
+    chips.querySelectorAll('.sample-chip').forEach(function(chip){
+      chip.addEventListener('click', function(){
+        document.getElementById('scene').value = scenes[parseInt(chip.dataset.idx, 10)];
+        document.getElementById('scene').focus();
+      });
+    });
   }
 
+  // ============ SAMPLE BUTTON ============
+  document.getElementById('sample').addEventListener('click', function(){
+    if (!state.domain) {
+      toast('请先选择一个业务域');
+      document.querySelector('.domains').scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
+    var scenes = domainScenes[state.domain];
+    var idx = Math.floor(Math.random() * scenes.length);
+    document.getElementById('scene').value = scenes[idx];
+    document.getElementById('scene').focus();
+    if (typeof window.fsTrack === 'function') window.fsTrack('decoder_sample', {domain: state.domain});
+  });
+
+  // ============ CLEAR ============
+  document.getElementById('clear').addEventListener('click', function(){
+    document.getElementById('scene').value = '';
+    document.getElementById('result').classList.remove('show');
+    document.getElementById('scene').focus();
+  });
+
+  // ============ ANALYZE ============
   document.getElementById('analyze').addEventListener('click', function(){
-    var houseType = document.getElementById('houseType').value;
-    var budget = document.getElementById('budget').value.trim();
-    var needs = document.getElementById('needs').value.trim();
-    var painPoints = document.getElementById('painPoints').value.trim();
-
-    if (!houseType) {
-      alert('请先选择户型');
+    var scene = document.getElementById('scene').value.trim();
+    if (!scene) {
+      toast('请先输入一段客户场景，或点击"给我示例"');
       return;
     }
-    if (!needs && !painPoints) {
-      alert('请至少填写客户需求或痛点');
+    if (!state.domain) {
+      toast('请先选择一个业务域');
+      document.querySelector('.domains').scrollIntoView({behavior:'smooth', block:'center'});
       return;
     }
-
-    var analysis = getAnalysis(houseType, budget, needs, painPoints);
-
-    var tagBox = document.getElementById('profileTags');
-    tagBox.innerHTML = '';
-    analysis.tags.forEach(function(t){
+    var a = analyses[state.domain];
+    var kwBox = document.getElementById('keywords');
+    kwBox.innerHTML = '';
+    a.keywords.forEach(function(k){
       var span = document.createElement('span');
-      span.className = 'tag';
-      span.textContent = t;
-      tagBox.appendChild(span);
+      span.className = 'kw';
+      span.textContent = k;
+      kwBox.appendChild(span);
     });
-
-    document.getElementById('profileSummary').textContent = analysis.summary;
-    document.getElementById('keyNeeds').textContent = analysis.needs;
-
-    var stratList = document.getElementById('strategies');
-    stratList.innerHTML = '';
-    analysis.strategies.forEach(function(s){
-      var li = document.createElement('li');
-      li.textContent = s;
-      stratList.appendChild(li);
-    });
-
-    document.getElementById('warnings').textContent = analysis.warnings;
-
+    document.getElementById('read').textContent = a.read;
+    document.getElementById('reply').textContent = a.reply;
+    document.getElementById('next').textContent = a.next;
     var box = document.getElementById('result');
     box.classList.add('show');
     box.scrollIntoView({behavior:'smooth', block:'center'});
 
+    // Save to history
+    var history = loadHistory();
+    history.unshift({
+      domain: state.domain,
+      domainName: domainLabels[state.domain],
+      scene: scene,
+      reply: a.reply,
+      time: new Date().toLocaleString('zh-CN', {month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'})
+    });
+    if (history.length > 6) history = history.slice(0, 6);
+    saveHistory(history);
+    renderHistory();
+
     if (typeof window.fsTrack === 'function') {
-      window.fsTrack('care_test_analyze', {houseType: houseType, budget: budget, hasNeeds: !!needs, hasPainPoints: !!painPoints});
+      window.fsTrack('decoder_analyze', {domain: state.domain, length: scene.length});
     }
   });
 
-  document.getElementById('saveBtn').addEventListener('click', function(){
-    var houseType = document.getElementById('houseType').value;
-    var budget = document.getElementById('budget').value.trim();
-    var needs = document.getElementById('needs').value.trim();
-    var painPoints = document.getElementById('painPoints').value.trim();
-    var analysis = getAnalysis(houseType, budget, needs, painPoints);
+  // ============ COPY REPLY ============
+  var copyBtn = document.getElementById('copy-reply');
+  copyBtn.addEventListener('click', function(){
+    var text = document.getElementById('reply').textContent.trim();
+    if (!text) { toast('还没有可复制的话术'); return; }
 
-    var record = {
-      houseType: houseType,
-      budget: budget,
-      needs: needs,
-      painPoints: painPoints,
-      analysis: analysis,
-      savedAt: new Date().toISOString()
-    };
+    // Modern copy with fallback
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){
+        copyBtn.classList.add('copied');
+        copyBtn.textContent = '已复制 ✓';
+        setTimeout(function(){ copyBtn.classList.remove('copied'); copyBtn.textContent = '复制'; }, 1800);
+        toast('话术已复制，可直接粘贴到微信或通话记录');
+      }).catch(function(){ fallbackCopy(text); });
+    } else {
+      fallbackCopy(text);
+    }
 
-    var existing = [];
-    try {
-      var raw = localStorage.getItem('care-test-results');
-      if (raw) { existing = JSON.parse(raw); }
-    } catch(e){}
-    existing.push(record);
-    localStorage.setItem('care-test-results', JSON.stringify(existing));
-    showToast('结果已保存到本地');
-    if (typeof window.fsTrack === 'function') {
-      window.fsTrack('care_test_save', {houseType: houseType});
+    function fallbackCopy(t){
+      var ta = document.createElement('textarea');
+      ta.value = t;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try{
+        document.execCommand('copy');
+        copyBtn.classList.add('copied');
+        copyBtn.textContent = '已复制 ✓';
+        setTimeout(function(){ copyBtn.classList.remove('copied'); copyBtn.textContent = '复制'; }, 1800);
+        toast('话术已复制');
+      }catch(e){ toast('长按文字可手动复制'); }
+      document.body.removeChild(ta);
     }
   });
 
-  document.getElementById('shareBtn').addEventListener('click', function(){
-    var houseType = document.getElementById('houseType').value;
-    var budget = document.getElementById('budget').value.trim();
-    var needs = document.getElementById('needs').value.trim();
-    var painPoints = document.getElementById('painPoints').value.trim();
-    var analysis = getAnalysis(houseType, budget, needs, painPoints);
-
-    var shareText = '【客户解码器分析报告】\n';
-    shareText += '户型：' + (document.getElementById('houseType').selectedOptions[0] ? document.getElementById('houseType').selectedOptions[0].textContent : '') + '\n';
-    if (budget) shareText += '预算：' + budget + '万元\n';
-    shareText += '客户画像：' + analysis.tags.join('、') + '\n';
-    shareText += '关键需求：' + analysis.needs + '\n';
-    shareText += '建议策略：\n';
-    analysis.strategies.forEach(function(s, i){ shareText += (i+1) + '. ' + s + '\n'; });
-    shareText += '注意事项：' + analysis.warnings + '\n';
-    shareText += '—— 来自风声客户解码器 fengsheng.tech';
-
-    try {
-      navigator.clipboard.writeText(shareText).then(function(){ showToast('分析结果已复制，可粘贴分享'); }, function(){ fallbackCopy(shareText); });
-    } catch(e){
-      fallbackCopy(shareText);
+  // ============ HISTORY ============
+  function renderHistory(){
+    var history = loadHistory();
+    var section = document.getElementById('history-section');
+    var list = document.getElementById('history-list');
+    if (history.length === 0) {
+      section.classList.remove('show');
+      return;
     }
-    if (typeof window.fsTrack === 'function') {
-      window.fsTrack('care_test_share', {houseType: houseType});
-    }
-  });
+    section.classList.add('show');
+    list.innerHTML = history.map(function(h, i){
+      return '<div class="history-item" data-idx="' + i + '">' +
+        '<div class="h-meta"><span class="h-domain">' + h.domainName + '</span><span>' + h.time + '</span></div>' +
+        '<p class="h-scene">' + escapeHtml(h.scene) + '</p>' +
+        '<p class="h-reply">💬 ' + escapeHtml(h.reply) + '</p>' +
+        '</div>';
+    }).join('');
+    list.querySelectorAll('.history-item').forEach(function(item){
+      item.addEventListener('click', function(){
+        var idx = parseInt(item.dataset.idx, 10);
+        var h = loadHistory()[idx];
+        if (!h) return;
+        // Restore domain
+        document.querySelectorAll('.domain').forEach(function(b){
+          b.setAttribute('aria-pressed', b.dataset.domain === h.domain ? 'true' : 'false');
+        });
+        state.domain = h.domain;
+        document.getElementById('sel-domain').style.display = 'inline-block';
+        document.getElementById('sel-domain-name').textContent = h.domainName;
+        // Restore scene
+        document.getElementById('scene').value = h.scene;
+        renderSampleChips();
+        // Scroll to tool
+        document.getElementById('tool').scrollIntoView({behavior:'smooth', block:'start'});
+        // Auto-analyze
+        document.getElementById('analyze').click();
+      });
+    });
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  // ============ INIT ============
+  renderHistory();
 })();
 </script>
 </body>

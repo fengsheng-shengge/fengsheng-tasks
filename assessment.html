@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self';">
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta name="description" content="能力测评：10道选择题定位你的服务能力段位，找到下一步成长方向 — 风声 fengsheng.tech">
-<meta name="keywords" content="能力测评,服务者能力,能力画像,成长路径,职业发展">
+<meta name="description" content="能力测评：定位你的服务能力段位，找到下一步成长方向 — 风声 fengsheng.tech">
+<meta name="keywords" content="能力测评,服务能力,成长路径,专业评估">
 <meta name="theme-color" content="#2D5A3D">
 <meta property="og:title" content="能力测评 · 风声 fengsheng.tech">
-<meta property="og:description" content="覆盖客户洞察、专业知识、沟通表达、资源整合、服务温度5大维度，10道题精准定位你的能力画像。">
+<meta property="og:description" content="覆盖客户洞察、专业知识、沟通表达、资源整合、服务温度5大维度，15个自评点精准定位你的服务能力画像。">
 <meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%23F5F1E8'/><rect x='140' y='320' width='140' height='160' rx='16' fill='%232D5A3D'/><rect x='310' y='240' width='140' height='240' rx='16' fill='%232D5A3D'/><rect x='480' y='180' width='140' height='300' rx='16' fill='%23D97757'/><rect x='650' y='280' width='140' height='200' rx='16' fill='%232D5A3D'/><rect x='820' y='220' width='140' height='260' rx='16' fill='%232D5A3D'/><text x='100' y='140' font-family='sans-serif' font-size='60' fill='%232D5A3D' font-weight='700'>能力测评</text></svg>">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://fengsheng.tech/assessment.html">
@@ -34,85 +33,87 @@ a:hover{text-decoration:underline}
 .nav a:hover{background:#F5F1E8;text-decoration:none;color:#2D5A3D}
 .nav .sep{color:#B8B1A4}
 .hero{padding:56px 0 32px;text-align:center}
-.hero h1{font-size:clamp(30px,5vw,44px);line-height:1.3;margin:0 0 14px;color:#2A2825}
+.hero h1{font-size:clamp(30px,5vw,44px);line-height:1.3;margin:0 0 14px;color:#2A2825;font-weight:700}
 .hero h1 em{font-style:normal;color:#D97757}
-.hero p.lead{font-size:clamp(16px,2.2vw,19px);color:#5E5952;max-width:620px;margin:0 auto}
+.hero p.lead{font-size:clamp(15px,2.2vw,19px);color:#5E5952;max-width:620px;margin:0 auto}
+.section{padding:32px 0}
+.section h2{font-size:clamp(22px,3.5vw,28px);margin:0 0 8px;color:#2A2825}
+.section .sub{color:#5E5952;margin:0 0 24px;font-size:14px}
+
+/* Dimension cards */
+.dims{display:grid;gap:14px;margin-top:12px}
+.dim{background:#fff;border-radius:16px;padding:22px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);transition:border-color .2s}
+.dim.completed{border-color:#2D5A3D}
+.dim-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.dim-title{font-size:17px;font-weight:700;color:#2A2825;margin:0}
+.dim-en{font-size:13px;color:#8A857B;font-weight:500;letter-spacing:.5px}
+.dim-desc{font-size:13px;color:#5E5952;margin:4px 0 14px}
+.dim-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dim-opt{background:#F5F1E8;border:2px solid transparent;color:#2A2825;padding:14px 12px;border-radius:12px;cursor:pointer;font-size:14px;text-align:left;font-family:inherit;font-weight:500;line-height:1.6;transition:all .15s}
+.dim-opt strong{display:block;color:#2D5A3D;font-size:14px;margin-bottom:4px}
+.dim-opt:hover{background:#E8EDE3;border-color:#B8B1A4}
+.dim-opt.active{background:#2D5A3D;color:#fff;border-color:#2D5A3D;font-weight:600}
+.dim-opt.active strong{color:#FBEDE5}
+
+/* Action bar */
+.action-bar{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;align-items:center}
+.progress-text{font-size:14px;color:#6B665E;flex:1;min-width:140px}
+.progress-text strong{color:#2D5A3D;font-size:16px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:14px 28px;font-size:16px;font-weight:600;font-family:inherit;transition:transform .15s ease,box-shadow .15s ease,background-color .2s}
 .btn-primary{background:#2D5A3D;color:#fff;box-shadow:0 6px 16px rgba(45,90,61,.25)}
 .btn-primary:hover{background:#234a31;text-decoration:none;transform:translateY(-1px)}
-.btn-orange{background:#D97757;color:#fff;box-shadow:0 6px 16px rgba(217,119,87,.25)}
-.btn-orange:hover{background:#c06649;text-decoration:none}
-.btn-ghost{background:transparent;color:#2D5A3D;border:2px solid #2D5A3D}
-.btn-ghost:hover{background:#2D5A3D;color:#fff;text-decoration:none}
-.btn[disabled]{opacity:.5;cursor:not-allowed}
-.section{padding:32px 0}
-.section h2{font-size:clamp(22px,3.5vw,28px);margin:0 0 8px;color:#2A2825}
-.section .sub{color:#5E5952;margin:0 0 24px}
-.card{background:#fff;border-radius:16px;padding:28px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04)}
-/* Progress */
-.progress-wrap{margin-bottom:32px}
-.progress-text{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:14px;font-weight:600;color:#2D5A3D}
-.progress-bar{width:100%;height:8px;background:#EFE8DB;border-radius:999px;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,#2D5A3D,#4B7A5C);border-radius:999px;transition:width .35s ease}
-/* Quiz */
-.quiz-card{background:#fff;border-radius:16px;padding:32px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04)}
-.quiz-dim{display:inline-block;font-size:13px;font-weight:700;color:#D97757;background:#FBEDE5;padding:4px 14px;border-radius:999px;margin-bottom:16px;letter-spacing:.5px}
-.quiz-question{font-size:20px;font-weight:700;color:#2A2825;margin:0 0 24px;line-height:1.5}
-.quiz-options{display:flex;flex-direction:column;gap:12px}
-.quiz-opt{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:#F5F1E8;border:2px solid transparent;border-radius:14px;cursor:pointer;font-family:inherit;font-size:15px;color:#2A2825;text-align:left;line-height:1.5;transition:all .15s;width:100%}
-.quiz-opt:hover{background:#EFE8DB;border-color:#D97757}
-.quiz-opt.selected{background:#E8EDE3;border-color:#2D5A3D;font-weight:600}
-.quiz-opt .opt-score{flex-shrink:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#EFE8DB;font-size:13px;font-weight:700;color:#6B665E}
-.quiz-opt.selected .opt-score{background:#2D5A3D;color:#fff}
-.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:12px;flex-wrap:wrap}
-.quiz-nav .btn-prev{background:transparent;color:#6B665E;border:2px solid #EFE8DB;border-radius:999px;padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
-.quiz-nav .btn-prev:hover{border-color:#2D5A3D;color:#2D5A3D}
-.quiz-nav .btn-prev:disabled{opacity:.35;cursor:not-allowed}
+.btn-primary[disabled]{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-ghost{background:transparent;color:#2A2825;border:1px solid #EFE8DB;padding:12px 20px;font-size:14px}
+.btn-ghost:hover{background:#fff;border-color:#D97757;text-decoration:none}
+
 /* Result */
-.result{display:none}
-.result.show{display:block;animation:fade .3s ease}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.result-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.result-head h2{margin:0}
+.result{margin-top:24px;display:none;animation:fadeSlide .35s ease}
+.result.show{display:block}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.result-card{background:#fff;border-radius:16px;padding:28px;border:1px solid #EFE8DB;box-shadow:0 4px 16px rgba(42,40,37,.06)}
+.result-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #EFE8DB}
+.result-head h2{font-size:22px;margin:0}
 .level-tag{display:inline-block;padding:8px 18px;background:#FBEDE5;color:#D97757;font-weight:700;border-radius:999px;font-size:15px}
-.chart-wrap{background:#fff;border-radius:16px;padding:24px;border:1px solid #EFE8DB}
+
+.chart-wrap{background:#F5F1E8;border-radius:16px;padding:24px 20px;margin-top:8px}
 .chart-wrap svg{width:100%;height:auto;display:block}
+
 .comment{background:#E8EDE3;color:#2D5A3D;padding:18px 22px;border-radius:16px;font-size:15px;line-height:1.7;margin-top:20px}
-.strength{background:#E8EDE3;color:#2D5A3D;padding:16px 20px;border-radius:14px;font-size:14px;line-height:1.6;margin-top:14px;border-left:4px solid #2D5A3D}
-.weakness{background:#FBEDE5;color:#8A3A22;padding:16px 20px;border-radius:14px;font-size:14px;line-height:1.6;margin-top:10px;border-left:4px solid #D97757}
-.suggestion{background:#F5F1E8;color:#2A2825;padding:18px 22px;border-radius:16px;font-size:15px;line-height:1.7;margin-top:14px;border:1px solid #EFE8DB}
-.suggestion strong{color:#D97757}
+.comment h4{margin:0 0 10px;color:#2D5A3D;font-size:16px}
+
 .next-step{background:#FBEDE5;color:#8A3A22;padding:18px 22px;border-radius:16px;font-size:15px;line-height:1.7;margin-top:14px}
-.next-step strong{color:#D97757}
-.cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#2D5A3D;color:#fff;padding:12px 24px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:999}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
-.footer{border-top:1px solid #EFE8DB;background:#fff;padding:30px 0 24px;margin-top:48px;font-size:14px;color:#6B665E}
+.next-step h4{margin:0 0 10px;color:#D97757;font-size:16px}
+.next-step strong{color:#D97757;display:block;margin-top:8px;font-size:14px}
+.next-step .step-item{padding:8px 0;border-bottom:1px dashed #F3D9CA}
+.next-step .step-item:last-child{border-bottom:none}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2A2825;color:#fff;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+.footer{border-top:1px solid #EFE8DB;background:#fff;padding:36px 0 28px;margin-top:48px;font-size:14px;color:#6B665E}
 .footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 .footer a{color:#6B665E}
 .footer .sep{color:#B8B1A4;margin:0 4px}
-.form-hint{font-size:13px;color:#D97757;margin-top:10px;display:none}
-.form-hint.show{display:block}
+
 @media (max-width:640px){
   .wrap{padding:0 16px}
   .hero{padding:40px 0 24px}
-  .section{padding:24px 0}
-  .quiz-card{padding:22px 18px}
-  .quiz-nav{flex-direction:column}
+  .section{padding:28px 0}
+  .dim-opts{grid-template-columns:1fr}
   .nav{font-size:14px}
   .brand{font-size:18px}
-  .cta{flex-direction:column}
 }
 </style>
 </head>
 <body>
-<a class="skip-nav" href="#main" aria-label="跳到主要内容">跳到主要内容</a>
+<a href="#main" class="skip-nav" aria-label="跳到主要内容">跳到主要内容</a>
+
 <header class="header" role="banner">
   <div class="wrap header-inner">
-    <a href="/" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
-    <nav class="nav" aria-label="面包屑">
-      <a href="/">首页</a><span class="sep">·</span>
-      <a href="assessment">能力测评</a>
+    <a href="index.html" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
+    <nav class="nav" aria-label="主导航">
+      <a href="index.html">首页</a><span class="sep">·</span>
+      <a href="assessment.html">能力测评</a>
     </nav>
   </div>
 </header>
@@ -120,56 +121,34 @@ a:hover{text-decoration:underline}
 <main id="main" role="main">
   <section class="hero" aria-labelledby="hero-title">
     <div class="wrap">
-      <h1 id="hero-title">你的能力段位<em>在哪里</em></h1>
-      <p class="lead">10 道选择题，覆盖 5 大维度，精准定位你的能力画像。</p>
+      <h1 id="hero-title">服务能力<em>测评</em></h1>
+      <p class="lead">5 个维度的自我评估，看清楚你的优势和成长点。诚实回答，你会看到一个清晰的成长路径。</p>
     </div>
   </section>
 
-  <section class="section" aria-labelledby="quiz-area-title">
+  <section class="section" aria-labelledby="dims-title">
     <div class="wrap">
-      <!-- Quiz Area -->
-      <div id="quizArea">
-        <div class="card">
-          <div class="progress-wrap">
-            <div class="progress-text">
-              <span id="progressLabel">第 1/10 题</span>
-              <span id="dimensionLabel" style="color:#D97757">客户洞察</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" id="progressFill" style="width:10%"></div>
-            </div>
-          </div>
-          <div class="quiz-card" id="quizCard">
-            <div class="quiz-dim" id="quizDim"></div>
-            <h3 class="quiz-question" id="quizQuestion"></h3>
-            <div class="quiz-options" id="quizOptions"></div>
-            <div class="quiz-nav">
-              <button class="btn-prev" id="btnPrev" disabled>上一题</button>
-              <button class="btn btn-primary" id="btnNext">下一题</button>
-            </div>
-          </div>
-        </div>
+      <h2 id="dims-title">请在每个维度选最接近你的描述</h2>
+      <p class="sub">每个维度有 3 个层次，选完后查看你的能力画像。</p>
+      <div class="dims" id="dims"></div>
+
+      <div class="action-bar">
+        <div class="progress-text">已完成 <strong id="progress-count">0</strong> / 5</div>
+        <button class="btn btn-ghost" type="button" id="resetBtn">重新开始</button>
+        <button class="btn btn-primary" type="button" id="checkBtn" disabled>查看我的画像 →</button>
       </div>
 
-      <!-- Result Area -->
-      <div class="result" id="result">
-        <div class="card">
+      <div class="result" id="result" aria-live="polite">
+        <div class="result-card">
           <div class="result-head">
-            <h2 id="levelTitle">能力画像</h2>
-            <span class="level-tag" id="levelTag">总分：- / 50</span>
+            <h2 id="levelTitle">当前段位</h2>
+            <span class="level-tag" id="levelTag">总分：0 / 15</span>
           </div>
           <div class="chart-wrap">
-            <svg id="barChart" viewBox="0 0 600 440" role="img" aria-label="五维能力柱状图"></svg>
+            <svg id="barChart" viewBox="0 0 800 480" role="img" aria-label="五维能力画像"></svg>
           </div>
-          <div class="strength" id="strengthBox"></div>
-          <div class="weakness" id="weaknessBox"></div>
-          <div class="suggestion" id="suggestionBox"></div>
+          <div class="comment" id="levelComment"></div>
           <div class="next-step" id="nextStep"></div>
-          <div class="cta">
-            <button class="btn btn-orange" id="btnSave" aria-label="保存结果">保存结果</button>
-            <button class="btn btn-ghost" id="btnRetake" aria-label="重新测评">重新测评</button>
-            <a href="breeder" class="btn btn-primary" aria-label="前往 Agent 培养师深造">前往 Agent 培养师深造 →</a>
-          </div>
         </div>
       </div>
     </div>
@@ -180,389 +159,270 @@ a:hover{text-decoration:underline}
   <div class="wrap footer-inner">
     <div>© 2026 风声 · fengsheng.tech</div>
     <div>
-      <a href="privacy" aria-label="查看隐私政策">隐私政策</a> ·
-      <a href="reply" aria-label="帮助与反馈">帮助</a>
+      <a href="privacy.html" aria-label="查看隐私政策">隐私政策</a><span class="sep">·</span>
+      <a href="reply.html" aria-label="帮助与反馈">帮助</a>
     </div>
   </div>
 </footer>
 
-<div class="toast" id="toast" role="status" aria-live="polite">已保存</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="tracker.js" defer></script>
 <script>
 (function(){
-  var DIM_NAMES = ['客户洞察', '专业知识', '沟通表达', '资源整合', '服务温度'];
-  var DIM_KEYS = ['insight', 'knowledge', 'communication', 'resource', 'warmth'];
-
-  var QUESTIONS = [
-    // 客户洞察 (0-1)
-    {
-      dim: 0,
-      question: '当客户说"我再看看"时，你通常怎么做？',
-      options: [
-        {text:'尊重客户，礼貌送别，不做深入追问', score:1},
-        {text:'询问客户具体还需要考虑什么，尝试了解顾虑', score:3},
-        {text:'通过提问帮助客户梳理真实需求，给出针对性建议', score:5}
-      ]
-    },
-    {
-      dim: 0,
-      question: '了解客户需求时，你更关注什么？',
-      options: [
-        {text:'客户的预算和基本要求', score:1},
-        {text:'客户的决策逻辑和家庭结构', score:3},
-        {text:'客户未说出口的深层需求和生活场景', score:5}
-      ]
-    },
-    // 专业知识 (2-3)
-    {
-      dim: 1,
-      question: '客户询问一个你不确定的问题时，你会？',
-      options: [
-        {text:'如实说不知道，建议客户自己查', score:1},
-        {text:'记下问题，回去查资料后再回复客户', score:3},
-        {text:'先用已有知识给出框架性回答，确认后补充详细信息', score:5}
-      ]
-    },
-    {
-      dim: 1,
-      question: '关于行业最新政策或市场动态，你通常？',
-      options: [
-        {text:'等公司通知或培训时了解', score:1},
-        {text:'主动关注行业资讯，定期学习', score:3},
-        {text:'持续跟踪政策变化，预判对客户的影响并提前准备方案', score:5}
-      ]
-    },
-    // 沟通表达 (4-5)
-    {
-      dim: 2,
-      question: '向客户介绍房源时，你的方式更接近？',
-      options: [
-        {text:'按照标准流程逐一介绍房源信息', score:1},
-        {text:'根据客户关注点，重点突出房源优势', score:3},
-        {text:'用故事化的方式，让客户想象自己住在里面的场景', score:5}
-      ]
-    },
-    {
-      dim: 2,
-      question: '客户对价格有异议时，你通常？',
-      options: [
-        {text:'直接告诉客户这是最低价', score:1},
-        {text:'列举房源的价值点，证明价格合理', score:3},
-        {text:'先共情客户的感受，再通过对比分析让客户理解价值', score:5}
-      ]
-    },
-    // 资源整合 (6-7)
-    {
-      dim: 3,
-      question: '客户需要超出你服务范围的支持时，你会？',
-      options: [
-        {text:'告诉客户这不在你的服务范围内', score:1},
-        {text:'帮客户找到能提供支持的人或渠道', score:3},
-        {text:'主动协调资源，全程跟进直到问题解决', score:5}
-      ]
-    },
-    {
-      dim: 3,
-      question: '面对复杂的客户需求，你的做法是？',
-      options: [
-        {text:'按自己的经验独立处理', score:1},
-        {text:'请教同事或上级，获取更多信息', score:3},
-        {text:'整合内外部资源，为客户制定个性化方案', score:5}
-      ]
-    },
-    // 服务温度 (8-9)
-    {
-      dim: 4,
-      question: '客户在带看过程中表现出犹豫或焦虑时，你通常？',
-      options: [
-        {text:'继续按计划推进带看流程', score:1},
-        {text:'放慢节奏，多给客户一些思考时间', score:3},
-        {text:'主动关心客户感受，调整沟通方式，让客户感到被理解', score:5}
-      ]
-    },
-    {
-      dim: 4,
-      question: '服务结束后，你通常会？',
-      options: [
-        {text:'完成基本流程，等待客户主动联系', score:1},
-        {text:'定期回访，了解客户后续需求', score:3},
-        {text:'持续关注客户生活变化，在关键节点主动提供有价值的信息', score:5}
-      ]
-    }
+  var DIMS = [
+    {key:'insight', title:'客户洞察能力', en:'Customer Insight',
+     desc:'你能在多大程度上读懂客户真正的需求和顾虑',
+     options:[
+      {level:'入门', score:1,
+       desc:'能记录客户的基本信息和表面需求，但不太确定客户真正的决策因素',
+       plan:'从"每次服务结束后写 3 条观察笔记"开始：客户说的话 + 客户真正在问什么。先养成观察习惯，不急于下判断。可以从高频场景练习在3-5-10-20-30 分钟服务周期中，哪些线索在反复出现。'},
+      {level:'进阶', score:2,
+       desc:'能分析客户行为模式和决策因素，形成自己的一套分析习惯',
+       plan:'把"需求优先级排序。试着给每1个重要客户画一张"需求地图"：真正在驱动他做决定的3个核心因素是什么。'},
+      {level:'资深', score:3,
+       desc:'能预判客户潜在痛点并提前应对，能在复杂场景下把握核心问题',
+       plan:'你的洞察已经很扎实。接下来的方向是：把隐性经验变成可教的方法论，让团队整体上一个台阶。'}
+    ]},
+    {key:'knowledge', title:'专业知识体系', en:'Professional Knowledge',
+     desc:'你的行业知识、产品理解程度',
+     options:[
+      {level:'入门', score:1,
+       desc:'懂基础概念，能应对日常问题',
+       plan:'建立自己的"知识地图"：你的行业里最重要的 20 个概念。每一个都能解释清楚。一周掌握 2-3 个，一个月你会发现自己在知识上的信心会有质的变化。'},
+      {level:'进阶', score:2,
+       desc:'能把专业知识应用到真实场景中，理解不同客户问题中的专业判断',
+       plan:'进入"场景化"阶段：把知识点放在客户真实的案例中去理解。不是"我知道"，而是"在 xxx 情况下我该怎么选"。每周写 1 份"专业 + 场景"对照表。'},
+      {level:'资深', score:3,
+       desc:'能在复杂问题中给出有专业判断的建议',
+       plan:'可以开始做"专业判断"文档"：在不确定的情况下，根据已有信息做出可被质疑的判断。这是从"懂"到"资深"的转折点。'}
+    ]},
+    {key:'communication', title:'沟通表达能力', en:'Communication',
+     desc:'你能在多大程度上清晰、有说服力地与客户交流',
+     options:[
+      {level:'入门', score:1,
+       desc:'能清楚说明一件事情',
+       plan:'先练"3句话讲清楚"。开口之前先想一想：我的核心信息是什么？对方最关心什么？多说一句都不不行？把 3 句话讲清楚是一切沟通的起点。'},
+      {level:'进阶', score:2,
+       desc:'能说服客户接受一个合理的方案',
+       plan:'进入"结构化表达"：先讲结论 → 给 3 个理由 → 让对方做选择。这是进阶到资深的关键练习。'},
+      {level:'资深', score:3,
+       desc:'能引导对话，让客户自己做决定',
+       plan:'可以开始练"提问驱动对话"的能力。不是说服，而是通过提出好的问题让客户先理解。这要求对对方的理解比你的表达更重要。'}
+    ]},
+    {key:'resource', title:'资源整合能力', en:'Resource Integration',
+     desc:'在需要跨部门或外部资源时你的配合与推动能力',
+     options:[
+      {level:'入门', score:1,
+       desc:'会利用已有的资源完成任务',
+       plan:'从"了解公司所有可用资源清单"开始。你不了解的东西无法为你所用。花 1 周时间，把你日常工作中最常调用的 10 种资源列清楚。'},
+      {level:'进阶', score:2,
+       desc:'能整合跨部门的资源解决复杂问题',
+       plan:'进入"关系驱动"：主动建立你与同事的工作关系。资源不是申请来的，是互相支持出来的。每周主动与 1 个关键同事建立联系并了解他的工作。'},
+      {level:'资深', score:3,
+       desc:'能创造新资源、推动组织创新',
+       plan:'你已经能做"造东西"了。下一步是"造东西"：发起一件能让整个团队受益的事。从小项目开始做，你的影响力会在组织中自然增长。'}
+    ]},
+    {key:'warmth', title:'服务温度感知', en:'Service Warmth',
+     desc:'你是否能让客户感受到被理解和被关注',
+     options:[
+      {level:'入门', score:1,
+       desc:'有响应，能满足基本服务要求',
+       plan:'练习"客户叫得出你名字"的练习：每次服务结束后写 1 句观察记录。先做到"客户的情绪状态"而不是只记事件。'},
+      {level:'进阶', score:2,
+       desc:'有关怀，能感知客户情绪变化并调整回应方式',
+       plan:'进入"情绪同步"练习：在对话中注意客户语气、语速变化并同步回应方式。核心不是说对的话，而是说合适的话。'},
+      {level:'资深', score:3,
+       desc:'能让客户感受到被真正理解和被看见，有长期关系能力',
+       plan:'你的温度是稀缺价值。下一步：把"让客户感到被看见"变成你的服务风格，并开始思考"如何让团队也学会这个。这是你从个人优秀到团队影响力的关键一步。'}
+    ]}
   ];
 
-  var TOTAL = QUESTIONS.length;
-  var currentIdx = 0;
-  var answers = new Array(TOTAL).fill(null); // stores score per question
+  var state = {};
+  DIMS.forEach(function(d){ state[d.key] = null; });
 
-  // DOM refs
-  var quizCard = document.getElementById('quizCard');
-  var quizDim = document.getElementById('quizDim');
-  var quizQuestion = document.getElementById('quizQuestion');
-  var quizOptions = document.getElementById('quizOptions');
-  var btnPrev = document.getElementById('btnPrev');
-  var btnNext = document.getElementById('btnNext');
-  var progressLabel = document.getElementById('progressLabel');
-  var progressFill = document.getElementById('progressFill');
-  var dimensionLabel = document.getElementById('dimensionLabel');
-  var quizArea = document.getElementById('quizArea');
-  var resultArea = document.getElementById('result');
-  var toast = document.getElementById('toast');
+  var container = document.getElementById('dims');
+  DIMS.forEach(function(dim, dimIdx){
+    var box = document.createElement('div');
+    box.className = 'dim';
+    box.id = 'dim-' + dim.key;
 
-  function renderQuestion(idx) {
-    currentIdx = Math.max(0, Math.min(TOTAL - 1, idx));
-    var q = QUESTIONS[currentIdx];
-    quizDim.textContent = DIM_NAMES[q.dim];
-    quizQuestion.textContent = q.question;
-    dimensionLabel.textContent = DIM_NAMES[q.dim];
+    var top = document.createElement('div');
+    top.className = 'dim-top';
+    top.innerHTML = '<h3 class="dim-title">' + (dimIdx+1) + '. ' + dim.title + '</h3><span class="dim-en">' + dim.en + '</span>';
+    box.appendChild(top);
 
-    var html = '';
-    for (var i = 0; i < q.options.length; i++) {
-      var opt = q.options[i];
-      var cls = answers[currentIdx] === opt.score ? ' quiz-opt selected' : ' quiz-opt';
-      html += '<button class="' + cls + '" data-score="' + opt.score + '" aria-label="选项' + (i+1) + '：' + opt.text + '">';
-      html += '<span class="opt-score">' + opt.score + '</span>';
-      html += '<span>' + opt.text + '</span>';
-      html += '</button>';
-    }
-    quizOptions.innerHTML = html;
+    var desc = document.createElement('div');
+    desc.className = 'dim-desc';
+    desc.textContent = dim.desc;
+    box.appendChild(desc);
 
-    // Bind click
-    var btns = quizOptions.querySelectorAll('.quiz-opt');
-    for (var j = 0; j < btns.length; j++) {
-      btns[j].addEventListener('click', function(){
-        var score = parseInt(this.getAttribute('data-score'), 10);
-        answers[currentIdx] = score;
-        quizOptions.querySelectorAll('.quiz-opt').forEach(function(b){
-          var s = parseInt(b.getAttribute('data-score'), 10);
-          b.classList.toggle('selected', s === score);
+    var opts = document.createElement('div');
+    opts.className = 'dim-opts';
+    opts.setAttribute('role','radiogroup');
+    opts.setAttribute('aria-label', dim.title + '自评');
+    dim.options.forEach(function(opt, idx){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dim-opt';
+      btn.dataset.dim = dim.key;
+      btn.dataset.idx = idx;
+      btn.setAttribute('aria-pressed','false');
+      btn.setAttribute('aria-label', dim.title + '：' + opt.level + ' ' + opt.desc);
+      btn.innerHTML = '<strong>' + opt.level + '</strong>' + opt.desc;
+      btn.addEventListener('click', function(){
+        state[dim.key] = idx;
+        opts.querySelectorAll('.dim-opt').forEach(function(b){
+          var active = parseInt(b.dataset.idx, 10) === idx;
+          b.classList.toggle('active', active);
+          b.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
-        if (typeof window.fsTrack === 'function') {
-          window.fsTrack('assess_pick', {q: currentIdx + 1, dim: DIM_KEYS[q.dim], score: score});
-        }
+        box.classList.add('completed');
+        updateProgress();
+        if (typeof window.fsTrack === 'function') window.fsTrack('assess_pick', {dim:dim.key, idx:idx});
       });
-    }
-
-    // Update progress
-    progressLabel.textContent = '第 ' + (currentIdx + 1) + '/' + TOTAL + ' 题';
-    progressFill.style.width = ((currentIdx + 1) / TOTAL * 100) + '%';
-
-    // Update nav buttons
-    btnPrev.disabled = currentIdx === 0;
-    if (currentIdx === TOTAL - 1) {
-      btnNext.textContent = '提交测评';
-      btnNext.className = 'btn btn-orange';
-    } else {
-      btnNext.textContent = '下一题';
-      btnNext.className = 'btn btn-primary';
-    }
-  }
-
-  btnPrev.addEventListener('click', function(){
-    if (currentIdx > 0) {
-      renderQuestion(currentIdx - 1);
-      window.scrollTo({top: 0, behavior: 'smooth'});
-    }
+      opts.appendChild(btn);
+    });
+    box.appendChild(opts);
+    container.appendChild(box);
   });
 
-  btnNext.addEventListener('click', function(){
-    if (answers[currentIdx] === null) {
-      showToast('请先选择一个选项');
-      return;
-    }
-    if (currentIdx < TOTAL - 1) {
-      renderQuestion(currentIdx + 1);
-      window.scrollTo({top: 0, behavior: 'smooth'});
-    } else {
-      // Submit
-      submitQuiz();
-    }
-  });
-
-  function submitQuiz() {
-    if (answers.some(function(a){ return a === null; })) {
-      showToast('请先完成所有题目');
-      return;
-    }
-    // Calculate dimension scores (each dim has 2 questions, max 10)
-    var dimScores = [0, 0, 0, 0, 0];
-    for (var i = 0; i < TOTAL; i++) {
-      dimScores[QUESTIONS[i].dim] += answers[i];
-    }
-    var total = dimScores.reduce(function(a,b){ return a+b; }, 0);
-
-    renderResult(dimScores, total);
-    if (typeof window.fsTrack === 'function') {
-      window.fsTrack('assess_result', {total: total, dimScores: dimScores});
-    }
-    quizArea.style.display = 'none';
-    resultArea.classList.add('show');
-    resultArea.scrollIntoView({behavior:'smooth', block:'start'});
+  function updateProgress(){
+    var done = DIMS.filter(function(d){ return state[d.key] !== null; }).length;
+    document.getElementById('progress-count').textContent = done;
+    document.getElementById('checkBtn').disabled = done !== DIMS.length;
   }
 
-  function renderResult(dimScores, total) {
-    document.getElementById('levelTag').textContent = '总分：' + total + ' / 50';
+  document.getElementById('checkBtn').addEventListener('click', function(){
+    if (DIMS.some(function(d){ return state[d.key] === null; })){
+      toast('请先完成 5 个维度');
+      return;
+    }
+    renderResult();
+    if (typeof window.fsTrack === 'function') window.fsTrack('assess_result', {state:state});
+    document.getElementById('result').classList.add('show');
+    document.getElementById('result').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    DIMS.forEach(function(d){ state[d.key] = null; });
+    document.querySelectorAll('.dim-opt').forEach(function(b){
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed','false');
+    });
+    document.querySelectorAll('.dim').forEach(function(b){ b.classList.remove('completed'); });
+    document.getElementById('result').classList.remove('show');
+    updateProgress();
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  function renderResult(){
+    var values = DIMS.map(function(d){ return (state[d.key] || 0) + 1; });
+    var total = values.reduce(function(a,b){ return a+b; }, 0);
+    document.getElementById('levelTag').textContent = '总分：' + total + ' / 15';
+
+    // Find strengths (≥2) and weak spots (==1)
+    var strengths = [];
+    var weak = [];
+    DIMS.forEach(function(d, i){
+      if (values[i] === 3) strengths.push(d.title);
+      if (values[i] === 1) weak.push({title: d.title, plan: d.options[state[d.key]].plan});
+    });
 
     var level;
-    if (total <= 20) {
+    if (total <= 7){
       level = {name:'新秀期', color:'#D97757',
-        desc:'你正在建立对服务的基本认知。关键不是"会不会"，而是能不能在每一次真实服务中稳定完成基本动作。',
+        desc:'你刚刚进入这条成长路径，正在建立对服务、对客户的基本认知。关键不是"会不会"，而是能不能在每一次真实服务中稳定完成基本动作。',
         next:'接下来的重点：把每一次服务的基本流程跑顺，养成记录客户信息的习惯，并在复盘里写下"这次我本可以做什么"。'};
-    } else if (total <= 35) {
+    } else if (total <= 11){
       level = {name:'成长期', color:'#2D5A3D',
-        desc:'你已经能独立完成常见场景的服务，在关键维度开始形成自己的方法论。需要警惕"惯性"—— 用老经验应对新问题。',
-        next:'接下来的重点：主动进入更复杂的场景，刻意练习客户真正的决策线索分析，并把成功的做法沉淀为可分享的模板。'};
+        desc:'你已经能独立完成常见场景的服务，在关键维度开始形成自己的方法论。需要警惕的是"惯性"——用老经验应对新问题。',
+        next:'接下来的重点：主动进入更复杂的场景（如高预算、多决策人、跨团队协作），刻意练习客户真正的决策线索分析，并把成功做法沉淀为可分享的模板。'};
     } else {
       level = {name:'资深期', color:'#2D5A3D',
-        desc:'你已经具备资深服务者的核心能力：能理解客户、能整合资源、能引导对话、能让客户感受到被看见。成长的下一步是让专业变得可传授。',
+        desc:'你已经具备资深服务者的核心能力：能理解客户、能整合资源、能引导对话、能让客户感受到被看见。成长的下一步不是"更专业"，而是让专业变得可传授。',
         next:'接下来的重点：开始承担"带新人"或"做培训"的角色，把隐性经验变成显性方法论，并在更复杂的组织问题上做第一次尝试。'};
     }
+
     document.getElementById('levelTitle').textContent = '当前段位：' + level.name;
-    document.getElementById('nextStep').innerHTML = '<strong>下一步建议：</strong>' + level.next;
-
-    // Strengths & weaknesses
-    var maxScore = Math.max.apply(null, dimScores);
-    var minScore = Math.min.apply(null, dimScores);
-    var strengthDims = [];
-    var weaknessDims = [];
-    for (var i = 0; i < 5; i++) {
-      if (dimScores[i] === maxScore) strengthDims.push(DIM_NAMES[i]);
-      if (dimScores[i] === minScore) weaknessDims.push(DIM_NAMES[i]);
+    var commentHtml = '<h4 style="margin:0 0 8px">📋 ' + level.name + '画像</h4>' + level.desc;
+    if (strengths.length > 0){
+      commentHtml += '<div style="margin-top:10px"><strong>你的优势：</strong>' + strengths.join('、') + '</div>';
     }
+    document.getElementById('levelComment').innerHTML = commentHtml;
 
-    var strengthHtml = '<strong>你的强项：</strong>' + strengthDims.join('、') + '（得分 ' + maxScore + '/10）';
-    if (maxScore >= 8) {
-      strengthHtml += '<br>这些领域你已经建立了扎实的认知和方法论，建议在团队中分享你的经验，通过"教"来进一步"学"。';
-    } else if (maxScore >= 6) {
-      strengthHtml += '<br>这些领域你有不错的基础，继续保持并尝试在真实场景中刻意练习更复杂的案例。';
-    } else {
-      strengthHtml += '<br>这些领域目前是你的相对优势，但仍有提升空间，建议多观察资深同事的做法，记录每一次服务的得失。';
+    // Next step section
+    var nextHtml = '<h4>🚀 下一步成长计划</h4>';
+    if (weak.length > 0){
+      weak.forEach(function(w){
+        nextHtml += '<div style="padding:8px 0;border-bottom:1px dashed #F3D9CA"><strong>' + w.title + '（当前最弱项）：</strong>' + w.plan + '</div>';
+      });
     }
-    document.getElementById('strengthBox').innerHTML = strengthHtml;
+    nextHtml += '<div style="margin-top:10px"><strong style="display:block;color:#D97757;margin-bottom:6px">整体方向：</strong>' + level.next + '</div>';
+    document.getElementById('nextStep').innerHTML = nextHtml;
 
-    var weaknessHtml = '<strong>提升空间：</strong>' + weaknessDims.join('、') + '（得分 ' + minScore + '/10）';
-    if (minScore <= 4) {
-      weaknessHtml += '<br>这些领域是你的短板，建议先从基础动作开始练习，比如：每天记录一个客户案例，每周参加一次团队复盘。';
-    } else if (minScore <= 6) {
-      weaknessHtml += '<br>这些领域你有基础但不够扎实，需要更有意识地学习，建议参加相关培训或向资深同事请教。';
-    } else {
-      weaknessHtml += '<br>整体能力比较均衡，这些领域虽然相对较低，但基础不错，持续精进即可。';
-    }
-    document.getElementById('weaknessBox').innerHTML = weaknessHtml;
-
-    // Dimension-specific suggestions
-    var suggestions = '';
-    for (var d = 0; d < 5; d++) {
-      if (dimScores[d] <= 4) {
-        var tips = {
-          0: '客户洞察：尝试在每次服务后记录三个"客户说了什么"和三个"客户没说什么"，训练自己捕捉隐性需求的能力。',
-          1: '专业知识：每天花15分钟阅读一篇行业文章，周末整理成知识卡片，坚持一个月会看到明显变化。',
-          2: '沟通表达：练习"先听后说"，每次沟通前默念"客户真正想要的是什么"，尝试用客户的语言回应客户。',
-          3: '资源整合：每周认识一位不同部门的同事，了解他们的工作内容，建立一个"我可以找谁帮忙"的资源清单。',
-          4: '服务温度：每天给一位老客户发一条关心的信息（不推销），记录客户的反馈，感受温度的力量。'
-        };
-        suggestions += '<p>' + tips[d] + '</p>';
-      }
-    }
-    if (suggestions) {
-      document.getElementById('suggestionBox').innerHTML = '<strong>针对性提升建议：</strong>' + suggestions;
-      document.getElementById('suggestionBox').style.display = 'block';
-    } else {
-      document.getElementById('suggestionBox').style.display = 'none';
-    }
-
-    drawBarChart(dimScores);
+    drawBarChart(values);
   }
 
   function drawBarChart(values){
     var svg = document.getElementById('barChart');
-    var W = 600, H = 440;
-    var padding = {top:30, right:30, bottom:70, left:40};
+    var W = 800, H = 480;
+    var padding = {top:40, right:30, bottom:120, left:60};
     var plotW = W - padding.left - padding.right;
     var plotH = H - padding.top - padding.bottom;
-    var maxVal = 10;
+    var maxVal = 3;
     var n = values.length;
-    var barW = plotW / n * 0.62;
-    var gap = plotW / n * 0.38;
-
+    var barW = plotW / n * 0.55;
+    var gap = plotW / n * 0.45;
     var html = '';
-    html += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#fff"/>';
+
+    // Background
+    html += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#F5F1E8"/>';
 
     // Grid lines
-    for (var v = 2; v <= maxVal; v += 2){
-      var y = padding.top + plotH - (plotH / maxVal) * v;
-      html += '<line x1="' + padding.left + '" y1="' + y + '" x2="' + (W - padding.right) + '" y2="' + y + '" stroke="#EFE8DB" stroke-width="1" stroke-dasharray="4 4"/>';
-      html += '<text x="' + (padding.left - 8) + '" y="' + (y + 5) + '" text-anchor="end" font-family="inherit" font-size="12" fill="#8A857B">' + v + '分</text>';
+    for (var v = 1; v <= maxVal; v++){
+      var y = padding.top + plotH - (plotH/maxVal)*v;
+      html += '<line x1="' + padding.left + '" y1="' + y + '" x2="' + (W - padding.right) + '" y2="' + y + '" stroke="#D9D4C7" stroke-width="1" stroke-dasharray="4 4"/>';
+      html += '<text x="' + (padding.left - 12) + '" y="' + (y + 5) + '" text-anchor="end" font-family="inherit" font-size="13" fill="#8A857B" font-weight="600">' + v + '分</text>';
     }
 
     // Bars
     for (var i = 0; i < n; i++){
-      var x = padding.left + i * (plotW / n) + gap / 2;
+      var x = padding.left + i * (plotW/n) + gap/2;
       var val = values[i];
-      var barH = (plotH / maxVal) * val;
-      var by = padding.top + plotH - barH;
+      var barH = (plotH/maxVal) * val;
+      var y = padding.top + plotH - barH;
       var color;
-      if (val >= 8) color = '#2D5A3D';
-      else if (val >= 6) color = '#4B7A5C';
-      else if (val >= 4) color = '#D97757';
-      else color = '#C0392B';
+      if (val === 3) color = '#2D5A3D';
+      else if (val === 2) color = '#4B7A5C';
+      else color = '#D97757';
+      html += '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + barH + '" rx="10" fill="' + color + '" opacity="0.95"/>';
+      html += '<text x="' + (x + barW/2) + '" y="' + (y - 10) + '" text-anchor="middle" font-family="inherit" font-size="16" fill="#2A2825" font-weight="700">' + val + '</text>';
 
-      html += '<rect x="' + x + '" y="' + by + '" width="' + barW + '" height="' + barH + '" rx="10" fill="' + color + '" opacity=".92"/>';
-      html += '<text x="' + (x + barW / 2) + '" y="' + (by - 8) + '" text-anchor="middle" font-family="inherit" font-size="14" fill="#2A2825" font-weight="700">' + val + '</text>';
+      // Label
+      var labelY = padding.top + plotH + 20;
+      var label = DIMS[i].title;
+      var line1 = label.substring(0, 6);
+      var line2 = label.substring(6);
+      html += '<text x="' + (x + barW/2) + '" y="' + labelY + '" text-anchor="middle" font-family="inherit" font-size="14" fill="#2A2825" font-weight="600">' + line1 + '</text>';
+      if (line2) html += '<text x="' + (x + barW/2) + '" y="' + (labelY + 22) + '" text-anchor="middle" font-family="inherit" font-size="14" fill="#2A2825" font-weight="600">' + line2 + '</text>';
 
-      var labelY = padding.top + plotH + 10;
-      var label = DIM_NAMES[i];
-      html += '<text x="' + (x + barW / 2) + '" y="' + labelY + '" text-anchor="middle" font-family="inherit" font-size="13" fill="#2A2825" font-weight="600">' + label + '</text>';
-
-      var sub = val >= 8 ? '强项' : (val >= 6 ? '良好' : (val >= 4 ? '待提升' : '薄弱'));
-      html += '<text x="' + (x + barW / 2) + '" y="' + (labelY + 22) + '" text-anchor="middle" font-family="inherit" font-size="12" fill="' + (val >= 6 ? '#2D5A3D' : '#D97757') + '">' + sub + '</text>';
+      var sub = DIMS[i].options[state[DIMS[i].key]].level;
+      html += '<text x="' + (x + barW/2) + '" y="' + (labelY + (line2 ? 52 : 34)) + '" text-anchor="middle" font-family="inherit" font-size="13" fill="#8A857B" font-weight="500">' + sub + '</text>';
     }
 
     svg.innerHTML = html;
   }
 
-  // Save result
-  document.getElementById('btnSave').addEventListener('click', function(){
-    try {
-      var dimScores = [0,0,0,0,0];
-      for (var i = 0; i < TOTAL; i++) {
-        dimScores[QUESTIONS[i].dim] += answers[i];
-      }
-      var total = dimScores.reduce(function(a,b){ return a+b; }, 0);
-      var record = {
-        date: new Date().toISOString(),
-        answers: answers.slice(),
-        dimScores: dimScores,
-        total: total
-      };
-      localStorage.setItem('assessment-results', JSON.stringify(record));
-      showToast('结果已保存到本地');
-      if (typeof window.fsTrack === 'function') window.fsTrack('assess_save');
-    } catch(e) {
-      showToast('保存失败，请检查浏览器存储空间');
-    }
-  });
-
-  // Retake
-  document.getElementById('btnRetake').addEventListener('click', function(){
-    answers = new Array(TOTAL).fill(null);
-    quizArea.style.display = 'block';
-    resultArea.classList.remove('show');
-    renderQuestion(0);
-    window.scrollTo({top: 0, behavior: 'smooth'});
-    if (typeof window.fsTrack === 'function') window.fsTrack('assess_retake');
-  });
-
-  function showToast(msg) {
-    toast.textContent = msg;
-    toast.classList.add('show');
-    clearTimeout(toast._timeout);
-    toast._timeout = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
+  // Toast
+  var toastEl = document.getElementById('toast');
+  var toastTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2200);
   }
-
-  // Init
-  renderQuestion(0);
 })();
 </script>
 </body>

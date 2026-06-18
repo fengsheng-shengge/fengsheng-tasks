@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self';">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta name="description" content="六维品质测评：给客户的居住品质做一次体检，2分钟6个维度，生成可分享的品质报告 — 风声 fengsheng.tech">
-<meta name="keywords" content="品质测评,居住品质,六维测评,品质报告,房产服务">
+<meta name="description" content="六维品质测评：给客户的居住品质做一次体检，6个维度点选即出报告 — 风声 fengsheng.tech">
+<meta name="keywords" content="品质测评,居住品质,房产服务,品质报告,居住体验">
 <meta name="theme-color" content="#2D5A3D">
 <meta property="og:title" content="六维品质测评 · 风声 fengsheng.tech">
 <meta property="og:description" content="给客户的居住品质做一次体检：采光与通风、安静程度、温度舒适、空间布局、邻里关系、配套便利。">
@@ -34,81 +34,92 @@ a:hover{text-decoration:underline}
 .nav a:hover{background:#F5F1E8;text-decoration:none;color:#2D5A3D}
 .nav .sep{color:#B8B1A4}
 .hero{padding:56px 0 32px;text-align:center}
-.hero h1{font-size:clamp(30px,5vw,44px);line-height:1.3;margin:0 0 14px;color:#2A2825}
+.hero h1{font-size:clamp(30px,5vw,44px);line-height:1.3;margin:0 0 14px;color:#2A2825;font-weight:700}
 .hero h1 em{font-style:normal;color:#D97757}
 .hero p.lead{font-size:clamp(16px,2.2vw,19px);color:#5E5952;max-width:620px;margin:0 auto}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:14px 28px;font-size:16px;font-weight:600;font-family:inherit;transition:transform .15s ease,box-shadow .15s ease,background-color .2s}
-.btn-primary{background:#2D5A3D;color:#fff;box-shadow:0 6px 16px rgba(45,90,61,.25)}
-.btn-primary:hover{background:#234a31;text-decoration:none;transform:translateY(-1px)}
-.btn-orange{background:#D97757;color:#fff;box-shadow:0 6px 16px rgba(217,119,87,.25)}
-.btn-orange:hover{background:#c06649;text-decoration:none}
-.btn-ghost{background:transparent;color:#2D5A3D;border:2px solid #2D5A3D}
-.btn-ghost:hover{background:#2D5A3D;color:#fff;text-decoration:none}
-.btn[disabled]{opacity:.5;cursor:not-allowed}
 .section{padding:32px 0}
 .section h2{font-size:clamp(22px,3.5vw,28px);margin:0 0 8px;color:#2A2825}
 .section .sub{color:#5E5952;margin:0 0 24px}
-.card{background:#fff;border-radius:16px;padding:24px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04)}
-.privacy-card{background:#FBEDE5;border:1px solid #F3D9CA;color:#8A3A22;border-radius:16px;padding:18px 22px;font-size:15px}
-.privacy-card strong{color:#D97757}
+
+/* Domain cards */
 .dims{display:grid;gap:14px;margin-top:12px}
-.dim{background:#fff;border-radius:16px;padding:22px;border:1px solid #EFE8DB}
+.dim{background:#fff;border-radius:16px;padding:22px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);transition:border-color .2s}
+.dim.completed{border-color:#2D5A3D}
 .dim-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
 .dim-title{font-size:18px;font-weight:700;color:#2A2825;margin:0}
 .dim-en{font-size:13px;color:#8A857B;font-weight:500;letter-spacing:.5px}
-.dim-score{font-size:28px;font-weight:700;color:#2D5A3D;min-width:48px;text-align:right}
-.dim-slider-row{display:flex;align-items:center;gap:12px}
-.dim-slider-row input[type="range"]{flex:1;-webkit-appearance:none;appearance:none;height:8px;border-radius:4px;background:linear-gradient(to right, #2D5A3D 0%, #2D5A3D 50%, #EFE8DB 50%, #EFE8DB 100%);outline:none;transition:background .15s}
-.dim-slider-row input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;border-radius:50%;background:#2D5A3D;cursor:pointer;border:3px solid #fff;box-shadow:0 2px 6px rgba(45,90,61,.3);transition:transform .15s}
-.dim-slider-row input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.15)}
-.dim-slider-row input[type="range"]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#2D5A3D;cursor:pointer;border:3px solid #fff;box-shadow:0 2px 6px rgba(45,90,61,.3)}
-.dim-labels{display:flex;justify-content:space-between;font-size:12px;color:#8A857B;margin-top:4px;padding:0 2px}
-.radar-section{margin-top:20px;display:none}
-.radar-section.show{display:block;animation:fade .3s ease}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.radar-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.radar-head h2{margin:0}
+.dim-desc{font-size:13px;color:#5E5952;margin:4px 0 14px}
+.dim-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dim-opt{background:#F5F1E8;border:2px solid transparent;color:#2A2825;padding:14px 12px;border-radius:12px;cursor:pointer;font-size:14px;text-align:center;font-family:inherit;font-weight:500;line-height:1.5;transition:all .15s}
+.dim-opt:hover{background:#E8EDE3;border-color:#B8B1A4}
+.dim-opt.active{background:#2D5A3D;color:#fff;border-color:#2D5A3D;font-weight:600}
+
+/* Action bar */
+.action-bar{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;align-items:center}
+.progress-text{font-size:14px;color:#6B665E;flex:1;min-width:140px}
+.progress-text strong{color:#2D5A3D;font-size:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:14px 28px;font-size:16px;font-weight:600;font-family:inherit;transition:transform .15s ease,box-shadow .15s ease,background-color .2s}
+.btn-primary{background:#2D5A3D;color:#fff;box-shadow:0 6px 16px rgba(45,90,61,.25)}
+.btn-primary:hover{background:#234a31;text-decoration:none;transform:translateY(-1px)}
+.btn-primary[disabled]{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-ghost{background:transparent;color:#2A2825;border:1px solid #EFE8DB;padding:12px 20px;font-size:14px}
+.btn-ghost:hover{background:#fff;border-color:#D97757;text-decoration:none}
+
+/* Result */
+.result{margin-top:24px;display:none}
+.result.show{display:block;animation:fadeSlide .35s ease}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.result-card{background:#fff;border-radius:16px;padding:28px;border:1px solid #EFE8DB;box-shadow:0 4px 16px rgba(42,40,37,.06)}
+.result-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #EFE8DB}
+.result-head h2{font-size:24px;margin:0}
 .score-tag{display:inline-block;padding:6px 14px;background:#FBEDE5;color:#D97757;font-weight:700;border-radius:999px;font-size:14px}
-.radar-wrap{display:flex;justify-content:center;margin:12px 0 24px}
+.radar-wrap{display:flex;justify-content:center;margin:12px 0 24px;padding:16px;background:#F5F1E8;border-radius:16px}
 .radar-wrap svg{max-width:100%;height:auto}
-.suggestions{margin-top:20px}
-.suggestions h4{margin:0 0 12px;color:#2D5A3D;font-size:17px}
-.suggestion-item{background:#F5F1E8;border-radius:12px;padding:14px 18px;margin-bottom:10px;border-left:4px solid #2D5A3D}
-.suggestion-item.excellent{border-left-color:#2D5A3D;background:#E8EDE3}
-.suggestion-item.good{border-left-color:#D97757;background:#FBEDE5}
-.suggestion-item.poor{border-left-color:#D97757;background:#FFF3E0}
-.suggestion-item .s-dim-name{font-weight:700;font-size:15px;color:#2A2825;margin-bottom:4px}
-.suggestion-item .s-dim-score{font-size:13px;color:#6B665E;margin-bottom:2px}
-.suggestion-item .s-dim-advice{font-size:14px;color:#5E5952;line-height:1.6}
-.suggestion-label{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;margin-left:8px}
-.suggestion-label.lvl-excellent{background:#2D5A3D;color:#fff}
-.suggestion-label.lvl-good{background:#D97757;color:#fff}
-.suggestion-label.lvl-poor{background:#D97757;color:#fff}
-.toast{position:fixed;left:50%;top:32px;transform:translateX(-50%) translateY(-20px);background:#2D5A3D;color:#fff;padding:12px 22px;border-radius:999px;font-size:14px;opacity:0;transition:all .25s;z-index:200;pointer-events:none;box-shadow:0 8px 24px rgba(45,90,61,.3)}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.result-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
-.footer{border-top:1px solid #EFE8DB;background:#fff;padding:30px 0 24px;margin-top:48px;font-size:14px;color:#6B665E}
+.dim-legend{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 24px;font-size:14px;color:#5E5952;margin-bottom:8px}
+.dim-legend-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed #EFE8DB}
+.dim-legend-item .dot{width:8px;height:8px;border-radius:50%;background:#2D5A3D;flex:none}
+.dim-legend-item.low .dot{background:#D97757}
+.dim-legend-item.low{color:#8A3A22;font-weight:500}
+.dim-legend-item.high .dot{background:#2D5A3D}
+.dim-legend-item .l-title{flex:1}
+.dim-legend-item .l-score{font-weight:700;color:#2A2825}
+
+/* Comments */
+.comment{background:#E8EDE3;color:#2D5A3D;padding:18px 22px;border-radius:16px;font-size:15px;line-height:1.7;margin-top:20px}
+.improve{background:#FBEDE5;color:#8A3A22;padding:18px 22px;border-radius:16px;font-size:15px;line-height:1.7;margin-top:14px}
+.improve h4{margin:0 0 10px;color:#D97757;font-size:16px}
+.improve-item{padding:8px 0;border-bottom:1px dashed #F3D9CA}
+.improve-item:last-child{border-bottom:none}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2A2825;color:#fff;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+.footer{border-top:1px solid #EFE8DB;background:#fff;padding:36px 0 28px;margin-top:48px;font-size:14px;color:#6B665E}
 .footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 .footer a{color:#6B665E}
 .footer .sep{color:#B8B1A4;margin:0 4px}
+
 @media (max-width:640px){
   .wrap{padding:0 16px}
   .hero{padding:40px 0 24px}
-  .section{padding:24px 0}
-  .dim-score{font-size:24px}
+  .section{padding:28px 0}
+  .dim-opts{grid-template-columns:1fr}
+  .dim-legend{grid-template-columns:1fr}
   .nav{font-size:14px}
   .brand{font-size:18px}
 }
 </style>
 </head>
 <body>
-<a class="skip-nav" href="#main" aria-label="跳到主要内容">跳到主要内容</a>
+<a href="#main" class="skip-nav" aria-label="跳到主要内容">跳到主要内容</a>
+
 <header class="header" role="banner">
   <div class="wrap header-inner">
-    <a href="/" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
-    <nav class="nav" aria-label="面包屑">
-      <a href="/">首页</a><span class="sep">·</span>
-      <a href="quality-test">六维品质测评</a>
+    <a href="index.html" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
+    <nav class="nav" aria-label="主导航">
+      <a href="index.html">首页</a><span class="sep">·</span>
+      <a href="quality-test.html">六维品质</a>
     </nav>
   </div>
 </header>
@@ -116,40 +127,36 @@ a:hover{text-decoration:underline}
 <main id="main" role="main">
   <section class="hero" aria-labelledby="hero-title">
     <div class="wrap">
-      <h1 id="hero-title">给客户做一次<em>六维品质体检</em></h1>
-      <p class="lead">6个维度，0-100分，实时雷达图，一份可保存的品质报告。</p>
+      <h1 id="hero-title">六维品质<em>测评</em></h1>
+      <p class="lead">给客户的居住品质做一次体检。六个维度点选即出报告，帮你和客户一起找到真正的改善方向。</p>
     </div>
   </section>
 
   <section class="section" aria-labelledby="dims-title">
     <div class="wrap">
-      <div class="privacy-card" role="note">
-        <strong>隐私提示：</strong>此测评数据仅保存在您的浏览器本地存储中，不会上传到服务器。详细数据政策见 <a href="privacy" aria-label="查看隐私政策">privacy.html</a>。
+      <h2 id="dims-title">请在每个维度选择最接近的描述</h2>
+      <p class="sub">每个维度有 3 个选项，选完即可查看报告。</p>
+      <div class="dims" id="dims"></div>
+
+      <div class="action-bar">
+        <div class="progress-text">已完成 <strong id="progress-count">0</strong> / 6</div>
+        <button class="btn btn-ghost" type="button" id="resetBtn">清空重选</button>
+        <button class="btn btn-primary" type="button" id="genReport" disabled>生成报告 →</button>
       </div>
 
-      <div class="card" style="margin-top:18px" id="dims-title">
-        <h2 style="margin:0 0 4px">六个维度，滑动打分</h2>
-        <p class="sub" style="margin:0">拖动滑块为每个维度打分（0-100），雷达图将实时更新。</p>
-        <div class="dims" id="dims"></div>
-      </div>
-
-      <div class="card radar-section" id="radarSection">
-        <div class="radar-head">
-          <h2>六维雷达图</h2>
-          <span class="score-tag" id="avgScore">平均分：-</span>
-        </div>
-        <div class="radar-wrap">
-          <svg id="radar" width="500" height="500" viewBox="0 0 500 500" role="img" aria-label="六维品质雷达图"></svg>
-        </div>
-
-        <div class="suggestions" id="suggestions">
-          <h4>改善建议</h4>
-          <div id="suggestionList"></div>
-        </div>
-
-        <div class="result-actions">
-          <button class="btn btn-primary" type="button" id="saveBtn" aria-label="保存结果">保存结果</button>
-          <button class="btn btn-ghost" type="button" id="resetBtn" aria-label="重新测评">重新测评</button>
+      <div class="result" id="result" aria-live="polite">
+        <div class="result-card">
+          <div class="result-head">
+            <h2 id="levelTitle">品质报告</h2>
+            <span class="score-tag" id="reportScore">总得分：0 / 18</span>
+          </div>
+          <div class="radar-wrap">
+            <svg id="radar" viewBox="0 0 480 480" role="img" aria-label="六维品质雷达图"></svg>
+          </div>
+          <h3 style="margin:12px 0 8px;font-size:18px;color:#2A2825">维度详情</h3>
+          <div class="dim-legend" id="dimLegend"></div>
+          <div class="comment" id="comment"></div>
+          <div class="improve" id="improve"></div>
         </div>
       </div>
     </div>
@@ -160,316 +167,299 @@ a:hover{text-decoration:underline}
   <div class="wrap footer-inner">
     <div>© 2026 风声 · fengsheng.tech</div>
     <div>
-      <a href="privacy" aria-label="查看隐私政策">隐私政策</a> ·
-      <a href="reply" aria-label="帮助与反馈">帮助</a>
+      <a href="privacy.html" aria-label="查看隐私政策">隐私政策</a><span class="sep">·</span>
+      <a href="reply.html" aria-label="帮助与反馈">帮助</a>
     </div>
   </div>
 </footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="tracker.js" defer></script>
 <script>
 (function(){
   var DIMS = [
-    {key:'attitude', title:'服务态度', en:'Service Attitude'},
-    {key:'professional', title:'专业度', en:'Professionalism'},
-    {key:'response', title:'响应速度', en:'Response Speed'},
-    {key:'accuracy', title:'准确度', en:'Accuracy'},
-    {key:'initiative', title:'主动性', en:'Initiative'},
-    {key:'satisfaction', title:'客户满意度', en:'Client Satisfaction'}
+    {key:'light', title:'采光与通风', en:'Light & Ventilation',
+     desc:'自然光是否充足，空气流通是否顺畅',
+     options:[
+       {label:'充足', detail:'阳光充足，空气自然流通良好', score:3,
+        improve:'保持并利用：可以考虑增加绿植或遮阳设施，避免过度暴晒'},
+       {label:'尚可', detail:'有基本采光，偶有通风不足的感觉', score:2,
+        improve:'可改善：检查窗帘选择是否挡住光线；在通风差的区域增加辅助通风（如排气扇、小风扇）；在关键位置加镜面反射'},
+       {label:'需改善', detail:'采光不足或有明显通风问题', score:1,
+        improve:'重点改善：评估是否可以改变灯具配置；考虑安装新风系统或排气扇；检查是否有房间空气停滞问题；必要时做一次专业采光评估'}
+     ]},
+    {key:'quiet', title:'安静程度', en:'Quietness',
+     desc:'外部噪音和内部安静程度',
+     options:[
+       {label:'非常安静', detail:'几乎听不到外部噪音', score:3,
+        improve:'保持优势：隔音效果是高价值卖点，可以形成客户的"宁静专属空间"印象'},
+       {label:'一般', detail:'偶有外部噪音但不影响生活', score:2,
+        improve:'可改善：检查门窗密封性；在噪音来源方向（如主干道、电梯旁）增加厚重窗帘或密封胶条；在卧室铺设地毯'},
+       {label:'有噪音困扰', detail:'经常受到噪音影响', score:1,
+        improve:'重点改善：评估是否需要更换隔音窗；在噪音高峰时段合理安排活动；墙面加装吸音板；对空调外机、电梯、邻里噪声来源逐一排查'}
+     ]},
+    {key:'thermal', title:'温度舒适', en:'Thermal Comfort',
+     desc:'全年温度和湿度的舒适度',
+     options:[
+       {label:'常年舒适', detail:'四季温度都在舒适范围', score:3,
+        improve:'保持并优化：可以在季节变化时做精细化温度管理，如冬天加暖风机、夏天使用遮阳设施'},
+       {label:'夏天偏热', detail:'夏季有明显闷热感，其他季节OK', score:2,
+        improve:'可改善：检查空调效率是否足够；考虑增加遮光窗帘或窗贴膜；在阳光直射的下午时段提前关窗拉帘'},
+       {label:'冬天偏冷', detail:'冬季温度不足或有冷感', score:1,
+        improve:'重点改善：评估门窗密封性和保温；检查供暖系统是否需维护；考虑加装踢脚线暖气或加厚窗帘；注意老人和儿童房间的温度'}
+     ]},
+    {key:'layout', title:'空间布局', en:'Layout',
+     desc:'户型是否合理好用，动线是否顺畅',
+     options:[
+       {label:'合理好用', detail:'动线清晰，空间利用充分', score:3,
+        improve:'保持优势：空间布局是高价值卖点，可以在"如何让空间更聪明"上做进一步精细化设计'},
+       {label:'基本够用', detail:'大致可用但某些区域略局促', score:2,
+        improve:'可改善：评估是否有被浪费的空间（如大型玄关、过长走廊）；检查家具布局是否最优；考虑收纳系统的空间优化'},
+       {label:'需改造', detail:'存在明显不合理或动线问题', score:1,
+        improve:'重点改善：做一次专业的空间动线评估；针对最痛点的区域做低成本改造（如移除墙体、重新布置收纳）；必要时考虑小范围的装修改造'}
+     ]},
+    {key:'neighbor', title:'邻里关系', en:'Neighborhood',
+     desc:'社区氛围与邻里互动状况',
+     options:[
+       {label:'融洽', detail:'邻里熟悉，社区氛围良好', score:3,
+        improve:'保持优势：良好的社区关系是稀缺价值，可以组织小型社区活动强化这一点，形成独特"居住温度"'},
+       {label:'一般', detail:'基本互不打扰但缺乏互动', score:2,
+        improve:'可改善：尝试发起或参与一些低门槛的社区活动；在公共空间增加互动元素；让客户感知到"这里有邻居的温度"'},
+       {label:'需关注', detail:'有潜在矛盾或互动较少', score:1,
+        improve:'重点关注：评估是否有明确可改善的点（如公共区域管理、噪音问题、宠物管理）；对重点问题做好记录和沟通；必要时通过物业或业委会协调'}
+     ]},
+    {key:'amenities', title:'配套便利', en:'Amenities',
+     desc:'商业、教育、医疗等配套设施便利性',
+     options:[
+       {label:'非常便利', detail:'步行范围内配套齐全', score:3,
+        improve:'保持优势：便利度是客户决策的核心因素之一，可以形成"5分钟生活圈"的故事化描述'},
+       {label:'基本满足', detail:'主要需求可满足，但部分需要出行', score:2,
+        improve:'可改善：把"不便利的点"转化为"可以解决的方案"（如离地铁远但骑车8分钟）；标注潜在新配套规划；对重要配套做具体到分钟的距离评估'},
+       {label:'需改善', detail:'部分核心配套距离较远', score:1,
+        improve:'重点规划：列出最关键的3个不便点并提供替代方案；关注区域长期规划（如新建学校、商业体）；把距离转换为时间成本的量化评估'}
+     ]}
   ];
 
-  var ADVICE = {
-    attitude: {
-      excellent: '服务态度非常出色，客户体验极佳。继续保持热情、耐心和同理心，让每一位客户都感受到被重视。',
-      good: '服务态度良好，多数情况下客户感到满意。建议在沟通中更加主动地关注客户情绪变化，及时给予积极回应。',
-      poor: '服务态度需要提升。建议从微笑服务、主动问候和耐心倾听开始，建立更积极的客户互动模式。'
-    },
-    professional: {
-      excellent: '专业度表现出色，对行业知识、产品细节和流程都非常熟悉。建议持续关注行业动态，保持专业领先。',
-      good: '专业度基本达标，建议在特定领域（如合同条款、交易流程、建筑知识）做进一步深度学习，提升专业深度。',
-      poor: '专业度有待加强。建议制定系统学习计划，定期参加行业培训，积累常见问题处理经验。'
-    },
-    response: {
-      excellent: '响应非常及时，客户需求能得到快速处理。建议保持当前响应节奏，同时关注回复质量的持续提升。',
-      good: '响应速度基本满足客户期望，建议在高峰期或复杂问题上建立更高效的响应机制，减少客户等待时间。',
-      poor: '响应速度需要加快。建议设置响应时效目标，优化工作流程，确保客户需求在合理时间内得到反馈。'
-    },
-    accuracy: {
-      excellent: '信息准确度极高，客户可以完全信赖你的判断和建议。建议将准确的工作方法总结成标准化流程，分享给团队。',
-      good: '信息准确度较好，偶尔有小误差。建议在关键信息传递前做二次确认，建立信息核对清单。',
-      poor: '信息准确度需要改进。建议养成"先确认再传递"的习惯，重要信息做好记录和备份，避免凭记忆给出不确定的答复。'
-    },
-    initiative: {
-      excellent: '主动性非常强，能够提前预判客户需求并主动提供解决方案。建议将这种前瞻性思维固化为服务流程的一部分。',
-      good: '主动性尚可，但有时需要客户提醒才跟进。建议建立客户跟进提醒机制，在关键节点主动联系客户。',
-      poor: '主动性需要加强。建议从"每日主动联系一位客户"开始，逐步培养主动服务意识，将被动响应转变为主动关怀。'
-    },
-    satisfaction: {
-      excellent: '客户满意度非常高，这是长期努力的结果。建议定期收集客户反馈，将满意的服务经验沉淀为可复制的标准。',
-      good: '客户满意度良好，但仍有提升空间。建议在服务结束后主动询问客户感受，收集具体改进意见。',
-      poor: '客户满意度偏低，需要重点关注。建议主动联系客户了解不满原因，制定针对性的改进计划并定期复盘。'
-    }
-  };
-
   var state = {};
-  DIMS.forEach(function(d){ state[d.key] = 50; });
-
-  var hasInteracted = false;
+  DIMS.forEach(function(d){ state[d.key] = null; });
 
   var container = document.getElementById('dims');
-  DIMS.forEach(function(dim){
+  DIMS.forEach(function(dim, dimIdx){
     var box = document.createElement('div');
     box.className = 'dim';
+    box.id = 'dim-' + dim.key;
 
     var top = document.createElement('div');
     top.className = 'dim-top';
-    top.innerHTML = '<h3 class="dim-title">' + dim.title + '</h3><span class="dim-en">' + dim.en + '</span>';
-
-    var scoreEl = document.createElement('span');
-    scoreEl.className = 'dim-score';
-    scoreEl.id = 'score-' + dim.key;
-    scoreEl.textContent = '50';
-    top.appendChild(scoreEl);
+    top.innerHTML = '<h3 class="dim-title">' + (dimIdx+1) + '. ' + dim.title + '</h3><span class="dim-en">' + dim.en + '</span>';
     box.appendChild(top);
 
-    var sliderRow = document.createElement('div');
-    sliderRow.className = 'dim-slider-row';
+    var desc = document.createElement('div');
+    desc.className = 'dim-desc';
+    desc.textContent = dim.desc;
+    box.appendChild(desc);
 
-    var labelMin = document.createElement('span');
-    labelMin.style.cssText = 'font-size:12px;color:#8A857B;min-width:20px;text-align:center';
-    labelMin.textContent = '0';
-
-    var slider = document.createElement('input');
-    slider.type = 'range';
-    slider.id = 'slider-' + dim.key;
-    slider.min = '0';
-    slider.max = '100';
-    slider.value = '50';
-    slider.setAttribute('aria-label', dim.title + '评分');
-    slider.addEventListener('input', function(){
-      hasInteracted = true;
-      var val = parseInt(slider.value, 10);
-      state[dim.key] = val;
-      scoreEl.textContent = val;
-      updateSliderBg(slider, val);
-      updateRadar();
-      if (typeof window.fsTrack === 'function') {
-        window.fsTrack('quality_test_slide', {dim: dim.key, score: val});
-      }
+    var opts = document.createElement('div');
+    opts.className = 'dim-opts';
+    opts.setAttribute('role','radiogroup');
+    opts.setAttribute('aria-label', dim.title + '选项');
+    dim.options.forEach(function(opt, idx){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dim-opt';
+      btn.dataset.dim = dim.key;
+      btn.dataset.idx = idx;
+      btn.setAttribute('aria-pressed','false');
+      btn.setAttribute('aria-label', dim.title + '：' + opt.label);
+      btn.innerHTML = '<strong style="display:block;margin-bottom:4px;font-size:15px">' + opt.label + '</strong>' + opt.detail;
+      btn.addEventListener('click', function(){
+        var prev = state[dim.key];
+        state[dim.key] = idx;
+        opts.querySelectorAll('.dim-opt').forEach(function(b){
+          var active = parseInt(b.dataset.idx, 10) === idx;
+          b.classList.toggle('active', active);
+          b.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        box.classList.add('completed');
+        updateProgress();
+        if (typeof window.fsTrack === 'function') window.fsTrack('quality_pick', {dim:dim.key, idx:idx});
+        // If all done, auto-scroll to action
+        if (DIMS.every(function(d){ return state[d.key] !== null; })){
+          toast('6个维度都选好啦，点"生成报告" →');
+        }
+      });
+      opts.appendChild(btn);
     });
-
-    var labelMax = document.createElement('span');
-    labelMax.style.cssText = 'font-size:12px;color:#8A857B;min-width:24px;text-align:center';
-    labelMax.textContent = '100';
-
-    sliderRow.appendChild(labelMin);
-    sliderRow.appendChild(slider);
-    sliderRow.appendChild(labelMax);
-    box.appendChild(sliderRow);
-
-    updateSliderBg(slider, 50);
+    box.appendChild(opts);
     container.appendChild(box);
   });
 
-  function updateSliderBg(slider, val){
-    var pct = (val / 100) * 100;
-    slider.style.background = 'linear-gradient(to right, #2D5A3D 0%, #2D5A3D ' + pct + '%, #EFE8DB ' + pct + '%, #EFE8DB 100%)';
+  function updateProgress(){
+    var done = DIMS.filter(function(d){ return state[d.key] !== null; }).length;
+    document.getElementById('progress-count').textContent = done;
+    document.getElementById('genReport').disabled = done !== DIMS.length;
   }
 
-  function updateRadar(){
-    if (!hasInteracted) return;
+  // Report generation
+  document.getElementById('genReport').addEventListener('click', function(){
+    if (DIMS.some(function(d){ return state[d.key] === null; })){
+      toast('请先完成 6 个维度的选择');
+      return;
+    }
+    renderReport();
+    if (typeof window.fsTrack === 'function') window.fsTrack('quality_report', {state:state});
+    var box = document.getElementById('result');
+    box.classList.add('show');
+    box.scrollIntoView({behavior:'smooth', block:'start'});
+  });
 
-    var values = DIMS.map(function(d){ return state[d.key]; });
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    DIMS.forEach(function(d){ state[d.key] = null; });
+    document.querySelectorAll('.dim-opt').forEach(function(b){
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed','false');
+    });
+    document.querySelectorAll('.dim').forEach(function(b){
+      b.classList.remove('completed');
+    });
+    document.getElementById('result').classList.remove('show');
+    updateProgress();
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  function renderReport(){
+    var values = DIMS.map(function(d){ return d.options[state[d.key]].score; });
+    var total = values.reduce(function(a,b){ return a+b; }, 0);
+    var max = DIMS.length * 3;
+
+    document.getElementById('reportScore').textContent = '总得分：' + total + ' / ' + max;
+
     drawRadar(values);
-    renderSuggestions(values);
 
-    var avg = Math.round(values.reduce(function(a,b){ return a+b; }, 0) / values.length);
-    document.getElementById('avgScore').textContent = '平均分：' + avg;
+    // Legend with improvement tips
+    var legend = document.getElementById('dimLegend');
+    legend.innerHTML = '';
+    DIMS.forEach(function(d, i){
+      var item = document.createElement('div');
+      var isLow = values[i] === 1;
+      item.className = 'dim-legend-item' + (isLow ? ' low' : '');
+      var optLabel = d.options[state[d.key]].label;
+      item.innerHTML =
+        '<span class="dot" aria-hidden="true"></span>' +
+        '<span class="l-title">' + d.title + '：' + optLabel + '</span>' +
+        '<span class="l-score">' + values[i] + '/3</span>';
+      legend.appendChild(item);
+    });
 
-    var section = document.getElementById('radarSection');
-    if (!section.classList.contains('show')) {
-      section.classList.add('show');
+    // Comment
+    var perfectCount = values.filter(function(v){ return v === 3; }).length;
+    var lowCount = values.filter(function(v){ return v === 1; }).length;
+    var comment;
+    if (perfectCount === DIMS.length){
+      comment = '这套居住品质在六个维度都处于高水平，属于"会被羡慕的房子"。核心价值点非常清晰 —— 重要的是在后续服务中保持住这些优势，并在细节舒适度上做精细化打磨。';
+    } else if (lowCount >= 2){
+      comment = '整体居住条件有可圈可点之处，但存在 ' + lowCount + ' 个明显痛点。这些维度对日常生活品质影响最大，也是客户最容易感知到的问题 —— 值得优先投入资源改善。';
+    } else if (lowCount === 1){
+      comment = '居住品质整体良好，仅有 1 个维度存在明显改善空间。可以结合客户的实际生活场景评估是否值得投入改造 —— 好消息是大部分维度都在正常水平以上。';
+    } else {
+      comment = '居住品质整体良好，六个维度都维持在中等以上水平。接下来的重点是"让好的更好"：把高分区的优势变成独特卖点，同时对中分区做精细化提升。';
     }
+    document.getElementById('comment').innerHTML = '<h4 style="margin:0 0 8px;color:#2D5A3D;font-size:16px">📊 整体评估</h4>' + comment;
 
-    if (typeof window.fsTrack === 'function') {
-      window.fsTrack('quality_test_update', {avg: avg});
+    // Improvement suggestions — show for non-perfect scores
+    var improveBox = document.getElementById('improve');
+    var lowItems = [];
+    var midItems = [];
+    DIMS.forEach(function(d, i){
+      if (values[i] === 1){
+        lowItems.push({title: d.title, text: d.options[state[d.key]].improve});
+      } else if (values[i] === 2){
+        midItems.push({title: d.title, text: d.options[state[d.key]].improve});
+      }
+    });
+    var html = '<h4>💡 改善建议</h4>';
+    if (lowItems.length > 0){
+      html += '<div style="font-weight:700;margin-top:10px;margin-bottom:6px;color:#D97757">优先级 1：优先处理（得分 1 分维度）</div>';
+      lowItems.forEach(function(item){
+        html += '<div class="improve-item"><strong>' + item.title + '：</strong>' + item.text + '</div>';
+      });
     }
+    if (midItems.length > 0){
+      html += '<div style="font-weight:700;margin-top:12px;margin-bottom:6px;color:#8A3A22">优先级 2：稳步优化（得分 2 分维度）</div>';
+      midItems.forEach(function(item){
+        html += '<div class="improve-item"><strong>' + item.title + '：</strong>' + item.text + '</div>';
+      });
+    }
+    if (lowItems.length === 0 && midItems.length === 0){
+      html += '<div style="margin-top:8px">所有维度都在最高水平，保持即可。可以考虑在"环境温度精细化管理"和"邻里互动温度"上做一些创新尝试。</div>';
+    }
+    improveBox.innerHTML = html;
   }
 
   function drawRadar(values){
     var svg = document.getElementById('radar');
-    var cx = 250, cy = 250;
-    var maxR = 200;
+    var cx = 240, cy = 240;
+    var maxR = 170;
     var n = 6;
     var labels = DIMS.map(function(d){ return d.title; });
     var angle = function(i){ return -Math.PI/2 + i * (2*Math.PI/n); };
     var point = function(i, r){ return [cx + r*Math.cos(angle(i)), cy + r*Math.sin(angle(i))]; };
-
     var html = '';
 
-    // Scale rings at 20, 40, 60, 80, 100
-    var scaleValues = [20, 40, 60, 80, 100];
-    for (var si = 0; si < scaleValues.length; si++){
-      var r = (maxR / 100) * scaleValues[si];
+    // Grid polygons (3 rings)
+    for (var r = 1; r <= 3; r++){
       var pts = [];
       for (var i = 0; i < n; i++){
-        var p = point(i, r);
+        var p = point(i, (maxR/3)*r);
         pts.push(p[0].toFixed(1) + ',' + p[1].toFixed(1));
       }
-      var strokeColor = scaleValues[si] === 100 ? '#D0C8B8' : '#EFE8DB';
-      html += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="' + strokeColor + '" stroke-width="1.5"/>';
-      // Scale label on the top axis (index 0)
-      var labelP = point(0, r);
-      html += '<text x="' + (labelP[0].toFixed(1)) + '" y="' + (labelP[1].toFixed(1) - 4) + '" text-anchor="middle" font-family="inherit" font-size="10" fill="#8A857B">' + scaleValues[si] + '</text>';
+      html += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="#D9D4C7" stroke-width="1.5"/>';
     }
 
     // Axis lines
     for (var i = 0; i < n; i++){
-      var p = point(i, maxR);
-      html += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '" stroke="#EFE8DB" stroke-width="1.5"/>';
+      var p0 = point(i, 0);
+      var p1 = point(i, maxR);
+      html += '<line x1="' + p0[0].toFixed(1) + '" y1="' + p0[1].toFixed(1) + '" x2="' + p1[0].toFixed(1) + '" y2="' + p1[1].toFixed(1) + '" stroke="#E8E3D4" stroke-width="1.5"/>';
     }
 
-    // Data polygon
-    var dataPts = [];
+    // User score polygon
+    var userPts = [];
     for (var i = 0; i < n; i++){
-      var v = values[i];
-      var p = point(i, (maxR/100)*v);
-      dataPts.push(p[0].toFixed(1) + ',' + p[1].toFixed(1));
+      var r = (maxR/3) * values[i];
+      var up = point(i, r);
+      userPts.push(up[0].toFixed(1) + ',' + up[1].toFixed(1));
     }
-    html += '<polygon points="' + dataPts.join(' ') + '" fill="#2D5A3D" fill-opacity=".3" stroke="#2D5A3D" stroke-width="2.5"/>';
+    html += '<polygon points="' + userPts.join(' ') + '" fill="#D97757" fill-opacity="0.55" stroke="#D97757" stroke-width="2.5"/>';
 
-    // Data points
+    // Score dots
     for (var i = 0; i < n; i++){
-      var v = values[i];
-      var p = point(i, (maxR/100)*v);
-      html += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="5" fill="#2D5A3D" stroke="#fff" stroke-width="2"/>';
+      var r = (maxR/3) * values[i];
+      var up = point(i, r);
+      html += '<circle cx="' + up[0].toFixed(1) + '" cy="' + up[1].toFixed(1) + '" r="5" fill="#fff" stroke="#D97757" stroke-width="2.5"/>';
     }
 
-    // Axis labels
+    // Labels
     for (var i = 0; i < n; i++){
-      var p = point(i, maxR + 28);
+      var lp = point(i, maxR + 26);
       var anchor = 'middle';
-      var ang = angle(i);
-      if (ang > -0.1 && ang < 0.1) anchor = 'start';
-      else if (ang > Math.PI - 0.1 || ang < -Math.PI + 0.1) anchor = 'end';
-      html += '<text x="' + p[0].toFixed(1) + '" y="' + p[1].toFixed(1) + '" text-anchor="' + anchor + '" dominant-baseline="middle" font-family="inherit" font-size="14" fill="#2A2825" font-weight="600">' + labels[i] + '</text>';
-    }
-
-    // Score labels at data points
-    for (var i = 0; i < n; i++){
-      var v = values[i];
-      var p = point(i, (maxR/100)*v + 18);
-      html += '<text x="' + p[0].toFixed(1) + '" y="' + p[1].toFixed(1) + '" text-anchor="middle" font-family="inherit" font-size="12" fill="#2D5A3D" font-weight="700">' + v + '</text>';
+      if (Math.abs(lp[0]-cx) > 50) anchor = (lp[0] > cx ? 'start' : 'end');
+      html += '<text x="' + lp[0].toFixed(1) + '" y="' + lp[1].toFixed(1) + '" text-anchor="' + anchor + '" font-family="inherit" font-size="13" fill="#2A2825" font-weight="600">' + labels[i] + '</text>';
     }
 
     svg.innerHTML = html;
   }
 
-  function renderSuggestions(values){
-    var list = document.getElementById('suggestionList');
-    list.innerHTML = '';
-
-    DIMS.forEach(function(dim, i){
-      var score = values[i];
-      var item = document.createElement('div');
-      var level, labelClass, labelText, advice;
-
-      if (score >= 80) {
-        level = 'excellent';
-        labelClass = 'lvl-excellent';
-        labelText = '优秀';
-        advice = ADVICE[dim.key].excellent;
-      } else if (score >= 60) {
-        level = 'good';
-        labelClass = 'lvl-good';
-        labelText = '良好';
-        advice = ADVICE[dim.key].good;
-      } else {
-        level = 'poor';
-        labelClass = 'lvl-poor';
-        labelText = '需改善';
-        advice = ADVICE[dim.key].poor;
-      }
-
-      item.className = 'suggestion-item ' + level;
-      item.innerHTML = '<div class="s-dim-name">' + dim.title + '<span class="suggestion-label ' + labelClass + '">' + labelText + '</span></div>' +
-        '<div class="s-dim-score">得分：' + score + ' / 100</div>' +
-        '<div class="s-dim-advice">' + advice + '</div>';
-      list.appendChild(item);
-    });
+  // Toast
+  var toastEl = document.getElementById('toast');
+  var toastTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2500);
   }
-
-  function showToast(msg){
-    var t = document.createElement('div');
-    t.className = 'toast';
-    t.textContent = msg;
-    document.body.appendChild(t);
-    requestAnimationFrame(function(){ t.classList.add('show'); });
-    setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 250); }, 2000);
-  }
-
-  function fallbackCopy(text){
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.left = '-9999px';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); showToast('链接已复制，可粘贴分享'); } catch(e){ showToast('复制失败，请手动复制浏览器地址栏'); }
-    document.body.removeChild(ta);
-  }
-
-  // Save button
-  document.getElementById('saveBtn').addEventListener('click', function(){
-    var values = DIMS.map(function(d){ return state[d.key]; });
-    var avg = Math.round(values.reduce(function(a,b){ return a+b; }, 0) / values.length);
-
-    var record = {
-      scores: {},
-      avg: avg,
-      savedAt: new Date().toISOString()
-    };
-    DIMS.forEach(function(dim){
-      record.scores[dim.key] = state[dim.key];
-    });
-
-    var existing = [];
-    try {
-      var raw = localStorage.getItem('quality-test-results');
-      if (raw) { existing = JSON.parse(raw); }
-    } catch(e){}
-    existing.push(record);
-    localStorage.setItem('quality-test-results', JSON.stringify(existing));
-    showToast('结果已保存到本地');
-    if (typeof window.fsTrack === 'function') {
-      window.fsTrack('quality_test_save', {avg: avg});
-    }
-  });
-
-  // Reset button
-  document.getElementById('resetBtn').addEventListener('click', function(){
-    DIMS.forEach(function(dim){
-      state[dim.key] = 50;
-      var slider = document.getElementById('slider-' + dim.key);
-      var scoreEl = document.getElementById('score-' + dim.key);
-      slider.value = 50;
-      scoreEl.textContent = '50';
-      updateSliderBg(slider, 50);
-    });
-    hasInteracted = false;
-    document.getElementById('radarSection').classList.remove('show');
-    document.getElementById('avgScore').textContent = '平均分：-';
-    document.getElementById('radar').innerHTML = '';
-    document.getElementById('suggestionList').innerHTML = '';
-    window.scrollTo({top:0, behavior:'smooth'});
-    if (typeof window.fsTrack === 'function') {
-      window.fsTrack('quality_test_reset');
-    }
-  });
-
-  // Initial radar draw
-  var initValues = DIMS.map(function(){ return 50; });
-  drawRadar(initValues);
 })();
 </script>
 </body>
