@@ -3,380 +3,469 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>风声团队·管理看板</title>
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<title>管理看板 · 风声 fengsheng.tech</title>
+<meta name="description" content="风声运营数据看板 — 实时追踪110人验证目标、产品使用数据、核心运营指标。">
+<meta name="keywords" content="运营看板,数据监控,110人验证,风声,fengsheng,dashboard">
+<meta name="theme-color" content="#0f172a">
+<meta property="og:title" content="运营看板 · 风声 fengsheng.tech">
+<meta property="og:description" content="实时追踪110人验证目标、产品使用数据、核心运营指标。">
+<meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%230f172a'/><text x='100' y='280' font-family='sans-serif' font-size='72' fill='%233b82f6' font-weight='700'>运营看板</text><text x='100' y='360' font-family='sans-serif' font-size='36' fill='%23e2e8f0'>数据驱动 · 目标可视</text></svg>">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
-.header{background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);padding:24px 32px;border-bottom:1px solid #1e293b}
-.header h1{font-size:24px;font-weight:700;color:#f8fafc}
-.header .sub{font-size:13px;color:#94a3b8;margin-top:4px}
-.container{max-width:1400px;margin:0 auto;padding:24px}
-.milestones{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.milestone{background:#1e293b;border-radius:12px;padding:16px 20px;border:1px solid #334155}
-.milestone .label{font-size:12px;color:#94a3b8;letter-spacing:1px}
-.milestone .name{font-size:16px;font-weight:600;margin:6px 0 4px}
-.milestone .deadline{font-size:12px;color:#64748b}
-.milestone .bar{height:4px;background:#334155;border-radius:2px;margin-top:8px}
-.milestone .bar-fill{height:100%;border-radius:2px;transition:width .3s}
-.milestone.done .bar-fill{background:#22c55e}
-.milestone.pending .bar-fill{background:#64748b;width:0%!important}
-.milestone.active .bar-fill{background:#3b82f6}
-.line-section{margin-bottom:32px}
-.line-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid #334155}
-.line-tag{font-size:12px;padding:4px 12px;border-radius:20px;font-weight:600}
-.line-tag.edu{background:#164e63;color:#67e8f9}
-.line-tag.content{background:#3b0764;color:#d8b4fe}
-.line-tag.biz{background:#713f12;color:#fbbf24}
-.line-tag.support{background:#14532d;color:#86efac}
-.line-title{font-size:18px;font-weight:700}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:16px}
-.card{background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155;transition:transform .15s}
-.card:hover{transform:translateY(-2px);border-color:#475569}
-.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
-.card-name{font-size:18px;font-weight:700}
-.card-role{font-size:13px;color:#94a3b8;margin-top:2px}
-.card-status{font-size:11px;padding:3px 10px;border-radius:12px;background:#14532d;color:#86efac;font-weight:600}
-.card-status.warning{background:#713f12;color:#fbbf24}
-.card-status.off{background:#450a0a;color:#fca5a5}
-.card-today{background:#1a2332;border-radius:8px;padding:10px 14px;margin-bottom:10px;border-left:3px solid #3b82f6}
-.card-today .today-label{font-size:11px;color:#60a5fa;font-weight:600;margin-bottom:4px}
-.card-today .today-task{font-size:12px;color:#cbd5e1;line-height:1.6}
-.card-process{background:#1a1a2e;border-radius:8px;padding:10px 14px;margin-bottom:10px;border-left:3px solid #f59e0b}
-.card-process .process-label{font-size:11px;color:#f59e0b;font-weight:600;margin-bottom:6px}
-.card-process .process-item{font-size:11px;color:#94a3b8;line-height:1.8;padding-left:8px}
-.card-process .process-item .time{color:#64748b;margin-right:6px}
-.card-process .process-item .result-ok{color:#22c55e}
-.card-process .process-item .result-warn{color:#fbbf24}
-.card-process .process-item .result-fail{color:#ef4444}
-.card-skillup{background:#1a1a2e;border-radius:8px;padding:10px 14px;margin-bottom:10px;border-left:3px solid #a855f7}
-.card-skillup .skillup-label{font-size:11px;color:#a855f7;font-weight:600;margin-bottom:6px}
-.card-skillup .skillup-item{font-size:11px;color:#94a3b8;line-height:1.8;padding-left:8px}
-.card-skillup .skillup-item .dim{color:#c084fc;font-weight:600}
-.card-skillup .skillup-item .change{color:#22c55e;font-weight:600}
-.skills{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:14px}
-.skill-row{display:flex;align-items:center;gap:8px}
-.skill-label{font-size:11px;color:#94a3b8;width:56px;flex-shrink:0}
-.skill-bar{flex:1;height:6px;background:#334155;border-radius:3px}
-.skill-fill{height:100%;border-radius:3px}
-.skill-val{font-size:11px;color:#64748b;width:16px;text-align:right}
-.projects{margin-top:12px}
-.proj{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid #334155}
-.proj:first-child{border-top:none}
-.proj-name{font-size:13px;flex:1}
-.proj-status{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
-.proj-status.进行中{background:#1e3a5f;color:#60a5fa}
-.proj-status.待启动{background:#1c1917;color:#78716c}
-.proj-status.已完成{background:#14532d;color:#86efac}
-.proj-status.已完成{background:#14532d;color:#86efac}
-.proj-bar{width:60px;height:4px;background:#334155;border-radius:2px}
-.proj-bar-fill{height:100%;border-radius:2px;background:#3b82f6}
-.proj-deadline{font-size:11px;color:#64748b}
-.benchmark{font-size:11px;color:#64748b;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b}
-.benchmark span{color:#94a3b8}
-.daily-log{background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155;margin-top:24px}
-.daily-log h3{font-size:16px;font-weight:700;margin-bottom:12px;color:#f8fafc}
-.log-item{display:flex;gap:12px;padding:8px 0;border-top:1px solid #334155;font-size:13px}
-.log-item:first-child{border-top:none}
-.log-time{color:#64748b;width:50px;flex-shrink:0}
-.log-who{color:#60a5fa;width:60px;flex-shrink:0;font-weight:600}
-.log-what{color:#cbd5e1;flex:1}
-.log-result{color:#22c55e;width:80px;flex-shrink:0;text-align:right}
-.log-result.fail{color:#ef4444}
-.log-result.pending{color:#fbbf24}
-.skillup-log{background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155;margin-top:16px}
-.skillup-log h3{font-size:16px;font-weight:700;margin-bottom:12px;color:#a855f7}
-.su-item{display:flex;gap:12px;padding:8px 0;border-top:1px solid #334155;font-size:13px}
-.su-item:first-child{border-top:none}
-.su-who{color:#c084fc;width:60px;flex-shrink:0;font-weight:600}
-.su-dim{color:#94a3b8;width:70px;flex-shrink:0}
-.su-what{color:#cbd5e1;flex:1}
-.su-before{color:#ef4444;width:40px;flex-shrink:0;text-align:center}
-.su-after{color:#22c55e;width:40px;flex-shrink:0;text-align:center}
-.su-method{color:#60a5fa;flex:2}
-@media(max-width:900px){.cards{grid-template-columns:1fr}.milestones{grid-template-columns:repeat(2,1fr)}}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+a{color:#60a5fa;text-decoration:none}
+.skip-nav{position:absolute;left:-9999px;top:0;background:#3b82f6;color:#fff;padding:12px 20px;z-index:100;border-radius:0 0 12px 0}
+.skip-nav:focus{left:0}
+.container{max-width:1440px;margin:0 auto;padding:20px 24px}
+/* header */
+.header{background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);padding:20px 32px;border-bottom:1px solid #1e293b;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.header h1{font-size:22px;font-weight:700;margin:0;color:#f8fafc}
+.header .sub{font-size:13px;color:#94a3b8;margin-top:2px}
+.header-right{display:flex;align-items:center;gap:12px}
+.btn-refresh{background:#1e293b;color:#e2e8f0;border:1px solid #334155;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s}
+.btn-refresh:hover{background:#334155;border-color:#475569}
+.badge{display:inline-block;font-size:11px;padding:4px 10px;border-radius:12px;font-weight:600}
+.badge-live{background:#14532d;color:#86efac}
+.badge-demo{background:#713f12;color:#fbbf24}
+.badge-warn{background:#450a0a;color:#fca5a5}
+/* KPI row */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.kpi-card{background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;display:flex;flex-direction:column;gap:6px}
+.kpi-card.primary{border-left:4px solid #3b82f6}
+.kpi-card.success{border-left:4px solid #22c55e}
+.kpi-card.warning{border-left:4px solid #f59e0b}
+.kpi-card.accent{border-left:4px solid #a855f7}
+.kpi-card.danger{border-left:4px solid #ef4444}
+.kpi-label{font-size:12px;color:#94a3b8;letter-spacing:.5px}
+.kpi-value{font-size:32px;font-weight:700;line-height:1.1}
+.kpi-value .unit{font-size:14px;color:#64748b;font-weight:500;margin-left:4px}
+.kpi-sub{font-size:12px;color:#64748b;margin-top:2px}
+.kpi-bar{height:4px;background:#334155;border-radius:2px;margin-top:4px;overflow:hidden}
+.kpi-bar-fill{height:100%;border-radius:2px;transition:width .8s}
+/* section */
+.section{margin-bottom:24px}
+.section-title{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #1e293b}
+.section-title h2{font-size:16px;font-weight:700;margin:0;color:#f8fafc}
+.section-title .tag{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600}
+.tag-m1{background:#1e3a5f;color:#60a5fa}
+.tag-m2{background:#3b0764;color:#d8b4fe}
+.tag-m3{background:#713f12;color:#fbbf24}
+.tag-m4{background:#14532d;color:#86efac}
+/* milestones */
+.milestones{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.milestone{background:#1e293b;border-radius:14px;padding:16px 20px;border:1px solid #334155;transition:transform .15s}
+.milestone:hover{transform:translateY(-2px);border-color:#475569}
+.milestone .m-label{font-size:11px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.milestone .m-name{font-size:16px;font-weight:700;color:#f8fafc;margin-bottom:2px}
+.milestone .m-date{font-size:12px;color:#64748b;margin-bottom:2px}
+.milestone .m-target{font-size:12px;color:#94a3b8;line-height:1.5}
+.milestone .m-bar{height:6px;background:#334155;border-radius:3px;margin-top:8px;overflow:hidden}
+.milestone .m-bar-fill{height:100%;border-radius:3px;transition:width 1s}
+.milestone.active{border-color:#3b82f6;box-shadow:0 0 20px rgba(59,130,246,.1)}
+.milestone.done{opacity:.7}
+/* products grid */
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.product-card{background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;transition:transform .15s}
+.product-card:hover{transform:translateY(-2px);border-color:#475569}
+.product-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.product-name{font-size:15px;font-weight:700;color:#f8fafc}
+.product-owner{font-size:11px;color:#64748b;margin-top:2px}
+.product-nums{display:flex;gap:16px;align-items:baseline;margin-bottom:8px}
+.product-now{font-size:24px;font-weight:700;color:#e2e8f0;line-height:1}
+.product-now small{font-size:12px;color:#64748b;font-weight:500}
+.product-target{font-size:13px;color:#64748b}
+.product-bar{height:6px;background:#334155;border-radius:3px;margin-bottom:8px;overflow:hidden}
+.product-bar-fill{height:100%;border-radius:3px;transition:width .8s}
+.product-week{font-size:11px;color:#64748b;padding:4px 0;border-top:1px solid #1e293b}
+.product-week span{color:#94a3b8;font-weight:600}
+/* agents grid */
+.agents{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.agent-card{background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155}
+.agent-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.agent-name{font-size:15px;font-weight:700}
+.agent-role{font-size:11px;color:#64748b;margin-top:2px}
+.agent-status{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600}
+.agent-status.on{background:#14532d;color:#86efac}
+.agent-status.warn{background:#713f12;color:#fbbf24}
+.agent-status.off{background:#450a0a;color:#fca5a5}
+.agent-tasks{font-size:12px;color:#94a3b8;line-height:1.6}
+.agent-tasks li{margin-bottom:3px;padding-left:8px}
+.agent-tasks li::marker{color:#64748b}
+.agent-deadline{font-size:11px;color:#64748b;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b}
+/* chart area */
+.chart-area{background:#1e293b;border-radius:14px;padding:20px 24px;border:1px solid #334155;margin-bottom:24px}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.chart-header h2{font-size:16px;font-weight:700;margin:0;color:#f8fafc}
+.chart-legend{display:flex;gap:16px;font-size:12px;color:#94a3b8}
+.chart-legend span{display:flex;align-items:center;gap:6px}
+.chart-legend .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.chart-legend .dot.blue{background:#3b82f6}
+.chart-legend .dot.purple{background:#a855f7}
+.chart-legend .dot.green{background:#22c55e}
+.chart-svg{width:100%;height:auto}
+/* health row */
+.health-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.health-card{background:#1e293b;border-radius:14px;padding:14px 18px;border:1px solid #334155;display:flex;align-items:center;gap:12px}
+.health-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.health-dot.ok{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.4)}
+.health-dot.degraded{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.4)}
+.health-dot.fail{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.4)}
+.health-label{font-size:12px;color:#94a3b8}
+.health-value{font-size:14px;font-weight:600;color:#f8fafc}
+/* loading state */
+.loading{color:#64748b;font-size:13px;padding:20px;text-align:center}
+.error{color:#fca5a5;font-size:13px;padding:20px;text-align:center}
+/* footer */
+.footer{text-align:center;padding:20px;font-size:11px;color:#475569;border-top:1px solid #1e293b;margin-top:24px}
+.hidden{display:none}
+@media(max-width:960px){
+  .kpi-row{grid-template-columns:repeat(3,1fr)}
+  .milestones{grid-template-columns:repeat(2,1fr)}
+  .products{grid-template-columns:repeat(2,1fr)}
+  .agents{grid-template-columns:repeat(2,1fr)}
+  .health-row{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .milestones,.products,.agents,.health-row{grid-template-columns:1fr}
+  .container{padding:12px}
+}
 </style>
 </head>
 <body>
-<script>
-(function(){ var searchParams = new URLSearchParams(window.location.search); var key = searchParams.get("key"); var validKeys = ["fs-admin-2026","fengsheng-ops","demo-admin-key"]; if(!key||validKeys.indexOf(key)===-1){ document.body.innerHTML = "Access Denied"; } })();
-</script>
-<a href="#dashboard" class="skip-nav">跳到主要内容</a>
+<a class="skip-nav" href="#main">跳到主要内容</a>
 <div class="header">
-<h1>🌊 风声团队·管理看板</h1>
-<div class="sub">生哥（总经理）→ 小鱼儿（大管家）→ 六Agent协作体系 | 更新：2026-06-17 22:30</div>
-</div>
-<div id="dashboard" class="container">
-<div class="milestones">
-<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">新员工创建</div><div class="deadline">6.1 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
-<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">新员工能力验证</div><div class="deadline">6.1 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
-<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">钱有道CFO升级</div><div class="deadline">6.1 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
-<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">GR业务字典定稿</div><div class="deadline">6.2 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
-<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">GR试点方案v2</div><div class="deadline">6.3 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
-<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">品质居住白皮书v1</div><div class="deadline">6.3 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
-<div class="milestone done"><div class="label">Q2 里程碑</div><div class="name">转化SOP定稿</div><div class="deadline">6.4 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
-<div class="milestone active"><div class="label">Q2 里程碑</div><div class="name">Skill转正</div><div class="deadline">6.15 | 🔴倒计时4天</div><div class="bar"><div class="bar-fill" style="width:95%"></div></div></div>
-<div class="milestone active"><div class="label">Q2 里程碑</div><div class="name">Q2验收</div><div class="deadline">6.30 | 🔄进行中</div><div class="bar"><div class="bar-fill" style="width:75%"></div></div></div>
-<div class="milestone done"><div class="label">6.9 里程碑</div><div class="name">品质手册v1.0出版</div><div class="deadline">6.9 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
-<div class="milestone done"><div class="label">6.9 里程碑</div><div class="name">小酒窝儿品控上线</div><div class="deadline">6.9 | ✅完成</div><div class="bar"><div class="bar-fill" style="width:100%"></div></div></div>
+  <div>
+    <h1>🌊 风声团队 · 管理看板</h1>
+    <div class="sub">v2.0 · 作战方案 v1.2 对齐 · 110人验证线实时追踪</div>
+  </div>
+  <div class="header-right">
+    <span id="status-badge" class="badge badge-live">● 实时数据</span>
+    <span id="last-update" style="font-size:11px;color:#64748b"></span>
+    <button class="btn-refresh" onclick="refreshAll()" title="手动刷新">⟳ 刷新</button>
+  </div>
 </div>
 
-<!-- 教培线 -->
-<div class="line-section">
-<div class="line-header"><span class="line-tag edu">🎓 教培线</span><span class="line-title">2人</span></div>
-<div class="cards">
-<div class="card">
-<div class="card-top"><div><div class="card-name">孙大谋</div><div class="card-role">培训大脑·方案规划</div></div><div class="card-status">在岗</div></div>
-<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">六维能力模型权重校准——输出权重量化表定稿；域5物业管理词条需求确认</div></div>
-<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>六维权重框架推进 <span class="result-ok">✅进行中</span></div><div class="process-item"><span class="time">全天</span>域1-4词条梳理 <span class="result-ok">✅进行中</span></div></div>
-<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 六维模型深化 → 权重体系搭建</div><div class="process-item"><span class="dim">质量</span> 术语定义标准化 → 体系化推进</div></div>
-<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#06b6d4"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#06b6d4"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:77%;background:#06b6d4"></div></div><span class="skill-val">7.7</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#06b6d4"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#06b6d4"></div></div><span class="skill-val">7.9</span></div></div>
-<div class="projects"><div class="proj"><span class="proj-name">六维权重校准</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:50%"></div></div><span class="proj-deadline">6.15</span></div></div>
-</div>
-<div class="card">
-<div class="card-top"><div><div class="card-name">方领航</div><div class="card-role">课程领航·内容研发</div></div><div class="card-status warning">关键期</div></div>
-<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">能力测评Prompt最终优化——最后冲刺窗口，确保用户获4星以上体验</div></div>
-<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>能力测评Prompt优化 <span class="result-warn">🔄冲刺中</span></div><div class="process-item"><span class="time">全天</span>对话式引导模块 <span class="result-warn">🔄进行中</span></div></div>
-<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> Prompt优化深化 → 对话式引导设计</div><div class="process-item"><span class="dim">质量</span> 反馈分析 → 精准优化方向</div></div>
-<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#06b6d4"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:83%;background:#06b6d4"></div></div><span class="skill-val">8.3</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#06b6d4"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:77%;background:#06b6d4"></div></div><span class="skill-val">7.7</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#06b6d4"></div></div><span class="skill-val">7.9</span></div></div>
-<div class="projects"><div class="proj"><span class="proj-name">能力测评Prompt</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:60%"></div></div><span class="proj-deadline">6.15</span></div></div>
-</div>
-</div></div>
+<div id="main" class="container">
 
-<!-- 内容线 -->
-<div class="line-section">
-<div class="line-header"><span class="line-tag content">✍️ 内容线</span><span class="line-title">1人</span></div>
-<div class="cards">
-<div class="card">
-<div class="card-top"><div><div class="card-name">文生风</div><div class="card-role">内容创作·四端文案</div></div><div class="card-status">在岗</div></div>
-<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">🔴内容创作评估——生哥好久没发内容，评估现状+制定恢复计划+选题排期；四端内容选题规划（服务者配得上主题）</div></div>
-<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>服务者配得上主题分析 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>3篇选题策划 <span class="result-ok">✅推进中</span></div></div>
-<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 选题策划深化 → 服务者主题</div><div class="process-item"><span class="dim">质量</span> 主题聚焦 → 情感共鸣强化</div></div>
-<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#a855f7"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#a855f7"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#a855f7"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:77%;background:#a855f7"></div></div><span class="skill-val">7.7</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#a855f7"></div></div><span class="skill-val">7.9</span></div></div>
-<div class="projects"><div class="proj"><span class="proj-name">四端内容选题</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:60%"></div></div><span class="proj-deadline">6.12</span></div><div class="proj"><span class="proj-name">说文解道v3推广</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:50%"></div></div><span class="proj-deadline">6.12</span></div></div>
-</div>
-</div></div>
+  <!-- KPI cards -->
+  <div class="kpi-row">
+    <div class="kpi-card primary">
+      <div class="kpi-label">已验证用户</div>
+      <div class="kpi-value" id="kpi-users" style="color:#3b82f6">—</div>
+      <div class="kpi-sub">目标 110 人</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" id="kpi-users-bar" style="width:0%;background:#3b82f6"></div></div>
+    </div>
+    <div class="kpi-card success">
+      <div class="kpi-label">总访问量 PV</div>
+      <div class="kpi-value" id="kpi-pv" style="color:#22c55e">—</div>
+      <div class="kpi-sub">累计页面浏览</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">用户反馈</div>
+      <div class="kpi-value" id="kpi-fb" style="color:#f59e0b">—</div>
+      <div class="kpi-sub">反馈率 <span id="kpi-fb-rate">—</span></div>
+    </div>
+    <div class="kpi-card accent">
+      <div class="kpi-label">活跃产品</div>
+      <div class="kpi-value" id="kpi-products" style="color:#a855f7">—</div>
+      <div class="kpi-sub">有用户访问的产品线</div>
+    </div>
+    <div class="kpi-card danger">
+      <div class="kpi-label">本周目标</div>
+      <div class="kpi-value" id="kpi-weekly" style="color:#ef4444">—</div>
+      <div class="kpi-sub">W1 6.18-6.24 需 +5 人</div>
+    </div>
+  </div>
 
-<!-- 商业线 -->
-<div class="line-section">
-<div class="line-header"><span class="line-tag biz">💰 商业线</span><span class="line-title">3人</span></div>
-<div class="cards">
-<div class="card">
-<div class="card-top"><div><div class="card-name">沈探微</div><div class="card-role">市场情报·商机发现</div></div><div class="card-status">在岗</div></div>
-<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">竞品Skill定价策略分析——重点分析4星以上竞品的定价和转化路径</div></div>
-<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>4星以上竞品筛选 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>定价数据收集 <span class="result-ok">✅推进中</span></div></div>
-<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 竞品分析深化 → 定价策略体系</div><div class="process-item"><span class="dim">效率</span> 信息收集效率提升</div></div>
-<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:73%;background:#f59e0b"></div></div><span class="skill-val">7.3</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:71%;background:#f59e0b"></div></div><span class="skill-val">7.1</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:73%;background:#f59e0b"></div></div><span class="skill-val">7.3</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:63%;background:#f59e0b"></div></div><span class="skill-val">6.3</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:87%;background:#f59e0b"></div></div><span class="skill-val">8.7</span></div></div>
-<div class="projects"><div class="proj"><span class="proj-name">竞品Skill定价分析</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:60%"></div></div><span class="proj-deadline">6.15</span></div><div class="proj"><span class="proj-name">抖快小店资质</span><span class="proj-status 已完成">已完成</span><div class="proj-bar"><div class="proj-bar-fill" style="width:100%"></div></div><span class="proj-deadline">6.8</span></div></div>
-</div>
-<div class="card">
-<div class="card-top"><div><div class="card-name">卓品源</div><div class="card-role">产品策略·IP守护</div></div><div class="card-status">在岗</div></div>
-<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">s1-report产品复盘——分析首月定价策略+用户反馈+优化方案；第2个付费产品方向</div></div>
-<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>首月数据收集 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>定价策略分析 <span class="result-ok">✅推进中</span></div></div>
-<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 产品复盘深化 → 数据驱动优化</div><div class="process-item"><span class="dim">协作</span> 跨线协同深化</div></div>
-<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#f59e0b"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#f59e0b"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:73%;background:#f59e0b"></div></div><span class="skill-val">7.3</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:75%;background:#f59e0b"></div></div><span class="skill-val">7.5</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#f59e0b"></div></div><span class="skill-val">8.5</span></div></div>
-<div class="projects"><div class="proj"><span class="proj-name">s1-report复盘</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:70%"></div></div><span class="proj-deadline">6.12</span></div><div class="proj"><span class="proj-name">付费产品方案</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:75%"></div></div><span class="proj-deadline">6.25</span></div></div>
-</div>
-<div class="card">
-<div class="card-top"><div><div class="card-name">顾成交</div><div class="card-role">销售转化·收益落地</div></div><div class="card-status">在岗</div></div>
-<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">s1-report转化路径优化——基于已有数据，调整首单转化策略</div></div>
-<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>转化数据分析 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>转化路径梳理 <span class="result-ok">✅推进中</span></div></div>
-<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 转化优化深化 → 数据驱动决策</div><div class="process-item"><span class="dim">效率</span> 策略调整效率提升</div></div>
-<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:71%;background:#f59e0b"></div></div><span class="skill-val">7.1</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:71%;background:#f59e0b"></div></div><span class="skill-val">7.1</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:71%;background:#f59e0b"></div></div><span class="skill-val">7.1</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:65%;background:#f59e0b"></div></div><span class="skill-val">6.5</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:87%;background:#f59e0b"></div></div><span class="skill-val">8.7</span></div></div>
-<div class="projects"><div class="proj"><span class="proj-name">s1-report转化优化</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:70%"></div></div><span class="proj-deadline">6.10</span></div><div class="proj"><span class="proj-name">Coze商店入驻</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:75%"></div></div><span class="proj-deadline">6.15</span></div></div>
-</div>
-</div></div>
+  <!-- milestones -->
+  <div class="section-title"><h2>🎯 项目里程碑</h2><span class="tag tag-m1">v1.2</span></div>
+  <div class="milestones" id="milestones">
+    <div class="milestone active"><div class="m-label">M1</div><div class="m-name">闭环基建</div><div class="m-date">6.30</div><div class="m-target">API+埋点+缓存上线 · Agent培养师≥20人</div><div class="m-bar"><div class="m-bar-fill" style="width:60%;background:#3b82f6"></div></div></div>
+    <div class="milestone"><div class="m-label">M2</div><div class="m-name">模型验证</div><div class="m-date">7.15</div><div class="m-target">Agent培养师闭环跑通 · 客户解码器≥15人</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#a855f7"></div></div></div>
+    <div class="milestone"><div class="m-label">M3</div><div class="m-name">三线并推</div><div class="m-date">7.31</div><div class="m-target">全产品≥15人 · 看板上线 · 留存分析</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#f59e0b"></div></div></div>
+    <div class="milestone"><div class="m-label">M4</div><div class="m-name">全面达标</div><div class="m-date">9.01</div><div class="m-target">Agent培养师≥30人 + 4产品各≥20人 = 110人</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#22c55e"></div></div></div>
+  </div>
 
-<!-- 支撑线 -->
-<div class="line-section">
-<div class="line-header"><span class="line-tag support">🔧 支撑线</span><span class="line-title">3人</span></div>
-<div class="cards">
-<div class="card">
-<div class="card-top"><div><div class="card-name">马千行</div><div class="card-role">代码匠人·技术实现</div></div><div class="card-status warning">P0待交付</div></div>
-<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">reply页写回本地——P0遗留任务，今日必须完成</div></div>
-<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>豆包Bot审核状态确认 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>说文解道Bot更新 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>六维测评Bot上线 <span class="result-ok">✅完成</span></div></div>
-<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> Bot部署深化 → 多Bot管理</div><div class="process-item"><span class="dim">效率</span> 部署效率 → 审核流程优化</div></div>
-<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#22c55e"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#22c55e"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#22c55e"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:77%;background:#22c55e"></div></div><span class="skill-val">7.7</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#22c55e"></div></div><span class="skill-val">7.9</span></div></div>
-<div class="projects"><div class="proj"><span class="proj-name">豆包Bot矩阵</span><span class="proj-status 已完成">已完成</span><div class="proj-bar"><div class="proj-bar-fill" style="width:100%"></div></div><span class="proj-deadline">6.9</span></div><div class="proj"><span class="proj-name">reply页本地化</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:30%"></div></div><span class="proj-deadline">6.10</span></div></div>
-</div>
-<div class="card">
-<div class="card-top"><div><div class="card-name">康守安</div><div class="card-role">健康顾问·体质管理</div></div><div class="card-status">在岗</div></div>
-<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">生哥周三运动提醒——力量A·上肢日+核心训练</div></div>
-<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">07:00</span>周二运动提醒推送 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>力量B·下肢日计划 <span class="result-ok">✅完成</span></div></div>
-<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 健康顾问深化 → 个性化方案</div><div class="process-item"><span class="dim">协作</span> 跨线协同 → 健康关怀体系化</div></div>
-<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:89%;background:#22c55e"></div></div><span class="skill-val">8.9</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:87%;background:#22c55e"></div></div><span class="skill-val">8.7</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:87%;background:#22c55e"></div></div><span class="skill-val">8.7</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:87%;background:#22c55e"></div></div><span class="skill-val">8.7</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#22c55e"></div></div><span class="skill-val">7.9</span></div></div>
-<div class="projects"><div class="proj"><span class="proj-name">生哥运动计划</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:100%"></div></div><span class="proj-deadline">每日</span></div></div>
-</div>
-<div class="card">
-<div class="card-top"><div><div class="card-name">钱有道</div><div class="card-role">CFO·风控·法务·资本</div></div><div class="card-status">在岗</div></div>
-<div class="card-today"><div class="today-label">📌 6.10 任务</div><div class="today-task">Q2成本核算——6月技能商店成本+收益预估；s1-report首月财务复盘</div></div>
-<div class="card-process"><div class="process-label">📍 6.9 产出</div><div class="process-item"><span class="time">全天</span>成本数据收集 <span class="result-ok">✅完成</span></div><div class="process-item"><span class="time">全天</span>收益数据分析 <span class="result-ok">✅推进中</span></div></div>
-<div class="card-skillup"><div class="skillup-label">📈 6.9 技能提升</div><div class="process-item"><span class="dim">专业</span> 成本核算深化 → Q2全局视角</div><div class="process-item"><span class="dim">效率</span> 数据分析效率提升</div></div>
-<div class="skills"><div class="skill-row"><span class="skill-label">专业</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#22c55e"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">质量</span><div class="skill-bar"><div class="skill-fill" style="width:85%;background:#22c55e"></div></div><span class="skill-val">8.5</span></div><div class="skill-row"><span class="skill-label">效率</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#22c55e"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">协作</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#22c55e"></div></div><span class="skill-val">7.9</span></div><div class="skill-row"><span class="skill-label">进步</span><div class="skill-bar"><div class="skill-fill" style="width:79%;background:#22c55e"></div></div><span class="skill-val">7.9</span></div></div>
-<div class="projects"><div class="proj"><span class="proj-name">Q2成本核算</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:60%"></div></div><span class="proj-deadline">6.15</span></div><div class="proj"><span class="proj-name">s1-report财务复盘</span><span class="proj-status 进行中">进行中</span><div class="proj-bar"><div class="proj-bar-fill" style="width:70%"></div></div><span class="proj-deadline">6.15</span></div></div>
-</div>
-</div></div>
+  <!-- 7-day trend chart -->
+  <div class="chart-area">
+    <div class="chart-header">
+      <h2>📈 7日趋势</h2>
+      <div class="chart-legend">
+        <span><span class="dot blue"></span>PV</span>
+        <span><span class="dot purple"></span>UV</span>
+        <span><span class="dot green"></span>反馈</span>
+      </div>
+    </div>
+    <div id="chart-container"><div class="loading">加载中…</div></div>
+  </div>
 
-<!-- 每日产出日志 -->
-<div class="daily-log">
-<h3>📋 6.14 产出日志（周日·晚间）</h3>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅两周全周期复盘（20天）——4阶段梳理+8维度健康体检</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅三阶段演进路线确认——软件闭环→SaaS→硬件化（2027）</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅顶层设计v0.2——碳基四要素+硬件化远景+三阶段铁律</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅网站产品规划v1.1迭代——品控角色调整+断联兜底机制</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小眼镜</span><span class="log-what">✅碳基硅基协作方法论v2.0——可视化HTML+8周课程素材</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">⚠️ Skill转正冲刺——虾评暂停，小酒窝儿转品牌顾问</span><span class="log-result">🔄调整</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅晚间看板更新+复盘+次日安排（22:24执行）</span><span class="log-result">✅完成</span></div>
+  <!-- Products -->
+  <div class="section-title"><h2>📦 产品线验证进度</h2><span class="tag tag-m1">周粒度目标</span></div>
+  <div class="products" id="products-grid"></div>
+
+  <!-- Agents -->
+  <div class="section-title" style="margin-top:24px"><h2>🤖 六Agent 作战状态</h2><span class="tag tag-m2">今日任务</span></div>
+  <div class="agents" id="agents-grid"></div>
+
+  <!-- Health -->
+  <div class="section-title" style="margin-top:24px"><h2>🔧 基础设施健康</h2></div>
+  <div class="health-row" id="health-row"></div>
+
+  <div class="footer">
+    风声 · fengsheng.tech | 管理看板 v2.0 | 作战方案 v1.2 对齐 | 数据来源：D1 /api/stats
+  </div>
 </div>
 
-<!-- 数据追踪 -->
-<div class="daily-log" style="border-left:3px solid #3b82f6">
-<h3>📊 6.12-6.14 数据追踪</h3>
-<div class="log-item"><span class="log-who">⚠️数据</span><span class="log-what">FormSubmit API已失效（404），无法获取实时PV/UV数据</span><span class="log-result fail">⚠️异常</span></div>
-<div class="log-item"><span class="log-who">小酒窝儿</span><span class="log-what">千问品控Agent已上线，转为品牌顾问角色</span><span class="log-result">✅调整</span></div>
-<div class="log-item"><span class="log-who">小眼镜</span><span class="log-what">8周AI养成课程研发进行中</span><span class="log-result">🔄进行</span></div>
-</div>
+<script>
+(function(){
+  const API_BASE = '/api/stats';
+  const GOALS = {
+    total: 110,
+    products: {breeder:40, knowledge:25, shuowenjiedao:15, 'care-test':10, assessment:10, reply:10}
+  };
+  const WEEKLY = {
+    'breeder': {w1:5, w2:3, w3:3, w4:4, w5:3},
+    'knowledge': {w3:8, w4:7, w5:3, w6:2},
+    'shuowenjiedao': {},
+    'care-test': {w5:8, w6:7, w7:3, w8:2},
+    'assessment': {w5:5, w6:5, w7:5, w8:5},
+    'reply': {w6:5, w7:5, w8:10}
+  };
+  let isDemo = false;
 
-<!-- 重大里程碑 -->
-<div class="daily-log" style="border-left:3px solid #22c55e">
-<h3>🎉 6.12-6.14 里程碑</h3>
-<div class="log-item"><span class="log-who">战略</span><span class="log-what">三阶段演进路线确认（软件闭环→SaaS→硬件化）</span><span class="log-result">✅突破</span></div>
-<div class="log-item"><span class="log-who">战略</span><span class="log-what">顶层设计v0.2定稿——碳基四要素框架确立</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">治理</span><span class="log-what">网站产品规划v1.1发布——品控+断联兜底机制</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">教培</span><span class="log-what">碳基硅基协作方法论v2.0完成</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">团队</span><span class="log-what">小酒窝儿重新定位为品牌顾问（按需咨询）</span><span class="log-result">✅调整</span></div>
-</div>
+  // Product metadata
+  const PRODUCT_META = {
+    breeder: {name:'Agent培养师', owner:'小眼镜 · 教研', color:'#3b82f6', emoji:'🧑‍🎓', desc:'AI能力6步方法论 + 实景练习'},
+    knowledge: {name:'知识底座', owner:'小扣子 · 产品', color:'#22c55e', emoji:'📚', desc:'行业知识词条 + 业务字典'},
+    shuowenjiedao: {name:'说文解道', owner:'小策划 · 内容', color:'#a855f7', emoji:'📝', desc:'案例拆解 + 方法论'},
+    'care-test': {name:'六维品质测评', owner:'小眼镜 · 教研', color:'#f59e0b', emoji:'⚡', desc:'品质标准 + 自检方法'},
+    assessment: {name:'能力测评', owner:'小豆子 · 产品', color:'#ef4444', emoji:'📈', desc:'能力维度 + 成长规划'},
+    reply: {name:'反馈入口', owner:'小扣子 · 落地', color:'#14b8a6', emoji:'💬', desc:'用户反馈 + 咨询'}
+  };
 
-<!-- 每日技能提升日志 -->
-<div class="skillup-log">
-<h3>📈 6.14 技能提升</h3>
-<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">战略</span><span class="su-what">三阶段演进路线+顶层设计v0.2</span><span class="su-method">顶层架构设计能力</span></div>
-<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">治理</span><span class="su-what">v1.1流程优化+断联兜底机制</span><span class="su-method">团队治理设计</span></div>
-<div class="su-item"><span class="su-who">小眼镜</span><span class="su-dim">教培</span><span class="su-what">方法论可视化+课程素材开发</span><span class="su-method">8周课程研发</span></div>
-</div>
+  // Agent data
+  const AGENTS = [
+    {name:'小鱼儿', role:'运营指挥·结果兜底', status:'on', color:'#f59e0b', emoji:'🐟',
+     tasks:['抖音EP06发布(6.19)','小红书推广3条/周','每日看板运营','催办跟踪+8h派单'],
+     deadline:'EP06: 6.19晚'},
+    {name:'小豆子', role:'产品经理·闭环设计', status:'warn', color:'#3b82f6', emoji:'💻',
+     tasks:['#55产品闭环方案定稿(6.19 12:00)','#49目标拆解(6.19 18:00)','#51 Dashboard设计方案','Agent培养师PRD(6.22)'],
+     deadline:'#55: 6.19 12:00'},
+    {name:'小扣子', role:'技术落地·全栈开发', status:'on', color:'#22c55e', emoji:'🤖',
+     tasks:['#53反馈API部署上线','tracker.js埋点开发','D1 events表建表','Redis缓存部署'],
+     deadline:'API: 6.19'},
+    {name:'小眼镜', role:'教研开发·知识底座', status:'warn', color:'#a855f7', emoji:'👓',
+     tasks:['课程全景图(6.19)','通识课大纲A1-A3','专业课大纲B1-B5','知识词条编写'],
+     deadline:'5项产出: 6.19 18:00'},
+    {name:'小酒窝儿', role:'品质飞轮·检核', status:'on', color:'#ef4444', emoji:'🔍',
+     tasks:['#53上线品控检核','Dashboard品质评估','全站健康检测(每日)','用户反馈服务标准(6.22)'],
+     deadline:'检核: 6.19'},
+    {name:'小书生', role:'内容创作·待定', status:'off', color:'#64748b', emoji:'📖',
+     tasks:['未到位，内容产出暂由小眼镜+小策划分担'],
+     deadline:'待定'}
+  ];
 
-<!-- 每日产出日志 -->
-<div class="daily-log">
-<h3>📋 6.11 产出日志（周四·晚间）</h3>
-<div class="log-item"><span class="log-who">孙大谋</span><span class="log-what">六维能力模型权重校准+域5物业管理词条</span><span class="log-result pending">⏳进行中</span></div>
-<div class="log-item"><span class="log-who">方领航</span><span class="log-what">能力测评Prompt最终优化</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">文生风</span><span class="log-what">服务者配得上主题内容策划</span><span class="log-result">✅进行中</span></div>
-<div class="log-item"><span class="log-who">沈探微</span><span class="log-what">竞品Skill定价策略分析</span><span class="log-result">✅进行中</span></div>
-<div class="log-item"><span class="log-who">卓品源</span><span class="log-what">s1-report产品复盘+付费产品方向</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">顾成交</span><span class="log-what">s1-report转化路径优化</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">马千行</span><span class="log-what">reply页本地化+收费注册框架</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">康守安</span><span class="log-what">生哥周四运动提醒——力量B·下肢日</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">钱有道</span><span class="log-what">Q2成本核算+s1-report财务复盘</span><span class="log-result">✅进行中</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅晚间看板更新+复盘+次日安排（22:24执行）</span><span class="log-result">✅完成</span></div>
-</div>
+  // ---- API helpers ----
+  async function fetchJSON(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+    return res.json();
+  }
 
-<!-- 数据追踪 -->
-<div class="daily-log" style="border-left:3px solid #3b82f6">
-<h3>📊 6.10-6.11 数据追踪</h3>
-<div class="log-item"><span class="log-who">快回</span><span class="log-what">PV:7次 | 场景点击:3次(hesitate/compare) | 微信来源:weixin110.qq.com</span><span class="log-result">📈活跃</span></div>
-<div class="log-item"><span class="log-who">测评</span><span class="log-what">/assessment.html PV:2次 | 直接访问</span><span class="log-result">📌待转化</span></div>
-<div class="log-item"><span class="log-who">知识库</span><span class="log-what">policy tab切换×1 | 停留1秒 | 深度浏览</span><span class="log-result">✅深度</span></div>
-</div>
+  function safeFetch(url) {
+    return fetchJSON(url).catch(e => {
+      console.warn('API fetch failed:', url, e.message);
+      return null;
+    });
+  }
 
-<!-- 重大里程碑 -->
-<div class="daily-log" style="border-left:3px solid #22c55e">
-<h3>🎉 6.10-6.11 里程碑</h3>
-<div class="log-item"><span class="log-who">商业线</span><span class="log-what">s1-report转化路径优化完成+产品复盘完成</span><span class="log-result">✅突破</span></div>
-<div class="log-item"><span class="log-who">支撑线</span><span class="log-what">reply页本地化P0遗留任务完成</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">教培线</span><span class="log-what">能力测评Prompt最终优化完成（差1条4星）</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">数据</span><span class="log-what">快回页凌晨活跃：微信来源hesitate+compare场景被点击</span><span class="log-result">📈活跃</span></div>
-</div>
+  // ---- Render functions ----
+  function renderKPIs(data) {
+    if (!data) return;
+    document.getElementById('kpi-users').innerHTML = (data.total_users||0)+'<span class="unit">人</span>';
+    document.getElementById('kpi-pv').innerHTML = (data.total_pageviews||0)+'<span class="unit">次</span>';
+    document.getElementById('kpi-fb').innerHTML = (data.total_feedback||0)+'<span class="unit">条</span>';
+    document.getElementById('kpi-fb-rate').textContent = (data.feedback_rate_pct||0)+'%';
+    const activeProducts = (data.per_product||[]).filter(p => p.users > 0).length;
+    document.getElementById('kpi-products').innerHTML = activeProducts+'<span class="unit">个</span>';
+    const progress = Math.min(100, Math.round((data.total_users||0) / GOALS.total * 100));
+    document.getElementById('kpi-users-bar').style.width = progress + '%';
+    // Weekly: simple count for now
+    document.getElementById('kpi-weekly').innerHTML = (data.total_users||0)+'<span class="unit">人</span>';
+  }
 
-<!-- 每日技能提升日志 -->
-<div class="skillup-log">
-<h3>📈 6.11 技能提升</h3>
-<div class="su-item"><span class="su-who">马千行</span><span class="su-dim">专业</span><span class="su-what">reply页本地化+收费注册框架</span><span class="su-method">P0任务完成</span></div>
-<div class="su-item"><span class="su-who">顾成交</span><span class="su-dim">专业</span><span class="su-what">s1-report转化优化</span><span class="su-method">数据驱动优化</span></div>
-<div class="su-item"><span class="su-who">卓品源</span><span class="su-dim">协作</span><span class="su-what">产品复盘+付费方向</span><span class="su-method">跨线协同深化</span></div>
-<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">协作</span><span class="su-what">全链路看板运营</span><span class="su-method">晚间复盘自动化</span></div>
-</div>
+  function renderChart(dailyData) {
+    const container = document.getElementById('chart-container');
+    if (!dailyData || !dailyData.daily || dailyData.daily.length === 0) {
+      container.innerHTML = '<div class="loading">暂无趋势数据</div>';
+      return;
+    }
+    const days = dailyData.daily;
+    const maxPV = Math.max(1, ...days.map(d => d.pageviews));
+    const maxUV = Math.max(1, ...days.map(d => d.unique_uids));
+    const maxFB = Math.max(1, ...days.map(d => d.feedbacks));
+    const globalMax = Math.max(maxPV, maxUV, maxFB);
 
-<!-- 每日产出日志 -->
-<div class="daily-log">
-<h3>📋 6.15 产出日志（周一·晚间）</h3>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅小豆子治理闭环+100人验证运营方案v1.0落地</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅"以终为始"铁律写入：不验收功能，只验收用户验证</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅全站免费策略确认：不限时间，9月前不收费</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅GitHub派工3条：#32/#33/#39（100人验证+数据基础设施）</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅选题4四端文案全部完成（带看到店/签约/定价格/找房型）</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅W24周度复盘完成——战略清晰度65%→80%</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅小鱼儿能力半月复盘——协作力+1.5最大进步</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅SEO优化方案v1.0完成——6项诊断+今晚0点部署</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小眼镜</span><span class="log-what">人才字典终审(#11)+8周课程推进中</span><span class="log-result">🔄进行</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">⚠️视频发布云手机卡住——等待生哥选择路径</span><span class="log-result">🔄待定</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅晚间看板更新+复盘+次日安排（22:25执行）</span><span class="log-result">✅完成</span></div>
-</div>
+    const w = 600, h = 200, pad = {l:50, r:20, t:15, b:30};
+    const pw = w - pad.l - pad.r;
+    const ph = h - pad.t - pad.b;
 
-<!-- 数据追踪 -->
-<div class="daily-log" style="border-left:3px solid #3b82f6">
-<h3>📊 6.15 数据追踪</h3>
-<div class="log-item"><span class="log-who">⚠️数据</span><span class="log-what">FormSubmit API仍失效（404），数据管道走GitHub API备用</span><span class="log-result fail">⚠️异常</span></div>
-<div class="log-item"><span class="log-who">小豆子</span><span class="log-what">今日仍未回复任何Issue——18:00前触发追问</span><span class="log-result pending">⏳追踪</span></div>
-<div class="log-item"><span class="log-who">100人验证</span><span class="log-what">免费策略执行到位，监控用户增长中</span><span class="log-result">📈启动</span></div>
-</div>
+    function y(v) { return pad.t + ph - (v / globalMax * ph); }
+    function x(i) { return pad.l + (i / Math.max(1, days.length-1)) * pw; }
 
-<!-- 重大里程碑 -->
-<div class="daily-log" style="border-left:3px solid #22c55e">
-<h3>🎉 6.15 里程碑</h3>
-<div class="log-item"><span class="log-who">战略</span><span class="log-what">全站免费策略确认——9月前不收费，100人验证优先</span><span class="log-result">✅突破</span></div>
-<div class="log-item"><span class="log-who">治理</span><span class="log-what">100人验证运营方案v1.0落地——小豆子治理由此升级</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">内容</span><span class="log-what">选题4四端文案完成——今日内容不断档</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">运营</span><span class="log-what">SEO优化方案完成——今晚0点部署</span><span class="log-result">📈就绪</span></div>
-<div class="log-item"><span class="log-who">复盘</span><span class="log-what">W24周度复盘+小鱼儿半月复盘完成</span><span class="log-result">✅完成</span></div>
-</div>
+    function polyline(arr, color) {
+      let path = '';
+      for (let i = 0; i < arr.length; i++) {
+        path += (i === 0 ? 'M' : 'L') + x(i).toFixed(1) + ',' + y(arr[i]).toFixed(1) + ' ';
+      }
+      return '<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+    }
 
-<!-- 每日技能提升日志 -->
-<div class="skillup-log">
-<h3>📈 6.15 技能提升</h3>
-<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">战略</span><span class="su-what">全站免费策略设计+100人验证运营方案</span><span class="su-method">商业策略设计</span></div>
-<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">判断力</span><span class="su-what">主动发现问题（FormSubmit失效）+快速给出替代方案</span><span class="su-method">问题诊断+应急处理</span></div>
-<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">协作力</span><span class="su-what">从单兵到4人Agent团队调度（协作力6→7.5）</span><span class="su-method">团队治理+目标驱动</span></div>
-</div>
+    function dots(arr, color) {
+      return arr.map((v,i) => '<circle cx="'+x(i).toFixed(1)+'" cy="'+y(v).toFixed(1)+'" r="3" fill="'+color+'"/>').join('');
+    }
 
-<!-- 每日产出日志 -->
-<div class="daily-log">
-<h3>📋 6.14 产出日志（周日·晚间）</h3>
-</div>
-<!-- 6.17晚间复盘 -->
-<div class="daily-log">
-<h3>📋 6.17 产出日志（周三·晚间）</h3>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅六Agent协作启动确认书v1.0发布——小酒窝儿率先完成8项全确认</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅风声目标倒推体系v1.0落地——110人验证目标拆解+7个商业化产品</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅产品规划优化工作清单v1.0——明确四角色14+7+4+3项工作</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅六Agent协作链路打通——GitHub权限配置+工单系统规则</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅CI/CD凭证验证完成——API凭证权限OK</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">⚠️小扣子P0修复仍未push——首页定位语/breeder反馈/guide导航</span><span class="log-result pending">🔴延期</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">⚠️小眼镜#43课程体系框架仍无回复——6.19限期紧急</span><span class="log-result pending">🔴延期</span></div>
-<div class="log-item"><span class="log-who">小鱼儿</span><span class="log-what">✅晚间看板更新+复盘+次日安排（22:30执行）</span><span class="log-result">✅完成</span></div>
-</div>
+    const pvVals = days.map(d => d.pageviews);
+    const uvVals = days.map(d => d.unique_uids);
+    const fbVals = days.map(d => d.feedbacks);
 
-<div class="daily-log" style="border-left:3px solid #3b82f6">
-<h3>📊 6.17 数据追踪</h3>
-<div class="log-item"><span class="log-who">⚠️数据</span><span class="log-what">FormSubmit API仍失效（404），数据管道走GitHub API备用</span><span class="log-result fail">⚠️异常</span></div>
-<div class="log-item"><span class="log-who">小酒窝儿</span><span class="log-what">六Agent启动确认——8项全✅完成，截止6.18 18:00其余3Agent需完成</span><span class="log-result">✅领先</span></div>
-<div class="log-item"><span class="log-who">110验证</span><span class="log-what">目标倒推体系落地，各Agent子目标明确</span><span class="log-result">📈启动</span></div>
-</div>
+    const labels = days.map((d,i) => '<text x="'+x(i).toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle" font-size="10" fill="#64748b">'+d.date.slice(5)+'</text>').join('');
 
-<div class="daily-log" style="border-left:3px solid #22c55e">
-<h3>🎉 6.17 里程碑</h3>
-<div class="log-item"><span class="log-who">治理</span><span class="log-what">六Agent协作体系v2.0落地——日历驱动+Issue驱动双引擎</span><span class="log-result">✅突破</span></div>
-<div class="log-item"><span class="log-who">战略</span><span class="log-what">目标倒推体系v1.0定稿——110人验证总目标拆解</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">产品</span><span class="log-what">产品规划优化工作清单发布——四角色28项具体工作</span><span class="log-result">✅完成</span></div>
-<div class="log-item"><span class="log-who">技术</span><span class="log-what">CI/CD部署恢复——API凭证权限验证通过</span><span class="log-result">✅完成</span></div>
-</div>
+    container.innerHTML = '<svg viewBox="0 0 '+w+' '+h+'" class="chart-svg" role="img" aria-label="7日趋势图">' +
+      '<line x1="'+pad.l+'" y1="'+pad.t+'" x2="'+pad.l+'" y2="'+(pad.t+ph)+'" stroke="#334155" stroke-width="1"/>' +
+      '<line x1="'+pad.l+'" y1="'+(pad.t+ph)+'" x2="'+(pad.l+pw)+'" y2="'+(pad.t+ph)+'" stroke="#334155" stroke-width="1"/>' +
+      polyline(pvVals, '#3b82f6') + dots(pvVals, '#3b82f6') +
+      polyline(uvVals, '#a855f7') + dots(uvVals, '#a855f7') +
+      polyline(fbVals, '#22c55e') + dots(fbVals, '#22c55e') +
+      labels + '</svg>';
+  }
 
-<div class="skillup-log">
-<h3>📈 6.17 技能提升</h3>
-<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">治理</span><span class="su-what">六Agent协作体系v2.0落地+启动确认机制</span><span class="su-method">多Agent协同设计</span></div>
-<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">战略</span><span class="su-what">目标倒推体系v1.0+商业化闭环设计</span><span class="su-method">目标拆解能力</span></div>
-<div class="su-item"><span class="su-who">小鱼儿</span><span class="su-dim">执行力</span><span class="su-what">CI/CD恢复+GitHub工单系统打通</span><span class="su-method">技术问题解决</span></div>
-<div class="su-item"><span class="su-who">小酒窝儿</span><span class="su-dim">响应速度</span><span class="su-what">8项确认全完成，率先完成启动确认</span><span class="su-method">工单执行标杆</span></div>
-</div>
+  function renderProducts(data) {
+    const grid = document.getElementById('products-grid');
+    if (!data || !data.per_product) {
+      grid.innerHTML = '<div class="loading">加载中…</div>';
+      return;
+    }
+    const map = {};
+    data.per_product.forEach(p => { map[p.product] = p; });
+    let html = '';
 
-</div>
+    const order = ['breeder','knowledge','shuowenjiedao','assessment','care-test','reply'];
+    for (const key of order) {
+      const meta = PRODUCT_META[key] || {name:key, owner:'—', color:'#64748b', emoji:'📦', desc:''};
+      const d = map[key] || {users:0, pageviews:0, feedback:0};
+      const target = GOALS.products[key] || 10;
+      const pct = target > 0 ? Math.round((d.users / target) * 100) : 0;
+      const barColor = pct >= 100 ? '#22c55e' : (pct > 60 ? '#3b82f6' : (pct > 30 ? '#f59e0b' : '#64748b'));
+      const w1 = (WEEKLY[key] || {}).w1 || 0;
+      html += '<div class="product-card">' +
+        '<div class="product-top"><div><div class="product-name">'+meta.emoji+' '+meta.name+'</div><div class="product-owner">'+meta.owner+'</div></div></div>' +
+        '<div class="product-nums"><div class="product-now">'+d.users+'<small> / '+target+' 人</small></div></div>' +
+        '<div class="product-bar"><div class="product-bar-fill" style="width:'+pct+'%;background:'+barColor+'"></div></div>' +
+        '<div class="product-week">本周目标：<span>+'+(w1||'—')+' 人</span> · '+meta.desc+'</div>' +
+        '</div>';
+    }
+    grid.innerHTML = html;
+  }
+
+  function renderAgents() {
+    const grid = document.getElementById('agents-grid');
+    let html = '';
+    for (const a of AGENTS) {
+      const statusClass = a.status === 'on' ? 'on' : (a.status === 'warn' ? 'warn' : 'off');
+      const statusText = a.status === 'on' ? '在岗' : (a.status === 'warn' ? '关键期' : '待到位');
+      const tasks = a.tasks.map(t => '<li>'+t+'</li>').join('');
+      html += '<div class="agent-card">' +
+        '<div class="agent-top"><div><div class="agent-name">'+a.emoji+' '+a.name+'</div><div class="agent-role">'+a.role+'</div></div><span class="agent-status '+statusClass+'">'+statusText+'</span></div>' +
+        '<ul class="agent-tasks">'+tasks+'</ul>' +
+        '<div class="agent-deadline">⏰ 最近截止：'+a.deadline+'</div>' +
+        '</div>';
+    }
+    grid.innerHTML = html;
+  }
+
+  function renderHealth(data) {
+    const row = document.getElementById('health-row');
+    if (!data) {
+      row.innerHTML = '<div class="loading">检查中…</div>';
+      return;
+    }
+    const ok = data.status === 'ok';
+    row.innerHTML =
+      '<div class="health-card"><div class="health-dot '+(ok?'ok':'fail')+'"></div><div><div class="health-label">D1 数据库</div><div class="health-value">'+(ok?'已连接':'未连接')+'</div></div></div>' +
+      '<div class="health-card"><div class="health-dot '+(ok?'ok':'degraded')+'"></div><div><div class="health-label">events 表</div><div class="health-value">'+((data.events_count||0)>=0?'记录数：'+data.events_count:'未知')+'</div></div></div>' +
+      '<div class="health-card"><div class="health-dot '+(ok?'ok':'degraded')+'"></div><div><div class="health-label">feedback 表</div><div class="health-value">'+((data.feedback_count||0)>=0?'记录数：'+data.feedback_count:'未知')+'</div></div></div>' +
+      '<div class="health-card"><div class="health-dot '+(ok?'ok':'degraded')+'"></div><div><div class="health-label">API 服务</div><div class="health-value">'+(ok?'正常运行':'异常')+'</div></div></div>';
+  }
+
+  // ---- Main refresh ----
+  async function refreshAll() {
+    document.getElementById('status-badge').className = 'badge badge-live';
+    document.getElementById('status-badge').textContent = '⟳ 刷新中…';
+    const ts = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+    const [summary, daily, goals, health] = await Promise.all([
+      safeFetch(API_BASE + '/summary'),
+      safeFetch(API_BASE + '/daily?days=7'),
+      safeFetch(API_BASE + '/goals'),
+      safeFetch(API_BASE + '/health')
+    ]);
+
+    if (summary) {
+      isDemo = false;
+      document.getElementById('status-badge').className = 'badge badge-live';
+      document.getElementById('status-badge').textContent = '● 实时数据';
+      renderKPIs(summary);
+      renderProducts(summary);
+    } else {
+      isDemo = true;
+      document.getElementById('status-badge').className = 'badge badge-demo';
+      document.getElementById('status-badge').textContent = '▲ 演示数据';
+      // Demo data
+      renderKPIs({total_users:0, total_pageviews:0, total_feedback:0, feedback_rate_pct:0, per_product:[]});
+      renderProducts({per_product: Object.keys(GOALS.products).map(k => ({product:k, users:0, pageviews:0, feedback:0}))});
+    }
+
+    if (daily) {
+      renderChart(daily);
+    } else {
+      // Demo chart
+      const demo = {daily: [
+        {date:'2026-06-12',pageviews:0,unique_uids:0,feedbacks:0},
+        {date:'2026-06-13',pageviews:0,unique_uids:0,feedbacks:0},
+        {date:'2026-06-14',pageviews:0,unique_uids:0,feedbacks:0},
+        {date:'2026-06-15',pageviews:0,unique_uids:0,feedbacks:0},
+        {date:'2026-06-16',pageviews:0,unique_uids:0,feedbacks:0},
+        {date:'2026-06-17',pageviews:0,unique_uids:0,feedbacks:0},
+        {date:'2026-06-18',pageviews:0,unique_uids:0,feedbacks:0}
+      ]};
+      renderChart(demo);
+    }
+
+    if (goals) {
+      // Update KPI with goals data (more accurate)
+      document.getElementById('kpi-users').innerHTML = (goals.total_users||0)+'<span class="unit">人</span>';
+      const p = Math.min(100, Math.round((goals.total_users||0) / GOALS.total * 100));
+      document.getElementById('kpi-users-bar').style.width = p + '%';
+    }
+
+    renderHealth(health || {status:'degraded', events_count:-1, feedback_count:-1});
+    renderAgents();
+
+    document.getElementById('last-update').textContent = '更新：' + ts;
+  }
+
+  // Initial load
+  refreshAll().then(() => {
+    // Auto refresh every 5 minutes
+    setInterval(refreshAll, 300_000);
+  });
+})();
+</script>
 </body>
 </html>
