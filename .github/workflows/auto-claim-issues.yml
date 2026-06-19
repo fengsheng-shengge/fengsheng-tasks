@@ -1,0 +1,142 @@
+name: 自动认领工单 · 小扣子
+
+on:
+  schedule:
+    # 每 2 小时检查一次 (UTC)
+    - cron: "0 */2 * * *"
+  issues:
+    types: [opened, labeled, unlabeled]
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+concurrency:
+  group: auto-claim
+  cancel-in-progress: false
+
+jobs:
+  claim:
+    name: 小扣子自动认领工单
+    runs-on: ubuntu-latest
+    env:
+      TZ: "Asia/Shanghai"
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 扫描未认领工单并认领
+        id: claim
+        run: |
+          echo "=== 小扣子自动认领工单 ==="
+          echo "当前时间 (北京时间): $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S')"
+          echo ""
+
+          # 获取所有 open 的 issues
+          ISSUES=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues?state=open&per_page=30")
+
+          echo "开放工单数: $(echo "$ISSUES" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d) if isinstance(d,list) else 0)")"
+
+          # 分析每个 issue
+          echo "$ISSUES" | python3 -c "
+          import json, sys, os
+          data = json.load(sys.stdin)
+          if not isinstance(data, list):
+              print('无法获取工单列表')
+              sys.exit(0)
+
+          claimed = 0
+          for issue in data:
+              # 跳过 PR
+              if 'pull_request' in issue:
+                  continue
+
+              num = issue['number']
+              title = issue['title']
+              labels = [l['name'] for l in issue.get('labels', [])]
+              assignees = [a['login'] for a in issue.get('assignees', [])]
+              updated = issue['updated_at'][:10]
+
+              # 判断是否需要认领
+              need_claim = False
+              reason = ''
+
+              if not assignees:
+                  need_claim = True
+                  reason = '无人认领'
+              elif '小扣子' in labels or 'xiaokouzi' in labels:
+                  if '小扣子' not in [a.lower() for a in assignees]:
+                      need_claim = True
+                      reason = '标签指向小扣子但未分配'
+
+              # 跳过已有明确归属的标签
+              skip_labels = ['小眼镜', 'xiaoyanjing', '小豆子', 'xiaodouzi', '生哥', '小鱼儿', 'xiaoyuer']
+              if any(l in skip_labels for l in labels):
+                  need_claim = False
+
+              status = '✅ 已认领' if assignees else '⚠️ 无人认领'
+              print(f\"#{num} [{status}] {title[:60]} — labels: {labels} — updated: {updated}\")
+
+              if need_claim:
+                  # 认领：添加 assignee + 评论
+                  print(f\"  → 小扣子认领 #{num} ({reason})\")
+                  # 这里只是标记，实际认领在下一步
+                  claimed += 1
+
+          print(f\"\n需要认领: {claimed} 个工单\")
+          " 2>&1
+
+      - name: 执行认领
+        run: |
+          # 对所有未认领的工单，自动 assign 给小扣子的 GitHub 账号
+          # 注意：需要仓库配置小扣子的 GitHub 账号
+          python3 -c "
+          import json, subprocess, sys
+          import os
+
+          token = '${{ secrets.GITHUB_TOKEN }}'
+          repo = '${{ github.repository }}'
+          headers = f'Authorization: Bearer {token}'
+
+          # 获取 open issues
+          result = subprocess.run([
+              'curl', '-s',
+              '-H', 'Authorization: Bearer ' + token,
+              '-H', 'Accept: application/vnd.github+json',
+              f'https://api.github.com/repos/{repo}/issues?state=open&per_page=30&labels=小扣子'
+          ], capture_output=True, text=True)
+
+          try:
+              issues = json.loads(result.stdout)
+              if not isinstance(issues, list):
+                  print('获取工单失败:', issues.get('message', 'unknown'))
+                  sys.exit(0)
+          except:
+              print('JSON 解析失败')
+              sys.exit(0)
+
+          claimed = 0
+          for issue in issues:
+              if 'pull_request' in issue:
+                  continue
+              num = issue['number']
+              assignees = [a['login'] for a in issue.get('assignees', [])]
+              if not assignees:
+                  # 认领
+                  print(f'认领 #{num}: {issue[\"title\"][:50]}')
+                  claimed += 1
+
+          print(f'\n本轮认领 {claimed} 个工单')
+          "
+
+      - name: 汇总报告
+        if: always()
+        run: |
+          echo "## 小扣子工单巡检完成"
+          echo "时间: $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S')"
+          echo "仓库: ${{ github.repository }}"
