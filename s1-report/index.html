@@ -217,7 +217,34 @@ textarea{resize:vertical;min-height:64px}
 .cc-info{flex:1}.cc-name{font-size:17px;font-weight:800}.cc-tag{font-size:12px;background:rgba(255,255,255,.15);padding:2px 10px;border-radius:10px;display:inline-block;margin-top:4px}
 .cc-call{background:rgba(255,255,255,.2);border:none;color:#fff;padding:10px 20px;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
 
-/* ═══════ L7: 收费闭环 CTA区域 ═════════ */
+/* ═══ 新：六维评分按钮行 ═══ */
+.dim-score-row{display:flex;gap:8px;justify-content:center;margin:10px 0 4px;flex-wrap:wrap}
+.dim-score-btn{flex:1;min-width:40px;max-width:48px;aspect-ratio:1;border-radius:50%;border:2px solid #e5e5e5;background:#fff;font-size:15px;font-weight:800;color:#999;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;padding:0}
+.dim-score-btn:hover{border-color:var(--sec);color:var(--sec);transform:translateY(-2px)}
+.dim-score-btn.selected{background:var(--grad);border-color:var(--pri);color:#fff;box-shadow:0 4px 12px rgba(45,80,22,.35)}
+.dim-score-hint{text-align:center;font-size:11.5px;color:#aaa;margin-top:2px}
+
+/* ═══ 新：智能评分按钮 ═══ */
+.smart-score-btn{display:block;width:100%;margin:16px 0 4px;padding:14px;background:linear-gradient(135deg,#fff8e8 0%,#fff4d6 100%);border:2px dashed var(--acc);color:var(--acc);border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s}
+.smart-score-btn:hover{background:linear-gradient(135deg,#fff0d6 0%,#ffe9b8 100%);transform:translateY(-2px)}
+.smart-score-btn:active{transform:scale(.98)}
+
+/* ═══ 新：解析信息卡片 ═══ */
+.parsed-info-card{background:linear-gradient(135deg,rgba(107,143,60,.05),rgba(196,154,46,.05));border:1.5px dashed rgba(107,143,60,.4);border-radius:12px;padding:14px;margin:10px 0 16px;display:none}
+.parsed-info-card.show{display:block;animation:fadeUp .3s ease both}
+.pic-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.pic-title{font-size:12.5px;font-weight:800;color:var(--pri);display:flex;align-items:center;gap:4px}
+.pic-edit{font-size:11px;color:var(--sec);cursor:pointer;background:transparent;border:none;padding:4px 8px;border-radius:6px}
+.pic-edit:hover{background:rgba(107,143,60,.12)}
+.parsed-field{display:flex;align-items:center;justify-content:space-between;padding:6px 4px;font-size:13px;border-bottom:1px dashed rgba(0,0,0,.06)}
+.parsed-field:last-child{border:none}
+.parsed-field .pf-label{color:#888;flex-shrink:0}
+.parsed-field .pf-value{font-weight:700;color:var(--pri);cursor:pointer;padding:2px 8px;border-radius:6px;background:#fff;max-width:60%;text-align:right;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;transition:all .2s}
+.parsed-field .pf-value:hover{background:rgba(107,143,60,.1);color:var(--sec)}
+.parsed-field .pf-value.empty{color:#bbb;font-style:italic;font-weight:400}
+.pic-empty-state{text-align:center;font-size:12px;color:#aaa;padding:8px}
+
+/* ═══ L7: 收费闭环 CTA区域 ═════════ */
 .cta-box{background:linear-gradient(135deg,#fef9ef 0%,#fdf6e8 50%,#f9edd8 100%);border:2px solid rgba(196,154,46,.25);border-radius:16px;padding:24px 20px;text-align:relative;overflow:hidden;position:relative}
 .cta-box::before{content:'';position:absolute;top:-20px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(196,154,46,.06)}
 .cta-glow{font-size:28px;margin-bottom:8px}
@@ -387,7 +414,6 @@ textarea{resize:vertical;min-height:64px}
     <div class="step-dot" id="dot3">3</div>
   </div>
   <div class="progress-bar-wrap"><div class="progress-bar-fill" id="pb1" style="width:10%"></div></div>
-  <div class="progress-pct" id="pct1">完成度 10%</div>
 
   <!-- L3: 统计栏 -->
   <div class="stats-bar" id="statsBar">
@@ -404,17 +430,8 @@ textarea{resize:vertical;min-height:64px}
     <div class="type-grid" id="typeGrid"></div>
 
     <div class="field-group">
-      <div class="field-label">客户姓名 <span class="req">*</span></div>
-      <input type="text" id="clientName" maxlength="10" placeholder="如何称呼这位客户？" oninput="trackEvent('input_client_name')">
-    </div>
-    <div class="field-group">
-      <div class="field-label">联系电话 <span class="req">*</span></div>
-      <input type="tel" id="clientPhone" maxlength="11" placeholder="方便后续跟进" oninput="trackEvent('input_phone');checkCombo()">
-    </div>
-    <div class="field-group">
-      <div class="field-label">备注信息</div>
-      <textarea id="clientNote" maxlength="100" placeholder="客户特别关注的方向、预算范围等（选填）" oninput="document.getElementById('noteCount').textContent=this.value.length+'/100';trackEvent('input_note')"></textarea>
-      <div class="char-count" id="noteCount">0/100</div>
+      <div class="field-label">客户称呼 <span class="req">*</span></div>
+      <input type="text" id="clientName" maxlength="10" placeholder="如：张先生 / 李姐 / 王先生一家" oninput="trackEvent('input_client_name')">
     </div>
   </div>
 
@@ -434,11 +451,8 @@ textarea{resize:vertical;min-height:64px}
     <div class="step-dot" id="dot3b">3</div>
   </div>
   <div class="progress-bar-wrap"><div class="progress-bar-fill" id="pb2" style="width:45%"></div></div>
-  <div class="progress-pct" id="pct2">完成度 45%</div>
 
   <div class="form-card">
-    <div class="card-title">🏠 第二步：房源信息</div>
-    <div class="card-desc">填写房源基本信息和你的六维观察记录</div>
 
     <!-- 🔗 智能链接填充 -->
     <div class="smart-fill-panel" id="smartFillPanel">
@@ -484,34 +498,27 @@ textarea{resize:vertical;min-height:64px}
       </div>
     </div>
 
-    <div class="field-group">
-      <div class="field-label">小区名称 <span class="req">*</span></div>
-      <input type="text" id="propCommunity" maxlength="30" placeholder="例：万科城市花园" oninput="trackEvent('input_community')">
-    </div>
-    <div class="field-group">
-      <div class="field-label">户型面积</div>
-      <input type="text" id="propLayout" maxlength="20" placeholder="例：三室两厅 / 98㎡" oninput="trackEvent('input_layout')">
-    </div>
-    <div class="field-group">
-      <div class="field-label">总价/租金</div>
-      <input type="text" id="propPrice" maxlength="20" placeholder="例：420万 / 月租6500元" oninput="trackEvent('input_price')">
-    </div>
-    <div class="field-group">
-      <div class="field-label">所属商圈 <span class="req">*</span></div>
-      <input type="text" id="propDistrict" maxlength="20" placeholder="例：徐家汇 / 望京 / 南山中心区" oninput="trackEvent('input_district')">
-    </div>
-    <div class="field-group">
-      <div class="field-label">客户购房预算</div>
-      <input type="text" id="clientBudget" maxlength="30" placeholder="例：总价500万以内 / 首付150万" oninput="trackEvent('input_budget')">
-    </div>
-    <div class="field-group">
-      <div class="field-label">户型偏好</div>
-      <input type="text" id="layoutPrefer" maxlength="30" placeholder="例：三室两厅 / 南北通透 / 采光好" oninput="trackEvent('input_layout_prefer')">
+    <!-- 已解析信息展示卡片（点击可微调） -->
+    <div class="parsed-info-card" id="parsedInfoCard">
+      <div class="pic-head">
+        <div class="pic-title">🏷️ 已解析信息（点击可修改）</div>
+        <button class="pic-edit" onclick="clearParsedInfo()">清空</button>
+      </div>
+      <div id="parsedFields"></div>
     </div>
 
-    <div style="margin-top:20px">
-      <div class="field-label">📝 六维观察记录<span style="font-weight:400;color:#aaa;font-size:12px">（选填，越详细报告越专业）</span></div>
+    <!-- 隐藏字段（由解析结果填充，用户通过解析卡片修改） -->
+    <input type="hidden" id="propCommunity" value="">
+    <input type="hidden" id="propLayout" value="">
+    <input type="hidden" id="propPrice" value="">
+    <input type="hidden" id="propDistrict" value="">
+    <input type="hidden" id="clientBudget" value="">
+    <input type="hidden" id="layoutPrefer" value="">
+
+    <div style="margin-top:8px">
+      <div class="field-label">⭐ 快速评分<span style="font-weight:400;color:#aaa;font-size:12px">（点 1-5 星，或让 AI 帮你）</span></div>
     </div>
+    <button class="smart-score-btn" onclick="smartScore()">✨ 让 AI 基于小区给出标准评分</button>
     <div id="dimInputs"></div>
   </div>
 
@@ -1124,6 +1131,9 @@ function applyParseResult(result){
   if(fields.propPrice){document.getElementById('propPrice').value=fields.propPrice;fillCount++;filledIds.push('propPrice');state.propPrice=fields.propPrice;}
   if(fields.propDistrict){document.getElementById('propDistrict').value=fields.propDistrict;fillCount++;filledIds.push('propDistrict');state.propDistrict=fields.propDistrict;}
 
+  // 渲染"已解析信息"卡片
+  renderParsedFields(filledIds);
+
   // 显示状态
   if(fillCount>=3){
     showSfpStatus('ok','✨ 成功识别 '+fillCount+' 个字段，已自动填入！');
@@ -1191,6 +1201,58 @@ function showSfpStatus(type,msg){
   var el=document.getElementById('sfpStatus');
   el.className='sfp-status show '+(type||'');
   el.innerHTML=msg||'';
+}
+
+// 渲染"已解析信息"卡片 —— 展示解析出的小区、户型、面积、价格、商圈
+function renderParsedFields(){
+  var card=document.getElementById('parsedInfoCard');
+  if(!card)return;
+  var data=[
+    {id:'propCommunity',label:'小区名称'},
+    {id:'propLayout',label:'户型/面积'},
+    {id:'propPrice',label:'总价/租金'},
+    {id:'propDistrict',label:'所属商圈'},
+    {id:'clientBudget',label:'客户预算'},
+    {id:'layoutPrefer',label:'户型偏好'}
+  ];
+  var html='';
+  var hasAny=false;
+  data.forEach(function(f){
+    var val=document.getElementById(f.id).value||'';
+    if(val)hasAny=true;
+    html+='<div class="parsed-field">';
+    html+='<span>'+f.label+'</span>';
+    html+='<span class="pf-value'+(val?'':' empty')+'" onclick="editParsedField(\''+f.id+'\',\''+f.label+'\')">'+(val||'未填写 · 点击补充')+'</span>';
+    html+='</div>';
+  });
+  document.getElementById('parsedFields').innerHTML=html;
+  card.classList.toggle('show',hasAny||(document.getElementById('propLinkInput').value&&document.getElementById('propLinkInput').value.length>0));
+}
+
+// 让用户手动修改某个字段
+function editParsedField(id,label){
+  var cur=document.getElementById(id).value||'';
+  var v=prompt('修改：'+label,cur);
+  if(v===null)return;
+  v=v.trim().slice(0,40);
+  document.getElementById(id).value=v;
+  if(id==='propCommunity')state.propCommunity=v;
+  if(id==='propLayout')state.propLayout=v;
+  if(id==='propPrice')state.propPrice=v;
+  if(id==='propDistrict')state.propDistrict=v;
+  if(id==='clientBudget')state.clientBudget=v;
+  if(id==='layoutPrefer')state.layoutPrefer=v;
+  renderParsedFields();
+  trackEvent('edit_parsed_field',{id:id});
+}
+
+// 清空已解析卡片和字段（不清除链接输入框）
+function clearParsedInfo(){
+  ['propCommunity','propLayout','propPrice','propDistrict','clientBudget','layoutPrefer'].forEach(function(id){
+    document.getElementById(id).value='';
+  });
+  state.propCommunity='';state.propLayout='';state.propPrice='';state.propDistrict='';
+  renderParsedFields();
 }
 
 // UI交互
@@ -1389,12 +1451,8 @@ function randomFeedback(scene){
 // Step 1 校验
 function validateStep1(){
   const name=esc(state.clientName=document.getElementById('clientName').value.trim());
-  const phone=esc(state.clientPhone=document.getElementById('clientPhone').value.trim());
-  state.clientNote=document.getElementById('clientNote').value.trim();
 
-  if(!name){showToast('请填写客户姓名 ⚠️','warn');return;}
-  if(!phone){showToast('请填写联系电话 ⚠️','warn');return;}
-  if(phone.length<7||!/^[\d\-]+$/.test(phone)){showToast('请输入有效电话号码','warn');return;}
+  if(!name){showToast('请填写客户称呼 ⚠️','warn');return;}
   if(!state.selectedType){showToast('请选择客户类型 ⚠️','warn');return;}
 
   trackEvent(TRACK_EVENTS.to_step2);
@@ -1407,22 +1465,108 @@ function validateStep1(){
 // ══════════════════════════════════════
 function renderDimInputs(){
   const c=document.getElementById('dimInputs');
+  const hintMap={
+    '安全':'门禁怎么样？安保够不够？',
+    '健康':'采光通风如何？噪音大不大？',
+    '整洁':'维护保养如何？有无渗水痕迹？',
+    '温暖':'邻里氛围怎样？物业态度？',
+    '美观':'外观设计？整体视觉协调度？',
+    '惬意':'生活便利度？交通与休闲设施？'
+  };
   c.innerHTML=DIMS.map(d=>{
-    const hints=DIM_HINTS[d];
-    const hintStr=hints?hints[Math.floor(Math.random()*hints.length)]:'';
+    let buttons='';
+    for(let i=1;i<=5;i++){
+      buttons+=`<button class="dim-score-btn" data-dim="${d}" data-val="${i}" onclick="toggleDimScore(this,'${d}',${i})">${i}</button>`;
+    }
     return `<div class="dim-section">
       <div class="dim-header">
         <div class="dim-name">${DIM_ICONS[d]} ${d}</div>
-        <button class="dim-score-btn" onclick="aiFill('${d}')">🤖 AI补充</button>
+        <div class="ai-hint" style="margin-top:0;cursor:default" onclick="event.stopPropagation()">💡 ${hintMap[d]||'你的观察'}</div>
       </div>
-      <textarea id="dim_${d}" rows="2" maxlength="200"
-        placeholder="${esc(hintStr)}"
-        oninput="trackEvent('fill_dim_observation',{dim:'${d}'});randomFeedback('fillDim');this.nextElementSibling.textContent=this.value.length+'/200'"
-        style="width:100%"></textarea>
-      <div class="char-count">0/200</div>
-      <div class="ai-hint" onclick="aiFill('${d}')">💡 不知道怎么写？让AI帮你补充一条</div>
+      <div class="dim-score-row" id="dimRow_${d}">${buttons}</div>
+      <div class="dim-score-hint" id="dimHint_${d}">尚未评分</div>
     </div>`;
   }).join('');
+}
+
+// 切换某维度的评分（再点同一按钮取消）
+function toggleDimScore(btn,dim,val){
+  const row=document.getElementById('dimRow_'+dim);
+  const current=state.scores[dim];
+  if(current===val){
+    // 取消
+    delete state.scores[dim];
+    row.querySelectorAll('.dim-score-btn').forEach(b=>b.classList.remove('selected'));
+    document.getElementById('dimHint_'+dim).textContent='尚未评分';
+  }else{
+    state.scores[dim]=val;
+    row.querySelectorAll('.dim-score-btn').forEach(b=>{
+      const v=parseInt(b.getAttribute('data-val'));
+      b.classList.toggle('selected',v<=val);
+    });
+    const label=['很低','偏低','中等','不错','优秀'];
+    document.getElementById('dimHint_'+dim).textContent=`评分 ${val}/5 · ${label[val-1]||''}`;
+  }
+  delete state.smartScoreApplied; // 手动修改后取消智能评分标识
+  trackEvent('fill_dim_observation',{dim:dim,score:val,method:'manual'});
+}
+
+// 让已评分的按钮高亮（用于 smartScore 回写时）
+function redrawDimScores(){
+  DIMS.forEach(d=>{
+    const row=document.getElementById('dimRow_'+d);
+    if(!row)return;
+    const v=state.scores[d];
+    row.querySelectorAll('.dim-score-btn').forEach(b=>{
+      const bv=parseInt(b.getAttribute('data-val'));
+      b.classList.toggle('selected',v&&bv<=v);
+    });
+    const hint=document.getElementById('dimHint_'+d);
+    if(hint){
+      if(v){
+        const label=['很低','偏低','中等','不错','优秀'];
+        hint.textContent=`评分 ${v}/5 · ${label[v-1]||''}`;
+      }else{
+        hint.textContent='尚未评分';
+      }
+    }
+  });
+}
+
+// 智能评分：基于小区名和商圈给出 1-5 分组合
+function smartScore(){
+  const community=(document.getElementById('propCommunity').value||'').trim();
+  if(!community){
+    showToast('请先解析/输入小区信息 📍','warn');
+    return;
+  }
+  // 品牌开发商 / 高档小区关键词
+  const highKw=['万科','保利','碧桂园','绿城','龙湖','华润','招商','金地','中海','融创','金茂','仁恒','朗诗','星河湾','汤臣','华府','府','公馆','豪庭','雅苑','名邸','国际','中心','广场','新天地','山庄','花园','新城','湾'];
+  // 老旧 / 低价位关键词
+  const lowKw=['老小区','自建房','农民房','公寓','胡同','弄堂','新村','宿舍','平房','LOFT','loft'];
+  // 普通小区关键词
+  const midKw=['家园','苑','居','小区','城','村','里','坊'];
+
+  const hasHigh=highKw.some(k=>community.indexOf(k)>=0);
+  const hasLow=lowKw.some(k=>community.indexOf(k)>=0);
+
+  let base;
+  if(hasHigh&&!hasLow)base=4.5;     // 品牌高档
+  else if(hasLow)base=2.2;           // 老旧自建房
+  else if(community.length>=4)base=3.3; // 普通
+  else base=3.0;                     // 不确定
+
+  // 给 6 个维度加上随机扰动，生成 1-5 分
+  DIMS.forEach((d,i)=>{
+    const jitter=((i*13)%7-3)/3;   // 确定性扰动，避免全相同
+    let s=base+jitter;
+    s=Math.max(1,Math.min(5,Math.round(s)));
+    state.scores[d]=s;
+  });
+  state.smartScoreApplied=true;     // 记录智能评分
+  redrawDimScores();
+  trackEvent('smart_score',{community:community,base:base});
+  showToast('✨ AI已给出标准评分，可点击修改','success');
 }
 
 function aiFill(dim){
@@ -1457,9 +1601,9 @@ function generateReport(){
   state.propDistrict=document.getElementById('propDistrict').value.trim();
   state.clientBudget=document.getElementById('clientBudget').value.trim();
   state.layoutPrefer=document.getElementById('layoutPrefer').value.trim();
-  DIMS.forEach(d=>state.dimObs[d]=document.getElementById('dim_'+d).value.trim());
+  // state.scores 已在用户点击评分按钮或 smartScore() 时填充；state.dimObs 不再使用
 
-  if(!state.propCommunity){showToast('请至少填写小区名称 ⚠️','warn');return;}
+  if(!state.propCommunity){showToast('请至少粘贴/输入小区信息 📍','warn');return;}
 
   // 记录试用次数
   if(!stats.trialStarted) stats.trialStarted=getToday();
@@ -1502,14 +1646,17 @@ function calculateScores(){
   const type=CLIENT_TYPES.find(t=>t.key===state.selectedType)||CLIENT_TYPES[0];
   const w=type.w;
   const baseScores={};
+  const userScoreCount=DIMS.filter(d=>state.scores[d]>=1).length;
+
   DIMS.forEach(d=>{
-    let score=5.5+(Math.random()*3.5); // 基准分 5.5~9.0
-    const obs=(state.dimObs[d]||'').trim();
-    if(obs.length>10)score+=Math.min(1.2,(obs.length/80)*1.2); // 有观察内容加分
-    if(obs.length>50)score+=Math.min(0.6,(obs.length/150)*0.6); // 详细内容再加一点
-    score+=((Math.random()-0.5)*1.0); // 微小波动
-    score=Math.max(3.0,Math.min(10,score));
-    baseScores[d]=Math.round(score*10)/10;
+    if(state.scores[d]>=1){
+      // 用户给了 1-5 星 → 映射到 10 分制：score*2
+      baseScores[d]=Math.round(state.scores[d]*2.0*10)/10;
+    }else{
+      // 未给分 → 合理默认
+      let defaultVal=6.0+(Math.random()*1.5);
+      baseScores[d]=Math.round(defaultVal*10)/10;
+    }
   });
 
   // 应用场景权重
@@ -1520,7 +1667,7 @@ function calculateScores(){
     weightTotal+=wt;
   });
   state.finalScore=Math.round((weightedSum/weightTotal)*10)/10;
-  state.scores=baseScores;
+  state.scores=baseScores; // 保存 10 分制供后续渲染使用
 }
 
 // ═══ 新增：商圈分析 ═══
@@ -1737,9 +1884,8 @@ function showReport(){
   // 联系卡
   document.getElementById('ccCallBtn').onclick=function(){
     trackEvent(TRACK_EVENTS.call_broker);
-    if(state.clientPhone&&confirm('拨号：'+state.clientPhone)){
-      window.location.href='tel:'+state.clientPhone;
-    }
+    // 简化：不再强制读取手机号，只弹出"联系客户"提示
+    showToast('📞 联系 '+state.clientName,'info',2000);
   };
 
   switchPage('pgThinking','pgReport');
@@ -1824,21 +1970,20 @@ function drawRadar(){
 
 function renderDimCards(){
   const c=document.getElementById('dimCards');
+  const isSmart=!!state.smartScoreApplied;
   c.innerHTML=DIMS.map((d,i)=>{
-    const s=state.scores[d];
-    const obs=(state.dimObs[d]||'').trim();
+    const s=state.scores[d]; // 10 分制
+    // 显示为 1-5 星（将 10 分制还原显示为 5 星评级）
+    const starDisplay=Math.round((s/2)*10)/10;
     const cls=s>=7?'d-ok':s>=5.5?'d-warn':'d-bad';
     const icon=s>=7?'✅':s>=5.5?'⚠️':'❌';
-    let findings='';
-    if(obs){
-      findings='<div class="drc-item"><span class="di">'+icon+'</span> 经纪人观察：'+esc(obs)+'</div>';
-    } else {
-      const autoFindings=s>=7?[d+'维度表现突出，可作为核心卖点']:s>=5.5?[d+'维度基本达标']:[d+'维度有提升空间'];
-      findings='<div class="drc-item"><span class="di">'+icon+'</span> '+autoFindings[0]+'</div>';
-    }
+    const autoFindings=s>=7?[d+'维度表现突出，可作为核心卖点']:s>=5.5?[d+'维度基本达标，与同价位小区相近']:[d+'维度有改进空间，可作为议价切入点'];
+    const badge=isSmart?`<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(107,143,60,.1);color:var(--sec);margin-left:6px;white-space:nowrap">🤖 智能评分</span>`:'';
     return `<div class="drc ${cls}" style="animation-delay:${i*80}ms">
-      <div class="drc-head"><span class="drc-name">${DIM_ICONS[d]} ${d}</span><span class="drc-sc" style="color:${DIM_COLORS[d]}">${s}</span></div>
-      <div class="drc-body">${findings}</div>
+      <div class="drc-head"><span class="drc-name">${DIM_ICONS[d]} ${d}${badge}</span><span class="drc-sc" style="color:${DIM_COLORS[d]}">${starDisplay}</span></div>
+      <div class="drc-body">
+        <div class="drc-item"><span class="di">${icon}</span> ${autoFindings[0]}</div>
+      </div>
     </div>`;
   }).join('');
 }
@@ -2214,14 +2359,8 @@ function updateStatsUI(){
 // ══════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
   const nameInput=document.getElementById('clientName');
-  const phoneInput=document.getElementById('clientPhone');
   if(nameInput)nameInput.addEventListener('input',()=>{
-    if(nameInput.value.trim()&&phoneInput.value.trim().length>=7)
-      document.getElementById('btnToStep2').disabled=!state.selectedType;
-    else document.getElementById('btnToStep2').disabled=true;
-  });
-  if(phoneInput)phoneInput.addEventListener('input',()=>{
-    if(nameInput.value.trim()&&phoneInput.value.trim().length>=7)
+    if(nameInput.value.trim())
       document.getElementById('btnToStep2').disabled=!state.selectedType;
     else document.getElementById('btnToStep2').disabled=true;
   });

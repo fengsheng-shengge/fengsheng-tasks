@@ -33,6 +33,50 @@
   .dim-name { font-size: 15px; font-weight: 600; color: #333; }
   .dim-desc { font-size: 11.5px; color: #888; margin-top: 2px; }
 
+  /* 价值主张盒子 */
+  .value-box { background: linear-gradient(135deg, #f0f5ee, #e8f5ea); border-radius: 14px; padding: 16px 18px; margin-bottom: 18px; border-left: 4px solid #3d5a3e; }
+  .value-title { font-size: 14px; font-weight: 700; color: #3d5a3e; margin-bottom: 8px; letter-spacing: 0.5px; }
+  .value-text { font-size: 13.5px; color: #333; line-height: 1.7; font-weight: 500; }
+
+  /* 维度说明网格（不是选择项） */
+  .dim-intro-title { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 10px; padding-left: 4px; }
+  .dim-intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+  .dim-intro-item { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 12px 10px; text-align: center; }
+  .dim-intro-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; margin: 0 auto 6px; }
+  .dim-intro-name { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 2px; }
+  .dim-intro-desc { font-size: 10.5px; color: #999; line-height: 1.4; }
+
+  /* 元信息行 */
+  .meta-row { display: flex; justify-content: space-around; margin-top: 16px; padding-top: 14px; border-top: 1px dashed #e8e8e8; }
+  .meta-item { text-align: center; }
+  .meta-num { font-size: 20px; font-weight: 700; color: #3d5a3e; line-height: 1; }
+  .meta-label { font-size: 11px; color: #888; margin-top: 4px; }
+
+  /* 报告页：四维结论卡片 */
+  .dim-score-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 10px; padding: 4px 2px; }
+  .dim-score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .dim-score-card { background: #fff; border-radius: 14px; padding: 14px 12px; text-align: center; border: 1.5px solid transparent; transition: all 0.2s; }
+  .dim-score-card.good { background: #f4f8f3; border-color: #d9e3d7; }
+  .dim-score-card.warn { background: #fdf6f0; border-color: #f0dcc8; }
+  .dim-score-card.low  { background: #fdecec; border-color: #f5c8c8; }
+  .dim-score-card .ds-icon { font-size: 26px; margin-bottom: 4px; }
+  .dim-score-card .ds-name { font-size: 13px; font-weight: 700; color: #333; margin-bottom: 4px; }
+  .dim-score-card .ds-score { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .dim-score-card.good .ds-score { color: #3d5a3e; }
+  .dim-score-card.warn .ds-score { color: #c46a3a; }
+  .dim-score-card.low  .ds-score { color: #d44; }
+  .dim-score-card .ds-status { display: inline-block; font-size: 10.5px; padding: 2px 8px; border-radius: 6px; font-weight: 600; margin-bottom: 6px; }
+  .dim-score-card.good .ds-status { background: #e8f0e6; color: #3d5a3e; }
+  .dim-score-card.warn .ds-status { background: #fef0e8; color: #c46a3a; }
+  .dim-score-card.low  .ds-status { background: #fdecec; color: #d44; }
+  .dim-score-card .ds-advice { font-size: 11.5px; color: #555; line-height: 1.5; min-height: 38px; }
+
+  /* 最薄弱维度横幅 */
+  .weakest-banner { background: linear-gradient(135deg, #c46a3a, #e08858); color: white; border-radius: 14px; padding: 14px 18px; margin-bottom: 18px; text-align: center; }
+  .weakest-banner-title { font-size: 11.5px; opacity: 0.9; letter-spacing: 1px; margin-bottom: 4px; }
+  .weakest-banner-name { font-size: 18px; font-weight: 700; }
+  .weakest-banner-score { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+
   .start-btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 14px; background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; font-size: 17px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 18px; box-shadow: 0 4px 15px rgba(61,90,62,0.35); }
   .start-btn:active { transform: scale(0.98); }
 
@@ -160,39 +204,51 @@
   </div>
   <div class="intro-body">
 
-    <div class="dim-card">
-      <div class="dim-icon" style="background:linear-gradient(135deg,#ff6b6b,#ee5a24);">💪</div>
-      <div class="dim-info">
-        <div class="dim-name">身体</div>
-        <div class="dim-desc">工作强度 / 睡眠质量 / 健康指标</div>
+    <!-- 价值主张：一句话告诉用户为什么要测 -->
+    <div class="value-box">
+      <div class="value-title">为什么要做这次测评？</div>
+      <div class="value-text">
+        你每天帮别人解决居住问题，但你自己的状态怎么样？
+        <br><br>
+        这份测评会从 <b>身体 · 心理 · 尊严 · 质感</b> 四个方面，帮你画一张真实的状态图。
+        <br><br>
+        测完之后，你会看到每个维度的独立评分，以及你最需要关注什么。
       </div>
     </div>
 
-    <div class="dim-card">
-      <div class="dim-icon" style="background:linear-gradient(135deg,#a29bfe,#6c5ce7);">🧘</div>
-      <div class="dim-info">
-        <div class="dim-name">心理</div>
-        <div class="dim-desc">抗压能力 / 情绪管理 / 心理韧性</div>
+    <!-- 四个维度说明：是"测什么"，不是"选哪个" -->
+    <div class="dim-intro-title">测评覆盖四个维度</div>
+    <div class="dim-intro-grid">
+      <div class="dim-intro-item">
+        <div class="dim-intro-icon" style="background:#fde4e4;">💪</div>
+        <div class="dim-intro-name">身体状态</div>
+        <div class="dim-intro-desc">睡眠 · 健康 · 体力消耗</div>
+      </div>
+      <div class="dim-intro-item">
+        <div class="dim-intro-icon" style="background:#ece6fb;">🧘</div>
+        <div class="dim-intro-name">心理韧性</div>
+        <div class="dim-intro-desc">情绪 · 抗压 · 自我调节</div>
+      </div>
+      <div class="dim-intro-item">
+        <div class="dim-intro-icon" style="background:#fff0d9;">🏅</div>
+        <div class="dim-intro-name">职业尊严</div>
+        <div class="dim-intro-desc">被尊重 · 职业认同 · 成就感</div>
+      </div>
+      <div class="dim-intro-item">
+        <div class="dim-intro-icon" style="background:#d9f3f5;">🏠</div>
+        <div class="dim-intro-name">生活质感</div>
+        <div class="dim-intro-desc">居住 · 饮食 · 个人时间</div>
       </div>
     </div>
 
-    <div class="dim-card">
-      <div class="dim-icon" style="background:linear-gradient(135deg,#fdcb6e,#f0932b);">🏅</div>
-      <div class="dim-info">
-        <div class="dim-name">尊严</div>
-        <div class="dim-desc">客户尊重 / 职业认同 / 成就感</div>
-      </div>
-    </div>
+    <!-- 单一入口：一次完整测评，不需要选维度 -->
+    <button class="start-btn" onclick="startQuiz()">开始测评 →</button>
 
-    <div class="dim-card">
-      <div class="dim-icon" style="background:linear-gradient(135deg,#00cec9,#81ecec);">🏠</div>
-      <div class="dim-info">
-        <div class="dim-name">质感</div>
-        <div class="dim-desc">居住环境 / 生活品质 / 经济压力</div>
-      </div>
+    <div class="meta-row">
+      <div class="meta-item"><div class="meta-num">2</div><div class="meta-label">分钟</div></div>
+      <div class="meta-item"><div class="meta-num">12</div><div class="meta-label">道题</div></div>
+      <div class="meta-item"><div class="meta-num">4</div><div class="meta-label">份维度评分</div></div>
     </div>
-
-    <button class="start-btn" onclick="startQuiz()">开始测评</button>
   </div>
 </div>
 
@@ -221,10 +277,21 @@
     <div class="report-grade" id="report-grade">--</div>
   </div>
   <div class="report-body">
+    <!-- 核心：四维结论卡片（每个维度独立评分+状态+建议） -->
+    <div class="dim-score-title">📋 你的四维评分</div>
+    <div class="dim-score-grid" id="dim-score-grid"></div>
+
     <!-- 关怀画像 -->
     <div class="care-profile-box" id="care-profile-box" style="display:none">
       <div class="care-profile-label">关怀画像</div>
       <div class="care-profile-text" id="care-profile-text"></div>
+    </div>
+
+    <!-- 最薄弱维度横幅 -->
+    <div class="weakest-banner" id="weakest-banner" style="display:none;">
+      <div class="weakest-banner-title">⚠️ 最需要关注的维度</div>
+      <div class="weakest-banner-name" id="weakest-name"></div>
+      <div class="weakest-banner-score" id="weakest-score"></div>
     </div>
 
     <!-- 四维雷达图 -->
@@ -439,6 +506,30 @@ var SUGGESTIONS = {
   '质感': {icon:'🏠', color:'#0891b2', text:'本周只做一件事：好好吃一顿饭。不是外卖，是坐下来慢慢吃的正餐。对自己好一点不需要很大动作，从一口热饭开始。'}
 };
 
+// 每个维度的分段建议（显示在四维评分卡上）
+var DIM_ADVICE = {
+  '身体': {
+    good: '身体状态在线，继续保持现在的作息和运动。',
+    warn: '有些透支信号，注意补觉和定时休息。',
+    low:  '身体在亮红灯，请至少保证基本的睡眠和休息。'
+  },
+  '心理': {
+    good: '心态很稳，你已经有了不错的自我调节方式。',
+    warn: '有些压力在积累，找个出口让大脑放空一下。',
+    low:  '心理负荷偏重，你需要的不是更努力，是休息。'
+  },
+  '尊严': {
+    good: '职业认同很扎实，你知道自己在做有价值的事。',
+    warn: '偶尔会怀疑价值，试试记录每次被认可的瞬间。',
+    low:  '你对这份工作的认同感偏低，值得认真想想为什么。'
+  },
+  '质感': {
+    good: '生活节奏感很好，记得不要让工作慢慢吞掉它。',
+    warn: '个人时间有点紧张，保护每周至少半天的私人时间。',
+    low:  '生活被工作挤得太满，你上一次真正放松是什么时候？'
+  }
+};
+
 // ============================================================
 //  状态变量
 // ============================================================
@@ -619,6 +710,37 @@ function showReport() {
   var profileBox = document.getElementById('care-profile-box');
   profileBox.style.display = 'block';
   document.getElementById('care-profile-text').textContent = profileText;
+
+  // === 四维结论卡片（核心视觉输出） ===
+  var gridEl = document.getElementById('dim-score-grid');
+  gridEl.innerHTML = '';
+  for (var ci = 0; ci < DIMS.length; ci++) {
+    var cdim = DIMS[ci];
+    var cscore = avg[cdim];
+    var clevel = cscore >= 75 ? 'good' : (cscore >= 50 ? 'warn' : 'low');
+    var cstatusText = clevel === 'good' ? '状态良好' : (clevel === 'warn' ? '值得关注' : '需要调整');
+    var cicon = DIM_ICONS[cdim];
+    var cAdvice = DIM_ADVICE[cdim][clevel];
+
+    gridEl.innerHTML +=
+      '<div class="dim-score-card ' + clevel + '">' +
+        '<div class="ds-icon">' + cicon + '</div>' +
+        '<div class="ds-name">' + cdim + '</div>' +
+        '<div class="ds-score">' + cscore + '</div>' +
+        '<div class="ds-status">' + cstatusText + '</div>' +
+        '<div class="ds-advice">' + cAdvice + '</div>' +
+      '</div>';
+  }
+
+  // === 最薄弱维度高亮（如果有低于60分的） ===
+  var weakestEl = document.getElementById('weakest-banner');
+  if (avg[lowest] < 60 && weakestEl) {
+    weakestEl.style.display = 'block';
+    document.getElementById('weakest-name').textContent = DIM_ICONS[lowest] + ' ' + lowest;
+    document.getElementById('weakest-score').textContent = avg[lowest] + '分';
+  } else if (weakestEl) {
+    weakestEl.style.display = 'none';
+  }
 
   // === 四维雷达图 ===
   drawRadar(avg);

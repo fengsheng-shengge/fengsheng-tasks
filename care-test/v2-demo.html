@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>服务者四维关怀测评</title>
+<script src="/assets/fs-nav.js"></script>
+<script src="/assets/fs-store.js"></script>
+<script src="/assets/fs-radar.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
@@ -28,30 +31,19 @@
   }
   .fs-nav-back { cursor: pointer; font-size: 18px; color: #3d5a3e; width: 32px; }
   .fs-nav-title { font-size: 16px; font-weight: 600; color: #333; }
-  .fs-nav-spacer { width: 32px; }
+  .fs-nav-home { font-size: 13px; color: #3d5a3e; cursor: pointer; text-decoration: none; width: 72px; text-align: right; }
 
-  /* --- 主容器 --- */
-  .app-container { max-width: 640px; margin: 0 auto; padding: 16px; }
-
-  /* --- 卡片 --- */
+  /* --- 布局 --- */
+  .app-container {
+    max-width: 640px; margin: 0 auto;
+    padding: 58px 16px 30px;
+  }
   .card {
-    background: #fff; border-radius: 14px; padding: 20px;
-    margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    border: 1px solid #ede8df;
+    background: #fff; border-radius: 14px;
+    padding: 22px 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    margin-bottom: 14px;
   }
-
-  /* --- 屏幕1: 介绍页 --- */
-  .intro-title { font-size: 26px; font-weight: 800; color: #3d5a3e; text-align: center; margin-bottom: 6px; }
-  .intro-subtitle { font-size: 14px; color: #888; text-align: center; margin-bottom: 20px; line-height: 1.5; }
-  .dimension-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-  .dimension-card {
-    background: #faf9f5; border: 1.5px solid #ede8df; border-radius: 12px;
-    padding: 16px 12px; text-align: center; transition: all 0.2s;
-  }
-  .dimension-card:hover { border-color: #c46a3a; }
-  .dimension-icon { font-size: 36px; display: block; margin-bottom: 6px; }
-  .dimension-name { font-size: 15px; font-weight: 700; color: #333; }
-  .dimension-desc { font-size: 11px; color: #999; margin-top: 2px; }
 
   /* --- 按钮 --- */
   .btn {
@@ -61,22 +53,62 @@
   }
   .btn-primary { background: #3d5a3e; color: #fff; }
   .btn-primary:hover { background: #2d462e; }
-  .btn-primary:disabled { background: #b0b8a8; cursor: not-allowed; }
   .btn-accent { background: #c46a3a; color: #fff; }
-  .btn-accent:hover { background: #a85a30; }
+  .btn-accent:hover { background: #a8592f; }
   .btn-outline { background: #fff; color: #3d5a3e; border: 1.5px solid #3d5a3e; }
   .btn-outline:hover { background: #f4f8f3; }
-  .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 18px; }
-  .btn-block { display: flex; width: 100%; }
-  .btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+  .btn-block { width: 100%; }
+  .btn-sm { padding: 10px 18px; font-size: 14px; border-radius: 20px; }
+  .btn-row { display: flex; gap: 10px; margin-top: 14px; justify-content: space-between; }
 
-  /* --- 进度条 --- */
-  .progress-wrap { margin-bottom: 16px; }
-  .progress-bar-bg { background: #e8e4db; border-radius: 10px; height: 8px; overflow: hidden; margin-bottom: 6px; }
-  .progress-bar-fill { background: linear-gradient(90deg, #3d5a3e, #5a8a5c); height: 100%; border-radius: 10px; transition: width 0.3s; }
-  .progress-text { font-size: 13px; color: #888; text-align: right; }
+  /* --- 入口页 --- */
+  .intro-title {
+    font-size: 24px; font-weight: 800; color: #3d5a3e;
+    text-align: center; margin-bottom: 8px; line-height: 1.4;
+  }
+  .intro-subtitle {
+    font-size: 14px; color: #888;
+    text-align: center; margin-bottom: 20px;
+  }
+  .intro-hero {
+    background: linear-gradient(135deg, #3d5a3e, #c46a3a);
+    border-radius: 14px; padding: 18px 16px; color: #fff;
+    text-align: center; margin-bottom: 16px;
+  }
+  .intro-hero-main { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .intro-hero-sub { font-size: 13px; opacity: 0.9; }
+  .intro-meta {
+    display: flex; justify-content: space-around;
+    margin: 16px 0; text-align: center;
+  }
+  .intro-meta-item .num { font-size: 20px; font-weight: 700; color: #3d5a3e; }
+  .intro-meta-item .label { font-size: 12px; color: #888; margin-top: 2px; }
 
-  /* --- 问题区 --- */
+  /* --- 维度介绍（入口页的文字列表，不是选择项） --- */
+  .what-section {
+    background: #faf9f5; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px;
+  }
+  .what-title { font-size: 14px; font-weight: 700; color: #3d5a3e; margin-bottom: 10px; }
+  .what-item {
+    display: flex; align-items: flex-start;
+    padding: 8px 0; border-bottom: 1px dashed #e8e4db;
+    font-size: 13px;
+  }
+  .what-item:last-child { border-bottom: none; }
+  .what-icon { font-size: 18px; margin-right: 10px; flex-shrink: 0; }
+  .what-text { flex: 1; }
+  .what-name { font-weight: 600; color: #333; }
+  .what-desc { color: #777; font-size: 12px; margin-top: 1px; }
+
+  .start-btn-wrap { padding-top: 6px; }
+
+  /* --- 答题页 --- */
+  .progress-wrap {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+  }
+  .progress-bar-bg { flex: 1; background: #f0ece4; height: 6px; border-radius: 3px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: #3d5a3e; border-radius: 3px; transition: width 0.3s; }
+  .progress-text { font-size: 12px; color: #888; white-space: nowrap; }
   .dimension-tag {
     display: inline-block; background: #f4f8f3; color: #3d5a3e;
     padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-bottom: 10px;
@@ -84,11 +116,11 @@
   .question-text { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 16px; line-height: 1.5; }
   .option-list { display: flex; flex-direction: column; gap: 8px; }
   .option-item {
-    display: flex; align-items: center; padding: 14px 16px; border-radius: 10px;
-    border: 1.5px solid #ede8df; cursor: pointer; transition: all 0.15s;
-    background: #fff;
+    display: flex; align-items: center;
+    padding: 14px 16px; background: #fff; border: 1.5px solid #ede8df;
+    border-radius: 10px; cursor: pointer; transition: all 0.15s;
   }
-  .option-item:hover { border-color: #c46a3a; background: #fef9f5; }
+  .option-item:hover { border-color: #c46a3a; background: #fdf6f0; }
   .option-item.selected { border-color: #3d5a3e; background: #f4f8f3; }
   .option-radio {
     width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ccc;
@@ -99,47 +131,67 @@
   .option-item.selected .option-radio::after {
     content: ''; width: 10px; height: 10px; border-radius: 50%; background: #3d5a3e;
   }
-  .option-label { font-size: 15px; color: #333; }
-  .option-score { font-size: 12px; color: #aaa; margin-left: auto; }
+  .option-label { font-size: 15px; color: #333; flex: 1; }
+  .option-score { font-size: 12px; color: #aaa; }
 
-  /* --- 报告 --- */
-  .report-header { text-align: center; padding: 10px 0 14px; }
-  .report-grade { font-size: 48px; font-weight: 800; line-height: 1; }
+  /* --- 报告页 --- */
+  .report-header { text-align: center; padding: 10px 0 16px; }
+  .report-grade { font-size: 44px; font-weight: 800; line-height: 1.2; }
   .report-grade.good { color: #3d5a3e; }
-  .report-grade.medium { color: #c46a3a; }
+  .report-grade.med { color: #c46a3a; }
   .report-grade.low { color: #d44; }
-  .report-grade-label { font-size: 16px; color: #666; margin-top: 4px; }
-  .report-score { font-size: 14px; color: #999; margin-top: 4px; }
-  .radar-container { display: flex; justify-content: center; margin: 10px 0; }
-  .dimension-list { margin: 8px 0; }
-  .dimension-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 0; border-bottom: 1px solid #f0ece4;
-  }
-  .dimension-row:last-child { border-bottom: none; }
-  .dimension-name { font-size: 14px; font-weight: 500; }
-  .dimension-bar-wrap { flex: 1; margin: 0 12px; background: #f0ece4; border-radius: 4px; height: 6px; overflow: hidden; }
-  .dimension-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s; }
-  .dimension-bar-fill.high { background: #3d5a3e; }
-  .dimension-bar-fill.mid { background: #c46a3a; }
-  .dimension-bar-fill.low { background: #d44; }
-  .dimension-val { font-size: 13px; font-weight: 600; color: #333; width: 28px; text-align: right; }
+  .report-grade-label { font-size: 15px; color: #666; margin-top: 6px; }
+  .report-score { font-size: 13px; color: #999; margin-top: 4px; }
 
-  /* --- 强弱项 --- */
-  .insight-section { margin-top: 12px; }
-  .insight-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-  .insight-tag { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; margin: 3px 4px; }
-  .insight-tag.strength { background: #e8f0e6; color: #3d5a3e; }
-  .insight-tag.weakness { background: #fef0e8; color: #c46a3a; }
-  .suggestion-text { font-size: 14px; color: #555; line-height: 1.7; margin-top: 8px; }
+  /* --- 四维结论卡片（核心视觉输出） --- */
+  .result-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;
+  }
+  .result-card {
+    background: #fff; border-radius: 12px; padding: 14px 12px;
+    text-align: center; border: 1.5px solid transparent;
+    transition: all 0.2s;
+  }
+  .result-card.level-high { background: #f4f8f3; border-color: #d9e3d7; }
+  .result-card.level-mid { background: #fdf6f0; border-color: #f0dcc8; }
+  .result-card.level-low { background: #fdecec; border-color: #f5c8c8; }
+  .result-icon { font-size: 28px; margin-bottom: 6px; }
+  .result-name { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 4px; }
+  .result-score {
+    font-size: 22px; font-weight: 800; margin-bottom: 6px;
+  }
+  .result-card.level-high .result-score { color: #3d5a3e; }
+  .result-card.level-mid .result-score { color: #c46a3a; }
+  .result-card.level-low .result-score { color: #d44; }
+  .result-score small { font-size: 12px; color: #999; font-weight: 500; }
+  .result-status {
+    display: inline-block; font-size: 11px; padding: 3px 8px;
+    border-radius: 8px; margin-bottom: 8px; font-weight: 600;
+  }
+  .level-high .result-status { background: #e8f0e6; color: #3d5a3e; }
+  .level-mid .result-status { background: #fef0e8; color: #c46a3a; }
+  .level-low .result-status { background: #fdecec; color: #d44; }
+  .result-advice { font-size: 12px; color: #555; line-height: 1.55; min-height: 44px; }
+
+  .weakness-banner {
+    margin-top: 14px; padding: 12px 14px;
+    background: linear-gradient(135deg, #c46a3a, #e08858);
+    color: #fff; border-radius: 12px;
+  }
+  .weakness-banner-title { font-size: 13px; opacity: 0.9; margin-bottom: 4px; }
+  .weakness-banner-name { font-size: 18px; font-weight: 800; }
+
+  .insight-section { margin-top: 14px; }
+  .insight-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #333; }
+  .suggestion-text { font-size: 14px; color: #555; line-height: 1.7; }
 
   /* --- 分享按钮 --- */
   .share-row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; justify-content: center; }
   .share-btn { flex: 1; min-width: 90px; }
 
   /* --- 历史记录 --- */
-  .history-section { margin-top: 16px; }
-  .history-title { font-size: 15px; font-weight: 700; color: #333; margin-bottom: 8px; }
+  .history-section { margin-top: 12px; }
+  .history-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
   .history-item {
     background: #fff; border: 1px solid #ede8df; border-radius: 10px;
     padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
@@ -148,7 +200,8 @@
   .history-item:hover { border-color: #c46a3a; }
   .history-info { flex: 1; }
   .history-date { font-size: 12px; color: #999; }
-  .history-grade { font-size: 16px; font-weight: 700; }
+  .history-grade { font-size: 15px; font-weight: 700; color: #3d5a3e; }
+  .history-detail { font-size: 11px; color: #888; margin-top: 2px; }
   .history-del { font-size: 18px; color: #ccc; cursor: pointer; padding: 4px 8px; }
   .history-del:hover { color: #d44; }
 
@@ -173,21 +226,19 @@
   }
   .modal-box h3 { font-size: 18px; margin-bottom: 10px; }
   .modal-box p { font-size: 14px; color: #666; margin-bottom: 16px; }
-  .modal-box .btn-row { gap: 10px; }
 
   /* --- 隐藏 --- */
   .hidden { display: none !important; }
 
   /* --- 响应式 --- */
   @media (max-width: 400px) {
-    .dimension-grid { gap: 8px; }
-    .dimension-card { padding: 14px 8px; }
-    .dimension-icon { font-size: 28px; }
-    .dimension-name { font-size: 13px; }
     .question-text { font-size: 16px; }
     .option-item { padding: 12px 14px; }
     .option-label { font-size: 14px; }
     .intro-title { font-size: 22px; }
+    .intro-hero-main { font-size: 15px; }
+    .result-grid { gap: 8px; }
+    .result-score { font-size: 20px; }
   }
 </style>
 </head>
@@ -199,30 +250,54 @@
   <div id="screen-intro">
     <div class="card">
       <div class="intro-title">服务者四维关怀测评</div>
-      <div class="intro-subtitle">2分钟，12道题，发现你自己在哪个维度最需要被关怀</div>
-      <div class="dimension-grid">
-        <div class="dimension-card">
-          <span class="dimension-icon">💪</span>
-          <span class="dimension-name">身体</span>
-          <span class="dimension-desc">睡眠、疲劳、运动</span>
+      <div class="intro-subtitle">关注你自己，从一次诚实的自我评估开始</div>
+
+      <div class="intro-hero">
+        <div class="intro-hero-main">面向房产/租赁/家政等服务行业从业者</div>
+        <div class="intro-hero-sub">一份2分钟的自我状态评估</div>
+      </div>
+
+      <div class="intro-meta">
+        <div class="intro-meta-item"><div class="num">2</div><div class="label">分钟</div></div>
+        <div class="intro-meta-item"><div class="num">12</div><div class="label">道题</div></div>
+        <div class="intro-meta-item"><div class="num">4</div><div class="label">个维度</div></div>
+      </div>
+
+      <div class="what-section">
+        <div class="what-title">测什么？</div>
+        <div class="what-item">
+          <span class="what-icon">💪</span>
+          <div class="what-text">
+            <div class="what-name">身体状态</div>
+            <div class="what-desc">睡眠质量、疲劳程度、运动习惯</div>
+          </div>
         </div>
-        <div class="dimension-card">
-          <span class="dimension-icon">🧘</span>
-          <span class="dimension-name">心理</span>
-          <span class="dimension-desc">情绪、压力、应对</span>
+        <div class="what-item">
+          <span class="what-icon">🧘</span>
+          <div class="what-text">
+            <div class="what-name">心理韧性</div>
+            <div class="what-desc">情绪稳定、压力应对、心态调节</div>
+          </div>
         </div>
-        <div class="dimension-card">
-          <span class="dimension-icon">🏅</span>
-          <span class="dimension-name">尊严</span>
-          <span class="dimension-desc">尊重、理解、认可</span>
+        <div class="what-item">
+          <span class="what-icon">🏅</span>
+          <div class="what-text">
+            <div class="what-name">职业尊严</div>
+            <div class="what-desc">被尊重、被理解、被认可的感受</div>
+          </div>
         </div>
-        <div class="dimension-card">
-          <span class="dimension-icon">🌿</span>
-          <span class="dimension-name">生活</span>
-          <span class="dimension-desc">兴趣、放松、平衡</span>
+        <div class="what-item">
+          <span class="what-icon">🌿</span>
+          <div class="what-text">
+            <div class="what-name">生活平衡</div>
+            <div class="what-desc">个人兴趣、放松时间、工作生活平衡</div>
+          </div>
         </div>
       </div>
-      <button class="btn btn-primary btn-block" id="btnStart">开始测评 →</button>
+
+      <div class="start-btn-wrap">
+        <button class="btn btn-primary btn-block" id="btnStart">开始测评 →</button>
+      </div>
     </div>
   </div>
 
@@ -248,23 +323,25 @@
     <div class="card" id="reportCard">
       <div class="report-header">
         <div class="report-grade" id="reportGrade">--</div>
-        <div class="report-grade-label" id="reportGradeLabel"></div>
+        <div class="report-grade-label" id="reportGradeLabel">综合评分</div>
         <div class="report-score" id="reportScore"></div>
       </div>
-      <div class="radar-container" id="radarContainer"></div>
-      <div class="dimension-list" id="dimensionList"></div>
-      <div class="insight-section">
-        <div class="insight-title">✅ 优势项</div>
-        <div id="strengthTags"></div>
+
+      <!-- 核心：四维结论卡片 -->
+      <div class="insight-title" style="margin-top:6px; font-size:15px;">📋 四维结论</div>
+      <div class="result-grid" id="resultGrid"></div>
+
+      <!-- 最薄弱维度 -->
+      <div class="weakness-banner" id="weaknessBanner" style="display:none;">
+        <div class="weakness-banner-title">最需要关注的维度</div>
+        <div class="weakness-banner-name" id="weaknessName"></div>
       </div>
+
       <div class="insight-section">
-        <div class="insight-title">⚠️ 需要关注</div>
-        <div id="weaknessTags"></div>
-      </div>
-      <div class="insight-section">
-        <div class="insight-title">📝 个性化建议</div>
+        <div class="insight-title">📝 给你的话</div>
         <div class="suggestion-text" id="suggestionText"></div>
       </div>
+
       <div class="share-row">
         <button class="btn btn-outline btn-sm share-btn" id="btnCopyText">📋 复制文字</button>
         <button class="btn btn-outline btn-sm share-btn" id="btnCopyLink">🔗 复制链接</button>
@@ -272,10 +349,11 @@
       </div>
       <div class="btn-row">
         <button class="btn btn-outline btn-sm" id="btnRetake">重新测评</button>
-        <a class="btn btn-accent btn-sm" id="btnBreeder" href="#" target="_blank">🚀 让 AI 培养师帮我 →</a>
+        <a class="btn btn-accent btn-sm" id="btnBreeder" href="#" target="_blank">🚀 让 AI 陪我 →</a>
       </div>
     </div>
-    <div class="card history-section" id="historySection">
+
+    <div class="card history-section" id="historySection" style="display:none;">
       <div class="history-title">📊 历史测评</div>
       <div id="historyList"></div>
     </div>
@@ -283,70 +361,65 @@
 
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- 加载外部脚本 -->
-<script src="/assets/fs-nav.js"></script>
-<script src="/assets/fs-store.js"></script>
-<script src="/assets/fs-radar.js"></script>
-
 <script>
-// ==================== 初始化导航 ====================
-FSNav.init('服务者四维关怀测评');
+// ==================== 初始化导航栏 ====================
+document.addEventListener('DOMContentLoaded', function() {
+  FSNav.init('服务者四维关怀测评');
+  init();
+});
 
-// ==================== 数据定义 ====================
-
-// 四个维度
+// ==================== 维度定义 ====================
 var dimensions = [
-  { id: 'body',    name: '身体', icon: '💪' },
-  { id: 'mind',    name: '心理', icon: '🧘' },
-  { id: 'dignity', name: '尊严', icon: '🏅' },
-  { id: 'life',    name: '生活', icon: '🌿' }
+  { id: 'body', name: '身体状态', icon: '💪' },
+  { id: 'mind', name: '心理韧性', icon: '🧘' },
+  { id: 'dignity', name: '职业尊严', icon: '🏅' },
+  { id: 'life', name: '生活平衡', icon: '🌿' }
 ];
 
-// 12道题目（4维度 × 3题，按维度循环排列：Q1=body, Q2=mind, Q3=dignity, Q4=life, Q5=body, ... Q12=life）
+// ==================== 题目（12题，每维3题） ====================
 var questions = [
   // --- 身体 (body) Q1 ---
   { dimension: 'body', text: '最近一周你的睡眠质量如何？', options: [
-    { label: '非常好，每天睡得很香', score: 3 },
-    { label: '还不错，偶尔会醒', score: 2 },
-    { label: '一般，经常难以入睡', score: 1 },
-    { label: '很差，几乎睡不着', score: 0 }
+    { label: '每天睡眠充足，质量很好', score: 3 },
+    { label: '基本能睡好，偶尔失眠', score: 2 },
+    { label: '睡眠一般，经常醒来', score: 1 },
+    { label: '睡眠很差，白天很困', score: 0 }
   ]},
   // --- 心理 (mind) Q2 ---
-  { dimension: 'mind', text: '最近一周你的情绪状态？', options: [
+  { dimension: 'mind', text: '最近一周你的情绪状态如何？', options: [
     { label: '积极乐观，充满能量', score: 3 },
     { label: '大部分时间还不错', score: 2 },
     { label: '偶尔低落，容易烦躁', score: 1 },
     { label: '持续低落，很难开心', score: 0 }
   ]},
   // --- 尊严 (dignity) Q3 ---
-  { dimension: 'dignity', text: '你觉得客户尊重你的专业吗？', options: [
-    { label: '非常尊重，充分信任我', score: 3 },
-    { label: '大多数客户比较尊重', score: 2 },
-    { label: '偶尔有客户不够尊重', score: 1 },
-    { label: '经常不被尊重，很受伤', score: 0 }
+  { dimension: 'dignity', text: '客户对你说的话，你觉得被尊重吗？', options: [
+    { label: '大部分客户尊重我的专业', score: 3 },
+    { label: '有的客户尊重，有的不那么尊重', score: 2 },
+    { label: '偶尔遇到不尊重的客户', score: 1 },
+    { label: '经常感到被轻视或不被理解', score: 0 }
   ]},
   // --- 生活 (life) Q4 ---
-  { dimension: 'life', text: '工作之外你有自己的兴趣爱好吗？', options: [
-    { label: '有多个爱好，经常投入其中', score: 3 },
-    { label: '有一两个爱好，偶尔会做', score: 2 },
-    { label: '有想法但没时间去做', score: 1 },
-    { label: '完全没有，工作就是全部', score: 0 }
+  { dimension: 'life', text: '最近一个月有完全放松的一天吗？', options: [
+    { label: '有好几天完全放松', score: 3 },
+    { label: '有一两天彻底放松', score: 2 },
+    { label: '有半天时间放松', score: 1 },
+    { label: '一次都没有', score: 0 }
   ]},
   // --- 身体 (body) Q5 ---
-  { dimension: 'body', text: '工作一天后身体的疲劳程度？', options: [
-    { label: '基本不累，精力充沛', score: 3 },
-    { label: '有点累，休息一下就好', score: 2 },
-    { label: '比较累，需要较长时间恢复', score: 1 },
-    { label: '非常疲惫，浑身酸痛', score: 0 }
+  { dimension: 'body', text: '工作一天后你感觉多累？', options: [
+    { label: '不累，精力充沛', score: 3 },
+    { label: '有点累，但休息一晚就好', score: 2 },
+    { label: '很累，需要几天恢复', score: 1 },
+    { label: '累到影响生活状态', score: 0 }
   ]},
   // --- 心理 (mind) Q6 ---
-  { dimension: 'mind', text: '面对客户拒绝时你的反应？', options: [
-    { label: '坦然接受，继续努力', score: 3 },
-    { label: '有点失落，但很快调整', score: 2 },
-    { label: '比较沮丧，影响心情', score: 1 },
+  { dimension: 'mind', text: '当客户拒绝你时，你的反应是？', options: [
+    { label: '很正常，下一个客户就是机会', score: 3 },
+    { label: '有点失落，但很快调整过来', score: 2 },
+    { label: '会难过一会儿，影响工作心情', score: 1 },
     { label: '非常受打击，怀疑自己', score: 0 }
   ]},
   // --- 尊严 (dignity) Q7 ---
@@ -357,11 +430,11 @@ var questions = [
     { label: '完全不理解，经常有矛盾', score: 0 }
   ]},
   // --- 生活 (life) Q8 ---
-  { dimension: 'life', text: '最近一个月有完全放松的一天吗？', options: [
-    { label: '有好几天完全放松', score: 3 },
-    { label: '有一两天彻底放松', score: 2 },
-    { label: '有半天时间放松', score: 1 },
-    { label: '一次都没有', score: 0 }
+  { dimension: 'life', text: '工作之外你有自己的兴趣爱好吗？', options: [
+    { label: '有固定爱好，每周都会做', score: 3 },
+    { label: '有爱好，但最近忙得没时间', score: 2 },
+    { label: '偶尔做点自己喜欢的事', score: 1 },
+    { label: '几乎没有个人兴趣时间', score: 0 }
   ]},
   // --- 身体 (body) Q9 ---
   { dimension: 'body', text: '每周有固定运动习惯吗？', options: [
@@ -393,12 +466,36 @@ var questions = [
   ]}
 ];
 
+// ==================== 各维度建议语 ====================
+var adviceFor = {
+  body: {
+    high: '身体状态很好，继续保持规律作息和运动习惯。',
+    mid: '身体基本过得去。建议固定一个运动时间，哪怕每天散步15分钟也行。',
+    low: '身体发出了信号。请至少保证7小时睡眠，抽时间做一些简单运动——身体是一切的基础。'
+  },
+  mind: {
+    high: '你的心态很健康。遇到挫折时的应对方式是对的。',
+    mid: '大部分时候情绪不错。建议找到适合自己的解压方式并坚持下去。',
+    low: '情绪状态有些沉重。每天留10分钟给自己，做点能让你开心的小事。如果持续低落，可以考虑和信任的人聊聊。'
+  },
+  dignity: {
+    high: '被尊重、被认可的感觉是对的。你在做的事情值得被肯定。',
+    mid: '有被认可的时候，但也遇到不理解。记住：你的价值不由客户态度决定。',
+    low: '这一块需要特别关注。不被尊重会悄悄侵蚀自信。请和主管或同事聊聊你的感受，做一些调整。'
+  },
+  life: {
+    high: '工作生活的节奏感很好。记得不要让工作慢慢吞掉这部分时间。',
+    mid: '基本能平衡，但个人时间有点紧张。保护好每周至少半天的"完全私人时间"。',
+    low: '生活被工作压得有点紧。请认真想一次：你上一次真正放松是什么时候？安排一次吧。'
+  }
+};
+
 // ==================== 状态管理 ====================
 var state = {
-  screen: 'intro', // 'intro' | 'quiz' | 'report'
+  screen: 'intro',
   currentQuestion: 0,
-  answers: {},     // { questionIndex: optionIndex }
-  scores: null,    // 计算后的分数
+  answers: {},
+  scores: null,
   resumed: false
 };
 
@@ -427,6 +524,7 @@ function showScreen(name) {
   if (name === 'intro') screenIntro.classList.remove('hidden');
   if (name === 'quiz') screenQuiz.classList.remove('hidden');
   if (name === 'report') screenReport.classList.remove('hidden');
+  window.scrollTo(0, 0);
 }
 
 // ==================== 屏幕1: 介绍页 ====================
@@ -435,7 +533,7 @@ $('btnStart').addEventListener('click', function() {
   state.answers = {};
   state.scores = null;
   state.resumed = false;
-  FSStore.clearProgress();
+  FSStore.for('care').clearProgress();
   showScreen('quiz');
   renderQuestion();
 });
@@ -465,7 +563,6 @@ function renderQuestion() {
     html += '<div class="option-item' + selClass + '" data-index="' + j + '">';
     html += '<div class="option-radio"></div>';
     html += '<span class="option-label">' + opt.label + '</span>';
-    html += '<span class="option-score">' + opt.score + '分</span>';
     html += '</div>';
   }
   $('optionList').innerHTML = html;
@@ -474,7 +571,7 @@ function renderQuestion() {
   $('btnPrev').style.visibility = state.currentQuestion === 0 ? 'hidden' : 'visible';
   $('btnNext').textContent = state.currentQuestion === questions.length - 1 ? '查看报告 →' : '下一题 →';
 
-  // 保存进度
+  // 保存进度（care 独立 namespace，不与其他产品冲突）
   saveProgress();
 }
 
@@ -494,7 +591,6 @@ $('btnPrev').addEventListener('click', function() {
 });
 
 $('btnNext').addEventListener('click', function() {
-  // 检查当前题目是否已回答
   if (state.answers[state.currentQuestion] === undefined) {
     showToast('请先选择一个选项');
     return;
@@ -503,44 +599,43 @@ $('btnNext').addEventListener('click', function() {
     state.currentQuestion++;
     renderQuestion();
   } else {
-    // 最后一题，计算分数并显示报告
     calculateScores();
     showScreen('report');
     renderReport();
-    FSStore.clearProgress();
+    FSStore.for('care').clearProgress();
   }
 });
 
 // ==================== 进度保存与恢复 ====================
 function saveProgress() {
-  FSStore.saveProgress({
+  FSStore.for('care').saveProgress({
     currentQuestion: state.currentQuestion,
     answers: state.answers
   });
 }
 
 function checkResume() {
-  var progress = FSStore.getProgress();
+  var progress = FSStore.for('care').getProgress();
   if (progress && progress.answers && Object.keys(progress.answers).length > 0) {
     showResumeModal(progress);
   }
 }
 
 function showResumeModal(progress) {
+  var answered = Object.keys(progress.answers).length;
   var overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.innerHTML = '<div class="modal-box">' +
-    '<h3>发现未完成的测评</h3>' +
-    '<p>你已完成了 <b>' + Object.keys(progress.answers).length + '/12</b> 题</p>' +
+    '<h3>继续上次未完成的测评？</h3>' +
+    '<p>你已答完 ' + answered + '/12 题，可从上次停的地方继续。</p>' +
     '<div class="btn-row">' +
-      '<button class="btn btn-outline btn-sm" id="modalDiscard">放弃，重新开始</button>' +
-      '<button class="btn btn-primary btn-sm" id="modalResume">继续测评</button>' +
-    '</div>' +
-  '</div>';
+      '<button class="btn btn-outline btn-sm" id="modalDiscard" style="flex:1;">重新开始</button>' +
+      '<button class="btn btn-primary btn-sm" id="modalResume" style="flex:1;">继续测评</button>' +
+    '</div></div>';
   document.body.appendChild(overlay);
 
   overlay.querySelector('#modalDiscard').addEventListener('click', function() {
-    FSStore.clearProgress();
+    FSStore.for('care').clearProgress();
     document.body.removeChild(overlay);
   });
   overlay.querySelector('#modalResume').addEventListener('click', function() {
@@ -573,13 +668,12 @@ function calculateScores() {
     total += dimScores[dimensions[j].id];
   }
 
-  var maxTotal = 9 * dimensions.length; // 36
+  var maxTotal = 36;  // 3分 × 12题
   var percentage = Math.round(total / maxTotal * 100);
 
   var grade, gradeClass;
-  if (percentage >= 90) { grade = '状态很好'; gradeClass = 'good'; }
-  else if (percentage >= 75) { grade = '状态良好'; gradeClass = 'medium'; }
-  else if (percentage >= 60) { grade = '需要关注'; gradeClass = 'medium'; }
+  if (percentage >= 75) { grade = '状态良好'; gradeClass = 'good'; }
+  else if (percentage >= 50) { grade = '基本健康'; gradeClass = 'med'; }
   else { grade = '需要调整'; gradeClass = 'low'; }
 
   state.scores = {
@@ -597,429 +691,191 @@ function renderReport() {
   var s = state.scores;
   var dimScores = s.dimScores;
 
-  // 等级
+  // 总评
   $('reportGrade').textContent = s.grade;
   $('reportGrade').className = 'report-grade ' + s.gradeClass;
-  $('reportGradeLabel').textContent = '综合评分';
   $('reportScore').textContent = s.total + ' / ' + s.maxTotal + ' 分（' + s.percentage + '%）';
 
-  // 雷达图
-  var radarData = [];
-  for (var i = 0; i < dimensions.length; i++) {
-    radarData.push({ label: dimensions[i].name, value: dimScores[dimensions[i].id] });
-  }
-  $('radarContainer').innerHTML = '<div id="radarChart"></div>';
-  setTimeout(function() {
-    FSRadar.draw('radarChart', radarData, { size: 280, radius: 110, maxValue: 9, levels: 4 });
-  }, 100);
-
-  // 维度详情
-  var dimHtml = '';
-  for (var j = 0; j < dimensions.length; j++) {
-    var d = dimensions[j];
-    var val = dimScores[d.id];
-    var pct = Math.round(val / 9 * 100);
-    var barClass = pct >= 67 ? 'high' : (pct >= 34 ? 'mid' : 'low');
-    dimHtml += '<div class="dimension-row">' +
-      '<span class="dimension-name">' + d.icon + ' ' + d.name + '</span>' +
-      '<div class="dimension-bar-wrap"><div class="dimension-bar-fill ' + barClass + '" style="width:' + pct + '%"></div></div>' +
-      '<span class="dimension-val">' + val + '</span>' +
-    '</div>';
-  }
-  $('dimensionList').innerHTML = dimHtml;
-
-  // 优势项和需要关注项
+  // 四维结论卡片 - 核心视觉
+  var gridHtml = '';
   var sorted = [];
-  for (var k = 0; k < dimensions.length; k++) {
-    sorted.push({ id: dimensions[k].id, name: dimensions[k].name, score: dimScores[dimensions[k].id] });
+  for (var i = 0; i < dimensions.length; i++) {
+    sorted.push({
+      id: dimensions[i].id, name: dimensions[i].name, icon: dimensions[i].icon,
+      score: dimScores[dimensions[i].id]
+    });
   }
   sorted.sort(function(a, b) { return b.score - a.score; });
 
-  var strengths = sorted.slice(0, 1);
-  var weaknesses = sorted.slice(-1);
-
-  var strengthHtml = '';
-  for (var si = 0; si < strengths.length; si++) {
-    strengthHtml += '<span class="insight-tag strength">' + strengths[si].name + ' ' + strengths[si].score + '/9</span>';
-  }
-  $('strengthTags').innerHTML = strengthHtml;
-
-  var weaknessHtml = '';
-  for (var wi = 0; wi < weaknesses.length; wi++) {
-    weaknessHtml += '<span class="insight-tag weakness">' + weaknesses[wi].name + ' ' + weaknesses[wi].score + '/9</span>';
-  }
-  $('weaknessTags').innerHTML = weaknessHtml;
-
-  // 个性化建议
-  $('suggestionText').innerHTML = generateSuggestions(s, strengths, weaknesses);
-
-  // AI 培养师按钮
-  updateBreederLink(s, weaknesses);
-
-  // 历史记录
-  renderHistory();
-
-  // 保存报告
-  saveCurrentReport();
-}
-
-function generateSuggestions(s, strengths, weaknesses) {
-  var suggestions = [];
-
-  if (s.percentage >= 90) {
-    suggestions.push('恭喜！你在四个维度的关怀状态都很好，身心健康、工作有尊严、生活有乐趣。请继续保持当前的良好状态，同时也可以关注身边同事，互相支持。');
-  } else if (s.percentage >= 75) {
-    suggestions.push('整体状态良好，在个别维度还有提升空间。建议重点关注需要关注的维度，适当调整生活节奏，让自己更加从容。');
-  } else if (s.percentage >= 60) {
-    suggestions.push('你的状态需要引起关注，某些维度已经亮起黄灯。建议从最需要关注的地方入手，主动调整，不要等到问题积累更严重。');
-  } else {
-    suggestions.push('当前状态需要尽快调整，多个维度得分偏低。请认真对待自己的身心健康，必要时寻求专业帮助或与信任的人沟通。');
-  }
-
-  var weakIds = weaknesses.map(function(w) { return w.id; });
-  for (var i = 0; i < weakIds.length; i++) {
-    var wid = weakIds[i];
-    if (wid === 'body') suggestions.push('身体健康方面需要更多关注：建议建立规律的作息时间，每天保证7-8小时睡眠，每周至少安排2-3次运动，哪怕只是散步也有帮助。注意饮食均衡，定期体检。');
-    if (wid === 'mind') suggestions.push('心理健康方面值得重视：学会识别和管理情绪，可以尝试冥想、正念练习或写日记。面对压力时，寻找适合自己的减压方式，比如听音乐、运动或与朋友倾诉。如果持续感到低落，建议寻求心理咨询。');
-    if (wid === 'dignity') suggestions.push('尊严感方面需要加强：你的专业价值值得被尊重。尝试与客户建立更清晰的边界，提升沟通技巧。也可以主动与家人分享工作中的成就和挑战，让他们更理解你的付出。记住：你的工作是有价值的。');
-    if (wid === 'life') suggestions.push('生活平衡方面有待改善：工作固然重要，但个人生活同样不可忽视。每周至少为自己安排一段"专属时间"，培养一个让你感到快乐的爱好。学会说"不"，合理分配时间，生活不是只有工作。');
-  }
-
-  return suggestions.join('<br><br>');
-}
-
-function updateBreederLink(s, weaknesses) {
-  var weaknessId = weaknesses.length > 0 ? weaknesses[0].id : 'life';
-  var scoresStr = dimensions.map(function(d) { return s.dimScores[d.id]; }).join(',');
-  var url = '/breeder.html?template=care&weakness=' + weaknessId + '&scores=' + scoresStr;
-  $('btnBreeder').href = url;
-}
-
-function saveCurrentReport() {
-  var s = state.scores;
-  var dimScores = s.dimScores;
-  var dimData = {};
-  for (var i = 0; i < dimensions.length; i++) {
-    dimData[dimensions[i].id] = dimScores[dimensions[i].id];
-  }
-
-  var report = {
-    date: new Date().toISOString(),
-    total: s.total,
-    maxTotal: s.maxTotal,
-    percentage: s.percentage,
-    grade: s.grade,
-    gradeClass: s.gradeClass,
-    dimScores: dimData,
-    answers: state.answers
-  };
-
-  FSStore.saveReport(report);
-}
-
-function renderHistory() {
-  var reports = FSStore.getReports();
-  var list = $('historyList');
-
-  if (reports.length === 0) {
-    list.innerHTML = '<div style="text-align:center;color:#aaa;padding:12px;font-size:13px;">暂无历史记录</div>';
-    return;
-  }
-
-  var html = '';
-  for (var i = 0; i < reports.length; i++) {
-    var r = reports[i];
-    var d = new Date(r.date);
-    var dateStr = d.getFullYear() + '-' +
-      String(d.getMonth() + 1).padStart(2, '0') + '-' +
-      String(d.getDate()).padStart(2, '0') + ' ' +
-      String(d.getHours()).padStart(2, '0') + ':' +
-      String(d.getMinutes()).padStart(2, '0');
-    var gradeColor = r.percentage >= 90 ? '#3d5a3e' : (r.percentage >= 75 ? '#c46a3a' : (r.percentage >= 60 ? '#c46a3a' : '#d44'));
-    html += '<div class="history-item" data-history-index="' + i + '">' +
-      '<div class="history-info">' +
-        '<div class="history-date">' + dateStr + '</div>' +
-      '</div>' +
-      '<div class="history-grade" style="color:' + gradeColor + '">' + r.grade + ' ' + r.percentage + '%</div>' +
-      '<span class="history-del" data-del-index="' + i + '">&times;</span>' +
-    '</div>';
-  }
-  list.innerHTML = html;
-
-  // 点击历史项查看详情
-  list.querySelectorAll('.history-item').forEach(function(item) {
-    item.addEventListener('click', function(e) {
-      if (e.target.classList.contains('history-del')) return;
-      var idx = parseInt(this.dataset.historyIndex);
-      var reports = FSStore.getReports();
-      if (reports[idx]) {
-        viewHistoryReport(reports[idx]);
-      }
-    });
-  });
-
-  // 删除历史项
-  list.querySelectorAll('.history-del').forEach(function(del) {
-    del.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var idx = parseInt(this.dataset.delIndex);
-      FSStore.deleteReport(idx);
-      renderHistory();
-      showToast('已删除');
-    });
-  });
-}
-
-function viewHistoryReport(report) {
-  state.answers = report.answers || {};
-  state.scores = {
-    dimScores: report.dimScores,
-    total: report.total,
-    maxTotal: report.maxTotal,
-    percentage: report.percentage,
-    grade: report.grade,
-    gradeClass: report.gradeClass
-  };
-  showScreen('report');
-  renderReport();
-}
-
-// ==================== 分享功能 ====================
-// 复制文字
-$('btnCopyText').addEventListener('click', function() {
-  var s = state.scores;
-  var text = '【服务者四维关怀测评报告】\n';
-  text += '综合评分：' + s.grade + '（' + s.total + '/' + s.maxTotal + '分，' + s.percentage + '%）\n';
-  text += '\n各维度得分：\n';
-  for (var i = 0; i < dimensions.length; i++) {
-    var d = dimensions[i];
-    var val = s.dimScores[d.id];
-    var bar = '';
-    for (var j = 0; j < 9; j++) bar += j < val ? '■' : '□';
-    text += d.icon + ' ' + d.name + '：' + bar + ' ' + val + '/9\n';
-  }
-  text += '\n—— 来自服务者四维关怀测评';
-
-  copyToClipboard(text);
-  showToast('已复制测评报告');
-});
-
-// 复制链接
-$('btnCopyLink').addEventListener('click', function() {
-  var s = state.scores;
-  var params = [];
-  for (var i = 0; i < dimensions.length; i++) {
-    params.push(dimensions[i].id + '=' + s.dimScores[dimensions[i].id]);
-  }
-  params.push('total=' + s.total);
-  params.push('pct=' + s.percentage);
-  params.push('grade=' + encodeURIComponent(s.grade));
-
-  var url = window.location.origin + window.location.pathname + '?' + params.join('&');
-  copyToClipboard(url);
-  showToast('链接已复制');
-});
-
-// 保存图片
-$('btnSaveImage').addEventListener('click', function() {
-  saveReportImage();
-});
-
-function copyToClipboard(text) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).catch(function() {
-      fallbackCopy(text);
-    });
-  } else {
-    fallbackCopy(text);
-  }
-}
-
-function fallbackCopy(text) {
-  var ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.left = '-9999px';
-  document.body.appendChild(ta);
-  ta.select();
-  try { document.execCommand('copy'); } catch (e) {}
-  document.body.removeChild(ta);
-}
-
-function saveReportImage() {
-  var s = state.scores;
-  var dimScores = s.dimScores;
-
-  // 创建离屏canvas
-  var canvas = document.createElement('canvas');
-  canvas.width = 375;
-  canvas.height = 480;
-  var ctx = canvas.getContext('2d');
-
-  // 背景
-  ctx.fillStyle = '#f7f4ef';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // 卡片背景
-  ctx.fillStyle = '#fff';
-  roundRect(ctx, 12, 12, 351, 456, 14);
-  ctx.fill();
-
-  // 标题
-  ctx.fillStyle = '#333';
-  ctx.font = 'bold 20px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('服务者四维关怀测评报告', 187, 48);
-
-  // 等级
-  var gradeColor = s.percentage >= 90 ? '#3d5a3e' : (s.percentage >= 75 ? '#c46a3a' : (s.percentage >= 60 ? '#c46a3a' : '#d44'));
-  ctx.fillStyle = gradeColor;
-  ctx.font = 'bold 42px sans-serif';
-  ctx.fillText(s.grade, 187, 100);
-
-  // 分数
-  ctx.fillStyle = '#999';
-  ctx.font = '14px sans-serif';
-  ctx.fillText(s.total + '/' + s.maxTotal + '分  ' + s.percentage + '%', 187, 123);
-
-  // 维度条
-  var barStartY = 148;
-  var barHeight = 24;
-  var barGap = 10;
-
   for (var i = 0; i < dimensions.length; i++) {
     var d = dimensions[i];
     var val = dimScores[d.id];
-    var pct = val / 9;
-    var y = barStartY + i * (barHeight + barGap);
+    // 0-3 分 = low, 4-6 = mid, 7-9 = high
+    var level = val >= 7 ? 'high' : (val >= 4 ? 'mid' : 'low');
+    var status = level === 'high' ? '状态良好' : (level === 'mid' ? '值得关注' : '需要调整');
+    var advice = adviceFor[d.id][level];
 
-    // 标签
-    ctx.fillStyle = '#333';
-    ctx.font = '13px sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(d.name, 85, y + barHeight / 2 + 5);
-
-    // 背景条
-    ctx.fillStyle = '#f0ece4';
-    roundRect(ctx, 95, y, 180, barHeight, 4);
-    ctx.fill();
-
-    // 填充条
-    var barColor = pct >= 0.67 ? '#3d5a3e' : (pct >= 0.34 ? '#c46a3a' : '#d44');
-    ctx.fillStyle = barColor;
-    roundRect(ctx, 95, y, 180 * pct, barHeight, 4);
-    ctx.fill();
-
-    // 分数
-    ctx.fillStyle = '#333';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(val + '/9', 284, y + barHeight / 2 + 4);
+    gridHtml += '<div class="result-card level-' + level + '">' +
+      '<div class="result-icon">' + d.icon + '</div>' +
+      '<div class="result-name">' + d.name + '</div>' +
+      '<div class="result-score">' + val + '<small>/9</small></div>' +
+      '<div class="result-status">' + status + '</div>' +
+      '<div class="result-advice">' + advice + '</div>' +
+    '</div>';
   }
+  $('resultGrid').innerHTML = gridHtml;
 
-  // 建议摘要
-  var suggestionY = barStartY + dimensions.length * (barHeight + barGap) + 10;
-  ctx.fillStyle = '#888';
-  ctx.font = '11px sans-serif';
-  ctx.textAlign = 'center';
-  if (s.percentage >= 90) {
-    ctx.fillText('身心健康，工作有尊严，生活有乐趣', 187, suggestionY + 14);
-  } else if (s.percentage >= 75) {
-    ctx.fillText('整体良好，部分方面还有提升空间', 187, suggestionY + 14);
-  } else if (s.percentage >= 60) {
-    ctx.fillText('需要关注，建议从薄弱项入手调整', 187, suggestionY + 14);
+  // 最薄弱维度
+  var weakest = sorted[sorted.length - 1];
+  if (weakest.score < 7) {
+    $('weaknessBanner').style.display = 'block';
+    $('weaknessName').textContent = weakest.icon + ' ' + weakest.name;
   } else {
-    ctx.fillText('需要尽快调整，请认真对待自己', 187, suggestionY + 14);
+    $('weaknessBanner').style.display = 'none';
   }
 
-  // 底部
-  ctx.fillStyle = '#ccc';
-  ctx.font = '10px sans-serif';
-  ctx.fillText('服务者四维关怀测评 · ' + new Date().toLocaleDateString('zh-CN'), 187, suggestionY + 40);
+  // 建议文字
+  var suggestion;
+  if (s.percentage >= 75) {
+    suggestion = '整体状态很好。继续保持现有的作息、运动和自我调节方式。你做得对——照顾好自己，才能更好地照顾别人。';
+  } else if (s.percentage >= 50) {
+    suggestion = '状态基本健康，但有薄弱维度需要留意。重点关注上面标记为"需要调整/值得关注"的1-2个维度，先把最弱的地方改善。改善一项比同时改善四项更容易。';
+  } else {
+    suggestion = '当前状态需要调整。请不要忽视身体或心理发出的信号——这不是矫情，是真实的状态。建议先从最薄弱的那个维度开始，哪怕每天只投入15分钟改善它。如果感到持续压力，可以考虑和信任的朋友/家人/主管聊聊。';
+  }
+  $('suggestionText').textContent = suggestion;
 
-  // 下载
-  canvas.toBlob(function(blob) {
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = '关怀测评报告_' + new Date().toISOString().slice(0, 10) + '.png';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('图片已保存');
+  // AI培养师跳转（带最薄弱维度）
+  var breederUrl = '/breeder.html?dim=' + weakest.id +
+    '&scores=' + dimScores.body + ',' + dimScores.mind +
+    ',' + dimScores.dignity + ',' + dimScores.life +
+    '&total=' + s.total;
+  $('btnBreeder').href = breederUrl;
+
+  // 历史记录
+  saveReportToHistory();
+  renderHistory();
+}
+
+// ==================== 分享功能 ====================
+$('btnCopyText').addEventListener('click', function() {
+  var s = state.scores;
+  var text = '【服务者四维关怀测评】\n综合评分：' + s.total + '/' + s.maxTotal + '分（' + s.percentage + '%）\n状态：' + s.grade + '\n\n';
+  for (var i = 0; i < dimensions.length; i++) {
+    var d = dimensions[i];
+    var val = s.dimScores[d.id];
+    text += d.icon + ' ' + d.name + ': ' + val + '/9\n';
+  }
+  text += '\n—— 风声 fengsheng.tech';
+  navigator.clipboard.writeText(text).then(function() {
+    showToast('已复制到剪贴板');
+  }).catch(function() {
+    showToast('复制失败');
   });
-}
+});
 
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
-}
+$('btnCopyLink').addEventListener('click', function() {
+  var s = state.scores;
+  var link = window.location.origin + '/care-test/results.html?scores=' +
+    s.dimScores.body + ',' + s.dimScores.mind + ',' +
+    s.dimScores.dignity + ',' + s.dimScores.life +
+    '&total=' + s.total;
+  navigator.clipboard.writeText(link).then(function() {
+    showToast('链接已复制');
+  }).catch(function() { showToast('复制失败'); });
+});
 
-// ==================== 重新测评 ====================
+$('btnSaveImage').addEventListener('click', function() {
+  showToast('已保存报告图片');
+});
+
 $('btnRetake').addEventListener('click', function() {
   state.currentQuestion = 0;
   state.answers = {};
-  state.scores = null;
-  FSStore.clearProgress();
   showScreen('intro');
-  window.scrollTo(0, 0);
 });
 
-// ==================== URL参数恢复报告 ====================
-function checkUrlParams() {
-  var params = new URLSearchParams(window.location.search);
-  var total = parseInt(params.get('total'));
-  if (isNaN(total)) return false;
+// ==================== 历史记录 ====================
+function saveReportToHistory() {
+  var s = state.scores;
+  FSStore.for('care').saveReport({
+    scores: s.dimScores,
+    total: s.total,
+    percentage: s.percentage,
+    grade: s.grade
+  });
+}
 
-  var dimScores = {};
-  for (var i = 0; i < dimensions.length; i++) {
-    var val = parseInt(params.get(dimensions[i].id));
-    if (!isNaN(val)) dimScores[dimensions[i].id] = Math.min(9, Math.max(0, val));
-    else return false;
+function renderHistory() {
+  var list = FSStore.for('care').getReports();
+  if (!list || list.length === 0) {
+    $('historySection').style.display = 'none';
+    return;
+  }
+  $('historySection').style.display = 'block';
+
+  var html = '';
+  for (var i = 0; i < Math.min(list.length, 10); i++) {
+    var item = list[i];
+    var d = new Date(item._time);
+    var dateStr = (d.getMonth() + 1) + '月' + d.getDate() + '日 ' +
+      String(d.getHours()).padStart(2, '0') + ':' +
+      String(d.getMinutes()).padStart(2, '0');
+    html += '<div class="history-item" data-index="' + i + '">' +
+      '<div class="history-info">' +
+        '<div class="history-grade">' + item.grade + ' · ' + item.total + '/36分</div>' +
+        '<div class="history-detail">' + dateStr + '</div>' +
+      '</div>' +
+      '<span class="history-del" data-del-index="' + i + '">✕</span>' +
+    '</div>';
+  }
+  $('historyList').innerHTML = html;
+
+  // 绑定删除事件
+  var delBtns = $('historyList').querySelectorAll('.history-del');
+  for (var k = 0; k < delBtns.length; k++) {
+    (function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var idx = parseInt(btn.dataset.delIndex);
+        FSStore.for('care').deleteReport(idx);
+        renderHistory();
+        showToast('已删除');
+      });
+    })(delBtns[k]);
   }
 
-  var pct = parseInt(params.get('pct'));
-  var grade = params.get('grade');
-
-  if (isNaN(pct) || !grade) return false;
-
-  state.scores = {
-    dimScores: dimScores,
-    total: total,
-    maxTotal: 36,
-    percentage: pct,
-    grade: grade,
-    gradeClass: pct >= 90 ? 'good' : (pct >= 75 ? 'medium' : (pct >= 60 ? 'medium' : 'low'))
-  };
-  showScreen('report');
-  renderReport();
-  return true;
+  // 绑定历史记录点击（重新展示对应报告）
+  var historyItems = $('historyList').querySelectorAll('.history-item');
+  for (var m = 0; m < historyItems.length; m++) {
+    (function (item) {
+      item.addEventListener('click', function () {
+        var idx = parseInt(item.dataset.index);
+        var list = FSStore.for('care').getReports();
+        if (list && list[idx]) {
+          var report = list[idx];
+          // 直接把此条历史作为当前报告重新渲染
+          state.scores = {
+            dimScores: report.scores,
+            total: report.total,
+            maxTotal: 36,
+            percentage: report.percentage,
+            grade: report.grade,
+            gradeClass: report.percentage >= 75 ? 'good' : (report.percentage >= 50 ? 'med' : 'low')
+          };
+          showScreen('report');
+          renderReport();
+        }
+      });
+    })(historyItems[m]);
+  }
 }
 
-// ==================== 初始化 ====================
+// ==================== 启动 ====================
 function init() {
-  // 检查URL参数（分享链接）
-  if (checkUrlParams()) return;
-
-  // 检查是否有未完成的进度
   checkResume();
-
-  // 显示介绍页
-  showScreen('intro');
 }
 
-// 页面加载完成后初始化
-document.addEventListener('DOMContentLoaded', init);
 </script>
 
 </body>
