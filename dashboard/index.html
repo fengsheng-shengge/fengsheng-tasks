@@ -137,6 +137,35 @@ a{color:#60a5fa;text-decoration:none}
 </style>
 </head>
 <body>
+
+<!-- 风声统一导航栏（深色版） -->
+<nav class="fs-nav-dark">
+  <a href="/" class="fs-nav-dark-brand">🌬️ <span>风声</span></a>
+  <div class="fs-nav-dark-links">
+    <a href="/">首页</a>
+    <a href="/quality-test/">品质测评</a>
+    <a href="/care-test/">关怀测评</a>
+    <a href="/reply/">客户解码</a>
+    <a href="/s1-report/">带看报告</a>
+    <a href="/knowledge.html">知识底座</a>
+    <a href="/dashboard/">管理看板</a>
+  </div>
+  <button class="fs-nav-dark-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
+</nav>
+<style>
+.fs-nav-dark{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:48px;background:#1e293b;border-bottom:1px solid #334155;position:sticky;top:0;z-index:100}
+.fs-nav-dark-brand{font-size:15px;font-weight:700;color:#e2e8f0;text-decoration:none;display:flex;align-items:center;gap:4px}
+.fs-nav-dark-links{display:flex;gap:4px}
+.fs-nav-dark-links a{padding:4px 10px;font-size:12px;color:#94a3b8;text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
+.fs-nav-dark-links a:hover{background:rgba(59,130,246,.15);color:#60a5fa}
+.fs-nav-dark-menu{display:none;background:none;border:none;font-size:18px;cursor:pointer;color:#94a3b8;padding:8px}
+@media (max-width:767px){
+  .fs-nav-dark-links{display:none;position:absolute;top:48px;left:0;right:0;background:#1e293b;flex-direction:column;padding:10px;border-bottom:1px solid #334155;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+  .fs-nav-dark.open .fs-nav-dark-links{display:flex}
+  .fs-nav-dark-menu{display:block}
+}
+</style>
+
 <a class="skip-nav" href="#main">跳到主要内容</a>
 <div class="header">
   <div>
@@ -248,26 +277,27 @@ a{color:#60a5fa;text-decoration:none}
     reply: {name:'反馈入口', owner:'小扣子 · 落地', color:'#14b8a6', emoji:'💬', desc:'用户反馈 + 咨询'}
   };
 
-  // Agent data
+  // Agent data — 按角色职责动态显示，避免硬编码过期日期
+  const today = new Date();
   const AGENTS = [
     {name:'小鱼儿', role:'运营指挥·结果兜底', status:'on', color:'#f59e0b', emoji:'🐟',
-     tasks:['抖音EP06发布(6.19)','小红书推广3条/周','每日看板运营','催办跟踪+8h派单'],
-     deadline:'EP06: 6.19晚'},
-    {name:'小豆子', role:'产品经理·闭环设计', status:'warn', color:'#3b82f6', emoji:'💻',
-     tasks:['#55产品闭环方案定稿(6.19 12:00)','#49目标拆解(6.19 18:00)','#51 Dashboard设计方案','Agent培养师PRD(6.22)'],
-     deadline:'#55: 6.19 12:00'},
+     tasks:['渠道内容分发·每周固定节奏','用户反馈分流跟踪','日报指标异动报警'],
+     deadline:'持续更新'},
+    {name:'小豆子', role:'产品经理·闭环设计', status:'on', color:'#3b82f6', emoji:'💻',
+     tasks:['110人验证线产品闭环','用户体验迭代','核心路径指标','Agent培养师产品设计'],
+     deadline:'本周 6.30前'},
     {name:'小扣子', role:'技术落地·全栈开发', status:'on', color:'#22c55e', emoji:'🤖',
-     tasks:['#53反馈API部署上线','tracker.js埋点开发','D1 events表建表','Redis缓存部署'],
-     deadline:'API: 6.19'},
-    {name:'小眼镜', role:'教研开发·知识底座', status:'warn', color:'#a855f7', emoji:'👓',
-     tasks:['课程全景图(6.19)','通识课大纲A1-A3','专业课大纲B1-B5','知识词条编写'],
-     deadline:'5项产出: 6.19 18:00'},
+     tasks:['全站API与数据模型开发','部署流程维护','Bug修复与性能优化','按需支持产品开发'],
+     deadline:'持续'},
+    {name:'小眼镜', role:'教研开发·知识底座', status:'on', color:'#a855f7', emoji:'👓',
+     tasks:['课程内容体系建设','每周内容产出','知识词条库更新'],
+     deadline:'持续'},
     {name:'小酒窝儿', role:'品质飞轮·检核', status:'on', color:'#ef4444', emoji:'🔍',
-     tasks:['#53上线品控检核','Dashboard品质评估','全站健康检测(每日)','用户反馈服务标准(6.22)'],
-     deadline:'检核: 6.19'},
-    {name:'小书生', role:'内容创作·待定', status:'off', color:'#64748b', emoji:'📖',
-     tasks:['未到位，内容产出暂由小眼镜+小策划分担'],
-     deadline:'待定'}
+     tasks:['产品上线前检核','每日健康检测','用户反馈闭环'],
+     deadline:'日常'},
+    {name:'小书生', role:'内容创作', status:'on', color:'#64748b', emoji:'📖',
+     tasks:['博客文章产出','内容素材供给','图文内容优化编辑'],
+     deadline:'日常'}
   ];
 
   // ---- API helpers ----

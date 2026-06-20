@@ -128,6 +128,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .product-action a{display:inline-block;padding:4px 10px;border-radius:8px;font-size:9px;font-weight:700;text-decoration:none;background:rgba(61,90,62,.06);color:var(--p)}
 .product-action a.live{background:rgba(94,126,92,.1);color:var(--safe)}
 .product-action a.soon{background:var(--bg2);color:var(--td)}
+.soon-tag{display:inline-block;padding:4px 10px;border-radius:8px;font-size:9px;font-weight:700;background:rgba(180,150,100,.12);color:#8a7856;cursor:default;user-select:none}
 
 /* 知识底座入口 */
 .knowledge-entry{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--tx);transition:all .3s;-webkit-tap-highlight-color:transparent}
@@ -226,6 +227,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 </style>
 </head>
 <body>
+
+<!-- 风声统一导航栏 -->
+<nav class="fs-nav">
+  <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
+  <div class="fs-nav-links">
+    <a href="/">首页</a>
+    <a href="/quality-test/">品质测评</a>
+    <a href="/care-test/">关怀测评</a>
+    <a href="/reply/">客户解码</a>
+    <a href="/s1-report/">带看报告</a>
+    <a href="/knowledge.html">知识底座</a>
+    <a href="/dashboard/">管理看板</a>
+  </div>
+  <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
+</nav>
+<style>
+.fs-nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:#fff;border-bottom:1px solid rgba(80,90,70,.09);position:sticky;top:0;z-index:100}
+.fs-nav-brand{font-size:16px;font-weight:700;color:#3d5a3e;text-decoration:none;display:flex;align-items:center;gap:4px}
+.fs-nav-links{display:flex;gap:6px}
+.fs-nav-links a{padding:5px 10px;font-size:12px;color:#555;text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
+.fs-nav-links a:hover{background:rgba(61,90,62,.06);color:#3d5a3e}
+.fs-nav-menu{display:none;background:none;border:none;font-size:20px;cursor:pointer;color:#3d5a3e;padding:8px}
+@media (max-width:767px){
+  .fs-nav-links{display:none;position:absolute;top:52px;left:0;right:0;background:#fff;flex-direction:column;padding:10px;border-bottom:1px solid rgba(80,90,70,.09);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+  .fs-nav.open .fs-nav-links{display:flex}
+  .fs-nav-menu{display:block}
+}
+</style>
 
 <div class="main">
 
@@ -377,7 +406,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
           <div class="product-stat">带看后差距可视化&middot;加速客户决策</div>
         </div>
       </div>
-      <div class="product-action"><a class="soon" href="#" data-track="product:decision">即将上线 &middot; 7月</a></div>
+      <div class="product-action"><span class="soon-tag">🚧 建设中 · 敬请期待</span></div>
     </div>
   </div>
 
