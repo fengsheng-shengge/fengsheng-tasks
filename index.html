@@ -32,7 +32,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .main{position:relative;z-index:1;max-width:1200px;margin:0 auto}
 
 /* HERO */
-.hero{padding:120px 8% 40px;text-align:center}
+.hero{padding:120px 8% 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:
+  linear-gradient(180deg,rgba(247,244,239,0) 0%,rgba(247,244,239,.5) 55%,rgba(247,244,239,1) 100%),
+  url('assets/images/hero-living-dimension.jpg') center/cover no-repeat;
+  z-index:0;opacity:.35}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(247,244,239,.3) 0%,rgba(247,244,239,0) 50%,rgba(247,244,239,.3) 100%);z-index:1}
+.hero > *{position:relative;z-index:2}
 .hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--p-d);background:var(--p-bg);border:1px solid rgba(61,90,62,.12);border-radius:16px;padding:4px 12px;margin-bottom:16px;letter-spacing:2px}
 .hero-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--p-l);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
@@ -45,6 +51,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .cta-primary{background:var(--p);color:#fff}
 .cta-secondary{background:var(--card);color:var(--p-d);border:1px solid var(--border)}
 .cta-fire{background:var(--fire);color:#fff}
+
+/* 110人验证线 */
+.v-line{max-width:520px;margin:36px auto 0;background:rgba(255,255,255,.75);backdrop-filter:blur(8px);border:1px solid rgba(61,90,62,.1);border-radius:12px;padding:16px 20px;position:relative;z-index:2}
+.v-line-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.v-line-label{font-size:13px;font-weight:700;color:var(--p);letter-spacing:.5px}
+.v-line-num{font-size:12px;color:var(--ts)}
+.v-line-bar{height:6px;background:rgba(61,90,62,.1);border-radius:999px;overflow:hidden;margin-bottom:8px}
+.v-line-fill{height:100%;width:0;background:linear-gradient(90deg,var(--p) 0%,var(--fire) 100%);border-radius:999px;animation:vprogress 2.5s ease-out forwards}
+@keyframes vprogress{from{width:0}to{width:62%}}
+.v-line-foot{font-size:11px;color:var(--ts);text-align:center}
 
 /* SECTION通用 */
 .section{padding:60px 8% 20px}
@@ -117,8 +133,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
 /* 产品矩阵 */
 .product-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.product-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column}
-.product-card:active{transform:scale(.97);border-color:var(--border-h)}
+.product-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;border-top:3px solid transparent}
+.product-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(60,50,40,.12);border-color:rgba(60,80,50,.15)}
+.product-card:active{transform:scale(.98);border-color:var(--border-h)}
 .product-top{display:flex;align-items:center;gap:8px}
 .product-ico{font-size:22px;flex-shrink:0}
 .product-info{flex:1}
@@ -268,7 +285,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   <div class="hero-desc">六维标准定义品质 · 四维关怀守护服务者 · 三条路径实现商业闭环</div>
   <div class="hero-cta">
     <a class="cta-btn cta-primary" href="/quality-test/">🏠 客户·六维品质居住测评</a>
-    <a class="cta-btn cta-fire" href="/care-test/">🏥 服务者·四维关怀测评</a>
+    <a class="cta-btn cta-fire" href="/care-test/">💚 服务者·四维关怀测评</a>
+  </div>
+
+  <!-- 110人验证线 -->
+  <div class="v-line">
+    <div class="v-line-top">
+      <span class="v-line-label">🎯 110人验证线</span>
+      <span class="v-line-num">需要你 · 2分钟即可贡献 1 份有效样本</span>
+    </div>
+    <div class="v-line-bar"><div class="v-line-fill"></div></div>
+    <div class="v-line-foot">
+      <span>目标 110 人 · 每人只需完成一次测评或报告</span>
+    </div>
   </div>
 </div>
 
@@ -342,7 +371,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
       <div class="path-sub">路径B</div>
       <div class="path-earn b">赚未来的势</div>
       <div class="path-who">高校/政府<br>政策杠杆<br>产教融合</div>
-      <a class="path-btn b" href="/partner/">谈合作</a>
+      <a class="path-btn b" href="#" style="background:rgba(78,126,142,.12);color:#4e7e8e" onclick="return false;">谈合作 · 敬请期待</a>
     </div>
     <div class="path-card c">
       <div class="path-ico">⚖️</div>
@@ -474,13 +503,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 <div class="section pub-section" style="display:none">
   <div class="section-header"><div class="section-dot" style="background:var(--pathB)"></div><div class="section-title">合作入口</div><div class="section-desc">路径B·政府/高校对接</div></div>
   <div class="partner-grid">
-    <a class="partner-card edu" href="/partner/">
+    <a class="partner-card edu" href="#" onclick="return false;" style="pointer-events:none;opacity:.85">
       <div class="partner-ico">🎓</div>
       <div class="partner-name">高校合作</div>
       <div class="partner-tags"><span class="partner-tag edu">产教融合</span><span class="partner-tag edu">课程共建</span><span class="partner-tag edu">就业对接</span></div>
       <div class="partner-desc">居住服务人才培养·数智化课程体系·实习就业一体化</div>
     </a>
-    <a class="partner-card gov" href="/partner/">
+    <a class="partner-card gov" href="#" onclick="return false;" style="pointer-events:none;opacity:.85">
       <div class="partner-ico">🏛️</div>
       <div class="partner-name">政府治理</div>
       <div class="partner-tags"><span class="partner-tag gov">行业健康</span><span class="partner-tag gov">政策对接</span><span class="partner-tag gov">标准共建</span></div>
@@ -492,7 +521,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
 <!-- 每日简报入口（暂隐藏，内容就绪后上线）
 <div class="section pub-section">
-  <a class="brief-entry" href="/daily/">
+  <a class="brief-entry" href="#" onclick="return false;" style="pointer-events:none;opacity:.85">
     <span class="brief-ico">📰</span>
     <div class="brief-info">
       <div class="brief-name">每日简报</div>
@@ -548,6 +577,83 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 @media(max-width:640px){.fs-feedback-widget{margin:20px 12px;padding:18px 14px}.fs-fb-stars{font-size:30px;gap:4px}}
 </style>
 <script>
-(function(){var s=document.querySelectorAll('#fs-fb-stars .fs-star'),l=document.getElementById('fs-fb-score-label'),b=document.getElementById('fs-fb-submit'),t=document.getElementById('fs-fb-text'),c=document.getElementById('fs-fb-contact'),r=document.getElementById('fs-fb-result'),n=0,labels=['','☆ 1分 · 不可用','☆ 2分 · 需大幅改进','☆ 3分 · 一般','☆ 4分 · 好用','★ 5分 · 超预期'];s.forEach(function(star){star.addEventListener('mouseenter',function(){var i=parseInt(this.dataset.score);h(i);l.textContent=labels[i]});star.addEventListener('mouseleave',function(){h(n);l.textContent=n>0?labels[n]:'点击星星评分'});star.addEventListener('click',function(){n=parseInt(this.dataset.score);h(n);l.textContent=labels[n];b.disabled=false})});function h(i){s.forEach(function(star){var j=parseInt(star.dataset.score);star.textContent=j<=i?'★':'☆';star.classList.toggle('active',j<=i)})}b.addEventListener('click',function(){if(n===0){r.textContent='请先点击星星评分';r.className='fs-fb-result error';return}b.disabled=true;b.textContent='提交中...';fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({module:b.dataset.module||window.location.pathname.replace(/^\//,'').replace(/\//g,'-')||'home',score:n,content:t.value.trim()||null,contact:c.value.trim()||null,source:'web'})}).then(function(x){return x.json()}).then(function(d){if(d.ok){r.textContent='✓ 反馈已收到，谢谢你的贡献！';r.className='fs-fb-result success';t.value='';c.value='';n=0;h(0);l.textContent='点击星星评分';b.disabled=true;b.textContent='提交反馈'}else throw new Error(d.error||'提交失败')}).catch(function(e){r.textContent='提交失败，请稍后重试：'+e.message;r.className='fs-fb-result error';b.disabled=false;b.textContent='重新提交'});var p=window.location.pathname,m='home';if(p.indexOf('/guide/')>=0)m='guide';else if(p.indexOf('/quality-test')>=0)m='quality-test';else if(p.indexOf('/care-test')>=0)m='care-test';else if(p.indexOf('/s1-report')>=0)m='s1-report';else if(p.indexOf('/reply')>=0)m='reply';else if(p.indexOf('/knowledge')>=0)m='knowledge';else if(p.indexOf('/dashboard')>=0)m='dashboard';b.dataset.module=m})();
-</script>
+  (function() {
+    var s = document.querySelectorAll('#fs-fb-stars .fs-star');
+    var l = document.getElementById('fs-fb-score-label');
+    var b = document.getElementById('fs-fb-submit');
+    var t = document.getElementById('fs-fb-text');
+    var c = document.getElementById('fs-fb-contact');
+    var r = document.getElementById('fs-fb-result');
+    var n = 0;
+    var labels = ['',
+      '☆ 1分 · 不可用', '☆ 2分 · 需大幅改进',
+      '☆ 3分 · 一般', '☆ 4分 · 好用', '★ 5分 · 超预期'];
+
+    s.forEach(function(star) {
+      star.addEventListener('mouseenter', function() {
+        var i = parseInt(star.dataset.score);
+        h(i); l.textContent = labels[i];
+      });
+      star.addEventListener('mouseleave', function() {
+        h(n); l.textContent = n > 0 ? labels[n] : '点击星星评分';
+      });
+      star.addEventListener('click', function() {
+        n = parseInt(star.dataset.score);
+        h(n); l.textContent = labels[n]; b.disabled = false;
+      });
+    });
+
+    function h(i) {
+      s.forEach(function(star) {
+        var j = parseInt(star.dataset.score);
+        star.textContent = j <= i ? '★' : '☆';
+        star.classList.toggle('active', j <= i);
+      });
+    }
+
+    b.addEventListener('click', function() {
+      if (n === 0) { r.textContent = '请先点击星星评分';
+        r.className = 'fs-fb-result error'; return; }
+      b.disabled = true; b.textContent = '提交中...';
+      var path = window.location.pathname;
+      var moduleName = b.dataset.module
+        || (path.charAt(0) === '/' ? path.slice(1) : path).replace(/\//g, '-')
+        || 'home';
+      fetch('/api/feedback', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          module: moduleName, score: n,
+          content: t.value.trim() || null,
+          contact: c.value.trim() || null,
+          source: 'web'
+        })
+      }).then(function(x) { return x.json(); })
+      .then(function(d) {
+        if (d.ok) {
+          r.textContent = '✓ 反馈已收到，谢谢你的贡献！';
+          r.className = 'fs-fb-result success';
+          t.value = ''; c.value = ''; n = 0; h(0);
+          l.textContent = '点击星星评分';
+          b.disabled = true; b.textContent = '提交反馈';
+        } else throw new Error(d.error || '提交失败');
+      }).catch(function(e) {
+        r.textContent = '提交失败，请稍后重试：' + e.message;
+        r.className = 'fs-fb-result error';
+        b.disabled = false; b.textContent = '重新提交';
+      });
+    });
+
+    var p = window.location.pathname;
+    var m = 'home';
+    if (p.indexOf('/quality-test') >= 0) m = 'quality-test';
+    else if (p.indexOf('/care-test') >= 0) m = 'care-test';
+    else if (p.indexOf('/s1-report') >= 0) m = 's1-report';
+    else if (p.indexOf('/reply') >= 0) m = 'reply';
+    else if (p.indexOf('/knowledge') >= 0) m = 'knowledge';
+    else if (p.indexOf('/dashboard') >= 0) m = 'dashboard';
+    b.dataset.module = m;
+  })();
+  </script>
+</body>
 </html>

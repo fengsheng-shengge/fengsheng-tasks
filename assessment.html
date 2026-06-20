@@ -1274,7 +1274,7 @@ window.addEventListener("beforeunload", function() {
   // 拦截选项点击，触发即时反馈
   // 通过MutationObserver监听测评区域的点击事件
   document.addEventListener('click',function(e){
-    const opt=e.target.closest('.option-btn, .opt-btn, [data-action="select"], button[class*="option"]');
+    const opt=e.target.closest('.option-item, .option-btn, .opt-btn, [data-action="select"], button[class*="option"]');
     if(opt){
       // 从选项上下文推断维度
       const qCard=opt.closest('.question-card, .q-card, [class*="question"]');
