@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="keywords" content="居住服务业务字典,知识底座,品质标准,业务词条,行业术语,风声,fengsheng">
 <title>知识底座 · 风声</title>
 <style>
 :root{--bg:#f7f4ef;--bg2:#e8e4d9;--dk:#1a1a1a;--p:#3d5a3e;--fire:#c46a3a;--orange:#f5a623;--ts:#555555;--td:#888;--card:#fff;--border:#e8e4d9;--r:8px}
@@ -73,57 +72,49 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
   color:var(--tx,#555);transition:all .15s}
 .feedback-btn:hover{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
 .feedback-btn.active{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
+/* 人才字典三层卡片 */
+.talent-domain-header{text-align:center;margin-bottom:18px;padding:12px;background:rgba(61,90,62,.04);border-radius:var(--r)}
+.talent-domain-header .td-icon{font-size:32px}
+.talent-domain-header .td-name{font-size:14px;font-weight:800;color:var(--p);margin:4px 0}
+.talent-domain-header .td-desc{font-size:11px;color:var(--td)}
+.talent-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;transition:all .2s}
+.talent-card .tc-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.talent-card .tc-role{font-size:15px;font-weight:800;color:var(--dk)}
+.talent-card .tc-tag{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700}
+.tag-trade{background:#e8f5e9;color:#2e7d32}
+.tag-rental{background:#e3f2fd;color:#1565c0}
+.tag-newhome{background:#fff3e0;color:#e65100}
+.tag-homesvc{background:#fce4ec;color:#c62828}
+.talent-card .tc-layers{display:flex;flex-direction:column;gap:8px}
+.talent-card .tc-layer{padding:8px 10px;border-radius:4px;font-size:12px;line-height:1.5}
+.tc-layer.l1{background:rgba(61,90,62,.06);border-left:3px solid var(--p)}
+.tc-layer.l2{background:rgba(196,106,58,.06);border-left:3px solid var(--fire)}
+.tc-layer.l3{background:rgba(245,166,35,.08);border-left:3px solid var(--orange)}
+.tc-layer .ll-label{font-weight:700;font-size:11px;margin-bottom:2px}
+.tc-layer.l1 .ll-label{color:var(--p)}
+.tc-layer.l2 .ll-label{color:var(--fire)}
+.tc-layer.l3 .ll-label{color:var(--orange)}
+.tc-layer .ll-val{color:var(--ts);font-size:12px}
 
 </style>
-<meta property="og:title" content="居住服务业务字典 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/knowledge.html"><meta name="twitter:card" content="summary_large_image"><!-- 全站数据追踪器 v1.0 -->
-<script src="/tracker.js" async></script>
-</head>
+<meta property="og:title" content="居住服务业务字典 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/knowledge.html"><meta name="twitter:card" content="summary_large_image"></head>
 <body>
-
-<!-- 风声统一导航栏 -->
-<nav class="fs-nav">
-  <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
-  <div class="fs-nav-links">
-    <a href="/">首页</a>
-    <a href="/quality-test/">品质测评</a>
-    <a href="/care-test/">关怀测评</a>
-    <a href="/reply/">客户解码</a>
-    <a href="/s1-report/">带看报告</a>
-    <a href="/knowledge.html">知识底座</a>
-    <a href="/dashboard/">管理看板</a>
-  </div>
-  <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
-</nav>
-<style>
-.fs-nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:#fff;border-bottom:1px solid rgba(80,90,70,.09);position:sticky;top:0;z-index:100}
-.fs-nav-brand{font-size:16px;font-weight:700;color:#3d5a3e;text-decoration:none;display:flex;align-items:center;gap:4px}
-.fs-nav-links{display:flex;gap:6px}
-.fs-nav-links a{padding:5px 10px;font-size:12px;color:#555;text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
-.fs-nav-links a:hover{background:rgba(61,90,62,.06);color:#3d5a3e}
-.fs-nav-menu{display:none;background:none;border:none;font-size:20px;cursor:pointer;color:#3d5a3e;padding:8px}
-@media (max-width:767px){
-  .fs-nav-links{display:none;position:absolute;top:52px;left:0;right:0;background:#fff;flex-direction:column;padding:10px;border-bottom:1px solid rgba(80,90,70,.09);box-shadow:0 4px 12px rgba(0,0,0,.08)}
-  .fs-nav.open .fs-nav-links{display:flex}
-  .fs-nav-menu{display:block}
-}
-</style>
-
 <div class="page">
   <div class="top-bar"><span class="brand">风声</span><a href="/">← 返回首页</a></div>
   <div class="hero-icon">🏛️</div>
   <div class="hero-title">知识底座</div>
-  <div class="hero-sub">客户六维 + 服务者四维 + 居住服务5域业务字典<br>每个词条<strong>标注出处</strong>，有据可查</div>
+  <div class="hero-sub">客户六维 + 服务者四维 + 业务字典 + 人才字典<br>每个词条<strong>标注出处</strong>，有据可查</div>
   <div class="stats-row">
-    <div class="stat-item"><div class="stat-num">90</div><div class="stat-label">词条总量</div></div>
-    <div class="stat-item"><div class="stat-num">4</div><div class="stat-label">业务域</div></div>
-    <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">品质维度</div></div>
+    <div class="stat-item"><div class="stat-num">87</div><div class="stat-label">词条总量</div></div>
+    <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">分类域</div></div>
+    <div class="stat-item"><div class="stat-num">9</div><div class="stat-label">人才岗位</div></div>
   </div>
   <div class="domain-tabs" id="domain-tabs"></div>
-  <div id="policy-card"></div>
   <div id="entry-list"></div>
   <div class="footer">
     风声 · 居住服务知识底座<br>
-    数据来源：国家标准/行业标准/部门规章/学术研究/贝壳体系<br>
+    业务字典（78条）+ 人才字典（9岗位）<br>
+    数据来源：国家标准/行业规范/贝壳体系/学术研究<br>
     fengsheng.tech
   </div>
 </div>
@@ -133,11 +124,9 @@ const DOMAINS=[
 {id:'quality-server',name:'服务者四维',icon:'🛡️',count:4,desc:'服务者关怀模型'},
 {id:'trade',name:'域1·房产交易',icon:'🔑',count:20,desc:'二手房/经纪/产权/保障'},
 {id:'rental',name:'域2·房屋租赁',icon:'📋',count:30,desc:'长租/管理/租客服务'},
-{id:'decor',name:'域3·整装家居整体交付',icon:'🔧',count:15,desc:'整装/交付/施工/质保'},
-{id:'homekeep',name:'域4·家政保洁',icon:'✨',count:15,desc:'保洁/家政/照护/标准化'}
+{id:'policy',name:'域3·十五五政策与趋势',icon:'🏛️',count:18,desc:'顶层政策·行业趋势·关键数据'},
+{id:'talent',name:'人才字典',icon:'👥',count:9,desc:'4域·9岗位·三层展示'}
 ];
-
-const POLICY_CARD={id:'policy',name:'十五五政策与趋势',icon:'🏛️',count:18,desc:'顶层政策·行业趋势·关键数据',link:'/policy/'};
 
 const ENTRIES=[
 // 品质居住标准（10条）
@@ -203,39 +192,7 @@ const ENTRIES=[
             {id:'RNT-028',domain:'rental',name:'整租·合租',alias:'整套出租；分租',def:'整租指整套房屋由一个租客独立使用；合租指多租客共同使用一套房屋的不同房间。',source:'《城市房屋租赁管理办法》《住房租赁市场规范指引》',srcType:'部门规章',attrs:'使用人数：整租1方/合租2方以上+隐私程度：整租高/合租低+价格差异：合租人均成本低30%-50%',scene:'单身人士选择整租或合租；合租需明确公共区域使用规则',posSpeech:'根据预算和需求选整租或合租，住得舒服最重要。',negSpeech:'别图便宜选非法群租房，安全隐患太大。'},
             {id:'RNT-029',domain:'rental',name:'租金评估·定价',alias:'租金估值；租金定价',def:'根据市场供需、地段、房屋状况等因素，对房屋租金进行合理评估和定价的过程。',source:'《住房租赁市场发展指导意见》《房地产估价规范》',srcType:'部门规章',attrs:'评估方法：比较法/收益法/成本法+影响因素：地段/楼层/装修/配套/供需+定价策略：市场价/略低快速出租/略高等优质租客',scene:'房东定价参考；租客议价依据',posSpeech:'合理定价，快速出租，空置才是最大损失。',negSpeech:'定价太高没人看，太低自己亏，参考同小区成交价最靠谱。'},
             {id:'RNT-030',domain:'rental',name:'租赁纠纷',alias:'租房争议；租赁矛盾',def:'在房屋租赁过程中，因合同履行、租金支付、房屋使用等问题引发的争议或冲突。',source:'《中华人民共和国民法典》《人民调解法》《仲裁法》',srcType:'部门规章',attrs:'纠纷类型：租金/维修/违约/押金/转租+调解方式：协商/调解/仲裁/诉讼+法律途径：民事诉讼/仲裁',scene:'租金拖欠协商；房屋损坏赔偿争议',posSpeech:'协商优先，谈不拢走法律途径，别拖。',negSpeech:'纠纷不及时处理，损失只会越来越大。'}
-// 域3·整装家居整体交付（15条）
-,{id:'DEC-001',domain:'decor',name:'整装整体交付',alias:'全案整装、一站式交付',def:'整装企业从设计、选材、施工到验收到售后的一站式交付模式，核心是"所见即所得"的效果一致性。',source:'《住宅全案整装服务标准》（中国房地产业协会，2026年1月实施）',srcType:'行业标准',attrs:'设计→报价→签约→施工→验收→售后全流程+效果一致性+预算即决算',scene:'整装项目全流程管理/客户交付体验保障',posSpeech:'从设计到交付一站式搞定，效果图就是实景图',negSpeech:'设计一套交付一套，那叫拼凑不叫整装'}
-,{id:'DEC-002',domain:'decor',name:'交付标准与验收依据',alias:'验收标准、交付规范',def:'整装项目竣工时必须达到的质量标准和验收规范，是判断"是否完成交付"的法定依据。',source:'《建筑装饰装修工程质量验收标准》GB 50210-2018',srcType:'国家标准',attrs:'强制性条文+一般项目+允许偏差+观感质量',scene:'整装竣工验收/客户维权依据',posSpeech:'验收标准写进合同，不达标不签字',negSpeech:'没有验收标准就开工，出了问题扯不清'}
-,{id:'DEC-003',domain:'decor',name:'交付策划流程',alias:'整装策划、开工前准备',def:'从签约到开工前的策划准备流程，包括设计确认、材料选型、施工计划、交底等环节。',source:'《住宅全案整装服务标准》第4章',srcType:'行业标准',attrs:'设计确认+材料锁定+施工计划+技术交底+开工许可',scene:'整装项目启动/客户开工前准备',posSpeech:'策划做得越细，后面问题越少',negSpeech:'不策划直接开工，变更多、工期拖、预算超'}
-,{id:'DEC-004',domain:'decor',name:'工程款构成与计价方式',alias:'整装报价、装修费用',def:'整装工程款的构成明细和计价规则，包括设计费、主材费、辅材费、人工费、管理费等。',source:'《住宅全案整装服务标准》第5章',srcType:'行业标准',attrs:'设计费+主材费+辅材费+人工费+管理费+税金',scene:'整装报价审核/客户费用解读',posSpeech:'每一分钱花在哪，清单看得明明白白',negSpeech:'报价只有一个总数，那叫黑箱不叫报价'}
-,{id:'DEC-005',domain:'decor',name:'预算控制与变更管理',alias:'增项管理、预算超支',def:'控制整装工程预算和设计/施工变更的管理机制，核心是"预算即决算"。',source:'《住宅全案整装服务标准》第5章；贝壳被窝"恶意增项双倍返还"',srcType:'行业标准',attrs:'预算锁定+变更确认+增项审批+超支预警',scene:'整装预算管理/客户增项争议',posSpeech:'预算即决算，变更必须你签字确认',negSpeech:'开工后不停加钱，这不是整装是坑人'}
-,{id:'DEC-006',domain:'decor',name:'支付方式与节点',alias:'分期付款、工程款节点',def:'整装工程按施工进度分阶段付款的机制，通常按水电/泥木/油漆/竣工等节点支付。',source:'《住宅全案整装服务标准》第6章',srcType:'行业标准',attrs:'预付款+水电完工+泥木完工+油漆完工+竣工验收+质保金',scene:'整装付款安排/客户资金管理',posSpeech:'干完一步付一步，钱跟进度走',negSpeech:'一次性付全款，你说了就不算了'}
-,{id:'DEC-007',domain:'decor',name:'环保标准与检测',alias:'甲醛检测、室内空气质量',def:'整装竣工后室内空气质量必须达到国家标准，甲醛、苯、TVOC等污染物浓度不得超标。',source:'《室内空气质量标准》GB/T 18883-2022；《民用建筑工程室内环境污染控制规范》GB 50325',srcType:'国家标准',attrs:'甲醛≤0.08mg/m³+苯≤0.03mg/m³+TVOC≤0.6mg/m³+检测时机：完工7天后',scene:'整装竣工验收/客户入住前检测',posSpeech:'环保检测达标才交付，孕婴也能放心住',negSpeech:'装完就催你入住，检测都不敢做'}
-,{id:'DEC-008',domain:'decor',name:'材料验收与问题处理',alias:'主材验收、辅材确认',def:'整装使用的主材、辅材到场后需经客户确认品牌、型号、规格、质量后方可施工。',source:'《定制家具安装服务规范》GB/T 42588-2023',srcType:'国家标准',attrs:'品牌型号核对+数量确认+质量检查+问题拍照留证+退换流程',scene:'整装材料进场验收/客户材料确认',posSpeech:'材料到场先验收，对得上合同再施工',negSpeech:'材料到了就装，型号对不对你都不知道'}
-,{id:'DEC-009',domain:'decor',name:'施工交底规范',alias:'技术交底、开工交底',def:'开工前由设计师、项目经理、施工队长共同对施工方案进行技术交底的规范流程。',source:'《建筑装饰装修工程质量验收标准》GB 50210-2018第3.1节',srcType:'国家标准',attrs:'设计意图+施工工艺+材料要求+节点做法+验收标准',scene:'整装开工交底/施工方案确认',posSpeech:'交底做得细，施工不走样',negSpeech:'不交底就开工，出来的效果跟设计两回事'}
-,{id:'DEC-010',domain:'decor',name:'工期管理与延误责任',alias:'工期延误、工期保障',def:'整装工程工期管理和延误赔偿机制，约定开工至竣工的合理工期和延误责任。',source:'《住宅全案整装服务标准》第8章；贝壳被窝"延误在线确认赔付"',srcType:'行业标准',attrs:'合理工期约定+关键节点+延误原因认定+赔偿标准+不可抗力',scene:'整装工期管理/客户延误维权',posSpeech:'工期写进合同，延误一天赔一天',negSpeech:'工期口头说说不写合同，拖半年你也没辙'}
-,{id:'DEC-011',domain:'decor',name:'隐蔽工程验收',alias:'水电验收、中间验收',def:'对水电管线等被后续工序覆盖前的工程质量进行验收确认，是整装最关键的中间节点。',source:'《建筑装饰装修工程质量验收标准》GB 50210-2018第3.1.4条（强制性条文）',srcType:'国家标准',attrs:'水管打压+电路检测+防水闭水+管线走向拍照+验收签字',scene:'水电验收/客户中间验收',posSpeech:'隐蔽工程封闭前必须验收，签了字再封',negSpeech:'水电封了再验，出了问题砸墙才知道'}
-,{id:'DEC-012',domain:'decor',name:'竣工验收标准',alias:'整装验收、最终验收',def:'整装工程全部完工后的综合验收，包括观感质量、使用功能、设备运行、环保达标等。',source:'《建筑装饰装修工程质量验收标准》GB 50210-2018',srcType:'国家标准',attrs:'观感检查+功能测试+设备调试+环保检测+整改清单',scene:'整装竣工验收/客户交付确认',posSpeech:'验收清单逐项过，一项不达标不签字',negSpeech:'不验收就入住，问题全是你的'}
-,{id:'DEC-013',domain:'decor',name:'质保范围与期限',alias:'整装质保、保修期',def:'整装企业对交付后出现的质量问题承担保修责任的范围和期限约定。',source:'《住宅全案整装服务标准》第9章；《建设工程质量管理条例》第40条',srcType:'行业标准',attrs:'水电5年+防水5年+装修2年+主体结构终身+质保起始日=竣工验收合格日',scene:'整装售后保障/客户质保咨询',posSpeech:'质保白纸黑字写进合同，出了问题有人管',negSpeech:'口头承诺质保10年，出事找不到人'}
-,{id:'DEC-014',domain:'decor',name:'售后服务承诺',alias:'整装售后、维保服务',def:'整装企业在质保期内和质保期后提供的服务承诺，包括响应时效、维修流程、费用承担等。',source:'《住宅全案整装服务标准》第9章；贝壳被窝"十心实意"服务承诺',srcType:'行业标准',attrs:'响应时效+上门维修+费用承担+服务记录+回访机制',scene:'整装售后服务/客户报修',posSpeech:'售后2小时响应，48小时上门，质保期内免费修',negSpeech:'交了钱就失联，售后电话永远打不通'}
-,{id:'DEC-015',domain:'decor',name:'投诉处理机制',alias:'整装投诉、维权渠道',def:'整装服务出现质量或服务问题时的投诉受理和处理的规范化流程。',source:'《消费者权益保护法》第39条；中国建筑装饰协会投诉处理指引',srcType:'部门规章',attrs:'投诉渠道+受理时限+处理流程+升级机制+赔偿标准',scene:'整装服务投诉/客户维权',posSpeech:'投诉有渠道，处理有时限，不满意可升级',negSpeech:'投诉无门，推诿扯皮，消费者只能自认倒霉'}
-// 域4·家政保洁（15条）
-,{id:'HOM-001',domain:'homekeep',name:'家政服务',alias:'家政、家庭服务',def:'为家庭提供保洁、照护、烹饪等生活服务的专业行业，是居住服务的重要延伸。',source:'《家政服务业管理暂行办法》（商务部2012年）；国务院办公厅《关于促进家政服务业提质扩容的意见》',srcType:'部门规章',attrs:'保洁+照护+烹饪+月嫂+收纳+分类管理体系',scene:'家政需求评估/家政服务选择',posSpeech:'专业的事交给专业的人，家政是品质生活的标配',negSpeech:'家政不是保姆活，是专业服务行业'}
-,{id:'HOM-002',domain:'homekeep',name:'日常保洁',alias:'常规保洁、定期清洁',def:'按约定周期（日/周/月）对居住空间进行常规清洁维护的服务，是家政服务的高频需求。',source:'《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'地面+台面+厨卫+垃圾清理+物品归位+服务时长',scene:'家庭日常清洁/办公室保洁',posSpeech:'定期保洁，家里永远是做客状态',negSpeech:'平时不打扫，积到一起更费钱费力'}
-,{id:'HOM-003',domain:'homekeep',name:'深度保洁',alias:'深度清洁、大扫除',def:'对居住空间进行全面彻底的清洁服务，包括日常保洁不覆盖的死角、缝隙、高处等区域。',source:'《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'死角清洁+玻璃+灯具+油烟机拆洗+空调清洗+消毒杀菌',scene:'换季大扫除/搬家前清洁/入住前清洁',posSpeech:'深度清洁一次，日常保洁轻松一周',negSpeech:'只做表面不做深层，脏东西藏在看不见的地方'}
-,{id:'HOM-004',domain:'homekeep',name:'开荒保洁',alias:'新房开荒、装修后保洁',def:'新房交付或装修完成后首次全面清洁，清除施工残留的建筑垃圾、灰尘、胶渍等。',source:'《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'建筑垃圾清理+除尘+除胶+擦玻璃+地面养护+全面消毒',scene:'新房入住前/整装完工后/二手房翻新后',posSpeech:'开荒做彻底，入住才安心',negSpeech:'装修完不保洁直接住，灰尘甲醛全吸进去了'}
-,{id:'HOM-005',domain:'homekeep',name:'家政人员资质',alias:'家政阿姨资质、从业资格',def:'家政服务从业人员应具备的身份核验、健康证明、技能培训和资格认证等基本资质。',source:'国务院办公厅《关于促进家政服务业提质扩容的意见》；商务部家政服务信用信息平台',srcType:'部门规章',attrs:'身份核验+健康证+培训证书+信用记录+无犯罪证明',scene:'家政人员筛选/雇主安全保障',posSpeech:'查身份、看健康证、查信用，三证齐全才放心',negSpeech:'不查资质就用，出了事连人都找不到'}
-,{id:'HOM-006',domain:'homekeep',name:'家政服务合同',alias:'家政合同、服务协议',def:'家政服务提供方与雇主之间约定服务内容、期限、费用、权利义务的书面协议。',source:'《民法典》第九百一十九条；《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'服务内容+服务期限+费用标准+双方权利义务+违约责任+终止条款',scene:'家政服务签约/服务争议处理',posSpeech:'合同写清做什么、做多长时间、多少钱，白纸黑字最靠谱',negSpeech:'口头约定不靠谱，出了问题各说各话'}
-,{id:'HOM-007',domain:'homekeep',name:'钟点工',alias:'小时工、计时保洁',def:'按小时计费的家政保洁服务，灵活安排时间和频次，适合日常保洁需求。',source:'《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'按小时计费+灵活预约+最低服务时长+服务范围约定',scene:'临时保洁需求/定期钟点服务',posSpeech:'需要就来，不用养人，灵活又经济',negSpeech:'只按小时算不约定范围，做一半走了算谁的'}
-,{id:'HOM-008',domain:'homekeep',name:'住家保姆',alias:'住家阿姨、全日家政',def:'居住在雇主家中提供全天候家政服务的从业人员，覆盖做饭、保洁、照护等综合服务。',source:'《家政服务规范》SB/T 10643-2011；国务院办公厅家政提质扩容意见',srcType:'行业标准',attrs:'住家服务+综合家务+做饭+保洁+照护+休息时间约定',scene:'双职工家庭/老人家庭/有婴幼儿家庭',posSpeech:'住家阿姨全天候照顾，上班也安心',negSpeech:'住家服务边界不清，休息时间要写进合同'}
-,{id:'HOM-009',domain:'homekeep',name:'育婴服务',alias:'月嫂、育婴师、母婴护理',def:'为0-3岁婴幼儿和产妇提供专业照护的服务，包括喂养、护理、早教等。',source:'《家政服务规范》SB/T 10643-2011；《育婴员国家职业技能标准》',srcType:'行业标准',attrs:'产妇护理+新生儿护理+喂养指导+早教启蒙+健康监测',scene:'新生儿家庭/产褥期护理/育儿指导',posSpeech:'专业月嫂护航，新手妈妈不慌',negSpeech:'育儿不是带娃那么简单，专业资质要看清'}
-,{id:'HOM-010',domain:'homekeep',name:'老人照护',alias:'居家养老、老人陪护',def:'为居家老年人提供生活照料、健康监测、心理陪伴等专业照护服务。',source:'《中华人民共和国老年人权益保障法》；国务院《关于推进养老服务发展的意见》',srcType:'部门规章',attrs:'生活照料+健康监测+用药提醒+心理陪伴+应急响应',scene:'独居老人照护/术后康复护理/失能老人陪护',posSpeech:'老人在家有人陪，儿女在外也放心',negSpeech:'老人照护不只是做饭打扫，应急处理才是关键'}
-,{id:'HOM-011',domain:'homekeep',name:'家政保险',alias:'家政责任险、家政意外险',def:'为家政服务过程中的人身伤害和财产损失提供保障的保险产品，包括家政人员意外险和雇主责任险。',source:'银保监会《关于促进家政服务保险发展的指导意见》',srcType:'部门规章',attrs:'家政人员意外险+雇主责任险+第三者责任+财产损失+保费分担',scene:'家政服务安全保障/风险分担',posSpeech:'买了保险再用家政，出事有人赔',negSpeech:'不买保险就用家政，阿姨受伤你全责'}
-,{id:'HOM-012',domain:'homekeep',name:'家政平台',alias:'家政App、互联网家政',def:'通过互联网平台连接家政服务人员和雇主的撮合平台，提供预约、支付、评价、售后等闭环服务。',source:'《电子商务法》；商务部家政服务信用信息平台',srcType:'部门规章',attrs:'在线预约+服务匹配+支付担保+评价体系+售后保障',scene:'家政服务预约/家政人员选择',posSpeech:'平台下单，有评价有保障，跑得了和尚跑不了庙',negSpeech:'路边找的阿姨，出了问题没处说理'}
-,{id:'HOM-013',domain:'homekeep',name:'家政服务标准化',alias:'家政标准、服务规范',def:'对家政服务流程、质量、评价进行统一规范，推动行业从"游击队"走向"正规军"。',source:'《家政服务规范》SB/T 10643-2011；国务院办公厅家政提质扩容意见',srcType:'行业标准',attrs:'服务流程标准+质量评价标准+人员资质标准+价格指导标准',scene:'家政服务选择/行业规范化',posSpeech:'标准化服务，价格透明、流程清晰、质量有保障',negSpeech:'没有标准的服务，每次体验都不一样'}
-,{id:'HOM-014',domain:'homekeep',name:'家政培训与认证',alias:'家政培训、职业认证',def:'对家政服务从业人员进行技能培训和职业认证的体系，推动行业职业化和专业化。',source:'《育婴员国家职业技能标准》；《养老护理员国家职业技能标准》',srcType:'行业标准',attrs:'技能培训+等级认证+继续教育+信用档案+持证上岗',scene:'家政人员职业发展/雇主选择依据',posSpeech:'持证上岗，培训越多越专业',negSpeech:'没培训没认证，服务质量全凭运气'}
-,{id:'HOM-015',domain:'homekeep',name:'家政投诉与维权',alias:'家政维权、服务纠纷',def:'家政服务过程中出现质量、费用、人身安全等问题时的投诉受理和维权渠道。',source:'《消费者权益保护法》第39条；《家政服务规范》SB/T 10643-2011',srcType:'部门规章',attrs:'平台投诉+12315+行业协会+法律途径+证据保全',scene:'家政服务纠纷/消费者维权',posSpeech:'先拍照留证据，再投诉维权，12315是靠山',negSpeech:'吃了哑巴亏不投诉，下一个人还是受害者'}
-// 域5·十五五政策与趋势（18条）
+// 域3·十五五政策与趋势（18条）
 ,{id:'POL-001',domain:'policy',name:'好房子',alias:'高品质住房、安全舒适绿色智慧住宅',def:'住房城乡建设部定义的住房品质目标，以安全、舒适、绿色、智慧为四大核心特征的新一代住房。',source:'住建部《关于提升住房品质的意见》（2025年）；《城市更新十五五规划》',srcType:'政策文件',attrs:'安全底线+舒适体验+绿色低碳+智慧便捷',scene:'向客户介绍住房品质升级趋势/解释什么是好房子',posSpeech:'现在国家都在推好房子，安全舒适绿色智慧，以后这会是标配',negSpeech:'好房子不是噱头，是写入中央文件的硬指标'}
 ,{id:'POL-002',domain:'policy',name:'房地产发展新模式',alias:'新模式、三大工程',def:'从增量扩张转向存量提质增效的发展模式，以好房子建设、城市更新、租购并举为核心特征的房地产转型方向。',source:'中共中央《十四届全国人大三次会议政府工作报告》；《城市更新十五五规划》',srcType:'政策文件',attrs:'从增量到存量+好房子建设+城市更新+租购并举',scene:'解释市场转型/行业逻辑变化',posSpeech:'房地产进入新模式，从盖房子卖变成存量提质，这是大方向',negSpeech:'还在用老眼光看房地产？新模式已经开始了'}
 ,{id:'POL-003',domain:'policy',name:'城市更新',alias:'城市更新行动、存量更新',def:'对城市存量空间进行功能性提升、环境改善、设施完善的活动，涵盖老旧小区、城中村、历史街区等综合整治。',source:'《城市更新十五五规划》（国发〔2026〕12号）',srcType:'政策文件',attrs:'老旧小区改造+城中村改造+街区整治+功能提升',scene:'老房改造项目/区域发展前景评估',posSpeech:'这个区域纳入城市更新，未来配套会越来越好',negSpeech:'城市更新是政府行为，不是你想改就能改'}
@@ -256,6 +213,49 @@ const ENTRIES=[
 ,{id:'POL-018',domain:'policy',name:'年均新建商品住宅销售',alias:'7-8亿平方米、新房去化',def:'中指研究院预测的十五五期间新建商品住宅年均销售面积约7-8亿平方米，是判断新房市场规模的核心指标。',source:'中指研究院《中国房地产市场2025总结与2026展望》',srcType:'行业研究',attrs:'年均7-8亿㎡+去化压力+结构分化+好城市好房子',scene:'新房市场判断/项目定位参考',posSpeech:'新房市场年均7-8亿平方米，分化严重，好城市好房子才有机会',negSpeech:'新房整体往下走，别指望大行情'}
 ];
 
+const TALENT_ENTRIES=[
+// ── 域1·房产交易（3岗位）──
+{id:'TAL-001',domain:'talent',subdomain:'trade',subicon:'🔑',subname:'域1·房产交易',role:'房产经纪人',tag:'trade',
+  L1:'岗位名称',L1val:'房产经纪人（买方/卖方/综合型）',
+  L2:'核心能力',L2val:'客户需求洞察 · 房源匹配 · 带看讲解 · 议价谈判 · 签约风控 · 社区深耕 · 客户关系维护 · AI工具运用',
+  L3:'考核标准',L3val:'月度成交转化率≥行业均值 · 客户满意度≥4.5/5 · 房源维护时效≤30天 · 独立完成交易全流程 · 通过年度能力测评'},
+{id:'TAL-002',domain:'talent',subdomain:'trade',subicon:'🔑',subname:'域1·房产交易',role:'门店经理/店长',tag:'trade',
+  L1:'岗位名称',L1val:'门店经理 / 店长',
+  L2:'核心能力',L2val:'团队组建与培养 · 目标拆解与跟进 · 业务策略制定 · ACN合作网络运营 · 人员绩效评估 · 合规风控 · 门店经营分析',
+  L3:'考核标准',L3val:'门店月人均产能达标 · 新人6个月留存率≥70% · 合规0重大事故 · 季度营收达成率≥90% · 团队能力测评覆盖率100%'},
+{id:'TAL-003',domain:'talent',subdomain:'trade',subicon:'🔑',subname:'域1·房产交易',role:'区域经理/总监',tag:'trade',
+  L1:'岗位名称',L1val:'区域经理 / 区域总监',
+  L2:'核心能力',L2val:'多门店统筹管理 · 市场分析与战略规划 · 人才培养体系搭建 · 资源调配与协同 · 政府关系与合规 · 数据驱动决策',
+  L3:'考核标准',L3val:'区域市占率≥目标值 · 区域盈利达标 · 店长梯队储备≥3人 · 年度品质审计通过 · 客户投诉率≤0.5%'},
+// ── 域2·房屋租赁（3岗位）──
+{id:'TAL-004',domain:'talent',subdomain:'rental',subicon:'📋',subname:'域2·房屋租赁',role:'租赁经纪人',tag:'rental',
+  L1:'岗位名称',L1val:'租赁经纪人',
+  L2:'核心能力',L2val:'租赁市场行情判断 · 租客需求匹配 · 合同条款解释 · 租金定价评估 · 租后服务跟进 · 纠纷调解 · 长租公寓知识',
+  L3:'考核标准',L3val:'月度签约套数达标 · 租客满意度≥4.3/5 · 合同签约零差错 · 续租率≥60% · 租赁知识考试≥80分'},
+{id:'TAL-005',domain:'talent',subdomain:'rental',subicon:'📋',subname:'域2·房屋租赁',role:'租赁店长',tag:'rental',
+  L1:'岗位名称',L1val:'租赁门店店长',
+  L2:'核心能力',L2val:'租赁团队管理 · 出租率提升策略 · 业主关系维护 · 机构托管对接 · 租金贷合规 · 租赁风险管控',
+  L3:'考核标准',L3val:'门店出租率≥90% · 团队人均产出达标 · 业主满意度≥4.5/5 · 托管签约数达标 · 0合规处罚'},
+{id:'TAL-006',domain:'talent',subdomain:'rental',subicon:'📋',subname:'域2·房屋租赁',role:'租赁运营经理',tag:'rental',
+  L1:'岗位名称',L1val:'租赁运营经理',
+  L2:'核心能力',L2val:'租赁产品线规划 · 收益管理 · 供应链对接 · 线上获客运营 · 数据报表分析 · 流程标准化建设',
+  L3:'考核标准',L3val:'整体出租率≥92% · 线上渠道获客占比≥40% · 运营成本控制达标 · 流程SOP覆盖率100% · 季度运营复盘通过'},
+// ── 域3·新房服务（2岗位）──
+{id:'TAL-007',domain:'talent',subdomain:'newhome',subicon:'🏗️',subname:'域3·新房服务',role:'新房经纪人',tag:'newhome',
+  L1:'岗位名称',L1val:'新房经纪人',
+  L2:'核心能力',L2val:'新房项目知识 · 区域规划解读 · 开发商沟通 · 客户带看与逼定 · 贷款方案匹配 · 预售政策理解',
+  L3:'考核标准',L3val:'月度成交套数达标 · 客户满意度≥4.3/5 · 项目信息更新及时率100% · 贷款方案匹配准确率≥95% · 通过新房专项考试'},
+{id:'TAL-008',domain:'talent',subdomain:'newhome',subicon:'🏗️',subname:'域3·新房服务',role:'新房项目经理',tag:'newhome',
+  L1:'岗位名称',L1val:'新房项目经理',
+  L2:'核心能力',L2val:'项目全周期管理 · 开发商关系维护 · 渠道整合 · 营销方案策划 · 销售数据监控 · 合同与回款管理',
+  L3:'考核标准',L3val:'项目去化率达标 · 回款周期≤45天 · 渠道费效比可控 · 开发商满意度≥4.5/5 · 项目复盘通过'},
+// ── 域4·品质居住服务（1岗位）──
+{id:'TAL-009',domain:'talent',subdomain:'homesvc',subicon:'🏡',subname:'域4·品质居住服务',role:'品质居住顾问',tag:'homesvc',
+  L1:'岗位名称',L1val:'品质居住顾问',
+  L2:'核心能力',L2val:'六维品质评估（安全/健康/整洁/温暖/美观/惬意） · 客户生活方式解读 · 改善方案设计 · 社区资源整合 · 品质标准培训 · 居住体验追踪',
+  L3:'考核标准',L3val:'品质评估报告通过率≥95% · 客户改善满意度≥4.5/5 · 六维标准考试≥85分 · 年度品质服务案例≥12个 · 客户复购/推荐率≥30%'}
+];
+
 let currentDomain='quality-customer';
 
 function init(){
@@ -263,68 +263,7 @@ function init(){
   if(params.get('tab')&&DOMAINS.some(d=>d.id===params.get('tab')))currentDomain=params.get('tab');
   const tabs=document.getElementById('domain-tabs');
   tabs.innerHTML=DOMAINS.map(d=>`<div class="domain-tab ${d.id===currentDomain?'active':''}" data-domain="${d.id}" onclick="switchDomain('${d.id}')">${d.icon} ${d.name}（${d.count}）</div>`).join('');
-  renderPolicyCard();
   renderEntries();
-}
-
-function renderPolicyCard(){
-  const p=POLICY_CARD;
-  const entries=ENTRIES.filter(e=>e.domain===p.id);
-  document.getElementById('policy-card').innerHTML=`
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px;cursor:pointer" onclick="togglePolicyEntries()">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:28px">${p.icon}</span>
-        <div>
-          <div style="font-size:15px;font-weight:700;color:var(--dk)">${p.name}</div>
-          <div style="font-size:11px;color:var(--td);margin-top:2px">${p.desc} · ${p.count}词条</div>
-        </div>
-      </div>
-      <a href="${p.link}" onclick="event.stopPropagation()" style="display:inline-block;padding:7px 14px;background:var(--p);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap">查看完整执行方案 →</a>
-    </div>
-    <div id="policy-entries" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-      ${entries.map(e=>{
-        const badgeCls=e.srcType.includes('国家')?'badge-gb':e.srcType.includes('法律')?'badge-law':e.srcType.includes('学术')?'badge-academic':e.srcType.includes('平台')?'badge-platform':'badge-industry';
-        return `<div class="entry-card" onclick="event.stopPropagation();toggleDetail(this)" style="margin-bottom:8px">
-          <div class="entry-header"><span class="entry-name">${e.name}</span><span class="entry-id">${e.id}</span></div>
-          <div class="entry-alias">别名：${e.alias}</div>
-          <div class="entry-def">${e.def}</div>
-          <div class="entry-source"><span class="src-label">📖 出处：</span><span class="source-badge ${badgeCls}">${e.srcType}</span> ${e.source.split('；')[0]}</div>
-          <div class="entry-detail" onclick="event.stopPropagation()">
-            <div class="layer-tabs">
-              <div class="layer-tab active" onclick="switchLayer(this,'detail')">📋 详情</div>
-              <div class="layer-tab" onclick="switchLayer(this,'trace')">🔗 溯源</div>
-            </div>
-            <div class="layer-content active" data-layer="detail">
-              <div class="detail-row"><span class="detail-label">属性拆解：</span><span class="detail-val">${e.attrs}</span></div>
-              <div class="detail-row"><span class="detail-label">适用场景：</span><span class="detail-val">${e.scene}</span></div>
-              <div class="detail-row speech"><span class="detail-label">✅ 正向话术：</span><span class="detail-val">${e.posSpeech||'暂无'}</span></div>
-              <div class="detail-row speech"><span class="detail-label">⚠️ 反向话术：</span><span class="detail-val">${e.negSpeech||'暂无'}</span></div>
-            </div>
-            <div class="layer-content" data-layer="trace">
-              <div class="detail-row"><span class="detail-label">📄 法规原文：</span><span class="detail-val">${e.source}</span></div>
-              <div class="detail-row"><span class="detail-label">🏷️ 来源类型：</span><span class="source-badge ${badgeCls}">${e.srcType}</span></div>
-              <div class="detail-row"><span class="detail-label">🔗 溯源查询：</span><span class="detail-val">${e.srcType.includes('政策')?'<a class="source-link" href="https://www.gov.cn" target="_blank">中国政府网</a> <a class="source-link" href="https://www.mohurd.gov.cn" target="_blank">住建部官网</a>':e.srcType.includes('行业')?'<a class="source-link" href="https://www.cnki.net" target="_blank">中国知网</a>':'暂无在线链接'}</span></div>
-            </div>
-          </div>
-          <div class="expand-hint">▼ 点击展开详情</div>
-        </div>`;
-      }).join('')}
-    </div>
-    <div style="font-size:10px;color:var(--td);text-align:center;margin-top:8px" id="policy-toggle-hint">▼ 点击展开${p.count}条政策词条</div>
-  </div>`;
-}
-
-function togglePolicyEntries(){
-  const el=document.getElementById('policy-entries');
-  const hint=document.getElementById('policy-toggle-hint');
-  if(el.style.display==='none'){
-    el.style.display='block';
-    hint.textContent='▲ 收起政策词条';
-  }else{
-    el.style.display='none';
-    hint.textContent='▼ 点击展开'+POLICY_CARD.count+'条政策词条';
-  }
 }
 
 function switchDomain(id){
@@ -336,6 +275,9 @@ function switchDomain(id){
 
 function renderEntries(){
   const list=document.getElementById('entry-list');
+  if(currentDomain==='talent'){
+    renderTalentEntries(list);return;
+  }
   const filtered=ENTRIES.filter(e=>e.domain===currentDomain);
   list.innerHTML=filtered.map((e,idx)=>{
     const badgeCls=e.srcType.includes('国家')?'badge-gb':e.srcType.includes('法律')?'badge-law':e.srcType.includes('学术')?'badge-academic':e.srcType.includes('平台')?'badge-platform':'badge-industry';
@@ -395,6 +337,34 @@ function toggleDetail(card){
   detail.classList.toggle('open');
 }
 
+// ── 人才字典专用渲染 ──
+function renderTalentEntries(list){
+  // 按 subdomain 分组
+  const domains=[
+    {id:'trade',icon:'🔑',name:'域1·房产交易',tag:'tag-trade'},
+    {id:'rental',icon:'📋',name:'域2·房屋租赁',tag:'tag-rental'},
+    {id:'newhome',icon:'🏗️',name:'域3·新房服务',tag:'tag-newhome'},
+    {id:'homesvc',icon:'🏡',name:'域4·品质居住服务',tag:'tag-homesvc'}
+  ];
+  let html='';
+  domains.forEach(d=>{
+    const cards=TALENT_ENTRIES.filter(e=>e.subdomain===d.id);
+    if(!cards.length)return;
+    html+=`<div class="talent-domain-header"><div class="td-icon">${d.icon}</div><div class="td-name">${d.name}</div><div class="td-desc">${cards.length}个岗位</div></div>`;
+    cards.forEach(e=>{
+      html+=`<div class="talent-card" onclick="if(typeof track==='function')track('talent_lookup',{role:'${e.role}',domain:'${e.subdomain}'})">
+        <div class="tc-header"><span class="tc-role">${e.role}</span><span class="tc-tag ${d.tag}">${d.name}</span></div>
+        <div class="tc-layers">
+          <div class="tc-layer l1"><div class="ll-label">🔹 ${e.L1}</div><div class="ll-val">${e.L1val}</div></div>
+          <div class="tc-layer l2"><div class="ll-label">🔸 ${e.L2}</div><div class="ll-val">${e.L2val}</div></div>
+          <div class="tc-layer l3"><div class="ll-label">🔺 ${e.L3}</div><div class="ll-val">${e.L3val}</div></div>
+        </div>
+      </div>`;
+    });
+  });
+  list.innerHTML=html;
+}
+
 init();
 track("page_view",{referrer:document.referrer});
 </script>
@@ -439,15 +409,13 @@ function sendFeedback(type){
 </script>
 <div class="page-footer">
   <div class="copyright">© 2026 风声 · 保留所有权利 · 未经授权禁止转载</div>
-  <div>数据来源：国家标准/行业标准/部门规章/学术研究/贝壳体系</div>
+  <div>数据来源：国家标准/行业规范/贝壳体系/学术研究</div>
   <div class="feedback-bar">
     <span>这个工具对你有帮助吗？</span>
     <button class="feedback-btn" onclick="sendFeedback('👍')">👍 有帮助</button>
     <button class="feedback-btn" onclick="sendFeedback('👎')">👎 一般</button>
   </div>
 </div>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"e02e5265cf6f49c09196db4252d69e7c","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script src="/feedback-widget.js"></script>
 </body>
-<!-- v20260611f -->
+<!-- v20260621-talent -->
 </html>
