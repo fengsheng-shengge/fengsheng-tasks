@@ -98,6 +98,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .dim-one{color:var(--ts);font-size:13px}
 .dual-link{display:block;text-align:center;margin-top:10px;font-size:15px;font-weight:700;color:var(--p);text-decoration:none;padding:6px 0}
 .dual-link:active{opacity:.7}
+/* 双维模型 · 双按钮入口 */
+.dual-actions{display:flex;gap:8px;margin-top:12px}
+.dual-actions .dual-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:10px 0;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:all .2s;cursor:pointer}
+.dual-actions .dual-btn:active{transform:scale(.96)}
+.dual-btn-primary{background:var(--p);color:#fff}
+.dual-btn-primary:hover{background:var(--p-d)}
+.dual-btn-secondary{background:transparent;color:var(--ts);border:1px solid var(--border)}
+.dual-btn-secondary:hover{color:var(--p);border-color:var(--p)}
+.dual-btn-fire{background:var(--fire);color:#fff}
+.dual-btn-fire:hover{background:var(--fire-l)}
+.dual-btn-fire-secondary{background:transparent;color:var(--fire);border:1px solid rgba(196,106,58,.2)}
+.dual-btn-fire-secondary:hover{background:rgba(196,106,58,.06)}
+@media(max-width:767px){.dual-actions{flex-direction:column}}
 .dual-causal{grid-column:1/-1;text-align:center;padding:12px;font-size:15px;color:var(--fire);font-weight:700;line-height:1.6;background:rgba(196,106,58,.05);border-radius:var(--r)}
 
 /* 三路径 */
@@ -337,7 +350,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
         <div class="dim-row"><div class="dim-dot" style="background:var(--beauty)"></div><div class="dim-name">美观</div><div class="dim-one">统一·舒服</div></div>
         <div class="dim-row"><div class="dim-dot" style="background:var(--cozy)"></div><div class="dim-name">惬意</div><div class="dim-one">放松·不被打扰</div></div>
       </div>
-      <a class="dual-link" href="/knowledge.html">了解六维标准 →</a>
+      <div class="dual-actions">
+        <a class="dual-btn dual-btn-primary" href="/quality-test/">🏠 开始测评</a>
+        <a class="dual-btn dual-btn-secondary" href="/knowledge.html">了解六维标准</a>
+      </div>
     </div>
     <div class="dual-col server">
       <div class="dual-label s">🤝 服务者四维·关怀</div>
@@ -347,7 +363,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
         <div class="dim-row"><div class="dim-dot" style="background:var(--sc-dignity)"></div><div class="dim-name">尊严</div><div class="dim-one">你觉得值</div></div>
         <div class="dim-row"><div class="dim-dot" style="background:var(--sc-life)"></div><div class="dim-name">质感</div><div class="dim-one">你先住好</div></div>
       </div>
-      <a class="dual-link" href="/knowledge.html?tab=quality-server" style="color:var(--fire)">测一测你的关怀维度 →</a>
+      <div class="dual-actions">
+        <a class="dual-btn dual-btn-fire" href="/care-test/">💚 开始测评</a>
+        <a class="dual-btn dual-btn-fire-secondary" href="/knowledge.html?tab=quality-server">了解四维关怀</a>
+      </div>
     </div>
     <div class="dual-causal">服务者四维不及格 → 客户六维一定做不好<br>自己先活好，才能帮别人活好</div>
   </div>
