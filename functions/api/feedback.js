@@ -65,6 +65,18 @@ function errJson(code, msg) {
   });
 }
 
+function validateCSRF(request) {
+  const origin = request.headers.get('origin') || '';
+  const referer = request.headers.get('referer') || '';
+  const host = request.headers.get('host') || '';
+  // 允许同源请求 + 无Origin的请求（如curl/server-side）
+  if (!origin) return true;
+  if (origin.includes('fengsheng.tech') || origin.includes('localhost')) return true;
+  if (referer.includes('fengsheng.tech') || referer.includes('localhost')) return true;
+  // 拒绝跨域伪造
+  return false;
+}
+
 function okJson(obj) {
   return new Response(JSON.stringify(obj), {
     status: 200,
@@ -93,6 +105,9 @@ export async function onRequest(context) {
   }
 
   if (method === 'POST') {
+    if (!validateCSRF(request)) {
+      return errJson(403, 'CSRF validation failed');
+    }
     try {
       const body = await request.json();
       let { topic, page, content, contact, product, uid } = body;

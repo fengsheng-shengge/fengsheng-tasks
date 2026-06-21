@@ -64,6 +64,15 @@ function errJson(code, msg) {
   });
 }
 
+function validateCSRF(request) {
+  const origin = request.headers.get('origin') || '';
+  const referer = request.headers.get('referer') || '';
+  if (!origin) return true;
+  if (origin.includes('fengsheng.tech') || origin.includes('localhost')) return true;
+  if (referer.includes('fengsheng.tech') || referer.includes('localhost')) return true;
+  return false;
+}
+
 function okJson(obj, status) {
   return new Response(JSON.stringify(obj), {
     status: status || 200,
@@ -124,6 +133,9 @@ export async function onRequest(context) {
   }
 
   if (method === 'POST') {
+    if (!validateCSRF(request)) {
+      return errJson(403, 'CSRF validation failed');
+    }
     try {
       let body;
       try { body = await request.json(); } catch (_) {
