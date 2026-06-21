@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="培养你的专属AI助理，关怀陪伴、销售教练、全能助理，一键生成Prompt即插即用。">
+<meta name="keywords" content="Agent培养师,AI能力培养,服务者AI培训,智能工具使用,AI方法论,风声,fengsheng">
 <title>Agent 培养师 | 风声</title>
 <meta property="og:title" content="Agent 培养师 · 风声">
 <meta property="og:description" content="培养你的专属AI助理，让他帮你搞定重复工作、照顾你的身心状态。">
@@ -77,6 +78,43 @@
 </div>
 
 <div class="container">
+  <!-- 四句话框架 -->
+  <div class="card" style="background:linear-gradient(135deg,rgba(61,90,62,.03),rgba(196,106,58,.03));border-left:4px solid #3d5a3e">
+    <div class="card-title">📖 四句话框架</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12.5px;color:#555;line-height:1.7">
+      <div><strong style="color:#3d5a3e">1. AI做效率</strong><br>把重复性、标准化的工作交给AI</div>
+      <div><strong style="color:#c46a3a">2. 人做意义</strong><br>把人用在理解客户、建立信任</div>
+      <div><strong style="color:#3d5a3e">3. 标准要统一</strong><br>六维品质标准是共同语言</div>
+      <div><strong style="color:#c46a3a">4. 迭代要持续</strong><br>AI模型和人的能力同步进化</div>
+    </div>
+  </div>
+
+  <!-- 四大场景一键复制 -->
+  <div class="card">
+    <div class="card-title">🎯 四大场景 · 一键复制提示词</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="tpl-card" onclick="copyScenario('房源匹配','根据以下客户需求，在房源库中匹配最合适的三套房源：\n预算：[客户预算]\n位置：[目标区域]\n核心需求：[列出3个关键需求]\n\n请按六维标准（安全/健康/整洁/温暖/美观/惬意）打分并排序，给出推荐理由。')">
+        <div class="tpl-icon">🏠</div>
+        <div class="tpl-name">房源匹配</div>
+        <div class="tpl-desc">AI快速匹配最合适房源</div>
+      </div>
+      <div class="tpl-card" onclick="copyScenario('带看报告','请根据以下带看记录，生成一份专业带看报告：\n房源：[房源地址+户型]\n客户反馈：[客户现场提出的问题与关注点]\n房源亮点：[3个核心优势]\n\n报告需包含：六维评估、客户匹配度、下一步建议。')">
+        <div class="tpl-icon">📋</div>
+        <div class="tpl-name">带看报告</div>
+        <div class="tpl-desc">自动生成专业带看报告</div>
+      </div>
+      <div class="tpl-card" onclick="copyScenario('客户话术','客户说：[客户原话]\n场景：[询价/议价/犹豫/投诉]\n请生成3个回应话术，每个话术包含：\n1. 共情句式\n2. 事实依据\n3. 行动建议\n风格要求：专业、温暖、不油腻。')">
+        <div class="tpl-icon">💬</div>
+        <div class="tpl-name">客户话术</div>
+        <div class="tpl-desc">常见疑问AI应答模板</div>
+      </div>
+      <div class="tpl-card" onclick="copyScenario('市场分析','请分析[区域名称]当前居住市场：\n关注维度：租金走势、供给量、热门户型、租客画像\n输出格式：3个关键发现 + 1条趋势判断 + 客户决策建议。')">
+        <div class="tpl-icon">📊</div>
+        <div class="tpl-name">市场分析</div>
+        <div class="tpl-desc">快速生成区域市场分析</div>
+      </div>
+    </div>
+  </div>
 
   <!-- 参数提示（如果从关怀测评跳过来） -->
   <div class="param-info hidden" id="param-info"></div>
@@ -287,6 +325,20 @@ function generateAgent() {
 // ============================================================
 //  复制 Prompt
 // ============================================================
+function copyScenario(name, text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      var btns = document.querySelectorAll('.tpl-card');
+      // 临时显示复制成功
+      alert('✅ ' + name + ' 提示词已复制！可直接粘贴到AI对话框使用。');
+    }).catch(function() {
+      prompt('请手动复制以下提示词（' + name + '）：', text);
+    });
+  } else {
+    prompt('请手动复制以下提示词（' + name + '）：', text);
+  }
+}
+
 function copyPrompt() {
   var text = document.getElementById("result-content").textContent;
   if (navigator.clipboard) {
