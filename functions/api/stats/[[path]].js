@@ -13,10 +13,11 @@
 // ============================================================
 
 const GOALS = {
-  total: 110,
+  total: 130,
   products: {
     'breeder': 40, 'knowledge': 25, 'shuowenjiedao': 15,
-    'care-test': 10, 'assessment': 10, 'reply': 10
+    'care-test': 10, 'assessment': 10, 'reply': 10,
+    'quality-test': 5, 's1-report': 5, 'dashboard': 5, 'index': 5
   }
 };
 
