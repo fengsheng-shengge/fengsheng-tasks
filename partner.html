@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>合作 · 风声 · 帮助服务者配得上被好好对待<meta property="og:image" content="https://fengsheng.tech/og-image.png">
-</title>
+<title>合作 · 风声 · 帮助服务者配得上被好好对待</title>
+  <meta property="og:image" content="https://fengsheng.tech/og-image.png">
 <meta name="description" content="风声合作入口：高校产教融合、政府行业标准、企业服务赋能。六维标准定义品质，四维关怀守护服务者，三条路径实现商业闭环。">
 <meta name="keywords" content="风声合作,高校合作,产教融合,政府合作,居住服务标准,品质居住,企业赋能,风声,fengsheng">
 <meta property="og:title" content="合作 · 风声">
@@ -186,12 +186,43 @@ function submitCoop() {
   var contact = document.getElementById('coop-contact').value.trim();
   var desc = document.getElementById('coop-desc').value.trim();
   var result = document.getElementById('coop-result');
+  var btn = document.querySelector('.form-submit');
 
+  // 基础非空校验
   if (!name || !type || !contact) {
-    result.textContent = '请填写姓名、合作方向和联系方式';
+    result.textContent = '⚠ 请填写姓名、合作方向和联系方式';
     result.className = 'form-result error';
     return;
   }
+
+  // 姓名长度校验
+  if (name.length < 2 || name.length > 20) {
+    result.textContent = '⚠ 姓名长度需在2-20字之间';
+    result.className = 'form-result error';
+    return;
+  }
+
+  // 联系方式格式校验（手机或邮箱）
+  var phoneRe = /^1[3-9]\d{9}$/;
+  var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!phoneRe.test(contact) && !emailRe.test(contact)) {
+    result.textContent = '⚠ 联系方式需为有效手机号或邮箱';
+    result.className = 'form-result error';
+    return;
+  }
+
+  // 描述长度限制
+  if (desc.length > 500) {
+    result.textContent = '⚠ 合作描述不能超过500字';
+    result.className = 'form-result error';
+    return;
+  }
+
+  // 防重复提交
+  if (btn.disabled) return;
+  btn.disabled = true;
+  btn.textContent = '提交中...';
+  result.textContent = '';
 
   try {
     fetch('/api/event', {
@@ -209,8 +240,9 @@ function submitCoop() {
     }).catch(function(){});
   } catch(e) {}
 
-  result.textContent = '✓ 合作意向已提交，我们将在48小时内与您联系！';
+  result.innerHTML = '✓ 合作意向已提交，我们将在48小时内与您联系！<br><a href="/" style="color:var(--p);font-weight:700;">🏠 返回首页</a> · <a href="/works.html" style="color:var(--p);font-weight:700;">🔧 查看服务工具</a>';
   result.className = 'form-result success';
+  btn.textContent = '已提交';
   document.getElementById('coop-name').value = '';
   document.getElementById('coop-type').value = '';
   document.getElementById('coop-contact').value = '';
