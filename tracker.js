@@ -98,14 +98,34 @@
     } catch (e) {}
   }
 
+  function deriveProduct() {
+    var path = window.location.pathname;
+    if (path === '/' || path === '') return 'index';
+    var m = path.match(/^\/([a-z0-9-]+)/);
+    if (!m) return 'other';
+    var whitelist = {
+      'quality-test':1,'reply':1,'assessment':1,'breeder':1,
+      'knowledge':1,'care-test':1,'s1-report':1,'dashboard':1,
+      'shuowenjiedao':1,'goals':1,'about':1
+    };
+    return whitelist[m[1]] ? m[1] : 'other';
+  }
+
   function buildPayload(type, data) {
     var source = getSource();
     return {
       type: type,
+      event_type: type,       // v2.2: 兼容后端event_type字段
       url: window.location.href,
+      page: window.location.pathname,  // v2.2: 显式传page字段
+      product: deriveProduct(),         // v2.2: 显式传product字段
       title: document.title,
       referrer: document.referrer,
       uid: getUid(),
+      utm_source: source.utm_source || null,    // v2.2: 扁平化utm字段
+      utm_medium: source.utm_medium || null,
+      utm_campaign: source.utm_campaign || null,
+      ref: source.ref || null,
       source: source,
       ts: Date.now(),
       ua: navigator.userAgent,

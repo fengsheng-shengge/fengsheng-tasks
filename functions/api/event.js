@@ -1,4 +1,4 @@
-// Cloudflare Pages Function: /api/event  v2.1
+// Cloudflare Pages Function: /api/event  v2.2 — 修复字段映射+product推导
 // POST /api/event  — 提交埋点事件（公开，支持单条或批量数组）
 // GET  /api/event?key=fs-admin-2026&product=xxx — 管理查询
 
@@ -84,19 +84,52 @@ function okJson(obj, status) {
   });
 }
 
+function deriveProduct(pathname) {
+  if (!pathname || pathname === '/') return 'index';
+  const m = pathname.match(/^\/([a-z0-9-]+)/);
+  if (!m) return 'other';
+  const map = {
+    'quality-test': 'quality-test', 'reply': 'reply',
+    'assessment': 'assessment', 'breeder': 'breeder',
+    'knowledge': 'knowledge', 'care-test': 'care-test',
+    's1-report': 's1-report', 'dashboard': 'dashboard',
+    'shuowenjiedao': 'shuowenjiedao', 'goals': 'goals',
+    'about': 'about'
+  };
+  return map[m[1]] || 'other';
+}
+
 function normalizeEvent(raw, request, url) {
   let event_type = (raw.event_type || raw.type || '').toString().slice(0, 50);
   if (!EVENT_WHITELIST.has(event_type)) event_type = 'action';
 
+  // 修复page：兼容 tracker.js 传的 url 字段
+  let page = (raw.page || '').toString().slice(0, 200);
+  if (!page) {
+    const rawUrl = raw.url || '';
+    try {
+      page = rawUrl ? new URL(rawUrl, 'https://fengsheng.tech').pathname : '';
+    } catch (_) { page = ''; }
+  }
+  // 清理bug数据：如果page以/api/开头说明是旧bug，清空
+  if (page.startsWith('/api/')) page = '';
+  if (!page) page = url.pathname || '';
+
+  // 修复product：从显式字段或page路径推导
   let product = (raw.product || '').toString().slice(0, 50);
+  if (!product) {
+    product = deriveProduct(page);
+  }
   if (product && !PRODUCT_WHITELIST.has(product)) product = 'other';
 
-  const page = (raw.page || url.pathname || '').toString().slice(0, 200);
   const uid = (raw.uid || '').toString().slice(0, 100);
-  const utm_source = (raw.utm_source || '').toString().slice(0, 100);
-  const utm_medium = (raw.utm_medium || '').toString().slice(0, 100);
-  const utm_campaign = (raw.utm_campaign || '').toString().slice(0, 100);
-  const ref = (raw.ref || '').toString().slice(0, 200);
+
+  // 修复utm：兼容 tracker.js 的 source 对象
+  const src = raw.source || {};
+  const utm_source = (raw.utm_source || src.utm_source || '').toString().slice(0, 100);
+  const utm_medium = (raw.utm_medium || src.utm_medium || '').toString().slice(0, 100);
+  const utm_campaign = (raw.utm_campaign || src.utm_campaign || '').toString().slice(0, 100);
+  const ref = (raw.ref || src.ref || raw.referrer || '').toString().slice(0, 200);
 
   let dataStr = '{}';
   if (raw.data !== undefined && raw.data !== null) {
