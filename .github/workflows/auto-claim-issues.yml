@@ -35,140 +35,147 @@ jobs:
           echo "当前时间 (北京时间): $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S')"
           echo ""
 
-          # 获取所有 open 的 issues
-          ISSUES=$(curl -s \
+          # 获取所有 open 的 issues（带错误处理）
+          ISSUES_FILE=$(mktemp)
+          HTTP_CODE=$(curl -s -w "%{http_code}" -o "$ISSUES_FILE" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}/issues?state=open&per_page=50")
 
-          ISSUE_COUNT=$(echo "$ISSUES" | python3 -c "
-          import sys, json
-          data = json.load(sys.stdin)
-          count = 0
-          if isinstance(data, list):
-              for it in data:
-                  if 'pull_request' not in it:
-                      count += 1
-          print(count)
-          ")
-          echo "开放工单总数: $ISSUE_COUNT"
-          echo ""
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "❌ GitHub API 返回 HTTP $HTTP_CODE，无法获取工单列表"
+            cat "$ISSUES_FILE" | head -5
+            rm -f "$ISSUES_FILE"
+            exit 0
+          fi
 
-          # 逐个分析并认领
-          CLAIMED_LIST=$(echo "$ISSUES" | python3 -c "
-          import json, sys
-          data = json.load(sys.stdin)
+          ISSUES=$(cat "$ISSUES_FILE")
+          rm -f "$ISSUES_FILE"
+
+          # 用 Python 统一处理：分析 + 输出认领列表
+          CLAIM_RESULT=$(python3 << 'PYEOF'
+          import json, sys, os
+
+          data = json.loads(sys.stdin.read())
           if not isinstance(data, list):
+              print("❌ API 返回格式异常，不是列表", file=sys.stderr)
               sys.exit(0)
 
-          claimed = []
           # 要跳过的标签（归属其他 Agent）
-          skip = ['小眼镜', 'xiaoyanjing', '小豆子', 'xiaodouzi',
-                  '小鱼儿', 'xiaoyuer', '小酒窝', 'xiaojiuxian',
-                  '小书生', 'xiaoshusheng', '生哥']
+          skip_labels = {
+              '小眼镜', 'xiaoyanjing', '小豆子', 'xiaodouzi',
+              '小鱼儿', 'xiaoyuer', '小酒窝', 'xiaojiuxian',
+              '小书生', 'xiaoshusheng', '生哥'
+          }
+
+          issue_count = 0
+          claimed = []
 
           for issue in data:
               if 'pull_request' in issue:
                   continue
+              issue_count += 1
               num = issue['number']
-              title = issue['title']
+              title = issue.get('title', '')
               labels = [l['name'] for l in issue.get('labels', [])]
               assignees = [a['login'] for a in issue.get('assignees', [])]
 
               need_claim = False
-              reason = ''
-
-              # 已有归属，跳过
-              if any(l in skip for l in labels):
+              if any(l in skip_labels for l in labels):
                   status = '跳过（有其他归属）'
               elif assignees:
                   status = '✅ 已有认领人'
               else:
                   need_claim = True
                   status = '🔴 无人认领'
-                  reason = '无人认领，小扣子主动接收'
-                  # 如果有 小扣子 标签，更优先
                   if '小扣子' in labels or 'xiaokouzi' in labels:
-                      reason = '标签指向小扣子'
+                      status = '🔴 无人认领（标签指向小扣子）'
 
-              print(f'#{num} [{status}] {title[:55]} — labels: {labels}')
+              print(f'#{num} [{status}] {title[:55]} — labels: {labels}', file=sys.stderr)
 
               if need_claim:
                   claimed.append(str(num))
 
-          # 输出要认领的列表（空格分隔）
-          if claimed:
-              print(f'\n→ 需要认领 {len(claimed)} 个: {claimed}')
-              print('TO_CLAIM=' + ','.join(claimed), file=sys.stderr)
-          else:
-              print('\n→ 全部工单已有负责人，无需认领')
-              print('TO_CLAIM=', file=sys.stderr)
-          " 2>&1 >/dev/null)
+          # 输出结果到 stdout（会被 shell 捕获）
+          result = {
+              'total': issue_count,
+              'to_claim': claimed
+          }
+          print(json.dumps(result))
+          PYEOF
+          ) <<< "$ISSUES"
 
-          # 解析要认领的编号
-          TO_CLAIM=$(echo "$CLAIMED_LIST" | grep 'TO_CLAIM=' | sed 's/.*TO_CLAIM=//' | tail -1)
-          echo "待认领编号: $TO_CLAIM"
+          # 解析 JSON 结果
+          TOTAL=$(echo "$CLAIM_RESULT" | python3 -c "import json,sys; print(json.load(sys.stdin)['total'])")
+          TO_CLAIM=$(echo "$CLAIM_RESULT" | python3 -c "import json,sys; print(','.join(json.load(sys.stdin)['to_claim']))")
 
-          if [ -n "$TO_CLAIM" ]; then
-            IFS=','
-            for num in $TO_CLAIM; do
-              echo ""
-              echo "--- 认领 #$num ---"
+          echo "开放工单总数: $TOTAL"
+          echo "待认领编号: ${TO_CLAIM:-无}"
+          echo ""
 
-              # 添加 assignee
-              RESULT=$(curl -s -w "\nHTTPCODE=%{http_code}" \
-                -X POST \
-                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Accept: application/vnd.github+json" \
-                -H "Content-Type: application/json" \
-                -d '{"assignees":["fengsheng-shengge"]}' \
-                "https://api.github.com/repos/${{ github.repository }}/issues/$num/assignees")
-
-              HTTP_CODE=$(echo "$RESULT" | tail -1 | grep 'HTTPCODE=' | sed 's/.*HTTPCODE=//')
-              echo "API 返回 HTTP $HTTP_CODE"
-
-              # 添加 in-progress 标签
-              curl -s -X POST \
-                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Accept: application/vnd.github+json" \
-                -H "Content-Type: application/json" \
-                -d '{"labels":["in-progress"]}' \
-                "https://api.github.com/repos/${{ github.repository }}/issues/$num/labels" > /dev/null
-
-              # 添加认领评论
-              COMMENT_BODY=$(python3 -c "
-              from datetime import datetime, timedelta, timezone
-              now = datetime.now(timezone(timedelta(hours=8)))
-              msg = f'''
-              ✅ **小扣子已认领**
-
-              - 认领时间：{now.strftime('%Y-%m-%d %H:%M:%S')} 北京时间
-              - 当前状态：in-progress
-              - 预计处理：P0 24h / P1 本周 / P2 迭代内
-              - 代码变更将直接推送到 main，经 CI 后自动部署
-
-              > 如属其他同事负责，请回复「转交 + 人名」，小扣子会转分配。
-              '''
-              print(msg)
-              ")
-
-              ESCAPED_BODY=$(python3 -c "
-              import json, sys
-              text = '''$COMMENT_BODY'''
-              print(json.dumps({'body': text}))
-              ")
-
-              curl -s -X POST \
-                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Accept: application/vnd.github+json" \
-                -H "Content-Type: application/json" \
-                -d "$ESCAPED_BODY" \
-                "https://api.github.com/repos/${{ github.repository }}/issues/$num/comments" > /dev/null
-
-              echo "  ✓ 已添加 assignee + in-progress 标签 + 认领评论"
-            done
-            unset IFS
+          if [ -z "$TO_CLAIM" ]; then
+            echo "→ 全部工单已有负责人，无需认领"
+            exit 0
           fi
+
+          IFS=','
+          for num in $TO_CLAIM; do
+            echo "--- 认领 #$num ---"
+
+            # 添加 assignee
+            RESULT=$(curl -s -w "\nHTTPCODE=%{http_code}" \
+              -X POST \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "Content-Type: application/json" \
+              -d '{"assignees":["fengsheng-shengge"]}' \
+              "https://api.github.com/repos/${{ github.repository }}/issues/$num/assignees")
+
+            HTTP_CODE=$(echo "$RESULT" | tail -1 | grep 'HTTPCODE=' | sed 's/.*HTTPCODE=//')
+            echo "  assign API 返回 HTTP $HTTP_CODE"
+
+            # 添加 in-progress 标签
+            LABEL_RESULT=$(curl -s -w "\nHTTPCODE=%{http_code}" \
+              -X POST \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "Content-Type: application/json" \
+              -d '{"labels":["in-progress"]}' \
+              "https://api.github.com/repos/${{ github.repository }}/issues/$num/labels")
+
+            LABEL_HTTP=$(echo "$LABEL_RESULT" | tail -1 | grep 'HTTPCODE=' | sed 's/.*HTTPCODE=//')
+            echo "  label API 返回 HTTP $LABEL_HTTP"
+
+            # 添加认领评论（用 Python 生成 JSON 避免 shell 转义问题）
+            COMMENT_JSON=$(python3 -c "
+          import json
+          from datetime import datetime, timedelta, timezone
+          now = datetime.now(timezone(timedelta(hours=8)))
+          body = f'''✅ **小扣子已认领**
+
+          - 认领时间：{now.strftime('%Y-%m-%d %H:%M:%S')} 北京时间
+          - 当前状态：in-progress
+          - 预计处理：P0 24h / P1 本周 / P2 迭代内
+          - 代码变更将直接推送到 main，经 CI 后自动部署
+
+          > 如属其他同事负责，请回复「转交 + 人名」，小扣子会转分配。'''
+          print(json.dumps({'body': body}))
+          ")
+
+            COMMENT_RESULT=$(curl -s -w "\nHTTPCODE=%{http_code}" \
+              -X POST \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "Content-Type: application/json" \
+              -d "$COMMENT_JSON" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/$num/comments")
+
+            COMMENT_HTTP=$(echo "$COMMENT_RESULT" | tail -1 | grep 'HTTPCODE=' | sed 's/.*HTTPCODE=//')
+            echo "  comment API 返回 HTTP $COMMENT_HTTP"
+
+            echo "  ✓ 已添加 assignee + in-progress 标签 + 认领评论"
+          done
+          unset IFS
 
       - name: 汇总报告
         if: always()

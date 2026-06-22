@@ -1,7 +1,8 @@
-/* feedback-widget.js v1.0 | 风声互动反馈组件
+/* feedback-widget.js v1.1 | 风声互动反馈组件
  * 用法：<script src="/feedback-widget.js" data-module="quality-test"></script>
  * 事件类型：sentiment（👍/👎）、rating（1-5星）、feedback（文本）
- * 数据推送：POST /api/event
+ * 数据推送：sentiment/rating → POST /api/event（埋点），feedback → POST /api/feedback（反馈）
+ * fix: sendBeacon 补 Content-Type: application/json，修复 Cloudflare Functions 路由解析
  */
 
 (function() {
@@ -178,13 +179,17 @@
         source: 'feedback-widget',
         t: Date.now()
       };
+      var body = JSON.stringify(payload);
+      // 文本反馈走 /api/feedback，埋点事件走 /api/event
+      var endpoint = data.type === 'feedback' ? '/api/feedback' : '/api/event';
       if (navigator.sendBeacon) {
-        navigator.sendBeacon('/api/event', JSON.stringify(payload));
+        var blob = new Blob([body], { type: 'application/json' });
+        navigator.sendBeacon(endpoint, blob);
       } else {
-        fetch('/api/event', {
+        fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          body: body,
           keepalive: true
         }).catch(function() {});
       }
