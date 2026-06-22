@@ -352,5 +352,113 @@ function copyPrompt() {
 }
 </script>
 
+
+<!-- 反馈组件 -->
+<div style="max-width:900px;margin:0 auto;padding:0 20px">
+  <div class="fs-feedback-widget" id="fs-feedback">
+    <div class="fs-fb-title">📣 你的反馈，决定产品方向</div>
+    <div class="fs-fb-subtitle">评分 + 建议，帮我们把产品做对</div>
+    <div class="fs-fb-stars" id="fs-fb-stars">
+      <span class="fs-star" data-score="1">☆</span>
+      <span class="fs-star" data-score="2">☆</span>
+      <span class="fs-star" data-score="3">☆</span>
+      <span class="fs-star" data-score="4">☆</span>
+      <span class="fs-star" data-score="5">☆</span>
+    </div>
+    <div class="fs-fb-score-label" id="fs-fb-score-label">点击星星评分</div>
+    <textarea class="fs-fb-text" id="fs-fb-text" placeholder="有什么建议或想法？（选填，50字以上更容易被采纳）"></textarea>
+    <input class="fs-fb-contact" id="fs-fb-contact" type="text" placeholder="手机号/微信（选填，方便我们联系你）" />
+    <button class="fs-fb-submit" id="fs-fb-submit" disabled>提交反馈</button>
+    <div class="fs-fb-result" id="fs-fb-result"></div>
+  </div>
+</div>
+
+<!-- 反馈组件 v3 样式 + 逻辑 -->
+<style>
+.fs-feedback-widget{max-width:640px;margin:32px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(44,95,58,0.10);text-align:center;font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif}
+.fs-fb-title{font-size:17px;font-weight:700;color:#2C5F3A;margin-bottom:4px}
+.fs-fb-subtitle{font-size:13px;color:#888;margin-bottom:16px}
+.fs-fb-stars{font-size:36px;margin-bottom:8px;user-select:none;display:flex;justify-content:center;gap:6px}
+.fs-star{cursor:pointer;color:#ddd;transition:color 0.2s,transform 0.15s;display:inline-block}
+.fs-star:hover,.fs-star.active{color:#E8742C;transform:scale(1.18)}
+.fs-fb-score-label{font-size:13px;color:#888;margin-bottom:16px;min-height:20px}
+.fs-fb-text{width:100%;min-height:64px;padding:10px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f4ef;resize:vertical;outline:none;box-sizing:border-box;margin-bottom:10px;font-family:inherit}
+.fs-fb-text:focus{border-color:#2C5F3A}
+.fs-fb-contact{width:100%;padding:9px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f4ef;outline:none;box-sizing:border-box;margin-bottom:14px;font-family:inherit}
+.fs-fb-contact:focus{border-color:#2C5F3A}
+.fs-fb-submit{width:100%;padding:12px 0;background:#2C5F3A;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:background 0.2s;font-family:inherit}
+.fs-fb-submit:disabled{background:#b5a89a;cursor:not-allowed}
+.fs-fb-submit:not(:disabled):hover{background:#1e3d26}
+.fs-fb-result{margin-top:12px;font-size:14px;min-height:22px}
+.fs-fb-result.success{color:#2C5F3A}
+.fs-fb-result.error{color:#c0392b}
+@media(max-width:640px){.fs-feedback-widget{margin:20px 12px;padding:18px 14px}.fs-fb-stars{font-size:30px;gap:4px}}
+</style>
+<script>
+  (function() {
+    var s = document.querySelectorAll('#fs-fb-stars .fs-star');
+    var l = document.getElementById('fs-fb-score-label');
+    var b = document.getElementById('fs-fb-submit');
+    var t = document.getElementById('fs-fb-text');
+    var c = document.getElementById('fs-fb-contact');
+    var r = document.getElementById('fs-fb-result');
+    var n = 0;
+    var labels = ['',
+      '☆ 1分 · 不可用', '☆ 2分 · 需大幅改进',
+      '☆ 3分 · 一般', '☆ 4分 · 好用', '★ 5分 · 超预期'];
+
+    s.forEach(function(star) {
+      star.addEventListener('mouseenter', function() {
+        var i = parseInt(star.dataset.score);
+        h(i); l.textContent = labels[i];
+      });
+      star.addEventListener('mouseleave', function() {
+        h(n); l.textContent = n > 0 ? labels[n] : '点击星星评分';
+      });
+      star.addEventListener('click', function() {
+        n = parseInt(star.dataset.score);
+        h(n); l.textContent = labels[n]; b.disabled = false;
+      });
+    });
+
+    function h(i) {
+      s.forEach(function(star) {
+        var j = parseInt(star.dataset.score);
+        star.textContent = j <= i ? '★' : '☆';
+        star.classList.toggle('active', j <= i);
+      });
+    }
+
+    b.addEventListener('click', function() {
+      if (n === 0) { r.textContent = '请先点击星星评分';
+        r.className = 'fs-fb-result error'; return; }
+      b.disabled = true; b.textContent = '提交中...';
+      fetch('/api/feedback', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          module: 'breeder', score: n,
+          content: t.value.trim() || null,
+          contact: c.value.trim() || null,
+          source: 'web'
+        })
+      }).then(function(x) { return x.json(); })
+      .then(function(d) {
+        if (d.ok) {
+          r.textContent = '✓ 反馈已收到，谢谢你的贡献！';
+          r.className = 'fs-fb-result success';
+          t.value = ''; c.value = ''; n = 0; h(0);
+          l.textContent = '点击星星评分';
+          b.disabled = true; b.textContent = '提交反馈';
+        } else throw new Error(d.error || '提交失败');
+      }).catch(function(e) {
+        r.textContent = '提交失败，请稍后重试：' + e.message;
+        r.className = 'fs-fb-result error';
+        b.disabled = false; b.textContent = '重新提交';
+      });
+    });
+  })();
+</script>
+
 </body>
 </html>
