@@ -933,11 +933,8 @@ function trackEvent(type, data){
   if(type==='assessment_completed'){ u.totalCompletions++; u.monthCompletions++; }
   u.history.push({type,time:now.toISOString(),data});
   saveUsage(usage);
-  // 上报到 formsubmit（与 assessment.html 共用通道）
-  fetch('https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de', {
-    method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
-    body: JSON.stringify({type,identity,data,_subject:'六维品质测评数据',_replyto:'yu-er@coze.email'})
-  }).catch(()=>{});
+  // v2.1: 移除 formsubmit.co 邮箱推送，改用内部 tracker
+  if (typeof track === 'function') track(type, {identity, data});
   updateStatsDisplay(key);
 }
 

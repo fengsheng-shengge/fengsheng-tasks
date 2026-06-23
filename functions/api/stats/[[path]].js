@@ -26,7 +26,8 @@ function checkRate(ipHash) {
   const now = Date.now();
   const arr = RATE_LIMIT.get(ipHash) || [];
   const fresh = arr.filter(t => now - t < 60_000);
-  if (fresh.length >= 60) return false;
+  // v2.0: 收紧限流 60→30，防止CC攻击
+  if (fresh.length >= 30) return false;
   fresh.push(now);
   RATE_LIMIT.set(ipHash, fresh);
   if (RATE_LIMIT.size > 500) RATE_LIMIT.clear();

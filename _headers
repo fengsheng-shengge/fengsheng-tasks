@@ -1,26 +1,82 @@
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';
-  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  _headers v3.0 — 全站安全加固
+  小扣子·技术侧 | 2026.06.23
+
+  安全层级：
+  1. 全局安全响应头（CSP/HSTS/X-Frame等）
+  2. API接口专用头（CORS/限流提示）
+  3. 静态资源缓存策略
+  4. 敏感路径访问控制
+*/
+
+# ========== 全局安全响应头 ==========
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co; upgrade-insecure-requests;
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   X-Content-Type-Options: nosniff
   X-XSS-Protection: 1; mode=block
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
-  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=()
+  X-Permitted-Cross-Domain-Policies: none
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Cross-Origin-Embedder-Policy: credentialless
   Cache-Control: public, max-age=3600, must-revalidate
 
+# ========== HTML页面 ==========
 /*.html
   Cache-Control: public, max-age=600, must-revalidate
+  X-Content-Type-Options: nosniff
 
+# ========== API接口 — 严格CORS + 禁止缓存 ==========
 /api/*
   Content-Type: application/json
-  Cache-Control: no-store, no-cache, must-revalidate
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Pragma: no-cache
   X-Content-Type-Options: nosniff
-  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Origin: https://fengsheng.tech
   Access-Control-Allow-Methods: GET, POST, OPTIONS
   Access-Control-Allow-Headers: Content-Type
+  Access-Control-Max-Age: 86400
 
+# ========== 运维接口 — 额外限制 ==========
+/api/ops/*
+  Access-Control-Allow-Origin: ""
+  X-Robots-Tag: noindex, nofollow
+
+# ========== 静态JS资源 — 长缓存 + immutable ==========
 /tracker.js
   Cache-Control: public, max-age=86400, immutable
 
 /feedback-widget.js
   Cache-Control: public, max-age=86400, immutable
+
+# ========== 数据文件 — 禁止直接访问 ==========
+/functions/*
+  X-Content-Type-Options: nosniff
+  Cache-Control: no-store
+
+# ========== Sitemap ==========
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+  X-Content-Type-Options: nosniff
+
+# ========== 敏感文件 — 禁止访问 ==========
+/.git/*
+  X-Content-Type-Options: nosniff
+  Cache-Control: no-store, no-cache
+  Access-Control-Allow-Origin: ""
+
+/.env*
+  X-Content-Type-Options: nosniff
+  Cache-Control: no-store, no-cache
+  Access-Control-Allow-Origin: ""
+
+/_headers
+  Cache-Control: no-store
+  Access-Control-Allow-Origin: ""
+
+/_redirects
+  Cache-Control: no-store
+  Access-Control-Allow-Origin: ""

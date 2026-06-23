@@ -853,11 +853,8 @@ function showReport() {
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // 上报测评数据到 formsubmit（与 assessment.html 共用通道）
-  fetch('https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de', {
-    method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
-    body: JSON.stringify({event_type:'care_test_completed',total:total,avg:avg,weakDims:weakDims,_subject:'四维关怀测评数据',_replyto:'yu-er@coze.email'})
-  }).catch(()=>{});
+  // v2.1: 移除 formsubmit.co 邮箱推送，改用内部 tracker
+  if (typeof track === 'function') track('care_test_completed', {total: total, avg: avg, weakDims: weakDims});
 }
 
 // ============================================================
