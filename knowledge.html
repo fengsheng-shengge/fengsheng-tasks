@@ -437,37 +437,27 @@ track("page_view",{referrer:document.referrer});
 <script>
 const _startTime = Date.now();
 function track(eventType, extra = {}) {
+  // v2.1: 移除 formsubmit.co 邮箱推送，改用内部 tracker 防止垃圾邮件
   const data = {
     event_type: eventType,
     page: "/knowledge.html",
     timestamp: new Date().toISOString(),
     duration_sec: eventType === 'page_view' ? 0 : Math.round((Date.now() - _startTime) / 1000),
-    ...extra,
-    _replyto: "yu-er@coze.email",
-    _subject: "知识底座数据回传"
+    ...extra
   };
-  fetch("https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de", {
-    method: "POST",
-    headers: {"Content-Type": "application/json", "Accept": "application/json"},
-    body: JSON.stringify(data)
-  }).catch(() => {});
+  // 数据仅通过 tracker.js 上报到 /api/event，不再外发邮箱
+  if (typeof track === 'function') track(eventType, extra);
 }
 document.addEventListener("visibilitychange", function() {
   if (document.visibilityState === "hidden") {
-    navigator.sendBeacon("https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de",
-      JSON.stringify({event_type:"page_leave",page:"/knowledge.html",timestamp:new Date().toISOString(),
-        duration_sec:Math.round((Date.now()-_startTime)/1000),
-        _replyto:"yu-er@coze.email",_subject:"知识底座数据回传"}));
+    if (typeof track === 'function') track("page_leave", {
+      duration_sec: Math.round((Date.now()-_startTime)/1000)
+    });
   }
 });
 
 function sendFeedback(type){
-  track("feedback",{feedback:type});
-  fetch('https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de',{
-    method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
-    body:JSON.stringify({page:location.pathname,feedback:type,timestamp:new Date().toISOString(),
-      _replyto:'yu-er@coze.email',_subject:'用户反馈'})
-  }).catch(()=>{});
+  if (typeof track === 'function') track("feedback", {feedback: type, sentiment: type === '👍' ? 1 : -1});
   document.querySelectorAll('.feedback-btn').forEach(b=>b.classList.remove('active'));
   event.target.classList.add('active');
   alert(type==='👍'?'感谢认可！我们会继续努力 💪':'收到！我们会持续改进 🙏');

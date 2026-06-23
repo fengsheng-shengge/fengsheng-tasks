@@ -1138,23 +1138,12 @@ function submitData(role, overall, empathy, decision, L1, L2, L3, eScores, dScor
     warm_e: eScores.warm, warm_d: dScores.warm,
     beauty_e: eScores.beauty, beauty_d: dScores.beauty,
     cozy_e: eScores.cozy, cozy_d: dScores.cozy,
-    _replyto: 'yu-er@coze.email',
-    _subject: '能力测评数据回传'
+    source: 'assessment'
   };
   
-  // FormSubmit
-  fetch('https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-    body: JSON.stringify(data)
-  }).catch(() => {});
-  
-  // Web3Forms 备用
-  fetch('https://api.web3forms.com/submit', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({...data, event_type:"quiz_complete",duration_sec:Math.round((Date.now()-_startTime)/1000),access_key:"27c926eb-07d8-4a71-8bf8-f30ad73f8e39"})
-  }).catch(() => {});
+  // v2.1: 移除 formsubmit.co 和 web3forms 邮箱推送，防止垃圾邮件
+  // 数据仅通过 tracker.js 上报到 /api/event
+  if (typeof track === 'function') track('quiz_complete', data);
 }
 
 // ========== 数据监测 ==========
@@ -1165,15 +1154,12 @@ function track(eventType, extra = {}) {
     page: "/assessment.html",
     timestamp: new Date().toISOString(),
     duration_sec: eventType === 'page_view' ? 0 : Math.round((Date.now() - _startTime) / 1000),
-    ...extra,
-    _replyto: "yu-er@coze.email",
-    _subject: "能力测评数据回传"
+    ...extra
   };
-  fetch("https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de", {
-    method: "POST",
-    headers: {"Content-Type": "application/json", "Accept": "application/json"},
-    body: JSON.stringify(data)
-  }).catch(() => {});
+  // 仅内部上报，不再外发邮箱
+  if (window._fsQueue) {
+    window._fsQueue.push(data);
+  }
 }
 document.addEventListener("visibilitychange", function() {
   if (document.visibilityState === "hidden") {

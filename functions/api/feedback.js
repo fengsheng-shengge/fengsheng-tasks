@@ -1,10 +1,11 @@
 // ============================================================
-// Cloudflare Pages Function: /api/feedback  v2.0
+// Cloudflare Pages Function: /api/feedback  v2.1
 // 对应作战方案 v1.1 · 110人验证线
 // 小扣子（技术侧）
 //
 // POST /api/feedback  — 提交一条反馈（公开）
 // GET  /api/feedback?key=fs-admin-2026&product=xxx — 管理查询
+// v2.1: 增加反垃圾邮件过滤（内容关键词 + 链接检测 + 重复内容）
 // ============================================================
 
 const PRODUCT_WHITELIST = new Set([
@@ -12,6 +13,27 @@ const PRODUCT_WHITELIST = new Set([
   'reply', 'goals', 'index', 'about',
   'assessment', 'care-test', 'quality-test', 's1-report', 'other'
 ]);
+
+// 反垃圾关键词列表
+const SPAM_KEYWORDS = [
+  'viagra', 'cialis', 'casino', 'lottery', 'win money', 'earn $', 'make money',
+  'click here', 'buy now', 'order now', 'limited time', 'act now',
+  'free gift', 'congratulations', 'you won', 'winner', 'prize',
+  'debt', 'loan', 'credit card', 'mortgage', 'insurance',
+  'weight loss', 'diet pill', 'muscle', 'supplement',
+  'hot singles', 'dating', 'sexy', 'adult', 'xxx',
+  'crypto', 'bitcoin', 'investment opportunity', 'double your',
+  ' Nigerian', 'prince', 'inheritance', 'wire transfer',
+  'urgent', 'important notice', 'verify your account', 'suspended',
+  '发情', '约炮', '博彩', '彩票', '兼职刷单', '信用卡套现',
+  '贷款', '高利贷', '代孕', '毒品', '枪支'
+];
+
+const SPAM_URL_PATTERNS = [
+  /https?:\/\/[^\s]+\.(tk|ml|ga|cf|top|xyz|click|link|work)/i,
+  /bit\.ly|tinyurl|t\.co|goo\.gl|short\.link/i,
+  /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g
+];
 
 // 简单内存限流（单 Worker 进程内生效）
 const RATE_LIMIT = new Map(); // key -> [{ts: ms, ...}]
@@ -52,6 +74,35 @@ function checkRateLimit(uid, ipHash) {
     }
   }
   return true;
+}
+
+// 反垃圾检测
+function isSpam(content, contact) {
+  const text = (content + ' ' + contact).toLowerCase();
+  
+  // 1. 关键词检测
+  for (const kw of SPAM_KEYWORDS) {
+    if (text.includes(kw.toLowerCase())) return { spam: true, reason: 'keyword: ' + kw };
+  }
+  
+  // 2. URL模式检测
+  for (const pattern of SPAM_URL_PATTERNS) {
+    if (pattern.test(text)) return { spam: true, reason: 'suspicious link pattern' };
+  }
+  
+  // 3. 链接数量检测（正常反馈不会有很多链接）
+  const linkCount = (text.match(/https?:\/\//g) || []).length;
+  if (linkCount > 2) return { spam: true, reason: 'too many links: ' + linkCount };
+  
+  // 4. 重复字符检测（垃圾邮件常见特征）
+  const repeatedChars = /(.)(\1{10,})/;
+  if (repeatedChars.test(text)) return { spam: true, reason: 'repeated characters' };
+  
+  // 5. 全大写比例检测
+  const upperRatio = (text.match(/[A-Z]/g) || []).length / Math.max(text.length, 1);
+  if (upperRatio > 0.7 && text.length > 20) return { spam: true, reason: 'excessive caps' };
+  
+  return { spam: false };
 }
 
 function errJson(code, msg) {
@@ -129,6 +180,14 @@ export async function onRequest(context) {
 
       if (!checkRateLimit(uid, ipHash)) {
         return errJson(429, 'too many requests, please wait a moment');
+      }
+
+      // v2.1: 反垃圾邮件检测
+      const spamCheck = isSpam(content, contact);
+      if (spamCheck.spam) {
+        // 记录垃圾邮件但不入库，返回成功避免暴露检测逻辑
+        console.log('Spam blocked:', spamCheck.reason, 'IP:', ipHash, 'UA:', userAgent.slice(0, 100));
+        return okJson({ ok: true, id: null, note: 'feedback received' });
       }
 
       const result = await env.DB.prepare(
