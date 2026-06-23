@@ -6,12 +6,11 @@
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <title>管理看板 · 风声 fengsheng.tech</title>
-<meta name="description" content="风声运营数据看板 — 实时追踪110人验证目标、产品使用数据、核心运营指标。">
-<meta name="keywords" content="运营看板,数据监控,110人验证,风声,fengsheng,dashboard">
+<meta name="description" content="风声产品质量看板 — 追踪交互深度、用户粘性、反馈密度、验证线进度。">
+<meta name="keywords" content="运营看板,产品质量,交互深度,110人验证,风声,fengsheng,dashboard">
 <meta name="theme-color" content="#0f172a">
-<meta property="og:title" content="运营看板 · 风声 fengsheng.tech">
-<meta property="og:description" content="实时追踪110人验证目标、产品使用数据、核心运营指标。">
-<meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%230f172a'/><text x='100' y='280' font-family='sans-serif' font-size='72' fill='%233b82f6' font-weight='700'>运营看板</text><text x='100' y='360' font-family='sans-serif' font-size='36' fill='%23e2e8f0'>数据驱动 · 目标可视</text></svg>">
+<meta property="og:title" content="质量看板 · 风声 fengsheng.tech">
+<meta property="og:description" content="追踪交互深度、用户粘性、反馈密度、验证线进度。">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <style>
@@ -31,7 +30,6 @@ a{color:#60a5fa;text-decoration:none}
 .badge{display:inline-block;font-size:11px;padding:4px 10px;border-radius:12px;font-weight:600}
 .badge-live{background:#14532d;color:#86efac}
 .badge-demo{background:#713f12;color:#fbbf24}
-.badge-warn{background:#450a0a;color:#fca5a5}
 /* KPI row */
 .kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
 .kpi-card{background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;display:flex;flex-direction:column;gap:6px}
@@ -46,6 +44,11 @@ a{color:#60a5fa;text-decoration:none}
 .kpi-sub{font-size:12px;color:#64748b;margin-top:2px}
 .kpi-bar{height:4px;background:#334155;border-radius:2px;margin-top:4px;overflow:hidden}
 .kpi-bar-fill{height:100%;border-radius:2px;transition:width .8s}
+/* quality score */
+.quality-ring{display:flex;align-items:center;gap:16px}
+.quality-svg{flex-shrink:0}
+.quality-detail{font-size:12px;color:#94a3b8;line-height:1.8}
+.quality-detail span{color:#e2e8f0;font-weight:600}
 /* section */
 .section{margin-bottom:24px}
 .section-title{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #1e293b}
@@ -74,28 +77,29 @@ a{color:#60a5fa;text-decoration:none}
 .product-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
 .product-name{font-size:15px;font-weight:700;color:#f8fafc}
 .product-owner{font-size:11px;color:#64748b;margin-top:2px}
-.product-nums{display:flex;gap:16px;align-items:baseline;margin-bottom:8px}
-.product-now{font-size:24px;font-weight:700;color:#e2e8f0;line-height:1}
-.product-now small{font-size:12px;color:#64748b;font-weight:500}
-.product-target{font-size:13px;color:#64748b}
+.product-metrics{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:8px}
+.pm-item{font-size:11px;color:#94a3b8}
+.pm-item .pm-val{color:#e2e8f0;font-weight:700;font-size:14px}
+.pm-item .pm-unit{color:#64748b;font-size:11px;font-weight:500}
 .product-bar{height:6px;background:#334155;border-radius:3px;margin-bottom:8px;overflow:hidden}
 .product-bar-fill{height:100%;border-radius:3px;transition:width .8s}
-.product-week{font-size:11px;color:#64748b;padding:4px 0;border-top:1px solid #1e293b}
-.product-week span{color:#94a3b8;font-weight:600}
+.product-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:8px;font-weight:600;margin-right:4px}
+.tag-hot{background:#450a0a;color:#fca5a5}
+.tag-growing{background:#14532d;color:#86efac}
+.tag-cold{background:#1e293b;color:#64748b;border:1px solid #334155}
 /* agents grid */
-.agents{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.agent-card{background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155}
-.agent-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.agent-name{font-size:15px;font-weight:700}
-.agent-role{font-size:11px;color:#64748b;margin-top:2px}
-.agent-status{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600}
+.agents{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.agent-card{background:#1e293b;border-radius:14px;padding:16px 18px;border:1px solid #334155}
+.agent-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.agent-name{font-size:14px;font-weight:700}
+.agent-role{font-size:10px;color:#64748b;margin-top:2px}
+.agent-status{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
 .agent-status.on{background:#14532d;color:#86efac}
 .agent-status.warn{background:#713f12;color:#fbbf24}
 .agent-status.off{background:#450a0a;color:#fca5a5}
-.agent-tasks{font-size:12px;color:#94a3b8;line-height:1.6}
-.agent-tasks li{margin-bottom:3px;padding-left:8px}
+.agent-tasks{font-size:11px;color:#94a3b8;line-height:1.5;margin:0;padding-left:14px}
+.agent-tasks li{margin-bottom:2px}
 .agent-tasks li::marker{color:#64748b}
-.agent-deadline{font-size:11px;color:#64748b;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b}
 /* chart area */
 .chart-area{background:#1e293b;border-radius:14px;padding:20px 24px;border:1px solid #334155;margin-bottom:24px}
 .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
@@ -103,9 +107,6 @@ a{color:#60a5fa;text-decoration:none}
 .chart-legend{display:flex;gap:16px;font-size:12px;color:#94a3b8}
 .chart-legend span{display:flex;align-items:center;gap:6px}
 .chart-legend .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
-.chart-legend .dot.blue{background:#3b82f6}
-.chart-legend .dot.purple{background:#a855f7}
-.chart-legend .dot.green{background:#22c55e}
 .chart-svg{width:100%;height:auto}
 /* health row */
 .health-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
@@ -116,9 +117,13 @@ a{color:#60a5fa;text-decoration:none}
 .health-dot.fail{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.4)}
 .health-label{font-size:12px;color:#94a3b8}
 .health-value{font-size:14px;font-weight:600;color:#f8fafc}
-/* loading state */
-.loading{color:#64748b;font-size:13px;padding:20px;text-align:center}
-.error{color:#fca5a5;font-size:13px;padding:20px;text-align:center}
+/* feedback stream */
+.feedback-stream{max-height:200px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#334155 transparent}
+.fb-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #1e293b;font-size:12px}
+.fb-item:last-child{border-bottom:none}
+.fb-product{color:#60a5fa;font-weight:600;min-width:80px}
+.fb-text{color:#94a3b8;flex:1}
+.fb-time{color:#475569;font-size:11px;min-width:50px;text-align:right}
 /* footer */
 .footer{text-align:center;padding:20px;font-size:11px;color:#475569;border-top:1px solid #1e293b;margin-top:24px}
 .hidden{display:none}
@@ -137,43 +142,14 @@ a{color:#60a5fa;text-decoration:none}
 </style>
 </head>
 <body>
-
-<!-- 风声统一导航栏（深色版） -->
-<nav class="fs-nav-dark">
-  <a href="/" class="fs-nav-dark-brand">🌬️ <span>风声</span></a>
-  <div class="fs-nav-dark-links">
-    <a href="/">首页</a>
-    <a href="/quality-test/">品质测评</a>
-    <a href="/care-test/">关怀测评</a>
-    <a href="/reply/">客户解码</a>
-    <a href="/s1-report/">带看报告</a>
-    <a href="/knowledge.html">知识底座</a>
-    <a href="/dashboard/">管理看板</a>
-  </div>
-  <button class="fs-nav-dark-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
-</nav>
-<style>
-.fs-nav-dark{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:48px;background:#1e293b;border-bottom:1px solid #334155;position:sticky;top:0;z-index:100}
-.fs-nav-dark-brand{font-size:15px;font-weight:700;color:#e2e8f0;text-decoration:none;display:flex;align-items:center;gap:4px}
-.fs-nav-dark-links{display:flex;gap:4px}
-.fs-nav-dark-links a{padding:4px 10px;font-size:12px;color:#94a3b8;text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
-.fs-nav-dark-links a:hover{background:rgba(59,130,246,.15);color:#60a5fa}
-.fs-nav-dark-menu{display:none;background:none;border:none;font-size:18px;cursor:pointer;color:#94a3b8;padding:8px}
-@media (max-width:767px){
-  .fs-nav-dark-links{display:none;position:absolute;top:48px;left:0;right:0;background:#1e293b;flex-direction:column;padding:10px;border-bottom:1px solid #334155;box-shadow:0 4px 12px rgba(0,0,0,.3)}
-  .fs-nav-dark.open .fs-nav-dark-links{display:flex}
-  .fs-nav-dark-menu{display:block}
-}
-</style>
-
 <a class="skip-nav" href="#main">跳到主要内容</a>
 <div class="header">
   <div>
-    <h1>🌊 风声团队 · 管理看板</h1>
-    <div class="sub">v2.0 · 作战方案 v1.2 对齐 · 110人验证线实时追踪</div>
+    <h1>🌊 风声 · 质量看板</h1>
+    <div class="sub">v3.0 · 产品质量优先 · 交互深度 / 用户粘性 / 反馈密度 / 验证线</div>
   </div>
   <div class="header-right">
-    <span id="status-badge" class="badge badge-live">● 实时数据</span>
+    <span id="status-badge" class="badge badge-demo">▲ 静态数据</span>
     <span id="last-update" style="font-size:11px;color:#64748b"></span>
     <button class="btn-refresh" onclick="refreshAll()" title="手动刷新">⟳ 刷新</button>
   </div>
@@ -181,52 +157,58 @@ a{color:#60a5fa;text-decoration:none}
 
 <div id="main" class="container">
 
-  <!-- KPI cards -->
+  <!-- KPI: 质量优先 -->
   <div class="kpi-row">
     <div class="kpi-card primary">
-      <div class="kpi-label">已验证用户</div>
-      <div class="kpi-value" id="kpi-users" style="color:#3b82f6">—</div>
-      <div class="kpi-sub">目标 110 人</div>
-      <div class="kpi-bar"><div class="kpi-bar-fill" id="kpi-users-bar" style="width:0%;background:#3b82f6"></div></div>
+      <div class="kpi-label">交互深度</div>
+      <div class="kpi-value" id="kpi-depth" style="color:#3b82f6">—</div>
+      <div class="kpi-sub">人均交互次数 (click+action)/UV</div>
     </div>
     <div class="kpi-card success">
-      <div class="kpi-label">总访问量 PV</div>
-      <div class="kpi-value" id="kpi-pv" style="color:#22c55e">—</div>
-      <div class="kpi-sub">累计页面浏览</div>
+      <div class="kpi-label">人均浏览</div>
+      <div class="kpi-value" id="kpi-pages" style="color:#22c55e">—</div>
+      <div class="kpi-sub">页/人 · 越高内容越吸引</div>
     </div>
     <div class="kpi-card warning">
-      <div class="kpi-label">用户反馈</div>
-      <div class="kpi-value" id="kpi-fb" style="color:#f59e0b">—</div>
+      <div class="kpi-label">反馈密度</div>
+      <div class="kpi-value" id="kpi-feedback" style="color:#f59e0b">—</div>
       <div class="kpi-sub">反馈率 <span id="kpi-fb-rate">—</span></div>
     </div>
     <div class="kpi-card accent">
-      <div class="kpi-label">活跃产品</div>
-      <div class="kpi-value" id="kpi-products" style="color:#a855f7">—</div>
-      <div class="kpi-sub">有用户访问的产品线</div>
+      <div class="kpi-label">验证线进度</div>
+      <div class="kpi-value" id="kpi-verify" style="color:#a855f7">—</div>
+      <div class="kpi-sub">目标 110 人真实使用</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" id="kpi-verify-bar" style="width:0%;background:#a855f7"></div></div>
     </div>
     <div class="kpi-card danger">
-      <div class="kpi-label">本周目标</div>
-      <div class="kpi-value" id="kpi-weekly" style="color:#ef4444">—</div>
-      <div class="kpi-sub">W1 6.18-6.24 需 +5 人</div>
+      <div class="kpi-label">产品质量分</div>
+      <div class="quality-ring">
+        <svg class="quality-svg" width="64" height="64" viewBox="0 0 64 64" id="quality-ring-svg">
+          <circle cx="32" cy="32" r="28" fill="none" stroke="#334155" stroke-width="4"/>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="176" stroke-dashoffset="176" stroke-linecap="round" transform="rotate(-90 32 32)" id="quality-ring-circle"/>
+          <text x="32" y="36" text-anchor="middle" font-size="16" font-weight="700" fill="#e2e8f0" id="quality-ring-text">—</text>
+        </svg>
+        <div class="quality-detail" id="quality-detail">加载中…</div>
+      </div>
     </div>
   </div>
 
   <!-- milestones -->
-  <div class="section-title"><h2>🎯 项目里程碑</h2><span class="tag tag-m1">v1.2</span></div>
+  <div class="section-title"><h2>🎯 里程碑</h2><span class="tag tag-m1">产品质量驱动</span></div>
   <div class="milestones" id="milestones">
-    <div class="milestone active"><div class="m-label">M1</div><div class="m-name">闭环基建</div><div class="m-date">6.30</div><div class="m-target">API+埋点+缓存上线 · Agent培养师≥20人</div><div class="m-bar"><div class="m-bar-fill" style="width:60%;background:#3b82f6"></div></div></div>
-    <div class="milestone"><div class="m-label">M2</div><div class="m-name">模型验证</div><div class="m-date">7.15</div><div class="m-target">Agent培养师闭环跑通 · 客户解码器≥15人</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#a855f7"></div></div></div>
-    <div class="milestone"><div class="m-label">M3</div><div class="m-name">三线并推</div><div class="m-date">7.31</div><div class="m-target">全产品≥15人 · 看板上线 · 留存分析</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#f59e0b"></div></div></div>
-    <div class="milestone"><div class="m-label">M4</div><div class="m-name">全面达标</div><div class="m-date">9.01</div><div class="m-target">Agent培养师≥30人 + 4产品各≥20人 = 110人</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#22c55e"></div></div></div>
+    <div class="milestone active"><div class="m-label">M1</div><div class="m-name">质量基线</div><div class="m-date">6.30</div><div class="m-target">交互深度≥3次/人 · 反馈率≥5% · Agent培养师≥20人</div><div class="m-bar"><div class="m-bar-fill" style="width:40%;background:#3b82f6"></div></div></div>
+    <div class="milestone"><div class="m-label">M2</div><div class="m-name">粘性验证</div><div class="m-date">7.15</div><div class="m-target">人均浏览≥4页 · 回访率≥15% · 客户解码器≥15人</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#a855f7"></div></div></div>
+    <div class="milestone"><div class="m-label">M3</div><div class="m-name">深度闭环</div><div class="m-date">7.31</div><div class="m-target">交互深度≥5 · 反馈闭环≤24h · 全产品≥15人</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#f59e0b"></div></div></div>
+    <div class="milestone"><div class="m-label">M4</div><div class="m-name">全面达标</div><div class="m-date">9.01</div><div class="m-target">110人验证线 · 产品质量分≥70 · 商业闭环跑通</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#22c55e"></div></div></div>
   </div>
 
-  <!-- 7-day trend chart -->
+  <!-- 7-day trend -->
   <div class="chart-area">
     <div class="chart-header">
-      <h2>📈 7日趋势</h2>
+      <h2>📈 7日质量趋势</h2>
       <div class="chart-legend">
-        <span><span class="dot blue"></span>PV</span>
-        <span><span class="dot purple"></span>UV</span>
+        <span><span class="dot blue"></span>交互深度</span>
+        <span><span class="dot purple"></span>人均浏览</span>
         <span><span class="dot green"></span>反馈</span>
       </div>
     </div>
@@ -234,19 +216,19 @@ a{color:#60a5fa;text-decoration:none}
   </div>
 
   <!-- Products -->
-  <div class="section-title"><h2>📦 产品线验证进度</h2><span class="tag tag-m1">周粒度目标</span></div>
+  <div class="section-title"><h2>📦 产品质量矩阵</h2><span class="tag tag-m4">交互深度·粘性·反馈</span></div>
   <div class="products" id="products-grid"></div>
 
   <!-- Agents -->
-  <div class="section-title" style="margin-top:24px"><h2>🤖 六Agent 作战状态</h2><span class="tag tag-m2">今日任务</span></div>
+  <div class="section-title" style="margin-top:24px"><h2>🤖 七Agent 作战状态</h2><span class="tag tag-m2">今日任务</span></div>
   <div class="agents" id="agents-grid"></div>
 
   <!-- Health -->
-  <div class="section-title" style="margin-top:24px"><h2>🔧 基础设施健康</h2></div>
+  <div class="section-title" style="margin-top:24px"><h2>🔧 基础设施</h2></div>
   <div class="health-row" id="health-row"></div>
 
   <div class="footer">
-    风声 · fengsheng.tech | 管理看板 v2.0 | 作战方案 v1.2 对齐 | 数据来源：D1 /api/stats
+    风声 · fengsheng.tech | 质量看板 v3.0 | 交互深度 / 粘性 / 反馈密度 / 验证线 | 数据来源：D1 /api/stats
   </div>
 </div>
 
@@ -255,149 +237,210 @@ a{color:#60a5fa;text-decoration:none}
   const API_BASE = '/api/stats';
   const GOALS = {
     total: 110,
-    products: {breeder:30, 'quality-test':20, 'care-test':20, assessment:20, 's1-report':10, reply:10}
+    /* 质量目标 */
+    interaction_depth: 5,    // 目标5次/人
+    pages_per_user: 4,       // 目标4页/人
+    feedback_rate: 5,        // 目标5%
+    quality_score: 70,       // 目标70分
+    products: {
+      breeder:      {users:30, depth:5, pages:4},
+      knowledge:    {users:20, depth:3, pages:3},
+      'care-test':  {users:20, depth:4, pages:3},
+      assessment:   {users:20, depth:4, pages:3},
+      reply:        {users:20, depth:3, pages:2},
+      'quality-test':{users:15, depth:4, pages:3}
+    }
   };
-  const WEEKLY = {
-    'breeder': {w1:5, w2:3, w3:3, w4:4, w5:3},
-    'quality-test': {w3:5, w4:6, w5:5, w6:4},
-    'care-test': {w3:4, w4:5, w5:5, w6:6},
-    'assessment': {w5:5, w6:5, w7:5, w8:5},
-    's1-report': {w6:3, w7:3, w8:4},
-    'reply': {w4:3, w5:3, w6:4}
-  };
-  let isDemo = false;
 
-  // Product metadata
+  // Product metadata — v3.0更新
   const PRODUCT_META = {
-    breeder: {name:'Agent培养师', owner:'小眼镜 · 教研', color:'#3b82f6', emoji:'🧑‍🎓', desc:'AI能力6步方法论 + 实景练习'},
-    'quality-test': {name:'六维品质测评', owner:'小眼镜 · 教研', color:'#f59e0b', emoji:'🏠', desc:'品质居住标准 + 六维自检'},
-    'care-test': {name:'四维关怀测评', owner:'小豆子 · 产品', color:'#10b981', emoji:'💚', desc:'服务者身心健康 + 职业尊严'},
-    assessment: {name:'数智能力测评', owner:'小豆子 · 产品', color:'#ef4444', emoji:'📈', desc:'8角色·6维度·成长路径'},
-    's1-report': {name:'带看报告 S1', owner:'小扣子 · 落地', color:'#8b5cf6', emoji:'📋', desc:'房源解析 + 客户画像 + 输出'},
-    reply: {name:'客户解码器', owner:'小扣子 · 落地', color:'#14b8a6', emoji:'🔍', desc:'9场景·48疑问话术库'}
+    breeder:       {name:'Agent培养师', owner:'小眼镜', color:'#3b82f6', emoji:'🧑‍🎓', desc:'AI能力6步方法论+实景练习'},
+    knowledge:     {name:'业务字典', owner:'小豆子', color:'#22c55e', emoji:'📚', desc:'9域176词条·行业唯一'},
+    'care-test':   {name:'六维品质测评', owner:'小酒窝儿', color:'#f59e0b', emoji:'⚡', desc:'品质标准+自检方法'},
+    assessment:    {name:'能力测评', owner:'小豆子', color:'#ef4444', emoji:'📈', desc:'能力维度+成长规划'},
+    reply:         {name:'客户解码器', owner:'小豆子', color:'#14b8a6', emoji:'💬', desc:'4域26场景·话术解码'},
+    'quality-test':{name:'品质检测', owner:'小酒窝儿', color:'#a855f7', emoji:'🔍', desc:'居住品质检测工具'}
   };
 
-  // Agent data — 按角色职责动态显示，避免硬编码过期日期
-  const today = new Date();
+  // Agent data — 七Agent v3.0
   const AGENTS = [
-    {name:'小鱼儿', role:'运营指挥·结果兜底', status:'on', color:'#f59e0b', emoji:'🐟',
-     tasks:['渠道内容分发·每周固定节奏','用户反馈分流跟踪','日报指标异动报警'],
-     deadline:'持续更新'},
-    {name:'小豆子', role:'产品经理·闭环设计', status:'on', color:'#3b82f6', emoji:'💻',
-     tasks:['110人验证线产品闭环','用户体验迭代','核心路径指标','Agent培养师产品设计'],
-     deadline:'本周 6.30前'},
-    {name:'小扣子', role:'技术落地·全栈开发', status:'on', color:'#22c55e', emoji:'🤖',
-     tasks:['全站API与数据模型开发','部署流程维护','Bug修复与性能优化','按需支持产品开发'],
-     deadline:'持续'},
-    {name:'小眼镜', role:'教研开发·知识底座', status:'on', color:'#a855f7', emoji:'👓',
-     tasks:['课程内容体系建设','每周内容产出','知识词条库更新'],
-     deadline:'持续'},
-    {name:'小酒窝儿', role:'品质飞轮·检核', status:'on', color:'#ef4444', emoji:'🔍',
-     tasks:['产品上线前检核','每日健康检测','用户反馈闭环'],
-     deadline:'日常'},
-    {name:'小书生', role:'内容创作', status:'on', color:'#64748b', emoji:'📖',
-     tasks:['博客文章产出','内容素材供给','图文内容优化编辑'],
-     deadline:'日常'}
+    {name:'小鱼儿', role:'运营指挥·结果兜底', status:'on', emoji:'🐟',
+     tasks:['日常调度+看板','Agent协同治理','运营数据复盘','催办跟踪']},
+    {name:'小扣子', role:'CTO·全栈开发', status:'on', emoji:'🤖',
+     tasks:['#98 FormSubmit修复','全站UX优化','CI/CD维护','技术架构决策']},
+    {name:'小豆子', role:'产品经理·闭环设计', status:'warn', emoji:'💻',
+     tasks:['#92知识底座3新域词条','#97客户解码器v2方案','#80教程补全文','#88交叉验证']},
+    {name:'小眼镜', role:'教研开发·课程', status:'on', emoji:'👓',
+     tasks:['8周课程3-8课开发','Agent培养师迭代','知识底座教研验证']},
+    {name:'小酒窝儿', role:'品质飞轮·检核', status:'on', emoji:'🔍',
+     tasks:['全站品质巡检','内容品控9项检核','V3自修能力开发','反馈闭环']},
+    {name:'小马甲', role:'本地桥梁·视频生产', status:'on', emoji:'🎬',
+     tasks:['即梦CLI本地登录','EP01/EP02短视频制作','蝉镜API打通','本地工具桥梁']},
+    {name:'小眼镜₂', role:'教研执行·知识底座', status:'on', emoji:'📘',
+     tasks:['#11课程开发执行','知识词条教研审校','产品教程内容支持']}
   ];
 
   // ---- API helpers ----
   async function fetchJSON(url) {
     const res = await fetch(url);
-    if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+    if (!res.ok) throw new Error(res.status);
     return res.json();
   }
-
   function safeFetch(url) {
-    return fetchJSON(url).catch(e => {
-      console.warn('API fetch failed:', url, e.message);
-      return null;
-    });
+    return fetchJSON(url).catch(e => { console.warn('API:', url, e.message); return null; });
+  }
+
+  // ---- Quality Score Calculation ----
+  // 综合评分 = 交互深度分(30%) + 粘性分(25%) + 反馈分(25%) + 验证进度分(20%)
+  function calcQualityScore(summary, daily) {
+    let depthScore = 0, stickinessScore = 0, feedbackScore = 0, verifyScore = 0;
+    if (summary && summary.total_users > 0) {
+      // 交互深度: clicks+actions / users, 目标5次/人
+      const totalClicks = (summary.per_product || []).reduce((s, p) => s + (p.clicks || 0), 0);
+      const depth = totalClicks / summary.total_users;
+      depthScore = Math.min(30, (depth / GOALS.interaction_depth) * 30);
+      // 粘性: pages/user, 目标4页/人
+      const ppu = summary.total_pageviews / summary.total_users;
+      stickinessScore = Math.min(25, (ppu / GOALS.pages_per_user) * 25);
+      // 反馈率
+      feedbackScore = Math.min(25, ((summary.feedback_rate_pct || 0) / GOALS.feedback_rate) * 25);
+      // 验证进度
+      verifyScore = Math.min(20, ((summary.total_users || 0) / GOALS.total) * 20);
+    }
+    const total = Math.round(depthScore + stickinessScore + feedbackScore + verifyScore);
+    return {
+      total,
+      depth: depthScore.toFixed(1),
+      stickiness: stickinessScore.toFixed(1),
+      feedback: feedbackScore.toFixed(1),
+      verify: verifyScore.toFixed(1)
+    };
   }
 
   // ---- Render functions ----
-  function renderKPIs(data) {
-    if (!data) return;
-    document.getElementById('kpi-users').innerHTML = (data.total_users||0)+'<span class="unit">人</span>';
-    document.getElementById('kpi-pv').innerHTML = (data.total_pageviews||0)+'<span class="unit">次</span>';
-    document.getElementById('kpi-fb').innerHTML = (data.total_feedback||0)+'<span class="unit">条</span>';
-    document.getElementById('kpi-fb-rate').textContent = (data.feedback_rate_pct||0)+'%';
-    const activeProducts = (data.per_product||[]).filter(p => p.users > 0).length;
-    document.getElementById('kpi-products').innerHTML = activeProducts+'<span class="unit">个</span>';
-    const progress = Math.min(100, Math.round((data.total_users||0) / GOALS.total * 100));
-    document.getElementById('kpi-users-bar').style.width = progress + '%';
-    // Weekly: simple count for now
-    document.getElementById('kpi-weekly').innerHTML = (data.total_users||0)+'<span class="unit">人</span>';
+  function renderKPIs(summary, daily) {
+    if (!summary) return;
+    const users = summary.total_users || 0;
+    const pvs = summary.total_pageviews || 0;
+    const fb = summary.total_feedback || 0;
+    const fbRate = summary.feedback_rate_pct || 0;
+
+    // 交互深度
+    const totalInteractions = (summary.per_product || []).reduce((s, p) => s + (p.clicks || 0) + (p.actions || 0), 0);
+    // 如果summary没有clicks字段，从daily算
+    let interactionDepth = 0;
+    if (totalInteractions > 0 && users > 0) {
+      interactionDepth = (totalInteractions / users).toFixed(1);
+    } else if (daily && daily.daily) {
+      const recentDay = daily.daily[daily.daily.length - 1];
+      if (recentDay && recentDay.unique_uids > 0) {
+        interactionDepth = ((recentDay.clicks || 0) / recentDay.unique_uids).toFixed(1);
+      }
+    }
+    document.getElementById('kpi-depth').innerHTML = (interactionDepth || '0') + '<span class="unit">次/人</span>';
+
+    // 人均浏览
+    const ppu = users > 0 ? (pvs / users).toFixed(1) : '0';
+    document.getElementById('kpi-pages').innerHTML = ppu + '<span class="unit">页/人</span>';
+
+    // 反馈密度
+    document.getElementById('kpi-feedback').innerHTML = fb + '<span class="unit">条</span>';
+    document.getElementById('kpi-fb-rate').textContent = fbRate + '%';
+
+    // 验证线
+    const progress = Math.min(100, Math.round(users / GOALS.total * 100));
+    document.getElementById('kpi-verify').innerHTML = users + '<span class="unit">/ ' + GOALS.total + '</span>';
+    document.getElementById('kpi-verify-bar').style.width = progress + '%';
+
+    // 产品质量分
+    const qs = calcQualityScore(summary, daily);
+    document.getElementById('quality-ring-text').textContent = qs.total;
+    const offset = 176 - (176 * qs.total / 100);
+    const ringColor = qs.total >= 70 ? '#22c55e' : (qs.total >= 40 ? '#f59e0b' : '#ef4444');
+    document.getElementById('quality-ring-circle').setAttribute('stroke-dashoffset', offset);
+    document.getElementById('quality-ring-circle').setAttribute('stroke', ringColor);
+    document.getElementById('quality-detail').innerHTML =
+      '深度 <span>' + qs.depth + '</span>/30<br>' +
+      '粘性 <span>' + qs.stickiness + '</span>/25<br>' +
+      '反馈 <span>' + qs.feedback + '</span>/25<br>' +
+      '验证 <span>' + qs.verify + '</span>/20';
   }
 
   function renderChart(dailyData) {
     const container = document.getElementById('chart-container');
     if (!dailyData || !dailyData.daily || dailyData.daily.length === 0) {
-      container.innerHTML = '<div class="loading">暂无趋势数据</div>';
+      container.innerHTML = '<div style="color:#64748b;font-size:13px;padding:20px;text-align:center">暂无趋势数据</div>';
       return;
     }
     const days = dailyData.daily;
-    const maxPV = Math.max(1, ...days.map(d => d.pageviews));
-    const maxUV = Math.max(1, ...days.map(d => d.unique_uids));
-    const maxFB = Math.max(1, ...days.map(d => d.feedbacks));
-    const globalMax = Math.max(maxPV, maxUV, maxFB);
+    // 算每日交互深度和人均浏览
+    const depthVals = days.map(d => d.unique_uids > 0 ? ((d.clicks || 0) / d.unique_uids) : 0);
+    const ppuVals = days.map(d => d.unique_uids > 0 ? ((d.pageviews || 0) / d.unique_uids) : 0);
+    const fbVals = days.map(d => d.feedbacks || 0);
+    const globalMax = Math.max(1, ...depthVals, ...ppuVals, ...fbVals);
 
     const w = 600, h = 200, pad = {l:50, r:20, t:15, b:30};
     const pw = w - pad.l - pad.r;
     const ph = h - pad.t - pad.b;
-
     function y(v) { return pad.t + ph - (v / globalMax * ph); }
     function x(i) { return pad.l + (i / Math.max(1, days.length-1)) * pw; }
 
     function polyline(arr, color) {
       let path = '';
-      for (let i = 0; i < arr.length; i++) {
-        path += (i === 0 ? 'M' : 'L') + x(i).toFixed(1) + ',' + y(arr[i]).toFixed(1) + ' ';
-      }
+      for (let i = 0; i < arr.length; i++) path += (i === 0 ? 'M' : 'L') + x(i).toFixed(1) + ',' + y(arr[i]).toFixed(1) + ' ';
       return '<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
     }
-
     function dots(arr, color) {
       return arr.map((v,i) => '<circle cx="'+x(i).toFixed(1)+'" cy="'+y(v).toFixed(1)+'" r="3" fill="'+color+'"/>').join('');
     }
-
-    const pvVals = days.map(d => d.pageviews);
-    const uvVals = days.map(d => d.unique_uids);
-    const fbVals = days.map(d => d.feedbacks);
-
     const labels = days.map((d,i) => '<text x="'+x(i).toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle" font-size="10" fill="#64748b">'+d.date.slice(5)+'</text>').join('');
 
-    container.innerHTML = '<svg viewBox="0 0 '+w+' '+h+'" class="chart-svg" role="img" aria-label="7日趋势图">' +
+    container.innerHTML = '<svg viewBox="0 0 '+w+' '+h+'" class="chart-svg" role="img" aria-label="7日质量趋势">' +
       '<line x1="'+pad.l+'" y1="'+pad.t+'" x2="'+pad.l+'" y2="'+(pad.t+ph)+'" stroke="#334155" stroke-width="1"/>' +
       '<line x1="'+pad.l+'" y1="'+(pad.t+ph)+'" x2="'+(pad.l+pw)+'" y2="'+(pad.t+ph)+'" stroke="#334155" stroke-width="1"/>' +
-      polyline(pvVals, '#3b82f6') + dots(pvVals, '#3b82f6') +
-      polyline(uvVals, '#a855f7') + dots(uvVals, '#a855f7') +
+      polyline(depthVals, '#3b82f6') + dots(depthVals, '#3b82f6') +
+      polyline(ppuVals, '#a855f7') + dots(ppuVals, '#a855f7') +
       polyline(fbVals, '#22c55e') + dots(fbVals, '#22c55e') +
       labels + '</svg>';
   }
 
   function renderProducts(data) {
     const grid = document.getElementById('products-grid');
-    if (!data || !data.per_product) {
-      grid.innerHTML = '<div class="loading">加载中…</div>';
-      return;
-    }
+    if (!data || !data.per_product) { grid.innerHTML = '<div style="color:#64748b">加载中…</div>'; return; }
     const map = {};
     data.per_product.forEach(p => { map[p.product] = p; });
     let html = '';
 
-    const order = ['breeder','quality-test','care-test','assessment','s1-report','reply'];
+    const order = ['breeder','knowledge','care-test','assessment','reply','quality-test'];
     for (const key of order) {
       const meta = PRODUCT_META[key] || {name:key, owner:'—', color:'#64748b', emoji:'📦', desc:''};
-      const d = map[key] || {users:0, pageviews:0, feedback:0};
-      const target = GOALS.products[key] || 10;
-      const pct = target > 0 ? Math.round((d.users / target) * 100) : 0;
-      const barColor = pct >= 100 ? '#22c55e' : (pct > 60 ? '#3b82f6' : (pct > 30 ? '#f59e0b' : '#64748b'));
-      const w1 = (WEEKLY[key] || {}).w1 || 0;
+      const d = map[key] || {users:0, pageviews:0, feedback:0, clicks:0};
+      const goals = GOALS.products[key] || {users:10, depth:3, pages:3};
+      const pct = goals.users > 0 ? Math.round((d.users / goals.users) * 100) : 0;
+      const barColor = pct >= 100 ? '#22c55e' : (pct > 50 ? '#3b82f6' : (pct > 20 ? '#f59e0b' : '#64748b'));
+
+      // 交互深度
+      const depth = d.users > 0 ? ((d.clicks || 0) / d.users).toFixed(1) : '0';
+      const depthColor = parseFloat(depth) >= goals.depth ? '#22c55e' : (parseFloat(depth) >= goals.depth/2 ? '#f59e0b' : '#ef4444');
+      // 人均浏览
+      const ppu = d.users > 0 ? (d.pageviews / d.users).toFixed(1) : '0';
+      const ppuColor = parseFloat(ppu) >= goals.pages ? '#22c55e' : (parseFloat(ppu) >= goals.pages/2 ? '#f59e0b' : '#ef4444');
+
+      // 热度标签
+      let tag = '';
+      if (d.users >= goals.users) tag = '<span class="product-tag tag-hot">🔥达标</span>';
+      else if (d.users > 0) tag = '<span class="product-tag tag-growing">📈增长中</span>';
+      else tag = '<span class="product-tag tag-cold">待启动</span>';
+
       html += '<div class="product-card">' +
-        '<div class="product-top"><div><div class="product-name">'+meta.emoji+' '+meta.name+'</div><div class="product-owner">'+meta.owner+'</div></div></div>' +
-        '<div class="product-nums"><div class="product-now">'+d.users+'<small> / '+target+' 人</small></div></div>' +
+        '<div class="product-top"><div><div class="product-name">'+meta.emoji+' '+meta.name+tag+'</div><div class="product-owner">'+meta.owner+' · '+meta.desc+'</div></div></div>' +
+        '<div class="product-metrics">' +
+          '<div class="pm-item">验证 <span class="pm-val" style="color:'+barColor+'">'+d.users+'</span><span class="pm-unit">/'+goals.users+'</span></div>' +
+          '<div class="pm-item">深度 <span class="pm-val" style="color:'+depthColor+'">'+depth+'</span><span class="pm-unit">次/人</span></div>' +
+          '<div class="pm-item">浏览 <span class="pm-val" style="color:'+ppuColor+'">'+ppu+'</span><span class="pm-unit">页/人</span></div>' +
+          '<div class="pm-item">反馈 <span class="pm-val">'+d.feedback+'</span><span class="pm-unit">条</span></div>' +
+        '</div>' +
         '<div class="product-bar"><div class="product-bar-fill" style="width:'+pct+'%;background:'+barColor+'"></div></div>' +
-        '<div class="product-week">本周目标：<span>+'+(w1||'—')+' 人</span> · '+meta.desc+'</div>' +
         '</div>';
     }
     grid.innerHTML = html;
@@ -413,7 +456,6 @@ a{color:#60a5fa;text-decoration:none}
       html += '<div class="agent-card">' +
         '<div class="agent-top"><div><div class="agent-name">'+a.emoji+' '+a.name+'</div><div class="agent-role">'+a.role+'</div></div><span class="agent-status '+statusClass+'">'+statusText+'</span></div>' +
         '<ul class="agent-tasks">'+tasks+'</ul>' +
-        '<div class="agent-deadline">⏰ 最近截止：'+a.deadline+'</div>' +
         '</div>';
     }
     grid.innerHTML = html;
@@ -421,80 +463,45 @@ a{color:#60a5fa;text-decoration:none}
 
   function renderHealth(data) {
     const row = document.getElementById('health-row');
-    if (!data) {
-      row.innerHTML = '<div class="loading">检查中…</div>';
-      return;
-    }
+    if (!data) { row.innerHTML = '<div style="color:#64748b">检查中…</div>'; return; }
     const ok = data.status === 'ok';
     row.innerHTML =
-      '<div class="health-card"><div class="health-dot '+(ok?'ok':'fail')+'"></div><div><div class="health-label">D1 数据库</div><div class="health-value">'+(ok?'已连接':'未连接')+'</div></div></div>' +
-      '<div class="health-card"><div class="health-dot '+(ok?'ok':'degraded')+'"></div><div><div class="health-label">events 表</div><div class="health-value">'+((data.events_count||0)>=0?'记录数：'+data.events_count:'未知')+'</div></div></div>' +
-      '<div class="health-card"><div class="health-dot '+(ok?'ok':'degraded')+'"></div><div><div class="health-label">feedback 表</div><div class="health-value">'+((data.feedback_count||0)>=0?'记录数：'+data.feedback_count:'未知')+'</div></div></div>' +
-      '<div class="health-card"><div class="health-dot '+(ok?'ok':'degraded')+'"></div><div><div class="health-label">API 服务</div><div class="health-value">'+(ok?'正常运行':'异常')+'</div></div></div>';
+      '<div class="health-card"><div class="health-dot '+(ok?'ok':'fail')+'"></div><div><div class="health-label">D1 数据库</div><div class="health-value">'+(data.db_connected?'已连接':'断开')+'</div></div></div>' +
+      '<div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">事件记录</div><div class="health-value">'+(data.events_count||0)+' 条</div></div></div>' +
+      '<div class="health-card"><div class="health-dot '+(data.feedback_count>0?'ok':'degraded')+'"></div><div><div class="health-label">用户反馈</div><div class="health-value">'+(data.feedback_count||0)+' 条</div></div></div>' +
+      '<div class="health-card"><div class="health-dot '+(ok?'ok':'degraded')+'"></div><div><div class="health-label">API 服务</div><div class="health-value">'+(ok?'正常':'异常')+'</div></div></div>';
   }
 
   // ---- Main refresh ----
   async function refreshAll() {
-    document.getElementById('status-badge').className = 'badge badge-live';
     document.getElementById('status-badge').textContent = '⟳ 刷新中…';
     const ts = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
 
-    const [summary, daily, goals, health] = await Promise.all([
+    const [summary, daily, health] = await Promise.all([
       safeFetch(API_BASE + '/summary'),
       safeFetch(API_BASE + '/daily?days=7'),
-      safeFetch(API_BASE + '/goals'),
       safeFetch(API_BASE + '/health')
     ]);
 
     if (summary) {
-      isDemo = false;
       document.getElementById('status-badge').className = 'badge badge-live';
       document.getElementById('status-badge').textContent = '● 实时数据';
-      renderKPIs(summary);
+      renderKPIs(summary, daily);
       renderProducts(summary);
     } else {
-      isDemo = true;
       document.getElementById('status-badge').className = 'badge badge-demo';
       document.getElementById('status-badge').textContent = '▲ 演示数据';
-      // Demo data
-      renderKPIs({total_users:0, total_pageviews:0, total_feedback:0, feedback_rate_pct:0, per_product:[]});
-      renderProducts({per_product: Object.keys(GOALS.products).map(k => ({product:k, users:0, pageviews:0, feedback:0}))});
+      renderKPIs({total_users:0, total_pageviews:0, total_feedback:0, feedback_rate_pct:0, per_product:[]}, null);
+      renderProducts({per_product: Object.keys(GOALS.products).map(k => ({product:k, users:0, pageviews:0, feedback:0, clicks:0}))});
     }
 
-    if (daily) {
-      renderChart(daily);
-    } else {
-      // Demo chart
-      const demo = {daily: [
-        {date:'2026-06-12',pageviews:0,unique_uids:0,feedbacks:0},
-        {date:'2026-06-13',pageviews:0,unique_uids:0,feedbacks:0},
-        {date:'2026-06-14',pageviews:0,unique_uids:0,feedbacks:0},
-        {date:'2026-06-15',pageviews:0,unique_uids:0,feedbacks:0},
-        {date:'2026-06-16',pageviews:0,unique_uids:0,feedbacks:0},
-        {date:'2026-06-17',pageviews:0,unique_uids:0,feedbacks:0},
-        {date:'2026-06-18',pageviews:0,unique_uids:0,feedbacks:0}
-      ]};
-      renderChart(demo);
-    }
-
-    if (goals) {
-      // Update KPI with goals data (more accurate)
-      document.getElementById('kpi-users').innerHTML = (goals.total_users||0)+'<span class="unit">人</span>';
-      const p = Math.min(100, Math.round((goals.total_users||0) / GOALS.total * 100));
-      document.getElementById('kpi-users-bar').style.width = p + '%';
-    }
-
-    renderHealth(health || {status:'degraded', events_count:-1, feedback_count:-1});
+    renderChart(daily || {daily:[]});
+    renderHealth(health || {status:'degraded', events_count:-1, feedback_count:-1, db_connected:false});
     renderAgents();
-
     document.getElementById('last-update').textContent = '更新：' + ts;
   }
 
-  // Initial load
-  refreshAll().then(() => {
-    // Auto refresh every 5 minutes
-    setInterval(refreshAll, 300_000);
-  });
+  refreshAll().then(() => { setInterval(refreshAll, 300_000); });
 })();
 </script>
 </body>
