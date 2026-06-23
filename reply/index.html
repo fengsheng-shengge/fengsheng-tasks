@@ -161,6 +161,47 @@ button.decoder-back{outline:none}
 .tool-name{font-size:14px;font-weight:700;color:var(--dk);margin-bottom:2px}
 .tool-desc{font-size:11px;color:var(--td);line-height:1.5}
 
+/* AI 智能解码样式 */
+.ai-decode-section{padding:0 0 24px}
+.ai-chat-container{max-width:640px;margin:0 auto;padding:0 8%}
+.ai-welcome{display:flex;gap:12px;margin-bottom:20px;align-items:flex-start}
+.ai-avatar{width:36px;height:36px;border-radius:50%;background:var(--p-bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ai-bubble{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;flex:1;box-shadow:var(--shadow)}
+.ai-bubble p{font-size:13px;color:var(--tx);line-height:1.7;margin-bottom:6px}
+.ai-bubble p:last-child{margin-bottom:0}
+.ai-bubble strong{color:var(--p-d)}
+.ai-messages{margin-bottom:16px}
+.ai-message{display:flex;gap:12px;margin-bottom:16px;align-items:flex-start;animation:fadeIn .3s ease}
+.ai-message.user{flex-direction:row-reverse}
+.ai-message .msg-bubble{max-width:80%;padding:12px 14px;border-radius:12px;font-size:13px;line-height:1.7}
+.ai-message.ai .msg-bubble{background:var(--card);border:1px solid var(--border);color:var(--tx);box-shadow:var(--shadow)}
+.ai-message.user .msg-bubble{background:var(--p);color:#fff}
+.ai-message .msg-time{font-size:10px;color:var(--td);margin-top:4px;text-align:right}
+.ai-message.ai .msg-time{text-align:left}
+.ai-dao-fa-shu{margin-top:12px;padding:14px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.ai-dao-fa-shu .dfs-row{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.ai-dao-fa-shu .dfs-row:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.ai-dao-fa-shu .dfs-label{font-size:11px;font-weight:700;margin-bottom:4px;display:inline-block;padding:2px 8px;border-radius:4px}
+.ai-dao-fa-shu .dfs-label.dao{background:var(--dao-bg);color:var(--dao)}
+.ai-dao-fa-shu .dfs-label.fa{background:var(--fa-bg);color:var(--fa)}
+.ai-dao-fa-shu .dfs-label.shu{background:var(--shu-bg);color:var(--shu)}
+.ai-dao-fa-shu .dfs-text{font-size:13px;color:var(--tx);line-height:1.7}
+.ai-input-area{display:flex;gap:8px;margin-bottom:8px}
+.ai-input-area textarea{flex:1;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;resize:none;outline:none;transition:.2s;background:var(--card)}
+.ai-input-area textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(61,90,62,.08)}
+.ai-send-btn{padding:10px 20px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.ai-send-btn:hover{background:var(--p-d)}
+.ai-send-btn:disabled{background:var(--td);cursor:not-allowed}
+.ai-send-btn svg{flex-shrink:0}
+.ai-hint{text-align:center;font-size:11px;color:var(--td);padding:0 8%}
+.ai-loading{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:16px}
+.ai-loading .loading-dots{display:flex;gap:4px}
+.ai-loading .loading-dots span{width:6px;height:6px;border-radius:50%;background:var(--p-l);animation:dotPulse 1.4s infinite}
+.ai-loading .loading-dots span:nth-child(2){animation-delay:.2s}
+.ai-loading .loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.2)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
 @media(min-width:768px){
   .domains{grid-template-columns:repeat(4,1fr);max-width:720px;margin:0 auto 24px}
   .scenes{grid-template-columns:repeat(3,1fr);max-width:720px;margin:0 auto 24px}
@@ -244,15 +285,15 @@ button.decoder-back{outline:none}
     <div class="section-title">同行都在用</div>
   </div>
   <div class="tools-grid">
+    <div class="tool-card" onclick="showAiDecode()" style="cursor:pointer;border-color:var(--p);background:var(--p-bg)">
+      <div class="tool-icon">🤖</div>
+      <div class="tool-name" style="color:var(--p-d)">AI 智能解码</div>
+      <div class="tool-desc">不用选场景，直接描述客户表现，AI自动识别并给出道·法·术三层解码</div>
+    </div>
     <a class="tool-card" href="/care-test/">
       <div class="tool-icon">🎯</div>
       <div class="tool-name">共情力测评</div>
       <div class="tool-desc">3分钟测出你的客户共情等级</div>
-    </a>
-    <a class="tool-card" href="/knowledge.html">
-      <div class="tool-icon">📖</div>
-      <div class="tool-name">知识底座</div>
-      <div class="tool-desc">四域业务字典·有据可查</div>
     </a>
   </div>
 </div>
@@ -261,6 +302,32 @@ button.decoder-back{outline:none}
   <button class="decoder-back" onclick="closeDecoder(event)">← 换一个场景</button>
   <div class="scene-header" id="sceneHeader"></div>
   <div id="insightCards"></div>
+</div>
+
+<!-- AI 智能解码入口 -->
+<div class="ai-decode-section" id="aiDecodeSection" style="display:none">
+  <div class="section-hd" style="padding:0 8%;margin-bottom:12px">
+    <div class="section-dot" style="background:linear-gradient(135deg,#3d5a3e,#c46a3a)"></div>
+    <div class="section-title">🤖 AI 智能解码</div>
+  </div>
+  <div class="ai-chat-container" id="aiChatContainer">
+    <div class="ai-welcome">
+      <div class="ai-avatar">🌬️</div>
+      <div class="ai-bubble">
+        <p>你好，我是风声 AI 解码助手。</p>
+        <p>直接告诉我你遇到的客户表现，我帮你从<strong>道·法·术</strong>三层解码——不用选场景，AI 自动识别。</p>
+      </div>
+    </div>
+    <div class="ai-messages" id="aiMessages"></div>
+    <div class="ai-input-area">
+      <textarea id="aiInput" placeholder="例如：客户看了3次房，每次都说'考虑考虑'，但就是不成交..." rows="2"></textarea>
+      <button class="ai-send-btn" id="aiSendBtn" onclick="sendAiDecode()">
+        <span>解码</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
+    </div>
+    <div class="ai-hint">💡 试试追问："接下来怎么跟进？" 或 "客户同意了怎么收口？"</div>
+  </div>
 </div>
 
 <div class="bottom-cta">
@@ -1303,9 +1370,157 @@ function copyAgentPrompt(){
   });
 }
 
+// ===================== AI 智能解码 =====================
+const AI_SYSTEM_PROMPT = `你是"风声·客户解码器"AI助手，专门帮助居住服务领域的服务者理解客户行为背后的真实原因。
+
+## 核心理念
+你不是话术机器，你是规律导师。不是告诉服务者"该说什么"，而是帮他理解"客户为什么这样说"。
+
+## 解码框架：道·法·术
+每个客户场景都从三层解码：
+- **道（人性规律）**：客户行为背后的心理学/社会学原理——不是他"不讲理"，是他有你没看到的需求
+- **法（坚持原则）**：服务者永远不该做的事，和一定要坚持的底线——原则比技巧重要
+- **术（参考话术）**：具体可参考的沟通策略和话术——参考用，不要照搬
+
+## 输出格式
+必须用以下格式回复：
+
+**道 · 人性规律**
+[1-2句话，点明核心心理学原理]
+
+**法 · 坚持原则**
+[2-3条原则，告诉服务者什么该做、什么不该做]
+
+**术 · 参考话术**
+[1-2段具体可参考的沟通话术]
+
+## 交互规则
+1. 用户描述客户表现后，先判断属于哪个业务域（房产交易/房屋租赁/整装家居/家政保洁），再给出三层解码
+2. 永远先说"道"（规律），再说"法"（原则），最后说"术"（话术）
+3. 话术只是参考，鼓励服务者理解规律后用自己的方式表达
+4. 如果用户追问"接下来怎么跟进"，给出第二轮跟进策略
+5. 如果用户追问"客户同意了怎么收口"，给出第三轮收口建议
+6. 保持温暖但专业的语气，不要评判服务者
+7. 每次回复控制在300字以内，简洁有力`;
+
+let aiChatHistory = [];
+
+function showAiDecode(){
+  document.getElementById('aiDecodeSection').style.display = 'block';
+  document.getElementById('aiDecodeSection').scrollIntoView({behavior:'smooth'});
+}
+
+function sendAiDecode(){
+  const input = document.getElementById('aiInput');
+  const btn = document.getElementById('aiSendBtn');
+  const text = input.value.trim();
+  if(!text) return;
+
+  // 添加用户消息
+  addAiMessage('user', text);
+  input.value = '';
+  btn.disabled = true;
+  btn.innerHTML = '<span>解码中</span><div class="loading-dots" style="display:flex;gap:3px"><span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:dotPulse 1.4s infinite"></span><span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:dotPulse 1.4s infinite;animation-delay:.2s"></span><span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:dotPulse 1.4s infinite;animation-delay:.4s"></span></div>';
+
+  // 模拟AI回复（MVP阶段用模拟数据，后续接入真实API）
+  setTimeout(()=>{
+    const response = simulateAiResponse(text);
+    addAiMessage('ai', response);
+    btn.disabled = false;
+    btn.innerHTML = '<span>解码</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
+  }, 1500);
+}
+
+function addAiMessage(role, content){
+  const container = document.getElementById('aiMessages');
+  const time = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = 'ai-message ' + role;
+
+  if(role === 'ai' && typeof content === 'object'){
+    // 结构化输出（道·法·术）
+    div.innerHTML = `
+      <div class="msg-bubble">
+        <div class="ai-dao-fa-shu">
+          <div class="dfs-row">
+            <span class="dfs-label dao">👁 道 · 人性规律</span>
+            <div class="dfs-text">${content.dao}</div>
+          </div>
+          <div class="dfs-row">
+            <span class="dfs-label fa">🎯 法 · 坚持原则</span>
+            <div class="dfs-text">${content.fa}</div>
+          </div>
+          <div class="dfs-row">
+            <span class="dfs-label shu">💬 术 · 参考话术</span>
+            <div class="dfs-text">${content.shu}</div>
+          </div>
+        </div>
+        <div class="msg-time">${time}</div>
+      </div>`;
+  } else {
+    div.innerHTML = `<div class="msg-bubble">${content}<div class="msg-time">${time}</div></div>`;
+  }
+
+  container.appendChild(div);
+  div.scrollIntoView({behavior:'smooth'});
+}
+
+// MVP模拟AI响应（基于关键词匹配）
+function simulateAiResponse(text){
+  const t = text.toLowerCase();
+
+  // 犹豫场景
+  if(t.includes('犹豫') || t.includes('考虑') || t.includes('想想') || t.includes('再看看')){
+    return {
+      dao: '客户犹豫的本质是"损失厌恶"——不是不想买，是怕买了后悔。大脑对损失的敏感度是收益的2.5倍。他不是在比较A和B，是在反复确认"选错了怎么办"。',
+      fa: '1. 永远不说"这套很好你赶紧定"——这是在加大他的决策压力\n2. 把"为什么该买"变成"不买会怎样"——从收益框架切换到损失框架\n3. 给他一个"反悔权"——降低他的心理试错成本',
+      shu: '"哥，我观察您看这几套房子的状态，每次走到阳台都会站很久——您是不是在担心视野和采光的问题？"\n\n"姐，您说再看看我特别理解，说实话买房子这种事谁都不敢随便定。我能问一下，您心里最纠结的是哪一点吗？"'
+    };
+  }
+
+  // 比价场景
+  if(t.includes('贵') || t.includes('便宜') || t.includes('比价') || t.includes('别家')){
+    return {
+      dao: '客户疯狂比价的本质是"锚定效应"缺失——他没有一个明确的参照标准来判断"值不值"。当你只报价格，他就只能用价格比。他不是在找最便宜的，是在找"买了不亏的确定性"。',
+      fa: '1. 永远不在价格上跟竞品比——那是在帮他确认"这东西只值这个价"\n2. 先定义"什么才算好"，再谈价格——先锚标准，再锚价格\n3. 用"单位价值"代替"总价"——把数字变小，把意义放大',
+      shu: '"哥，您说别的家更便宜，我信。但我特别想了解——您比下来，觉得价格差在哪了？是同样的东西标了不同价，还是东西本身就不一样？"\n\n"姐，我不跟您报总价，咱们算笔细账：这套房您住5年，摊下来每天XX块——比您现在租房还少。"'
+    };
+  }
+
+  // 挑毛病场景
+  if(t.includes('毛病') || t.includes('问题') || t.includes('不好') || t.includes('不满意')){
+    return {
+      dao: '客户反复挑毛病的本质是"信任缺失"——他不是真的发现了问题，是在用挑毛病的方式索取"你值得信任"的证据。每个毛病背后都是一个问题："你能不能给我一个让我放心的理由？"',
+      fa: '1. 永远不说"这个没问题"——没凭据的保证比沉默更可疑\n2. 每个毛病都用"证据"回应，不用"保证"回应\n3. 主动暴露小缺陷——主动承认的不完美比被动发现的可信10倍',
+      shu: '"哥，您提的这个问题我特别重视。我帮您查一下具体的检测报告/维修记录，有凭有据地跟您说。"\n\n"姐，说实话这个户型确实有个小问题——北向卧室的采光下午会弱一些。但正因为这个，业主在价格上让了X万，您算算值不值？"'
+    };
+  }
+
+  // 默认响应
+  return {
+    dao: '客户的每个"不"都是一种"我还没准备好"。表面上是拒绝，背后往往是信息不足、信任不够、或者时机不对。服务者的任务不是说服他"买"，而是帮他"准备好"。',
+    fa: '1. 不要对抗客户的拒绝——对抗只会让他更坚定\n2. 用提问代替陈述——让客户自己说出真实顾虑\n3. 给台阶比给压力更有效——"不着急，您想清楚了再决定"',
+    shu: '"哥/姐，我特别理解您的顾虑。能问一下，如果这个问题解决了，您会觉得怎么样？"\n\n"没关系，买房子是大事，多想想是对的。我这边帮您保留着，您随时找我。"'
+  };
+}
+
+// 回车发送
+function initAiInput(){
+  const input = document.getElementById('aiInput');
+  if(input){
+    input.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' && !e.shiftKey){
+        e.preventDefault();
+        sendAiDecode();
+      }
+    });
+  }
+}
+
 // ============ 页面初始化 ============
 // 首次加载时就显示最基础的面包屑
 updateBreadcrumb({});
+initAiInput();
 
 // ============ 反馈成功回调 ============
 window.FEEDBACK_SUCCESS = function(module, score) {
