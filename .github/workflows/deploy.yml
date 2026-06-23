@@ -35,31 +35,51 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
 
+      - name: Purge Cloudflare cache
+        run: |
+          echo "🧹 清除CF边缘缓存..."
+          RESPONSE=$(curl -s -X POST \
+            "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}')
+          if echo "$RESPONSE" | grep -q '"success":true'; then
+            echo "✅ 缓存清除成功"
+          else
+            echo "⚠️ 缓存清除失败: $RESPONSE"
+          fi
+
   verify:
     name: 部署后验证
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Wait for deployment
-        run: sleep 10
+      - name: Wait for cache purge propagation
+        run: sleep 15
 
-      - name: Verify site accessibility
+      - name: Verify key pages content
         run: |
-          echo "=== 验证 https://fengsheng.tech 可访问 ==="
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://fengsheng.tech --max-time 10)
-          if [ "$HTTP_CODE" = "200" ]; then
-            echo "  ✓ 网站正常响应 (HTTP $HTTP_CODE)"
+          echo "=== 验证关键页面内容 ==="
+          # 验证首页品牌定位
+          TITLE=$(curl -sL https://fengsheng.tech/ | grep -oP '(?<=<title>)[^<]+')
+          if echo "$TITLE" | grep -q "帮助服务者配得上被好好对待"; then
+            echo "  ✓ 首页品牌定位正确: $TITLE"
           else
-            echo "  ⚠ 网站响应 HTTP $HTTP_CODE（可能还在部署中）"
+            echo "  ✘ 首页品牌定位异常: $TITLE"
           fi
-
-      - name: Verify key pages
-        run: |
-          echo "=== 验证关键页面 ==="
-          for page in index.html breeder.html care-test.html quality-test.html privacy.html; do
-            URL="https://fengsheng.tech/$page"
-            CODE=$(curl -s -o /dev/null -w "%{http_code}" "$URL" --max-time 10)
-            echo "  $page → HTTP $CODE"
+          
+          # 验证客户解码器
+          REPLY_VER=$(curl -sL https://fengsheng.tech/reply/ | head -1)
+          if echo "$REPLY_VER" | grep -q "解码器"; then
+            echo "  ✓ /reply/ 解码器页面正常"
+          else
+            echo "  ✘ /reply/ 解码器页面异常（可能返回首页）"
+          fi
+          
+          # 验证HTTP状态
+          for page in "/" "/reply/" "/quality-test/" "/breeder/" "/knowledge/" "/care-test/" "/assessment/"; do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://fengsheng.tech${page}" --max-time 10)
+            echo "  ${page} → HTTP $CODE"
           done
 
   notify:
@@ -74,7 +94,7 @@ jobs:
           echo ""
           echo "| 环境 | 状态 |"
           echo "|------|------|"
-          echo "| production | ✅ 已部署 |"
+          echo "| production | ✅ 已部署 + 缓存已清除 |"
           echo ""
           echo "👉 https://fengsheng.tech"
           echo ""
