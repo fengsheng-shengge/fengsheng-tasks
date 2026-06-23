@@ -100,7 +100,25 @@
 
   function deriveProduct() {
     var path = window.location.pathname;
-    if (path === '/' || path === '') return 'index';
+    // 根目录HTML文件映射
+    var fileMap = {
+      '/': 'index',
+      '/index.html': 'index',
+      '/breeder.html': 'breeder',
+      '/assessment.html': 'assessment',
+      '/knowledge.html': 'knowledge',
+      '/shuowenjiedao.html': 'shuowenjiedao',
+      '/about.html': 'about',
+      '/course.html': 'course',
+      '/works.html': 'works',
+      '/partner.html': 'partner',
+      '/skills.html': 'skills',
+      '/standard.html': 'standard',
+      '/okr.html': 'okr',
+      '/agent-academy.html': 'agent-academy'
+    };
+    if (fileMap[path] !== undefined) return fileMap[path];
+    // 子目录路径
     var m = path.match(/^\/([a-z0-9-]+)/);
     if (!m) return 'other';
     var whitelist = {
@@ -183,6 +201,18 @@
     } catch (e) {}
   };
 
+  // v3.0: 测评完成率追踪
+  window.fsTrackStart = function fsTrackStart(stepName) {
+    try {
+      queue(buildPayload('funnel_start', { step: stepName || 'default', product: deriveProduct() }));
+    } catch (e) {}
+  };
+  window.fsTrackComplete = function fsTrackComplete(stepName) {
+    try {
+      queue(buildPayload('funnel_complete', { step: stepName || 'default', product: deriveProduct() }));
+    } catch (e) {}
+  };
+
   function trackClick(el) {
     if (!el) return;
     var label = el.getAttribute('aria-label') || el.getAttribute('data-track') || el.textContent || el.name || '';
@@ -243,6 +273,24 @@
     setupReplyForm();
     flushPending();
     window.addEventListener('online', flushPending);
+    // v3.0: 停留时长追踪
+    var _fsEnterTime = Date.now();
+    var _fsDurationReported = false;
+    function reportDuration() {
+      if (_fsDurationReported) return;
+      _fsDurationReported = true;
+      var dur = Math.round((Date.now() - _fsEnterTime) / 1000);
+      queue(buildPayload('duration', {
+        seconds: dur,
+        product: deriveProduct()
+      }));
+    }
+    // 页面离开时上报
+    window.addEventListener('beforeunload', reportDuration);
+    // 页面切到后台时上报（移动端友好）
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'hidden') reportDuration();
+    });
   }
 
   if (document.readyState === 'loading') {

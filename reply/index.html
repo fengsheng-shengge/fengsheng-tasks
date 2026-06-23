@@ -1540,5 +1540,21 @@ if(typeof track==='function') track('page_view',{page:'reply_v2'});
     <p style="font-size:14px;color:#555">感谢你的反馈！你可以再次使用客户解码器：</p>
     <button onclick="location.reload()" style="margin-top:12px;padding:10px 20px;background:#2C5F3A;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer">再次分析</button>
   </div>
+
+<div id="fs-feedback" style="margin:24px 0;text-align:center;padding:16px;background:rgba(255,255,255,0.6);border-radius:8px;">
+  <p style="font-size:14px;color:#666;margin-bottom:8px;">这个结果对你有用吗？</p>
+  <button onclick="fsTrack('feedback_useful',{value:'yes'});this.parentElement.innerHTML='<p style=font-size:14px;color:#2D6A4F;>👍 谢谢！你的反馈帮我们做得更好</p>'" style="background:#2D6A4F;color:#fff;border:none;padding:8px 20px;border-radius:20px;margin:0 6px;cursor:pointer;font-size:14px;">👍 有用</button>
+  <button onclick="fsTrack('feedback_useful',{value:'no'});this.parentElement.innerHTML='<p style=font-size:14px;color:#666;>👎 谢谢反馈，我们会持续改进</p>'" style="background:#f0f0f0;color:#666;border:none;padding:8px 20px;border-radius:20px;margin:0 6px;cursor:pointer;font-size:14px;">👎 没用</button>
+</div>
+
+<div id="fs-cross-sell" style="margin:20px 0;padding:16px;background:linear-gradient(135deg,#F0FFF4,#E8F5E9);border-radius:12px;border-left:4px solid #2D6A4F;">
+  <p style="font-size:15px;font-weight:bold;color:#2D6A4F;margin:0 0 12px 0;">✨ 想提升服务品质？试试这些工具</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <a href="/quality-test/" onclick="fsTrack('cross_sell',{from:'reply',to:'quality-test'})" style="display:inline-block;background:#2D6A4F;color:#fff;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:13px;">🎯 六维品质测评</a>
+    <a href="/care-test/" onclick="fsTrack('cross_sell',{from:'reply',to:'care-test'})" style="display:inline-block;background:#40916C;color:#fff;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:13px;">❤️ 服务者关怀测评</a>
+    <a href="/assessment.html" onclick="fsTrack('cross_sell',{from:'reply',to:'assessment'})" style="display:inline-block;background:#52B788;color:#fff;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:13px;">📊 能力测评</a>
+    <a href="/breeder.html" onclick="fsTrack('cross_sell',{from:'reply',to:'breeder'})" style="display:inline-block;background:#74C69D;color:#fff;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:13px;">🤖 Agent培养师</a>
+  </div>
+</div>
 </body>
 </html>
