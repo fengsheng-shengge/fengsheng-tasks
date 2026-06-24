@@ -41,6 +41,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .layer-tabs{display:flex;gap:4px;margin-bottom:10px}
 .layer-tab{font-size:10px;padding:3px 8px;border-radius:3px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;font-weight:600;transition:all .15s}
 .layer-tab.active{background:var(--p);color:#fff;border-color:var(--p)}
+.layer-tab.tab-consumer{background:#FFF5EB;border-color:#E8853D;color:#C56A20;font-weight:700;position:relative}
+.layer-tab.tab-consumer::after{content:'NEW';font-size:8px;background:#E8853D;color:#fff;padding:0 3px;border-radius:2px;margin-left:4px;vertical-align:super;line-height:1}
+.layer-tab.tab-consumer.active{background:#E8853D;color:#fff;border-color:#E8853D}
+.layer-tab.tab-consumer.active::after{background:#fff;color:#E8853D}
 .layer-content{display:none}
 .layer-content.active{display:block}
 .detail-row{margin-bottom:8px;font-size:12px;line-height:1.6}
@@ -401,7 +405,7 @@ function renderEntries(){
       <div class="entry-detail" onclick="event.stopPropagation()">
         <div class="layer-tabs">
           <div class="layer-tab active" onclick="switchLayer(this,'detail')">📋 详情</div>
-          <div class="layer-tab" onclick="switchLayer(this,'consumer')">🏠 消费者</div>
+          <div class="layer-tab tab-consumer" onclick="switchLayer(this,'consumer')">🏠 消费者视角</div>
           <div class="layer-tab" onclick="switchLayer(this,'trace')">🔗 溯源</div>
         </div>
         <div class="layer-content active" data-layer="detail">
