@@ -7,7 +7,7 @@
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <title>管理看板 · 风声 fengsheng.tech</title>
 <meta name="description" content="风声产品质量看板 — 追踪交互深度、用户粘性、反馈密度、验证线进度。">
-<meta name="keywords" content="运营看板,产品质量,交互深度,110人验证,风声,fengsheng,dashboard">
+<meta name="keywords" content="运营看板,产品质量,交互深度,300人验证,风声,fengsheng,dashboard">
 <meta name="theme-color" content="#0f172a">
 <meta property="og:title" content="质量看板 · 风声 fengsheng.tech">
 <meta property="og:description" content="追踪交互深度、用户粘性、反馈密度、验证线进度。">
@@ -177,7 +177,7 @@ a{color:#60a5fa;text-decoration:none}
     <div class="kpi-card accent">
       <div class="kpi-label">验证线进度</div>
       <div class="kpi-value" id="kpi-verify" style="color:#a855f7">—</div>
-      <div class="kpi-sub">目标 110 人真实使用</div>
+      <div class="kpi-sub">目标 300 人真实使用（解码器100+其余5产品各40）</div>
       <div class="kpi-bar"><div class="kpi-bar-fill" id="kpi-verify-bar" style="width:0%;background:#a855f7"></div></div>
     </div>
     <div class="kpi-card danger">
@@ -196,10 +196,10 @@ a{color:#60a5fa;text-decoration:none}
   <!-- milestones -->
   <div class="section-title"><h2>🎯 里程碑</h2><span class="tag tag-m1">产品质量驱动</span></div>
   <div class="milestones" id="milestones">
-    <div class="milestone active"><div class="m-label">M1</div><div class="m-name">质量基线</div><div class="m-date">6.30</div><div class="m-target">交互深度≥3次/人 · 反馈率≥5% · Agent培养师≥20人</div><div class="m-bar"><div class="m-bar-fill" style="width:40%;background:#3b82f6"></div></div></div>
-    <div class="milestone"><div class="m-label">M2</div><div class="m-name">粘性验证</div><div class="m-date">7.15</div><div class="m-target">人均浏览≥4页 · 回访率≥15% · 客户解码器≥15人</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#a855f7"></div></div></div>
+    <div class="milestone active"><div class="m-label">M1</div><div class="m-name">质量基线</div><div class="m-date">6.30</div><div class="m-target">交互深度≥3次/人 · 反馈率≥5% · Agent培养师≥20人</div><div class="m-bar"><div class="m-bar-fill" style="width:60%;background:#3b82f6"></div></div></div>
+    <div class="milestone"><div class="m-label">M2</div><div class="m-name">粘性验证</div><div class="m-date">7.15</div><div class="m-target">人均浏览≥4页(已达标✅) · 回访率≥15% · 客户解码器≥15人</div><div class="m-bar"><div class="m-bar-fill" style="width:20%;background:#a855f7"></div></div></div>
     <div class="milestone"><div class="m-label">M3</div><div class="m-name">深度闭环</div><div class="m-date">7.31</div><div class="m-target">交互深度≥5 · 反馈闭环≤24h · 全产品≥15人</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#f59e0b"></div></div></div>
-    <div class="milestone"><div class="m-label">M4</div><div class="m-name">全面达标</div><div class="m-date">9.01</div><div class="m-target">110人验证线 · 产品质量分≥70 · 商业闭环跑通</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#22c55e"></div></div></div>
+    <div class="milestone"><div class="m-label">M4</div><div class="m-name">全面达标</div><div class="m-date">9.01</div><div class="m-target">300人验证线 · 产品质量分≥70 · 商业闭环跑通</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#22c55e"></div></div></div>
   </div>
 
   <!-- 7-day trend -->
@@ -223,41 +223,6 @@ a{color:#60a5fa;text-decoration:none}
   <div class="section-title" style="margin-top:24px"><h2>🤖 七Agent 作战状态</h2><span class="tag tag-m2">今日任务</span></div>
   <div class="agents" id="agents-grid"></div>
 
-  <!-- 项目矩阵 -->
-  <div class="section-title" style="margin-top:24px"><h2>🏗️ 风声项目矩阵</h2><span class="tag" style="background:#1e3a5f;color:#60a5fa">三层架构</span></div>
-  <div id="project-matrix" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px">
-    <div style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;border-left:4px solid #2D6A4F">
-      <div style="font-size:15px;font-weight:700;color:#f8fafc;margin-bottom:4px">🌬️ 风声主站</div>
-      <div style="font-size:12px;color:#94a3b8;margin-bottom:10px">fengsheng.tech · C端服务者 · 110人验证</div>
-      <div style="font-size:12px;color:#64748b;line-height:1.8">
-        <div>📌 六维品质测评 · 客户解码器 · 关怀测评</div>
-        <div>📌 能力测评 · Agent培养师 · 业务字典</div>
-        <div>📌 验房报告 · 知识底座 · 数字团队</div>
-        <div style="margin-top:6px;color:#52B788">状态：<b>线上运行</b> | 145用户 | 6产品</div>
-      </div>
-    </div>
-    <div style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;border-left:4px solid #3b82f6">
-      <div style="font-size:15px;font-weight:700;color:#f8fafc;margin-bottom:4px">📱 微信小程序</div>
-      <div style="font-size:12px;color:#94a3b8;margin-bottom:10px">微信生态 · 引流闭环 · 轻量体验</div>
-      <div style="font-size:12px;color:#64748b;line-height:1.8">
-        <div>📌 核心产品小程序化（解码器/测评优先）</div>
-        <div>📌 引流链路：抖音→公众号→小程序</div>
-        <div>📌 微信登录+分享+消息触达</div>
-        <div style="margin-top:6px;color:#f59e0b">状态：<b>🔥开发中</b> | 小扣子推进·MVP 7.14上线</div>
-      </div>
-    </div>
-    <div style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;border-left:4px solid #a855f7">
-      <div style="font-size:15px;font-weight:700;color:#f8fafc;margin-bottom:4px">🏢 机构版 · 本地化部署</div>
-      <div style="font-size:12px;color:#94a3b8;margin-bottom:10px">B端客户 · 私有部署 · 企业赋能</div>
-      <div style="font-size:12px;color:#64748b;line-height:1.8">
-        <div>📌 管理后台（学员/团队/数据看板）</div>
-        <div>📌 批量测评+组织能力诊断</div>
-        <div>📌 本地化部署+数据隔离</div>
-        <div style="margin-top:6px;color:#a855f7">状态：<b>方案设计中</b> | #95小豆子6.26交付方案</div>
-      </div>
-    </div>
-  </div>
-
   <!-- Health -->
   <div class="section-title" style="margin-top:24px"><h2>🔧 基础设施</h2></div>
   <div class="health-row" id="health-row"></div>
@@ -271,19 +236,19 @@ a{color:#60a5fa;text-decoration:none}
 (function(){
   const API_BASE = '/api/stats';
   const GOALS = {
-    total: 110,
+    total: 300,
     /* 质量目标 */
     interaction_depth: 5,    // 目标5次/人
     pages_per_user: 4,       // 目标4页/人
     feedback_rate: 5,        // 目标5%
     quality_score: 70,       // 目标70分
     products: {
-      breeder:      {users:30, depth:5, pages:4},
-      knowledge:    {users:20, depth:3, pages:3},
-      'care-test':  {users:20, depth:4, pages:3},
-      assessment:   {users:20, depth:4, pages:3},
-      reply:        {users:20, depth:3, pages:2},
-      'quality-test':{users:15, depth:4, pages:3}
+      breeder:      {users:40, depth:5, pages:4},
+      knowledge:    {users:40, depth:3, pages:3},
+      'care-test':  {users:40, depth:4, pages:3},
+      assessment:   {users:40, depth:4, pages:3},
+      reply:        {users:100, depth:3, pages:2},
+      'quality-test':{users:40, depth:4, pages:3}
     }
   };
 
@@ -300,18 +265,17 @@ a{color:#60a5fa;text-decoration:none}
   // Agent data — 七Agent v3.0
   const AGENTS = [
     {name:'小鱼儿', role:'运营指挥·结果兜底', status:'on', emoji:'🐟',
-     tasks:['日常调度+看板','Agent协同治理','运营数据复盘','催办跟踪']},
+     tasks:['300人M1引流执行','#11教案代处置评估','小酒窝儿V3催办','每日调度+看板']},
     {name:'小扣子', role:'CTO·全栈开发', status:'on', emoji:'🤖',
-     tasks:['#98 FormSubmit修复','全站UX优化','CI/CD维护','技术架构决策']},
+     tasks:['#89数据质量持续观察','解码器v2技术预研','#74 Phase3技术评估','全站稳定性维护']},
     {name:'小豆子', role:'产品经理·闭环设计', status:'warn', emoji:'💻',
-     tasks:['#92知识底座3新域词条','#97客户解码器v2方案','#80教程补全文','#88交叉验证']},
-    {name:'小眼镜', role:'教研开发·课程', status:'on', emoji:'👓',
-     tasks:['8周课程3-8课开发','Agent培养师迭代','知识底座教研验证','#11课程开发执行','知识词条教研审校','产品教程内容支持']},
-    {name:'小酒窝儿', role:'品质飞轮·检核', status:'on', emoji:'🔍',
-     tasks:['全站品质巡检','内容品控9项检核','V3自修能力开发','反馈闭环']},
+     tasks:['#93 UX交叉验证8项','#92词条9字段验收','#94 #73效果验证','#80教程补全文','#97解码器v2方案']},
+    {name:'小眼镜', role:'教研开发·课程', status:'warn', emoji:'👓',
+     tasks:['#11教案5-8课','1-4课终稿完善','知识底座教研验证','军师令#97定价']},
+    {name:'小酒窝儿', role:'品质飞轮·检核', status:'warn', emoji:'🔍',
+     tasks:['V3自修方案设计(6.24)','内容品控9项检核','#101品控自动对接','反馈闭环']},
     {name:'小马丫', role:'本地桥梁·视频生产', status:'on', emoji:'🎬',
-     tasks:['即梦CLI本地登录','EP01/EP02短视频制作','蝉镜API打通','本地工具桥梁']},
-
+     tasks:['EP01短视频制作','300人引流素材','蝉镜API打通','本地工具桥梁']}
   ];
 
   // ---- API helpers ----
