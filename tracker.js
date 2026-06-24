@@ -271,7 +271,7 @@
     setupAutoClick();
     setupCozeBot();
     setupReplyForm();
-    flushPending();
+    // removed: queue() already schedules send via setTimeout, flushPending() caused duplicate events
     window.addEventListener('online', flushPending);
     // v3.0: 停留时长追踪
     var _fsEnterTime = Date.now();

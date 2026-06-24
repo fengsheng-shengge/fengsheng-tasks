@@ -113,11 +113,11 @@ async function getSummary(env) {
     for (const row of results) {
       pvByProduct[row.product || 'other'] = row.pv || 0;
       usersByProduct[row.product || 'other'] = row.uniq_users || 0;
-      totalPV += row.pv || 0;
+      if ((row.product || 'other') !== 'other') totalPV += row.pv || 0;
     }
   } catch (_) {}
   try {
-    const r = await env.DB.prepare(`SELECT COUNT(DISTINCT CASE WHEN uid != '' THEN uid END) as n FROM events`).first();
+    const r = await env.DB.prepare(`SELECT COUNT(DISTINCT CASE WHEN uid != '' THEN uid END) as n FROM events WHERE product != 'other'`).first();
     totalUsers = r.n || 0;
   } catch (_) { totalUsers = 0; }
   let totalFB = 0;
@@ -129,7 +129,7 @@ async function getSummary(env) {
     }
   } catch (_) {}
   const perProduct = [];
-  for (const p of Object.keys(GOALS.products).concat(['other'])) {
+  for (const p of Object.keys(GOALS.products)) {
     perProduct.push({ product: p, pageviews: pvByProduct[p] || 0, users: usersByProduct[p] || 0, feedback: fbByProduct[p] || 0 });
   }
   const feedbackRate = totalUsers > 0 ? Math.round((totalFB / totalUsers) * 1000) / 10 : 0;
@@ -183,7 +183,7 @@ async function getDaily(env, url) {
 async function getGoals(env) {
   let totalUsers = 0;
   try {
-    const r = await env.DB.prepare(`SELECT COUNT(DISTINCT CASE WHEN uid != '' THEN uid END) as n FROM events`).first();
+    const r = await env.DB.prepare(`SELECT COUNT(DISTINCT CASE WHEN uid != '' THEN uid END) as n FROM events WHERE product != 'other'`).first();
     totalUsers = r.n || 0;
   } catch (_) {}
   const usersByProduct = {};
@@ -203,7 +203,7 @@ async function getGoals(env) {
 
 async function getPublic(env) {
   let totalUsers = 0;
-  try { const r = await env.DB.prepare(`SELECT COUNT(DISTINCT CASE WHEN uid != '' THEN uid END) as n FROM events`).first(); totalUsers = r.n || 0; } catch (_) {}
+  try { const r = await env.DB.prepare(`SELECT COUNT(DISTINCT CASE WHEN uid != '' THEN uid END) as n FROM events WHERE product != 'other'`).first(); totalUsers = r.n || 0; } catch (_) {}
   let totalFB = 0;
   try { const r = await env.DB.prepare(`SELECT COUNT(*) as n FROM feedback`).first(); totalFB = r.n || 0; } catch (_) {}
   return okJson({ users_validated: totalUsers, total_feedback: totalFB, target: GOALS.total, progress_pct: Math.round((totalUsers / GOALS.total) * 1000) / 10 });
