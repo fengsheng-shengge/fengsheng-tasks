@@ -155,8 +155,8 @@ const ENTRIES=[
 {id:'QLT-009',domain:'quality-server',name:'职业尊严',alias:'职业认同、行业荣誉',def:'服务者对自身职业价值的认同感和被社会认可的程度。',source:'风声·服务者四维关怀模型（2026）',srcType:'行业标准',attrs:'专业自信+社会尊重+职业认同+成长空间',scene:'服务者状态评估/职业规划',posSpeech:'不是卖房子的，是帮人实现美好居住的',negSpeech:'自己都不尊重这行，客户凭什么尊重你'},
 {id:'QLT-010',domain:'quality-server',name:'生活质感',alias:'生活品质、幸福感',def:'服务者自身生活质量达到合理水平的综合状态。',source:'风声·服务者四维关怀模型（2026）',srcType:'行业标准',attrs:'收入合理性+居住条件+社交生活+个人成长',scene:'服务者生活评估/福利设计',posSpeech:'服务者先活好，客户才能住好',negSpeech:'自己住不好，怎么帮别人实现美好居住'},
 // 域1·房产交易（20条，展示核心5条，其余缩略）
-{id:'TRX-001',domain:'trade',name:'真房源',alias:'真实房源、假房源克星',def:'房源信息满足"真实存在、真实在售、真实价格、真实图片"四个维度标准。',source:'贝壳平台"真实房源，假一赔百元"服务承诺；《房地产经纪管理办法》第22条',srcType:'平台标准+部门规章',attrs:'真实存在+真实在售+真实价格+真实图片',scene:'客户质疑房源真实性时解释标准',posSpeech:'假一赔百，每套房都经得起验证',negSpeech:'连真假都不保证，凭什么让人信'},
-{id:'TRX-002',domain:'trade',name:'带看',alias:'看房、实地看房',def:'经纪人陪同客户实地查看房源的专业服务行为。',source:'《房地产经纪管理办法》第14条',srcType:'部门规章',attrs:'预约+路线规划+现场讲解+安全确认+后续跟进',scene:'带看服务标准化/客户看房体验管理',posSpeech:'带看不是开门关门，是帮客户看见未来生活',negSpeech:'开门让他自己看，那叫物业不叫经纪'},
+{id:'TRX-001',domain:'trade',name:'真房源',alias:'真实房源、假房源克星',def:'房源信息满足"真实存在、真实在售、真实价格、真实图片"四个维度标准。',source:'贝壳平台"真实房源，假一赔百元"服务承诺；《房地产经纪管理办法》第22条',srcType:'平台标准+部门规章',attrs:'真实存在+真实在售+真实价格+真实图片',scene:'客户质疑房源真实性时解释标准',posSpeech:'假一赔百，每套房都经得起验证',negSpeech:'连真假都不保证，凭什么让人信',consumerQ:'网上看的房子到底是不是真的？',simpleAnswer:'真房源必须满足四个标准：房子真实存在、确实在卖、价格真实、图片是实拍。',consumerBenefit:'不怕白跑一趟，看到的就是能看的'},
+{id:'TRX-002',domain:'trade',name:'带看',alias:'看房、实地看房',def:'经纪人陪同客户实地查看房源的专业服务行为。',source:'《房地产经纪管理办法》第14条',srcType:'部门规章',attrs:'预约+路线规划+现场讲解+安全确认+后续跟进',scene:'带看服务标准化/客户看房体验管理',posSpeech:'带看不是开门关门，是帮客户看见未来生活',negSpeech:'开门让他自己看，那叫物业不叫经纪',consumerQ:'去看房时经纪人应该帮我做什么？',simpleAnswer:'不只是开门，好的带看包括规划路线、现场讲解优缺点、确认安全、看完跟进反馈。',consumerBenefit:'看得明白，不踩坑，看完心里有数'},
 {id:'TRX-003',domain:'trade',name:'房源核验',alias:'产调、产权核验',def:'对房源的产权状态、抵押查封情况进行官方查询确认的过程。',source:'《不动产登记暂行条例》第27条',srcType:'行政法规',attrs:'产权人确认+抵押查询+查封查询+限制交易查询',scene:'签约前产权确认/风险排查',posSpeech:'先查清再签约，这是对你最基本的保护',negSpeech:'不核验就签约，等于闭着眼签字'},
 {id:'TRX-004',domain:'trade',name:'签约',alias:'签合同、网签',def:'买卖双方在经纪机构居间下签署房屋买卖合同并完成网签备案的法律行为。',source:'《城市房地产管理法》第41条；《城市商品房预售管理办法》',srcType:'法律+部门规章',attrs:'合同签署+网签备案+资金监管+税费确认',scene:'交易签约/合同审查/风险提示',posSpeech:'签合同不是走流程，是把你的权利写进法律',negSpeech:'合同没看清就签，出了问题没人替你扛'},
 {id:'TRX-005',domain:'trade',name:'资金监管',alias:'第三方资金托管',def:'交易资金由银行或指定机构托管，按约定条件释放，保障买卖双方资金安全。',source:'住建部《关于加强房地产中介管理促进行业健康发展的意见》',srcType:'部门规章',attrs:'监管协议+资金存入+条件释放+利息归属',scene:'交易资金安全保障/风险防控',posSpeech:'钱不经过经纪人手，银行托管到过户完成',negSpeech:'不监管资金，等于把积蓄交给陌生人'},
@@ -401,6 +401,7 @@ function renderEntries(){
       <div class="entry-detail" onclick="event.stopPropagation()">
         <div class="layer-tabs">
           <div class="layer-tab active" onclick="switchLayer(this,'detail')">📋 详情</div>
+          <div class="layer-tab" onclick="switchLayer(this,'consumer')">🏠 消费者</div>
           <div class="layer-tab" onclick="switchLayer(this,'trace')">🔗 溯源</div>
         </div>
         <div class="layer-content active" data-layer="detail">
@@ -408,6 +409,11 @@ function renderEntries(){
           <div class="detail-row"><span class="detail-label">适用场景：</span><span class="detail-val">${e.scene}</span></div>
           <div class="detail-row speech"><span class="detail-label">✅ 正向话术：</span><span class="detail-val">${e.posSpeech||'暂无'}</span></div>
           <div class="detail-row speech"><span class="detail-label">⚠️ 反向话术：</span><span class="detail-val">${e.negSpeech||'暂无'}</span></div>
+        </div>
+        <div class="layer-content" data-layer="consumer">
+          ${e.consumerQ ? `<div class="detail-row"><span class="detail-label">❓ 你可能会问：</span><span class="detail-val" style="color:var(--fire)">${e.consumerQ}</span></div>` : '<div style="color:var(--td);font-size:13px;padding:12px">暂无消费者视角内容</div>'}
+          ${e.simpleAnswer ? `<div class="detail-row"><span class="detail-label">💡 大白话：</span><span class="detail-val">${e.simpleAnswer}</span></div>` : ''}
+          ${e.consumerBenefit ? `<div class="detail-row"><span class="detail-label">✨ 你能得到：</span><span class="detail-val" style="color:var(--p)">${e.consumerBenefit}</span></div>` : ''}
         </div>
         ${traceLayer}
       </div>
