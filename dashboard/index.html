@@ -215,6 +215,41 @@ a{color:#60a5fa;text-decoration:none}
     <div id="chart-container"><div class="loading">加载中…</div></div>
   </div>
 
+  <!-- 项目矩阵 -->
+  <div class="section-title" style="margin-top:24px"><h2>🏗️ 风声项目矩阵</h2><span class="tag" style="background:#1e3a5f;color:#60a5fa">三层架构</span></div>
+  <div id="project-matrix" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px">
+    <div style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;border-left:4px solid #2D6A4F">
+      <div style="font-size:15px;font-weight:700;color:#f8fafc;margin-bottom:4px">🌬️ 风声主站</div>
+      <div style="font-size:12px;color:#94a3b8;margin-bottom:10px">fengsheng.tech · C端服务者 · 300人验证</div>
+      <div style="font-size:12px;color:#64748b;line-height:1.8">
+        <div>📌 六维品质测评 · 客户解码器 · 关怀测评</div>
+        <div>📌 能力测评 · Agent培养师 · 业务字典</div>
+        <div>📌 验房报告 · 知识底座 · 数字团队</div>
+        <div style="margin-top:6px;color:#52B788">状态：<b>线上运行</b> | 解码器100+其余5产品各40</div>
+      </div>
+    </div>
+    <div style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;border-left:4px solid #3b82f6">
+      <div style="font-size:15px;font-weight:700;color:#f8fafc;margin-bottom:4px">📱 微信小程序·风声助手</div>
+      <div style="font-size:12px;color:#94a3b8;margin-bottom:10px">微信生态 · 引流闭环 · 轻量体验</div>
+      <div style="font-size:12px;color:#64748b;line-height:1.8">
+        <div>📌 MVP：客户解码器+六维品质测评</div>
+        <div>📌 引流链路：抖音→公众号→小程序</div>
+        <div>📌 uni-app三端共用后端 Workers+D1</div>
+        <div style="margin-top:6px;color:#f59e0b">状态：<b>🔥开发中</b> | 小扣子推进·MVP 7.14上线</div>
+      </div>
+    </div>
+    <div style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;border-left:4px solid #a855f7">
+      <div style="font-size:15px;font-weight:700;color:#f8fafc;margin-bottom:4px">🏢 机构版 · 本地化部署</div>
+      <div style="font-size:12px;color:#94a3b8;margin-bottom:10px">B端客户 · 私有部署 · 企业赋能</div>
+      <div style="font-size:12px;color:#64748b;line-height:1.8">
+        <div>📌 管理后台（学员/团队/数据看板）</div>
+        <div>📌 批量测评+组织能力诊断</div>
+        <div>📌 AI盒子+本地化部署+数据隔离</div>
+        <div style="margin-top:6px;color:#a855f7">状态：<b>方案设计中</b> | #95小豆子6.26交付方案</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Products -->
   <div class="section-title"><h2>📦 产品质量矩阵</h2><span class="tag tag-m4">交互深度·粘性·反馈</span></div>
   <div class="products" id="products-grid"></div>
@@ -417,8 +452,8 @@ a{color:#60a5fa;text-decoration:none}
       const pct = goals.users > 0 ? Math.round((d.users / goals.users) * 100) : 0;
       const barColor = pct >= 100 ? '#22c55e' : (pct > 50 ? '#3b82f6' : (pct > 20 ? '#f59e0b' : '#64748b'));
 
-      // 交互深度
-      const depth = d.users > 0 ? ((d.clicks || 0) / d.users).toFixed(1) : '0';
+      // 交互深度（用人均浏览页数代替，因API无clicks字段）
+      const depth = d.users > 0 ? (d.pageviews / d.users).toFixed(1) : '0';
       const depthColor = parseFloat(depth) >= goals.depth ? '#22c55e' : (parseFloat(depth) >= goals.depth/2 ? '#f59e0b' : '#ef4444');
       // 人均浏览
       const ppu = d.users > 0 ? (d.pageviews / d.users).toFixed(1) : '0';
