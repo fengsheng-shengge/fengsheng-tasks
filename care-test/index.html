@@ -484,15 +484,15 @@ var CARE_PROFILES = {
 var SOLUTIONS = {
   '身体': [
     {title:'六维品质测评', desc:'先评估一下自己的居住品质，好的环境是最好的养生', type:'free', link:'https://fengsheng.tech/quality-test/'},
-    {title:'居住改善知识库', desc:'学习科学居住知识，从环境入手提升健康', type:'free', link:'https://fengsheng.tech/knowledge.html'}
+    {title:'居住改善知识库', desc:'学习科学居住知识，从环境入手提升健康', type:'free', link:'https://fengsheng.tech/knowledge'}
   ],
   '心理': [
-    {title:'AI助手养成师', desc:'训练一个专属AI助手帮你处理日常事务，减少焦虑', type:'trial', link:'https://fengsheng.tech/breeder.html'},
-    {title:'能力测评', desc:'了解自己的专业短板，提升能力才能提升信心', type:'trial', link:'https://fengsheng.tech/assessment.html'}
+    {title:'AI助手养成师', desc:'训练一个专属AI助手帮你处理日常事务，减少焦虑', type:'trial', link:'https://fengsheng.tech/breeder'},
+    {title:'能力测评', desc:'了解自己的专业短板，提升能力才能提升信心', type:'trial', link:'https://fengsheng.tech/assessment'}
   ],
   '尊严': [
-    {title:'能力测评', desc:'专业能力提升 → 更好的服务 → 更多尊重', type:'trial', link:'https://fengsheng.tech/assessment.html'},
-    {title:'业务字典', desc:'学会用专业术语沟通，让客户看到你的专业度', type:'free', link:'https://fengsheng.tech/knowledge.html'}
+    {title:'能力测评', desc:'专业能力提升 → 更好的服务 → 更多尊重', type:'trial', link:'https://fengsheng.tech/assessment'},
+    {title:'业务字典', desc:'学会用专业术语沟通，让客户看到你的专业度', type:'free', link:'https://fengsheng.tech/knowledge'}
   ],
   '质感': [
     {title:'六维品质测评', desc:'重新评估你对"家"的标准，帮自己也找一个好房子', type:'free', link:'https://fengsheng.tech/quality-test/'},
@@ -969,7 +969,7 @@ function goToBreeder() {
     scoreArr.push(scores.avg[dimKeys[di]] || 0);
   }
   params.set("scores", scoreArr.join(","));
-  var url = "https://fengsheng.tech/breeder.html?" + params.toString();
+  var url = "https://fengsheng.tech/breeder?" + params.toString();
   window.location.href = url;
 }
 
