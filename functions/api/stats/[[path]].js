@@ -7,17 +7,24 @@
 //
 // GET /api/stats/summary   — 全局总览
 // GET /api/stats/daily?days=7&product=breeder — 每日曲线
-// GET /api/stats/goals     — 110人验证线进度
+// GET /api/stats/goals     — 300人验证线进度
 // GET /api/stats/public    — 极简公开只读
 // GET /api/stats/health    — 健康检查
 // ============================================================
 
 const GOALS = {
-  total: 130,
+  total: 300,  // 6.24生哥确认：300人验证线，9.1前达标
   products: {
-    'breeder': 40, 'knowledge': 25, 'shuowenjiedao': 15,
-    'care-test': 10, 'assessment': 10, 'reply': 10,
-    'quality-test': 5, 's1-report': 5, 'dashboard': 5, 'index': 5
+    'reply': 100,          // 客户解码器：流量发动机
+    'knowledge': 40,       // 业务字典
+    'breeder': 40,         // Agent培养师
+    'care-test': 40,       // 能力测评
+    'assessment': 40,      // 六维品质测评
+    'quality-test': 40,    // 品质测试
+    's1-report': 10,       // 带看报告
+    'shuowenjiedao': 10,   // 说文解道
+    'dashboard': 5,        // 管理看板
+    'index': 5             // 首页
   }
 };
 
