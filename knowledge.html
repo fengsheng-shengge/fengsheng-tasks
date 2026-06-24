@@ -432,22 +432,11 @@ function toggleDetail(card){
 }
 
 init();
-track("page_view",{referrer:document.referrer});
+if(typeof track==="function") track("page_view",{referrer:document.referrer});
 </script>
 <script>
 const _startTime = Date.now();
-function track(eventType, extra = {}) {
-  // v2.1: 移除 formsubmit.co 邮箱推送，改用内部 tracker 防止垃圾邮件
-  const data = {
-    event_type: eventType,
-    page: "/knowledge.html",
-    timestamp: new Date().toISOString(),
-    duration_sec: eventType === 'page_view' ? 0 : Math.round((Date.now() - _startTime) / 1000),
-    ...extra
-  };
-  // 数据仅通过 tracker.js 上报到 /api/event，不再外发邮箱
-  if (typeof track === 'function') track(eventType, extra);
-}
+// track 函数由 tracker.js 提供，此处仅记录页面停留时长
 document.addEventListener("visibilitychange", function() {
   if (document.visibilityState === "hidden") {
     if (typeof track === 'function') track("page_leave", {
