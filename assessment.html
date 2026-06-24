@@ -160,7 +160,6 @@ border-radius:50%;animation:spin .8s linear infinite}
 </style>
 <meta property="og:title" content="六维品质测评 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/assessment.html"><meta name="twitter:card" content="summary_large_image"><!-- 全站数据追踪器 v1.0 -->
 <script src="/tracker.js" async></script>
-<script src="/feedback-widget.js" data-module="assessment"></script>
 <link rel="canonical" href="https://fengsheng.tech/assessment.html">
 </head>
 <body>
@@ -1286,21 +1285,8 @@ window.addEventListener("beforeunload", function() {
 </div>
   <div class="page-footer" style="text-align:center;padding:20px;border-top:1px solid #e0e0e0;margin-top:30px;font-size:12px;color:#999">
   <div style="margin-bottom:8px">© 2026 风声 · 保留所有权利</div>
-  <div class="feedback-bar" style="display:flex;align-items:center;justify-content:center;gap:8px">
-    <span style="font-size:13px;color:#555">这个工具有帮助吗？</span>
-    <button class="feedback-btn" onclick="sendFeedback('👍')" style="display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;font-size:13px;transition:all .2s">👍 有帮助</button>
-    <button class="feedback-btn" onclick="sendFeedback('👎')" style="display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;font-size:13px;transition:all .2s">👎 一般</button>
   </div>
-</div>
-<script>
-function sendFeedback(type){
-  track("feedback",{feedback:type});
-  document.querySelectorAll(".feedback-btn").forEach(function(b){b.classList.remove("active")});
-  event.target.classList.add("active");
-  event.target.style.background="#3d5a3e";event.target.style.color="#fff";event.target.style.borderColor="#3d5a3e";
-  alert(type==="👍"?"感谢认可！💪":"收到！我们会持续改进 🙏");
-}
-</script>
+
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"e02e5265cf6f49c09196db4252d69e7c","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 <!-- v20260605c -->
