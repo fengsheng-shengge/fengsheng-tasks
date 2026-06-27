@@ -449,6 +449,9 @@ function init(){
       debounceTimer=setTimeout(()=>{
         const results=searchEntries(this.value);
         renderSearchResults(results,this.value);
+        if(this.value.trim().length>=2){
+          track.use('search',{query:this.value.trim(),resultCount:results.length,domain:currentDomain});
+        }
       },200);
     });
     searchInput.addEventListener('focus',function(){
@@ -473,6 +476,7 @@ function renderSceneTabs(){
   container.querySelectorAll('.scene-tab').forEach(t=>t.addEventListener('click',function(){
     currentScene=this.dataset.scene;
     container.querySelectorAll('.scene-tab').forEach(tab=>tab.classList.toggle('active',tab===this));
+    track.use('scene_filter',{scene:currentScene,domain:currentDomain});
     renderEntries();
     updateSceneCount();
   }));
@@ -539,7 +543,11 @@ function togglePolicyEntries(){
 }
 
 function switchDomain(id){
-  if(typeof track==="function") track("tab_switch",{tab:id});
+  if(typeof track==="object"&&track.use){
+    track.use('domain_switch',{from:currentDomain,to:id});
+  } else if(typeof track==="function"){
+    track("tab_switch",{tab:id});
+  }
   currentDomain=id;
   document.querySelectorAll('.domain-tab').forEach(t=>t.classList.toggle('active',t.dataset.domain===id));
   renderEntries();
@@ -637,6 +645,10 @@ function renderQaExamples(){
   container.querySelectorAll('.qa-tag').forEach(tag=>{
     tag.addEventListener('click',function(){
       const id=this.dataset.id;
+      const qText=this.textContent;
+      if(typeof track==="object"&&track.use){
+        track.use('qa_click',{entryId:id,question:qText,domain:currentDomain});
+      }
       // 滚动到对应词条并高亮
       document.querySelectorAll('.entry-card').forEach(c=>c.classList.remove('highlight'));
       const target=document.querySelector(`[data-entry-id="${id}"]`);
@@ -711,8 +723,13 @@ function switchLayer(tab,layer){
 }
 
 function toggleDetail(card){
-  var name=card.querySelector(".entry-name");
-  if(name && typeof track==="function") track("lookup",{entry_name:name.textContent,tab:currentDomain});
+  const nameEl=card.querySelector(".entry-name");
+  const entryId=card.dataset.entryId||'';
+  if(typeof track==="object"&&track.use){
+    track.use('entry_expand',{entryId,entryName:nameEl?nameEl.textContent:'',domain:currentDomain});
+  } else if(typeof track==="function"){
+    track("lookup",{entry_name:nameEl?nameEl.textContent:"",tab:currentDomain});
+  }
   const detail=card.querySelector('.entry-detail');
   detail.classList.toggle('open');
 }
