@@ -4,13 +4,16 @@
 
 const EVENT_WHITELIST = new Set([
   'pageview', 'click', 'reply_submit', 'coze_chat_open',
-  'action', 'scroll_depth', 'signup', 'feedback'
+  'action', 'scroll_depth', 'signup', 'feedback',
+  'ai_surfaced', 'ai_used', 'decode', 'assess',
+  'feature_use', 'subscribe'
 ]);
 
 const PRODUCT_WHITELIST = new Set([
   'breeder', 'knowledge', 'shuowenjiedao', 'dashboard',
   'reply', 'goals', 'index', 'about',
-  'assessment', 'care-test', 'quality-test', 's1-report', 'other'
+  'assessment', 'care-test', 'quality-test', 's1-report',
+  'decode', 'assess', 'mini-program', 'agent', 'other'
 ]);
 
 const RATE_LIMIT = new Map();
