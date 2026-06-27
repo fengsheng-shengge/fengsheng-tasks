@@ -139,7 +139,7 @@ POST /api/decode/v2
 
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| input | string | ✅ | 用户输入 |
+| input | string | ✅ | 用户输入（2-2000字） |
 | type | string | | `text`（默认）\| `voice` |
 | sessionId | string | | 会话ID（用于上下文关联） |
 
@@ -149,29 +149,84 @@ POST /api/decode/v2
   "sessionId": "sess_xxxxx",
   "category": "buying",
   "profile": {
-    "lifeStage": "婚房置業",
+    "lifeStage": "婚房置业",
     "coreNeed": "安全",
-    "riskTolerance": "穩健型",
-    "decisionStyle": "遲疑型"
+    "riskTolerance": "稳健型",
+    "decisionStyle": "迟疑型",
+    "source": "rule_based"
   },
   "insights": [
-    {
-      "type": "情感",
-      "content": "買房對她而言是安全感重建..."
-    }
+    { "type": "需求", "content": "客户关注「安全」..." }
   ],
   "suggestions": [
-    {
-      "scene": "初次見面",
-      "content": "不急着推房源，先問問她對家的想象..."
-    }
-  ]
+    { "scene": "初次接触", "content": "先讲安全底线..." }
+  ],
+  "engine": "rule_based"
+}
+```
+
+**引擎说明**：
+- `rule_based`：规则引擎（无需 Coze API Key，降级可用）
+- `coze`：Coze Bot AI 解码（需配置 COZE_API_KEY）
+
+---
+
+## 5. 订阅管理
+
+### 创建订阅订单
+
+```
+POST /api/subscribe
+```
+
+**认证**：需要 Bearer Token
+
+**请求体**：
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| product | string | ✅ | `decode` \| `assess` |
+| plan | string | ✅ | `monthly` \| `yearly` |
+
+**响应**：
+```json
+{
+  "orderId": "ord_xxxxx",
+  "amount": 4900,
+  "currency": "CNY",
+  "product": "decode",
+  "plan": "monthly",
+  "mock": false,
+  "expiresAt": "2026-06-27T00:15:00Z"
+}
+```
+
+> `mock: true` 表示微信支付未配置，开发调试模式。
+
+### 查询订阅状态
+
+```
+GET /api/subscribe
+```
+
+**认证**：需要 Bearer Token
+
+**响应**：
+```json
+{
+  "subscription": {
+    "product": "decode",
+    "plan": "monthly",
+    "status": "active",
+    "startedAt": "2026-06-27T00:00:00Z",
+    "expireAt": "2026-07-27T00:00:00Z"
+  }
 }
 ```
 
 ---
 
-## 5. 品质测评
+## 6. 品质测评
 
 ### 提交测评
 
@@ -208,7 +263,7 @@ POST /api/assess
 
 ---
 
-## 6. 订阅
+## 7. 订阅
 
 ### 创建订阅订单
 
