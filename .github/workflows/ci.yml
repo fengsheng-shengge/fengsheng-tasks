@@ -180,9 +180,30 @@ jobs:
             node --check tracker.js && echo "  ✓ tracker.js 语法正确" || echo "  ✗ tracker.js 有语法错误"
           fi
 
+  entry-validate:
+    name: Entry Schema Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run entry validator
+        run: |
+          echo "=== 检查 11: 词条Schema验证 ==="
+          node scripts/validate-entries.js knowledge.html
+
+  api-validate:
+    name: API Endpoint Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run API tests
+        run: |
+          echo "=== 检查 12: API接口验收测试 ==="
+          node scripts/validate-api.js
+        continue-on-error: false
+
   ci-result:
     name: CI Summary
-    needs: [lint, html-valid, js-lint]
+    needs: [lint, html-valid, js-lint, entry-validate, api-validate]
     runs-on: ubuntu-latest
     if: always()
     steps:
