@@ -125,40 +125,49 @@ function validateEntry(entry, file) {
 }
 
 function main() {
-  const htmlFiles = process.argv.slice(2);
-  console.log('🔍 词条Schema验证\n');
-  console.log(`必填字段: ${REQUIRED.join(', ')}`);
-  console.log(`推荐字段: ${RECOMMENDED.join(', ')}\n`);
+  const fs = require('fs');
+  const path = require('path');
+  let entries = [];
 
-  if (htmlFiles.length === 0) {
-    // 默认检查knowledge.html
-    const knowledgePath = path.join(__dirname, '..', 'knowledge.html');
-    if (fs.existsSync(knowledgePath)) {
-      htmlFiles.push(knowledgePath);
+  // 优先从 data/entries.json 读取（推荐）
+  const jsonPath = path.join(__dirname, '..', 'data', 'entries.json');
+  const jsonMinPath = path.join(__dirname, '..', 'data', 'entries.min.json');
+  if (fs.existsSync(jsonPath)) {
+    try {
+      const raw = fs.readFileSync(jsonPath, 'utf8');
+      entries = JSON.parse(raw);
+      console.log(`📄 从 data/entries.json 加载：${entries.length} 条词条`);
+    } catch(e) {
+      console.log(`⚠ data/entries.json 解析失败: ${e.message}`);
     }
   }
 
-  for (const file of htmlFiles) {
-    const content = fs.readFileSync(file, 'utf8');
-    const match = content.match(/const ENTRIES\s*=\s*(\[[\s\S]*?\])\s*;/);
-    if (!match) {
-      console.log(`⚠ 无法从 ${file} 提取词条`);
-      continue;
-    }
-
-    let entries;
-    try {
-      entries = eval(`(${match[1]})`);
-    } catch (e) {
-      console.log(`✗ ${file} 词条JSON解析失败: ${e.message}`);
+  // 降级：从 knowledge.html 解析
+  if (entries.length === 0) {
+    const htmlPath = path.join(__dirname, '..', 'knowledge.html');
+    if (!fs.existsSync(htmlPath)) {
+      console.log('✗ 未找到 data/entries.json 或 knowledge.html');
       process.exit(1);
     }
-
-    console.log(`📄 ${path.basename(file)}: ${entries.length} 条词条`);
-
-    for (const entry of entries) {
-      validateEntry(entry, path.basename(file));
+    const content = fs.readFileSync(htmlPath, 'utf8');
+    const match = content.match(/const ENTRIES\s*=\s*(\[[\s\S]*?\])\s*;/);
+    if (!match) {
+      console.log('✗ 无法从 knowledge.html 提取词条');
+      process.exit(1);
     }
+    try {
+      entries = eval(`(${match[1]})`);
+      console.log(`📄 从 knowledge.html 加载：${entries.length} 条词条`);
+    } catch(e) {
+      console.log(`✗ 词条JSON解析失败: ${e.message}`);
+      process.exit(1);
+    }
+  }
+
+  // 验证所有词条
+  console.log('\n验证开始...');
+  for (const entry of entries) {
+    validateEntry(entry, 'data/entries.json');
   }
 
   console.log('\n' + '='.repeat(50));
