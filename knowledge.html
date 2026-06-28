@@ -6,6 +6,34 @@
 <meta name="keywords" content="居住服务业务字典,知识底座,品质标准,业务词条,行业术语,风声,fengsheng">
 <title>知识底座 · 风声</title>
 <meta name="description" content="风声知识底座：居住服务业务字典，涵盖交易、租赁、整装、家政、人才字典、十五五政策等6大业务域，450+条消费者友好版词条。">
+<!-- JSON-LD Structured Data for AI Engines -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "风声知识底座",
+  "url": "https://fengsheng.tech/knowledge/",
+  "description": "居住服务从业者的业务知识库，涵盖交易、租赁、整装、家政、人才、政策6大业务域。",
+  "publisher": {
+    "@type": "Organization",
+    "name": "风声",
+    "url": "https://fengsheng.tech"
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://fengsheng.tech/knowledge/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+<script type="application/ld+json" id="faq-schema">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": []
+}
+</script>
+
 <style>
 :root{--bg:#f7f4ef;--bg2:#e8e4d9;--dk:#1a1a1a;--p:#3d5a3e;--fire:#c46a3a;--orange:#f5a623;--ts:#555555;--td:#888;--card:#fff;--border:#e8e4d9;--r:8px}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -451,6 +479,30 @@ function init(){
   if(params.get('tab')&&DOMAINS.some(d=>d.id===params.get('tab')))currentDomain=params.get('tab');
   const tabs=document.getElementById('domain-tabs');
   tabs.innerHTML=DOMAINS.map(d=>`<div class="domain-tab ${d.id===currentDomain?'active':''}" data-domain="${d.id}" onclick="switchDomain('${d.id}')">${d.icon} ${d.name}（${d.count}）</div>`).join('');
+  // 填充FAQPage JSON-LD schema（帮助AI理解词条问答）
+  const faqScript=document.getElementById('faq-schema');
+  if(faqScript&&ENTRIES.length>0){
+    const entities=[];
+    ENTRIES.forEach(e=>{
+      if(e.consumerQ&&e.simpleAnswer&&e.simpleAnswer.length>5){
+        entities.push({
+          "@type":"Question",
+          "name":e.consumerQ,
+          "acceptedAnswer":{
+            "@type":"Answer",
+            "text":e.simpleAnswer
+          }
+        });
+      }
+    });
+    if(entities.length>0){
+      try{
+        const faqData=JSON.parse(faqScript.textContent);
+        faqData.mainEntity=entities.slice(0,100);// 最多100条，避免schema过长
+        faqScript.textContent=JSON.stringify(faqData,null,0);
+      }catch(e){}
+    }
+  }
   renderPolicyCard();
   renderSceneTabs();
   renderQaExamples();
