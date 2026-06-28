@@ -60,7 +60,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .v-line-num{font-size:12px;color:var(--ts)}
 .v-line-bar{height:6px;background:rgba(61,90,62,.1);border-radius:999px;overflow:hidden;margin-bottom:8px}
 .v-line-fill{height:100%;width:0;background:linear-gradient(90deg,var(--p) 0%,var(--fire) 100%);border-radius:999px;animation:vprogress 2.5s ease-out forwards}
-@keyframes vprogress{from{width:0}to{width:62%}}
+@keyframes vprogress{from{width:0}to{width:var(--v-pct,67%)}}
 .v-line-foot{font-size:11px;color:var(--ts);text-align:center}
 
 /* SECTION通用 */
@@ -307,7 +307,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   <!-- 110人验证线 -->
   <div class="v-line">
     <div class="v-line-top">
-      <span class="v-line-label">🎯 110人验证线</span>
+      <span class="v-line-label">🎯 300人验证线</span>
       <span class="v-line-num">需要你 · 2分钟即可贡献 1 份有效样本</span>
     </div>
     <div class="v-line-bar"><div class="v-line-fill"></div></div>
@@ -684,6 +684,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     else if (p.indexOf('/dashboard') >= 0) m = 'dashboard';
     b.dataset.module = m;
   })();
-  </script>
+
+  // 验证线动态更新（fetch UV → 更新进度条）
+  (function() {
+    var VERIFY_TARGET = 300; // 300人验证线目标
+    var vLabel = document.querySelector('.v-line-label');
+    var vFill = document.querySelector('.v-line-fill');
+    var vNum = document.querySelector('.v-line-num');
+    if (!vFill) return;
+
+    fetch('/api/stats?key=fs-admin-2026')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var users = data.total_users || 0;
+        var pct = Math.min(100, Math.round(users / VERIFY_TARGET * 100));
+        // 更新进度条
+        vFill.style.setProperty('--v-pct', pct + '%');
+        vFill.style.animation = 'none';
+        vFill.style.width = pct + '%';
+        // 更新标签文字（仅当超过阈值时变化）
+        if (users >= VERIFY_TARGET) {
+          vLabel.textContent = '🎯 ' + users + '人已达成目标！';
+        }
+      })
+      .catch(function() {
+        // 静默失败，保持静态显示
+      });
+  })();
+</script>
 </body>
 </html>

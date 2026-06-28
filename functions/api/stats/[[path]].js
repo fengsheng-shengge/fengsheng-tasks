@@ -103,7 +103,7 @@ export async function onRequest(context) {
 }
 
 async function getSummary(env) {
-  const pvByProduct = {}, usersByProduct = {};
+  const pvByProduct = {}, usersByProduct = {}, clicksByProduct = {};
   let totalPV = 0, totalUsers = 0;
   try {
     const { results } = await env.DB.prepare(
@@ -114,6 +114,18 @@ async function getSummary(env) {
       pvByProduct[row.product || 'other'] = row.pv || 0;
       usersByProduct[row.product || 'other'] = row.uniq_users || 0;
       if ((row.product || 'other') !== 'other') totalPV += row.pv || 0;
+    }
+  } catch (_) {}
+  // 查询交互次数（click/action/feature_use等事件类型）
+  try {
+    const { results } = await env.DB.prepare(
+      `SELECT product, COUNT(*) as clicks
+       FROM events
+       WHERE event_type IN ('click','action','feature_use','ai_surfaced','ai_used','signup','reply_submit')
+       GROUP BY product`
+    ).all();
+    for (const row of results) {
+      clicksByProduct[row.product || 'other'] = row.clicks || 0;
     }
   } catch (_) {}
   try {
@@ -130,7 +142,7 @@ async function getSummary(env) {
   } catch (_) {}
   const perProduct = [];
   for (const p of Object.keys(GOALS.products)) {
-    perProduct.push({ product: p, pageviews: pvByProduct[p] || 0, users: usersByProduct[p] || 0, feedback: fbByProduct[p] || 0 });
+    perProduct.push({ product: p, pageviews: pvByProduct[p] || 0, users: usersByProduct[p] || 0, feedback: fbByProduct[p] || 0, clicks: clicksByProduct[p] || 0 });
   }
   const feedbackRate = totalUsers > 0 ? Math.round((totalFB / totalUsers) * 1000) / 10 : 0;
   return okJson({ total_users: totalUsers, total_pageviews: totalPV, total_feedback: totalFB, feedback_rate_pct: feedbackRate, per_product: perProduct, generated_at: Date.now() });
