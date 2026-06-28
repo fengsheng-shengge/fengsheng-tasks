@@ -42,15 +42,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--border)}
 .top-bar .brand{font-size:13px;font-weight:700;color:var(--p);letter-spacing:1px}
 .top-bar a{font-size:12px;color:var(--td);text-decoration:none}
-.hero-icon{font-size:48px;text-align:center;margin:24px 0 12px}
-.hero-title{font-size:22px;font-weight:800;text-align:center;margin-bottom:6px}
-.hero-sub{font-size:13px;color:var(--ts);text-align:center;margin-bottom:24px;line-height:1.6}
-.hero-sub strong{color:var(--p)}
-.stats-row{display:flex;justify-content:center;gap:16px;margin-bottom:24px}
-.stat-item{text-align:center}
-.stat-num{font-size:24px;font-weight:800;color:var(--p)}
-.stat-label{font-size:10px;color:var(--td)}
-.section-label{font-size:11px;font-weight:700;color:var(--td);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.section-label{font-size:12px;font-weight:700;color:var(--td);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
 /* 产品推荐模块 */
 .product-recommend-wrap{margin:20px 0;padding:16px 18px;background:linear-gradient(135deg,rgba(61,90,62,.05),rgba(196,106,58,.05));border-radius:12px;border:1px solid var(--border)}
 .product-recommend-title{font-size:12px;font-weight:700;color:var(--tx);margin-bottom:12px;letter-spacing:.02em}
@@ -73,45 +65,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .domain-tab:hover{background:rgba(61,90,62,.06);border-color:var(--p);color:var(--p);transform:translateY(-1px);box-shadow:0 3px 8px rgba(61,90,62,.12)}
 .domain-tab.active{background:var(--p);color:#fff;border-color:var(--p);box-shadow:0 2px 6px rgba(61,90,62,.2)}
 .domain-tab:active{transform:scale(.97)}
-.entry-card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.04)}
-.entry-card:hover{border-color:var(--p);box-shadow:0 4px 12px rgba(61,90,62,.12);transform:translateY(-1px)}
-.entry-card:active{transform:scale(.99)}
-.entry-card.highlight{animation:card-pulse 0.6s ease-out;border-color:var(--p);box-shadow:0 0 0 3px rgba(61,90,62,.2)}
-@keyframes card-pulse{0%{box-shadow:0 0 0 0 rgba(61,90,62,.4)}70%{box-shadow:0 0 0 8px rgba(61,90,62,0)}100%{box-shadow:0 0 0 0 rgba(61,90,62,0)}}
-.entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px}
-.entry-id{font-size:10px;font-weight:700;color:var(--td);background:var(--bg2);padding:2px 7px;border-radius:10px;white-space:nowrap}
-.entry-name{font-size:16px;font-weight:700;color:var(--dk);line-height:1.3}
-.entry-alias{font-size:12px;color:var(--td);margin-bottom:6px;font-style:italic}
-.entry-def{font-size:13px;color:var(--ts);line-height:1.6;margin-bottom:10px}
-.entry-source{font-size:12px;color:var(--p);background:rgba(61,90,62,.07);padding:5px 10px;border-radius:8px;line-height:1.5;font-weight:600}
-.entry-source .src-label{font-weight:700;margin-right:4px}
-.entry-detail{display:none;margin-top:12px;padding-top:12px;border-top:2px solid var(--border)}
-.entry-detail.open{display:block}
-/* 三层展示 */
-.layer-tabs{display:flex;gap:4px;margin-bottom:10px}
-.layer-tab{font-size:10px;padding:3px 8px;border-radius:3px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;font-weight:600;transition:all .15s}
-.layer-tab.active{background:var(--p);color:#fff;border-color:var(--p)}
-.layer-tab.tab-consumer{background:#FFF5EB;border-color:#E8853D;color:#C56A20;font-weight:700;position:relative}
-.layer-tab.tab-consumer::after{content:'NEW';font-size:8px;background:#E8853D;color:#fff;padding:0 3px;border-radius:2px;margin-left:4px;vertical-align:super;line-height:1}
-.layer-tab.tab-consumer.active{background:#E8853D;color:#fff;border-color:#E8853D}
-.layer-tab.tab-consumer.active::after{background:#fff;color:#E8853D}
-.layer-content{display:none}
-.layer-content.active{display:block}
-.detail-row{margin-bottom:8px;font-size:12px;line-height:1.6}
-.detail-label{font-weight:700;color:var(--dk);display:inline}
-.detail-val{color:var(--ts)}
-.detail-row.speech{background:rgba(61,90,62,.03);padding:6px 8px;border-radius:4px;margin:4px 0}
-.detail-row.speech .detail-val{white-space:pre-wrap}
-.source-link{color:var(--p);text-decoration:none;border-bottom:1px dashed var(--p);font-size:11px}
-.source-link:hover{border-bottom-style:solid}
+/* 出处标签 */
 .source-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;margin:2px 2px 2px 0;font-weight:600}
 .badge-gb{background:#e8f5e9;color:#2e7d32}
 .badge-law{background:#fff3e0;color:#e65100}
 .badge-industry{background:#e3f2fd;color:#1565c0}
 .badge-academic{background:#fce4ec;color:#c62828}
 .badge-platform{background:#f3e5f5;color:#7b1fa2}
-.entry-card .expand-hint{font-size:10px;color:var(--td);text-align:center;margin-top:6px}
-.entry-detail.open ~ .expand-hint{display:none}
+.source-link{color:var(--p);text-decoration:none;border-bottom:1px dashed var(--p);font-size:11px}
+.source-link:hover{border-bottom-style:solid}
+
+/* 三层展示（详情页签） */
+.layer-tabs{display:flex;gap:4px;margin-bottom:10px}
+.layer-tab{font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;font-weight:600;transition:all .15s;white-space:nowrap}
+.layer-tab:hover{background:rgba(61,90,62,.08)}
+.layer-tab.active{background:var(--p);color:#fff;border-color:var(--p)}
+.layer-tab.tab-consumer{background:#FFF5EB;border-color:#E8853D;color:#C56A20;font-weight:700}
+.layer-tab.tab-consumer.active{background:#E8853D;color:#fff;border-color:#E8853D}
+.layer-content{display:none}
+.layer-content.active{display:block}
+.detail-row{margin-bottom:8px;font-size:13px;line-height:1.6}
+.detail-label{font-weight:700;color:var(--dk);display:inline}
+.detail-val{color:var(--ts)}
+.detail-row.speech{background:rgba(61,90,62,.03);padding:6px 8px;border-radius:4px;margin:4px 0}
+.detail-row.speech .detail-val{white-space:pre-wrap}
 .footer{text-align:center;margin-top:32px;padding:20px 0;border-top:1px solid var(--border);font-size:11px;color:var(--td);line-height:1.7}
 /* 版权+反馈 */
 .page-footer{text-align:center;padding:24px 16px;margin-top:32px;
@@ -129,38 +106,72 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .feedback-btn:hover{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
 .feedback-btn.active{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
 
-/* Hero区域 */
-.hero-title{font-size:clamp(32px,6vw,56px);font-weight:900;letter-spacing:.2em;color:var(--dk);text-align:center;margin-bottom:8px}
-.hero-sub{font-size:14px;color:var(--td);text-align:center;margin-bottom:24px}
-
-/* 6宫格统计矩阵 */
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
-@media(min-width:640px){.stats-grid{grid-template-columns:repeat(6,1fr);gap:12px}}
-.stat-cell{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 8px;text-align:center}
-.stat-cell .stat-n{font-size:18px;font-weight:900;color:var(--p)}
-.stat-cell .stat-l{font-size:10px;color:var(--td);margin-top:2px}
-
-/* AI搜索框 */
-.search-wrap{position:relative;margin-bottom:16px}
-.search-input{width:100%;padding:13px 16px;font-size:15px;border:2px solid var(--p);border-radius:12px;background:var(--card);color:var(--dk);box-sizing:border-box;transition:border-color .2s,box-shadow .2s}
+/* 搜索区域 */
+.search-section{margin-bottom:16px}
+.search-label{font-size:12px;font-weight:700;color:var(--td);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.search-wrap{position:relative;margin-bottom:8px}
+.search-input{width:100%;padding:14px 16px;font-size:15px;border:2px solid var(--p);border-radius:12px;background:var(--card);color:var(--dk);box-sizing:border-box;transition:border-color .2s,box-shadow .2s}
 .search-input:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 3px rgba(61,90,62,.15)}
 .search-input::placeholder{color:#bbb}
-.search-count{display:none;font-size:12px;color:var(--p);font-weight:600;padding:6px 0 2px;text-align:center}
-.search-results{position:absolute;top:calc(100% + 2px);left:0;right:0;background:#fff;border:1.5px solid var(--p);border-radius:12px;box-shadow:0 8px 24px rgba(61,90,62,.18);z-index:50;max-height:360px;overflow-y:auto;display:none}
+.search-count{display:none;font-size:12px;color:var(--p);font-weight:600;padding:4px 0 2px}
+.search-results{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:2px solid var(--p);border-radius:14px;box-shadow:0 8px 24px rgba(61,90,62,.18);z-index:50;max-height:380px;overflow-y:auto;display:none;overflow-x:hidden}
 .search-results.active{display:block}
-.search-result-item{padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s}
+.search-result-item{padding:13px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .12s}
 .search-result-item:last-child{border-bottom:none}
-.search-result-item:hover{background:rgba(61,90,62,.06)}
-.search-result-item .result-name{font-size:14px;font-weight:700;color:var(--dk)}
-.search-result-item .result-q{font-size:12px;color:var(--p);margin-top:3px;line-height:1.4}
+.search-result-item:hover{background:rgba(61,90,62,.07)}
+.search-result-item.active-item{background:rgba(61,90,62,.1)}
+.search-result-item .result-name{font-size:14px;font-weight:700;color:var(--dk);flex:1}
+.search-result-item .result-domain{font-size:11px;color:var(--td);background:var(--bg2);padding:2px 7px;border-radius:10px;flex-shrink:0;font-weight:600}
+.search-result-item .result-q{font-size:12px;color:var(--ts);margin-top:4px;line-height:1.4}
 .search-no-results{padding:20px;text-align:center;color:var(--td);font-size:14px}
+.search-hints{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.hints-label{font-size:12px;color:var(--td)}
+.hint-chip{font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--ts);cursor:pointer;transition:all .15s;font-weight:600}
+.hint-chip:hover{background:var(--p);color:#fff;border-color:var(--p)}
+
+/* Hero 区域 */
+.hero-section{text-align:center;padding:20px 0 12px;margin-bottom:16px}
+.hero-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--p);background:rgba(61,90,62,.08);padding:4px 12px;border-radius:20px;letter-spacing:.05em;margin-bottom:8px;text-transform:uppercase}
+.hero-title{font-size:36px;font-weight:900;color:var(--dk);letter-spacing:.04em;margin-bottom:8px;line-height:1.1}
+.hero-desc{font-size:14px;color:var(--ts);line-height:1.7;margin-bottom:0}
+.hero-desc-sub{display:block;font-size:12px;color:var(--td);margin-top:4px}
+
+/* 核心数字条 */
+.stats-strip{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:20px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.stat-pill{display:flex;flex-direction:column;align-items:center;flex:1;gap:2px}
+.stat-pill-n{font-size:20px;font-weight:900;color:var(--p);line-height:1}
+.stat-pill-l{font-size:10px;color:var(--td);white-space:nowrap}
+.stat-divider{width:1px;height:28px;background:var(--border);flex-shrink:0}
+
+/* 住得好北极星框架 */
+.Polaris-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.Polaris-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.Polaris-icon{font-size:36px;flex-shrink:0}
+.Polaris-title{font-size:20px;font-weight:900;color:var(--dk);letter-spacing:.02em}
+.Polaris-sub{font-size:12px;color:var(--td);margin-top:3px}
+.Polaris-layers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.Polaris-layer{border-radius:10px;padding:12px 10px;text-align:center;transition:transform .2s}
+.Polaris-layer:hover{transform:translateY(-2px)}
+.layer-material{background:linear-gradient(145deg,#e8f5e9,#d7eddb);border:1px solid #b2d9b7}
+.layer-emotion{background:linear-gradient(145deg,#fff3e0,#ffe8cc);border:1px solid #f5c99a}
+.layer-spirit{background:linear-gradient(145deg,#fff8e1,#fff3cc);border:1px solid #f5d98a}
+.layer-eyebrow{font-size:10px;font-weight:700;color:var(--td);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.layer-name{font-size:14px;font-weight:800;color:var(--dk);margin-bottom:4px}
+.layer-tags{font-size:11px;color:var(--td);line-height:1.4}
+.Polaris-paths{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.path-card{border-radius:10px;padding:10px 12px;border:1px solid var(--border);background:var(--bg)}
+.path-label{font-size:12px;font-weight:800;color:var(--dk);margin-bottom:4px}
+.path-buy .path-label{color:var(--p)}
+.path-rent .path-label{color:var(--fire)}
+.path-steps{font-size:11px;color:var(--ts);line-height:1.5}
+.Polaris-hint{text-align:center;font-size:11px;color:var(--td);font-style:italic}
 
 /* 消费者问答示例 */
-.qa-section{margin-bottom:16px}
-.qa-title{font-size:12px;font-weight:700;color:var(--td);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
-.qa-examples{display:flex;flex-wrap:wrap;gap:6px}
-.qa-tag{font-size:12px;padding:4px 10px;background:var(--card);border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:all .15s;color:var(--tx)}
-.qa-tag:hover{background:var(--p);color:#fff;border-color:var(--p)}
+.qa-section{margin-bottom:20px}
+.qa-title{font-size:12px;font-weight:700;color:var(--td);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.qa-examples{display:flex;flex-wrap:wrap;gap:8px}
+.qa-tag{font-size:13px;padding:7px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:24px;cursor:pointer;transition:all .18s;color:var(--ts);font-weight:600;line-height:1.3}
+.qa-tag:hover{background:var(--p);color:#fff;border-color:var(--p);transform:translateY(-1px);box-shadow:0 3px 8px rgba(61,90,62,.15)}
 
 /* 场景入口 */
 .scene-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
@@ -170,39 +181,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 
 .scene-count{font-size:11px;color:var(--td);margin-bottom:16px}
 
-/* 词条卡片消费者视角 */
-.entry-card{margin-bottom:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:all .2s}
-.entry-card:hover{border-color:var(--p);box-shadow:0 2px 8px rgba(61,90,62,.08)}
-.entry-card.highlight{background:rgba(61,90,62,.08);border-color:var(--p);animation:highlightPulse 2s ease-out}
+/* 词条卡片 */
+.entry-card{margin-bottom:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.entry-card:hover{border-color:rgba(61,90,62,.4);box-shadow:0 4px 14px rgba(61,90,62,.1);transform:translateY(-1px)}
+.entry-card.highlight{background:rgba(61,90,62,.06);border-color:var(--p);animation:highlightPulse 2s ease-out}
 @keyframes highlightPulse{0%{background:rgba(61,90,62,.2)}100%{background:var(--card)}}
-.entry-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.entry-name{font-size:14px;font-weight:800;color:var(--dk)}
-.entry-id{font-size:10px;color:var(--td);font-weight:400}
-.entry-consumer-q{background:rgba(196,106,58,.08);border-left:3px solid #c46a3a;padding:8px 10px;border-radius:0 6px 6px 0;margin-bottom:8px;font-size:13px;color:var(--dk);line-height:1.5}
-.entry-consumer-q::before{content:'❓ ';font-size:11px}
-.entry-consumer-answer{background:rgba(61,90,62,.05);border-radius:6px;padding:8px 10px;margin-bottom:8px;font-size:12px;color:var(--tx);line-height:1.5}
-.entry-consumer-answer::before{content:'💡 ';font-size:11px}
-.entry-consumer-benefit{font-size:12px;color:var(--p);font-weight:600;margin-bottom:8px;padding:6px 0;border-top:1px dashed var(--border)}
-.entry-consumer-benefit::before{content:'✨ '}
+.entry-card .entry-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.entry-card .entry-name{font-size:15px;font-weight:800;color:var(--dk);line-height:1.3;flex:1}
+.entry-card .entry-id{font-size:10px;color:var(--td);background:var(--bg2);padding:2px 7px;border-radius:10px;flex-shrink:0}
+.entry-card .entry-consumer-q{background:rgba(196,106,58,.07);border-left:3px solid #c46a3a;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:10px;font-size:13px;color:var(--dk);line-height:1.5;font-weight:600}
+.entry-card .entry-consumer-answer{background:rgba(61,90,62,.06);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--ts);line-height:1.6;border:1px solid rgba(61,90,62,.1)}
+.entry-card .entry-consumer-benefit{font-size:12px;color:var(--p);font-weight:700;margin-bottom:8px;padding:6px 0;border-top:1px dashed rgba(61,90,62,.2)}
 /* 双视角叙事 */
-.entry-consumer-narrative{background:rgba(61,90,62,.06);border-left:3px solid var(--p);padding:6px 10px;border-radius:0 6px 6px 0;margin-bottom:6px;font-size:12px;color:var(--dk);line-height:1.5}
-.entry-consumer-narrative::before{content:'🏠 '}
-.entry-service-narrative{background:rgba(196,106,58,.05);border-left:3px solid #c46a3a;padding:6px 10px;border-radius:0 6px 6px 0;margin-bottom:6px;font-size:12px;color:var(--dk);line-height:1.5}
-.entry-service-narrative::before{content:'👔 '}
+.entry-card .entry-consumer-narrative{background:rgba(61,90,62,.06);border-left:3px solid var(--p);padding:8px 12px;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:12px;color:var(--dk);line-height:1.5}
+.entry-card .entry-service-narrative{background:rgba(196,106,58,.06);border-left:3px solid #c46a3a;padding:8px 12px;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:12px;color:var(--dk);line-height:1.5}
 /* FAQ */
-.entry-faq{margin-top:10px}
-.faq-header{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:8px}
-.faq-item{background:rgba(61,90,62,.04);border-radius:8px;padding:10px;margin-bottom:8px}
-.faq-q{font-size:13px;font-weight:600;color:var(--dk);margin-bottom:4px}
-.faq-a{font-size:12px;color:var(--td);line-height:1.5;margin-top:4px}
+.entry-card .entry-faq{margin-top:12px}
+.entry-card .faq-header{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:8px}
+.entry-card .faq-item{background:rgba(61,90,62,.04);border-radius:8px;padding:10px;margin-bottom:6px}
+.entry-card .faq-q{font-size:13px;font-weight:600;color:var(--dk);margin-bottom:4px}
+.entry-card .faq-a{font-size:12px;color:var(--ts);line-height:1.5;margin-top:4px}
 /* 对比表 */
-.entry-compare{background:rgba(61,90,62,.04);border-radius:8px;padding:10px;margin-top:8px}
-.compare-header{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:6px}
-.compare-content{font-size:12px;color:var(--dk);line-height:1.6;white-space:pre-wrap}
+.entry-card .entry-compare{background:rgba(61,90,62,.04);border-radius:8px;padding:10px;margin-top:8px}
 /* 权威引用 */
-.entry-auth-ref{margin-top:8px}
-/* AI解读tab */
-.layer-tab{font-size:12px}
+.entry-card .entry-auth-ref{margin-top:8px}
+/* 展开详情 */
+.entry-card .entry-detail{display:none;margin-top:14px;padding-top:14px;border-top:1.5px solid var(--border)}
+.entry-card .entry-detail.open{display:block}
+.entry-card .expand-hint{font-size:11px;color:var(--td);text-align:center;margin-top:8px;transition:opacity .2s}
+.entry-card.open .expand-hint{opacity:0}
+/* 出处标签 */
+.entry-card .entry-source{font-size:12px;color:var(--p);background:rgba(61,90,62,.07);padding:6px 10px;border-radius:8px;line-height:1.5;font-weight:600;margin-top:10px;border:1px solid rgba(61,90,62,.12)}
 </style>
 <meta property="og:title" content="居住服务业务字典 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/knowledge"><meta name="twitter:card" content="summary_large_image"><!-- 全站数据追踪器 v1.0 -->
 <script src="/tracker.js" async></script>
@@ -239,60 +248,86 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 </style>
 
 <div class="page">
-  <div class="top-bar"><span class="brand">风声</span><a href="/">← 返回首页</a></div>
-  <div class="hero-title">知 识 底 座</div>
-  <div class="hero-sub">居住服务行业的 AI 驱动业务字典</div>
-  <div class="stats-grid">
-    <div class="stat-cell"><div class="stat-n" id="stat-total">122</div><div class="stat-l">词条</div></div>
-    <div class="stat-cell"><div class="stat-n">7</div><div class="stat-l">业务域</div></div>
-    <div class="stat-cell"><div class="stat-n">双视角</div><div class="stat-l">专业+通俗</div></div>
-    <div class="stat-cell"><div class="stat-n">10+</div><div class="stat-l">权威来源</div></div>
-    <div class="stat-cell"><div class="stat-n">六维</div><div class="stat-l">品质模型</div></div>
-    <div class="stat-cell"><div class="stat-n">免费</div><div class="stat-l">查询使用</div></div>  
-  <div style="margin:0 0 20px;padding:20px 18px;background:var(--card);border:1px solid var(--border);border-radius:12px">
-    <div style="font-size:15px;font-weight:800;color:var(--dk);margin-bottom:4px">🏠 住得好 = ？</div>
-    <div style="font-size:12px;color:var(--ts);margin-bottom:16px;line-height:1.6">风声的北极星：帮助服务者，让客户住得好。住得好不是一句空话，是三层递进。</div>
-    
-    <div style="display:grid;gap:8px;margin-bottom:16px">
-      <div style="padding:10px 12px;border-radius:8px;background:linear-gradient(135deg,rgba(61,90,62,.08),rgba(61,90,62,.03));border-left:3px solid var(--p)">
-        <div style="font-size:12px;font-weight:700;color:var(--p)">物质层 · 得到保障</div>
-        <div style="font-size:11px;color:var(--ts);margin-top:2px">安全 · 健康 · 便利 · 经济</div>
-      </div>
-      <div style="padding:10px 12px;border-radius:8px;background:linear-gradient(135deg,rgba(196,106,58,.08),rgba(196,106,58,.03));border-left:3px solid var(--fire)">
-        <div style="font-size:12px;font-weight:700;color:var(--fire)">情感层 · 得到满足</div>
-        <div style="font-size:11px;color:var(--ts);margin-top:2px">舒适 · 美观</div>
-      </div>
-      <div style="padding:10px 12px;border-radius:8px;background:linear-gradient(135deg,rgba(245,166,35,.1),rgba(245,166,35,.03));border-left:3px solid var(--orange)">
-        <div style="font-size:12px;font-weight:700;color:#c4880a">精神层 · 得到尊重</div>
-        <div style="font-size:11px;color:var(--ts);margin-top:2px">自在 — 选择自由、不被将就、住得像自己</div>
-      </div>
-    </div>
+  <div class="top-bar"><span class="brand">🌬️ 风声</span><a href="/">← 返回首页</a></div>
 
-    <div style="font-size:13px;font-weight:700;color:var(--dk);margin-bottom:8px">🗺️ 两条人生居住路径</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <div style="padding:10px 12px;border-radius:8px;background:var(--bg);border:1px solid var(--border)">
-        <div style="font-size:11px;font-weight:700;color:var(--p)">🔑 购房线</div>
-        <div style="font-size:10px;color:var(--ts);margin-top:4px;line-height:1.5">
-          首套房 → 成家改善 → 子女教育 → 品质升级 → 适老安享
-        </div>
-      </div>
-      <div style="padding:10px 12px;border-radius:8px;background:var(--bg);border:1px solid var(--border)">
-        <div style="font-size:11px;font-weight:700;color:var(--fire)">📋 租住线</div>
-        <div style="font-size:10px;color:var(--ts);margin-top:4px;line-height:1.5">
-          起步租房 → 租住改善 → 家庭租房 → 品质租住 → 适老租住
-        </div>
-      </div>
-    </div>
-    <div style="font-size:10px;color:var(--td);margin-top:8px;text-align:center">每个阶段 × 住得好三层 = 你该关注什么</div>
+  <!-- Hero 区域 -->
+  <div class="hero-section">
+    <div class="hero-badge">🏠 居住服务 · 业务字典</div>
+    <h1 class="hero-title">知识底座</h1>
+    <p class="hero-desc">122 条行业词条 × 7 大业务域 × 双视角解读<br>
+      <span class="hero-desc-sub">帮助服务者，用消费者听得懂的语言，说专业的答案</span>
+    </p>
   </div>
 
-  <div class="search-wrap">
-    <input class="search-input" id="search-input" type="search" placeholder="🔍 搜索词条、客户问题或场景…" autocomplete="off">
-    <div class="search-count" id="search-count"></div>
-    <div class="search-results" id="search-results"></div>
+  <!-- 核心数字 -->
+  <div class="stats-strip">
+    <div class="stat-pill"><span class="stat-pill-n">122</span><span class="stat-pill-l">行业词条</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-pill"><span class="stat-pill-n">7</span><span class="stat-pill-l">业务域</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-pill"><span class="stat-pill-n">10+</span><span class="stat-pill-l">权威来源</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-pill"><span class="stat-pill-n">双视角</span><span class="stat-pill-l">专业+通俗</span></div>
+  </div>
+
+  <!-- 住得好北极星框架 -->
+  <div class="n Polaris-section">
+    <div class="Polaris-head">
+      <div class="Polaris-icon">🏠</div>
+      <div>
+        <div class="Polaris-title">住得好</div>
+        <div class="Polaris-sub">风声的北极星指标 · 帮助服务者，让客户住得好</div>
+      </div>
+    </div>
+    <div class="Polaris-layers">
+      <div class="Polaris-layer layer-material">
+        <div class="layer-eyebrow">物质层</div>
+        <div class="layer-name">得到保障</div>
+        <div class="layer-tags">安全 · 健康 · 便利 · 经济</div>
+      </div>
+      <div class="Polaris-layer layer-emotion">
+        <div class="layer-eyebrow">情感层</div>
+        <div class="layer-name">得到满足</div>
+        <div class="layer-tags">舒适 · 美观</div>
+      </div>
+      <div class="Polaris-layer layer-spirit">
+        <div class="layer-eyebrow">精神层</div>
+        <div class="layer-name">得到尊重</div>
+        <div class="layer-tags">自在 · 选择自由 · 住得像自己</div>
+      </div>
+    </div>
+    <div class="Polaris-paths">
+      <div class="path-card path-buy">
+        <div class="path-label">🔑 购房路径</div>
+        <div class="path-steps">首套房 → 成家改善 → 子女教育 → 品质升级 → 适老安享</div>
+      </div>
+      <div class="path-card path-rent">
+        <div class="path-label">📋 租住路径</div>
+        <div class="path-steps">起步租房 → 租住改善 → 家庭租房 → 品质租住 → 适老租住</div>
+      </div>
+    </div>
+    <div class="Polaris-hint">每个阶段 × 住得好三层 = 你该关注什么</div>
+  </div>
+
+  <!-- 搜索框 -->
+  <div class="search-section">
+    <div class="search-label">🔍 搜索业务词条</div>
+    <div class="search-wrap">
+      <input class="search-input" id="search-input" type="search" placeholder="输入关键词，如：真房源、带看、安全…">
+      <div class="search-count" id="search-count"></div>
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <div class="search-hints">
+      <span class="hints-label">热门：</span>
+      <button class="hint-chip" onclick="doHintSearch(this.textContent)">真房源</button>
+      <button class="hint-chip" onclick="doHintSearch(this.textContent)">资金监管</button>
+      <button class="hint-chip" onclick="doHintSearch(this.textContent)">安全</button>
+      <button class="hint-chip" onclick="doHintSearch(this.textContent)">健康</button>
+      <button class="hint-chip" onclick="doHintSearch(this.textContent)">带看</button>
+    </div>
   </div>
   <div class="qa-section">
-    <div class="qa-title">客户问答</div>
+    <div class="qa-title">💬 消费者常问</div>
     <div class="qa-examples" id="qa-examples"></div>
   </div>
   <div class="scene-tabs" id="scene-tabs">
@@ -572,7 +607,7 @@ function init(){
         if(this.value.trim().length>=2){
           track.use('search',{query:this.value.trim(),resultCount:results.length,domain:currentDomain});
         }
-      },200);
+      },120);
     });
     searchInput.addEventListener('focus',function(){
       if(this.value.trim().length>=2){
@@ -581,7 +616,7 @@ function init(){
       }
     });
     document.addEventListener('click',function(e){
-      if(!e.target.closest('.search-wrap')){
+      if(!e.target.closest('.search-section')){
         const resultsEl=document.getElementById('search-results');
         if(resultsEl) resultsEl.classList.remove('active');
       }
@@ -593,13 +628,23 @@ function init(){
       if(e.key==='ArrowDown'){e.preventDefault();activeIndex=Math.min(activeIndex+1,items.length-1);updateActive(resultsEl,items,activeIndex);}
       else if(e.key==='ArrowUp'){e.preventDefault();activeIndex=Math.max(activeIndex-1,-1);updateActive(resultsEl,items,activeIndex);}
       else if(e.key==='Enter'){e.preventDefault();if(activeIndex>=0&&items[activeIndex])items[activeIndex].click();}
-      else if(e.key==='Escape'){resultsEl?.classList.remove('active');activeIndex=-1;}
+      else if(e.key==='Escape'){resultsEl?.classList.remove('active');activeIndex=-1;this.blur();}
     });
     function updateActive(container,items,idx){
-      items.forEach((item,i)=>item.style.background=i===idx?'rgba(61,90,62,.12)':'');
+      items.forEach((item,i)=>item.classList.toggle('active-item',i===idx));
       if(idx>=0&&items[idx])items[idx].scrollIntoView({block:'nearest'});
     }
   }
+  // 热门搜索快捷搜索
+  window.doHintSearch=function(text){
+    const si=document.getElementById('search-input');
+    if(!si) return;
+    si.value=text;
+    si.focus();
+    const results=searchEntries(text);
+    renderSearchResults(results,text);
+    if(results.length>0) track.use('search',{query:text,resultCount:results.length,domain:currentDomain});
+  };
   // 全局：按 / 快速聚焦搜索框
   document.addEventListener('keydown',function(e){
     if(e.key==='/'&&!e.target.matches('input,textarea')){
@@ -729,9 +774,10 @@ function renderSearchResults(results,query){
     container.classList.add('active');
     return;
   }
+  const domainLabels={'quality-customer':'品质·客户','quality-server':'品质·服务者','trade':'房产交易','rental':'房屋租赁','decor':'整装家居','homekeep':'家政保洁','talent':'人才字典','policy':'十五五政策'};
   container.innerHTML=results.map(e=>`
     <div class="search-result-item" data-id="${e.id}">
-      <div class="result-name">${e.name}</div>
+      <div class="result-header"><span class="result-name">${e.name}</span><span class="result-domain">${domainLabels[e.domain]||e.domain}</span></div>
       <div class="result-q">${e.consumerQ||e.def||''}</div>
     </div>`).join('');
   container.querySelectorAll('.search-result-item').forEach(item=>{
