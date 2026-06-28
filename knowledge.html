@@ -68,21 +68,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .product-rec-card.secondary .rec-name{font-size:13px;font-weight:700;color:var(--dk)}
 .product-rec-card.secondary .rec-desc{font-size:11px;color:var(--td);margin-top:2px}
 
-.domain-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
-.domain-tab{display:inline-flex;align-items:center;gap:5px;font-size:13px;padding:8px 16px;border-radius:8px;border:2px solid var(--border);background:#fff;cursor:pointer;transition:all .2s;font-weight:700;color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.domain-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.domain-tab{display:inline-flex;align-items:center;gap:4px;font-size:13px;padding:7px 14px;border-radius:20px;border:2px solid var(--border);background:#fff;cursor:pointer;transition:all .2s;font-weight:600;color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .domain-tab:hover{background:rgba(61,90,62,.06);border-color:var(--p);color:var(--p);transform:translateY(-1px);box-shadow:0 3px 8px rgba(61,90,62,.12)}
 .domain-tab.active{background:var(--p);color:#fff;border-color:var(--p);box-shadow:0 2px 6px rgba(61,90,62,.2)}
 .domain-tab:active{transform:scale(.97)}
-.entry-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s}
-.entry-card:active{transform:scale(.98)}
-.entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.entry-id{font-size:10px;font-weight:700;color:var(--td);background:var(--bg2);padding:1px 6px;border-radius:3px}
-.entry-name{font-size:15px;font-weight:700;color:var(--dk)}
-.entry-alias{font-size:11px;color:var(--td);margin-bottom:6px}
-.entry-def{font-size:13px;color:var(--ts);line-height:1.5;margin-bottom:8px}
-.entry-source{font-size:11px;color:var(--p);background:rgba(61,90,62,.06);padding:4px 8px;border-radius:4px;line-height:1.5}
+.entry-card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.entry-card:hover{border-color:var(--p);box-shadow:0 4px 12px rgba(61,90,62,.12);transform:translateY(-1px)}
+.entry-card:active{transform:scale(.99)}
+.entry-card.highlight{animation:card-pulse 0.6s ease-out;border-color:var(--p);box-shadow:0 0 0 3px rgba(61,90,62,.2)}
+@keyframes card-pulse{0%{box-shadow:0 0 0 0 rgba(61,90,62,.4)}70%{box-shadow:0 0 0 8px rgba(61,90,62,0)}100%{box-shadow:0 0 0 0 rgba(61,90,62,0)}}
+.entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px}
+.entry-id{font-size:10px;font-weight:700;color:var(--td);background:var(--bg2);padding:2px 7px;border-radius:10px;white-space:nowrap}
+.entry-name{font-size:16px;font-weight:700;color:var(--dk);line-height:1.3}
+.entry-alias{font-size:12px;color:var(--td);margin-bottom:6px;font-style:italic}
+.entry-def{font-size:13px;color:var(--ts);line-height:1.6;margin-bottom:10px}
+.entry-source{font-size:12px;color:var(--p);background:rgba(61,90,62,.07);padding:5px 10px;border-radius:8px;line-height:1.5;font-weight:600}
 .entry-source .src-label{font-weight:700;margin-right:4px}
-.entry-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.entry-detail{display:none;margin-top:12px;padding-top:12px;border-top:2px solid var(--border)}
 .entry-detail.open{display:block}
 /* 三层展示 */
 .layer-tabs{display:flex;gap:4px;margin-bottom:10px}
@@ -138,18 +141,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .stat-cell .stat-l{font-size:10px;color:var(--td);margin-top:2px}
 
 /* AI搜索框 */
-.search-wrap{position:relative;margin-bottom:20px}
-.search-input{width:100%;padding:12px 16px;font-size:14px;border:2px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--dk);box-sizing:border-box;transition:border-color .2s}
-.search-input:focus{outline:none;border-color:var(--p)}
+.search-wrap{position:relative;margin-bottom:16px}
+.search-input{width:100%;padding:13px 16px;font-size:15px;border:2px solid var(--p);border-radius:12px;background:var(--card);color:var(--dk);box-sizing:border-box;transition:border-color .2s,box-shadow .2s}
+.search-input:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 3px rgba(61,90,62,.15)}
 .search-input::placeholder{color:#bbb}
-.search-results{position:absolute;top:calc(100%+4px);left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:50;max-height:320px;overflow-y:auto;display:none}
+.search-count{display:none;font-size:12px;color:var(--p);font-weight:600;padding:6px 0 2px;text-align:center}
+.search-results{position:absolute;top:calc(100% + 2px);left:0;right:0;background:#fff;border:1.5px solid var(--p);border-radius:12px;box-shadow:0 8px 24px rgba(61,90,62,.18);z-index:50;max-height:360px;overflow-y:auto;display:none}
 .search-results.active{display:block}
-.search-result-item{padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s}
+.search-result-item{padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s}
 .search-result-item:last-child{border-bottom:none}
-.search-result-item:hover{background:var(--bg)}
-.search-result-item .result-name{font-size:13px;font-weight:700;color:var(--dk)}
-.search-result-item .result-q{font-size:12px;color:var(--p);margin-top:2px}
-.search-no-results{padding:16px;text-align:center;color:var(--td);font-size:13px}
+.search-result-item:hover{background:rgba(61,90,62,.06)}
+.search-result-item .result-name{font-size:14px;font-weight:700;color:var(--dk)}
+.search-result-item .result-q{font-size:12px;color:var(--p);margin-top:3px;line-height:1.4}
+.search-no-results{padding:20px;text-align:center;color:var(--td);font-size:14px}
 
 /* 消费者问答示例 */
 .qa-section{margin-bottom:16px}
@@ -239,15 +243,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
   <div class="hero-title">知 识 底 座</div>
   <div class="hero-sub">居住服务行业的 AI 驱动业务字典</div>
   <div class="stats-grid">
-    <div class="stat-cell"><div class="stat-n">450+</div><div class="stat-l">专业词条</div></div>
-    <div class="stat-cell"><div class="stat-n">9</div><div class="stat-l">大域覆盖</div></div>
+    <div class="stat-cell"><div class="stat-n" id="stat-total">122</div><div class="stat-l">词条</div></div>
+    <div class="stat-cell"><div class="stat-n">7</div><div class="stat-l">业务域</div></div>
     <div class="stat-cell"><div class="stat-n">双视角</div><div class="stat-l">专业+通俗</div></div>
-    <div class="stat-cell"><div class="stat-n">10</div><div class="stat-l">权威来源</div></div>
+    <div class="stat-cell"><div class="stat-n">10+</div><div class="stat-l">权威来源</div></div>
     <div class="stat-cell"><div class="stat-n">六维</div><div class="stat-l">品质模型</div></div>
-    <div class="stat-cell"><div class="stat-n">ABC</div><div class="stat-l">三条路径</div></div>
+    <div class="stat-cell"><div class="stat-n">免费</div><div class="stat-l">查询使用</div></div>
   </div>
   <div class="search-wrap">
-    <input class="search-input" id="search-input" type="search" placeholder="" autocomplete="off">
+    <input class="search-input" id="search-input" type="search" placeholder="🔍 搜索词条、客户问题或场景…" autocomplete="off">
+    <div class="search-count" id="search-count"></div>
     <div class="search-results" id="search-results"></div>
   </div>
   <div class="qa-section">
@@ -507,6 +512,13 @@ function init(){
   renderSceneTabs();
   renderQaExamples();
   updateSceneCount();
+  // 动态更新词条总数
+  const statTotal=document.getElementById('stat-total');
+  if(statTotal&&ENTRIES.length>0) statTotal.textContent=ENTRIES.length;
+  // 动态更新域tab计数
+  const domainCounts={};
+  ENTRIES.forEach(e=>{domainCounts[e.domain]=(domainCounts[e.domain]||0)+1;});
+  DOMAINS.forEach(d=>{if(domainCounts[d.id]) d.count=domainCounts[d.id];});
   renderEntries();
   renderProductRecommend();
 
@@ -642,8 +654,20 @@ function searchEntries(query){
 function renderSearchResults(results,query){
   const container=document.getElementById('search-results');
   if(!container) return;
+  const countEl=document.getElementById('search-count');
+  if(!query||query.length<2){
+    container.classList.remove('active');
+    container.innerHTML='';
+    if(countEl) countEl.style.display='none';
+    return;
+  }
+  // 搜索计数显示
+  if(countEl){
+    countEl.textContent=`找到 ${results.length} 条相关词条`;
+    countEl.style.display='block';
+  }
   if(results.length===0){
-    container.innerHTML=`<div class="search-no-results">未找到"${query}"相关词条</div>`;
+    container.innerHTML=`<div class="search-no-results">未找到"${query}"相关词条，试试其他关键词</div>`;
     container.classList.add('active');
     return;
   }
@@ -655,12 +679,28 @@ function renderSearchResults(results,query){
   container.querySelectorAll('.search-result-item').forEach(item=>{
     item.addEventListener('click',function(){
       const id=this.dataset.id;
-      document.getElementById('search-input').value='';
+      const input=document.getElementById('search-input');
+      if(input) input.value='';
       container.classList.remove('active');
-      // 滚动到对应词条并高亮
-      document.querySelectorAll('.entry-card').forEach(c=>c.classList.remove('highlight'));
+      if(countEl) countEl.style.display='none';
+      // 展开对应词条并显示详情
+      document.querySelectorAll('.entry-card').forEach(c=>{
+        c.classList.remove('highlight');
+        if(c.classList.contains('open')){
+          c.querySelector('.entry-detail')?.classList.remove('open');
+          c.classList.remove('open');
+        }
+      });
       const target=document.querySelector(`[data-entry-id="${id}"]`);
-      if(target){target.scrollIntoView({behavior:'smooth',block:'center'});target.classList.add('highlight');setTimeout(()=>target.classList.remove('highlight'),2000);}
+      if(target){
+        target.scrollIntoView({behavior:'smooth',block:'center'});
+        target.classList.add('highlight');
+        // 自动展开详情
+        const detail=target.querySelector('.entry-detail');
+        if(detail){detail.classList.add('open');detail.style.display='block';}
+        target.classList.add('open');
+        setTimeout(()=>target.classList.remove('highlight'),3000);
+      }
     });
   });
   container.classList.add('active');
