@@ -562,8 +562,10 @@ function init(){
   const searchInput=document.getElementById('search-input');
   if(searchInput){
     let debounceTimer;
+    let activeIndex=-1;
     searchInput.addEventListener('input',function(){
       clearTimeout(debounceTimer);
+      activeIndex=-1;
       debounceTimer=setTimeout(()=>{
         const results=searchEntries(this.value);
         renderSearchResults(results,this.value);
@@ -584,8 +586,28 @@ function init(){
         if(resultsEl) resultsEl.classList.remove('active');
       }
     });
+    // 键盘导航：↑↓选词条，Enter确认，Esc关闭，/快速搜索
+    searchInput.addEventListener('keydown',function(e){
+      const resultsEl=document.getElementById('search-results');
+      const items=resultsEl?.querySelectorAll('.search-result-item')||[];
+      if(e.key==='ArrowDown'){e.preventDefault();activeIndex=Math.min(activeIndex+1,items.length-1);updateActive(resultsEl,items,activeIndex);}
+      else if(e.key==='ArrowUp'){e.preventDefault();activeIndex=Math.max(activeIndex-1,-1);updateActive(resultsEl,items,activeIndex);}
+      else if(e.key==='Enter'){e.preventDefault();if(activeIndex>=0&&items[activeIndex])items[activeIndex].click();}
+      else if(e.key==='Escape'){resultsEl?.classList.remove('active');activeIndex=-1;}
+    });
+    function updateActive(container,items,idx){
+      items.forEach((item,i)=>item.style.background=i===idx?'rgba(61,90,62,.12)':'');
+      if(idx>=0&&items[idx])items[idx].scrollIntoView({block:'nearest'});
+    }
   }
-}
+  // 全局：按 / 快速聚焦搜索框
+  document.addEventListener('keydown',function(e){
+    if(e.key==='/'&&!e.target.matches('input,textarea')){
+      e.preventDefault();
+      const si=document.getElementById('search-input');
+      if(si){si.focus();si.scrollIntoView({behavior:'smooth',block:'center'});}
+    }
+  });
 
 function renderSceneTabs(){
   const container=document.getElementById('scene-tabs');
