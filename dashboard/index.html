@@ -193,6 +193,20 @@ a{color:#60a5fa;text-decoration:none}
     </div>
   </div>
 
+  <!-- AI提及率GEO追踪 #115 -->
+  <div class="section-title" style="margin-top:24px"><h2>🤖 AI提及率 · GEO监测</h2><span class="tag" style="background:#1e3a5f;color:#60a5fa">#115数据基建</span></div>
+  <div id="ai-mentions-section" style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <div id="ai-mentions-rate" style="font-size:28px;font-weight:900;color:#94a3b8">—</div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#e2e8f0">AI提及率</div>
+        <div style="font-size:11px;color:#64748b" id="ai-mentions-sub">累计 0 次检查 · 0 次提及</div>
+      </div>
+    </div>
+    <div id="ai-engines-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
+    <div style="margin-top:12px;font-size:11px;color:#475569;text-align:right">每周手动更新一次 · 关键词：风声科技/居住服务</div>
+  </div>
+
   <!-- milestones -->
   <div class="section-title"><h2>🎯 里程碑</h2><span class="tag tag-m1">产品质量驱动</span></div>
   <div class="milestones" id="milestones">
@@ -263,7 +277,7 @@ a{color:#60a5fa;text-decoration:none}
   <div class="health-row" id="health-row"></div>
 
   <div class="footer">
-    风声 · fengsheng.tech | 质量看板 v3.1 | 交互深度 / 粘性 / 反馈密度 / 验证线 | 数据来源：D1 /api/stats | 更新：2026-06-25 22:30
+    风声 · fengsheng.tech | 质量看板 v3.2 | 交互深度 / 粘性 / 反馈密度 / AI提及率 | 数据来源：D1 /api/stats | 更新：2026-06-29
   </div>
 </div>
 
@@ -494,6 +508,39 @@ a{color:#60a5fa;text-decoration:none}
     grid.innerHTML = html;
   }
 
+  function renderAiMentions(data) {
+    const rateEl = document.getElementById('ai-mentions-rate');
+    const subEl = document.getElementById('ai-mentions-sub');
+    const gridEl = document.getElementById('ai-engines-grid');
+    if (!data || !data.engines) {
+      rateEl.textContent = '—';
+      rateEl.style.color = '#94a3b8';
+      subEl.textContent = 'AI提及率数据加载中…';
+      gridEl.innerHTML = '<div style="color:#64748b;font-size:12px;grid-column:1/-1;text-align:center;padding:20px">首次加载需在D1中执行 schema-115.sql 建表</div>';
+      return;
+    }
+    const rate = data.overall_mention_rate_pct || 0;
+    rateEl.textContent = rate + '%';
+    rateEl.style.color = rate > 30 ? '#22c55e' : rate > 10 ? '#f59e0b' : '#94a3b8';
+    subEl.textContent = `累计 ${data.total_checks || 0} 次检查 · ${data.total_mentions || 0} 次提及 · ${Object.keys(data.engines).length} 个引擎`;
+    // 渲染引擎卡片
+    const engineLabels = { metaso:'秘塔AI搜索', kimi:'Kimi', doubao:'豆包', baidu:'文心一言', perplexity:'Perplexity' };
+    gridEl.innerHTML = Object.entries(data.engines).map(([eng, info]) => {
+      const checks = info.total_checks || 0;
+      const mentions = info.mention_count || 0;
+      const engRate = info.mention_rate || 0;
+      const statusColor = engRate > 30 ? '#22c55e' : engRate > 10 ? '#f59e0b' : '#475569';
+      const latest = info.latest;
+      const lastDate = latest ? latest.date : '—';
+      return `<div style="background:#0f172a;border-radius:10px;padding:12px;border:1px solid #334155">
+        <div style="font-size:12px;font-weight:700;color:#e2e8f0;margin-bottom:6px">${engineLabels[eng] || eng}</div>
+        <div style="font-size:22px;font-weight:900;color:${statusColor}">${engRate}%</div>
+        <div style="font-size:11px;color:#64748b">提及率 · ${checks}次检查/${mentions}次提及</div>
+        <div style="font-size:10px;color:#475569;margin-top:4px">最新:${lastDate}</div>
+      </div>`;
+    }).join('');
+  }
+
   function renderHealth(data) {
     const row = document.getElementById('health-row');
     if (!data) { row.innerHTML = '<div style="color:#64748b">检查中…</div>'; return; }
@@ -510,10 +557,11 @@ a{color:#60a5fa;text-decoration:none}
     document.getElementById('status-badge').textContent = '⟳ 刷新中…';
     const ts = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
 
-    const [summary, daily, health] = await Promise.all([
+    const [summary, daily, health, aiMentions] = await Promise.all([
       safeFetch(API_BASE + '/summary'),
       safeFetch(API_BASE + '/daily?days=7'),
-      safeFetch(API_BASE + '/health')
+      safeFetch(API_BASE + '/health'),
+      safeFetch(API_BASE + '/ai-mentions').catch(() => null)
     ]);
 
     if (summary) {
@@ -530,6 +578,7 @@ a{color:#60a5fa;text-decoration:none}
 
     renderChart(daily || {daily:[]});
     renderHealth(health || {status:'degraded', events_count:-1, feedback_count:-1, db_connected:false});
+    renderAiMentions(aiMentions);
     renderAgents();
     document.getElementById('last-update').textContent = '更新：' + ts;
   }

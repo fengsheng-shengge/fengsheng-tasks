@@ -10,6 +10,7 @@
 // GET /api/stats/goals     — 300人验证线进度
 // GET /api/stats/public    — 极简公开只读
 // GET /api/stats/health    — 健康检查
+// GET /api/stats/ai-mentions — AI提及率追踪（#115数据基建）
 // ============================================================
 
 const GOALS = {
@@ -85,19 +86,25 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   if (request.method === 'OPTIONS') {
     return new Response(null, {
-      headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, OPTIONS', 'Cache-Control': 'no-store' }
+      headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Cache-Control': 'no-store' }
     });
   }
-  if (request.method !== 'GET') return errJson(405, 'method not allowed');
+  if (!['GET', 'POST'].includes(request.method)) return errJson(405, 'method not allowed');
   if (!checkRate(hashIp(getClientIp(request)))) return errJson(429, 'rate limited');
 
   const path = url.pathname.replace(/^\/api\/stats\/?/, '').toLowerCase();
   try {
+    // POST: 手动录入AI提及记录（#115 MVP阶段用）
+    if (request.method === 'POST' && path === 'ai-mentions') {
+      return await recordAiMention(env, request);
+    }
+    if (request.method === 'POST') return errJson(405, 'POST not supported for this endpoint');
     if (path === '' || path === 'summary') return await getSummary(env);
     if (path === 'daily') return await getDaily(env, url);
     if (path === 'goals') return await getGoals(env);
     if (path === 'public') return await getPublic(env);
     if (path === 'health') return await getHealth(env);
+    if (path === 'ai-mentions') return await getAiMentions(env);
     return errJson(404, 'unknown endpoint: ' + path);
   } catch (e) { return errJson(500, 'db error: ' + (e.message || String(e))); }
 }
@@ -226,4 +233,110 @@ async function getHealth(env) {
   try { const r = await env.DB.prepare(`SELECT COUNT(*) as n FROM events LIMIT 1`).first(); events_count = r.n || 0; } catch (_) { ok = false; }
   try { const r = await env.DB.prepare(`SELECT COUNT(*) as n FROM feedback LIMIT 1`).first(); feedback_count = r.n || 0; } catch (_) { ok = false; }
   return okJson({ status: ok ? 'ok' : 'degraded', events_count, feedback_count, db_connected: ok, generated_at: Date.now() });
+}
+
+// ============================================================
+// #115 AI提及率追踪
+// 目标：追踪fengsheng.tech在AI搜索引擎中的提及情况
+// 采集方式：MVP阶段手动定期查询，v2阶段接API自动化
+// ============================================================
+
+const AI_ENGINES = {
+  metaso:    { name: '秘塔AI搜索', url: 'https://metaso.cn', keywords: ['风声科技', '风声tech', '居住服务'] },
+  kimi:      { name: 'Kimi',       url: 'https://kimi.moonshot.cn', keywords: ['风声科技', 'fengsheng.tech'] },
+  doubao:    { name: '豆包',       url: 'https://www.doubao.com', keywords: ['风声科技', '居住服务AI'] },
+  baidu:     { name: '文心一言',   url: 'https://yiyan.baidu.com', keywords: ['风声科技', '居住服务'] },
+  perplexity:{ name: 'Perplexity', url: 'https://www.perplexity.ai', keywords: ['fengsheng.tech', 'housing service'] },
+};
+
+async function getAiMentions(env) {
+  // 1. 各引擎最新一次采集结果
+  const byEngine = {};
+  for (const engine of Object.keys(AI_ENGINES)) {
+    byEngine[engine] = { latest: null, total_checks: 0, mention_count: 0, mention_rate: 0 };
+  }
+  try {
+    const { results } = await env.DB.prepare(
+      `SELECT engine, engine_name, mentioned, mention_snippet, search_date, search_url
+       FROM ai_mentions
+       WHERE search_date >= date('now', '-90 days')
+       ORDER BY search_date DESC`
+    ).all();
+    for (const row of results) {
+      const eng = byEngine[row.engine] || byEngine[Object.keys(AI_ENGINES)[0]]; // fallback
+      eng.total_checks++;
+      if (row.mentioned) {
+        eng.mention_count++;
+        if (!eng.latest || eng.latest.newer) {
+          eng.latest = { mentioned: row.mentioned, snippet: row.mention_snippet, date: row.search_date, url: row.search_url };
+        }
+      } else if (!eng.latest) {
+        eng.latest = { mentioned: 0, snippet: '', date: row.search_date, url: row.search_url };
+      }
+    }
+    for (const eng of Object.keys(byEngine)) {
+      if (byEngine[eng].total_checks > 0) {
+        byEngine[eng].mention_rate = Math.round((byEngine[eng].mention_count / byEngine[eng].total_checks) * 1000) / 10;
+      }
+    }
+  } catch (_) {}
+
+  // 2. 全局统计
+  let totalChecks = 0, totalMentions = 0;
+  for (const eng of Object.keys(byEngine)) {
+    totalChecks += byEngine[eng].total_checks;
+    totalMentions += byEngine[eng].mention_count;
+  }
+  const overallRate = totalChecks > 0 ? Math.round((totalMentions / totalChecks) * 1000) / 10 : 0;
+
+  // 3. 最近30天的趋势（按月统计）
+  const trend = [];
+  try {
+    const { results } = await env.DB.prepare(
+      `SELECT strftime('%Y-%m', search_date) as month, COUNT(*) as checks, SUM(mentioned) as mentions
+       FROM ai_mentions
+       WHERE search_date >= date('now', '-90 days')
+       GROUP BY month ORDER BY month ASC`
+    ).all();
+    for (const row of results) {
+      trend.push({
+        month: row.month,
+        checks: row.checks || 0,
+        mentions: row.mentions || 0,
+        rate: row.checks > 0 ? Math.round((row.mentions / row.checks) * 1000) / 10 : 0
+      });
+    }
+  } catch (_) {}
+
+  return okJson({
+    total_checks: totalChecks,
+    total_mentions: totalMentions,
+    overall_mention_rate_pct: overallRate,
+    engines: byEngine,
+    trend,
+    engines_info: AI_ENGINES,
+    generated_at: Date.now(),
+    note: 'MVP阶段需手动在目标引擎搜索关键词并通过 POST /api/stats/ai-mentions 录入数据'
+  });
+}
+
+// POST /api/stats/ai-mentions — 手动录入AI提及记录
+// Body: { engine, query, mentioned, mention_snippet, mention_url, search_url }
+async function recordAiMention(env, request) {
+  let body;
+  try { body = await request.json(); } catch (_) { return errJson(400, 'invalid JSON'); }
+  const { engine, query, mentioned, mention_snippet = '', mention_url = '', search_url = '' } = body;
+  if (!engine || !query || mentioned === undefined) {
+    return errJson(400, 'missing required fields: engine, query, mentioned');
+  }
+  const engineNames = { metaso:'秘塔AI搜索', kimi:'Kimi', doubao:'豆包', baidu:'文心一言', perplexity:'Perplexity' };
+  const engineName = engineNames[engine] || engine;
+  const searchDate = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  try {
+    await env.DB.prepare(
+      `INSERT INTO ai_mentions (engine, engine_name, query, mentioned, mention_snippet, mention_url, search_url, search_date, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(engine, engineName, query, mentioned ? 1 : 0, mention_snippet, mention_url, search_url, searchDate, Date.now()).run();
+    return okJson({ ok: true, engine, query, mentioned: !!mentioned, search_date: searchDate });
+  } catch (e) { return errJson(500, 'db error: ' + e.message); }
 }
