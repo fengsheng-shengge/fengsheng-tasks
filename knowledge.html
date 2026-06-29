@@ -2,1989 +2,898 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="keywords" content="居住服务业务字典,知识底座,品质标准,业务词条,行业术语,风声,fengsheng">
 <title>知识底座 · 风声</title>
+<meta name="description" content="风声知识底座：居住服务业务字典，涵盖交易、租赁、整装、家政、人才字典、十五五政策等6大业务域，450+条消费者友好版词条。">
+<!-- JSON-LD Structured Data for AI Engines -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "风声知识底座",
+  "url": "https://fengsheng.tech/knowledge/",
+  "description": "居住服务从业者的业务知识库，涵盖交易、租赁、整装、家政、人才、政策6大业务域。",
+  "publisher": {
+    "@type": "Organization",
+    "name": "风声",
+    "url": "https://fengsheng.tech"
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://fengsheng.tech/knowledge/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+<script type="application/ld+json" id="faq-schema">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": []
+}
+</script>
+
 <style>
-:root {
-  --primary: #0E5C4A;       /* 深松绿 */
-  --primary-light: #2D8B6F;  /* 浅松绿 */
-  --wood: #C8956D;           /* 木褐 */
-  --wood-light: #E8C8A0;     /* 浅木 */
-  --cream: #F7F4EE;          /* 米色背景 */
-  --cream-deep: #EDE7DC;     /* 深米色 */
-  --ink: #1A2B26;            /* 主文字 */
-  --ink-soft: #5A6B65;       /* 次文字 */
-  --orange: #E08A3C;         /* 暖橙点缀 */
-  --line: rgba(14,92,74,0.12);
-  --shadow-sm: 0 2px 8px rgba(14,92,74,0.06);
-  --shadow-md: 0 8px 24px rgba(14,92,74,0.10);
-  --shadow-lg: 0 20px 48px rgba(14,92,74,0.14);
-}
+:root{--bg:#f7f4ef;--bg2:#e8e4d9;--dk:#1a1a1a;--p:#3d5a3e;--fire:#c46a3a;--orange:#f5a623;--ts:#555555;--td:#888;--card:#fff;--border:#e8e4d9;--r:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--dk);line-height:1.6;-webkit-font-smoothing:antialiased}
+.page{max-width:640px;margin:0 auto;padding:20px 16px}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.top-bar .brand{font-size:13px;font-weight:700;color:var(--p);letter-spacing:1px}
+.top-bar a{font-size:12px;color:var(--td);text-decoration:none}
+.hero-icon{font-size:48px;text-align:center;margin:24px 0 12px}
+.hero-title{font-size:22px;font-weight:800;text-align:center;margin-bottom:6px}
+.hero-sub{font-size:13px;color:var(--ts);text-align:center;margin-bottom:24px;line-height:1.6}
+.hero-sub strong{color:var(--p)}
+.stats-row{display:flex;justify-content:center;gap:16px;margin-bottom:24px}
+.stat-item{text-align:center}
+.stat-num{font-size:24px;font-weight:800;color:var(--p)}
+.stat-label{font-size:10px;color:var(--td)}
+.section-label{font-size:11px;font-weight:700;color:var(--td);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+/* 产品推荐模块 */
+.product-recommend-wrap{margin:20px 0;padding:16px 18px;background:linear-gradient(135deg,rgba(61,90,62,.05),rgba(196,106,58,.05));border-radius:12px;border:1px solid var(--border)}
+.product-recommend-title{font-size:12px;font-weight:700;color:var(--tx);margin-bottom:12px;letter-spacing:.02em}
+.product-recommend-grid{display:grid;gap:8px}
+@media(min-width:600px){.product-recommend-grid{grid-template-columns:1fr 1fr 1fr}}
+.product-rec-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1.5px solid var(--border);border-radius:10px;text-decoration:none;color:inherit;transition:all .2s;cursor:pointer}
+.product-rec-card:hover{border-color:var(--p);transform:translateY(-2px);box-shadow:0 4px 12px rgba(61,90,62,.1)}
+.product-rec-card.primary{background:var(--p);color:#fff;border-color:var(--p);flex-direction:column;align-items:flex-start;padding:14px}
+.product-rec-card.primary:hover{box-shadow:0 6px 16px rgba(61,90,62,.2)}
+.product-rec-card.primary .rec-icon{font-size:26px;margin-bottom:6px}
+.product-rec-card.primary .rec-name{font-size:14px;font-weight:800}
+.product-rec-card.primary .rec-desc{font-size:11px;opacity:.85;margin-top:3px}
+.product-rec-card.primary .rec-cta{font-size:12px;font-weight:700;background:#fff;color:var(--p);padding:4px 12px;border-radius:20px;margin-top:8px}
+.product-rec-card.secondary .rec-icon{font-size:20px;flex-shrink:0}
+.product-rec-card.secondary .rec-name{font-size:13px;font-weight:700;color:var(--dk)}
+.product-rec-card.secondary .rec-desc{font-size:11px;color:var(--td);margin-top:2px}
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  background: var(--cream);
-  color: var(--ink);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
+.domain-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.domain-tab{display:inline-flex;align-items:center;gap:5px;font-size:13px;padding:8px 16px;border-radius:8px;border:2px solid var(--border);background:#fff;cursor:pointer;transition:all .2s;font-weight:700;color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.domain-tab:hover{background:rgba(61,90,62,.06);border-color:var(--p);color:var(--p);transform:translateY(-1px);box-shadow:0 3px 8px rgba(61,90,62,.12)}
+.domain-tab.active{background:var(--p);color:#fff;border-color:var(--p);box-shadow:0 2px 6px rgba(61,90,62,.2)}
+.domain-tab:active{transform:scale(.97)}
+.entry-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s}
+.entry-card:active{transform:scale(.98)}
+.entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.entry-id{font-size:10px;font-weight:700;color:var(--td);background:var(--bg2);padding:1px 6px;border-radius:3px}
+.entry-name{font-size:15px;font-weight:700;color:var(--dk)}
+.entry-alias{font-size:11px;color:var(--td);margin-bottom:6px}
+.entry-def{font-size:13px;color:var(--ts);line-height:1.5;margin-bottom:8px}
+.entry-source{font-size:11px;color:var(--p);background:rgba(61,90,62,.06);padding:4px 8px;border-radius:4px;line-height:1.5}
+.entry-source .src-label{font-weight:700;margin-right:4px}
+.entry-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.entry-detail.open{display:block}
+/* 三层展示 */
+.layer-tabs{display:flex;gap:4px;margin-bottom:10px}
+.layer-tab{font-size:10px;padding:3px 8px;border-radius:3px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;font-weight:600;transition:all .15s}
+.layer-tab.active{background:var(--p);color:#fff;border-color:var(--p)}
+.layer-tab.tab-consumer{background:#FFF5EB;border-color:#E8853D;color:#C56A20;font-weight:700;position:relative}
+.layer-tab.tab-consumer::after{content:'NEW';font-size:8px;background:#E8853D;color:#fff;padding:0 3px;border-radius:2px;margin-left:4px;vertical-align:super;line-height:1}
+.layer-tab.tab-consumer.active{background:#E8853D;color:#fff;border-color:#E8853D}
+.layer-tab.tab-consumer.active::after{background:#fff;color:#E8853D}
+.layer-content{display:none}
+.layer-content.active{display:block}
+.detail-row{margin-bottom:8px;font-size:12px;line-height:1.6}
+.detail-label{font-weight:700;color:var(--dk);display:inline}
+.detail-val{color:var(--ts)}
+.detail-row.speech{background:rgba(61,90,62,.03);padding:6px 8px;border-radius:4px;margin:4px 0}
+.detail-row.speech .detail-val{white-space:pre-wrap}
+.source-link{color:var(--p);text-decoration:none;border-bottom:1px dashed var(--p);font-size:11px}
+.source-link:hover{border-bottom-style:solid}
+.source-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;margin:2px 2px 2px 0;font-weight:600}
+.badge-gb{background:#e8f5e9;color:#2e7d32}
+.badge-law{background:#fff3e0;color:#e65100}
+.badge-industry{background:#e3f2fd;color:#1565c0}
+.badge-academic{background:#fce4ec;color:#c62828}
+.badge-platform{background:#f3e5f5;color:#7b1fa2}
+.entry-card .expand-hint{font-size:10px;color:var(--td);text-align:center;margin-top:6px}
+.entry-detail.open ~ .expand-hint{display:none}
+.footer{text-align:center;margin-top:32px;padding:20px 0;border-top:1px solid var(--border);font-size:11px;color:var(--td);line-height:1.7}
+/* 版权+反馈 */
+.page-footer{text-align:center;padding:24px 16px;margin-top:32px;
+  border-top:1px solid var(--border,rgba(80,90,70,.09));
+  font-size:11px;color:var(--ts,#7a8478);line-height:1.8}
+.page-footer .copyright{margin-bottom:8px}
+.feedback-bar{display:flex;align-items:center;justify-content:center;
+  gap:16px;margin-top:12px;padding:12px;background:var(--card,#fff);
+  border-radius:8px;border:1px solid var(--border,rgba(80,90,70,.09))}
+.feedback-bar span{font-size:13px;color:var(--tx,#555)}
+.feedback-btn{display:inline-flex;align-items:center;gap:4px;
+  padding:6px 14px;border-radius:6px;border:1px solid var(--border);
+  background:var(--bg,#f7f4ef);cursor:pointer;font-size:13px;
+  color:var(--tx,#555);transition:all .15s}
+.feedback-btn:hover{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
+.feedback-btn.active{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
 
-/* ============ 顶部导航（引导） ============ */
-.nav {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(247,244,238,0.85);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 1px solid var(--line);
-}
-.nav-inner {
-  max-width: 1240px; margin: 0 auto;
-  padding: 14px 32px;
-  display: flex; align-items: center; gap: 40px;
-}
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
-.brand-mark {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  display: grid; place-items: center; color: white; font-weight: 800;
-}
-.nav-links { display: flex; gap: 4px; flex: 1; }
-.nav-link {
-  padding: 8px 16px; border-radius: 8px; font-size: 14px; color: var(--ink-soft);
-  text-decoration: none; transition: all .2s; position: relative;
-}
-.nav-link:hover { background: rgba(14,92,74,0.06); color: var(--primary); }
-.nav-link.active { color: var(--primary); font-weight: 600; background: rgba(14,92,74,0.08); }
-.nav-link .dot {
-  position: absolute; top: 4px; right: 4px; width: 6px; height: 6px;
-  background: var(--orange); border-radius: 50%;
-}
-.nav-cta {
-  padding: 8px 18px; border-radius: 8px; font-size: 14px;
-  background: var(--primary); color: white; text-decoration: none; font-weight: 500;
-  transition: all .2s;
-}
-.nav-cta:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+/* Hero区域 */
+.hero-title{font-size:clamp(32px,6vw,56px);font-weight:900;letter-spacing:.2em;color:var(--dk);text-align:center;margin-bottom:8px}
+.hero-sub{font-size:14px;color:var(--td);text-align:center;margin-bottom:24px}
 
-/* ============ Hero ============ */
-.hero {
-  position: relative;
-  padding: 80px 32px 60px;
-  max-width: 1240px; margin: 0 auto;
-  overflow: hidden;
-}
-.hero::before {
-  content: ''; position: absolute; top: -200px; right: -200px;
-  width: 600px; height: 600px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(200,149,109,0.18) 0%, transparent 70%);
-  pointer-events: none;
-}
-.hero-tag {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 14px; border-radius: 100px;
-  background: rgba(14,92,74,0.08); color: var(--primary);
-  font-size: 13px; font-weight: 500;
-  margin-bottom: 24px;
-}
-.hero-tag .pulse {
-  width: 6px; height: 6px; background: var(--primary); border-radius: 50%;
-  animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+/* 6宫格统计矩阵 */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+@media(min-width:640px){.stats-grid{grid-template-columns:repeat(6,1fr);gap:12px}}
+.stat-cell{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 8px;text-align:center}
+.stat-cell .stat-n{font-size:18px;font-weight:900;color:var(--p)}
+.stat-cell .stat-l{font-size:10px;color:var(--td);margin-top:2px}
 
-.hero h1 {
-  font-size: 56px; font-weight: 800; line-height: 1.1;
-  letter-spacing: -1.5px; margin-bottom: 20px; max-width: 800px;
-}
-.hero h1 .accent {
-  background: linear-gradient(135deg, var(--primary), var(--wood));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.hero-sub {
-  font-size: 18px; color: var(--ink-soft); max-width: 600px; margin-bottom: 32px;
-}
+/* AI搜索框 */
+.search-wrap{position:relative;margin-bottom:20px}
+.search-input{width:100%;padding:12px 16px;font-size:14px;border:2px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--dk);box-sizing:border-box;transition:border-color .2s}
+.search-input:focus{outline:none;border-color:var(--p)}
+.search-input::placeholder{color:#bbb}
+.search-results{position:absolute;top:calc(100%+4px);left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:50;max-height:320px;overflow-y:auto;display:none}
+.search-results.active{display:block}
+.search-result-item{padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s}
+.search-result-item:last-child{border-bottom:none}
+.search-result-item:hover{background:var(--bg)}
+.search-result-item .result-name{font-size:13px;font-weight:700;color:var(--dk)}
+.search-result-item .result-q{font-size:12px;color:var(--p);margin-top:2px}
+.search-no-results{padding:16px;text-align:center;color:var(--td);font-size:13px}
 
-/* Hero 服务者价值 3 句话 */
-.hero-promises {
-  display: flex; flex-direction: column; gap: 10px;
-  margin-bottom: 40px; max-width: 680px;
-}
-.promise {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 20px;
-  background: white; border: 1px solid var(--line);
-  border-left: 3px solid var(--primary);
-  border-radius: 10px;
-  box-shadow: var(--shadow-sm);
-  transition: all .2s;
-}
-.promise:hover {
-  transform: translateX(4px);
-  box-shadow: var(--shadow-md);
-}
-.promise:nth-child(1) { border-left-color: var(--primary); background: linear-gradient(90deg, rgba(14,92,74,0.04), white); }
-.promise:nth-child(2) { border-left-color: var(--wood); background: linear-gradient(90deg, rgba(200,149,109,0.06), white); }
-.promise:nth-child(3) { border-left-color: var(--orange); background: linear-gradient(90deg, rgba(224,138,60,0.06), white); }
-.promise-icon { font-size: 22px; flex-shrink: 0; }
-.promise-text {
-  font-size: 14px; color: var(--ink); font-weight: 400;
-  line-height: 1.5;
-}
-.promise-text b {
-  color: var(--ink); font-weight: 700; font-size: 15px;
-}
+/* 消费者问答示例 */
+.qa-section{margin-bottom:16px}
+.qa-title{font-size:12px;font-weight:700;color:var(--td);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.qa-examples{display:flex;flex-wrap:wrap;gap:6px}
+.qa-tag{font-size:12px;padding:4px 10px;background:var(--card);border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:all .15s;color:var(--tx)}
+.qa-tag:hover{background:var(--p);color:#fff;border-color:var(--p)}
 
-/* 数据点 */
-.stats {
-  display: grid; grid-template-columns: repeat(6, 1fr);
-  gap: 16px; margin-bottom: 48px;
-}
-.stat-num {
-  font-size: 28px; font-weight: 800; color: var(--primary);
-  display: flex; align-items: baseline; gap: 4px;
-}
-.stat-num .unit { font-size: 14px; color: var(--ink-soft); font-weight: 500; }
-.stat-label { font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+/* 场景入口 */
+.scene-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.scene-tab{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--card);cursor:pointer;transition:all .15s;color:var(--tx);font-weight:600}
+.scene-tab.active{background:var(--p);color:#fff;border-color:var(--p)}
+.scene-tab:hover:not(.active){border-color:var(--p);color:var(--p)}
 
-/* 6 个数据指标可点击 */
-.stat {
-  background: white; border: 1px solid var(--line);
-  border-radius: 16px; padding: 20px 16px;
-  transition: all .3s;
-  cursor: pointer;
-  text-decoration: none; color: inherit; display: block;
-  position: relative;
-}
-.stat::after {
-  content: '→'; position: absolute; top: 12px; right: 14px;
-  font-size: 14px; color: var(--ink-soft);
-  opacity: 0; transform: translateX(-4px);
-  transition: all .2s;
-}
-.stat:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--primary); }
-.stat:hover::after { opacity: 1; transform: translateX(0); }
+.scene-count{font-size:11px;color:var(--td);margin-bottom:16px}
 
-/* ============ 字典目录 ============ */
-.dict-index {
-  background: white; border: 1px solid var(--line);
-  border-radius: 24px; padding: 48px 40px;
-}
-.di-tag {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 14px; border-radius: 100px;
-  background: rgba(14,92,74,0.08); color: var(--primary);
-  font-size: 12px; font-weight: 600; margin-bottom: 16px;
-}
-.di-title {
-  font-size: 30px; font-weight: 800; margin-bottom: 12px;
-  letter-spacing: -0.5px;
-}
-.di-sub { color: var(--ink-soft); font-size: 15px; margin-bottom: 36px; }
-
-.di-block { margin-bottom: 32px; }
-.di-block-head {
-  display: flex; align-items: center; gap: 16px;
-  margin-bottom: 20px; padding-bottom: 12px;
-  border-bottom: 2px solid var(--cream-deep);
-}
-.di-block-num {
-  width: 40px; height: 40px; border-radius: 10px;
-  background: var(--cream-deep);
-  display: grid; place-items: center; font-size: 20px;
-}
-.di-block-title { font-size: 18px; font-weight: 700; }
-.di-block-sub { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
-.di-verify {
-  margin-left: auto;
-  font-size: 11px; padding: 4px 10px; border-radius: 4px;
-  background: var(--primary); color: white; font-weight: 600;
-}
-
-/* 7 域 */
-.di-domains { display: flex; flex-direction: column; gap: 12px; }
-.di-domain {
-  background: var(--cream); border-radius: 12px;
-  padding: 16px 20px;
-  transition: all .15s;
-}
-.di-domain:hover { background: rgba(14,92,74,0.05); }
-.di-domain-head {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 12px;
-}
-.di-domain-icon { font-size: 20px; }
-.di-domain-name {
-  font-size: 15px; font-weight: 700; color: var(--ink); flex: 1;
-}
-.di-domain-count {
-  font-size: 12px; color: var(--primary); font-weight: 600;
-  padding: 2px 10px; background: rgba(14,92,74,0.10);
-  border-radius: 100px;
-}
-.di-words { display: flex; flex-wrap: wrap; gap: 6px; }
-.di-word {
-  font-size: 12px; padding: 5px 12px; border-radius: 6px;
-  background: white; border: 1px solid var(--line);
-  color: var(--ink-soft); cursor: pointer; transition: all .15s;
-}
-.di-word:hover {
-  background: var(--primary); color: white;
-  border-color: var(--primary);
-}
-
-/* 6 岗位 */
-.di-roles {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-}
-.di-role {
-  background: var(--cream); border: 1px solid var(--line);
-  border-radius: 12px; padding: 14px 16px;
-  display: flex; align-items: center; gap: 12px;
-  cursor: pointer; transition: all .15s;
-}
-.di-role:hover {
-  background: white; transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-  border-color: var(--primary);
-}
-.di-role-emoji { font-size: 24px; flex-shrink: 0; }
-.di-role-content { flex: 1; min-width: 0; }
-.di-role-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-.di-role-meta-row { display: flex; gap: 4px; flex-wrap: wrap; }
-.di-role-meta {
-  font-size: 10px; color: var(--ink-soft);
-  padding: 1px 5px; background: white; border-radius: 3px;
-  border: 1px solid var(--line);
-}
-.di-role-level {
-  font-size: 10px; color: var(--primary); font-weight: 600;
-  padding: 2px 6px; background: rgba(14,92,74,0.10);
-  border-radius: 3px; flex-shrink: 0;
-}
-.di-role-note {
-  margin-top: 12px; padding: 10px 14px;
-  background: rgba(224,138,60,0.08); border-left: 3px solid var(--orange);
-  border-radius: 0 6px 6px 0;
-  font-size: 12px; color: var(--ink-soft);
-}
-
-/* 查询入口 */
-.di-actions {
-  display: flex; flex-wrap: wrap; gap: 12px;
-  margin-top: 24px; padding-top: 24px;
-  border-top: 1px dashed var(--line);
-}
-.di-action {
-  flex: 1; min-width: 200px;
-  padding: 12px 20px; border-radius: 10px;
-  background: var(--cream); border: 1px solid var(--line);
-  text-decoration: none; color: var(--ink); font-size: 14px;
-  font-weight: 500; text-align: center;
-  transition: all .15s;
-}
-.di-action:hover {
-  background: white; border-color: var(--primary);
-  color: var(--primary);
-}
-.di-action.primary {
-  background: var(--primary); color: white; border-color: var(--primary);
-}
-.di-action.primary:hover {
-  background: var(--primary-light); color: white;
-}
-
-/* ============ AI 助力 ============ */
-.ai-section {
-  background: linear-gradient(135deg, #1A4A3C 0%, var(--primary) 60%, var(--primary-light) 100%);
-  border-radius: 24px; padding: 56px 48px;
-  color: white; position: relative; overflow: hidden;
-}
-.ai-section::before {
-  content: ''; position: absolute; top: -150px; right: -150px;
-  width: 400px; height: 400px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(224,138,60,0.25) 0%, transparent 70%);
-}
-.ai-section::after {
-  content: '⚡'; position: absolute; bottom: -40px; right: 60px;
-  font-size: 220px; color: rgba(255,255,255,0.04);
-  font-weight: 900;
-}
-.ai-tag {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 14px; border-radius: 100px;
-  background: rgba(255,255,255,0.12); color: white;
-  font-size: 12px; font-weight: 600; margin-bottom: 16px;
-  border: 1px solid rgba(255,255,255,0.2);
-}
-.ai-title {
-  font-size: 30px; font-weight: 800; margin-bottom: 12px;
-  letter-spacing: -0.5px; max-width: 720px;
-}
-.ai-sub {
-  color: rgba(255,255,255,0.75); font-size: 15px; margin-bottom: 36px;
-  max-width: 640px;
-}
-.ai-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-  position: relative; z-index: 1;
-}
-.ai-card {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 16px; padding: 24px;
-  backdrop-filter: blur(10px);
-  transition: all .3s; cursor: pointer; position: relative;
-}
-.ai-card:hover {
-  background: rgba(255,255,255,0.10);
-  transform: translateY(-3px);
-  border-color: rgba(255,255,255,0.25);
-}
-.ai-card.highlight {
-  background: rgba(224,138,60,0.15);
-  border-color: rgba(224,138,60,0.4);
-}
-.ai-num {
-  position: absolute; top: 16px; right: 20px;
-  font-size: 36px; font-weight: 900; color: rgba(255,255,255,0.12);
-  font-family: Georgia, serif;
-}
-.ai-emoji { font-size: 32px; margin-bottom: 12px; }
-.ai-name { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-.ai-tagline {
-  font-size: 13px; color: rgba(255,255,255,0.75);
-  margin-bottom: 16px; line-height: 1.5;
-  min-height: 40px;
-}
-.ai-points {
-  list-style: none; padding: 0; margin: 0 0 16px 0;
-  border-top: 1px dashed rgba(255,255,255,0.15);
-  padding-top: 12px;
-}
-.ai-points li {
-  font-size: 12px; color: rgba(255,255,255,0.85);
-  padding: 4px 0 4px 16px; position: relative;
-  line-height: 1.5;
-}
-.ai-points li::before {
-  content: '›'; position: absolute; left: 0; top: 4px;
-  color: var(--orange); font-weight: 700;
-}
-.ai-result {
-  font-size: 13px; color: var(--orange); font-weight: 600;
-  padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1);
-}
-.ai-meta {
-  text-align: center; margin-top: 28px; font-size: 13px;
-  color: rgba(255,255,255,0.6); position: relative; z-index: 1;
-}
-.ai-meta b { color: white; }
-
-/* AI 工具收束金句（替换元数据） */
-.ai-takeaway {
-  display: flex; align-items: center; gap: 16px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 14px; padding: 20px 24px;
-  margin-top: 28px; position: relative; z-index: 1;
-}
-.ai-takeaway-icon {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: rgba(224,138,60,0.25);
-  display: grid; place-items: center;
-  font-size: 22px; flex-shrink: 0;
-}
-.ai-takeaway-text { font-size: 14px; color: rgba(255,255,255,0.9); line-height: 1.7; }
-.ai-takeaway-text b { color: white; font-size: 15px; }
-.ai-takeaway-text .hl {
-  color: var(--orange); font-weight: 600;
-}
-
-/* ============ 消费者全图 ============ */
-.consumer-full {
-  background: white; border: 1px solid var(--line);
-  border-radius: 24px; padding: 48px 40px;
-  position: relative;
-}
-.cf-tag {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 14px; border-radius: 100px;
-  background: rgba(14,92,74,0.08); color: var(--primary);
-  font-size: 12px; font-weight: 600; margin-bottom: 16px;
-}
-.cf-title {
-  font-size: 30px; font-weight: 800; margin-bottom: 12px;
-  letter-spacing: -0.5px;
-}
-.cf-title .hl {
-  background: linear-gradient(135deg, var(--primary), var(--orange));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.cf-sub { color: var(--ink-soft); font-size: 15px; margin-bottom: 36px; }
-
-.cf-block { margin-bottom: 32px; }
-.cf-block-head {
-  display: flex; align-items: center; gap: 16px;
-  margin-bottom: 20px; padding-bottom: 12px;
-  border-bottom: 2px solid var(--cream-deep);
-}
-.cf-block-num {
-  width: 40px; height: 40px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  color: white; display: grid; place-items: center;
-  font-size: 18px; font-weight: 800;
-  box-shadow: 0 4px 12px rgba(14,92,74,0.25);
-}
-.cf-block-title { font-size: 18px; font-weight: 700; }
-.cf-block-sub { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
-
-.cf-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.cf-keyword {
-  padding: 8px 14px; border-radius: 100px;
-  background: var(--cream); border: 1px solid var(--line);
-  font-size: 13px; color: var(--ink);
-  cursor: pointer; transition: all .15s;
-  display: inline-flex; align-items: center; gap: 4px;
-}
-.cf-keyword:hover {
-  background: var(--primary); color: white;
-  border-color: var(--primary); transform: translateY(-1px);
-}
-.cf-keyword.cf-all {
-  background: var(--primary); color: white;
-  font-weight: 600; border-color: var(--primary);
-}
-
-/* 三层分组视觉 */
-.cf-layer-group {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 20px;
-  align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px dashed var(--line);
-}
-.cf-layer-group:last-of-type { border-bottom: none; }
-.cf-layer-group .cf-tags { justify-content: flex-start; }
-
-.cf-layer-label {
-  display: flex; flex-direction: column; gap: 4px;
-  padding: 12px 16px; border-radius: 12px;
-  position: relative;
-}
-.cf-layer-label::after {
-  content: ''; position: absolute; right: -12px; top: 50%;
-  transform: translateY(-50%); width: 0; height: 0;
-  border-left: 8px solid; border-top: 6px solid transparent;
-  border-bottom: 6px solid transparent;
-}
-.l-physical {
-  background: linear-gradient(135deg, rgba(14,92,74,0.10), rgba(14,92,74,0.04));
-  border-left: 4px solid var(--primary);
-}
-.l-physical::after { border-left-color: var(--primary); }
-.l-emotion {
-  background: linear-gradient(135deg, rgba(200,149,109,0.18), rgba(200,149,109,0.06));
-  border-left: 4px solid var(--wood);
-}
-.l-emotion::after { border-left-color: var(--wood); }
-.l-spirit {
-  background: linear-gradient(135deg, rgba(224,138,60,0.15), rgba(224,138,60,0.04));
-  border-left: 4px solid var(--orange);
-}
-.l-spirit::after { border-left-color: var(--orange); }
-
-.cf-layer-icon { font-size: 18px; }
-.cf-layer-name {
-  font-size: 14px; font-weight: 700; color: var(--ink);
-}
-.cf-layer-meta {
-  font-size: 11px; color: var(--ink-soft);
-}
-
-/* 三层关键词的色彩区分 */
-.cf-keyword.cf-physical {
-  background: rgba(14,92,74,0.08);
-  border-color: rgba(14,92,74,0.2);
-  color: var(--primary);
-}
-.cf-keyword.cf-physical:hover {
-  background: var(--primary); color: white;
-  border-color: var(--primary);
-}
-.cf-keyword.cf-emotion {
-  background: rgba(200,149,109,0.15);
-  border-color: rgba(200,149,109,0.3);
-  color: #8B5A2B;
-}
-.cf-keyword.cf-emotion:hover {
-  background: var(--wood); color: white;
-  border-color: var(--wood);
-}
-.cf-keyword.cf-spirit {
-  background: rgba(224,138,60,0.12);
-  border-color: rgba(224,138,60,0.3);
-  color: #B5671E;
-}
-.cf-keyword.cf-spirit:hover {
-  background: var(--orange); color: white;
-  border-color: var(--orange);
-}
-
-.cf-overview {
-  text-align: center; margin-top: 20px;
-}
-
-.cf-axis-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-}
-.cf-axis-col {
-  background: var(--cream); border-radius: 14px; padding: 20px;
-}
-.cf-axis-name {
-  font-size: 14px; font-weight: 700; color: var(--primary);
-  margin-bottom: 12px; padding-bottom: 8px;
-  border-bottom: 1px dashed var(--line);
-}
-.cf-stage {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: 8px;
-  cursor: pointer; transition: all .15s;
-  margin-bottom: 4px;
-}
-.cf-stage:hover {
-  background: white; transform: translateX(4px);
-}
-.stage-num {
-  width: 24px; height: 24px; border-radius: 50%;
-  background: var(--wood); color: white;
-  display: grid; place-items: center;
-  font-size: 12px; font-weight: 700; flex-shrink: 0;
-}
-.stage-name { font-size: 14px; font-weight: 600; flex: 1; }
-.stage-sub { font-size: 11px; color: var(--ink-soft); }
-
-.cf-cta {
-  text-align: center; padding: 24px;
-  background: linear-gradient(135deg, rgba(14,92,74,0.04), rgba(224,138,60,0.04));
-  border-radius: 14px; font-size: 14px; color: var(--ink-soft);
-}
-.cf-cta a { color: var(--primary); text-decoration: none; font-weight: 600; border-bottom: 1px dashed var(--primary); }
-.cf-cta a:hover { color: var(--primary-light); }
-
-/* ============ 战略基座 ============ */
-.strategic-base {
-  background: linear-gradient(180deg, white 0%, var(--cream) 100%);
-  border-radius: 24px; padding: 48px 40px;
-  position: relative; overflow: hidden;
-  border: 1px solid var(--line);
-  margin-bottom: 24px;
-}
-  border-radius: 24px; padding: 48px 40px;
-  position: relative; overflow: hidden;
-  border: 1px solid var(--line);
-  margin-bottom: 24px;
-}
-.strategic-base::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-  background: linear-gradient(90deg, var(--primary) 0%, var(--wood) 50%, var(--orange) 100%);
-}
-.sb-tag {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 12px; border-radius: 100px;
-  background: rgba(14,92,74,0.08); color: var(--primary);
-  font-size: 12px; font-weight: 600; margin-bottom: 16px;
-}
-.sb-title { font-size: 28px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
-.sb-sub { color: var(--ink-soft); font-size: 15px; margin-bottom: 32px; max-width: 700px; }
-
-/* 道德经四层（顶） */
-.sb-classic {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
-  margin-bottom: 32px; padding: 20px;
-  background: rgba(247,244,238,0.6); border-radius: 16px;
-  border: 1px dashed rgba(14,92,74,0.2);
-}
-.classic-item {
-  text-align: center; padding: 12px 8px;
-  position: relative;
-}
-.classic-item + .classic-item::before {
-  content: '↓'; position: absolute; left: -8px; top: 50%; transform: translateY(-50%);
-  color: var(--wood); font-size: 14px; opacity: .5;
-}
-.classic-cn {
-  font-size: 14px; color: var(--ink); font-weight: 600;
-  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
-  margin-bottom: 4px;
-}
-.classic-fs { font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
-
-/* 核心双轴 */
-.sb-axis {
-  background: white; border: 1px solid var(--line);
-  border-radius: 16px; padding: 24px; margin-bottom: 24px;
-}
-.axis-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.axis-title { font-size: 16px; font-weight: 700; color: var(--primary); }
-.axis-tag { font-size: 11px; color: var(--ink-soft); padding: 3px 8px; background: var(--cream-deep); border-radius: 4px; }
-
-.axis-grid {
-  display: grid; grid-template-columns: 1fr auto 1fr; gap: 0;
-  align-items: stretch;
-}
-.axis-col { padding: 0 16px; }
-.axis-col + .axis-col { border-left: 1px dashed var(--line); }
-.axis-col h4 { font-size: 13px; color: var(--ink-soft); margin-bottom: 12px; font-weight: 600; }
-.axis-col .y-axis { font-size: 12px; color: var(--primary); margin-bottom: 8px; font-weight: 500; }
-.axis-item { padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 4px; transition: all .15s; }
-.axis-item:hover { background: var(--cream); }
-.axis-item .stage { font-weight: 600; color: var(--ink); }
-.axis-item .sub { color: var(--ink-soft); font-size: 11px; margin-left: 6px; }
-.axis-center {
-  display: grid; place-items: center; padding: 0 16px;
-  font-size: 11px; color: var(--ink-soft); font-weight: 600;
-  text-align: center; min-width: 80px;
-}
-.axis-center .arrow { font-size: 20px; color: var(--wood); margin: 4px 0; }
-
-/* 三条线 */
-.sb-lines {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-  margin-bottom: 28px;
-}
-.line-card {
-  padding: 20px; border-radius: 14px; position: relative;
-  border: 1px solid var(--line); background: white;
-  transition: all .25s; cursor: pointer;
-}
-.line-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-.line-card.l1 { border-top: 3px solid var(--primary); }
-.line-card.l2 { border-top: 3px solid var(--wood); }
-.line-card.l3 { border-top: 3px solid var(--orange); }
-.line-icon {
-  width: 36px; height: 36px; border-radius: 10px;
-  display: grid; place-items: center; font-size: 18px;
-  margin-bottom: 12px;
-}
-.l1 .line-icon { background: rgba(14,92,74,0.10); color: var(--primary); }
-.l2 .line-icon { background: rgba(200,149,109,0.18); color: var(--wood); }
-.l3 .line-icon { background: rgba(224,138,60,0.12); color: var(--orange); }
-
-.line-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-.line-tag { font-size: 11px; color: var(--ink-soft); margin-bottom: 12px; }
-.line-prod { display: flex; flex-wrap: wrap; gap: 4px; }
-.line-prod span {
-  font-size: 11px; padding: 2px 8px; border-radius: 4px;
-  background: var(--cream-deep); color: var(--ink);
-}
-
-/* 关键词底部 */
-.sb-key {
-  text-align: center; padding: 24px;
-  background: linear-gradient(135deg, rgba(14,92,74,0.04), rgba(200,149,109,0.06));
-  border-radius: 14px;
-  font-size: 16px; color: var(--ink); font-weight: 500;
-}
-.sb-key .strong { color: var(--primary); font-weight: 700; font-size: 18px; }
-.sb-key .small { display: block; font-size: 11px; color: var(--ink-soft); margin-top: 6px; letter-spacing: 2px; }
-
-.sb-detail {
-  text-align: center; margin-top: 16px; font-size: 13px;
-}
-.sb-detail a { color: var(--primary); text-decoration: none; border-bottom: 1px dashed var(--primary); }
-
-.search-wrapper { position: relative; max-width: 720px; }
-.search-box {
-  position: relative;
-  background: white; border: 2px solid var(--line);
-  border-radius: 16px; padding: 6px 6px 6px 20px;
-  display: flex; align-items: center; gap: 12px;
-  box-shadow: var(--shadow-md);
-  transition: all .2s;
-}
-.search-box:focus-within { border-color: var(--primary); box-shadow: 0 8px 32px rgba(14,92,74,0.16); }
-.search-box svg { flex-shrink: 0; opacity: .5; }
-.search-box input {
-  flex: 1; border: none; outline: none; background: transparent;
-  font-size: 16px; color: var(--ink); padding: 14px 0;
-  font-family: inherit;
-}
-.search-box input::placeholder { color: #A0ADA6; }
-.search-hint {
-  padding: 8px 14px; background: var(--cream-deep);
-  border-radius: 10px; font-size: 12px; color: var(--ink-soft);
-  display: inline-flex; align-items: center; gap: 4px;
-}
-.search-hint kbd {
-  background: white; padding: 2px 6px; border-radius: 4px;
-  font-family: inherit; font-size: 11px; box-shadow: 0 1px 2px rgba(0,0,0,.08);
-  border: 1px solid var(--line);
-}
-
-/* 搜索建议浮层 */
-.search-suggest {
-  position: absolute; top: calc(100% + 8px); left: 0; right: 0;
-  background: white; border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(14,92,74,0.18);
-  border: 1px solid var(--line);
-  padding: 12px; z-index: 50;
-  display: none;
-  animation: slideDown .2s ease-out;
-}
-.search-wrapper.active .search-suggest { display: block; }
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.suggest-section { padding: 8px 0; }
-.suggest-section + .suggest-section { border-top: 1px dashed var(--line); }
-.suggest-label {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 4px 12px 8px;
-  font-size: 11px; color: var(--ink-soft); font-weight: 600;
-  letter-spacing: 0.5px; text-transform: uppercase;
-}
-.suggest-label .clear {
-  color: var(--primary); cursor: pointer; text-transform: none; font-weight: 500;
-}
-
-.suggest-hot { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px; }
-.hot-chip {
-  padding: 6px 12px; border-radius: 100px;
-  background: var(--cream-deep); color: var(--ink);
-  font-size: 13px; cursor: pointer; transition: all .15s;
-  display: inline-flex; align-items: center; gap: 4px;
-}
-.hot-chip:hover { background: var(--primary); color: white; }
-.hot-chip .num {
-  font-size: 10px; color: var(--orange); font-weight: 700;
-}
-.hot-chip:hover .num { color: white; }
-
-.suggest-list { display: flex; flex-direction: column; }
-.suggest-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 12px; border-radius: 10px;
-  cursor: pointer; transition: background .15s;
-}
-.suggest-item:hover { background: var(--cream); }
-.suggest-icon {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: var(--cream-deep); display: grid; place-items: center;
-  font-size: 14px; flex-shrink: 0;
-}
-.suggest-content { flex: 1; min-width: 0; }
-.suggest-title { font-size: 14px; color: var(--ink); font-weight: 500; }
-.suggest-title mark {
-  background: rgba(224,138,60,0.25); color: var(--ink);
-  padding: 0 2px; border-radius: 3px;
-}
-.suggest-meta { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
-.suggest-type {
-  font-size: 11px; padding: 2px 8px; border-radius: 4px;
-  background: rgba(14,92,74,0.10); color: var(--primary);
-}
-
-/* 搜索框旁的小提示行（未输入时显示） */
-.search-tip-row {
-  display: flex; align-items: center; gap: 12px;
-  margin-top: 12px; font-size: 13px; color: var(--ink-soft);
-  flex-wrap: wrap;
-}
-.search-tip-row .label { display: inline-flex; align-items: center; gap: 4px; }
-.search-tip-row .examples { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.tip-chip {
-  padding: 3px 10px; border-radius: 6px;
-  background: rgba(14,92,74,0.06); color: var(--primary);
-  cursor: pointer; font-size: 12px;
-  transition: all .15s;
-}
-.tip-chip:hover { background: var(--primary); color: white; }
-.tip-divider { color: var(--line); }
-
-/* ============ 场景卡 ============ */
-.section { max-width: 1240px; margin: 0 auto; padding: 60px 32px; }
-.section-head {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  margin-bottom: 32px;
-}
-.section-title { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
-.section-sub { color: var(--ink-soft); margin-top: 6px; font-size: 14px; }
-.section-link {
-  font-size: 14px; color: var(--primary); text-decoration: none;
-  display: inline-flex; align-items: center; gap: 4px;
-}
-.section-link:hover { gap: 8px; }
-
-.scene-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-}
-.scene-card {
-  background: white; border: 1px solid var(--line);
-  border-radius: 20px; padding: 28px; position: relative;
-  transition: all .3s; cursor: pointer; overflow: hidden;
-}
-.scene-card::after {
-  content: ''; position: absolute; top: 0; right: 0; width: 80px; height: 80px;
-  border-radius: 50%; opacity: .08; transition: all .4s;
-}
-.scene-card.s1::after { background: var(--primary); }
-.scene-card.s2::after { background: var(--wood); }
-.scene-card.s3::after { background: var(--orange); }
-.scene-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
-.scene-card:hover::after { transform: scale(2.5); opacity: .12; }
-.scene-icon {
-  width: 48px; height: 48px; border-radius: 12px;
-  display: grid; place-items: center; margin-bottom: 20px;
-  font-size: 24px;
-}
-.s1 .scene-icon { background: rgba(14,92,74,0.10); color: var(--primary); }
-.s2 .scene-icon { background: rgba(200,149,109,0.18); color: var(--wood); }
-.s3 .scene-icon { background: rgba(224,138,60,0.12); color: var(--orange); }
-
-.scene-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-.scene-desc { color: var(--ink-soft); font-size: 14px; margin-bottom: 20px; min-height: 44px; }
-.scene-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
-.tag {
-  font-size: 12px; padding: 4px 10px; border-radius: 100px;
-  background: var(--cream-deep); color: var(--ink-soft);
-}
-.scene-cta {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-top: 16px; border-top: 1px dashed var(--line);
-  color: var(--primary); font-size: 14px; font-weight: 600;
-}
-/* ============ 场景卡价值说明 ============ */
-.scene-value {
-  background: rgba(224,138,60,0.05);
-  border-left: 3px solid var(--orange);
-  border-radius: 0 10px 10px 0;
-  padding: 14px 16px;
-  margin-bottom: 20px;
-}
-.value-label {
-  font-size: 12px; font-weight: 600; color: var(--orange);
-  margin-bottom: 8px;
-}
-.value-list {
-  list-style: none; padding: 0; margin: 0 0 10px 0;
-}
-.value-list li {
-  font-size: 12px; line-height: 1.6; color: var(--ink);
-  padding: 4px 0 4px 14px; position: relative;
-}
-.value-list li::before {
-  content: '▸'; position: absolute; left: 0; top: 4px;
-  color: var(--orange); font-size: 10px;
-}
-.value-list b { color: var(--primary); font-weight: 600; }
-.value-cta {
-  font-size: 12px; color: var(--ink-soft);
-  padding-top: 8px; border-top: 1px dashed rgba(224,138,60,0.2);
-}
-.value-cta .hl {
-  color: var(--primary); font-weight: 700;
-}
-
-.scene-arrow { transition: transform .2s; }
-.scene-card:hover .scene-arrow { transform: translateX(4px); }
-
-/* ============ 内容导航（消费者侧入口） ============ */
-.consumer-panel {
-  background: linear-gradient(135deg, var(--primary) 0%, #1A4A3C 100%);
-  border-radius: 24px; padding: 48px;
-  color: white; position: relative; overflow: hidden;
-}
-.consumer-panel::before {
-  content: ''; position: absolute; top: -100px; right: -100px;
-  width: 300px; height: 300px; border-radius: 50%;
-  background: rgba(200,149,109,0.20);
-}
-.consumer-panel::after {
-  content: '✦'; position: absolute; bottom: -20px; right: 40px;
-  font-size: 200px; color: rgba(255,255,255,0.05);
-}
-.consumer-grid {
-  display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px;
-  position: relative; z-index: 1;
-}
-.consumer-left h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.5px; }
-.consumer-left p { color: rgba(255,255,255,0.75); font-size: 15px; margin-bottom: 28px; max-width: 480px; }
-.consumer-cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
-.btn-primary {
-  background: white; color: var(--primary); padding: 12px 24px;
-  border-radius: 10px; font-weight: 600; font-size: 14px;
-  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
-  transition: all .2s;
-}
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
-.btn-ghost {
-  background: transparent; color: white; padding: 12px 24px;
-  border-radius: 10px; font-weight: 500; font-size: 14px;
-  text-decoration: none; border: 1px solid rgba(255,255,255,0.3);
-  transition: all .2s;
-}
-.btn-ghost:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.5); }
-
-.consumer-right {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 16px; padding: 24px; backdrop-filter: blur(10px);
-}
-.preview-title { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 12px; font-weight: 500; }
-.preview-item {
-  padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
-  display: flex; gap: 12px; align-items: flex-start;
-}
-.preview-item:last-child { border-bottom: none; }
-.preview-emoji { font-size: 20px; flex-shrink: 0; }
-.preview-content { flex: 1; }
-.preview-q { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-.preview-a { font-size: 12px; color: rgba(255,255,255,0.65); }
-.preview-lock {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 11px; padding: 2px 8px; border-radius: 4px;
-  background: rgba(224,138,60,0.25); color: #FFC79A; margin-top: 6px;
-}
-
-/* ============ 引导到其他页面 ============ */
-.guide {
-  background: white; border-top: 1px solid var(--line);
-  padding: 60px 32px;
-}
-.guide-inner { max-width: 1240px; margin: 0 auto; }
-.guide-head { text-align: center; margin-bottom: 36px; }
-.guide-head h2 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-.guide-head p { color: var(--ink-soft); }
-.guide-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
-}
-.guide-card {
-  background: var(--cream); border: 1px solid var(--line);
-  border-radius: 16px; padding: 24px; text-decoration: none;
-  color: var(--ink); transition: all .25s; position: relative;
-}
-.guide-card:hover {
-  background: white; transform: translateY(-3px);
-  box-shadow: var(--shadow-md); border-color: var(--primary);
-}
-.guide-icon {
-  width: 40px; height: 40px; border-radius: 10px;
-  background: white; display: grid; place-items: center;
-  font-size: 20px; margin-bottom: 14px;
-  box-shadow: var(--shadow-sm);
-}
-.guide-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-.guide-desc { font-size: 12px; color: var(--ink-soft); }
-.guide-arrow {
-  position: absolute; top: 20px; right: 20px;
-  color: var(--ink-soft); transition: all .2s;
-}
-.guide-card:hover .guide-arrow { color: var(--primary); transform: translate(2px,-2px); }
-
-/* 字典高亮卡（业务字典/人才字典） */
-.guide-card.highlight-dict {
-  background: linear-gradient(135deg, rgba(14,92,74,0.06), white);
-  border: 1px solid rgba(14,92,74,0.2);
-  position: relative;
-}
-.guide-card.highlight-dict::before {
-  content: '✓ 已验证';
-  position: absolute; top: 12px; right: 12px;
-  font-size: 10px; padding: 2px 8px; border-radius: 4px;
-  background: var(--primary); color: white;
-  font-weight: 600;
-}
-.guide-card.highlight-dict:hover {
-  background: linear-gradient(135deg, rgba(14,92,74,0.10), white);
-  border-color: var(--primary);
-}
-
-/* ============ Footer ============ */
-footer {
-  background: var(--cream-deep);
-  padding: 40px 32px 24px;
-  color: var(--ink-soft); font-size: 13px;
-}
-.footer-inner {
-  max-width: 1240px; margin: 0 auto;
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 16px;
-}
-.footer-links { display: flex; gap: 20px; }
-.footer-links a { color: var(--ink-soft); text-decoration: none; }
-.footer-links a:hover { color: var(--primary); }
-
-/* ============ 响应式 ============ */
-@media (max-width: 960px) {
-  .stats { grid-template-columns: repeat(3, 1fr); }
-  .scene-grid, .guide-grid { grid-template-columns: 1fr; }
-  .consumer-grid { grid-template-columns: 1fr; }
-  .hero h1 { font-size: 40px; }
-  .nav-links { display: none; }
-}
-
-/* ============ 搜索交互 JS ============ */
-const wrap = document.getElementById('searchWrapper');
-const input = document.getElementById('searchInput');
-const tip = document.getElementById('searchTipRow');
-const suggest = document.getElementById('searchSuggest');
-
-function fillSearch(v) {
-  input.value = v;
-  input.focus();
-  update();
-}
-function update() {
-  if (input.value.trim().length > 0) {
-    tip.style.display = 'none';
-    wrap.classList.add('active');
-    // 实时高亮 mark 标签里的关键词
-    document.querySelectorAll('.suggest-title mark').forEach(m => {
-      m.outerHTML = m.innerHTML;
-    });
-    const q = input.value.trim();
-    if (q) {
-      document.querySelectorAll('.suggest-title').forEach(el => {
-        const text = el.textContent;
-        const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'g');
-        el.innerHTML = text.replace(re, '<mark>$1</mark>');
-      });
-    }
-  } else {
-    tip.style.display = 'flex';
-    wrap.classList.remove('active');
-  }
-}
-input.addEventListener('focus', update);
-input.addEventListener('input', update);
-input.addEventListener('blur', () => setTimeout(() => {
-  // 失焦延迟关闭，方便点击建议项
-  if (input.value.trim().length === 0) {
-    wrap.classList.remove('active');
-    tip.style.display = 'flex';
-  }
-}, 200));
-
-// ⌘K / Ctrl+K 快捷键
-document.addEventListener('keydown', (e) => {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-    e.preventDefault();
-    input.focus();
-  }
-  if (e.key === 'Escape') {
-    input.blur();
-  }
-});
-
-// 点击建议项 → 假装跳转
-document.querySelectorAll('.suggest-item').forEach(item => {
-  item.addEventListener('click', () => {
-    const title = item.querySelector('.suggest-title').textContent;
-    input.value = title;
-    // 真实场景：window.location.hash = '/knowledge/' + ...
-    console.log('跳转：', title);
-  });
-});
+/* 词条卡片消费者视角 */
+.entry-card{margin-bottom:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:all .2s}
+.entry-card:hover{border-color:var(--p);box-shadow:0 2px 8px rgba(61,90,62,.08)}
+.entry-card.highlight{background:rgba(61,90,62,.08);border-color:var(--p);animation:highlightPulse 2s ease-out}
+@keyframes highlightPulse{0%{background:rgba(61,90,62,.2)}100%{background:var(--card)}}
+.entry-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.entry-name{font-size:14px;font-weight:800;color:var(--dk)}
+.entry-id{font-size:10px;color:var(--td);font-weight:400}
+.entry-consumer-q{background:rgba(196,106,58,.08);border-left:3px solid #c46a3a;padding:8px 10px;border-radius:0 6px 6px 0;margin-bottom:8px;font-size:13px;color:var(--dk);line-height:1.5}
+.entry-consumer-q::before{content:'❓ ';font-size:11px}
+.entry-consumer-answer{background:rgba(61,90,62,.05);border-radius:6px;padding:8px 10px;margin-bottom:8px;font-size:12px;color:var(--tx);line-height:1.5}
+.entry-consumer-answer::before{content:'💡 ';font-size:11px}
+.entry-consumer-benefit{font-size:12px;color:var(--p);font-weight:600;margin-bottom:8px;padding:6px 0;border-top:1px dashed var(--border)}
+.entry-consumer-benefit::before{content:'✨ '}
+/* 双视角叙事 */
+.entry-consumer-narrative{background:rgba(61,90,62,.06);border-left:3px solid var(--p);padding:6px 10px;border-radius:0 6px 6px 0;margin-bottom:6px;font-size:12px;color:var(--dk);line-height:1.5}
+.entry-consumer-narrative::before{content:'🏠 '}
+.entry-service-narrative{background:rgba(196,106,58,.05);border-left:3px solid #c46a3a;padding:6px 10px;border-radius:0 6px 6px 0;margin-bottom:6px;font-size:12px;color:var(--dk);line-height:1.5}
+.entry-service-narrative::before{content:'👔 '}
+/* FAQ */
+.entry-faq{margin-top:10px}
+.faq-header{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:8px}
+.faq-item{background:rgba(61,90,62,.04);border-radius:8px;padding:10px;margin-bottom:8px}
+.faq-q{font-size:13px;font-weight:600;color:var(--dk);margin-bottom:4px}
+.faq-a{font-size:12px;color:var(--td);line-height:1.5;margin-top:4px}
+/* 对比表 */
+.entry-compare{background:rgba(61,90,62,.04);border-radius:8px;padding:10px;margin-top:8px}
+.compare-header{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:6px}
+.compare-content{font-size:12px;color:var(--dk);line-height:1.6;white-space:pre-wrap}
+/* 权威引用 */
+.entry-auth-ref{margin-top:8px}
+/* AI解读tab */
+.layer-tab{font-size:12px}
 </style>
+<meta property="og:title" content="居住服务业务字典 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/knowledge"><meta name="twitter:card" content="summary_large_image"><!-- 全站数据追踪器 v1.0 -->
+<script src="/tracker.js" async></script>
+<link rel="canonical" href="https://fengsheng.tech/knowledge">
 </head>
 <body>
 
-<!-- 顶部导航（带其他页面引导） -->
-<nav class="nav">
-  <div class="nav-inner">
-    <div class="brand">
-      <div class="brand-mark">风</div>
-      <span>风声</span>
-    </div>
-    <div class="nav-links">
-      <a class="nav-link" href="#">首页</a>
-      <a class="nav-link" href="#">六维测评</a>
-      <a class="nav-link" href="#">培养师</a>
-      <a class="nav-link" href="#">品质测评</a>
-      <a class="nav-link active" href="#">知识底座<span class="dot"></span></a>
-      <a class="nav-link" href="#">数据看板</a>
-    </div>
-    <a class="nav-cta" href="#">免费体验 →</a>
+<!-- 风声统一导航栏 -->
+<nav class="fs-nav">
+  <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
+  <div class="fs-nav-links">
+    <a href="/">首页</a>
+    <a href="/quality-test/">品质测评</a>
+    <a href="/care-test/">关怀测评</a>
+    <a href="/reply/">客户解码</a>
+    <a href="/s1-report/">带看报告</a>
+    <a href="/knowledge">知识底座</a>
+    <a href="/dashboard/">管理看板</a>
   </div>
+  <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
 </nav>
+<style>
+.fs-nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:#fff;border-bottom:1px solid rgba(80,90,70,.09);position:sticky;top:0;z-index:100}
+.fs-nav-brand{font-size:16px;font-weight:700;color:#3d5a3e;text-decoration:none;display:flex;align-items:center;gap:4px}
+.fs-nav-links{display:flex;gap:6px}
+.fs-nav-links a{padding:5px 10px;font-size:12px;color:#555;text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
+.fs-nav-links a:hover{background:rgba(61,90,62,.06);color:#3d5a3e}
+.fs-nav-menu{display:none;background:none;border:none;font-size:20px;cursor:pointer;color:#3d5a3e;padding:8px}
+@media (max-width:767px){
+  .fs-nav-links{display:none;position:absolute;top:52px;left:0;right:0;background:#fff;flex-direction:column;padding:10px;border-bottom:1px solid rgba(80,90,70,.09);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+  .fs-nav.open .fs-nav-links{display:flex}
+  .fs-nav-menu{display:block}
+}
+</style>
 
-<!-- Hero 区 -->
-<section class="hero">
-  <div class="hero-tag">
-    <span class="pulse"></span>
-    帮助服务者配得上被好好对待 · 即将上线
-  </div>
-  <h1>
-    风声知识底座<br>
-    <span class="accent">帮助服务者贴近消费者的认知</span>
-  </h1>
-  <p class="hero-sub">
-    139 个专业词条 · 8 大业务域 · 7 维品质模型<br>
-    <b style="color:var(--ink);">你是被服务的对象</b> —— 字典收录你的经验 · AI 放大你的能力 · 客户回馈你的靠谱
-  </p>
-
-  <!-- 服务者价值 3 句话（生哥原话语气） -->
-  <div class="hero-promises">
-    <div class="promise">
-      <span class="promise-icon">🫶</span>
-      <span class="promise-text"><b>你是被服务的对象</b> —— 不是工具人</span>
-    </div>
-    <div class="promise">
-      <span class="promise-icon">💪</span>
-      <span class="promise-text"><b>你的能力被认可</b> —— 一线经验被收录进字典 · 4 维 × 9 岗位 = 36 个能力模型</span>
-    </div>
-    <div class="promise">
-      <span class="promise-icon">🚀</span>
-      <span class="promise-text"><b>你的成长被支持</b> —— 3 个 AI 副驾 + 1 套培养体系 + 客户对你的好评价</span>
-    </div>
-  </div>
-
-  <!-- 6 个数据指标（可点击进入落地页） -->
-  <div class="stats">
-    <a class="stat" href="#knowledge-words" title="查看全部词条">
-      <div class="stat-num">139<span class="unit">条</span></div>
-      <div class="stat-label">词条 · 全部可查</div>
-    </a>
-    <a class="stat" href="#knowledge-domains" title="查看 8 大业务域">
-      <div class="stat-num">8<span class="unit">个</span></div>
-      <div class="stat-label">业务域</div>
-    </a>
-    <a class="stat" href="#dual-view" title="了解双视角">
-      <div class="stat-num">双视角</div>
-      <div class="stat-label">专业 + 通俗</div>
-    </a>
-    <a class="stat" href="#knowledge-source" title="查看权威来源">
-      <div class="stat-num">10+</div>
-      <div class="stat-label">权威来源</div>
-    </a>
-    <a class="stat" href="#quality-six" title="七维品质模型">
-      <div class="stat-num">七维</div>
-      <div class="stat-label">品质模型</div>
-    </a>
-    <a class="stat" href="#knowledge-free" title="免费查询使用">
-      <div class="stat-num">免费</div>
-      <div class="stat-label">查询使用</div>
-    </a>
-  </div>
-
-  <!-- 大搜索框 + 引导提示 -->
-  <div class="search-wrapper" id="searchWrapper">
-    <div class="search-box">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-      </svg>
-      <input type="text" id="searchInput" placeholder="搜词条 / 场景 / SOP… 例如：物质层 · 安全保障" autocomplete="off">
-      <span class="search-hint"><kbd>⌘</kbd> + <kbd>K</kbd></span>
+<div class="page">
+  <div class="top-bar"><span class="brand">风声</span><a href="/">← 返回首页</a></div>
+  <div class="hero-title">知 识 底 座</div>
+  <div class="hero-sub">居住服务行业的 AI 驱动业务字典</div>
+  <div class="stats-grid">
+    <div class="stat-cell"><div class="stat-n">450+</div><div class="stat-l">专业词条</div></div>
+    <div class="stat-cell"><div class="stat-n">9</div><div class="stat-l">大域覆盖</div></div>
+    <div class="stat-cell"><div class="stat-n">双视角</div><div class="stat-l">专业+通俗</div></div>
+    <div class="stat-cell"><div class="stat-n">10</div><div class="stat-l">权威来源</div></div>
+    <div class="stat-cell"><div class="stat-n">六维</div><div class="stat-l">品质模型</div></div>
+    <div class="stat-cell"><div class="stat-n">ABC</div><div class="stat-l">三条路径</div>  
+  <div style="margin:0 0 20px;padding:20px 18px;background:var(--card);border:1px solid var(--border);border-radius:12px">
+    <div style="font-size:15px;font-weight:800;color:var(--dk);margin-bottom:4px">🏠 住得好 = ？</div>
+    <div style="font-size:12px;color:var(--ts);margin-bottom:16px;line-height:1.6">风声的北极星：帮助服务者，让客户住得好。住得好不是一句空话，是三层递进。</div>
+    
+    <div style="display:grid;gap:8px;margin-bottom:16px">
+      <div style="padding:10px 12px;border-radius:8px;background:linear-gradient(135deg,rgba(61,90,62,.08),rgba(61,90,62,.03));border-left:3px solid var(--p)">
+        <div style="font-size:12px;font-weight:700;color:var(--p)">物质层 · 得到保障</div>
+        <div style="font-size:11px;color:var(--ts);margin-top:2px">安全 · 健康 · 便利 · 经济</div>
+      </div>
+      <div style="padding:10px 12px;border-radius:8px;background:linear-gradient(135deg,rgba(196,106,58,.08),rgba(196,106,58,.03));border-left:3px solid var(--fire)">
+        <div style="font-size:12px;font-weight:700;color:var(--fire)">情感层 · 得到满足</div>
+        <div style="font-size:11px;color:var(--ts);margin-top:2px">舒适 · 美观</div>
+      </div>
+      <div style="padding:10px 12px;border-radius:8px;background:linear-gradient(135deg,rgba(245,166,35,.1),rgba(245,166,35,.03));border-left:3px solid var(--orange)">
+        <div style="font-size:12px;font-weight:700;color:#c4880a">精神层 · 得到尊重</div>
+        <div style="font-size:11px;color:var(--ts);margin-top:2px">自在 — 选择自由、不被将就、住得像自己</div>
+      </div>
     </div>
 
-    <!-- 未输入时：默认引导 -->
-    <div class="search-tip-row" id="searchTipRow">
-      <span class="label">💡 没想好搜啥？试试：</span>
-      <span class="examples">
-        <span class="tip-chip" onclick="fillSearch('住得好')">住得好</span>
-        <span class="tip-chip" onclick="fillSearch('物质层')">物质层</span>
-        <span class="tip-chip" onclick="fillSearch('情感层')">情感层</span>
-        <span class="tip-chip" onclick="fillSearch('精神层')">精神层</span>
-        <span class="tip-chip" onclick="fillSearch('租房避坑')">租房避坑</span>
-        <span class="tip-chip" onclick="fillSearch('服务者 SOP')">服务者 SOP</span>
-        <span class="tip-chip" onclick="fillSearch('品控评分')">品控评分</span>
-        <span class="tip-chip" onclick="fillSearch('六维')">六维</span>
-      </span>
-    </div>
-
-    <!-- 输入时：下拉建议浮层 -->
-    <div class="search-suggest" id="searchSuggest">
-      <div class="suggest-section">
-        <div class="suggest-label">
-          <span>🔥 本周热搜</span>
-          <span class="clear">清空历史</span>
-        </div>
-        <div class="suggest-hot">
-          <span class="hot-chip" onclick="fillSearch('住得好')"><span class="num">1</span>住得好</span>
-          <span class="hot-chip" onclick="fillSearch('物质层')"><span class="num">2</span>物质层</span>
-          <span class="hot-chip" onclick="fillSearch('租房')"><span class="num">3</span>租房</span>
-          <span class="hot-chip" onclick="fillSearch('服务者')"><span class="num">4</span>服务者</span>
-          <span class="hot-chip" onclick="fillSearch('六维')"><span class="num">5</span>六维</span>
-          <span class="hot-chip" onclick="fillSearch('品控')"><span class="num">6</span>品控</span>
+    <div style="font-size:13px;font-weight:700;color:var(--dk);margin-bottom:8px">🗺️ 两条人生居住路径</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="padding:10px 12px;border-radius:8px;background:var(--bg);border:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:700;color:var(--p)">🔑 购房线</div>
+        <div style="font-size:10px;color:var(--ts);margin-top:4px;line-height:1.5">
+          首套房 → 成家改善 → 子女教育 → 品质升级 → 适老安享
         </div>
       </div>
-      <div class="suggest-section">
-        <div class="suggest-label"><span>📖 猜你想找（按"住"匹配）</span></div>
-        <div class="suggest-list">
-          <div class="suggest-item">
-            <div class="suggest-icon">🏠</div>
-            <div class="suggest-content">
-              <div class="suggest-title">住得好 = <mark>住</mark>得安全 + 健康 + 便利 + 经济</div>
-              <div class="suggest-meta">词条 · 物质层 · 1.2k 人查阅</div>
-            </div>
-            <span class="suggest-type">词条</span>
+      <div style="padding:10px 12px;border-radius:8px;background:var(--bg);border:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:700;color:var(--fire)">📋 租住线</div>
+        <div style="font-size:10px;color:var(--ts);margin-top:4px;line-height:1.5">
+          起步租房 → 租住改善 → 家庭租房 → 品质租住 → 适老租住
+        </div>
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--td);margin-top:8px;text-align:center">每个阶段 × 住得好三层 = 你该关注什么</div>
+  </div>
+
+  <div class="search-wrap">
+    <input class="search-input" id="search-input" type="search" placeholder="" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+  <div class="qa-section">
+    <div class="qa-title">客户问答</div>
+    <div class="qa-examples" id="qa-examples"></div>
+  </div>
+  <div class="scene-tabs" id="scene-tabs">
+    <div class="scene-tab active" data-scene="all">全部</div>
+    <div class="scene-tab" data-scene="prospecting">找房买房</div>
+    <div class="scene-tab" data-scene="signing">谈单签约</div>
+    <div class="scene-tab" data-scene="followup">售后维护</div>
+  </div>
+  <div class="section-label">📚 按业务域筛选</div>
+  <div class="domain-tabs" id="domain-tabs"></div>
+  <div class="scene-count" id="scene-count"></div>
+  <div id="policy-card"></div>
+  <div id="entry-list"></div>
+  <div id="product-recommend"></div>
+  <div class="footer">
+    风声 · 居住服务知识底座<br>
+    数据来源：国家标准/行业标准/部门规章/学术研究/贝壳体系<br>
+    fengsheng.tech
+  </div>
+</div>
+<script>
+const DOMAINS=[
+{id:'quality-customer',name:'客户六维',icon:'🏠',count:6,desc:'品质居住标准·客户视角'},
+{id:'quality-server',name:'服务者四维',icon:'🛡️',count:4,desc:'服务者关怀模型'},
+{id:'trade',name:'域1·房产交易',icon:'🔑',count:20,desc:'二手房/经纪/产权/保障'},
+{id:'rental',name:'域2·房屋租赁',icon:'📋',count:26,desc:'长租/管理/租客服务'},
+{id:'decor',name:'域3·整装家居整体交付',icon:'🔧',count:15,desc:'整装/交付/施工/质保'},
+{id:'homekeep',name:'域4·家政保洁',icon:'✨',count:15,desc:'保洁/家政/照护/标准化'},
+{id:'talent',name:'域5·人才字典',icon:'👷',count:18,desc:'6个岗位×3等级=18条·国标五级/四级/三级体系'}
+];
+
+const POLICY_CARD={id:'policy',name:'十五五政策与趋势',icon:'🏛️',count:18,desc:'顶层政策·行业趋势·关键数据',link:'#'};
+
+const ENTRIES=[
+// 品质居住标准（10条）
+{id:'QLT-001',domain:'quality-customer',name:'安全',alias:'居住安全、安全底线',def:'居住空间不对人身造成即时或潜在危险的最低保障状态，是品质居住的不可妥协底线。',source:'《住宅设计规范》GB 50096-2011；《建筑设计防火规范》GB 50016',srcType:'国家标准',attrs:'结构安全+设备安全+环境安全+食水安全',scene:'房源认证/验房报告/居住品质测评',posSpeech:'这套房的安全指标全部达标，住着踏实',negSpeech:'安全不达标，其他都白搭',consumerQ:'住的房子安不安全？怎么判断？',simpleAnswer:'安全是住房子最基本的要求：楼不能歪、电不能漏、燃气不能炸、栏杆不能断，这些不过关其他都白搭。',consumerBenefit:'住着不提心吊胆，人没事比什么都强'},
+{id:'QLT-002',domain:'quality-customer',name:'健康',alias:'居住健康、健康居住',def:'居住空间不对人体造成长期隐性伤害（物理/化学/生物）的保障状态。',source:'《室内空气质量标准》GB/T 18883-2022；《住宅建筑室内环境污染控制标准》GB 50325',srcType:'国家标准',attrs:'空气质量+水质+光环境+声环境+辐射',scene:'甲醛检测/装修验收/品质测评',posSpeech:'甲醛0.03mg/m³，远低于国标0.08，孕婴可放心',negSpeech:'健康隐患看不见，但住久了身体会说话',consumerQ:'新房装修完会不会对身体不好？',simpleAnswer:'健康就是房子不能偷偷伤害你：甲醛不能超标、水不能有怪味、噪音不能震耳朵、辐射不能超标，看不见的也得查。',consumerBenefit:'住久了不生病，看不见的危险也有人管'},
+{id:'QLT-003',domain:'quality-customer',name:'整洁',alias:'有序、收纳、整洁度',def:'居住空间物品有序归位、易于查找、动线合理的功能性状态，是"好住"的基础门槛。',source:'《住宅设计规范》GB 50096-2011（收纳面积建议≥12%套内面积）',srcType:'国家标准',attrs:'收纳系统+动线规划+清洁便利+便利性',scene:'收纳方案/户型评估/品质测评',posSpeech:'东西有地方放，找得着、放得下',negSpeech:'家里乱不是因为懒，是因为没地方放',consumerQ:'家里总是乱糟糟的怎么办？',simpleAnswer:'整洁不是你懒，是房子没给你足够的地方放东西，好的户型会让你东西有地方放、找得到、放得下。',consumerBenefit:'不再为找东西抓狂，家看着就舒服'},
+{id:'QLT-004',domain:'quality-customer',name:'温暖',alias:'归属感、家的感觉',def:'居住空间让人产生"想回家"情感连接的心理状态，从"能用"到"想住"的分水岭。',source:'《建筑照明设计标准》GB 50034（居住空间照度建议）',srcType:'国家标准',attrs:'光温感+材质触感+私密性+家人互动',scene:'品质测评/软装方案/客户情感需求',posSpeech:'推开门就想坐下，这就是温暖',negSpeech:'房子是住了，但不像家',consumerQ:'什么样的房子住着有家的感觉？',simpleAnswer:'温暖是推开门就想坐下的感觉：灯光不刺眼、材质摸着舒服、有点隐私空间、能跟家人窝着聊天。',consumerBenefit:'回家就能卸下一天的累，房子不像宿舍像家'},
+{id:'QLT-005',domain:'quality-customer',name:'美观',alias:'审美、视觉品质',def:'居住空间在视觉上产生愉悦感受的状态，是品质居住的"加分项"而非必需项。',source:'清华×贝壳居住品质研究（2026）',srcType:'学术研究',attrs:'配色协调+空间比例+风格统一+细节品质',scene:'装修方案/品质测评/客户审美需求',posSpeech:'好看不是奢侈品，是每天回家第一眼的礼物',negSpeech:'审美没有标准答案，但有底线',consumerQ:'房子好看重要吗？值不值得为颜值花钱？',simpleAnswer:'美观是每天回家第一眼的感受，配色舒服、空间利落、细节用心，不一定花大钱但一定有品位。',consumerBenefit:'每天回家看到的是享受不是将就'},
+{id:'QLT-006',domain:'quality-customer',name:'惬意',alias:'舒适、便利、生活品质',def:'居住空间让日常生活轻松顺畅的综合性感受，是品质居住的"终极体验"。',source:'清华×贝壳居住品质研究（2026）',srcType:'学术研究',attrs:'通勤便利+生活配套+社区环境+空间灵活',scene:'品质测评/生活圈分析/客户便利需求',posSpeech:'住得舒服不是奢侈，是基本权利',negSpeech:'通勤2小时的人，没资格谈生活品质',consumerQ:'什么样的房子住着才叫舒服？',simpleAnswer:'惬意是每天生活顺顺当当：上班不远、买菜方便、小区安静、空间灵活能折腾，住着不累才叫好。',consumerBenefit:'过日子不费劲，每天少折腾一点是一点'},
+{id:'QLT-007',domain:'quality-server',name:'身体健康',alias:'体感健康',def:'服务者身体状况能支撑日常工作的基准状态。',source:'风声·服务者四维关怀模型（2026）',srcType:'行业标准',attrs:'作息规律+运动习惯+疾病管理+精力水平',scene:'服务者健康评估/关怀提醒',posSpeech:'身体是革命的本钱，更是服务的本钱',negSpeech:'自己都站不住，怎么帮客户站稳',consumerQ:'帮我服务的人自己身体撑得住吗？',simpleAnswer:'服务者身体健康才能好好服务你，自己都站不住的人怎么帮你站稳，公司应该关心他们的身体。',consumerBenefit:'服务你的人状态在线，帮你帮得更到位'},
+{id:'QLT-008',domain:'quality-server',name:'心理韧性',alias:'抗压能力、情绪稳定',def:'服务者面对拒绝、压力和不确定性时保持情绪稳定和持续行动的能力。',source:'风声·服务者四维关怀模型（2026）',srcType:'行业标准',attrs:'情绪管理+抗挫力+自我调节+支持系统',scene:'服务者心理评估/压力管理',posSpeech:'被拒绝10次还能微笑，这就是韧性',negSpeech:'心理不是软肋，是最大的武器',consumerQ:'帮我办事的人会不会被气跑了？',simpleAnswer:'服务者天天被拒绝、被骂、被放鸽子，心理韧性就是他们扛得住这些还能笑着帮你办事。',consumerBenefit:'遇到难缠的情况他不会撂挑子，始终站在你这边'},
+{id:'QLT-009',domain:'quality-server',name:'职业尊严',alias:'职业认同、行业荣誉',def:'服务者对自身职业价值的认同感和被社会认可的程度。',source:'风声·服务者四维关怀模型（2026）',srcType:'行业标准',attrs:'专业自信+社会尊重+职业认同+成长空间',scene:'服务者状态评估/职业规划',posSpeech:'不是卖房子的，是帮人实现美好居住的',negSpeech:'自己都不尊重这行，客户凭什么尊重你',consumerQ:'帮我服务的人自己看得起这行吗？',simpleAnswer:'服务者要是自己觉得这行不体面，做事就敷衍；他觉得这行值得干，才会真心帮你把事办好。',consumerBenefit:'服务你的人有尊严地工作，你得到的才是认真的服务'},
+{id:'QLT-010',domain:'quality-server',name:'生活质感',alias:'生活品质、幸福感',def:'服务者自身生活质量达到合理水平的综合状态。',source:'风声·服务者四维关怀模型（2026）',srcType:'行业标准',attrs:'收入合理性+居住条件+社交生活+个人成长',scene:'服务者生活评估/福利设计',posSpeech:'服务者先活好，客户才能住好',negSpeech:'自己住不好，怎么帮别人实现美好居住',consumerQ:'帮你服务的人自己过得好不好，跟我有什么关系？',simpleAnswer:'服务者自己住不好、吃不好，哪有心思帮你把事做好？他们过得好，你才能被服务好。',consumerBenefit:'服务你的人状态在线，你的服务才有保障'},
+// 域1·房产交易（20条，展示核心5条，其余缩略）
+{id:'TRX-001',domain:'trade',name:'真房源',alias:'真实房源、假房源克星',def:'房源信息满足"真实存在、真实在售、真实价格、真实图片"四个维度标准。',source:'贝壳平台"真实房源，假一赔百元"服务承诺；《房地产经纪管理办法》第22条',srcType:'平台标准+部门规章',attrs:'真实存在+真实在售+真实价格+真实图片',scene:'客户质疑房源真实性时解释标准',posSpeech:'假一赔百，每套房都经得起验证',negSpeech:'连真假都不保证，凭什么让人信',consumerQ:'网上看的房子到底是不是真的？',simpleAnswer:'真房源必须满足四个标准：房子真实存在、确实在卖、价格真实、图片是实拍。',consumerBenefit:'不怕白跑一趟，看到的就是能看的'},
+{id:'TRX-002',domain:'trade',name:'带看',alias:'看房、实地看房',def:'经纪人陪同客户实地查看房源的专业服务行为。',source:'《房地产经纪管理办法》第14条',srcType:'部门规章',attrs:'预约+路线规划+现场讲解+安全确认+后续跟进',scene:'带看服务标准化/客户看房体验管理',posSpeech:'带看不是开门关门，是帮客户看见未来生活',negSpeech:'开门让他自己看，那叫物业不叫经纪',consumerQ:'去看房时经纪人应该帮我做什么？',simpleAnswer:'不只是开门，好的带看包括规划路线、现场讲解优缺点、确认安全、看完跟进反馈。',consumerBenefit:'看得明白，不踩坑，看完心里有数'},
+{id:'TRX-003',domain:'trade',name:'房源核验',alias:'产调、产权核验',def:'对房源的产权状态、抵押查封情况进行官方查询确认的过程。',source:'《不动产登记暂行条例》第27条',srcType:'行政法规',attrs:'产权人确认+抵押查询+查封查询+限制交易查询',scene:'签约前产权确认/风险排查',posSpeech:'先查清再签约，这是对你最基本的保护',negSpeech:'不核验就签约，等于闭着眼签字',consumerQ:'这房子到底有没有问题，我怎么看出来？',simpleAnswer:'房源核验就是去官方系统查一遍，确认这房子真的是卖家的、没有被法院封、没有偷偷抵押给别人。',consumerBenefit:'买之前心里有底，不怕买到有问题的房'},
+{id:'TRX-004',domain:'trade',name:'签约',alias:'签合同、网签',def:'买卖双方在经纪机构居间下签署房屋买卖合同并完成网签备案的法律行为。',source:'《城市房地产管理法》第41条；《城市商品房预售管理办法》',srcType:'法律+部门规章',attrs:'合同签署+网签备案+资金监管+税费确认',scene:'交易签约/合同审查/风险提示',posSpeech:'签合同不是走流程，是把你的权利写进法律',negSpeech:'合同没看清就签，出了问题没人替你扛',consumerQ:'签合同的时候我该注意什么？',simpleAnswer:'签约就是把你们谈好的所有条件写进有法律效力的合同里，同时在网上备案，谁也赖不掉。',consumerBenefit:'白纸黑字有法律撑腰，谁也不能反悔'},
+{id:'TRX-005',domain:'trade',name:'资金监管',alias:'第三方资金托管',def:'交易资金由银行或指定机构托管，按约定条件释放，保障买卖双方资金安全。',source:'住建部《关于加强房地产中介管理促进行业健康发展的意见》',srcType:'部门规章',attrs:'监管协议+资金存入+条件释放+利息归属',scene:'交易资金安全保障/风险防控',posSpeech:'钱不经过经纪人手，银行托管到过户完成',negSpeech:'不监管资金，等于把积蓄交给陌生人',consumerQ:'我买房的钱安不安全？会不会被中介卷走？',simpleAnswer:'资金监管就是你的购房款先存银行保管，过户完成了才放给卖家，中介和卖家都碰不到你的钱。',consumerBenefit:'钱不到手不过户，过户不完成钱不丢'},
+            {id:'TRX-006',domain:'trade',name:'递件',alias:'递件受理、送件、产权递件',def:'指买卖双方将过户材料提交不动产登记机构，审核后出具受理凭证的业务环节。',source:'- 《不动产登记暂行条例》第十五条、第十七条',srcType:'部门规章',attrs:'材料清单：身份证明、产权证、合同、完税凭证、监管协议、贷款合同+受理凭证：不动产登记受理凭证，载明办结时间+补正：材料不齐一次性告知+撤回：受理后登簿前双方可申请撤回',scene:'- 客户问\"递件是不是就等于过户成功了\"时，需要澄清审核和登簿的区别 - 准备材料时客户不清楚要带什么，经纪人需核对清单时 - 递件后客户着急问\"怎么还没出证\"时  正反向话术： - 正向：\"材料已经递进去了，窗口给了受理凭证，上面有预计办结时间，咱们等着领证就行。\" - 反向：\"别说\'递件了今天就能拿证\'——受理只是开始，审核要时间，期间还可能要求补材料。\"',posSpeech:'',negSpeech:'',consumerQ:'递件了是不是房子就过户成功了？',simpleAnswer:'递件只是把材料交上去让窗口审核，审核通过了才算过户，中间还可能要补材料。',consumerBenefit:'知道走到哪一步了，不用干着急'},
+            {id:'TRX-007',domain:'trade',name:'房源维护',alias:'房源管理、盘源维护',def:'指卖方经纪人对受托房源进行信息更新、实地维护、业主关系维护等持续性服务工作总称。',source:'- 《房地产经纪管理办法》第二十二条 - 贝壳ACN维护责任规则',srcType:'部门规章',attrs:'信息维护：价格、状态、钥匙保管更新+实地维护：户型、装修、设施定期核实+业主关系：反馈行情、带看、市场动态+实勘更新：图片、视频、VR更新+维护周期：建议≤30天，超期影响曝光',scene:'- 录入新房源时，需对房屋信息进行实地核实和标准化维护时 - 业主咨询\"你们怎么帮我卖房子\"，经纪人展示维护动作时 - 客户质疑房源信息真实性，需要维护方承担责任时  正反向话术： - 正向：\"我每周会跟业主碰一次盘，更新带看反馈和市场行情，图片每月核实一次，保证展示跟实际一致。\" - 反向：\"别说\'维护就是挂网上等着\'——维护包括定期实勘、信息更新、业主沟通，敷衍了事平台会扣信用分，信息失实要担责。\"  ---',posSpeech:'',negSpeech:'',consumerQ:'我挂的房子在网上信息准不准？谁在管？',simpleAnswer:'房源维护就是卖房经纪人定期去房子里核实信息、拍新照片、跟业主同步行情，保证网上看到的跟实际一样。',consumerBenefit:'挂上去的信息是真的，看房的人不会白跑'},
+            {id:'TRX-008',domain:'trade',name:'ACN（Agent Cooperation Network）',alias:'经纪人合作网络、贝壳ACN',def:'将交易全流程拆分为多角色，按贡献分配佣金的合作机制。',source:'- 《房地产经纪管理办法》第十九条 - 贝壳ACN2.0规则',srcType:'部门规章',attrs:'房源方：录入、维护、实勘+客源方：客源开发、带看、成交+分佣：房源方30%+40%、客源方60%+70%+信用：红/黄/黑线管理+原则：房源唯一、业绩统分、禁跨区',scene:'- 新人入职不了解分佣机制，需要解释合作网络运作时 - 经纪人之间因带看归属产生争议，需要明确角色分工时 - 客户问\"为什么买这套房你们店的人都在跟进\"，解释多人服务时  正反向话术： - 正向：\"这套房有录入方、维护方、实勘方，您是客源方，各方按贡献分佣，保证每环节都有人负责。\" - 反向：\"别说\'ACN就是大家抢客户\'——房源归属是唯一的，谁录入归谁，其他人是配合角色，按规则分佣。\"',posSpeech:'',negSpeech:'',consumerQ:'为什么一套房有好几个经纪人在忙活？',simpleAnswer:'ACN合作网络就像一个团队打配合：有人负责找房源、有人负责维护、有人负责带客户看房，各干各的活各拿各的钱。',consumerBenefit:'每个环节都有专人负责，不用担心没人管你'},
+            {id:'TRX-009',domain:'trade',name:'单边代理',alias:'单方代理、独立代理',def:'经纪人仅代表买方或卖方一方利益，为委托人争取最大利益的代理模式。',source:'- 《房地产经纪管理办法》第三条 - 深圳中介协会单边代理指引',srcType:'部门规章',attrs:'立场：只对委托方负责+目标：卖方求高价快成交；买方求低价好房源+权责：较居间更清晰+背景：深圳2023年率先推行',scene:'- 客户问\"你是代表我还是代表业主\"，需要明确经纪人立场时 - 推行单边代理的城市，经纪人需要向客户解释服务模式变化时 - 经纪人被质疑\"偏心另一方\"，需要说明职业操守时  正反向话术： - 正向：\"我是您的专属经纪人，只帮您争取最大利益，您放心，我看房、谈价都会站在您的角度。\" - 反向：\"别说\'我帮双方说话/我尽量公平\'——单边代理只代表一方，说帮双方是居间思维，反而让客户不信任。\"',posSpeech:'',negSpeech:'',consumerQ:'经纪人到底站谁那边？帮我还是帮卖家？',simpleAnswer:'单边代理就是经纪人只代表你这一方，帮你砍价、帮你挑毛病，不会两边讨好。',consumerBenefit:'有人一心一意替你说话，不会被对方牵着走'},
+            {id:'TRX-010',domain:'trade',name:'独家委托',alias:'独家代理、独家房源',def:'卖方（买方）仅委托一家经纪机构在期限内代理交易的委托模式。',source:'- 《房地产经纪执业规则》 - 《民法典》第九百三十三条（任意解除权）',srcType:'部门规章',attrs:'形式：书面协议，期限、底价、服务内容+期限：3+6个月为主+违约：中途解约或自行成交可能付违约金+区别：独家委托=仅一家；独家代理=仅代表一方',scene:'- 业主问\"能不能同时挂几家中介\"，需要解释独家委托时 - 独家委托期内业主想解约，需要说明法律后果时 - 客户问\"独家是不是意味着只能买这套\"，需要澄清误解时  正反向话术： - 正向：\"签独家的话我们会把精力更集中在这套房上，推广资源倾斜，但您仍可自主选择是否成交。\" - 反向：\"别说\'签独家你就只能卖给我\'——独家委托是排他协议，不影响您最终决策权，不想卖可以协商解约。\"',posSpeech:'',negSpeech:'',consumerQ:'独家委托是什么意思，是不是只能找你一家？',simpleAnswer:'独家委托就是你只让一家中介帮你卖房，他们会集中资源推你的房，但你不满意可以解约，房子还是你的。',consumerBenefit:'中介更上心推你的房，不用被多家中介互相压价'},
+            {id:'TRX-011',domain:'trade',name:'产权调查',alias:'产调、房屋核验、权属调查',def:'查询不动产登记信息，核实权属、抵押、查封、限制交易等关键产权信息的服务动作。',source:'- 《不动产登记暂行条例》第二十七条 - 《不动产登记资料查询暂行办法》第四条 - 《房地产经纪管理办法》第二十二条',srcType:'部门规章',attrs:'查询主体：权利人、利害关系人+查询内容：产权人、面积、用途、抵押、查封、异议、预告登记+效力：可依法查询复制+实操：经纪协助买方核验',scene:'- 签约前客户问\"这房子有没有问题\"，需要核实产权状态时 - 发现产权人去世、离异分割等特殊情况，需要确权时 - 买方全款购房，担心抵押查封风险时  正反向话术： - 正向：\"我帮您拉一份产调，看看产权人、抵押、查封情况，正常的话会显示\'无限制\'，您心里有底。\" - 反向：\"别说\'查了没问题是干净的房子\'——产调查不到居住权、租赁备案等隐性权利，客户入住可能踩坑。\"  ---',posSpeech:'',negSpeech:'',consumerQ:'买之前能不能查一下这房子的底细？',simpleAnswer:'产权调查就是帮你查这套房是谁的、有没有抵押、有没有被法院封、有没有别人惦记着，查清楚再掏钱。',consumerBenefit:'掏钱之前知道底细，不怕踩坑'},
+            {id:'TRX-012',domain:'trade',name:'抵押查封',alias:'查封、抵押状态、限制交易',def:'房屋存在抵押权或被司法/行政机关查封，导致处分受限的权利限制状态。',source:'- 《民法典》第三百九十四条起 - 《不动产登记暂行条例实施细则》第八十七条起',srcType:'部门规章',attrs:'抵押：债务担保、不转移占有+查封：司法限制处分+效果：未解前不能过户+情形：贷款未清、涉诉、债务纠纷',scene:'- 发现房屋有抵押登记，客户问\"能不能买\"时 - 业主欠债被查封，客户担心付款后过不了户时 - 贷款未还清需要交易，需要解释解押流程时  正反向话术： - 正向：\"房子有抵押正常，关键是解押方案——可以帮您用首付还、也可以走带押过户，钱进监管账户安全。\" - 反向：\"别说\'查封没事，等解封就行\'——查封期间无法过户，付了钱可能房财两空，必须解封才能交易。\"',posSpeech:'',negSpeech:'',consumerQ:'房子有抵押或被查封了还能买吗？',simpleAnswer:'有抵押的房子很常见，贷款没还清就是抵押状态，关键是先解押再过户；被查封的不能过户，千万别碰。',consumerBenefit:'分清哪种能买哪种不能买，不花冤枉钱'},
+            {id:'TRX-013',domain:'trade',name:'不动产权证',alias:'房产证、不动产证、大红本',def:'不动产登记机构核发、证明权利人享有不动产权利的法定凭证。',source:'- 《不动产登记暂行条例》第二十条、第五条',srcType:'部门规章',attrs:'证书：产权证（权利人）、登记证明（他项）+内容：权利人、坐落、面积、用途、权利类型+效力：登簿生效+时限：受理后30个工作日',scene:'- 过户完成后客户问\"什么时候能拿到证\"，需要说明办理周期时 - 业主无法提供原件，客户担心产权问题时 - 客户办理落户、抵押贷款，需要出示不动产权证时  正反向话术： - 正向：\"递件后一般5-7个工作日出证，现在都是电子证，跟纸质同等效力，窗口也能打印。\" - 反向：\"别说\'证没出来不算你的房子\'——产权以登簿为准，证只是凭证，登簿后房子就是你的，证早晚能拿。\"',posSpeech:'',negSpeech:'',consumerQ:'房产证是什么样的？什么时候能拿到？',simpleAnswer:'不动产权证就是证明这房子是你的那个红本本，过户后一般5到7个工作日能拿到，现在还有电子版同样有效。',consumerBenefit:'拿到证房子才是你的，等几天心里踏实'},
+            {id:'TRX-014',domain:'trade',name:'交易不成退佣',alias:'交易保障、佣金退还、兜底承诺',def:'签约后因非消费者原因未完成交易，平台承诺退还佣金的服务保障。',source:'- 《房地产经纪管理办法》第十九条 - 贝壳\"交易不成，佣金无理由退\"',srcType:'部门规章',attrs:'适用：非买方违约解约+范围：退佣金，不退定金+免责：买方自身原因+兑付：贝壳5个工作日内',scene:'- 签约后因政策变化/贷款拒批等非客户原因交易终止，需要申请退佣时 - 客户担心\"万一买不成钱打水漂\"，需要介绍服务保障时 - 经纪人需要用服务承诺建立客户信任时  正反向话术： - 正向：\"您放心，签了贝壳的服务协议，因非您原因交易不成，佣金5个工作日内无理由退给您。\" - 反向：\"别说\'退佣要看情况\'或\'不一定能退\'——平台有明确承诺，说法模糊会让客户觉得你在敷衍，失去信任。\"',posSpeech:'',negSpeech:'',consumerQ:'万一买了最后没成交，中介费能退吗？',simpleAnswer:'交易不成退佣就是：不是你的原因导致买不成，佣金原路退回，5个工作日到账。',consumerBenefit:'买不成不亏钱，敢放心出手'},
+            {id:'TRX-015',domain:'trade',name:'漏水披露补偿',alias:'房屋漏水保障、渗水赔付',def:'经纪人未尽披露义务导致房屋漏水，平台承诺补偿损失的保障机制。',source:'- 《民法典》第五百条、第九百六十二条 - 贝壳漏水披露补偿试点',srcType:'部门规章',attrs:'范围：厨卫/阳台/外墙漏水+义务：签约前问询、看房检查+补偿：维修费、延误入住、装修/家具、租金损失+触发：交房后发现、买方不知情',scene:'- 雨天带看，客户关注墙角/窗框是否有渗水迹象时 - 签约前客户问\"这房子有没有漏过水\"，需要如实披露时 - 交房后发现漏水，客户投诉需要启动补偿流程时  正反向话术： - 正向：\"带看的时候我专门检查了厨卫和阳台墙角，这几个地方目前干燥无水渍，您放心。\" - 反向：\"别说\'没看到漏就是没漏\'或\'以前的事谁知道\'——经纪人有过问义务，客户入住才发现漏水，平台介入你可能担责。\"',posSpeech:'',negSpeech:'',consumerQ:'买完入住发现漏水怎么办？',simpleAnswer:'漏水披露补偿就是：经纪人带你看房时必须检查有没有漏过水，入住后才发现漏水且之前没告诉你，平台赔你损失。',consumerBenefit:'漏了有人兜底，不用自己掏钱修别人的问题'},
+            {id:'TRX-016',domain:'trade',name:'房价评估',alias:'房屋估价、房产评估、市场价值评估',def:'专业机构或系统基于市场数据测算房屋价值的行为。',source:'- 《房地产估价规范》GB/T 50291-2015',srcType:'国家标准',attrs:'方法：比较法、收益法、成本法+用途：贷款审批、定价参考、计税+主体：银行评估机构、平台估价系统+时效：3+6个月',scene:'- 客户贷款时银行要求评估报告，需要解释评估流程时 - 业主挂盘价与市场价差距大，客户问\"这价格靠谱吗\"时 - 客户询问\"评估价能不能做低一点省税\"，需要严正拒绝时  正反向话术： - 正向：\"评估价是银行参考的市场价，最终以银行认定为准，成交价是实际交易价，两者会有差异。\" - 反向：\"别说\'可以帮你把评估价做低点省税\'——高评套贷是违规骗贷，情节严重要坐牢，别碰这条红线。\"',posSpeech:'',negSpeech:'',consumerQ:'这房子到底值多少钱？卖家报价靠谱吗？',simpleAnswer:'房价评估就是用专业方法算出这套房的市场价，银行贷款也认这个价，不是卖家想卖多少就多少。',consumerBenefit:'心里有杆秤，不被人漫天要价'},
+            {id:'TRX-017',domain:'trade',name:'限购政策查询',alias:'购房资格查询、限购查询',def:'查询城市对户籍、社保、套数、人才、离异等群体的购房限制政策。',source:'- 国办发〔2013〕17号 - 住建部2024\"四个取消\"',srcType:'部门规章',attrs:'主体：地方政府+维度：户籍、社保/个税、套数、人才、离异+渠道：住建官网、政务平台、经纪系统+变化：动态调整',scene:'- 客户首次咨询购房资格，需要核查是否具备购买条件时 - 外地客户/人才购房，需要确认是否有额外名额时 - 客户离婚后再购房，需要核实离婚年限限制时  正反向话术： - 正向：\"您的情况我帮您核一下——户籍这边没限制，社保满2年有名额，我查完给您个准信。\" - 反向：\"别说\'你应该有资格\'或\'差不多能买\'——限购政策差一天都不行，没确认清楚客户买了也过不了户，纠纷就大了。\"  ---',posSpeech:'',negSpeech:'',consumerQ:'我到底有没有资格买房？',simpleAnswer:'限购政策查询就是帮你查你所在城市的买房门槛：户籍、社保年限、已有几套房，一条条对清楚再出手。',consumerBenefit:'先确认能不能买，不白忙活'},
+            {id:'TRX-018',domain:'trade',name:'预售许可证',alias:'预售证、商品房预售许可',def:'开发商向主管部门申请，获准预售商品房的行政许可凭证。',source:'- 《城市商品房预售管理办法》第六条、第五条',srcType:'部门规章',attrs:'条件：缴齐土地出让金、规划/施工许可证、投资≥25%+公示：无证不得预售+处罚：没收违法所得、最高罚预付款1%+时限：受理10日内决定',scene:'- 客户问\"这新房能不能买\"，需要核验开发商是否具备销售资质时 - 客户被要求先付定金，经纪人需要确认是否有预售证时 - 客户担心新房烂尾，需要解释证照与监管账户关系时  正反向话术： - 正向：\"我帮您查一下，这个楼盘证照齐全——有预售证才能收定金，没有的话钱直接打给监管账户才安全。\" - 反向：\"别说\'没证也安全，我们帮你盯着\'——无证预售是违法，收了钱不受保护，客户可能钱房两空。\"',posSpeech:'',negSpeech:'',consumerQ:'这新房能买吗？开发商手续齐不齐？',simpleAnswer:'预售许可证就是政府发的‘允许卖’的批文，有这个证才能收定金，没有证的楼盘千万别碰。',consumerBenefit:'看到证才掏钱，不怕买到烂尾楼'},
+            {id:'TRX-019',domain:'trade',name:'认购vs签约',alias:'认购书与正式合同、预约与本约',def:'认购（预约）约定将来签约；签约（本约）确立买卖权利义务。',source:'- 《民法典》第四百九十五条、第五百八十七条 - 商品房买卖司法解释第五条',srcType:'部门规章',attrs:'法律：预约合同vs买卖合同+定金：认购定金抵房款、违约适用定金罚则+认购：房号、面积、总价、定金、期限+签约：产权、付款、交付、违约等完整条款',scene:'- 客户看中新房但还在犹豫，销售催促交认购定金时 - 客户交了认购金后反悔，想退定金时 - 客户问\"认购和签合同有什么区别\"，需要解释法律效力时  正反向话术： - 正向：\"认购书是预约，确定您有购买意向，定金会抵房款，签正式合同才算成交，您想清楚再认购。\" - 反向：\"别说\'认购就是走个流程\'——认购书有法律效力，定金受定金罚则保护，签了不想买可能一分都退不回来。\"',posSpeech:'',negSpeech:'',consumerQ:'认购和签合同是一回事吗？交了认购金能退吗？',simpleAnswer:'认购是‘我打算买’先交个定金占位置，签约才是正式买；认购金如果自己反悔一般退不了，想清楚再交。',consumerBenefit:'搞清两步的区别，不被催着稀里糊涂交钱'},
+            {id:'TRX-020',domain:'trade',name:'销控',alias:'销售控制、捂盘、房源控制',def:'开发商对房源价格、推售节奏、展示统一管理的行为。',source:'- 建房〔2010〕53号、建房〔2018〕58号',srcType:'部门规章',attrs:'合法：自主定价、分期推售、一房一价+违规：捂盘惜售、制造抢购、哄抬房价+系统：可售/已售/预留状态管理+红线：严禁捂盘、哄抬、制造假象',scene:'- 客户问\"为什么有些楼层没有卖\"，怀疑捂盘时 - 开发商饥饿营销、制造抢购氛围，需要向客户解释时 - 客户被逼下定，需要提醒合规销售行为时  正反向话术： - 正向：\"取证后10天内要公开全部房源，您看中的楼层没卖可能真有人定了，您可以要求公开可售房源清单。\" - 反向：\"别说\'这套没有了/被人定了\'——捂盘惜售是违规，被查实开发商要被处罚，别帮开发商制造虚假紧张。\"',posSpeech:'',negSpeech:'',consumerQ:'楼盘说这层卖完了是不是真的？',simpleAnswer:'销控是开发商管房源的方式，有些楼层是真卖了，有些是故意藏着不卖制造紧张感，你可以要求看可售房源清单。',consumerBenefit:'不被饥饿营销忽悠，想买的房不会莫名其妙没了'},
+// 域2·房屋租赁（展示核心5条）
+{id:'RNT-001',domain:'rental',name:'长租公寓',alias:'长租住宅、租赁住房',def:'由专业机构运营，提供标准化、规范化服务的长期租赁住房产品。',source:'《住房租赁条例》第2条',srcType:'行政法规',attrs:'产权性质+服务内容+运营主体+合同期限',scene:'企业员工宿舍租赁/城市青年租房',posSpeech:'专业运营、标准服务，租得放心',negSpeech:'不是普通出租房，是专业长租公寓',consumerQ:'长租公寓跟普通租房有什么不一样？',simpleAnswer:'长租公寓是专门的公司统一装修、统一管理、统一出租的房子，住进去不用跟房东打交道，有事找管家。',consumerBenefit:'有人管事有人修东西，不用看房东脸色'},
+{id:'RNT-002',domain:'rental',name:'房源管理',alias:'房源信息管理、房源维护',def:'对可租赁房屋的信息进行采集、更新、展示和维护的全过程。',source:'《房地产经纪管理办法》第15条',srcType:'部门规章',attrs:'数据维度+操作主体+更新机制+展示规范',scene:'平台房源更新/经纪人房源录入',posSpeech:'信息准、更新快，找房效率高',negSpeech:'信息过期就是在浪费客户时间',consumerQ:'网上租房信息靠不靠谱？',simpleAnswer:'房源管理就是有人负责把房子信息采回来、核实准、更新快，保证你在网上看到的跟实际一样。',consumerBenefit:'看到啥就是啥，不浪费时间跑冤枉路'},
+{id:'RNT-003',domain:'rental',name:'租金贷',alias:'租金贷款、分期付租',def:'金融机构向租客提供的用于支付租金的消费贷款产品。',source:'住建部等6部门《关于整顿规范住房租赁市场秩序的意见》',srcType:'部门规章',attrs:'贷款主体+利率+期限+风险提示',scene:'租客资金安排/租赁金融风险提示',posSpeech:'租金贷不是必需品，量力而行',negSpeech:'诱导租客贷款付租，是行业毒瘤',consumerQ:'租房让我贷款付租金，该不该办？',simpleAnswer:'租金贷就是借钱交房租，表面月供少但总钱更多，万一中间退租贷款还得还，能不贷就不贷。',consumerBenefit:'不被套路背上贷款，租个房不背债'},
+{id:'RNT-004',domain:'rental',name:'押金退还',alias:'退押金、押金纠纷',def:'租赁关系结束后，房东按约定退还租客预交的押金。',source:'《民法典》第714条；《住房租赁条例》第24条',srcType:'法律+行政法规',attrs:'押金标准+扣除规则+退还时限+争议处理',scene:'退租结算/押金纠纷调解',posSpeech:'合同写清扣什么、退多少，清清楚楚',negSpeech:'押金一交就要不回来，这叫霸王条款',consumerQ:'退租时押金能不能全退回来？',simpleAnswer:'押金退还是有规则的：合同里写了什么能扣什么不能扣，到期按约定退，不是房东说了算。',consumerBenefit:'该退的钱退得回来，不被随便扣'},
+{id:'RNT-005',domain:'rental',name:'租客服务',alias:'租后服务、租客权益',def:'租赁期间为租客提供的居住保障和增值服务。',source:'《住房租赁条例》第3章',srcType:'行政法规',attrs:'维修响应+投诉渠道+社区活动+权益告知',scene:'租客体验管理/服务标准制定',posSpeech:'租的不是房子，是居住服务',negSpeech:'收了租金就消失，那叫房东不叫服务商',consumerQ:'租了房子以后出了事找谁？',simpleAnswer:'租客服务就是住进去以后有人管你：东西坏了有人修、有投诉有人听、有问题有渠道解决。',consumerBenefit:'住着有人管，不用自己扛'},
+            {id:'RNT-006',domain:'rental',name:'换租服务',alias:'转租服务；置换服务',def:'为租客提供将现有租赁合同转让给新租户的服务。',source:'《住房租赁条例》第21条',srcType:'部门规章',attrs:'流程要求：需经房东同意+费用结构：可能涉及中介费或违约金',scene:'租客因工作变动需换租；房东接受换租请求',posSpeech:'我们提供便捷的换租服务，帮助您解决租赁变更需求。',negSpeech:'别说不能换租，我们有专业的换租服务支持。',consumerQ:'租期没到但我要搬走怎么办？',simpleAnswer:'换租服务就是帮你把剩下的租期转给新租客，但要房东同意，可能要付一点手续费。',consumerBenefit:'不用硬撑到租期结束，有出路'},
+            {id:'RNT-007',domain:'rental',name:'租约',alias:'租赁合同；租赁协议',def:'租户与房东之间就房屋租赁达成的书面协议。',source:'《中华人民共和国民法典》第七百零三条',srcType:'部门规章',attrs:'期限：明确起止日期+条款：包含权利义务等内容',scene:'签订租赁合同；租约到期续签',posSpeech:'我们提供正规的租约，保障双方权益。',negSpeech:'别说没有合同，我们有正式的租赁协议。',consumerQ:'租房合同里该写些什么？',simpleAnswer:'租约就是你和房东的书面约定：租多久、多少钱、谁修东西、提前走怎么办，都写清楚才签。',consumerBenefit:'口说无凭写下来，出了事有据可查'},
+            {id:'RNT-008',domain:'rental',name:'押金',alias:'保证金；预付款',def:'租户在签订租赁合同时向房东支付的用于保证履行合同的款项。',source:'《住房租赁条例》第19条',srcType:'部门规章',attrs:'金额：通常为一个月租金+退还条件：需符合合同规定',scene:'租户支付押金；租约结束退还押金',posSpeech:'我们提供合理的押金政策，保障您的资金安全。',negSpeech:'别说不收押金，我们有明确的押金管理制度。',consumerQ:'租房押金一般交多少？怎么保证能退？',simpleAnswer:'押金通常是一个月房租，退租时只要没欠租没搞坏东西就该全退，合同里写清楚就行。',consumerBenefit:'交出去的钱有数，该退的退得明白'},
+            {id:'RNT-009',domain:'rental',name:'房屋状态',alias:'房屋状况；房源状态',def:'描述房屋当前的可用性、装修情况及维护状态的综合信息。',source:'《房地产经纪管理办法》第14条',srcType:'部门规章',attrs:'可用性：是否可立即入住+维护状态：是否需要维修',scene:'查看房源信息；房东更新房屋状态',posSpeech:'我们提供详细的房屋状态信息，让您了解真实情况。',negSpeech:'别说不提供房屋状态，我们有完整的房源信息。',consumerQ:'房子现在什么状况？能直接搬进去吗？',simpleAnswer:'房屋状态告诉你这房子能不能马上住、装修怎么样、有没有需要修的地方，看清楚再决定。',consumerBenefit:'搬进去不踩坑，心里有数'},
+            {id:'RNT-010',domain:'rental',name:'租赁备案 | 房屋租赁登记',alias:'房屋租赁登记备案、租赁合同备案',def:'指房屋出租人与承租人依法向住房保障部门或相关机构办理的房屋租赁合同备案手续，用于确认租赁关系合法有效',source:'《城市房屋租赁管理办法》第十四条、《民法典》第七百零三条',srcType:'部门规章',attrs:'1. 主体：出租人、承租人 2. 对象：租赁合同 3. 程序：提交材料、审核、备案 4. 效力：法律效力、政策依据 5. 时间：签订合同后30日内',scene:'适用于房屋租赁合同签订后，用于保障双方权益、办理居住证、申请公积金等场景',posSpeech:'',negSpeech:'',consumerQ:'租房要不要去政府备案？有什么用？',simpleAnswer:'租赁备案就是去房管部门登个记，让租房关系有官方记录，办居住证、提公积金、小孩上学都用到。',consumerBenefit:'办了备案有凭证，享政策不卡壳'},
+            {id:'RNT-011',domain:'rental',name:'续租 | 延续租赁',alias:'续约、租赁续期',def:'指租赁合同期满后，承租人继续承租该房屋的行为，通常需重新签订租赁合同或书面确认',source:'《民法典》第七百三十四条、《城市房屋租赁管理办法》第二十条',srcType:'部门规章',attrs:'1. 主体：承租人、出租人 2. 对象：原租赁合同 3. 行为：续约、重新签约 4. 条件：租金、条款协商一致 5. 法律效力：新合同生效后原合同终止',scene:'适用于租赁合同到期后，承租人希望继续使用房屋的情况',posSpeech:'',negSpeech:'',consumerQ:'租期到了想继续住怎么办？',simpleAnswer:'续租就是合同到期后跟房东重新签或者确认继续住，租金可能要重新谈，提前说别等最后一天。',consumerBenefit:'不用到期搬走，续上接着住'},
+            {id:'RNT-012',domain:'rental',name:'退租交接 | 房屋交还',alias:'房屋交还、退房手续',def:'指承租人在租赁合同终止时，将房屋按约定状态交还给出租人的过程，包括清点物品、结清费用、检查房屋状况等',source:'《民法典》第五百五十七条、《城市房屋租赁管理办法》第二十一条',srcType:'部门规章',attrs:'1. 主体：承租人、出租人 2. 对象：房屋及附属设施 3. 行为：交房、验收、结算 4. 内容：水电燃气结清、物品归还、损坏赔偿 5. 法律效力：交接确认后视为合同履行完毕',scene:'适用于租赁合同终止时，确保双方权益不受损的交接流程',posSpeech:'',negSpeech:'',consumerQ:'退租时要做什么？怎么交接才不吃亏？',simpleAnswer:'退租交接就是搬走时把房子检查一遍、东西点清、水电燃气结清、该修的修好，双方确认签字才算完。',consumerBenefit:'交接清楚不留尾巴，押金不被扣'},
+            {id:'RNT-013',domain:'rental',name:'中介服务费 | 房产中介佣金',alias:'房产中介佣金、中介费',def:'指房屋中介机构为促成租赁交易而收取的服务费用，通常由承租人或出租人承担',source:'《房地产经纪管理办法》第十八条、《民法典》第九百六十条',srcType:'部门规章',attrs:'1. 主体：中介机构、承租人/出租人 2. 对象：租赁交易 3. 收费方式：一次性支付、分期支付 4. 标准：按成交金额比例收取 5. 合规性：需明码标价、开具发票',scene:'适用于通过中介机构进行房屋租赁时的费用支付环节',posSpeech:'',negSpeech:'',consumerQ:'租房为什么要交中介费？交多少合理？',simpleAnswer:'中介服务费是帮你找房、带看、签合同的服务报酬，一般不超过一个月租金，必须明码标价开发票。',consumerBenefit:'花明白的钱，享清楚的服务'},
+            {id:'RNT-014',domain:'rental',name:'租客权益 | 承租人权利',alias:'承租人权利',def:'指承租人在租赁过程中依法享有的权利，包括但不限于房屋使用权、隐私权、维修请求权、押金返还权等',source:'《民法典》第七百零三条、第七百一十二条、第七百一十三条',srcType:'部门规章',attrs:'1. 主体：承租人 2. 对象：租赁合同、房屋 3. 权利内容：使用、维护、安全、信息知情 4. 法律依据：《民法典》《消费者权益保护法》 5. 实现方式：合同约定、法律维权',scene:'适用于租客在租赁过程中维护自身合法权益的场景',posSpeech:'',negSpeech:'',consumerQ:'租客有哪些权利是房东不能碰的？',simpleAnswer:'租客权益包括：住了就不能随便赶你走、东西坏了有权要求修、押金到期该退、隐私不能侵犯。',consumerBenefit:'知道自己的权利，不怕被欺负'},
+            {id:'RNT-015',domain:'rental',name:'租金与支付',alias:'租金收取、房租缴纳',def:'按合同约定支付租金的行为，依据《民法典》第七百二十一条，租金支付期限由双方约定，无约定或约定不明的，租赁期限不满一年的应在届满时支付',source:'《民法典》第七百二十一条；《住房租赁条例》第十七条',srcType:'部门规章',attrs:'支付主体：承租人+支付对象：出租人或指定方+支付形式：约定的货币形式+支付周期：月付/季付/半年付/年付+逾期处理：催告后可解除合同',scene:'租户按时缴纳租金；房东催缴逾期租金；合同约定支付方式',posSpeech:'租金按时付，租期有保障',negSpeech:'拖欠租金会触发解约，最后还得补齐',consumerQ:'房租怎么交？拖几天会怎样？',simpleAnswer:'租金按合同约定的时间和方式交，拖太久房东可以解除合同让你搬走，最好设个自动转账别忘。',consumerBenefit:'按时交租住得稳，不给自己找麻烦'},
+            {id:'RNT-016',domain:'rental',name:'房东义务 | 出租人责任',alias:'出租人责任、房东责任',def:'指出租人在租赁关系中依法应履行的义务，包括保证房屋权属清晰、提供符合居住条件的房屋、承担房屋修缮责任、配合办理相关手续等，依据《民法典》第七百一十条、第七百一十一条、第七百一十三条',source:'《民法典》第七百一十条、第七百一十一条、第七百一十三条',srcType:'部门规章',attrs:'1. 责任主体：房东 2. 责任内容：房屋状态、维修、配合 3. 责任范围：法定 4. 责任后果：违约赔偿',scene:'房屋交付、维修申请、投诉处理等场景',posSpeech:'',negSpeech:'',consumerQ:'房东该做什么？房子坏了该谁修？',simpleAnswer:'房东必须保证房子能住人，水管电路这些大件坏了房东修，灯泡水龙头这些日常消耗你自己换。',consumerBenefit:'该房东管的不能推给你，住着不用自己掏大钱'},
+            {id:'RNT-017',domain:'rental',name:'转租 | 再租赁',alias:'再租赁、二次出租',def:'指承租人将承租的房屋部分或全部再次出租给第三方的行为，依据《民法典》第七百一十六条，转租须经出租人书面同意，否则视为违约',source:'《民法典》第七百一十六条',srcType:'部门规章',attrs:'1. 行为主体：承租人 2. 行为对象：第三方 3. 行为前提：出租人同意 4. 行为后果：违约责任',scene:'房屋使用、合同变更、违规处理等场景',posSpeech:'',negSpeech:'',consumerQ:'租房期间能不能把房子再转租给别人？',simpleAnswer:'转租必须房东书面同意，不然就是违约，房东可以让你走人还不退押金。',consumerBenefit:'想转租先打招呼，不走冤枉路'},
+            {id:'RNT-018',domain:'rental',name:'群租房',alias:'合租房；多人合租',def:'将一套住房分割成多个房间或区域，由多名租客分别居住，通常未符合国家或地方对居住空间和安全标准的要求。',source:'《城市房屋租赁管理办法》《关于加强群租房安全管理的通知》',srcType:'部门规章',attrs:'空间分割方式：违规隔断或改造+居住人数：超出正常居住密度+安全隐患：消防、用电、结构风险',scene:'租客寻找低价房源需辨别是否群租；政府整治违规群租行动中',posSpeech:'建议选择正规、合规的合租房源，保障居住安全。',negSpeech:'别选未经审批的群租房，法律风险和安全隐患都很大。',consumerQ:'群租房那么便宜，能住吗？',simpleAnswer:'群租房是把一套房隔成很多小间塞很多人，消防逃生都成问题，便宜但危险，出了事没保障。',consumerBenefit:'安全比便宜重要，别拿命省钱'},
+            {id:'RNT-019',domain:'rental',name:'廉租房·公租房',alias:'保障性住房；政府补贴住房',def:'由政府提供、面向低收入群体或特定人群的租赁住房，租金低于市场价，具有申请门槛和使用限制。',source:'《公共租赁住房管理办法》《保障性住房建设管理规定》',srcType:'部门规章',attrs:'申请条件：收入/户籍/社保等门槛+租金标准：市场价的30%-70%+产权归属：政府或指定机构',scene:'低收入家庭申请住房保障；新就业大学生、外来务工人员租房',posSpeech:'符合条件可申请公租房，享受政府住房保障。',negSpeech:'不符合条件别硬占，被清退还得赔钱。',consumerQ:'收入不高能申请政府补贴的房子吗？',simpleAnswer:'廉租房和公租房是政府给低收入群体的保障房，租金远低于市场价，但得符合条件才能申请。',consumerBenefit:'符合条件就能住上便宜又安心的房'},
+            {id:'RNT-020',domain:'rental',name:'房屋维修责任',alias:'修缮义务；维护责任',def:'在租赁关系中，根据合同约定或法律规定，由房东或租客承担房屋设施设备的维修和维护责任。',source:'《中华人民共和国民法典》第七百一十二条、七百一十三条',srcType:'部门规章',attrs:'责任主体：房东承担主体结构/管道电路，租客承担日常使用损耗+费用承担：合同约定为准+时效要求：影响居住的需及时维修',scene:'水电故障、家具损坏、墙面渗漏等维修情况',posSpeech:'签合同前把维修责任写清楚，避免扯皮。',negSpeech:'房东不修？租客可依法维权，别忍着。',consumerQ:'租的房子东西坏了谁出钱修？',simpleAnswer:'水管电路墙面这些主体结构房东修，灯泡水龙头你自己弄，合同里最好提前写清楚谁管什么。',consumerBenefit:'谁修谁出钱说清楚，不用跟房东扯皮'},
+            {id:'RNT-021',domain:'rental',name:'租客违约',alias:'租户违约；承租人违约',def:'租客未按合同约定履行义务，如拖欠租金、提前退租、擅自转租等行为。',source:'《中华人民共和国民法典》第七百二十一条、七百二十五条',srcType:'部门规章',attrs:'违约类型：欠租/提前退租/擅自转租/违规使用+违约后果：违约金/赔偿/合同解除',scene:'租客拖欠租金催缴；租客擅自转租发现后处理',posSpeech:'按时履约，别影响信用记录和以后租房。',negSpeech:'租客违约要付违约金，严重的话还会被起诉。',consumerQ:'租客什么行为算违约？会怎样？',simpleAnswer:'拖欠房租、提前跑路、偷偷转租都算违约，要赔违约金，严重的房东可以赶人。',consumerBenefit:'知道底线在哪，不踩雷不亏钱'},
+            {id:'RNT-022',domain:'rental',name:'房东违约',alias:'业主违约；出租人违约',def:'房东未按合同约定履行义务，如擅自涨租、提前收回房屋、不履行维修责任等行为。',source:'《中华人民共和国民法典》第七百一十六条、七百一十八条',srcType:'部门规章',attrs:'违约类型：单方涨租/提前收房/不修不赔+违约后果：退还租金/赔偿损失/继续履行',scene:'房东单方面终止合同；房东恶意涨价逼走租客',posSpeech:'房东应诚信履约，维护租赁秩序。',negSpeech:'房东违约要赔钱，买卖不破租赁，卖房也得租客同意才能走。',consumerQ:'房东随便涨房租、提前赶我走怎么办？',simpleAnswer:'房东单方面涨价、提前收房都是违约，你可以拒绝、要求赔偿，买卖不破租赁，卖房也不能赶租客。',consumerBenefit:'合同没到期谁也赶不走你，有法律撑腰'},
+            {id:'RNT-023',domain:'rental',name:'租赁中介·经纪机构',alias:'中介公司；房产中介',def:'依法设立、从事房屋租赁信息发布、居间撮合、合同签订等服务的专业机构。',source:'《房地产经纪管理办法》《住房租赁管理条例》',srcType:'部门规章',attrs:'资质要求：需持房地产经纪备案证书+服务内容：信息发布/带看/签约/过户+收费标准：月租金的50%-100%',scene:'委托中介出租房源；通过中介租房签约',posSpeech:'选正规中介，交易安全有保障。',negSpeech:'警惕黑中介，虚假信息和乱收费的坑不少。',consumerQ:'怎么判断一个租房中介靠不靠谱？',simpleAnswer:'正规中介有备案证书、明码标价、开正式发票，黑中介啥都没有还可能骗钱，签约前先查资质。',consumerBenefit:'找对人办事，不被黑中介坑'},
+            {id:'RNT-024',domain:'rental',name:'整租·合租',alias:'整套出租；分租',def:'整租指整套房屋由一个租客独立使用；合租指多租客共同使用一套房屋的不同房间。',source:'《城市房屋租赁管理办法》《住房租赁市场规范指引》',srcType:'部门规章',attrs:'使用人数：整租1方/合租2方以上+隐私程度：整租高/合租低+价格差异：合租人均成本低30%-50%',scene:'单身人士选择整租或合租；合租需明确公共区域使用规则',posSpeech:'根据预算和需求选整租或合租，住得舒服最重要。',negSpeech:'别图便宜选非法群租房，安全隐患太大。',consumerQ:'整租和合租怎么选？',simpleAnswer:'整租一个人住整套自在但贵，合租分摊便宜但要跟人共用厨房卫生间，看你的预算和习惯。',consumerBenefit:'选适合自己钱包和生活方式的，不委屈自己'},
+            {id:'RNT-025',domain:'rental',name:'租金评估·定价',alias:'租金估值；租金定价',def:'根据市场供需、地段、房屋状况等因素，对房屋租金进行合理评估和定价的过程。',source:'《住房租赁市场发展指导意见》《房地产估价规范》',srcType:'部门规章',attrs:'评估方法：比较法/收益法/成本法+影响因素：地段/楼层/装修/配套/供需+定价策略：市场价/略低快速出租/略高等优质租客',scene:'房东定价参考；租客议价依据',posSpeech:'合理定价，快速出租，空置才是最大损失。',negSpeech:'定价太高没人看，太低自己亏，参考同小区成交价最靠谱。',consumerQ:'这房租多少钱合适？怎么知道有没有被坑？',simpleAnswer:'租金评估就是看看同小区、同类型房子别人租多少，给你一个参考价，太高没人租太低自己亏。',consumerBenefit:'有个市场价当参照，不被坑也不瞎要价'},
+            {id:'RNT-026',domain:'rental',name:'租赁纠纷',alias:'租房争议；租赁矛盾',def:'在房屋租赁过程中，因合同履行、租金支付、房屋使用等问题引发的争议或冲突。',source:'《中华人民共和国民法典》《人民调解法》《仲裁法》',srcType:'部门规章',attrs:'纠纷类型：租金/维修/违约/押金/转租+调解方式：协商/调解/仲裁/诉讼+法律途径：民事诉讼/仲裁',scene:'租金拖欠协商；房屋损坏赔偿争议',posSpeech:'协商优先，谈不拢走法律途径，别拖。',negSpeech:'纠纷不及时处理，损失只会越来越大。',consumerQ:'跟房东闹矛盾了怎么解决？',simpleAnswer:'租房纠纷先自己谈，谈不拢找社区调解，还不行就上法院，别拖着越拖越难。',consumerBenefit:'有理有据有渠道，不用忍气吞声'}
+// 域3·整装家居整体交付（15条）——消费者友好版
+,{id:'DEC-001',domain:'decor',name:'整装整体交付（一站式装修服务）',alias:'全案整装、一站式交付、拎包入住、全包装修',def:'就是你找一家公司，从设计、选材、施工到验收售后全部包办，不用你到处跑。核心是"效果图什么样，装完就是什么样"，预算说多少就多少，中途不加钱。',source:'《住宅全案整装服务标准》（中国房地产业协会，2026年1月实施）',srcType:'行业标准',attrs:'设计→报价→签约→施工→验收→售后全流程+效果一致性+预算即决算',scene:'上班族没时间盯装修/怕装修被坑想一站式解决/对装修不懂想省心',posSpeech:'您上班忙，我们全包，效果图就是实景图，预算即决算',negSpeech:'设计一套交付一套，那叫拼凑不叫整装',consumerQ:'装修能不能一次搞定不用我操心？',simpleAnswer:'整装整体交付就是从设计到施工到家具全包，你拎包入住，不用自己一样样找人干。',consumerBenefit:'一个电话全搞定，不用当包工头'}
+,{id:'DEC-002',domain:'decor',name:'交付标准与验收依据（装修合格的标准清单）',alias:'验收标准、交付规范、装修合格线、验收清单',def:'装修完怎么算合格？国家有标准清单，包括墙面平不平、水电通不通、环保达不达标等。这是你的维权依据，必须写进合同。',source:'《建筑装饰装修工程质量验收标准》GB 50210-2018',srcType:'国家标准',attrs:'合同附件清单+合格/不合格判定标准+签字确认',scene:'装修完不知道该怎么验收/装修公司说合格但你觉得有问题/需要维权依据',posSpeech:'验收标准写进合同附件，逐项对照，不达标不签字',negSpeech:'最怕合同里不写验收标准，装成什么样全凭装修公司一张嘴',consumerQ:'装修完了怎么知道合不合格？',simpleAnswer:'交付标准是一张验收清单，逐项对照检查，瓷砖空鼓、墙面不平、柜门歪斜都能查出来。',consumerBenefit:'有标准可对照，不达标就返工不糊弄'}
+,{id:'DEC-003',domain:'decor',name:'交付策划流程（开工前的准备清单）',alias:'整装策划、开工前准备、装修准备会',def:'签约后开工前，设计师、项目经理、施工队长要一起确认设计方案、材料清单、施工计划。这就像装修前的"作战会议"，准备越细，后面问题越少。',source:'《住宅全案整装服务标准》第4章',srcType:'行业标准',attrs:'设计确认+材料锁定+施工计划+各方签字',scene:'马上要开工了不知道要准备什么/担心开工后各种问题/想提前规避风险',posSpeech:'开工前我们三方一起确认，设计、材料、工期都定好再动工',negSpeech:'不策划直接开工，变更多、工期拖、预算超',consumerQ:'装修开工前要做哪些准备？',simpleAnswer:'交付策划就是开工前把要干啥、花多少钱、什么顺序都列清楚，按单子走不遗漏。',consumerBenefit:'提前心里有谱，开工不手忙脚乱'}
+,{id:'DEC-004',domain:'decor',name:'工程款构成与计价方式（装修钱花在哪儿）',alias:'整装报价、装修费用、装修预算明细',def:'装修总价由哪些部分组成？设计费、材料费（主材+辅材）、人工费、管理费、税金。正规公司会列明细清单，每项多少钱一清二楚。',source:'《住宅全案整装服务标准》第5章',srcType:'行业标准',attrs:'设计费+主材费+辅材费+人工费+管理费+税金=总价',scene:'拿到报价单看不懂/担心被乱收费/想对比不同公司报价',posSpeech:'每一项费用都列清楚，设计费多少、材料费多少、人工费多少，一目了然',negSpeech:'报价只有一个总数，材料什么牌子、人工多少钱都不写，那叫黑箱',consumerQ:'装修报价和最后花的钱能一样吗？',simpleAnswer:'透明报价就是预算即决算，说花多少就花多少，不中途加钱不加项。',consumerBenefit:'说多少钱就多少钱，不被加项加钱坑'}
+,{id:'DEC-005',domain:'decor',name:'预算控制与变更管理（管住装修不超标）',alias:'增项管理、预算超支、恶意增项',def:'装修最怕什么？开工后不断加钱！好的装修公司会签"预算即决算"，任何变更必须你签字同意，恶意增项还要双倍赔偿。',source:'《住宅全案整装服务标准》第5章；贝壳被窝"恶意增项双倍返还"',srcType:'行业标准',attrs:'预算锁定+变更签字+恶意增项双倍赔偿',scene:'装修中途被要求加钱/预算从10万变成15万/担心被恶意增项',posSpeech:'我们签预算即决算，任何增项必须您签字，恶意增项双倍赔',negSpeech:'开工后不停加钱，水电要加、瓷砖要升级，预算从10万变成15万',consumerQ:'效果图看着好看，装出来能一样吗？',simpleAnswer:'设计一致性就是效果图长什么样装出来就长什么样，不是看着美装完丑。',consumerBenefit:'所见即所得，不被效果图骗'}
+,{id:'DEC-006',domain:'decor',name:'支付方式与节点（按进度付款，干一步付一步）',alias:'分期付款、工程款节点、先干活后付钱',def:'别一次性付全款！正规装修是按进度付款：签合同付一部分，水电做完付一部分，泥木做完付一部分，最后验收合格付尾款。钱在手里，话语权就在手里。',source:'《住宅全案整装服务标准》第6章',srcType:'行业标准',attrs:'签合同→水电完工→泥木完工→油漆完工→竣工验收→质保金',scene:'装修公司要求一次性付全款/担心付了钱不好好干活/想知道什么时候该付多少钱',posSpeech:'按进度付款，水电做完您验收合格再付下一笔，钱跟进度走',negSpeech:'一次性付全款，后面出了问题你说了不算',consumerQ:'装修用的材料安全吗？品牌靠谱吗？',simpleAnswer:'主材选品就是用的板材、涂料、瓷砖都是说好的品牌和环保等级，不偷换不缩水。',consumerBenefit:'住进去不担心甲醛，用的材料认得牌子'}
+,{id:'DEC-007',domain:'decor',name:'环保标准与检测（装完能不能安全入住）',alias:'甲醛检测、室内空气质量、装修污染',def:'装修完能不能马上住？要看甲醛、苯等有害物质是否超标。国家标准规定甲醛≤0.08mg/m³，完工7天后检测达标才能入住，尤其是有孕妇、宝宝的家庭。',source:'《室内空气质量标准》GB/T 18883-2022',srcType:'国家标准',attrs:'甲醛≤0.08mg/m³+完工7天后检测+有孕妇宝宝更要测',scene:'装修完急着入住/家里有孕妇宝宝担心环保/想知道什么时候能安全入住',posSpeech:'完工7天后第三方检测，甲醛达标才交付，孕婴家庭放心住',negSpeech:'装完就催你入住，检测都不敢做，甲醛超标受害的是你自己',consumerQ:'装修施工有没有标准？会不会乱来？',simpleAnswer:'施工规范是干活的规矩：水电怎么走、墙怎么砌、防水刷几遍都有标准，不按标准干就是不合格。',consumerBenefit:'按标准施工，住着不漏不裂不操心'}
+,{id:'DEC-008',domain:'decor',name:'材料验收与问题处理（材料到场先验货）',alias:'主材验收、辅材确认、材料对单',def:'瓷砖、地板、涂料等材料送到工地，你必须现场核对品牌、型号、数量对不对。对不上合同的坚决不能施工，拍照留证。',source:'《定制家具安装服务规范》GB/T 42588-2023',srcType:'国家标准',attrs:'品牌型号核对+数量清点+拍照留证+不对就换',scene:'材料送到不知道对不对/担心被偷换材料/发现材料品牌和合同不一样',posSpeech:'材料到场您亲自验收，品牌型号对得上合同再施工，不对就换',negSpeech:'材料到了就装，等发现品牌不对已经贴墙上了',consumerQ:'装修完出了问题还管不管？',simpleAnswer:'售后保障就是装完后在一定期限内出了问题免费修，不用自己再掏钱。',consumerBenefit:'装完有人兜底，住着不心慌'}
+,{id:'DEC-009',domain:'decor',name:'施工交底规范（开工前各方碰头会）',alias:'技术交底、开工交底、装修动员会',def:'开工前，设计师、项目经理、施工队长要和你一起开会，确认设计方案、施工工艺、材料要求。这就像装修前的"对表"，确保大家理解一致。',source:'《建筑装饰装修工程质量验收标准》GB 50210-2018第3.1节',srcType:'国家标准',attrs:'设计意图+施工工艺+材料要求+验收标准+各方确认',scene:'担心设计师的想法工人理解不了/开工前想再确认一遍方案/各方沟通不到位',posSpeech:'开工前四方交底，设计、施工、材料要求都确认清楚再动工',negSpeech:'不交底就开工，设计师要的是A，工人做出来是B',consumerQ:'装修完多久能住？甲醛安全吗？',simpleAnswer:'环保标准是装修后室内空气必须达标才能交房，甲醛、苯这些有害物浓度低于国标，住进去不伤身。',consumerBenefit:'不用闻味儿猜安不安全，数据说话能放心住'}
+,{id:'DEC-010',domain:'decor',name:'工期管理与延误责任（装修多久能完工，拖了怎么办）',alias:'工期延误、工期保障、装修拖延',def:'装修一般多久？90-120天是合理工期。工期必须写进合同，延误了怎么赔偿也要约定。口头承诺没用，白纸黑字才作数。',source:'《住宅全案整装服务标准》第8章',srcType:'行业标准',attrs:'合理工期90-120天+延误赔偿标准+不可抗力除外',scene:'装修公司承诺3个月完工结果拖了半年/租房过渡等不起/想知道延误怎么赔偿',posSpeech:'工期写进合同，延误按天赔偿，特殊情况提前沟通',negSpeech:'工期口头说说不写合同，拖半年你也没辙，租房过渡多花的钱自己扛',consumerQ:'装修会不会装着装着加钱？',simpleAnswer:'增项控制就是合同外不让加钱，每项变更必须你签字同意，不签字不加钱。',consumerBenefit:'不加钱不增项，预算不失控'}
+,{id:'DEC-011',domain:'decor',name:'隐蔽工程验收（封起来就看不见的部分，必须先验）',alias:'水电验收、中间验收、隐蔽工程',def:'水电管线、防水层这些做完会被瓷砖、墙面盖住，看不见了。所以封之前必须验收：水管打不打压、电路通不通、防水漏不漏。这一步不做，后面出问题要砸墙。',source:'《建筑装饰装修工程质量验收标准》GB 50210-2018第3.1.4条',srcType:'国家标准',attrs:'水管打压测试+电路检测+防水闭水试验+拍照留证+签字确认',scene:'水电做完了要封墙了/不知道隐蔽工程要不要验收/担心水电出问题',posSpeech:'隐蔽工程封闭前必须验收，水管打压、电路检测、防水闭水，全部合格签字再封',negSpeech:'水电封了再验，出了问题砸墙才知道，代价太大了',consumerQ:'装修多久能完工？会不会拖着？',simpleAnswer:'工期管理就是定好哪天完工就哪天完工，延期有赔偿，不让你无限等。',consumerBenefit:'说好哪天住就哪天住，不被拖着'}
+,{id:'DEC-012',domain:'decor',name:'竣工验收标准（最终验收，逐项过）',alias:'整装验收、最终验收、收房 checklist',def:'全部装修完了，要逐项验收：墙面平不平、开关灵不灵、水龙头漏不漏水、环保达不达标。拿着验收清单一条条过，不合格的不签字。',source:'《建筑装饰装修工程质量验收标准》GB 50210-2018',srcType:'国家标准',attrs:'墙面/地面/门窗检查+水电功能测试+环保检测+整改清单',scene:'装修完了不知道怎么验收/担心有质量问题没发现/装修公司催着签字',posSpeech:'验收清单逐项过，您满意了再签字，有问题我们整改到您满意',negSpeech:'不验收就签字，住进去发现墙面开裂、水龙头漏水，后悔莫及',consumerQ:'水电改造为什么那么重要？',simpleAnswer:'水电改造是装修的隐蔽工程，埋在墙里地下，出了问题要砸墙凿地重来，一次干好最重要。',consumerBenefit:'水电一次到位，住进去不出幺蛾子'}
+,{id:'DEC-013',domain:'decor',name:'质保范围与期限（装修完出了问题谁负责）',alias:'整装质保、保修期、售后保障',def:'装修完出了问题谁管？水电和防水保5年，装修保2年，主体结构终身。但注意：质保从竣工验收合格那天算起，不是从开工算。',source:'《住宅全案整装服务标准》第9章',srcType:'行业标准',attrs:'水电5年+防水5年+装修2年+质保从验收合格日起算',scene:'装修完一年后墙面开裂/水管漏水不知道找谁/担心售后没人管',posSpeech:'质保白纸黑字写进合同，水电防水5年，装修2年，出了问题我们负责',negSpeech:'口头承诺质保10年，出事找不到人，电话不接微信不回',consumerQ:'全屋定制柜子靠谱吗？会不会跟想的不一样？',simpleAnswer:'全屋定制是按你家尺寸量身做柜子衣柜鞋柜，量尺出图你确认了再生产，装完严丝合缝。',consumerBenefit:'空间不浪费，东西有地儿放'}
+,{id:'DEC-014',domain:'decor',name:'售后服务承诺（住进去以后的服务保障）',alias:'整装售后、维保服务、维修响应',def:'住进去以后出问题怎么办？正规公司承诺响应时效：比如2小时内响应，48小时上门，质保期内免费修。这些要写进合同。',source:'《住宅全案整装服务标准》第9章',srcType:'行业标准',attrs:'响应时效+上门维修+质保期内免费+服务记录',scene:'住进去后发现小问题/联系售后没人理/想知道维修怎么收费',posSpeech:'售后2小时响应，48小时上门，质保期内免费修，每次服务有记录',negSpeech:'交了钱就失联，售后电话永远打不通，小问题拖成大问题',consumerQ:'装修过程中谁来检查质量？',simpleAnswer:'质检节点就是在关键环节（水电完工、贴砖完工、刷漆完工）有人来验收，不合格立刻改，不等全部干完才发现。',consumerBenefit:'问题早发现早改，不等到最后返工'}
+,{id:'DEC-015',domain:'decor',name:'投诉处理机制（遇到问题有地方说理）',alias:'整装投诉、维权渠道、投诉升级',def:'装修出了问题，装修公司不理怎么办？先内部投诉，不行找行业协会，再不行打12315或起诉。记住：保留证据（合同、照片、聊天记录）是关键。',source:'《消费者权益保护法》第39条',srcType:'部门规章',attrs:'内部投诉→行业协会→12315→法律途径+证据保留',scene:'装修质量差公司不管/想投诉不知道去哪/需要维权指导',posSpeech:'投诉有渠道，处理有时限，不满意可以升级，我们不怕您维权',negSpeech:'投诉无门，推诿扯皮，消费者只能自认倒霉',consumerQ:'装修不满意找谁说理？',simpleAnswer:'投诉处理机制就是你有地方反映问题、有人跟进解决、有明确时效，不用忍着没人管。',consumerBenefit:'有意见有人听，有问题有人管'}
+// 域4·家政保洁（15条）——消费者友好版
+,{id:'HOM-001',domain:'homekeep',name:'家政服务·帮你打理家的专业帮手',alias:'家政、阿姨、保洁、家务外包、请人做家务',def:'就是请人帮你做家务、带孩子、照顾老人，让你从繁琐的家务中解放出来。适合工作忙、有老人小孩、或者想提升生活品质的家庭。',source:'《家政服务业管理暂行办法》（商务部2012年）；国务院办公厅《关于促进家政服务业提质扩容的意见》',srcType:'部门规章',attrs:'保洁+做饭+带娃+照顾老人+收纳整理',scene:'双职工家庭没时间做家务/有新生儿需要专业护理/老人独居需要陪伴/换季大扫除忙不过来',posSpeech:'请个靠谱阿姨，回家就能躺平，生活质量直接翻倍',negSpeech:'为了省钱全靠自己扛，累病了去医院更花钱',consumerQ:'家政服务到底能帮我干什么？',simpleAnswer:'家政服务就是找专业的人帮你干家务：打扫、做饭、带娃、照顾老人，你忙不过来的事有人替你干。',consumerBenefit:'忙不过来有人搭手，家有人打理'}
+,{id:'HOM-002',domain:'homekeep',name:'日常保洁·定期上门打扫',alias:'定期保洁、日常打扫、固定阿姨、包月保洁',def:'阿姨按约定时间（每周或每月）来家里做常规打扫，包括扫地拖地、擦桌子、清理厨房卫生间等。就像给家请了个"定期清洁工"，保持家里基本整洁。',source:'《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'打扫频率+服务时长+覆盖区域+是否自带工具',scene:'上班族每周家里乱糟糟/有宠物需要经常清理毛发/希望家里长期保持整洁',posSpeech:'每周来一次，家里永远干干净净，朋友来串门不用提前收拾',negSpeech:'平时不打扫，等到过年才大扫除，累到腰酸背痛',consumerQ:'日常保洁跟自己打扫有什么区别？',simpleAnswer:'日常保洁是专人定期上门，用专业工具和清洁剂把你家从上到下收拾一遍，比自己擦得干净省力。',consumerBenefit:'别人帮你干活，你省下时间干正事'}
+,{id:'HOM-003',domain:'homekeep',name:'深度保洁·全屋彻底大扫除',alias:'大扫除、精细保洁、全屋清洁、年底扫除',def:'比日常保洁更彻底，会把平时打扫不到的死角都清理干净，比如窗户玻璃、油烟机内部、床底、天花板等。适合家里很久没彻底打扫，或者搬家、换季的时候。',source:'《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'死角清洁+玻璃擦拭+厨房深度去油+卫生间除垢+消毒杀菌',scene:'过年过节大扫除/租房退房要还原/刚装修完要彻底清洁/换季清理积攒的灰尘',posSpeech:'一年做一次深度保洁，平时日常保洁轻松很多',negSpeech:'只做表面功夫，柜子顶上、床底下的灰积了厚厚一层',consumerQ:'家里太久没彻底打扫了怎么办？',simpleAnswer:'深度保洁是全屋大扫除：油烟机拆洗、沙发底下的灰、窗户轨道的垢，犄角旮旯全给你弄干净。',consumerBenefit:'焕然一新，住着舒坦'}
+,{id:'HOM-004',domain:'homekeep',name:'开荒保洁·新房装修后首次清洁',alias:'新房开荒、装修后保洁、入住前清洁、粗保洁',def:'新房装修完后的第一次全面清洁，要清除装修留下的水泥点、油漆渍、玻璃胶、灰尘等。这是入住前必须做的一步，否则家里全是装修残留。',source:'《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'清除装修残留+擦玻璃+地面除胶+全面除尘+消毒',scene:'新房装修完准备入住/二手房翻新后要重新住/租房装修后要交房',posSpeech:'开荒做彻底，入住才安心，不然灰尘甲醛天天吸',negSpeech:'装修完不打扫直接住，满屋子灰尘和刺鼻气味',consumerQ:'新房装修完第一次打扫找谁？',simpleAnswer:'开荒保洁是新房装修后的首次清洁，处理建筑垃圾、擦玻璃、除胶渍，自己干又累又干不好。',consumerBenefit:'别人帮你干脏活累活，你直接拎包入住'}
+,{id:'HOM-005',domain:'homekeep',name:'家政人员资质·阿姨的背景靠不靠谱',alias:'健康证、身份证、从业资格、背景调查、信用记录',def:'请家政阿姨前，要确认她身份真实、身体健康、有基本培训。正规渠道会查身份证、健康证，有的还有技能培训证书和信用记录。这是为了你家的人身和财产安全。',source:'国务院办公厅《关于促进家政服务业提质扩容的意见》；商务部家政服务信用信息平台',srcType:'部门规章',attrs:'身份证核验+健康证有效期+培训证书+信用记录+有无犯罪记录',scene:'第一次请阿姨不放心/通过中介找人要确认身份/家里有老人小孩更要注意安全',posSpeech:'查过身份、看过健康证，用起来心里踏实',negSpeech:'路边随便找的阿姨，身份证都没核实，出了事人都找不到',consumerQ:'家里东西太多太乱怎么办？',simpleAnswer:'收纳整理是专业人帮你规划东西怎么放、放哪里，让每样东西都有自己的位置，找得到放得下。',consumerBenefit:'家里不再乱糟糟，想要的东西伸手就拿到'}
+,{id:'HOM-006',domain:'homekeep',name:'家政服务合同·把约定写清楚才放心',alias:'家政合同、服务协议、用工协议、雇佣合同',def:'请家政服务前签的书面协议，写清楚做什么、做多久、多少钱、双方的权利和责任。别嫌麻烦，这是出问题时的唯一依据。',source:'《民法典》第九百一十九条；《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'服务内容明细+服务时间+费用标准+双方责任+违约处理+解约条件',scene:'长期请住家阿姨要签合同/通过平台下单确认服务条款/发生纠纷需要维权依据',posSpeech:'合同写清做什么、做多长时间、多少钱，白纸黑字最靠谱',negSpeech:'口头说好了就行，结果阿姨中途涨价，一点办法没有',consumerQ:'空调冰箱洗衣机里面脏不脏？要不要洗？',simpleAnswer:'家电清洗是拆开深度清洁里面看不见的脏东西，空调里的灰、冰箱里的味儿、洗衣机里的垢，洗完健康又省电。',consumerBenefit:'家电干净寿命长，吹出来的风不呛人'}
+,{id:'HOM-007',domain:'homekeep',name:'钟点工·按小时计费的灵活保洁',alias:'小时工、计时保洁、临时阿姨、按小时算的保洁',def:'按小时收费的家政服务，你可以灵活预约，需要几小时就约几小时。适合临时有客人来、或者某个区域需要重点打扫的情况。',source:'《家政服务规范》SB/T 10643-2011',srcType:'行业标准',attrs:'每小时价格+最低时长+服务范围+预约方式',scene:'周末家里来客人临时打扫/厨房油烟机脏了单独清洁/不想长期请人，偶尔需要帮忙',posSpeech:'需要就叫，不用长期养人，灵活又省钱',negSpeech:'只按小时算不约定范围，做了两小时还没擦完玻璃，算谁的',consumerQ:'好衣服不想自己洗怕洗坏怎么办？',simpleAnswer:'洗护服务是专业洗衣服：高档面料、皮衣、羽绒服都能处理，不会缩水变形掉色。',consumerBenefit:'贵衣服放心洗，穿出去跟新的一样'}
+,{id:'HOM-008',domain:'homekeep',name:'住家保姆·住在你家的全能帮手',alias:'住家阿姨、住家保姆、24小时阿姨、全职家政',def:'住在雇主家里，全天候负责做饭、打扫、照顾老人或孩子的阿姨。适合需要全天候有人照顾的家庭，比如双职工带小孩、或者老人需要陪伴。',source:'《家政服务规范》SB/T 10643-2011；国务院办公厅家政提质扩容意见',srcType:'行业标准',attrs:'住家安排+工作内容+休息时间+食宿条件+节假日安排',scene:'双职工家庭没人接送孩子/老人独居需要日夜陪伴/家里人口多家务量大',posSpeech:'住家阿姨全天候照顾，上班也安心，回家有热饭',negSpeech:'住家阿姨休息时间没写清楚，半夜有事找不到人',consumerQ:'床上真的有螨虫吗？怎么除？',simpleAnswer:'除螨服务是用专业设备把床垫被子里看不见的螨虫和排泄物吸出来，晒太阳解决不了的问题它能解决。',consumerBenefit:'睡得安心不痒痒，皮肤不过敏'}
+,{id:'HOM-009',domain:'homekeep',name:'育婴服务·专业照顾宝宝和产妇',alias:'月嫂、育儿嫂、母婴护理、带娃阿姨、月子护理',def:'专门照顾0-3岁宝宝和产妇的服务，包括给宝宝喂奶、洗澡、做抚触，以及照顾产妇身体恢复。月嫂是月子期间的专业护理，育儿嫂是长期带娃的帮手。',source:'《家政服务规范》SB/T 10643-2011；《育婴员国家职业技能标准》',srcType:'行业标准',attrs:'照顾宝宝+产妇护理+喂养指导+早教互动+夜间陪护',scene:'刚生完宝宝需要月子护理/产假结束要回去上班/新手爸妈不会带娃需要指导',posSpeech:'专业月嫂在，新手妈妈不慌，宝宝照顾得明明白白',negSpeech:'随便找个阿姨带娃，连基本的拍嗝都不会',consumerQ:'保姆能帮我做什么？',simpleAnswer:'保姆是住家或白班帮你操持家务的人：做饭、打扫、买菜、照顾老人小孩，家里的日常她管。',consumerBenefit:'家里有人管，你安心上班不牵挂'}
+,{id:'HOM-010',domain:'homekeep',name:'老人照护·让爸妈在家安心养老',alias:'居家养老、老人陪护、护工、养老护理、陪老人',def:'上门照顾居家老人的生活起居，包括做饭、陪聊、提醒吃药、协助洗澡等。让老人不用去养老院，在家也能得到专业照顾。',source:'《中华人民共和国老年人权益保障法》；国务院《关于推进养老服务发展的意见》',srcType:'部门规章',attrs:'生活照料+健康监测+用药提醒+陪伴聊天+应急处理',scene:'父母独居子女不放心/老人术后需要康复护理/失能老人需要专人陪护',posSpeech:'老人在家有人陪，儿女在外也放心，比养老院更自在',negSpeech:'老人照护不只是做饭打扫，万一摔倒没人知道就麻烦了',consumerQ:'生完宝宝需要人照顾，月嫂能帮什么？',simpleAnswer:'月嫂是产后专业护理：帮产妇恢复身体、帮新生儿喂奶洗澡、教你育儿，不只是做饭洗衣服。',consumerBenefit:'月子里有人懂行照顾，大人小孩都安心'}
+,{id:'HOM-011',domain:'homekeep',name:'家政保险·给双方的一份保障',alias:'家政险、阿姨意外险、雇主责任险、用工保险',def:'给家政服务买的保险，万一阿姨工作中受伤，或者不小心损坏了家里东西，保险可以赔付。花小钱买安心，对阿姨和雇主都是保护。',source:'银保监会《关于促进家政服务保险发展的指导意见》',srcType:'部门规章',attrs:'阿姨人身意外+雇主责任+物品损坏赔付+保费谁出',scene:'长期雇佣阿姨建议购买/通过正规平台下单通常包含保险/阿姨工作中发生意外',posSpeech:'买了保险再用家政，阿姨受伤不用你掏钱赔',negSpeech:'没买保险，阿姨擦窗户摔了，医药费全得你出',consumerQ:'上班没人带娃，育儿嫂能放心吗？',simpleAnswer:'育儿嫂是专门带孩子的人：喂饭、哄睡、陪玩、教东西，比普通保姆更懂孩子。',consumerBenefit:'有人帮你带娃，孩子有人看你有班上'}
+,{id:'HOM-012',domain:'homekeep',name:'家政平台·网上找阿姨更靠谱',alias:'家政App、网上找阿姨、家政公司、线上预约',def:'像打车软件一样，用手机App就能预约家政服务。平台上有阿姨的评价、价格、服务项目，不满意可以投诉，比路边找更有保障。',source:'《电子商务法》；商务部家政服务信用信息平台',srcType:'部门规章',attrs:'在线预约+价格透明+用户评价+售后保障+投诉渠道',scene:'第一次找家政不知道去哪/想对比多家服务和价格/需要快速预约临时保洁',posSpeech:'平台下单，有评价有保障，出了问题找平台',negSpeech:'路边随便找的阿姨，干完活出问题，人都联系不上',consumerQ:'家里有人不能自理怎么办？',simpleAnswer:'护工是照顾不能自理家人的专业人员：喂饭、翻身、擦洗、陪看病，比家里人更专业更省力。',consumerBenefit:'家人有人照料，你不用24小时守着'}
+,{id:'HOM-013',domain:'homekeep',name:'家政服务标准化·服务有标准才不乱',alias:'服务规范、标准化流程、统一服务标准、正规家政',def:'好的家政服务应该有统一的标准，比如打扫流程、服务时长、验收标准都规定好。这样每次服务体验都差不多，不会这次好下次差。',source:'《家政服务规范》SB/T 10643-2011；国务院办公厅家政提质扩容意见',srcType:'行业标准',attrs:'服务流程统一+质量检查+收费标准透明+人员培训到位',scene:'换了新阿姨服务质量下降/想确认服务是否达标/对比不同家政公司的服务差异',posSpeech:'标准化服务，每次来都知道要做什么，质量稳定有保障',negSpeech:'没有标准，每次来的阿姨打扫方式都不一样，时好时坏',consumerQ:'请的家政人员干活时受伤了谁赔？',simpleAnswer:'家政保险就是给家政人员上了保险，干活时出了意外保险公司赔，不用你自掏腰包。',consumerBenefit:'出了事不用自己扛，保险兜底不破财'}
+,{id:'HOM-014',domain:'homekeep',name:'家政培训与认证·阿姨有没有真本事',alias:'持证上岗、培训证书、职业培训、技能认证、正规培训',def:'正规的家政阿姨应该接受过专业培训，有相应的技能证书。比如月嫂要有育婴证，护工要有护理证。培训过的阿姨服务更专业、更安全。',source:'《育婴员国家职业技能标准》；《养老护理员国家职业技能标准》',srcType:'行业标准',attrs:'培训内容+技能证书+等级划分+持续学习',scene:'请月嫂要看有没有育婴证/请护工要看护理资质/想确认阿姨的专业水平',posSpeech:'持证上岗的阿姨，带娃、护理都更专业，让人放心',negSpeech:'没培训没证书的阿姨，服务质量全凭运气',consumerQ:'请的阿姨靠不靠谱？有没有查过底细？',simpleAnswer:'背景调查是查阿姨的身份、健康、信用、过往工作记录，有问题的提前筛掉不让你碰上。',consumerBenefit:'来的都是查过的，敢放心让进门'}
+,{id:'HOM-015',domain:'homekeep',name:'家政投诉与维权·遇到问题别忍气吞声',alias:'家政维权、服务投诉、纠纷处理、投诉渠道、维权方式',def:'家政服务不满意或者出了问题，比如阿姨偷懒、损坏东西、甚至偷东西，要懂得维权。可以找平台投诉、打12315、或者报警。记得先保留证据。',source:'《消费者权益保护法》第39条；《家政服务规范》SB/T 10643-2011',srcType:'部门规章',attrs:'平台投诉+12315+报警+证据保留+赔偿协商',scene:'阿姨服务质量差要投诉/家里东西被损坏要索赔/遇到纠纷不知道怎么办',posSpeech:'先拍照留证据，再投诉维权，12315和平台都是靠山',negSpeech:'吃了哑巴亏不吭声，下一个人还是受害者',consumerQ:'家政服务不满意怎么投诉维权？',simpleAnswer:'家政投诉维权就是有渠道反映问题、有流程跟进处理、有结果给你答复，不是投诉无门只能忍。',consumerBenefit:'花钱不憋屈，有理有地方说'}
+// 域5·人才字典（6个岗位×3等级=18条——从业务域推导岗位，借鉴国标五级/四级/三级体系）
+// TAL-001 房产经纪人
+,{id:'TAL-001A',domain:'talent',name:'房产经纪人·初级',alias:'实习经纪人、置业顾问助理',def:'在指导下完成房源录入、客户带看、合同签署等基础经纪业务，需掌握基本法规和交易流程。',source:'国家职业分类大典（2024年版）；人社部《房地产经纪专业人员职业资格制度暂行规定》',srcType:'国家标准',attrs:'等级：五级（初级工）+要求：高中以上学历，通过初级考试+能力：熟悉交易流程、能独立完成带看和签约+监管：需在执业经纪人指导下工作',scene:'新人入职、基础房源维护、客户带看执行',posSpeech:'新人有师傅带，成长有路径',negSpeech:'没证就上岗，客户权益没保障',consumerQ:'刚入行的房产经纪人能信吗？',simpleAnswer:'初级经纪人刚拿证上路，懂基本流程但经验不多，适合有老手带的情况，别全指望他一个人搞定。',consumerBenefit:'知道他几斤几两，该追问就追问'}
+,{id:'TAL-001B',domain:'talent',name:'房产经纪人·中级',alias:'执业经纪人、资深置业顾问',def:'独立负责房源开发、客户维护、交易谈判等全流程，具备市场分析和客户服务综合能力。',source:'国家职业分类大典（2024年版）；人社部《房地产经纪专业人员职业资格制度暂行规定》',srcType:'国家标准',attrs:'等级：四级（中级工）+要求：取得房地产经纪人协理资格或2年以上从业经验+能力：独立开发房源、谈判议价、处理复杂交易+监管：可独立执业，需年度继续教育',scene:'二手房买卖全流程、新房代理、租赁业务',posSpeech:'持证上岗、信息真实，帮你选房更高效',negSpeech:'光靠嘴说没用，专业知识不过硬客户不信你',consumerQ:'怎么判断一个经纪人是熟手还是新手？',simpleAnswer:'中级经纪人干了几年、成交过不少单，能独立帮你走完全流程，该注意的坑他都见过。',consumerBenefit:'找个干过的人带你，少走弯路'}
+,{id:'TAL-001C',domain:'talent',name:'房产经纪人·高级',alias:'金牌经纪人、店长、区域合伙人',def:'具备团队管理、市场研判、复杂交易风控等高级能力，可带领团队并参与企业战略决策。',source:'国家职业分类大典（2024年版）；人社部《房地产经纪专业人员职业资格制度暂行规定》',srcType:'国家标准',attrs:'等级：三级（高级工）+要求：取得房地产经纪人职业资格或5年以上从业经验+能力：团队管理、市场研判、复杂交易风控、培训带教+监管：可担任门店负责人，参与企业战略',scene:'团队管理、大客户维护、复杂交易处理、新人培训',posSpeech:'金牌经纪人带团队，服务更有保障',negSpeech:'没管理能力的资深经纪人，天花板太低',consumerQ:'买卖房子这么大的事，经纪人得多厉害才行？',simpleAnswer:'高级经纪人经验丰富、专业过硬，疑难杂症能处理，谈判砍价有一套，大事找他最稳。',consumerBenefit:'大事有人扛，关键时刻不掉链子'}
+// TAL-002 居住服务顾问
+,{id:'TAL-002A',domain:'talent',name:'居住服务顾问·初级',alias:'客户服务专员、生活管家助理',def:'在指导下完成客户需求收集、服务对接和基础咨询，熟悉居住服务各环节流程。',source:'《城市更新十五五规划》（国发〔2026〕12号）；住建部"物业服务进家庭"工作指引',srcType:'国家标准',attrs:'等级：五级（初级工）+要求：大专以上学历，通过企业服务培训认证+能力：需求收集、服务对接、基础咨询+监管：需在高级顾问指导下工作',scene:'客户需求收集、服务对接执行、基础咨询',posSpeech:'新人有师傅带，成长有路径',negSpeech:'没培训就上岗，客户需求理解不透',consumerQ:'帮我租房的人靠谱吗？他懂不懂租房？',simpleAnswer:'初级租赁经纪人能帮你找房带看，但租约细节和纠纷处理可能不太熟，记得自己多上心。',consumerBenefit:'知道他的能力边界，该自己把关的自己来'}
+,{id:'TAL-002B',domain:'talent',name:'居住服务顾问·中级',alias:'居住管家、生活顾问',def:'独立为客户提供置业规划、装修对接、家政养老等跨域整合服务，具备多业务线协调能力。',source:'《城市更新十五五规划》（国发〔2026〕12号）；住建部"物业服务进家庭"工作指引',srcType:'国家标准',attrs:'等级：四级（中级工）+要求：3年以上居住服务经验，通过中级认证+能力：跨域整合、多业务线协调、客户全生命周期管理+监管：可独立服务客户，年度考核',scene:'客户置业规划、装修对接、家政养老服务整合',posSpeech:'一人对接全链条服务，省心得多',negSpeech:'只卖一次房不是顾问，那只是经纪人',consumerQ:'租房找个有经验的经纪人重要吗？',simpleAnswer:'中级租赁经纪人租过不少房，合同条款、押金纠纷这些他都处理过，能帮你避开常见坑。',consumerBenefit:'有人帮你盯着合同条款，不用自己硬啃'}
+,{id:'TAL-002C',domain:'talent',name:'居住服务顾问·高级',alias:'首席居住顾问、服务总监',def:'负责高端客户服务、服务标准制定和团队培训，具备居住服务全链条的战略规划能力。',source:'《城市更新十五五规划》（国发〔2026〕12号）；住建部"物业服务进家庭"工作指引',srcType:'国家标准',attrs:'等级：三级（高级工）+要求：8年以上经验，通过高级认证或行业评审+能力：高端客户服务、标准制定、团队培训、战略规划+监管：可担任服务总监，参与企业标准制定',scene:'高端客户服务、服务标准制定、团队培训、战略规划',posSpeech:'首席顾问定标准，服务质量有保障',negSpeech:'没标准的服务，每次体验都不一样',consumerQ:'租房遇到麻烦了，谁最帮得上忙？',simpleAnswer:'高级租赁经纪人处理过各种租房纠纷，维权、解约、索赔他都懂，出事找他准没错。',consumerBenefit:'出了问题有人帮你说理，不吃哑巴亏'}
+// TAL-004 整装设计师
+,{id:'TAL-004A',domain:'talent',name:'整装设计师·初级',alias:'设计助理、绘图员',def:'在指导下完成量房、CAD绘图、效果图制作等基础设计工作，熟悉设计软件操作。',source:'《住宅全案整装服务标准》（中国房地产业协会2026年实施）；《住宅室内装饰装修管理办法》',srcType:'行业标准',attrs:'等级：五级（初级工）+要求：室内设计相关专业大专以上学历，通过企业初级认证+能力：量房、CAD绘图、效果图制作、基础材料认知+监管：需在主案设计师指导下工作',scene:'量房、绘图、效果图制作、基础设计辅助',posSpeech:'基础工作扎实，成长有路径',negSpeech:'只会画图不懂施工，设计落不了地',consumerQ:'帮我找阿姨的人靠谱吗？',simpleAnswer:'初级家政经纪人能帮你匹配阿姨，但对阿姨的筛选和售后可能不够细，自己面试多看看。',consumerBenefit:'有人帮你筛简历，但进门之前自己再把一道关'}
+,{id:'TAL-004B',domain:'talent',name:'整装设计师·中级',alias:'主案设计师、全案设计师',def:'独立完成整装方案设计、材料选型和施工协调，具备空间规划、材料知识和施工工艺综合能力。',source:'《住宅全案整装服务标准》（中国房地产业协会2026年实施）；《住宅室内装饰装修管理办法》',srcType:'行业标准',attrs:'等级：四级（中级工）+要求：3年以上设计经验，通过中级认证+能力：独立方案设计、材料选型、施工协调、预算控制、客户沟通+监管：可独立接案，项目满意度考核',scene:'整装方案设计、效果把控、施工交底、预算控制',posSpeech:'从设计到交付全程跟，你满意才算完事',negSpeech:'设计师只画图不是整装设计师',consumerQ:'找个靠谱的家政中介有多重要？',simpleAnswer:'中级家政经纪人见过各种阿姨，知道什么样的家庭适合什么样的人，匹配更准、售后更及时。',consumerBenefit:'不用反复试人，一次配到合适的'}
+,{id:'TAL-004C',domain:'talent',name:'整装设计师·高级',alias:'设计总监、创意总监',def:'负责高端项目设计、设计标准制定和团队创意指导，具备设计创新和品牌战略能力。',source:'《住宅全案整装服务标准》（中国房地产业协会2026年实施）；《住宅室内装饰装修管理办法》',srcType:'行业标准',attrs:'等级：三级（高级工）+要求：8年以上设计经验，高级认证或行业奖项+能力：高端项目设计、标准制定、创意指导、品牌战略+监管：可担任设计总监，参与企业标准制定',scene:'高端项目设计、设计标准制定、团队创意指导、品牌战略',posSpeech:'设计总监把关，品质有保障',negSpeech:'没标准的设计，每次效果都不一样',consumerQ:'家里请阿姨想省心，中介得有多靠谱？',simpleAnswer:'高级家政经纪人擅长处理各种疑难情况：老人护理、双胞胎育儿、特殊饮食要求，他都能找到对的人。',consumerBenefit:'再刁钻的需求都能找到合适的人，不用将就'}
+// TAL-005 家装工程监理
+,{id:'TAL-005A',domain:'talent',name:'家装工程监理·初级',alias:'监理员、施工巡检员',def:'在指导下完成施工现场巡检、材料验收和进度记录，熟悉施工工艺和质量标准。',source:'《建设工程质量管理条例》；《住宅全案整装服务标准》第8章',srcType:'行政法规',attrs:'等级：五级（初级工）+要求：建筑工程相关专业中专以上学历，通过初级培训+能力：现场巡检、材料验收、进度记录、基础问题识别+监管：需在高级监理指导下工作',scene:'施工现场日常巡检、材料进场验收、进度记录',posSpeech:'巡检有记录，问题早发现',negSpeech:'不巡检的监理，形同虚设',consumerQ:'帮我估房价的人够专业吗？',simpleAnswer:'初级评估师能按公式算出基本估值，但复杂情况的判断可能欠火候，结果供参考别全信。',consumerBenefit:'有个参考价心里有数，但别当圣经'}
+,{id:'TAL-005B',domain:'talent',name:'家装工程监理·中级',alias:'专业监理工程师、项目经理',def:'独立负责施工质量管控、工期管理和变更审核，具备隐蔽工程验收和纠纷处理能力。',source:'《建设工程质量管理条例》；《住宅全案整装服务标准》第8章',srcType:'行政法规',attrs:'等级：四级（中级工）+要求：3年以上监理经验，通过中级职业考核+能力：质量管控、工期管理、变更审核、隐蔽工程验收、纠纷处理+监管：可独立负责项目，月度质量报告',scene:'施工过程监督、隐蔽工程验收、工期与变更管理、质量纠纷处理',posSpeech:'每一步施工有监理签字，质量有保障',negSpeech:'没人管的工地，是风险最大的地方',consumerQ:'房子估价准不准，跟评估师水平关系大吗？',simpleAnswer:'中级评估师估过很多房，能综合考虑楼层、朝向、装修、学区等因素，估值更贴近市场。',consumerBenefit:'估值靠谱，卖房不卖亏、买房不买贵'}
+,{id:'TAL-005C',domain:'talent',name:'家装工程监理·高级',alias:'总监理工程师、工程总监',def:'负责大型项目监理、监理标准制定和团队技术培训，具备工程仲裁和法律咨询能力。',source:'《建设工程质量管理条例》；《住宅全案整装服务标准》第8章',srcType:'行政法规',attrs:'等级：三级（高级工）+要求：8年以上监理经验，高级工程师或注册监理工程师+能力：大型项目管理、标准制定、技术培训、工程仲裁、法律咨询+监管：可担任工程总监，参与行业标准制定',scene:'大型项目监理、监理标准制定、技术培训、工程仲裁',posSpeech:'总监理工程师出报告，法律纠纷有依据',negSpeech:'没资质的监理报告，出了问题没人担责',consumerQ:'房子价值评估要找什么水平的人才信得过？',simpleAnswer:'高级评估师对市场吃得很透，稀有户型、特殊物业都能准确定价，银行和法院都认他出的报告。',consumerBenefit:'估值专业权威，说话有分量'}
+// TAL-006 家政服务员
+,{id:'TAL-006A',domain:'talent',name:'家政服务员·初级',alias:'保洁员、家政助理',def:'在指导下完成日常保洁、基础照护等标准化服务，熟悉服务流程和安全规范。',source:'《育婴员国家职业技能标准》；《养老护理员国家职业技能标准》；国务院办公厅《关于促进家政服务业提质扩容的意见》（国办发〔2019〕30号）',srcType:'国家标准',attrs:'等级：五级（初级工）+要求：初中以上学历，通过初级职业技能培训+能力：日常保洁、基础照护、服务流程执行、安全规范遵守+监管：需在高级家政员指导下工作，健康证、身份核验',scene:'日常保洁、基础照护、服务流程执行',posSpeech:'基础服务有标准，客户放心',negSpeech:'没培训就上岗，服务质量没保障',consumerQ:'帮我拍房子照片的人拍得好看吗？',simpleAnswer:'初级房产摄影师能用手机拍出基本能看的照片，但角度和光线可能不够讲究，看着凑合。',consumerBenefit:'有图可看，但别指望大片效果'}
+,{id:'TAL-006B',domain:'talent',name:'家政服务员·中级',alias:'专业育婴师、养老护理员、高级保洁师',def:'独立完成育婴、养老、深度保洁等专业服务，具备专业技能和应急处理能力。',source:'《育婴员国家职业技能标准》；《养老护理员国家职业技能标准》；国务院办公厅《关于促进家政服务业提质扩容的意见》（国办发〔2019〕30号）',srcType:'国家标准',attrs:'等级：四级（中级工）+要求：2年以上服务经验，通过中级职业技能鉴定+能力：专业育婴/养老/深度保洁、应急处理、客户沟通、服务方案制定+监管：可独立服务，年度技能复审，信用档案',scene:'专业育婴服务、老人照护、深度保洁、应急处理',posSpeech:'三证齐全的阿姨，用着放心',negSpeech:'没证的阿姨千万别用，出了问题没人担责',consumerQ:'房源照片拍得好不好，差别大吗？',simpleAnswer:'中级房产摄影师用专业设备，光线角度构图都讲究，拍出来的照片让房子看着舒服又不失真。',consumerBenefit:'看到的和实际差不多，不会被照片骗'}
+,{id:'TAL-006C',domain:'talent',name:'家政服务员·高级',alias:'家政培训师、服务督导、管家',def:'负责高端家政服务、服务标准制定和团队培训，具备服务设计和品质管控能力。',source:'《育婴员国家职业技能标准》；《养老护理员国家职业技能标准》；国务院办公厅《关于促进家政服务业提质扩容的意见》（国办发〔2019〕30号）',srcType:'国家标准',attrs:'等级：三级（高级工）+要求：5年以上经验，高级职业技能鉴定或技师资格+能力：高端服务、标准制定、团队培训、服务设计、品质管控+监管：可担任服务督导，参与行业标准制定',scene:'高端家政服务、服务标准制定、团队培训、品质管控',posSpeech:'高级管家定标准，服务质量有保障',negSpeech:'没标准的家政，每次体验都不一样',consumerQ:'想用VR看房，拍VR的人得什么水平？',simpleAnswer:'高级房产摄影师不只拍照片，VR全景、航拍、视频都能搞定，让你在线上就有实地看房的感觉。',consumerBenefit:'不用跑腿也能看清房子长啥样'}
+// TAL-007 收纳整理师
+,{id:'TAL-007A',domain:'talent',name:'收纳整理师·初级',alias:'整理助理、收纳专员',def:'在指导下完成基础收纳服务，熟悉常见收纳工具和分类方法。',source:'《家政服务业管理暂行办法》（商务部2012年）；行业协会整理收纳服务指南',srcType:'行业标准',attrs:'等级：五级（初级工）+要求：通过初级收纳培训认证+能力：基础收纳、分类整理、常见工具使用+监管：需在高级整理师指导下工作',scene:'基础收纳、换季整理、简单空间优化',posSpeech:'基础整理有方法，空间更整洁',negSpeech:'没方法的整理，东西找不到'}
+,{id:'TAL-007B',domain:'talent',name:'收纳整理师·中级',alias:'专业整理师、空间规划师',def:'独立完成全屋收纳规划、空间诊断和整理方案实施，具备空间设计和客户沟通能力。',source:'《家政服务业管理暂行办法》（商务部2012年）；行业协会整理收纳服务指南',srcType:'行业标准',attrs:'等级：四级（中级工）+要求：2年以上整理经验，通过中级认证+能力：全屋规划、空间诊断、方案实施、客户沟通、收纳用品推荐+监管：可独立接案，客户满意度考核',scene:'全屋收纳规划、搬家整理、空间诊断、收纳方案实施',posSpeech:'空间合理化，动线更合理',negSpeech:'不是帮你堆东西而是系统地规划空间'}
+,{id:'TAL-007C',domain:'talent',name:'收纳整理师·高级',alias:'收纳培训师、整理顾问',def:'负责高端收纳服务、收纳标准制定和团队培训，具备收纳产品研发和品牌运营能力。',source:'《家政服务业管理暂行办法》（商务部2012年）；行业协会整理收纳服务指南',srcType:'行业标准',attrs:'等级：三级（高级工）+要求：5年以上经验，高级认证或行业影响力+能力：高端服务、标准制定、团队培训、产品研发、品牌运营+监管：可担任培训导师，参与行业标准制定',scene:'高端收纳服务、收纳标准制定、团队培训、产品研发',posSpeech:'高级整理师定标准，服务品质有保障',negSpeech:'没标准的整理，每次效果都不一样'}
+// 域6·十五五政策与趋势（18条）
+,{id:'POL-001',domain:'policy',name:'好房子',alias:'高品质住房、安全舒适绿色智慧住宅',def:'住房城乡建设部定义的住房品质目标，以安全、舒适、绿色、智慧为四大核心特征的新一代住房。',source:'住建部《关于提升住房品质的意见》（2025年）；《城市更新十五五规划》',srcType:'政策文件',attrs:'安全底线+舒适体验+绿色低碳+智慧便捷',scene:'向客户介绍住房品质升级趋势/解释什么是好房子',posSpeech:'现在国家都在推好房子，安全舒适绿色智慧，以后这会是标配',negSpeech:'好房子不是噱头，是写入中央文件的硬指标',consumerQ:'政府说的‘好房子’到底是什么标准？',simpleAnswer:'好房子是国家的居住新标准：安全、健康、绿色、智能，以后盖房都要往这个方向走，你住的房子会越来越好。',consumerBenefit:'以后住的房子更安全更舒服，标准越来越高'}
+,{id:'POL-002',domain:'policy',name:'房地产发展新模式',alias:'新模式、三大工程',def:'从增量扩张转向存量提质增效的发展模式，以好房子建设、城市更新、租购并举为核心特征的房地产转型方向。',source:'中共中央《十四届全国人大三次会议政府工作报告》；《城市更新十五五规划》',srcType:'政策文件',attrs:'从增量到存量+好房子建设+城市更新+租购并举',scene:'解释市场转型/行业逻辑变化',posSpeech:'房地产进入新模式，从盖房子卖变成存量提质，这是大方向',negSpeech:'还在用老眼光看房地产？新模式已经开始了',consumerQ:'房地产新模式跟我买房有什么关系？',simpleAnswer:'新模式就是以后买房不再靠炒房升值，而是住得好才值，房子回归住的属性，该买的买、该住的住。',consumerBenefit:'不用怕买到高点，房子用来住的不是用来炒的'}
+,{id:'POL-003',domain:'policy',name:'城市更新',alias:'城市更新行动、存量更新',def:'对城市存量空间进行功能性提升、环境改善、设施完善的活动，涵盖老旧小区、城中村、历史街区等综合整治。',source:'《城市更新十五五规划》（国发〔2026〕12号）',srcType:'政策文件',attrs:'老旧小区改造+城中村改造+街区整治+功能提升',scene:'老房改造项目/区域发展前景评估',posSpeech:'这个区域纳入城市更新，未来配套会越来越好',negSpeech:'城市更新是政府行为，不是你想改就能改',consumerQ:'城市更新跟我住的老小区有什么关系？',simpleAnswer:'城市更新就是老旧小区改造：换管道、装电梯、加绿化、修路，你住的老房子可能焕然一新。',consumerBenefit:'老房子可能变新，住着更舒坦'}
+,{id:'POL-004',domain:'policy',name:'改善性住房',alias:'改善需求、改善型需求',def:'居民为提升居住品质而购买的第二套或置换型住房，区别于首次置业的刚性需求，对房屋面积、户型、小区环境有更高要求。',source:'中共中央十五五规划建议；住建部《城市住房发展规划编制导则》',srcType:'政策文件',attrs:'置换需求+品质提升+面积增加+配套完善',scene:'改善型客户需求挖掘/置换方案制定',posSpeech:'改善需求现在是主流，大家都想住得更好，这是大趋势',negSpeech:'改善不是刚需，要看时机和收入预期',consumerQ:'住房保障体系能帮到我吗？',simpleAnswer:'住房保障体系是政府给买不起房的人准备的：公租房、保障房、共有产权房，收入不够也有路子住上体面的房子。',consumerBenefit:'买不起也有房子住，不用硬撑'}
+,{id:'POL-005',domain:'policy',name:'房屋全生命周期安全管理',alias:'房屋安全管理制度、安全体检',def:'涵盖房屋安全体检、管理资金、质量保险三项制度的房屋安全管理体系，覆盖从建设到报废的全周期。',source:'《城市更新十五五规划》第七项政策举措',srcType:'政策文件',attrs:'安全体检+管理资金+质量保险+动态监管',scene:'老旧房屋安全性评估/房屋维护建议',posSpeech:'以后房子都要定期体检，像车年检一样',negSpeech:'老房子没体检过，谁知道有没有问题',consumerQ:'租购并举是什么意思？租房也能享跟买房一样的权利吗？',simpleAnswer:'租购并举就是租房和买房都算正当选择，租房也能落户上学，不必非得买房才能扎根城市。',consumerBenefit:'租房也有尊严有保障，不买房也能安心生活'}
+,{id:'POL-006',domain:'policy',name:'保障性住房',alias:'保障房、安居房',def:'政府提供或主导建设，面向城镇工薪群体和住房困难家庭的具有保障性质的住房，包括公租房、保障性租赁住房等。',source:'中共中央十五五规划建议；《城市更新十五五规划》',srcType:'政策文件',attrs:'保障性质+政府主导+低价租售+准入门槛',scene:'解释市场与保障双轨/客户分类',posSpeech:'保障房是兜底的，商品房是市场化选择，各有各的作用',negSpeech:'保障房跟你没关系，商品房才是市场',consumerQ:'公积金有什么用？我该怎么用？',simpleAnswer:'住房公积金是你和单位每月一起存的钱，买房贷款利率比商贷低一大截，租房也能提取出来用。',consumerBenefit:'低息贷款买房、提取出来租房，省的都是真金白银'}
+,{id:'POL-007',domain:'policy',name:'绿色建筑',alias:'低碳建筑、超低能耗建筑',def:'在全寿命期内节约资源、保护环境、减少污染，提供健康、适用、高效使用空间的建筑，新建城镇住房已全面要求达到绿色建筑标准。',source:'住建部《关于提升住房品质的意见》；《城市更新十五五规划》',srcType:'政策文件',attrs:'节能标准+环保材料+可再生能源+碳排放控制',scene:'新房品质介绍/绿色低碳卖点',posSpeech:'这房子是绿色建筑，节能省电，住着也更健康',negSpeech:'绿色建筑只是噱头，关键看实际居住体验',consumerQ:'房产税到底收不收？跟我有关系吗？',simpleAnswer:'房产税还在讨论试点阶段，目前大多数城市没征，即使将来征收也会有免征面积，普通家庭不用太担心。',consumerBenefit:'了解政策动向，早做打算不慌张'}
+,{id:'POL-008',domain:'policy',name:'城中村改造',alias:'城中村更新、城中存改造',def:'对城市建成区内土地权属复杂、建筑老旧、配套落后的城中村进行综合整治或拆除新建的改造行动。',source:'《城市更新十五五规划》重大工程；《住建部2025年工作会议》',srcType:'政策文件',attrs:'拆除新建+整治提升+拆整结合+一项目两方案',scene:'城中存区域发展/拆迁补偿谈判',posSpeech:'城中村改造是十五五重点，5年要完成4000个',negSpeech:'城中存改造周期长，不确定性大',consumerQ:'买的期房会不会烂尾？政府管不管？',simpleAnswer:'保交楼就是政府盯着开发商把没盖完的房子盖完交给你，你的首付进了监管账户，不能被开发商挪走。',consumerBenefit:'买了期房有人盯着交，钱不会打水漂'}
+,{id:'POL-009',domain:'policy',name:'危旧房改造',alias:'D级危房、C级危房、旧房改造',def:'对存在结构安全隐患的危旧房屋进行加固、拆除或原拆原建的改造行动，十五五期间目标是完成50万套。',source:'《城市更新十五五规划》重大工程',srcType:'政策文件',attrs:'C/D级分类+加固/拆除+原拆原建+资金支持',scene:'老旧房屋安全评估/危房处置建议',posSpeech:'危房改造有政策支持，政府补贴加上居民共担',negSpeech:'危房不改造，住着心里不踏实',consumerQ:'房贷利率还会降吗？现在贷款划不划算？',simpleAnswer:'房贷利率跟着国家政策走，最近几年一直在降，贷款成本比前几年低了不少，但具体多少看银行给你的报价。',consumerBenefit:'利率低的时候锁住低利息，月供少还钱'}
+,{id:'POL-010',domain:'policy',name:'城镇老旧小区改造',alias:'旧改、老旧小区综合整治',def:'对建成20年及以上、设施配套不完善的城镇住宅小区进行的基础设施完善、环境整治、适老化改造等综合整治行动。',source:'《城市更新十五五规划》重大工程',srcType:'政策文件',attrs:'基础类+完善类+提升类+加装电梯+完整社区',scene:'老小区价值评估/改造前景分析',posSpeech:'这个老小区在改造名单里，加装电梯政府有补贴',negSpeech:'老旧小区再怎么改也比不上新房',consumerQ:'限购限售松绑了吗？现在能买吗？',simpleAnswer:'很多城市的限购限售已经放松甚至取消了，之前买不了的现在可能能买了，具体看当地最新政策。',consumerBenefit:'以前不让买的现在可能让了，机会变多'}
+,{id:'POL-011',domain:'policy',name:'数字家庭',alias:'智能家居、智慧住宅',def:'利用物联网、云计算等新一代信息技术，实现家庭设施互联互通、提供智能化居住服务的住宅建设标准。',source:'住建部《关于提升住房品质的意见》；《城市更新十五五规划》',srcType:'政策文件',attrs:'物联网连接+智能控制+便捷服务+适老化设计',scene:'新房智能化配套介绍/科技卖点',posSpeech:'数字家庭是标配，手机就能控制全屋',negSpeech:'智能家居用不上，老人不会操作',consumerQ:'房地产税试点会不会落到我头上？',simpleAnswer:'目前只在少数城市试点，而且大概率有免征面积，首套房或小户型基本不受影响，多套房才需要关注。',consumerBenefit:'先试点再推广，普通人有缓冲期'}
+,{id:'POL-012',domain:'policy',name:'装配式装修',alias:'工业化装修、集成装修',def:'采用预制部品部件在现场组装的装修方式，具有质量可控、工期短、环保等优势，适用于新建和改造项目。',source:'住建部《关于提升住房品质的意见》',srcType:'政策文件',attrs:'预制部品+现场装配+集成厨卫+标准化设计',scene:'装修品质说明/工期优势介绍',posSpeech:'装配式装修工期短、质量有保障，还环保',negSpeech:'装配式装修以后维修麻烦',consumerQ:'老旧小区和棚户区改造，我能受益吗？',simpleAnswer:'旧改是老小区修修补补变新，棚改是危房拆了重建，如果你住的老小区被纳入改造计划，环境会大变样。',consumerBenefit:'住的地方有人帮你翻新，生活品质上台阶'}
+,{id:'POL-013',domain:'policy',name:'存量盘活',alias:'存量资产盘活、闲置房产激活',def:'通过出租、改造、处置等方式将闲置低效的存量房产激活利用的行为，政策支持5年过渡期政策。',source:'《城市更新十五五规划》任务一',srcType:'政策文件',attrs:'闲置激活+出租经营+改造升级+过渡期政策',scene:'闲置房处置建议/长租房源开发',posSpeech:'闲置房子出租是最直接的盘活方式，政策支持',negSpeech:'闲置房放着也是放着，不如出租产生收益',consumerQ:'共有产权房是什么？我买得起吗？',simpleAnswer:'共有产权房是你跟政府各出一份钱一起买房，你住着用着，价格比市场低很多，但将来卖的时候要跟政府分。',consumerBenefit:'花少一半的钱住上新房，上车门槛低'}
+,{id:'POL-014',domain:'policy',name:'改善型租赁需求',alias:'品质租住、升级租房',def:'租客对租赁住房的品质、配套、服务提出更高要求的趋势，改善型租住正从可选变为刚需。',source:'《2026中国城市长租市场发展蓝皮书》',srcType:'行业研究',attrs:'品质升级+服务需求+数智化+长期租住',scene:'租赁市场分析/长租公寓定位',posSpeech:'现在租房也要住得好，改善型需求是主流',negSpeech:'租房能将就就将就',consumerQ:'人才房是什么？我能申请吗？',simpleAnswer:'人才房是给符合条件的各类人才准备的优惠住房，租金或售价低于市场价，得看你的学历、职称或技能是否符合条件。',consumerBenefit:'符合条件就能享受优惠，住好房花少钱'}
+,{id:'POL-015',domain:'policy',name:'家庭型租赁',alias:'家庭租房、合家居住',def:'家庭成员（伴侣、孩子、父母）共同居住的租赁模式，30岁以上租客占比已超50%，家庭型租住占比超70%。',source:'《2026中国城市长租市场发展蓝皮书》',srcType:'行业研究',attrs:'家庭结构+整租需求+两居以上+长期稳定',scene:'家庭租客服务/整租产品设计',posSpeech:'一家人租房更看重稳定和配套，整租两居室最合适',negSpeech:'家庭租房麻烦多，稳定性差',consumerQ:'长租公寓出了那么多事，政府管了吗？',simpleAnswer:'长租公寓政策就是政府加强监管：严查租金贷、押金必须存管、不许挪用租客的钱，比以前安全多了。',consumerBenefit:'租房比以前有保障，不怕被机构卷钱跑路'}
+,{id:'POL-016',domain:'policy',name:'机构化长租',alias:'专业租赁机构、长租公寓托管',def:'由专业机构统一运营、提供标准化服务的租赁模式，近60%业主倾向机构托管，超6000万套存量房待提质。',source:'《2026中国城市长租市场发展蓝皮书》',srcType:'行业研究',attrs:'专业化运营+标准化服务+资产保值+维修保障',scene:'业主托管咨询/机构合作介绍',posSpeech:'交给专业机构打理，省心又稳定，维修不用你管',negSpeech:'机构托管要收管理费，自己出租更划算',consumerQ:'物业管理条例管什么？业主有什么权利？',simpleAnswer:'物业管理条例规定了物业该干啥、业主有啥权，物业费怎么收、公共收益归谁，都是业主说了算。',consumerBenefit:'自己的小区自己做主，物业不能乱来'}
+,{id:'POL-017',domain:'policy',name:'十五五住房需求总量',alias:'49.8亿平方米、城镇住房需求',def:'中指研究院测算的十五五期间城镇住房需求总量约49.8亿平方米，其中人均面积提升带动41%，为最大需求来源。',source:'中指研究院《中国房地产市场2025总结与2026展望》',srcType:'行业研究',attrs:'总量49.8亿㎡+人均面积提升41%+新增人口32%+拆迁改造27%',scene:'市场容量分析/需求结构解读',posSpeech:'未来五年需求还有近50亿平方米，市场依然很大',negSpeech:'需求都在往下走，房子越来越难卖',consumerQ:'装配式建筑跟买的房子质量有关系吗？',simpleAnswer:'装配式建筑是像搭积木一样盖房子，工厂里做好部件到现场拼装，质量更稳定、工期更短、污染更少。',consumerBenefit:'盖得快又准，质量比手工砌的更稳定'}
+,{id:'POL-018',domain:'policy',name:'年均新建商品住宅销售',alias:'7-8亿平方米、新房去化',def:'中指研究院预测的十五五期间新建商品住宅年均销售面积约7-8亿平方米，是判断新房市场规模的核心指标。',source:'中指研究院《中国房地产市场2025总结与2026展望》',srcType:'行业研究',attrs:'年均7-8亿㎡+去化压力+结构分化+好城市好房子',scene:'新房市场判断/项目定位参考',posSpeech:'新房市场年均7-8亿平方米，分化严重，好城市好房子才有机会',negSpeech:'新房整体往下走，别指望大行情',consumerQ:'绿色建筑跟我住的房子有什么关系？',simpleAnswer:'绿色建筑就是省电省水又健康的房子：隔热好空调费少、通风好空气新鲜、隔音好睡得香。',consumerBenefit:'住着舒服还省钱，电费水费都省'}
+];
+
+let currentDomain='quality-customer';
+
+// 场景定义（用于过滤词条）
+const SCENES=[
+  {id:'all',name:'全部'},
+  {id:'prospecting',name:'找房买房',keywords:['看房','选房','比价','预算','配套','交通','学区','户型','朝向','楼层','采光','装修','笋盘','性价比']},
+  {id:'signing',name:'谈单签约',keywords:['签约','合同','定金','首付','贷款','过户','税费','资金监管','递件','产权','抵押','赎楼','网签']},
+  {id:'followup',name:'售后维护',keywords:['物业','维修','投诉','纠纷','延期','违约','质量','漏水','渗水','外墙','电梯','车位','收楼','交房']}
+];
+let currentScene='all';
+
+// 产品推荐模块
+function renderProductRecommend(){
+  const container=document.getElementById('product-recommend');
+  if(!container) return;
+  const productMap={
+    'quality-customer':{name:'六维品质测评',desc:'帮客户看见自己真正在意什么',icon:'🎯',url:'/care-test/',cta:'免费测评'},
+    'quality-server':{name:'四维关怀测评',desc:'先活好自己，才能服务好别人',icon:'💚',url:'/care-test/',cta:'免费测评'},
+    'trade':{name:'客户解码器',desc:'快速了解客户的真实需求',icon:'🔑',url:'/',cta:'立即使用'},
+    'rental':{name:'客户解码器',desc:'了解客户真实需求，说对的话',icon:'🔑',url:'/',cta:'立即使用'},
+    'decor':{name:'带看报告 S1',desc:'让客户自己看见差距',icon:'📋',url:'/s1-report/',cta:'生成报告'},
+    'homekeep':{name:'四维关怀测评',desc:'先活好自己，才能服务好别人',icon:'💚',url:'/care-test/',cta:'免费测评'},
+    'talent':{name:'Agent 培养师',desc:'让AI越用越懂你的业务',icon:'🤖',url:'/',cta:'开始培养'}
+  };
+  const p=productMap[currentDomain]||productMap['trade'];
+  const others=[
+    {name:'六维品质测评',desc:'让客户看见自己真正在意什么',icon:'🎯',url:'/care-test/'},
+    {name:'带看报告 S1',desc:'一份报告=一次信任建立',icon:'📋',url:'/s1-report/'},
+    {name:'Agent 培养师',desc:'让AI越用越懂你的业务',icon:'🤖',url:'/'}
+  ].filter(o=>o.url!==p.url).slice(0,2);
+  container.innerHTML=`
+    <div class="product-recommend-wrap">
+      <div class="product-recommend-title">💡 学完这个词条，你可能还需要</div>
+      <div class="product-recommend-grid">
+        <a class="product-rec-card primary" href="${p.url}">
+          <div class="rec-icon">${p.icon}</div>
+          <div class="rec-info">
+            <div class="rec-name">${p.name}</div>
+            <div class="rec-desc">${p.desc}</div>
           </div>
-          <div class="suggest-item">
-            <div class="suggest-icon">🛋</div>
-            <div class="suggest-content">
-              <div class="suggest-title">居住七维 · 从物质到情感的递进</div>
-              <div class="suggest-meta">SOP · 业务域 · 服务者必读</div>
-            </div>
-            <span class="suggest-type">SOP</span>
-          </div>
-          <div class="suggest-item">
-            <div class="suggest-icon">📋</div>
-            <div class="suggest-content">
-              <div class="suggest-title"><mark>住</mark>房前必查 8 项清单</div>
-              <div class="suggest-meta">消费者问答 · 30 条公开</div>
-            </div>
-            <span class="suggest-type">问答</span>
-          </div>
-        </div>
-      </div>
-      <div class="suggest-section">
-        <div class="suggest-label"><span>🎯 想去哪个角色视角？</span></div>
-        <div class="suggest-hot">
-          <span class="hot-chip">🏠 消费者视角</span>
-          <span class="hot-chip">🛠 服务者视角</span>
-          <span class="hot-chip">✅ 审核员视角</span>
-        </div>
+          <div class="rec-cta">${p.cta} →</div>
+        </a>
+        ${others.map(o=>`<a class="product-rec-card secondary" href="${o.url}">
+          <div class="rec-icon">${o.icon}</div>
+          <div class="rec-info"><div class="rec-name">${o.name}</div><div class="rec-desc">${o.desc}</div></div>
+        </a>`).join('')}
       </div>
     </div>
-  </div>
-</section>
+  `;
+}
 
-<!-- 战略基座 · 5 层架构 -->
-<section class="section" id="strategicBase">
-  <div class="strategic-base">
-    <div class="sb-tag">📐 风声战略基座 · 帮助服务者配得上被好好对待</div>
-    <h2 class="sb-title">这本字典背后的 <span style="background:linear-gradient(135deg,var(--primary),var(--wood));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">5 层架构</span></h2>
-    <p class="sb-sub">从道德经哲学到三条产品线 · 知识底座不替用户判断，只交付认知武器</p>
+function init(){
+  const params=new URLSearchParams(location.search);
+  if(params.get('tab')&&DOMAINS.some(d=>d.id===params.get('tab')))currentDomain=params.get('tab');
+  const tabs=document.getElementById('domain-tabs');
+  tabs.innerHTML=DOMAINS.map(d=>`<div class="domain-tab ${d.id===currentDomain?'active':''}" data-domain="${d.id}" onclick="switchDomain('${d.id}')">${d.icon} ${d.name}（${d.count}）</div>`).join('');
+  // 填充FAQPage JSON-LD schema（帮助AI理解词条问答）
+  const faqScript=document.getElementById('faq-schema');
+  if(faqScript&&ENTRIES.length>0){
+    const entities=[];
+    ENTRIES.forEach(e=>{
+      if(e.consumerQ&&e.simpleAnswer&&e.simpleAnswer.length>5){
+        entities.push({
+          "@type":"Question",
+          "name":e.consumerQ,
+          "acceptedAnswer":{
+            "@type":"Answer",
+            "text":e.simpleAnswer
+          }
+        });
+      }
+    });
+    if(entities.length>0){
+      try{
+        const faqData=JSON.parse(faqScript.textContent);
+        faqData.mainEntity=entities.slice(0,100);// 最多100条，避免schema过长
+        faqScript.textContent=JSON.stringify(faqData,null,0);
+      }catch(e){}
+    }
+  }
+  renderPolicyCard();
+  renderSceneTabs();
+  renderQaExamples();
+  updateSceneCount();
+  renderEntries();
+  renderProductRecommend();
 
-    <!-- ① 道德经四层 -->
-    <div class="sb-classic">
-      <div class="classic-item">
-        <div class="classic-cn">损有余而补不足</div>
-        <div class="classic-fs">信息差必崩<br>补不足者存</div>
-      </div>
-      <div class="classic-item">
-        <div class="classic-cn">水善利万物而不争</div>
-        <div class="classic-fs">人要的不是安全<br>是尊严</div>
-      </div>
-      <div class="classic-item">
-        <div class="classic-cn">知人者智 自知者明</div>
-        <div class="classic-fs">放大人不替代人<br>支持不替代决策</div>
-      </div>
-      <div class="classic-item">
-        <div class="classic-cn">长而不宰</div>
-        <div class="classic-fs">让人觉得自主决定<br>方向恰好对</div>
-      </div>
-    </div>
+  // 搜索框事件监听
+  const searchInput=document.getElementById('search-input');
+  if(searchInput){
+    let debounceTimer;
+    searchInput.addEventListener('input',function(){
+      clearTimeout(debounceTimer);
+      debounceTimer=setTimeout(()=>{
+        const results=searchEntries(this.value);
+        renderSearchResults(results,this.value);
+        if(this.value.trim().length>=2){
+          track.use('search',{query:this.value.trim(),resultCount:results.length,domain:currentDomain});
+        }
+      },200);
+    });
+    searchInput.addEventListener('focus',function(){
+      if(this.value.trim().length>=2){
+        const results=searchEntries(this.value);
+        renderSearchResults(results,this.value);
+      }
+    });
+    document.addEventListener('click',function(e){
+      if(!e.target.closest('.search-wrap')){
+        const resultsEl=document.getElementById('search-results');
+        if(resultsEl) resultsEl.classList.remove('active');
+      }
+    });
+  }
+}
 
-    <!-- ② 核心双轴 -->
-    <div class="sb-axis">
-      <div class="axis-head">
-        <div class="axis-title">② 人生双纵轴 × 住得好七维 = 认知双轴</div>
-        <span class="axis-tag">服务者必备认知框架</span>
-      </div>
-      <div class="axis-grid">
-        <!-- 纵轴1：购房线 -->
-        <div class="axis-col">
-          <div class="y-axis">↓ 购房线（5 阶段）</div>
-          <div class="axis-item"><span class="stage">①首套房</span><span class="sub">新房/二手</span></div>
-          <div class="axis-item"><span class="stage">②成家改善</span><span class="sub">置换升级</span></div>
-          <div class="axis-item"><span class="stage">③子女教育</span><span class="sub">学区房</span></div>
-          <div class="axis-item"><span class="stage">④品质升级</span><span class="sub">换房升级</span></div>
-          <div class="axis-item"><span class="stage">⑤适老安享</span><span class="sub">置换适老</span></div>
-        </div>
-        <!-- 中间七维 -->
-        <div class="axis-center">
-          <div style="font-size:10px;color:var(--wood);font-weight:600;letter-spacing:1px;">住得好</div>
-          <div class="arrow">→</div>
-          <div style="font-size:14px;color:var(--primary);font-weight:700;line-height:1.4;">七<br>维<br>品<br>质</div>
-          <div class="arrow">←</div>
-          <div style="font-size:10px;color:var(--wood);font-weight:600;letter-spacing:1px;">物质4+情感2+精神1</div>
-        </div>
-        <!-- 纵轴2：租住线 -->
-        <div class="axis-col">
-          <div class="y-axis">↓ 租住线（4 阶段）</div>
-          <div class="axis-item"><span class="stage">①起步租房</span><span class="sub">普租/公寓</span></div>
-          <div class="axis-item"><span class="stage">②租住改善</span><span class="sub">改善型</span></div>
-          <div class="axis-item"><span class="stage">③家庭租房</span><span class="sub">家庭型</span></div>
-          <div class="axis-item"><span class="stage">④品质租住</span><span class="sub">租住升级</span></div>
-        </div>
-      </div>
-    </div>
+function renderSceneTabs(){
+  const container=document.getElementById('scene-tabs');
+  if(!container) return;
+  container.innerHTML=SCENES.map(s=>`<div class="scene-tab ${s.id===currentScene?'active':''}" data-scene="${s.id}">${s.name}</div>`).join('');
+  container.querySelectorAll('.scene-tab').forEach(t=>t.addEventListener('click',function(){
+    currentScene=this.dataset.scene;
+    container.querySelectorAll('.scene-tab').forEach(tab=>tab.classList.toggle('active',tab===this));
+    track.use('scene_filter',{scene:currentScene,domain:currentDomain});
+    renderEntries();
+    updateSceneCount();
+  }));
+}
 
-    <!-- ③ 三条产品线 -->
-    <div class="sb-lines">
-      <div class="line-card l1">
-        <div class="line-icon">📖</div>
-        <div class="line-name">认知线</div>
-        <div class="line-tag">我知道该说什么</div>
-        <div class="line-prod">
-          <span>📚 知识底座（核心）</span>
-        </div>
-      </div>
-      <div class="line-card l2">
-        <div class="line-icon">🛠</div>
-        <div class="line-name">作业线</div>
-        <div class="line-tag">我知道怎么做 · AI 交互</div>
-        <div class="line-prod">
-          <span>🔍 客户解码器</span>
-          <span>📋 带看报告</span>
-          <span>✅ 品质测评</span>
-          <span>📑 成交决策</span>
-        </div>
-      </div>
-      <div class="line-card l3">
-        <div class="line-icon">🎯</div>
-        <div class="line-name">能力线</div>
-        <div class="line-tag">我凭什么做得到</div>
-        <div class="line-prod">
-          <span>📊 能力测评</span>
-          <span>🤖 Agent 培养师</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ④ + ⑤ 关键词 -->
-    <div class="sb-key">
-      <span class="strong">帮助服务者配得上被好好对待</span>
-      <div class="small">— 顺势成全 —</div>
-    </div>
-
-  </div>
-</section>
-
-<!-- AI 助力 · 作业线产品线 -->
-<section class="section" id="aiBoost">
-  <div class="ai-section">
-    <div class="ai-tag">⚡ AI 助力 · 知识底座不是 AI，但 AI 是你的副驾</div>
-    <h2 class="ai-title">3 个 <span style="background:linear-gradient(135deg,var(--primary),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">作业线 AI 工具</span>，放大你的能力</h2>
-    <p class="ai-sub">知识底座只做信息呈现（边界遵守） · 但作业线有 3 个 AI 工具帮服务者真正干活</p>
-
-    <div class="ai-grid">
-      <div class="ai-card">
-        <div class="ai-num">01</div>
-        <div class="ai-emoji">🔍</div>
-        <div class="ai-name">客户解码器</div>
-        <div class="ai-tagline">客户说一句话 → AI 告诉你他在哪条线×哪个阶段×卡在哪层</div>
-        <ul class="ai-points">
-          <li>输入：客户说的话 / 选场景</li>
-          <li>AI 产出：双线归属 + 阶段定位 + 三层需求 + 岗位匹配 + 话术</li>
-          <li>有形交付：解码报告（PDF）</li>
-        </ul>
-        <div class="ai-result">→ 服务者 30 秒读懂客户，不再瞎聊</div>
-      </div>
-
-      <div class="ai-card highlight">
-        <div class="ai-num">02</div>
-        <div class="ai-emoji">📋</div>
-        <div class="ai-name">带看报告</div>
-        <div class="ai-tagline">带看时随手记 → AI 自动关联三层 + 品质评分</div>
-        <ul class="ai-points">
-          <li>输入：语音 / 照片 / 文字</li>
-          <li>AI 处理：关联物质/情感/精神三层 + 七维品质评分</li>
-          <li>有形交付：带看报告 PDF（可发给客户）</li>
-        </ul>
-        <div class="ai-result">→ 一份报告 = 一次专业背书</div>
-      </div>
-
-      <div class="ai-card">
-        <div class="ai-num">03</div>
-        <div class="ai-emoji">✅</div>
-        <div class="ai-name">六维品质测评</div>
-        <div class="ai-tagline">6-10 题 → AI 评分 + 三层呈现 + 可分享卡</div>
-        <ul class="ai-points">
-          <li>输入：服务者或客户答 6-10 题</li>
-          <li>AI 产出：七维评分 + 物质/情感/精神分层</li>
-          <li>有形交付：品质评分卡（可分享朋友圈）</li>
-        </ul>
-        <div class="ai-result">→ 客户看到 = 信任建立</div>
-      </div>
-    </div>
-
-    <div class="ai-takeaway">
-      <div class="ai-takeaway-icon">💡</div>
-      <div class="ai-takeaway-text">
-        <b>记住一件事：</b>你不只是用知识底座查词条——<br>
-        <span class="hl">客户说一句话 → 解码器告诉你他在哪 → 带看报告记录你的专业 → 品质测评证明你靠谱</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 消费者全图 · 人生阶段 + 住得好三层 = 关键词条 -->
-<section class="section" id="consumerFullView">
-  <div class="consumer-full">
-    <div class="cf-tag">📚 消费者词典 · 122 个关键词条的可查询入口</div>
-    <h2 class="cf-title">住得好 = <span class="hl">三层递进</span> × <span class="hl">人生双纵轴</span></h2>
-    <p class="cf-sub">消费者视角的两条主轴，都被打包成可独立查询的关键词条</p>
-
-    <!-- 住得好七维（4+2+1=7） -->
-    <div class="cf-block">
-      <div class="cf-block-head">
-        <div class="cf-block-num">A</div>
+function renderPolicyCard(){
+  const p=POLICY_CARD;
+  const entries=ENTRIES.filter(e=>e.domain===p.id);
+  document.getElementById('policy-card').innerHTML=`
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px;cursor:pointer" onclick="togglePolicyEntries()">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:28px">${p.icon}</span>
         <div>
-          <div class="cf-block-title">住得好七维</div>
-          <div class="cf-block-sub">横向 · 物质 4 + 情感 2 + 精神 1 = 七维品质模型</div>
+          <div style="font-size:15px;font-weight:700;color:var(--dk)">${p.name}</div>
+          <div style="font-size:11px;color:var(--td);margin-top:2px">${p.desc} · ${p.count}词条</div>
         </div>
       </div>
-      <div class="cf-layer-group">
-        <div class="cf-layer-label l-physical">
-          <span class="cf-layer-icon">🔒</span>
-          <span class="cf-layer-name">物质层 · 能住吗？</span>
-          <span class="cf-layer-meta">4 维</span>
-        </div>
-        <div class="cf-tags">
-          <span class="cf-keyword cf-physical">🛡 安全</span>
-          <span class="cf-keyword cf-physical">💚 健康</span>
-          <span class="cf-keyword cf-physical">🚪 便利</span>
-          <span class="cf-keyword cf-physical">💰 经济</span>
-        </div>
-      </div>
-
-      <div class="cf-layer-group">
-        <div class="cf-layer-label l-emotion">
-          <span class="cf-layer-icon">💗</span>
-          <span class="cf-layer-name">情感层 · 想住吗？</span>
-          <span class="cf-layer-meta">2 维</span>
-        </div>
-        <div class="cf-tags">
-          <span class="cf-keyword cf-emotion">🛋 舒适</span>
-          <span class="cf-keyword cf-emotion">🎨 美观</span>
-        </div>
-      </div>
-
-      <div class="cf-layer-group">
-        <div class="cf-layer-label l-spirit">
-          <span class="cf-layer-icon">✨</span>
-          <span class="cf-layer-name">精神层 · 值吗？</span>
-          <span class="cf-layer-meta">1 维</span>
-        </div>
-        <div class="cf-tags">
-          <span class="cf-keyword cf-spirit">🗽 自在</span>
-          <span class="cf-keyword cf-spirit-note">选择自由 · 不被将就 · 住得像自己</span>
-        </div>
-      </div>
-
-      <div class="cf-overview">
-        <span class="cf-keyword cf-all" style="font-size:14px;padding:12px 24px;">🏠 查「住得好」总词条 →</span>
-      </div>
+      <a href="${p.link}" onclick="event.stopPropagation()" style="display:inline-block;padding:7px 14px;background:var(--p);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap">查看完整执行方案 →</a>
     </div>
-
-    <!-- 人生双纵轴 -->
-    <div class="cf-block">
-      <div class="cf-block-head">
-        <div class="cf-block-num">B</div>
-        <div>
-          <div class="cf-block-title">人生双纵轴 · 9 个阶段</div>
-          <div class="cf-block-sub">纵向 · 消费者在居住旅程中的位置</div>
-        </div>
-      </div>
-      <div class="cf-axis-grid">
-        <div class="cf-axis-col">
-          <div class="cf-axis-name">🏡 购房线 · 5 阶段</div>
-          <div class="cf-stage">
-            <span class="stage-num">①</span>
-            <span class="stage-name">首套房</span>
-            <span class="stage-sub">新房/二手</span>
-          </div>
-          <div class="cf-stage">
-            <span class="stage-num">②</span>
-            <span class="stage-name">成家改善</span>
-            <span class="stage-sub">置换升级</span>
-          </div>
-          <div class="cf-stage">
-            <span class="stage-num">③</span>
-            <span class="stage-name">子女教育</span>
-            <span class="stage-sub">学区房</span>
-          </div>
-          <div class="cf-stage">
-            <span class="stage-num">④</span>
-            <span class="stage-name">品质升级</span>
-            <span class="stage-sub">换房升级</span>
-          </div>
-          <div class="cf-stage">
-            <span class="stage-num">⑤</span>
-            <span class="stage-name">适老安享</span>
-            <span class="stage-sub">置换适老</span>
-          </div>
-        </div>
-        <div class="cf-axis-col">
-          <div class="cf-axis-name">🏢 租住线 · 4 阶段</div>
-          <div class="cf-stage">
-            <span class="stage-num">①</span>
-            <span class="stage-name">起步租房</span>
-            <span class="stage-sub">普租/公寓</span>
-          </div>
-          <div class="cf-stage">
-            <span class="stage-num">②</span>
-            <span class="stage-name">租住改善</span>
-            <span class="stage-sub">改善型</span>
-          </div>
-          <div class="cf-stage">
-            <span class="stage-num">③</span>
-            <span class="stage-name">家庭租房</span>
-            <span class="stage-sub">家庭型</span>
-          </div>
-          <div class="cf-stage">
-            <span class="stage-num">④</span>
-            <span class="stage-name">品质租住</span>
-            <span class="stage-sub">租住升级</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cf-cta">
-      👉 点搜索框，输入任意关键词试试 · 或点 <a href="#">查看全 139 词条</a> · 或 <a href="#">按人生阶段浏览</a>
-    </div>
-  </div>
-</section>
-<section class="section">
-  <div class="section-head">
-    <div>
-      <div class="section-title">挑一个角色开始</div>
-      <div class="section-sub">7 类用户已折叠为 3 大主力入口 · 即将开放</div>
-    </div>
-    <a class="section-link" href="#">查看全部 7 类角色 →</a>
-  </div>
-
-  <div class="scene-grid">
-    <div class="scene-card s1">
-      <div class="scene-icon">🏠</div>
-      <div class="scene-title">我是消费者</div>
-      <div class="scene-desc">先看再决策。30% 摘要公开，无需注册就能读懂"住得好"到底在说什么。</div>
-      <div class="scene-tags">
-        <span class="tag">居住六维</span>
-        <span class="tag">30 条消费者问答</span>
-        <span class="tag">无需登录</span>
-      </div>
-      <div class="scene-value">
-        <div class="value-label">🎯 这个视角对服务者有什么用？</div>
-        <ul class="value-list">
-          <li><b>认知拉齐</b>：服务者拿这套"住得好"定义去影响消费者，让客户能说清"我要什么"——而不是"我就要个便宜的"。</li>
-          <li><b>人生阶段全图</b>：覆盖购房线 5 阶段（首套房→适老安享）+ 租住线 4 阶段，让服务者一眼定位客户在哪个阶段。</li>
-          <li><b>三步走字典</b>：消费者问答 + 阶段关键词 + 决策清单，三层结构都被打包成可查询词条。</li>
-        </ul>
-        <div class="value-cta">服务者拿去 → 影响客户 → <span class="hl">客户能说清自己要什么</span></div>
-      </div>
-      <div class="scene-cta">
-        <span>进入消费者视角</span>
-        <span class="scene-arrow">→</span>
-      </div>
-    </div>
-
-    <div class="scene-card s2">
-      <div class="scene-icon">🛠</div>
-      <div class="scene-title">我是服务者</div>
-      <div class="scene-desc">身体 · 心理 · 尊严 · 质感。SOP + 案例 + 自查清单,接单前过一遍。</div>
-      <div class="scene-tags">
-        <span class="tag">服务者四维</span>
-        <span class="tag">52 个 SOP</span>
-        <span class="tag">案例库</span>
-      </div>
-      <div class="scene-value">
-        <div class="value-label">🎯 这个视角对服务者有什么用？</div>
-        <ul class="value-list">
-          <li><b>被重视</b>：你的一线经验被收录进字典（4 维 × 9 岗位 = 36 个能力模型）——不再是一个人摸索。</li>
-          <li><b>被关注</b>：服务者自身的身体·心理·尊严·质感，跟客户需求一样被看见——不是工具人。</li>
-          <li><b>被支持</b>：作业前 SOP 自查 + 作业中 AI 解码器辅助 + 作业后能力卡证明——AI 不是替代你，是放大你。</li>
-          <li><b>被服务</b>：品控反馈 + 培养师定向训练 + 品质评分卡可分享给客户——你的靠谱有据可查。</li>
-        </ul>
-        <div class="value-cta">你 <span class="hl">配得上被好好对待</span>，先从被自己人好好对待开始</div>
-      </div>
-      <div class="scene-cta">
-        <span>进入服务者视角</span>
-        <span class="scene-arrow">→</span>
-      </div>
-    </div>
-
-    <div class="scene-card s3">
-      <div class="scene-icon">✅</div>
-      <div class="scene-title">我是审核员 / 培养师</div>
-      <div class="scene-desc">品控手册 v4.0 + 评分表 + 争议处理流程。审核有据可依，培养有迹可循。</div>
-      <div class="scene-tags">
-        <span class="tag">品控手册 v4.0</span>
-        <span class="tag">评分表</span>
-        <span class="tag">争议处理</span>
-      </div>
-      <div class="scene-value">
-        <div class="value-label">🎯 这个视角对服务者有什么用？</div>
-        <ul class="value-list">
-          <li><b>审核员视角</b> = 帮服务者把控质量底线。审核员依据三层七维标准审视服务者作业，输出可申诉的评分与改进建议，让"靠谱"可证明。</li>
-          <li><b>培养师视角</b> = 帮服务者补能力短板。培养师基于"住得好三层×双纵轴"框架，定向训练薄弱项（物质层 SOP / 情感层共情 / 精神层尊严），形成"测→学→练→考→评"闭环。</li>
-        </ul>
-        <div class="value-cta">让服务者<span class="hl">配得上被好好对待</span></div>
-      </div>
-      <div class="scene-cta">
-        <span>进入审核视角</span>
-        <span class="scene-arrow">→</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 消费者零门槛入口（深绿面板） -->
-<section class="section">
-  <div class="consumer-panel">
-    <div class="consumer-grid">
-      <div class="consumer-left">
-        <h2>消费者预览模式</h2>
-        <p>30% 摘要公开 · 70% 引导注册 · 不用登录就能读懂"住得好"的三层递进。<br>看完再决定要不要体验完整版。</p>
-        <div class="consumer-cta-row">
-          <a class="btn-primary" href="#">立即看预览 →</a>
-          <a class="btn-ghost" href="#">先注册备用</a>
-        </div>
-      </div>
-      <div class="consumer-right">
-        <div class="preview-title">📖 本周热读 · 消费者问答</div>
-        <div class="preview-item">
-          <div class="preview-emoji">🏠</div>
-          <div class="preview-content">
-            <div class="preview-q">住得好 = 什么？</div>
-            <div class="preview-a">风声北极星：帮助服务者，让客户住得好...</div>
-            <span class="preview-lock">🔒 完整版需注册</span>
-          </div>
-        </div>
-        <div class="preview-item">
-          <div class="preview-emoji">🔒</div>
-          <div class="preview-content">
-            <div class="preview-q">物质层 · 能住吗？</div>
-            <div class="preview-a">安全 · 健康 · 便利 · 经济 四维...</div>
-            <span class="preview-lock">🔒 完整版需注册</span>
-          </div>
-        </div>
-        <div class="preview-item">
-          <div class="preview-emoji">💗</div>
-          <div class="preview-content">
-            <div class="preview-q">情感层 · 想住吗？</div>
-            <div class="preview-a">舒适 · 美观 二维...</div>
-            <span class="preview-lock">🔒 完整版需注册</span>
-          </div>
-        </div>
-        <div class="preview-item">
-          <div class="preview-emoji">✨</div>
-          <div class="preview-content">
-            <div class="preview-q">精神层 · 住得自在</div>
-            <div class="preview-a">选择自由 · 不被将就 · 住得像自己...</div>
-            <span class="preview-lock">🔒 完整版需注册</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 字典目录 · 服务者自助查询 -->
-<section class="section" id="dictIndex">
-  <div class="dict-index">
-    <div class="di-head">
-      <div class="di-tag">📖 字典目录 · 服务者自助查询</div>
-      <h2 class="di-title">139 个词条 + 6 个岗位 = 行业最完整的一本居住字典</h2>
-      <p class="di-sub">点任意分类展开 · 直接看词条 · 不需要登录</p>
-    </div>
-
-    <!-- 业务字典 7 域 -->
-    <div class="di-block">
-      <div class="di-block-head">
-        <div class="di-block-num">📚</div>
-        <div>
-          <div class="di-block-title">业务字典 · 8 大业务域</div>
-          <div class="di-block-sub">139 条词条 · 8 域 · 全部可查</div>
-        </div>
-        <span class="di-verify">✓ 已验证</span>
-      </div>
-      <div class="di-domains">
-        <div class="di-domain">
-          <div class="di-domain-head">
-            <span class="di-domain-icon">🏘</span>
-            <span class="di-domain-name">域 1 · 房产交易</span>
-            <span class="di-domain-count">20 条</span>
-          </div>
-          <div class="di-words">
-            <span class="di-word">二手房交易流程</span>
-            <span class="di-word">新房认购</span>
-            <span class="di-word">资金监管</span>
-            <span class="di-word">税费计算</span>
-            <span class="di-word">+ 16 条</span>
-          </div>
-        </div>
-        <div class="di-domain">
-          <div class="di-domain-head">
-            <span class="di-domain-icon">🏠</span>
-            <span class="di-domain-name">域 2 · 租赁</span>
-            <span class="di-domain-count">26 条</span>
-          </div>
-          <div class="di-words">
-            <span class="di-word">普租签约</span>
-            <span class="di-word">公寓托管</span>
-            <span class="di-word">押一付三</span>
-            <span class="di-word">转租流程</span>
-            <span class="di-word">+ 22 条</span>
-          </div>
-        </div>
-        <div class="di-domain">
-          <div class="di-domain-head">
-            <span class="di-domain-icon">🪚</span>
-            <span class="di-domain-name">域 3 · 整装</span>
-            <span class="di-domain-count">15 条</span>
-          </div>
-          <div class="di-words">
-            <span class="di-word">包工包料</span>
-            <span class="di-word">设计方案</span>
-            <span class="di-word">施工验收</span>
-            <span class="di-word">+ 12 条</span>
-          </div>
-        </div>
-        <div class="di-domain">
-          <div class="di-domain-head">
-            <span class="di-domain-icon">🧹</span>
-            <span class="di-domain-name">域 4 · 家政</span>
-            <span class="di-domain-count">15 条</span>
-          </div>
-          <div class="di-words">
-            <span class="di-word">日常保洁</span>
-            <span class="di-word">深度清洁</span>
-            <span class="di-word">家电清洗</span>
-            <span class="di-word">+ 12 条</span>
-          </div>
-        </div>
-        <div class="di-domain">
-          <div class="di-domain-head">
-            <span class="di-domain-icon">👴</span>
-            <span class="di-domain-name">域 5 · 适老</span>
-            <span class="di-domain-count">待小鱼儿</span>
-          </div>
-          <div class="di-words">
-            <span class="di-word">适老化改造</span>
-            <span class="di-word">无障碍设计</span>
-            <span class="di-word">+ 高频词条</span>
-          </div>
-        </div>
-        <div class="di-domain">
-          <div class="di-domain-head">
-            <span class="di-domain-icon">🏡</span>
-            <span class="di-domain-name">域 6 · 物业</span>
-            <span class="di-domain-count">待小鱼儿</span>
-          </div>
-          <div class="di-words">
-            <span class="di-word">物业费收缴</span>
-            <span class="di-word">维修报修</span>
-            <span class="di-word">+ 高频词条</span>
-          </div>
-        </div>
-        <div class="di-domain">
-          <div class="di-domain-head">
-            <span class="di-domain-icon">💼</span>
-            <span class="di-domain-name">域 7 · 服务者</span>
-            <span class="di-domain-count">待小鱼儿</span>
-          </div>
-          <div class="di-words">
-            <span class="di-word">SOP 自查</span>
-            <span class="di-word">客户接单</span>
-            <span class="di-word">+ 高频词条</span>
-          </div>
-        </div>
-        <div class="di-domain highlight-domain">
-          <div class="di-domain-head">
-            <span class="di-domain-icon">📜</span>
-            <span class="di-domain-name">域 8 · 十五五政策</span>
-            <span class="di-domain-count">18 条</span>
-          </div>
-          <div class="di-words">
-            <span class="di-word">好房子</span>
-            <span class="di-word">新模式</span>
-            <span class="di-word">城市更新</span>
-            <span class="di-word">改善性住房</span>
-            <span class="di-word">+ 14 条</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 人才字典 6 岗位（v7.2 真实数据） -->
-    <div class="di-block">
-      <div class="di-block-head">
-        <div class="di-block-num">👥</div>
-        <div>
-          <div class="di-block-title">人才字典 · 4 域 6 岗位（v7.2）</div>
-          <div class="di-block-sub">服务者能力图谱 · 每个岗位都有 4 维 × 3 层级能力模型 · 三方交叉验证</div>
-        </div>
-        <span class="di-verify">✓ 已验证</span>
-      </div>
-      <div class="di-roles">
-        <div class="di-role">
-          <div class="di-role-emoji">🏘</div>
-          <div class="di-role-content">
-            <div class="di-role-name">A1 · 房产经纪人</div>
-            <div class="di-role-meta-row">
-              <span class="di-role-meta">域1·房产交易</span>
-              <span class="di-role-meta">✅ 国标 4-06-02-01</span>
+    <div id="policy-entries" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+      ${entries.map(e=>{
+        const badgeCls=e.srcType.includes('国家')?'badge-gb':e.srcType.includes('法律')?'badge-law':e.srcType.includes('学术')?'badge-academic':e.srcType.includes('平台')?'badge-platform':'badge-industry';
+        return `<div class="entry-card" onclick="event.stopPropagation();toggleDetail(this)" style="margin-bottom:8px">
+          <div class="entry-header"><span class="entry-name">${e.name}</span><span class="entry-id">${e.id}</span></div>
+          <div class="entry-alias">别名：${e.alias}</div>
+          <div class="entry-def">${e.def}</div>
+          <div class="entry-source"><span class="src-label">📖 出处：</span><span class="source-badge ${badgeCls}">${e.srcType}</span> ${e.source.split('；')[0]}</div>
+          <div class="entry-detail" onclick="event.stopPropagation()">
+            <div class="layer-tabs">
+              <div class="layer-tab active" onclick="switchLayer(this,'detail')">📋 详情</div>
+              <div class="layer-tab" onclick="switchLayer(this,'trace')">🔗 溯源</div>
+            </div>
+            <div class="layer-content active" data-layer="detail">
+              <div class="detail-row"><span class="detail-label">属性拆解：</span><span class="detail-val">${e.attrs}</span></div>
+              <div class="detail-row"><span class="detail-label">适用场景：</span><span class="detail-val">${e.scene}</span></div>
+              <div class="detail-row speech"><span class="detail-label">✅ 正向话术：</span><span class="detail-val">${e.posSpeech||'暂无'}</span></div>
+              <div class="detail-row speech"><span class="detail-label">⚠️ 反向话术：</span><span class="detail-val">${e.negSpeech||'暂无'}</span></div>
+            </div>
+            <div class="layer-content" data-layer="trace">
+              <div class="detail-row"><span class="detail-label">📄 法规原文：</span><span class="detail-val">${e.source}</span></div>
+              <div class="detail-row"><span class="detail-label">🏷️ 来源类型：</span><span class="source-badge ${badgeCls}">${e.srcType}</span></div>
+              <div class="detail-row"><span class="detail-label">🔗 溯源查询：</span><span class="detail-val">${e.srcType.includes('政策')?'<a class="source-link" href="https://www.gov.cn" target="_blank">中国政府网</a> <a class="source-link" href="https://www.mohurd.gov.cn" target="_blank">住建部官网</a>':e.srcType.includes('行业')?'<a class="source-link" href="https://www.cnki.net" target="_blank">中国知网</a>':'暂无在线链接'}</span></div>
             </div>
           </div>
-          <div class="di-role-level">4 维 × 3 层</div>
+          <div class="expand-hint">▼ 点击展开详情</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="font-size:10px;color:var(--td);text-align:center;margin-top:8px" id="policy-toggle-hint">▼ 点击展开${p.count}条政策词条</div>
+  </div>`;
+}
+
+function togglePolicyEntries(){
+  const el=document.getElementById('policy-entries');
+  const hint=document.getElementById('policy-toggle-hint');
+  if(el.style.display==='none'){
+    el.style.display='block';
+    hint.textContent='▲ 收起政策词条';
+  }else{
+    el.style.display='none';
+    hint.textContent='▼ 点击展开'+POLICY_CARD.count+'条政策词条';
+  }
+}
+
+function switchDomain(id){
+  if(typeof track==="object"&&track.use){
+    track.use('domain_switch',{from:currentDomain,to:id});
+  } else if(typeof track==="function"){
+    track("tab_switch",{tab:id});
+  }
+  currentDomain=id;
+  document.querySelectorAll('.domain-tab').forEach(t=>t.classList.toggle('active',t.dataset.domain===id));
+  renderEntries();
+  renderProductRecommend();
+}
+
+function searchEntries(query){
+  if(!query||query.length<2) return [];
+  query=query.toLowerCase();
+  return ENTRIES.filter(e=>
+    (e.name&&e.name.toLowerCase().includes(query))||
+    (e.alias&&e.alias.toLowerCase().includes(query))||
+    (e.def&&e.def.toLowerCase().includes(query))||
+    (e.consumerQ&&e.consumerQ.toLowerCase().includes(query))||
+    (e.simpleAnswer&&e.simpleAnswer.toLowerCase().includes(query))||
+    (e.scene&&e.scene.toLowerCase().includes(query))||
+    (e.posSpeech&&e.posSpeech.toLowerCase().includes(query))||
+    (e.negSpeech&&e.negSpeech.toLowerCase().includes(query))
+  ).slice(0,8);
+}
+
+function renderSearchResults(results,query){
+  const container=document.getElementById('search-results');
+  if(!container) return;
+  if(results.length===0){
+    container.innerHTML=`<div class="search-no-results">未找到"${query}"相关词条</div>`;
+    container.classList.add('active');
+    return;
+  }
+  container.innerHTML=results.map(e=>`
+    <div class="search-result-item" data-id="${e.id}">
+      <div class="result-name">${e.name}</div>
+      <div class="result-q">${e.consumerQ||e.def||''}</div>
+    </div>`).join('');
+  container.querySelectorAll('.search-result-item').forEach(item=>{
+    item.addEventListener('click',function(){
+      const id=this.dataset.id;
+      document.getElementById('search-input').value='';
+      container.classList.remove('active');
+      // 滚动到对应词条并高亮
+      document.querySelectorAll('.entry-card').forEach(c=>c.classList.remove('highlight'));
+      const target=document.querySelector(`[data-entry-id="${id}"]`);
+      if(target){target.scrollIntoView({behavior:'smooth',block:'center'});target.classList.add('highlight');setTimeout(()=>target.classList.remove('highlight'),2000);}
+    });
+  });
+  container.classList.add('active');
+}
+
+function updateSceneCount(){
+  const filtered=getFilteredEntries();
+  const count=document.getElementById('scene-count');
+  if(count) count.textContent=`显示${filtered.length}条相关词条`;
+}
+
+function getFilteredEntries(){
+  let entries=ENTRIES.filter(e=>e.domain===currentDomain);
+  // 场景过滤
+  if(currentScene!=='all'){
+    const scene=SCENES.find(s=>s.id===currentScene);
+    if(scene){
+      entries=entries.filter(e=>
+        scene.keywords.some(kw=>
+          (e.name&&e.name.includes(kw))||
+          (e.scene&&e.scene.includes(kw))||
+          (e.def&&e.def.includes(kw))||
+          (e.posSpeech&&e.posSpeech.includes(kw))||
+          (e.negSpeech&&e.negSpeech.includes(kw))
+        )
+      );
+    }
+  }
+  // 搜索过滤（如果搜索框有内容）
+  const query=document.getElementById('search-input')?.value?.trim();
+  if(query&&query.length>=2){
+    entries=entries.filter(e=>
+      (e.name&&e.name.toLowerCase().includes(query.toLowerCase()))||
+      (e.alias&&e.alias.toLowerCase().includes(query.toLowerCase()))||
+      (e.def&&e.def.toLowerCase().includes(query.toLowerCase()))||
+      (e.consumerQ&&e.consumerQ.toLowerCase().includes(query.toLowerCase()))
+    );
+  }
+  return entries;
+}
+
+function renderQaExamples(){
+  const container=document.getElementById('qa-examples');
+  if(!container) return;
+  // 从所有词条的consumerQ字段提取真实消费者问题
+  const questions=ENTRIES
+    .filter(e=>e.consumerQ)
+    .map(e=>({q:e.consumerQ,id:e.id}))
+    .sort(()=>Math.random()-0.5)
+    .slice(0,6);
+  container.innerHTML=questions.map(item=>`<div class="qa-tag" data-id="${item.id}">${item.q}</div>`).join('');
+  container.querySelectorAll('.qa-tag').forEach(tag=>{
+    tag.addEventListener('click',function(){
+      const id=this.dataset.id;
+      const qText=this.textContent;
+      if(typeof track==="object"&&track.use){
+        track.use('qa_click',{entryId:id,question:qText,domain:currentDomain});
+      }
+      // 滚动到对应词条并高亮
+      document.querySelectorAll('.entry-card').forEach(c=>c.classList.remove('highlight'));
+      const target=document.querySelector(`[data-entry-id="${id}"]`);
+      if(target){
+        target.scrollIntoView({behavior:'smooth',block:'center'});
+        target.classList.add('highlight');
+        setTimeout(()=>target.classList.remove('highlight'),3000);
+      }
+    });
+  });
+}
+
+function renderEntries(){
+  const list=document.getElementById('entry-list');
+  const filtered=getFilteredEntries();
+  list.innerHTML=filtered.map((e,idx)=>{
+    const badgeCls=e.srcType.includes('国家')?'badge-gb':e.srcType.includes('法律')?'badge-law':e.srcType.includes('学术')?'badge-academic':e.srcType.includes('平台')?'badge-platform':'badge-industry';
+    // 溯源链接：根据srcType生成
+    let sourceLinks='';
+    if(e.srcType.includes('国家'))sourceLinks+='<a class="source-link" href="https://std.samr.gov.cn" target="_blank">国家标准信息平台</a> ';
+    if(e.srcType.includes('法律')||e.source.includes('民法典'))sourceLinks+='<a class="source-link" href="https://www.gov.cn" target="_blank">中国政府法规查询</a> ';
+    if(e.srcType.includes('学术'))sourceLinks+='<a class="source-link" href="https://www.cnki.net" target="_blank">中国知网</a> ';
+    if(e.srcType.includes('部门规章'))sourceLinks+='<a class="source-link" href="https://www.mohurd.gov.cn" target="_blank">住建部官网</a> ';
+    if(e.srcType.includes('平台'))sourceLinks+='<a class="source-link" href="https://www.ke.com" target="_blank">贝壳平台</a> ';
+    // 溯源层
+    const traceLayer=`
+      <div class="layer-content" data-layer="trace">
+        <div class="detail-row"><span class="detail-label">📄 法规原文：</span><span class="detail-val">${e.source}</span></div>
+        <div class="detail-row"><span class="detail-label">🏷️ 来源类型：</span><span class="source-badge ${badgeCls}">${e.srcType}</span></div>
+        <div class="detail-row"><span class="detail-label">🔗 溯源查询：</span><span class="detail-val">${sourceLinks||'暂无在线链接'}</span></div>
+        <div class="detail-row" style="margin-top:8px;padding:6px 8px;background:rgba(61,90,62,.04);border-radius:4px;font-size:11px;color:var(--td)">
+          💡 提示：以上链接为权威查询入口，具体条文请在平台内搜索法规编号或名称
         </div>
-        <div class="di-role">
-          <div class="di-role-emoji">🏡</div>
-          <div class="di-role-content">
-            <div class="di-role-name">A2 · 居住服务顾问</div>
-            <div class="di-role-meta-row">
-              <span class="di-role-meta">域1·房产交易</span>
-              <span class="di-role-meta">⚠️ 无独立国标</span>
-            </div>
-          </div>
-          <div class="di-role-level">4 维 × 3 层</div>
+      </div>`;
+    const consumerQ=e.consumerQ?'<div class="entry-consumer-q">'+e.consumerQ+'</div>':'';
+    const simpleAnswer=e.simpleAnswer?'<div class="entry-consumer-answer">'+e.simpleAnswer+'</div>':'';
+    const consumerBenefit=e.consumerBenefit?'<div class="entry-consumer-benefit">'+e.consumerBenefit+'</div>':'';
+    // 扩展字段：双视角叙事
+    const consumerNarrative=e.consumerNarrative?'<div class="entry-consumer-narrative">🏠 '+e.consumerNarrative+'</div>':'';
+    const serviceNarrative=e.serviceNarrative?'<div class="entry-service-narrative">👔 '+e.serviceNarrative+'</div>':'';
+    // 扩展字段：FAQ列表
+    const faqRows=e.faq&&e.faq.length?e.faq.map((f,i)=>`<div class="faq-item"><div class="faq-q">Q${i+1}: ${f.q||f.question||f}</div><div class="faq-a">${f.a||f.answer||''}</div></div>`).join(''):'';
+    const faqSection=faqRows?`<div class="entry-faq"><div class="faq-header">❓ 常见问答（${e.faq.length}条）</div>${faqRows}</div>`:'';
+    // 扩展字段：对比表
+    const compareSection=e.compareTable?'<div class="entry-compare"><div class="compare-header">⚖️ 对比参考</div><div class="compare-content">'+e.compareTable+'</div></div>':'';
+    // 扩展字段：权威引用
+    const authRef=e.authRef?'<div class="entry-auth-ref"><span class="detail-label">📚 权威引用：</span><span class="detail-val">'+e.authRef+'</span></div>':'';
+    // layer tab判断：详情/溯源/AI解读（AI解读仅当有consumerNarrative或faq时才显示）
+    const hasAiFields=e.consumerNarrative||e.serviceNarrative||(e.faq&&e.faq.length)||e.compareTable||e.authRef;
+    const layerTabs=`<div class="layer-tab active" onclick="switchLayer(this,'detail')">📋 详情</div><div class="layer-tab" onclick="switchLayer(this,'trace')">🔗 溯源</div>${hasAiFields?'<div class="layer-tab" onclick="switchLayer(this,\'aiview\')">🤖 AI解读</div>':''}`;
+    // AI解读层内容
+    const aiLayerContent=`
+        <div class="layer-content" data-layer="aiview">
+          ${e.consumerNarrative?'<div class="detail-row"><span class="detail-label">🏠 客户视角：</span><span class="detail-val">'+e.consumerNarrative+'</span></div>':''}
+          ${e.serviceNarrative?'<div class="detail-row"><span class="detail-label">👔 服务者视角：</span><span class="detail-val">'+e.serviceNarrative+'</span></div>':''}
+          ${faqRows?'<div class="detail-row" style="flex-direction:column;gap:8px">'+faqSection+'</div>':''}
+          ${compareSection?'<div class="detail-row" style="flex-direction:column;gap:4px">'+compareSection+'</div>':''}
+          ${authRef}
+          ${!hasAiFields?'<div class="detail-row"><span class="detail-val" style="color:var(--td)">该词条暂无AI增强内容</span></div>':''}
+        </div>`;
+    return `<div class="entry-card" data-entry-id="${e.id}" onclick="toggleDetail(this)">
+      <div class="entry-header"><span class="entry-name">${e.name}</span><span class="entry-id">${e.id}</span></div>
+      ${consumerQ}
+      <div class="entry-def">${e.def}</div>
+      ${simpleAnswer}
+      ${consumerBenefit}
+      ${consumerNarrative}
+      ${serviceNarrative}
+      <div class="entry-source"><span class="src-label">📖 出处：</span><span class="source-badge ${badgeCls}">${e.srcType}</span> ${e.source.split('；')[0]}</div>
+      <div class="entry-detail" onclick="event.stopPropagation()">
+        <div class="layer-tabs">${layerTabs}</div>
+        <div class="layer-content active" data-layer="detail">
+          <div class="detail-row"><span class="detail-label">属性拆解：</span><span class="detail-val">${e.attrs||'暂无'}</span></div>
+          <div class="detail-row"><span class="detail-label">适用场景：</span><span class="detail-val">${e.scene||'暂无'}</span></div>
+          ${e.consumerQ?'<div class="detail-row"><span class="detail-label">💬 客户常问：</span><span class="detail-val">'+e.consumerQ+'</span></div>':''}
+          ${e.simpleAnswer?'<div class="detail-row"><span class="detail-label">💡 通俗解释：</span><span class="detail-val">'+e.simpleAnswer+'</span></div>':''}
+          ${e.consumerBenefit?'<div class="detail-row"><span class="detail-label">✨ 核心好处：</span><span class="detail-val">'+e.consumerBenefit+'</span></div>':''}
+          ${e.posSpeech?'<div class="detail-row speech"><span class="detail-label">✅ 正向话术：</span><span class="detail-val">'+e.posSpeech+'</span></div>':''}
+          ${e.negSpeech?'<div class="detail-row speech"><span class="detail-label">⚠️ 反向话术：</span><span class="detail-val">'+e.negSpeech+'</span></div>':''}
         </div>
-        <div class="di-role">
-          <div class="di-role-emoji">🏠</div>
-          <div class="di-role-content">
-            <div class="di-role-name">B1 · 租赁管家</div>
-            <div class="di-role-meta-row">
-              <span class="di-role-meta">域2·房屋租赁</span>
-              <span class="di-role-meta">⚠️ 无独立国标</span>
-            </div>
-          </div>
-          <div class="di-role-level">4 维 × 3 层</div>
-        </div>
-        <div class="di-role">
-          <div class="di-role-emoji">🪚</div>
-          <div class="di-role-content">
-            <div class="di-role-name">B2 · 整装设计师</div>
-            <div class="di-role-meta-row">
-              <span class="di-role-meta">域3·整装家居</span>
-              <span class="di-role-meta">✅ 国标 4-08-08-07</span>
-            </div>
-          </div>
-          <div class="di-role-level">4 维 × 3 层</div>
-        </div>
-        <div class="di-role">
-          <div class="di-role-emoji">📐</div>
-          <div class="di-role-content">
-            <div class="di-role-name">B3 · 家装工程监理</div>
-            <div class="di-role-meta-row">
-              <span class="di-role-meta">域3·整装家居</span>
-              <span class="di-role-meta">✅ 法规依据</span>
-            </div>
-          </div>
-          <div class="di-role-level">4 维 × 3 层</div>
-        </div>
-        <div class="di-role">
-          <div class="di-role-emoji">🧹</div>
-          <div class="di-role-content">
-            <div class="di-role-name">C1 · 家政服务员</div>
-            <div class="di-role-meta-row">
-              <span class="di-role-meta">域4·家政保洁</span>
-              <span class="di-role-meta">✅ 多项国标</span>
-            </div>
-          </div>
-          <div class="di-role-level">4 维 × 3 层</div>
-        </div>
+        ${traceLayer}
+        ${hasAiFields?aiLayerContent:''}
       </div>
-      <div class="di-role-note">
-        ⏸️ 域X·物业服务（C2 物业管家 · 国标 4-06-01-01）暂缓开发 · 等待团队接触增多后启动
-      </div>
-    </div>
+      <div class="expand-hint">▼ 查看详情/出处</div>
+    </div>`;
+  }).join('');
+}
 
-    <!-- 查询入口 -->
-    <div class="di-actions">
-      <a class="di-action primary" href="#all-words">📚 查全部 139 词条（按拼音）→</a>
-      <a class="di-action" href="#by-stage">📍 按人生阶段浏览（11 阶段）→</a>
-      <a class="di-action" href="#by-layer">🎯 按住得好三层浏览（10 要素）→</a>
-    </div>
-  </div>
-</section>
-  <div class="guide-inner">
-    <div class="guide-head">
-      <h2>读完字典，下一步去哪？</h2>
-      <p>知识底座只是起点 · 6 个产品 + 1 套心伴关怀 + 2 本验证字典 = 服务者被重视的完整链路</p>
-    </div>
-    <div class="guide-grid">
-      <a class="guide-card" href="#">
-        <div class="guide-icon">🧭</div>
-        <div class="guide-name">首页</div>
-        <div class="guide-desc">了解风声在做什么 · 即将上线</div>
-        <span class="guide-arrow">↗</span>
-      </a>
-      <a class="guide-card" href="#">
-        <div class="guide-icon">📊</div>
-        <div class="guide-name">六维测评</div>
-        <div class="guide-desc">3 分钟测出你的居住六维</div>
-        <span class="guide-arrow">↗</span>
-      </a>
-      <a class="guide-card" href="#">
-        <div class="guide-icon">🎓</div>
-        <div class="guide-name">培养师</div>
-        <div class="guide-desc">从新手到认证服务者的路径</div>
-        <span class="guide-arrow">↗</span>
-      </a>
-      <a class="guide-card" href="#">
-        <div class="guide-icon">✅</div>
-        <div class="guide-name">品质测评</div>
-        <div class="guide-desc">服务者月度自评 · 品控打分</div>
-        <span class="guide-arrow">↗</span>
-      </a>
-      <a class="guide-card" href="#">
-        <div class="guide-icon">💬</div>
-        <div class="guide-name">客户解码器</div>
-        <div class="guide-desc">AI 帮你读懂客户的一句话</div>
-        <span class="guide-arrow">↗</span>
-      </a>
-      <a class="guide-card" href="#">
-        <div class="guide-icon">📋</div>
-        <div class="guide-name">带看报告</div>
-        <div class="guide-desc">随手记 · 自动关联三层 + 评分</div>
-        <span class="guide-arrow">↗</span>
-      </a>
-      <a class="guide-card" href="#">
-        <div class="guide-icon">🎓</div>
-        <div class="guide-name">Agent 培养师</div>
-        <div class="guide-desc">薄弱项定向训练 · 能力卡可分享</div>
-        <span class="guide-arrow">↗</span>
-      </a>
-      <a class="guide-card" href="#">
-        <div class="guide-icon">💚</div>
-        <div class="guide-name">心伴关怀</div>
-        <div class="guide-desc">服务者身体·心理·尊严·质感 · 关怀不替代</div>
-        <span class="guide-arrow">↗</span>
-      </a>
-      <a class="guide-card highlight-dict" href="#business-dict">
-        <div class="guide-icon">📚</div>
-        <div class="guide-name">业务字典 · 139 词条</div>
-        <div class="guide-desc">8 大业务域 · 已验证 · 全部可查</div>
-        <span class="guide-arrow">↗</span>
-      </a>
-      <a class="guide-card highlight-dict" href="#talent-dict">
-        <div class="guide-icon">👥</div>
-        <div class="guide-name">人才字典 · 6 岗位</div>
-        <div class="guide-desc">4 域 · 4 维×3 层能力模型 · v7.2</div>
-        <span class="guide-arrow">↗</span>
-      </a>
-      <a class="guide-card" href="#">
-        <div class="guide-icon">📖</div>
-        <div class="guide-name">完整产品矩阵</div>
-        <div class="guide-desc">认知线·作业线·能力线 · 6 产品全景</div>
-        <span class="guide-arrow">↗</span>
-      </a>
-    </div>
-  </div>
-</section>
+function switchLayer(tab,layer){
+  const container=tab.closest('.entry-detail');
+  container.querySelectorAll('.layer-tab').forEach(t=>t.classList.remove('active'));
+  container.querySelectorAll('.layer-content').forEach(c=>c.classList.remove('active'));
+  tab.classList.add('active');
+  container.querySelector('[data-layer="'+layer+'"]').classList.add('active');
+}
 
-<!-- Footer -->
-<footer>
-  <div class="footer-inner">
-    <div>© 2026 风声 · 居住服务行业的 AI 驱动业务字典</div>
-    <div class="footer-links">
-      <a href="#">关于风声</a>
-      <a href="#">GitHub Issues</a>
-      <a href="#">五步法铁令</a>
-      <a href="#">v1.0 视觉规范</a>
-    </div>
-  </div>
-</footer>
+function toggleDetail(card){
+  const nameEl=card.querySelector(".entry-name");
+  const entryId=card.dataset.entryId||'';
+  if(typeof track==="object"&&track.use){
+    track.use('entry_expand',{entryId,entryName:nameEl?nameEl.textContent:'',domain:currentDomain});
+  } else if(typeof track==="function"){
+    track("lookup",{entry_name:nameEl?nameEl.textContent:"",tab:currentDomain});
+  }
+  const detail=card.querySelector('.entry-detail');
+  detail.classList.toggle('open');
+}
 
+init();
+if(typeof track==="function") track("page_view",{referrer:document.referrer});
+</script>
+<script>
+const _startTime = Date.now();
+// track 函数由 tracker.js 提供，此处仅记录页面停留时长
+document.addEventListener("visibilitychange", function() {
+  if (document.visibilityState === "hidden") {
+    if (typeof track === 'function') track("page_leave", {
+      duration_sec: Math.round((Date.now()-_startTime)/1000)
+    });
+  }
+});
+
+function sendFeedback(type){
+  if (typeof track === 'function') track("feedback", {feedback: type, sentiment: type === '👍' ? 1 : -1});
+  document.querySelectorAll('.feedback-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  alert(type==='👍'?'感谢认可！我们会继续努力 💪':'收到！我们会持续改进 🙏');
+}
+</script>
+<div class="page-footer">
+  <div class="copyright">© 2026 风声 · 保留所有权利 · 未经授权禁止转载</div>
+  <div>数据来源：国家标准/行业标准/部门规章/学术研究/贝壳体系</div>
+  <div class="feedback-bar">
+    <span>这个工具对你有帮助吗？</span>
+    <button class="feedback-btn" onclick="sendFeedback('👍')">👍 有帮助</button>
+    <button class="feedback-btn" onclick="sendFeedback('👎')">👎 一般</button>
+  </div>
+</div>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"e02e5265cf6f49c09196db4252d69e7c","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
+<!-- v20260611f -->
 </html>
