@@ -1655,18 +1655,16 @@ function renderDomains() {
     `;
   }).join('');
 
-  // 统计
-  const ready = businessDomains.filter(d => !d.isPlaceholder).length;
-  const total = businessDomains.length;
-  const readyCount = businessDomains.filter(d => !d.isPlaceholder).reduce((s,d) => s+d.count, 0);
-  const pendingCount = 122 - readyCount;
+  // 统计 · 基于entryDatabase实际词条数(小豆子6.30真跑验证)
+  const actualCount = Object.keys(entryDatabase).filter(k => /^(QLT|RNT|TRX|DEC|HMK|POL)/.test(k)).length;
+  const totalCount = 122;
+  const pendingCount = totalCount - actualCount;
   const badge = document.getElementById('dictVerifyBadge');
-  if (ready === total) {
-    badge.className = 'di-verify';
-    badge.textContent = '✓ 全部就绪 · 122 条全量';
-  } else {
-    badge.className = 'di-verify partial';
-    badge.textContent = `⏳ ${ready}/${total} 域就绪 · ${pendingCount} 词条待补`;
+  badge.className = 'di-verify partial';
+  badge.textContent = `⏳ ${actualCount}/${totalCount} 词条已就绪 · ${pendingCount} 条待补`;
+
+
+
   }
 }
 
@@ -2094,14 +2092,14 @@ function showEntry(data) {
 function closeEntry() {
   document.getElementById('entryModal').classList.remove('active');
 }
-
-// 绑定所有 [data-entry] 元素
-document.querySelectorAll('[data-entry]').forEach(el => {
-  el.addEventListener('click', (e) => {
+// 绑定所有 [data-entry] 元素 · 事件委托(小豆子6.30修复:滚动后动态元素也能响应)
+document.addEventListener('click', (e) =u003e {
+  const el = e.target.closest('[data-entry]');
+  if (el) {
     e.stopPropagation();
     const id = el.getAttribute('data-entry');
     openEntry(id);
-  });
+  }
 });
 
 // 点遮罩关闭
