@@ -1,0 +1,118 @@
+name: 小程序构建与发布
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号 (如 v1.0.0)'
+        required: false
+        default: 'v1.0.0'
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - 'fs-mini-program/**'
+      - '.github/workflows/mini-program.yml'
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build-and-upload:
+    name: 构建并上传微信小程序
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'fengsheng-shengge/fengsheng-tasks' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: fs-mini-program/package-lock.json
+
+      - name: Install dependencies
+        working-directory: fs-mini-program
+        run: npm ci
+
+      # ============================================================
+      # Step 1: Build uni-app → 微信小程序
+      # ============================================================
+      - name: Build uni-app for WeChat Mini Program
+        working-directory: fs-mini-program
+        run: npm run build:mp-weixin
+        env:
+          # uni-app 环境变量（按需配置）
+          BASE_API_URL: https://fengsheng.tech
+
+      # ============================================================
+      # Step 2: 验证构建产物
+      # ============================================================
+      - name: Verify build output
+        working-directory: fs-mini-program
+        run: |
+          echo "=== 检查构建产物 ==="
+          if [ -d "dist/build/mp-weixin" ]; then
+            echo "✓ 构建产物目录存在: dist/build/mp-weixin"
+            echo "  文件数: $(find dist/build/mp-weixin -type f | wc -l)"
+            echo "  app.js: $(ls dist/build/mp-weixin/app.js 2>/dev/null && echo '存在' || echo '缺失')"
+            echo "  app.json: $(ls dist/build/mp-weixin/app.json 2>/dev/null && echo '存在' || echo '缺失')"
+            echo "  pages/: $(find dist/build/mp-weixin/pages -type f 2>/dev/null | wc -l) 个文件"
+          else
+            echo "✗ 构建产物目录不存在！"
+            echo "  dist/内容:"
+            ls -la dist/ 2>/dev/null || echo "dist/ 不存在"
+            exit 1
+          fi
+
+      # ============================================================
+      # Step 3: 上传代码到微信
+      # ============================================================
+      - name: Upload to WeChat Mini Program
+        working-directory: fs-mini-program
+        env:
+          PRIVATE_KEY: ${{ secrets.MINIPROGRAM_PRIVATE_KEY }}
+          APP_ID: ${{ secrets.MINIPROGRAM_APP_ID }}
+        run: |
+          echo "=== 写入私钥 ==="
+          echo "$PRIVATE_KEY" > /tmp/privateKey.pem
+          chmod 600 /tmp/privateKey.pem
+          echo "✓ 私钥已写入 (/tmp/privateKey.pem)"
+
+          echo "=== 安装 miniprogram-ci ==="
+          npm install -g miniprogram-ci@latest
+
+          echo "=== 上传代码到微信 ==="
+          # 提取版本号（去空格和换行）
+          VERSION="${{ inputs.version || 'v1.0.0' }}"
+          VERSION_CLEAN=$(echo "$VERSION" | tr -d '[:space:]')
+
+          miniprogram-ci \
+            --appid "$APP_ID" \
+            --privateKeyPath /tmp/privateKey.pem \
+            --project dist/build/mp-weixin/project.config.json \
+            --version "$VERSION_CLEAN" \
+            --desc "GitHub Actions 自动构建 $VERSION_CLEAN $(date '+%Y%m%d %H:%M:%S')" \
+            --upload-mode update
+
+          echo "✓ 上传完成！"
+
+      # ============================================================
+      # Step 4: 发布通知
+      # ============================================================
+      - name: 构建完成通知
+        run: |
+          echo "=========================================="
+          echo "✅ 微信小程序构建+上传成功！"
+          echo "📦 AppID: ${{ secrets.MINIPROGRAM_APP_ID }}"
+          echo "🔢 版本: ${{ inputs.version || 'v1.0.0' }}"
+          echo "📁 产物: fs-mini-program/dist/build/mp-weixin/"
+          echo ""
+          echo "📋 下一步:"
+          echo "   1. 登录微信公众平台确认上传版本"
+          echo "   2. 提交审核（审核周期约7天）"
+          echo "   3. 审核通过后发布上线"
+          echo "=========================================="
