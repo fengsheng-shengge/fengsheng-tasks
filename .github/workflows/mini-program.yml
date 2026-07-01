@@ -1,4 +1,4 @@
-name: 小程序构建与发布
+name: 小程序构建
 
 on:
   workflow_dispatch:
@@ -18,8 +18,8 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  build-and-upload:
-    name: 构建并上传微信小程序
+  build:
+    name: 构建微信小程序
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'fengsheng-shengge/fengsheng-tasks' }}
 
@@ -45,7 +45,6 @@ jobs:
         working-directory: fs-mini-program
         run: npm run build:mp-weixin
         env:
-          # uni-app 环境变量（按需配置）
           BASE_API_URL: https://fengsheng.tech
 
       # ============================================================
@@ -63,75 +62,56 @@ jobs:
             echo "  pages/: $(find dist/build/mp-weixin/pages -type f 2>/dev/null | wc -l) 个文件"
           else
             echo "✗ 构建产物目录不存在！"
-            echo "  dist/内容:"
-            ls -la dist/ 2>/dev/null || echo "dist/ 不存在"
             exit 1
           fi
 
       # ============================================================
-      # Step 3: 上传代码到微信
+      # Step 3: 打包构建产物
       # ============================================================
-      - name: Upload to WeChat Mini Program
+      - name: Package build output
         working-directory: fs-mini-program
-        env:
-          PRIVATE_KEY: ${{ secrets.MINIPROGRAM_PRIVATE_KEY }}
-          APP_ID: ${{ secrets.MINIPROGRAM_APP_ID }}
         run: |
-          echo "=== 写入私钥 ==="
-          echo "$PRIVATE_KEY" > /tmp/privateKey.pem
-          chmod 600 /tmp/privateKey.pem
-          echo "✓ 私钥已写入 (/tmp/privateKey.pem)"
-
-          echo "=== 安装 miniprogram-ci ==="
-          npm install miniprogram-ci@latest --save-dev
-
-          echo "=== 上传代码到微信 ==="
-          # 提取版本号（去空格和换行）
           VERSION="${{ inputs.version || 'v1.0.0' }}"
-          VERSION_CLEAN=$(echo "$VERSION" | tr -d '[:space:]')
-
-          # 确保project.config.json在构建产物目录中
-          ls -la dist/build/mp-weixin/project.config.json
-          cat dist/build/mp-weixin/project.config.json | head -5
-
-          # 使用node脚本上传（比CLI更可靠）
-          node -e "
-          const ci = require('miniprogram-ci');
-          const project = new ci.Project({
-            appid: process.env.APP_ID,
-            type: 'miniProgram',
-            projectPath: 'dist/build/mp-weixin',
-            privateKeyPath: '/tmp/privateKey.pem',
-            ignores: ['node_modules/**/*']
-          });
-          ci.upload({
-            project: project,
-            version: '${VERSION_CLEAN}',
-            desc: 'GitHub Actions 自动构建 ${VERSION_CLEAN}',
-            setting: { es6: true, minify: true, autoPrefixWXSS: true }
-          }).then(res => {
-            console.log('✅ 上传成功！', JSON.stringify(res));
-          }).catch(err => {
-            console.error('❌ 上传失败：', err.message);
-            process.exit(1);
-          });
-          "
-
-          echo "✓ 上传完成！"
+          cd dist/build/mp-weixin
+          zip -r "../../../../mp-weixin-${VERSION}.zip" . -x "node_modules/*"
+          cd -
+          echo "✓ 打包完成: mp-weixin-${VERSION}.zip"
+          ls -lh "../mp-weixin-${VERSION}.zip" || ls -lh "mp-weixin-${VERSION}.zip"
 
       # ============================================================
-      # Step 4: 发布通知
+      # Step 4: 上传为GitHub Artifact（供下载）
+      # ============================================================
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mp-weixin-${{ inputs.version || 'v1.0.0' }}
+          path: fs-mini-program/dist/build/mp-weixin/
+          retention-days: 30
+
+      # ============================================================
+      # Step 5: 构建完成通知
       # ============================================================
       - name: 构建完成通知
         run: |
+          VERSION="${{ inputs.version || 'v1.0.0' }}"
           echo "=========================================="
-          echo "✅ 微信小程序构建+上传成功！"
-          echo "📦 AppID: ${{ secrets.MINIPROGRAM_APP_ID }}"
-          echo "🔢 版本: ${{ inputs.version || 'v1.0.0' }}"
-          echo "📁 产物: fs-mini-program/dist/build/mp-weixin/"
+          echo "✅ 微信小程序构建成功！"
+          echo "🔢 版本: ${VERSION}"
           echo ""
-          echo "📋 下一步:"
-          echo "   1. 登录微信公众平台确认上传版本"
-          echo "   2. 提交审核（审核周期约7天）"
-          echo "   3. 审核通过后发布上线"
+          echo "📥 下载构建产物:"
+          echo "   GitHub Actions → 本次运行 → Artifacts → mp-weixin-${VERSION}"
+          echo ""
+          echo "📋 上传到微信(二选一):"
+          echo ""
+          echo "   方案A: 微信开发者工具（推荐，无需IP白名单）"
+          echo "   1. 下载并解压构建产物"
+          echo "   2. 打开微信开发者工具 → 导入项目"
+          echo "   3. 目录选择解压后的文件夹"
+          echo "   4. AppID填: wxb87aa256991cc9c6"
+          echo "   5. 点击上传按钮，填写版本号 ${VERSION}"
+          echo ""
+          echo "   方案B: miniprogram-ci 本地上传"
+          echo "   1. 下载并解压构建产物"
+          echo "   2. 确保本机IP已在白名单中"
+          echo "   3. 运行: npx miniprogram-ci --appid wxb87aa256991cc9c6 ..."
           echo "=========================================="
