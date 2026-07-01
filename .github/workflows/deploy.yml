@@ -35,6 +35,15 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
 
+      - name: Verify JWT_SECRET not hardcoded (P0 security check)
+        run: |
+          echo "=== P0安全检查: 确认无硬编码JWT密钥 ==="
+          if grep -r "fs-mini-program-2026" functions/ 2>/dev/null; then
+            echo "❌ 发现硬编码密钥！部署中止"
+            exit 1
+          fi
+          echo "✅ 无硬编码密钥残留"
+
       - name: Purge Cloudflare cache
         run: |
           echo "🧹 清除CF边缘缓存..."

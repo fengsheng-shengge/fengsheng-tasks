@@ -109,8 +109,13 @@ export async function onRequest({ request, env }) {
   const { openid, session_key } = wxData;
   const userId = `wx_${openid.substring(0, 16)}`;
 
-  // 生成 JWT
-  const jwtSecret = env.JWT_SECRET || 'fs-mini-program-2026';
+  // 生成 JWT — P0安全修复：不再使用硬编码fallback
+  if (!env.JWT_SECRET) {
+    return new Response(JSON.stringify({ error: 'Server JWT_SECRET not configured' }), {
+      status: 500, headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  const jwtSecret = env.JWT_SECRET;
   const token = await signJwt({
     sub: userId,
     openid,

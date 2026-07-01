@@ -37,7 +37,9 @@ async function verifyToken(request, env) {
   const auth = request.headers.get('Authorization') || '';
   if (!auth.startsWith('Bearer ')) return null;
   const token = auth.slice(7);
-  const secret = env.JWT_SECRET || 'fs-mini-program-2026';
+  // P0安全修复：不再使用硬编码fallback
+  if (!env.JWT_SECRET) return null;
+  const secret = env.JWT_SECRET;
   try {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
