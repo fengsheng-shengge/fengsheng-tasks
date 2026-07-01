@@ -83,20 +83,39 @@ jobs:
           echo "✓ 私钥已写入 (/tmp/privateKey.pem)"
 
           echo "=== 安装 miniprogram-ci ==="
-          npm install -g miniprogram-ci@latest
+          npm install miniprogram-ci@latest --save-dev
 
           echo "=== 上传代码到微信 ==="
           # 提取版本号（去空格和换行）
           VERSION="${{ inputs.version || 'v1.0.0' }}"
           VERSION_CLEAN=$(echo "$VERSION" | tr -d '[:space:]')
 
-          miniprogram-ci \
-            --appid "$APP_ID" \
-            --privateKeyPath /tmp/privateKey.pem \
-            --project dist/build/mp-weixin/project.config.json \
-            --version "$VERSION_CLEAN" \
-            --desc "GitHub Actions 自动构建 $VERSION_CLEAN $(date '+%Y%m%d %H:%M:%S')" \
-            --upload-mode update
+          # 确保project.config.json在构建产物目录中
+          ls -la dist/build/mp-weixin/project.config.json
+          cat dist/build/mp-weixin/project.config.json | head -5
+
+          # 使用node脚本上传（比CLI更可靠）
+          node -e "
+          const ci = require('miniprogram-ci');
+          const project = new ci.Project({
+            appid: process.env.APP_ID,
+            type: 'miniProgram',
+            projectPath: 'dist/build/mp-weixin',
+            privateKeyPath: '/tmp/privateKey.pem',
+            ignores: ['node_modules/**/*']
+          });
+          ci.upload({
+            project: project,
+            version: '${VERSION_CLEAN}',
+            desc: 'GitHub Actions 自动构建 ${VERSION_CLEAN}',
+            setting: { es6: true, minify: true, autoPrefixWXSS: true }
+          }).then(res => {
+            console.log('✅ 上传成功！', JSON.stringify(res));
+          }).catch(err => {
+            console.error('❌ 上传失败：', err.message);
+            process.exit(1);
+          });
+          "
 
           echo "✓ 上传完成！"
 
