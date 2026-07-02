@@ -3,360 +3,276 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="培养你的专属AI助理，关怀陪伴、销售教练、全能助理，一键生成Prompt即插即用。">
-<meta name="keywords" content="Agent培养师,AI能力培养,服务者AI培训,智能工具使用,AI方法论,风声,fengsheng">
-<title>Agent 培养师 | 风声</title>
-<meta property="og:title" content="Agent 培养师 · 风声">
-<meta property="og:description" content="培养你的专属AI助理，让他帮你搞定重复工作、照顾你的身心状态。">
+<meta name="description" content="风声·开单导师：免费3步体验，拆需求·出话术·验房源，让客户主动开单。">
+<meta name="keywords" content="开单导师,客户解码,话术生成,房源核验,租赁AI,风声,fengsheng">
+<title>开单导师 · 风声</title>
+<meta property="og:title" content="开单导师 · 风声">
+<meta property="og:description" content="免费3步体验，拆需求·出话术·验房源，让客户主动开单。">
 <meta property="og:image" content="https://fengsheng.tech/og-image.png">
 <meta property="og:url" content="https://fengsheng.tech/breeder">
 <meta name="twitter:card" content="summary_large_image">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif; background: #f5f7fa; min-height: 100vh; }
-  .header { background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; padding: 32px 24px 24px; text-align: center; }
-  .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-  .header p { font-size: 13px; opacity: 0.85; line-height: 1.5; }
-  .container { max-width: 640px; margin: 0 auto; padding: 24px 16px 60px; }
-  .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-  .card-title { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-  .template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .tpl-card { border: 2px solid #eee; border-radius: 12px; padding: 14px 12px; text-align: center; cursor: pointer; transition: all 0.2s; }
-  .tpl-card:hover, .tpl-card.active { border-color: #3d5a3e; background: #f0f5ee; }
-  .tpl-icon { font-size: 28px; margin-bottom: 6px; }
-  .tpl-name { font-size: 13px; font-weight: 600; color: #333; }
-  .tpl-desc { font-size: 11px; color: #999; margin-top: 4px; line-height: 1.4; }
-  label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
-  input, textarea, select { width: 100%; padding: 10px 14px; border: 2px solid #e8e8e8; border-radius: 10px; font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.2s; }
-  input:focus, textarea:focus { border-color: #3d5a3e; }
-  textarea { resize: vertical; min-height: 80px; }
-  .btn-primary { display: block; width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 16px; font-family: inherit; box-shadow: 0 4px 15px rgba(61,90,62,0.35); transition: all 0.2s; }
-  .btn-primary:active { transform: scale(0.98); }
-  .result-box { background: linear-gradient(135deg, #f0f7ff, #e8f0fe); border-radius: 14px; padding: 18px; margin-top: 16px; border-left: 4px solid #3d5a3e; }
-  .result-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
-  .result-content { font-size: 13px; color: #555; line-height: 1.7; white-space: pre-wrap; cursor: pointer; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 6px; }
-  .badge-care { background: #e8f5ea; color: #2e7d32; }
-  .hidden { display: none !important; }
-  .param-info { background: #fff8e1; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 12.5px; color: #f57c00; line-height: 1.6; border-left: 3px solid #f57c00; }
-  .care-label { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 4px; display: block; }
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f7f4ef;--card:#fff;--p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;
+  --fire:#c46a3a;--border:rgba(80,90,70,.09);
+  --dk:#1a1a1a;--tx:#555;--ts:#888;--r:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6}
+.header{background:linear-gradient(135deg,var(--p),var(--fire));color:#fff;padding:48px 20px 36px;text-align:center}
+.header h1{font-size:22px;font-weight:700;margin-bottom:8px}
+.header p{font-size:13px;opacity:.85;line-height:1.6}
+.container{max-width:640px;margin:0 auto;padding:24px 16px 80px}
+
+/* 步骤导航 */
+.step-nav{display:flex;justify-content:center;gap:0;margin-bottom:28px;position:relative}
+.step-nav::before{content:'';position:absolute;top:18px;left:60px;right:60px;height:2px;background:#e0ddd8;z-index:0}
+.step-item{flex:1;text-align:center;position:relative;z-index:1}
+.step-num{width:36px;height:36px;border-radius:50%;background:#fff;border:3px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#aaa;margin:0 auto 6px;transition:all .3s}
+.step-name{font-size:12px;color:#aaa;font-weight:600}
+.step-item.active .step-num{background:var(--p);border-color:var(--p);color:#fff}
+.step-item.active .step-name{color:var(--p)}
+.step-item.done .step-num{background:var(--p);border-color:var(--p);color:#fff}
+.step-item.done .step-name{color:var(--p)}
+
+/* 卡片 */
+.card{background:var(--card);border-radius:var(--r);padding:22px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border)}
+.card-title{font-size:15px;font-weight:700;color:var(--dk);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card-title .step-badge{font-size:11px;font-weight:700;background:var(--p);color:#fff;padding:2px 8px;border-radius:4px}
+
+/* 输入区 */
+textarea{width:100%;padding:12px 14px;border:2px solid #e8e4dd;border-radius:10px;font-size:14px;font-family:inherit;resize:vertical;min-height:90px;outline:none;transition:border-color .2s;background:#fafaf8}
+textarea:focus{border-color:var(--p)}
+input{padding:11px 14px;border:2px solid #e8e4dd;border-radius:10px;font-size:14px;font-family:inherit;width:100%;outline:none;transition:border-color .2s}
+input:focus{border-color:var(--p)}
+label{display:block;font-size:13px;font-weight:600;color:#444;margin-bottom:6px}
+.hint{font-size:12px;color:var(--ts);margin-bottom:12px;padding:8px 12px;background:#f8f7f3;border-radius:8px;border-left:3px solid var(--p-l)}
+
+/* 场景选择 */
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.scenario-btn{border:2px solid #e8e4dd;border-radius:10px;padding:12px 10px;text-align:center;cursor:pointer;transition:all .2s;font-family:inherit;background:#fff}
+.scenario-btn:hover{border-color:var(--p-l);background:#f5faf5}
+.scenario-btn.active{border-color:var(--p);background:#edf7ee}
+.scenario-btn .s-icon{font-size:22px;margin-bottom:4px}
+.scenario-btn .s-name{font-size:13px;font-weight:600;color:#333}
+.scenario-btn .s-desc{font-size:11px;color:#999;margin-top:2px}
+
+/* 按钮 */
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--p),#5a7a5c);color:#fff;box-shadow:0 4px 15px rgba(61,90,62,.35)}
+.btn-primary:active{transform:scale(.98)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-secondary{background:#fff;border:2px solid var(--p);color:var(--p)}
+
+/* 结果区 */
+.result-box{background:linear-gradient(135deg,#f0f7ff,#f5faff);border-radius:12px;padding:18px;border-left:4px solid var(--p);margin-top:16px}
+.result-title{font-size:13px;font-weight:700;color:var(--p);margin-bottom:10px}
+.result-content{font-size:13px;color:#444;line-height:1.8;white-space:pre-wrap}
+.result-content .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee}
+.result-content .row:last-child{border-bottom:none}
+.result-content .label{color:#888;font-size:12px}
+.result-content .value{font-weight:600;color:#333;font-size:13px}
+.loading{text-align:center;padding:30px 0;color:var(--ts);font-size:14px}
+.loading::after{content:'...';animation:dots 1.5s infinite}
+@keyframes dots{0%,20%{content:'.'}40%{content:'..'}60%,100%{content:'...'}}
+
+/* CTA */
+.cta-section{background:linear-gradient(135deg,var(--p),var(--fire));border-radius:16px;padding:28px 24px;text-align:center;margin-top:8px}
+.cta-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:8px}
+.cta-desc{font-size:13px;color:rgba(255,255,255,.85);margin-bottom:16px;line-height:1.6}
+.cta-price{font-size:32px;font-weight:900;color:#fff;margin-bottom:4px}
+.cta-price span{font-size:14px;font-weight:400;opacity:.8}
+.cta-btn{background:#fff;color:var(--p);padding:14px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;display:inline-block;margin-top:12px}
+
+/* 标签 */
+.tag{display:inline-block;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:600;margin-right:6px;margin-bottom:4px}
+.tag-safe{background:#e8f5e9;color:#2e7d32}
+.tag-risk{background:#fff3e0;color:#e65100}
+.tag-info{background:#e3f2fd;color:#1565c0}
+
+/* 7步法 */
+.step7-list{margin-top:12px}
+.step7-item{display:flex;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f5f5f5}
+.step7-item:last-child{border-bottom:none}
+.step7-n{width:22px;height:22px;border-radius:50%;background:var(--p);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:10px;margin-top:2px}
+.step7-text{font-size:13px;color:#444;line-height:1.6}
+
+/* 下一步按钮 */
+.next-hint{text-align:center;padding:16px 0 8px;font-size:13px;color:var(--ts)}
+
+/* 反馈 */
+.feedback{max-width:640px;margin:0 auto;padding:0 16px 40px}
+.fs-feedback-widget{max-width:640px;margin:0 auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(44,95,58,.10);text-align:center;font-family:inherit}
+.fs-fb-title{font-size:17px;font-weight:700;color:var(--p);margin-bottom:4px}
+.fs-fb-subtitle{font-size:13px;color:#888;margin-bottom:16px}
+.fs-fb-stars{font-size:32px;margin-bottom:8px;user-select:none;display:flex;justify-content:center;gap:6px}
+.fs-star{cursor:pointer;color:#ddd;transition:color .2s,transform .15s;display:inline-block}
+.fs-star:hover,.fs-star.active{color:var(--fire);transform:scale(1.18)}
+.fs-fb-score-label{font-size:13px;color:#888;margin-bottom:16px;min-height:20px}
+.fs-fb-text{width:100%;min-height:64px;padding:10px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f4ef;resize:vertical;outline:none;margin-bottom:10px;font-family:inherit}
+.fs-fb-submit{width:100%;padding:12px 0;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
+.fs-fb-submit:disabled{background:#b5a89a;cursor:not-allowed}
+.fs-fb-result{margin-top:12px;font-size:14px;min-height:22px}
+.hidden{display:none!important}
 </style>
-<!-- 全站数据追踪器 v1.0 -->
+<!-- 全站数据追踪器 -->
 <script src="/tracker.js" async></script>
 <link rel="canonical" href="https://fengsheng.tech/breeder">
 </head>
 <body>
-<!-- 风声统一导航栏 -->
-<nav class="fs-nav">
-  <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
-  <div class="fs-nav-links">
-    <a href="/">首页</a>
-    <a href="/quality-test/">品质测评</a>
-    <a href="/care-test/">关怀测评</a>
-    <a href="/s1-report/">带看报告</a>
-    <a href="/breeder">培养师</a>
-  </div>
-  <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
-</nav>
-<style>
-.fs-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 52px; background: #fff; border-bottom: 1px solid rgba(80,90,70,.09); position: sticky; top: 0; z-index: 100; }
-.fs-nav-brand { font-size: 16px; font-weight: 700; color: #3d5a3e; text-decoration: none; display: flex; align-items: center; gap: 4px; }
-.fs-nav-links { display: flex; gap: 6px; }
-.fs-nav-links a { padding: 5px 10px; font-size: 12px; color: #555; text-decoration: none; border-radius: 6px; transition: all .15s; white-space: nowrap; }
-.fs-nav-links a:hover { background: rgba(61,90,62,.06); color: #3d5a3e; }
-.fs-nav-menu { display: none; background: none; border: none; font-size: 20px; cursor: pointer; color: #3d5a3e; padding: 8px; }
-@media (max-width: 767px) {
-  .fs-nav-links { display: none; position: absolute; top: 52px; left: 0; right: 0; background: #fff; flex-direction: column; padding: 10px; border-bottom: 1px solid rgba(80,90,70,.09); box-shadow: 0 4px 12px rgba(0,0,0,.08); }
-  .fs-nav.open .fs-nav-links { display: flex; }
-  .fs-nav-menu { display: block; }
-}
-</style>
 
+<!-- 导航栏 -->
+<nav style="display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100">
+  <a href="/" style="font-size:16px;font-weight:700;color:var(--p);text-decoration:none">🌬️ 风声</a>
+  <div style="display:flex;gap:6px">
+    <a href="/" style="padding:5px 10px;font-size:12px;color:#555;text-decoration:none;border-radius:6px">首页</a>
+    <a href="/quality-test/" style="padding:5px 10px;font-size:12px;color:#555;text-decoration:none;border-radius:6px">品质测评</a>
+    <a href="/breeder" style="padding:5px 10px;font-size:12px;color:var(--p);text-decoration:none;border-radius:6px;background:rgba(61,90,62,.06)">开单导师</a>
+  </div>
+</nav>
 
 <div class="header">
-  <h1>🤖 Agent 培养师</h1>
-  <p>培养你的专属AI助理<br>让他帮你搞定重复工作、照顾你的身心状态</p>
+  <h1>🤖 开单导师 · 3步体验</h1>
+  <p>拆需求 · 出话术 · 验房源<br>让客户主动开单的AI实战工具</p>
 </div>
 
 <div class="container">
-  <!-- 四句话框架 -->
-  <div class="card" style="background:linear-gradient(135deg,rgba(61,90,62,.03),rgba(196,106,58,.03));border-left:4px solid #3d5a3e">
-    <div class="card-title">📖 四句话框架</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12.5px;color:#555;line-height:1.7">
-      <div><strong style="color:#3d5a3e">1. AI做效率</strong><br>把重复性、标准化的工作交给AI</div>
-      <div><strong style="color:#c46a3a">2. 人做意义</strong><br>把人用在理解客户、建立信任</div>
-      <div><strong style="color:#3d5a3e">3. 标准要统一</strong><br>六维品质标准是共同语言</div>
-      <div><strong style="color:#c46a3a">4. 迭代要持续</strong><br>AI模型和人的能力同步进化</div>
+  <!-- 步骤导航 -->
+  <div class="step-nav" id="stepNav">
+    <div class="step-item active" id="nav1">
+      <div class="step-num">1</div>
+      <div class="step-name">拆需求</div>
+    </div>
+    <div class="step-item" id="nav2">
+      <div class="step-num">2</div>
+      <div class="step-name">出话术</div>
+    </div>
+    <div class="step-item" id="nav3">
+      <div class="step-num">3</div>
+      <div class="step-name">验房源</div>
     </div>
   </div>
 
-  <!-- 四大场景一键复制 -->
-  <div class="card">
-    <div class="card-title">🎯 四大场景 · 一键复制提示词</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="tpl-card" onclick="copyScenario('房源匹配','根据以下客户需求，在房源库中匹配最合适的三套房源：\n预算：[客户预算]\n位置：[目标区域]\n核心需求：[列出3个关键需求]\n\n请按六维标准（安全/健康/整洁/温暖/美观/惬意）打分并排序，给出推荐理由。')">
-        <div class="tpl-icon">🏠</div>
-        <div class="tpl-name">房源匹配</div>
-        <div class="tpl-desc">AI快速匹配最合适房源</div>
-      </div>
-      <div class="tpl-card" onclick="copyScenario('带看报告','请根据以下带看记录，生成一份专业带看报告：\n房源：[房源地址+户型]\n客户反馈：[客户现场提出的问题与关注点]\n房源亮点：[3个核心优势]\n\n报告需包含：六维评估、客户匹配度、下一步建议。')">
-        <div class="tpl-icon">📋</div>
-        <div class="tpl-name">带看报告</div>
-        <div class="tpl-desc">自动生成专业带看报告</div>
-      </div>
-      <div class="tpl-card" onclick="copyScenario('客户话术','客户说：[客户原话]\n场景：[询价/议价/犹豫/投诉]\n请生成3个回应话术，每个话术包含：\n1. 共情句式\n2. 事实依据\n3. 行动建议\n风格要求：专业、温暖、不油腻。')">
-        <div class="tpl-icon">💬</div>
-        <div class="tpl-name">客户话术</div>
-        <div class="tpl-desc">常见疑问AI应答模板</div>
-      </div>
-      <div class="tpl-card" onclick="copyScenario('市场分析','请分析[区域名称]当前居住市场：\n关注维度：租金走势、供给量、热门户型、租客画像\n输出格式：3个关键发现 + 1条趋势判断 + 客户决策建议。')">
-        <div class="tpl-icon">📊</div>
-        <div class="tpl-name">市场分析</div>
-        <div class="tpl-desc">快速生成区域市场分析</div>
-      </div>
+  <!-- =================== 步骤1：拆需求 =================== -->
+  <div class="card" id="step1">
+    <div class="card-title">
+      <span class="step-badge">Step 1</span>
+      拆需求 — 输入客户一句话，AI量化拆解真实需求
+    </div>
+    <div class="hint">💡 输入越具体，拆解越精准。例如："客户预算3000左右，想离地铁近，跟家里老人一起住"</div>
+    <div style="margin-bottom:14px">
+      <label>客户描述</label>
+      <textarea id="step1-input" placeholder="描述你遇到的客户情况，越详细越好..." maxlength="500"></textarea>
+    </div>
+    <button class="btn btn-primary" id="step1-btn" onclick="doStep1()">🔍 开始拆解</button>
+
+    <!-- 结果 -->
+    <div class="result-box hidden" id="step1-result">
+      <div class="result-title">📊 需求拆解结果</div>
+      <div class="result-content" id="step1-content"></div>
+    </div>
+
+    <div class="next-hint hidden" id="step1-next">
+      <button class="btn btn-secondary" onclick="goStep(2)" style="margin-top:4px">下一步：出话术 →</button>
     </div>
   </div>
 
-  <!-- 参数提示（如果从关怀测评跳过来） -->
-  <div class="param-info hidden" id="param-info"></div>
+  <!-- =================== 步骤2：出话术 =================== -->
+  <div class="card hidden" id="step2">
+    <div class="card-title">
+      <span class="step-badge">Step 2</span>
+      出话术 — 选场景，AI生成专业话术+共情话术
+    </div>
 
-  <!-- 选择模板 -->
-  <div class="card">
-    <div class="card-title">① 选择助理类型</div>
-    <div class="template-grid">
-      <div class="tpl-card" onclick="selectTemplate(this, 'general')">
-        <div class="tpl-icon">🧠</div>
-        <div class="tpl-name">全能助理</div>
-        <div class="tpl-desc">通用型，啥都能帮上忙</div>
-      </div>
-      <div class="tpl-card active" id="tpl-care" onclick="selectTemplate(this, 'care')">
-        <div class="tpl-icon">🩹</div>
-        <div class="tpl-name">关怀陪伴官<span class="badge badge-care">推荐</span></div>
-        <div class="tpl-desc">专治身心透支，陪你慢慢好起来</div>
-      </div>
-      <div class="tpl-card" onclick="selectTemplate(this, 'sales')">
-        <div class="tpl-icon">📈</div>
-        <div class="tpl-name">销售教练</div>
-        <div class="tpl-desc">陪练话术、分析客户、跟进提醒</div>
-      </div>
-      <div class="tpl-card" onclick="selectTemplate(this, 'custom')">
-        <div class="tpl-icon">✏️</div>
-        <div class="tpl-name">自定义</div>
-        <div class="tpl-desc">自己定义助理的能力和性格</div>
-      </div>
+    <div class="hint">💡 根据当前遇到的问题选择场景，AI会生成针对性的专业话术</div>
+
+    <div class="scenario-grid" id="scenarioGrid">
+      <button class="scenario-btn" onclick="selectScenario(this,'demand')">
+        <div class="s-icon">🔍</div>
+        <div class="s-name">需求挖掘</div>
+        <div class="s-desc">客户说不急，再看看</div>
+      </button>
+      <button class="scenario-btn" onclick="selectScenario(this,'visit')">
+        <div class="s-icon">🏠</div>
+        <div class="s-name">带看讲解</div>
+        <div class="s-desc">明天带看，提前准备</div>
+      </button>
+      <button class="scenario-btn" onclick="selectScenario(this,'bargain')">
+        <div class="s-icon">💰</div>
+        <div class="s-name">议价处理</div>
+        <div class="s-desc">客户要便宜，怎么回</div>
+      </button>
+      <button class="scenario-btn" onclick="selectScenario(this,'hesitate')">
+        <div class="s-icon">🤔</div>
+        <div class="s-name">犹豫不决</div>
+        <div class="s-desc">纠结户型/楼层/位置</div>
+      </button>
+    </div>
+
+    <div style="margin-top:16px">
+      <label>补充情况（可选）</label>
+      <textarea id="step2-extra" placeholder="补充客户的具体顾虑或情况，让话术更精准..." style="min-height:60px"></textarea>
+    </div>
+
+    <button class="btn btn-primary" id="step2-btn" style="margin-top:16px" onclick="doStep2()">💬 生成话术</button>
+
+    <div class="result-box hidden" id="step2-result">
+      <div class="result-title">🗣 话术建议</div>
+      <div class="result-content" id="step2-content"></div>
+    </div>
+
+    <div class="next-hint hidden" id="step2-next">
+      <button class="btn btn-secondary" onclick="goStep(3)" style="margin-top:4px">下一步：验房源 →</button>
     </div>
   </div>
 
-  <!-- 配置助理 -->
-  <div class="card">
-    <div class="card-title">② 配置你的助理</div>
-    <div style="margin-bottom:14px;">
-      <label>助理名字</label>
-      <input type="text" id="agent-name" placeholder="给你的助理起个名字" value="小暖">
+  <!-- =================== 步骤3：验房源 =================== -->
+  <div class="card hidden" id="step3">
+    <div class="card-title">
+      <span class="step-badge">Step 3</span>
+      验房源 — 输入房源信息，AI核验风险点
     </div>
-    <div style="margin-bottom:14px;">
-      <label>核心能力（关怀陪伴官专属）</label>
-      <div id="care-abilities">
-        <label class="care-label">☑ 每日关怀问候（早/晚安，问今天状态）</label>
-        <label class="care-label">☑ 情绪疏导（听你吐槽，给你疏导，不评断）</label>
-        <label class="care-label">☑ 健康提醒（喝水/休息/运动提醒）</label>
-        <label class="care-label">☑ 成就感记录（每天帮你记录一件「今天做得不错」的事）</label>
-      </div>
+    <div class="hint">💡 把中介或房东告诉你的房源信息粘贴进来，AI帮你核验有没有坑</div>
+    <div style="margin-bottom:14px">
+      <label>房源信息</label>
+      <textarea id="step3-input" placeholder="把房源宣传信息粘贴进来...\n例如：步行5分钟到地铁，月租2800包物业，押一付三，房东说没问题" style="min-height:100px"></textarea>
     </div>
-    <div style="margin-bottom:14px;">
-      <label>性格设定</label>
-      <select id="agent-personality">
-        <option value="warm">温暖型——像老朋友一样关心你</option>
-        <option value="rational">理性型——给你事实和可行建议</option>
-        <option value="humor">幽默型——用轻松方式化解压力</option>
-      </select>
-    </div>
-    <div style="margin-bottom:14px;">
-      <label>补充指令（可选）</label>
-      <textarea id="agent-extra" placeholder="比如：我睡眠质量差，请每天晚上9点提醒我放下手机..."></textarea>
+    <button class="btn btn-primary" id="step3-btn" onclick="doStep3()">🛡 开始核验</button>
+
+    <div class="result-box hidden" id="step3-result">
+      <div class="result-title">🛡 风险核验报告</div>
+      <div class="result-content" id="step3-content"></div>
     </div>
   </div>
 
-  <!-- 生成 -->
-  <div class="card">
-    <div class="card-title">③ 生成你的助理</div>
-    <p style="font-size:12.5px;color:#888;line-height:1.6;margin-bottom:14px;">点击下方按钮，系统会根据你的配置，生成专属AI助理的 Prompt（提示词）。复制后可用于任意 AI 工具（ChatGPT / 文心 / 通义等）。</p>
-    <button class="btn-primary" onclick="generateAgent()">🚀 生成我的专属助理</button>
-    <div class="result-box hidden" id="result-box">
-      <div class="result-title">✅ 你的专属助理 Prompt（点击复制）</div>
-      <div class="result-content" id="result-content" onclick="copyPrompt()"></div>
-      <p style="font-size:11.5px;color:#999;margin-top:8px;">💡 点击上方文字即可复制，然后粘贴到任意AI对话框开始使用</p>
-    </div>
-    <div class="card" id="doubao-cta" style="display:none;margin-top:12px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;">
-      <div class="card-title" style="color:#166534">🚀 下一步：直接去豆包体验</div>
-      <p style="font-size:13px;color:#166534;line-height:1.7;margin-bottom:14px;">不想手动配置？直接点击下面的按钮，在豆包上跟已经训练好的「AI培养师」对话，手把手教你从零开始养一个懂你的AI助手。</p>
-      <a href="https://doubao.com/bot/S7hm68Qv" target="_blank" class="btn-primary" style="text-align:center;text-decoration:none;display:block;background:linear-gradient(135deg,#16a34a,#22c55e);box-shadow:0 4px 15px rgba(22,163,74,0.35);">🎯 前往豆包体验 AI培养师 →</a>
-    </div>
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="cta-title">想要专属AI开单助手？</div>
+    <div class="cta-desc">3步体验完了？获取完整配置包，AI随时帮你开单</div>
+    <div class="cta-price">¥49<span>/月</span></div>
+    <a href="https://mp.weixin.qq.com/" class="cta-btn">👈 微信联系开通</a>
   </div>
-
 </div>
 
-<script>
-// ============================================================
-//  读取 URL 参数（从关怀测评跳过来）
-// ============================================================
-var urlParams = new URLSearchParams(window.location.search);
-var tplFromUrl = urlParams.get("template");
-var weaknessFromUrl = urlParams.get("weakness");
-var scoresFromUrl = urlParams.get("scores");
+<!-- 7步法参考 -->
+<div class="container">
+  <div class="card">
+    <div class="card-title">📖 开单7步法（参考框架）</div>
+    <div class="step7-list">
+      <div class="step7-item"><div class="step7-n">1</div><div class="step7-text"><strong>共情接纳</strong>：先点头认同，不反驳、不讲道理</div></div>
+      <div class="step7-item"><div class="step7-n">2</div><div class="step7-text"><strong>挖顾虑+探预算</strong>：用猜测代替硬问，"我猜你不是不想买，是怕..."</div></div>
+      <div class="step7-item"><div class="step7-n">3</div><div class="step7-text"><strong>需求分层+预算匹配</strong>：只留3个核心需求，做减法</div></div>
+      <div class="step7-item"><div class="step7-n">4</div><div class="step7-text"><strong>拆解焦虑</strong>：把模糊焦虑拆成3件可判断的小事</div></div>
+      <div class="step7-item"><div class="step7-n">5</div><div class="step7-text"><strong>给3条选房标准</strong>：客户自己能判断的标准，不超过3条</div></div>
+      <div class="step7-item"><div class="step7-n">6</div><div class="step7-text"><strong>精准匹配2-3套</strong>：每套有明确推荐理由，不超过3套</div></div>
+      <div class="step7-item"><div class="step7-n">7</div><div class="step7-text"><strong>决策兜底</strong>：给退路，不施压，"3天犹豫期，全额退"</div></div>
+    </div>
+  </div>
+</div>
 
-// 页面加载时处理参数
-window.addEventListener("DOMContentLoaded", function() {
-  if (tplFromUrl === "care") {
-    // 自动选中「关怀陪伴官」模板
-    selectTemplate(document.getElementById("tpl-care"), "care");
-
-    var info = document.getElementById("param-info");
-    var msg = "🩹 检测到你从【四维关怀测评】跳过来，已自动选中「关怀陪伴官」模板。";
-    if (weaknessFromUrl) {
-      msg += " 你的薄弱环节：" + weaknessFromUrl.replace(/,/g, "、") + "，助理会重点关注这些方面。";
-    }
-    if (scoresFromUrl) {
-      var sc = scoresFromUrl.split(",");
-      var dimNames = ["身体","心理","尊严","质感"];
-      msg += "\n你的四维得分：";
-      for (var i = 0; i < dimNames.length && i < sc.length; i++) {
-        msg += dimNames[i] + " " + sc[i] + "分  ";
-      }
-    }
-    info.textContent = msg;
-    info.classList.remove("hidden");
-  }
-});
-
-// ============================================================
-//  模板选择
-// ============================================================
-var currentTpl = "care";
-
-function selectTemplate(el, type) {
-  var cards = document.querySelectorAll(".tpl-card");
-  for (var i = 0; i < cards.length; i++) cards[i].classList.remove("active");
-  el.classList.add("active");
-  currentTpl = type;
-
-  var abEl = document.getElementById("care-abilities");
-  if (type === "care") {
-    document.getElementById("agent-name").value = "小暖";
-    abEl.innerHTML =
-      '<label class="care-label">☑ 每日关怀问候（早/晚安，问今天状态）</label>' +
-      '<label class="care-label">☑ 情绪疏导（听你吐槽，给你疏导，不评断）</label>' +
-      '<label class="care-label">☑ 健康提醒（喝水/休息/运动提醒）</label>' +
-      '<label class="care-label">☑ 成就感记录（每天帮你记录一件「今天做得不错」的事）</label>';
-  } else if (type === "sales") {
-    document.getElementById("agent-name").value = "小销";
-    abEl.innerHTML =
-      '<label class="care-label">☑ 话术陪练（模拟客户提问，帮你练应答）</label>' +
-      '<label class="care-label">☑ 客户分析（根据聊天记录分析客户意图）</label>' +
-      '<label class="care-label">☑ 跟进提醒（定期提醒你跟进哪些客户）</label>';
-  } else if (type === "general") {
-    document.getElementById("agent-name").value = "小风";
-    abEl.innerHTML = '<label style="font-size:12px;color:#999;">全能助理会根据你的补充指令自动调整能力范围</label>';
-  } else {
-    document.getElementById("agent-name").value = "";
-    abEl.innerHTML = '<label style="font-size:12px;color:#999;">请在下方补充指令里描述你想要的助理能力</label>';
-  }
-}
-
-// ============================================================
-//  生成 Prompt
-// ============================================================
-function generateAgent() {
-  var name = document.getElementById("agent-name").value.trim() || "小暖";
-  var pers = document.getElementById("agent-personality").value;
-  var extra = document.getElementById("agent-extra").value.trim();
-  var weakness = weaknessFromUrl ? weaknessFromUrl.split(",") : [];
-
-  var persMap = {
-    warm: "温暖耐心，像老朋友一样关怀对方，说话柔和但不啰嗦",
-    rational: "理性冷静，给建议直接可行，不煽情不鸡汤",
-    humor: "幽默轻松，用玩笑化解压力，但关键时刻很靠谱"
-  };
-  var persText = persMap[pers] || "温暖耐心";
-
-  var prompt = "";
-  prompt += "你叫" + name + "，是我的专属AI助理。\n\n";
-  prompt += "【你的性格】\n" + persText + "\n\n";
-
-  if (currentTpl === "care") {
-    prompt += "【你的核心职责】\n";
-    prompt += "1. 每日关怀：早上和晚上主动问候我，问我今天状态怎么样\n";
-    prompt += "2. 情绪疏导：当我吐槽工作/生活时，先倾听，再给疏导，不评断不指责\n";
-    prompt += "3. 健康提醒：定期提醒我喝水、休息、运动，不要让我一直忙\n";
-    prompt += "4. 成就感记录：每天帮我找到一件「今天做得不错」的事，记下来\n\n";
-
-    if (weakness.length > 0) {
-      prompt += "【重点关注】\n";
-      prompt += "我从关怀测评中发现自己的薄弱环节是：" + weakness.join("、") + "。\n";
-      prompt += "请你在对话中特别关注这些方面，主动问我、提醒我、帮我改善。\n\n";
-    }
-
-    prompt += "【重要原则】\n";
-    prompt += "- 不要催我做事，要陪我慢慢好起来\n";
-    prompt += "- 我吐槽的时候，先听，别急着给建议\n";
-    prompt += "- 每天至少帮我找到一件值得肯定的事\n";
-    prompt += "- 用简短的话，不要写小作文\n";
-  } else if (currentTpl === "sales") {
-    prompt += "【你的核心职责】\n";
-    prompt += "1. 话术陪练：模拟客户可能的提问，帮我练习应答话术\n";
-    prompt += "2. 客户分析：根据我描述的客户行为，分析其意图和关注点\n";
-    prompt += "3. 跟进提醒：帮我记录客户跟进计划，到期提醒我\n\n";
-  } else {
-    prompt += "【你的核心职责】\n根据我的需要，灵活提供帮助。\n\n";
-  }
-
-  if (extra) {
-    prompt += "【额外要求】\n" + extra + "\n\n";
-  }
-
-  prompt += "【输出格式】\n每次回复控制在3-5句话以内，除非我在问复杂问题。用「你」称呼我。";
-
-  var rc = document.getElementById("result-content");
-  rc.textContent = prompt;
-  document.getElementById("result-box").classList.remove("hidden");
-  document.getElementById("doubao-cta").style.display = "block";
-  rc.scrollIntoView({behavior: "smooth"});
-}
-
-// ============================================================
-//  复制 Prompt
-// ============================================================
-function copyScenario(name, text) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(function() {
-      var btns = document.querySelectorAll('.tpl-card');
-      // 临时显示复制成功
-      alert('✅ ' + name + ' 提示词已复制！可直接粘贴到AI对话框使用。');
-    }).catch(function() {
-      prompt('请手动复制以下提示词（' + name + '）：', text);
-    });
-  } else {
-    prompt('请手动复制以下提示词（' + name + '）：', text);
-  }
-}
-
-function copyPrompt() {
-  var text = document.getElementById("result-content").textContent;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(function() {
-      var rc = document.getElementById("result-content");
-      var prev = rc.textContent;
-      rc.textContent = "✅ 已复制到剪贴板！";
-      setTimeout(function(){ rc.textContent = prev; }, 1500);
-    });
-  }
-}
-</script>
-
-
-<!-- 反馈组件 -->
-<div style="max-width:900px;margin:0 auto;padding:0 20px">
-  <div class="fs-feedback-widget" id="fs-feedback">
+<!-- 反馈 -->
+<div class="feedback">
+  <div class="fs-feedback-widget">
     <div class="fs-fb-title">📣 你的反馈，决定产品方向</div>
     <div class="fs-fb-subtitle">评分 + 建议，帮我们把产品做对</div>
     <div class="fs-fb-stars" id="fs-fb-stars">
@@ -364,102 +280,406 @@ function copyPrompt() {
       <span class="fs-star" data-score="2">☆</span>
       <span class="fs-star" data-score="3">☆</span>
       <span class="fs-star" data-score="4">☆</span>
-      <span class="fs-star" data-score="5">☆</span>
+      <span class="fs-star" data-score="5">★</span>
     </div>
     <div class="fs-fb-score-label" id="fs-fb-score-label">点击星星评分</div>
     <textarea class="fs-fb-text" id="fs-fb-text" placeholder="有什么建议或想法？（选填，50字以上更容易被采纳）"></textarea>
-    <input class="fs-fb-contact" id="fs-fb-contact" type="text" placeholder="手机号/微信（选填，方便我们联系你）" />
     <button class="fs-fb-submit" id="fs-fb-submit" disabled>提交反馈</button>
     <div class="fs-fb-result" id="fs-fb-result"></div>
   </div>
 </div>
 
-<!-- 反馈组件 v3 样式 + 逻辑 -->
-<style>
-.fs-feedback-widget{max-width:640px;margin:32px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(44,95,58,0.10);text-align:center;font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif}
-.fs-fb-title{font-size:17px;font-weight:700;color:#2C5F3A;margin-bottom:4px}
-.fs-fb-subtitle{font-size:13px;color:#888;margin-bottom:16px}
-.fs-fb-stars{font-size:36px;margin-bottom:8px;user-select:none;display:flex;justify-content:center;gap:6px}
-.fs-star{cursor:pointer;color:#ddd;transition:color 0.2s,transform 0.15s;display:inline-block}
-.fs-star:hover,.fs-star.active{color:#E8742C;transform:scale(1.18)}
-.fs-fb-score-label{font-size:13px;color:#888;margin-bottom:16px;min-height:20px}
-.fs-fb-text{width:100%;min-height:64px;padding:10px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f4ef;resize:vertical;outline:none;box-sizing:border-box;margin-bottom:10px;font-family:inherit}
-.fs-fb-text:focus{border-color:#2C5F3A}
-.fs-fb-contact{width:100%;padding:9px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f4ef;outline:none;box-sizing:border-box;margin-bottom:14px;font-family:inherit}
-.fs-fb-contact:focus{border-color:#2C5F3A}
-.fs-fb-submit{width:100%;padding:12px 0;background:#2C5F3A;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:background 0.2s;font-family:inherit}
-.fs-fb-submit:disabled{background:#b5a89a;cursor:not-allowed}
-.fs-fb-submit:not(:disabled):hover{background:#1e3d26}
-.fs-fb-result{margin-top:12px;font-size:14px;min-height:22px}
-.fs-fb-result.success{color:#2C5F3A}
-.fs-fb-result.error{color:#c0392b}
-@media(max-width:640px){.fs-feedback-widget{margin:20px 12px;padding:18px 14px}.fs-fb-stars{font-size:30px;gap:4px}}
-</style>
 <script>
-  (function() {
-    var s = document.querySelectorAll('#fs-fb-stars .fs-star');
-    var l = document.getElementById('fs-fb-score-label');
-    var b = document.getElementById('fs-fb-submit');
-    var t = document.getElementById('fs-fb-text');
-    var c = document.getElementById('fs-fb-contact');
-    var r = document.getElementById('fs-fb-result');
-    var n = 0;
-    var labels = ['',
-      '☆ 1分 · 不可用', '☆ 2分 · 需大幅改进',
-      '☆ 3分 · 一般', '☆ 4分 · 好用', '★ 5分 · 超预期'];
+// ============================================================
+// 全局状态
+// ============================================================
+var currentStep = 1;
+var selectedScenario = null;
+var step1Data = null;  // 保存步骤1的结果，供步骤2使用
 
-    s.forEach(function(star) {
-      star.addEventListener('mouseenter', function() {
-        var i = parseInt(star.dataset.score);
-        h(i); l.textContent = labels[i];
-      });
-      star.addEventListener('mouseleave', function() {
-        h(n); l.textContent = n > 0 ? labels[n] : '点击星星评分';
-      });
-      star.addEventListener('click', function() {
-        n = parseInt(star.dataset.score);
-        h(n); l.textContent = labels[n]; b.disabled = false;
-      });
+// ============================================================
+// 步骤切换
+// ============================================================
+function goStep(n) {
+  currentStep = n;
+  document.querySelectorAll('.card').forEach(function(c){ c.classList.add('hidden'); });
+  document.getElementById('step' + n).classList.remove('hidden');
+
+  // 更新导航
+  for (var i = 1; i <= 3; i++) {
+    var nav = document.getElementById('nav' + i);
+    nav.classList.remove('active', 'done');
+    if (i < n) nav.classList.add('done');
+    if (i === n) nav.classList.add('active');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================================
+// 步骤1：拆需求
+// ============================================================
+async function doStep1() {
+  var input = document.getElementById('step1-input').value.trim();
+  if (!input) { alert('请先输入客户描述'); return; }
+
+  var btn = document.getElementById('step1-btn');
+  var resultBox = document.getElementById('step1-result');
+  var content = document.getElementById('step1-content');
+  btn.disabled = true;
+  btn.textContent = '拆解中...';
+  resultBox.classList.add('hidden');
+
+  try {
+    // 调用解码API
+    var res = await fetch('https://fengsheng.tech/api/decode/v2', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ input: input })
     });
+    var data = await res.json();
 
-    function h(i) {
-      s.forEach(function(star) {
-        var j = parseInt(star.dataset.score);
-        star.textContent = j <= i ? '★' : '☆';
-        star.classList.toggle('active', j <= i);
+    step1Data = data; // 保存供后续步骤使用
+    renderStep1Result(data, content);
+  } catch(e) {
+    // 降级：本地mock
+    step1Data = mockDecodeResult(input);
+    renderStep1Result(step1Data, content);
+  }
+
+  resultBox.classList.remove('hidden');
+  document.getElementById('step1-next').classList.remove('hidden');
+  btn.disabled = false;
+  btn.textContent = '🔍 重新拆解';
+  document.getElementById('step1-input').disabled = true;
+  track('step1_done', {category: step1Data.category || 'unknown'});
+}
+
+function renderStep1Result(data, container) {
+  var profile = data.profile || {};
+  var insights = data.insights || [];
+
+  var html = '<div style="margin-bottom:12px"><span class="tag tag-info">客户类型：' + (profile.lifeStage || '待观察') + '</span><span class="tag tag-safe">风险偏好：' + (profile.riskTolerance || '稳健') + '</span></div>';
+  html += '<div class="row"><span class="label">核心需求</span><span class="value">' + (profile.coreNeed || '待挖掘') + '</span></div>';
+  html += '<div class="row"><span class="label">决策风格</span><span class="value">' + (profile.decisionStyle || '待观察') + '</span></div>';
+
+  if (insights.length > 0) {
+    html += '<div style="margin-top:12px;font-size:13px;font-weight:700;color:var(--p)">💡 关键洞察</div>';
+    insights.forEach(function(ins, i) {
+      var text = typeof ins === 'string' ? ins : (ins.text || '');
+      html += '<div style="padding:6px 0;border-bottom:1px solid #eee;font-size:12px;color:#555"><span style="color:var(--p);font-weight:700;margin-right:6px">' + (i+1) + '.</span>' + text + '</div>';
+    });
+  } else {
+    html += '<div style="margin-top:12px;padding:10px;background:#fff8e1;border-radius:8px;font-size:12px;color:#e65100">💡 ' + (data.category === 'buying' ? '购买意向较强' : data.category === 'renting' ? '租房需求明确' : '需要进一步挖掘需求') + '，建议结合7步法推进。</div>';
+  }
+
+  container.innerHTML = html;
+}
+
+// ============================================================
+// 步骤2：出话术
+// ============================================================
+function selectScenario(el, type) {
+  document.querySelectorAll('.scenario-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  selectedScenario = type;
+}
+
+async function doStep2() {
+  if (!selectedScenario) { alert('请先选择一个场景'); return; }
+
+  var btn = document.getElementById('step2-btn');
+  var resultBox = document.getElementById('step2-result');
+  var content = document.getElementById('step2-content');
+  var extra = document.getElementById('step2-extra').value.trim();
+  btn.disabled = true;
+  btn.textContent = '生成中...';
+  resultBox.classList.add('hidden');
+
+  var scenarioMap = {
+    demand: {name:'需求挖掘', prompt: '需求挖掘场景' + (extra ? '，补充：'+extra : '')},
+    visit: {name:'带看讲解', prompt: '带看讲解场景' + (extra ? '，补充：'+extra : '')},
+    bargain: {name:'议价处理', prompt: '议价处理场景' + (extra ? '，补充：'+extra : '')},
+    hesitate: {name:'犹豫不决', prompt: '客户犹豫不决场景' + (extra ? '，补充：'+extra : '')},
+  };
+
+  try {
+    var res = await fetch('https://fengsheng.tech/api/decode/v2', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ input: scenarioMap[selectedScenario].prompt, type: 'script' })
+    });
+    var data = await res.json();
+    renderStep2Result(data, content);
+  } catch(e) {
+    renderStep2Result(mockScriptResult(selectedScenario), content);
+  }
+
+  resultBox.classList.remove('hidden');
+  document.getElementById('step2-next').classList.remove('hidden');
+  btn.disabled = false;
+  btn.textContent = '💬 重新生成';
+  track('step2_done', {scenario: selectedScenario});
+}
+
+function renderStep2Result(data, container) {
+  var html = '';
+  var insights = data.insights || [];
+  var suggestions = data.suggestions || [];
+
+  if (insights.length > 0 || suggestions.length > 0) {
+    if (insights.length > 0) {
+      html += '<div style="margin-bottom:12px;font-size:13px;font-weight:700;color:var(--p)">🗣 专业话术</div>';
+      insights.forEach(function(ins, i) {
+        var text = typeof ins === 'string' ? ins : (ins.text || '');
+        html += '<div style="padding:10px;background:#fff;border-radius:8px;margin-bottom:8px;border-left:3px solid var(--p)"><span style="font-size:12px;color:var(--p);font-weight:700;margin-right:6px">A' + (i+1) + '</span>' + text + '</div>';
       });
     }
-
-    b.addEventListener('click', function() {
-      if (n === 0) { r.textContent = '请先点击星星评分';
-        r.className = 'fs-fb-result error'; return; }
-      b.disabled = true; b.textContent = '提交中...';
-      fetch('/api/feedback', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          module: 'breeder', score: n,
-          content: t.value.trim() || null,
-          contact: c.value.trim() || null,
-          source: 'web'
-        })
-      }).then(function(x) { return x.json(); })
-      .then(function(d) {
-        if (d.ok) {
-          r.textContent = '✓ 反馈已收到，谢谢你的贡献！';
-          r.className = 'fs-fb-result success';
-          t.value = ''; c.value = ''; n = 0; h(0);
-          l.textContent = '点击星星评分';
-          b.disabled = true; b.textContent = '提交反馈';
-        } else throw new Error(d.error || '提交失败');
-      }).catch(function(e) {
-        r.textContent = '提交失败，请稍后重试：' + e.message;
-        r.className = 'fs-fb-result error';
-        b.disabled = false; b.textContent = '重新提交';
+    if (suggestions.length > 0) {
+      html += '<div style="margin:12px 0;font-size:13px;font-weight:700;color:var(--fire)">💗 共情话术</div>';
+      suggestions.forEach(function(sug, i) {
+        var text = typeof sug === 'string' ? sug : (sug.text || '');
+        html += '<div style="padding:10px;background:#fff8f5;border-radius:8px;margin-bottom:8px;font-size:13px;color:#555;line-height:1.7">' + text + '</div>';
       });
-    });
-  })();
-</script>
+    }
+  } else {
+    html += mockScriptResultHTML(selectedScenario);
+  }
 
+  container.innerHTML = html;
+}
+
+// ============================================================
+// 步骤3：验房源
+// ============================================================
+async function doStep3() {
+  var input = document.getElementById('step3-input').value.trim();
+  if (!input) { alert('请先输入房源信息'); return; }
+
+  var btn = document.getElementById('step3-btn');
+  var resultBox = document.getElementById('step3-result');
+  var content = document.getElementById('step3-content');
+  btn.disabled = true;
+  btn.textContent = '核验中...';
+  resultBox.classList.add('hidden');
+
+  try {
+    var res = await fetch('https://fengsheng.tech/api/decode/v2', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ input: input, type: 'verify' })
+    });
+    var data = await res.json();
+    renderStep3Result(data, content);
+  } catch(e) {
+    renderStep3Result(mockVerifyResult(input), content);
+  }
+
+  resultBox.classList.remove('hidden');
+  btn.disabled = false;
+  btn.textContent = '🛡 重新核验';
+  track('step3_done', {});
+}
+
+// 解析房源信息中的关键点
+function parseProperty(text) {
+  var result = { commute: null, price: null, deposit: null, transport: null, issues: [] };
+
+  // 步行X分钟
+  var m = text.match(/步行(\d+)分/);
+  if (m) result.commute = parseInt(m[1]);
+
+  // 价格
+  var pm = text.match(/(\d+)元/);
+  if (pm) result.price = parseInt(pm[1]);
+
+  // 押金
+  if (/押一/.test(text)) result.deposit = '押一';
+  if (/押二/.test(text)) result.deposit = '押二';
+
+  // 地铁
+  if (/地铁/.test(text)) result.transport = true;
+
+  // 风险信号
+  if (/便宜|低价/.test(text)) result.issues.push({type:'warn', text:'价格偏低，可能是钓鱼价格或问题房源'});
+  if (/没问题|绝对/.test(text)) result.issues.push({type:'warn', text:'房东承诺过于绝对，需核实'});
+  if (result.commute && result.commute < 3) result.issues.push({type:'warn', text:'步行时间过短，实际可能有偏差'});
+  if (result.price && result.price < 2000) result.issues.push({type:'risk', text:'租金明显低于市场价，谨慎核实'});
+  if (result.deposit === '押二') result.issues.push({type:'warn', text:'押二付二资金压力大，建议优先考虑押一付一'});
+
+  return result;
+}
+
+function renderStep3Result(data, container) {
+  var input = document.getElementById('step3-input').value;
+  var parsed = parseProperty(input);
+
+  var html = '';
+  if (parsed.issues.length > 0) {
+    parsed.issues.forEach(function(issue) {
+      var tagClass = issue.type === 'risk' ? 'tag-risk' : 'tag-safe';
+      html += '<div style="margin-bottom:10px;padding:12px;background:#fff;border-radius:8px;border-left:3px solid ' + (issue.type==='risk'?'#e65100':'#f57c00') + '">';
+      html += '<span class="tag ' + tagClass + '">' + (issue.type==='risk'?'⚠️风险':'⚡注意') + '</span>';
+      html += '<div style="margin-top:8px;font-size:13px;color:#444;line-height:1.6">' + issue.text + '</div></div>';
+    });
+  } else {
+    html += '<div style="padding:14px;background:#e8f5e9;border-radius:10px;font-size:13px;color:#2e7d32;line-height:1.7">✅ 初步核验：未发现明显风险信号。但最终判断还需实地核实。核实要点：①产权证②实际通勤距离③房屋现状。</div>';
+  }
+
+  html += '<div style="margin-top:14px;padding:12px;background:#f8f7f3;border-radius:8px;font-size:12px;color:#888;line-height:1.7">📋 建议核实清单：<br>① 产权证和房东身份是否一致<br>② 通勤时间实地走一遍，不信口头承诺<br>③ 水电燃气账单有无欠费<br>④ 合同条款有无不利条款</div>';
+
+  container.innerHTML = html;
+}
+
+// ============================================================
+// Mock降级数据
+// ============================================================
+function mockDecodeResult(input) {
+  var hasBudget = /[23][0-9]{3}/.test(input);
+  var hasMetro = /地铁/.test(input);
+  return {
+    category: 'renting',
+    profile: {
+      lifeStage: hasBudget ? '职场新人' : '待观察',
+      coreNeed: hasMetro ? '交通便利' : '待挖掘',
+      riskTolerance: '稳健',
+      decisionStyle: '分析型',
+      source: 'AI分析'
+    },
+    insights: [
+      '客户有明显的价格锚点意识（提到具体预算），说明有真实需求，可深入挖掘',
+      '提到"离地铁近"说明通勤是核心需求，可围绕通勤成本展开话题',
+      '建议用"需求分层法"：先确认通勤需求，再聊其他'
+    ],
+    suggestions: []
+  };
+}
+
+function mockScriptResult(scenario) {
+  var scripts = {
+    demand: {
+      insights: [
+        '"我理解，现在买房确实要慎重，毕竟不是小钱。您主要顾虑哪方面，是价格、位置还是时机？"（先认同，再探顾虑）',
+        '"您说的'再看看'，我猜不是不想买，是怕买错了对吧？"（用猜测代替追问，降低客户防御）',
+        '"其实您能告诉我预算范围，我帮你筛一遍，不合适的直接不看，节省时间"（给价值，降低决策成本）'
+      ],
+      suggestions: [
+        '🗣 专业话术：先点头认同客户的犹豫，不否定、不催单。',
+        '🗣 探预算：用"我猜"代替直接问，"我猜你不是不想，是怕..."，客户更愿意说出真实顾虑。'
+      ]
+    },
+    visit: {
+      insights: [
+        '提前准备带看路径：小区大门→楼栋→房源→周边配套，讲故事而不是念配置',
+        '针对客户提到过的需求（预算/地铁），主动在带看中指出来，"你看，这个就符合你的要求"',
+        '带看结束前做一次"需求再确认"："今天看的这套，您最满意哪点？"'
+      ],
+      suggestions: [
+        '🗣 带看前：给客户发一条预热短信："明天X点见，我提前帮你把房源准备了三套备选"',
+        '🗣 带看中：每到一处主动关联客户需求，不要等客户问'
+      ]
+    },
+    bargain: {
+      insights: [
+        '"X老板，您说的有道理，但现在这个价格确实已经是底价了。不过我帮你申请一下，看能不能从家具这边补一点"（给面子，留退路）',
+        '"这个价格我帮你跟房东谈，但需要您这边做个决定意向，今天能定我就去谈"（制造紧迫感，但不是施压）',
+        '"您说的这个价格我理解，但我们也要尊重房东的底线，我试试，争取不让您跑空"'
+      ],
+      suggestions: [
+        '🗣 议价原则：永远不直接拒绝，说"我帮你争取"。争取到了是功劳，争取不到也有退路。',
+        '🗣 议价不是让步：给房东面子，给客户里子，核心是不让谈判破裂。'
+      ]
+    },
+    hesitate: {
+      insights: [
+        '"您现在最纠结的是什么，是户型、楼层还是位置？"（聚焦一个点，不要同时处理多个顾虑）',
+        '"其实选房子没有完美的，核心满足2个条件就够了，您觉得哪2个最重要？"（帮客户做减法）',
+        '"您有这个纠结很正常，说明您认真。我帮你把两个选项的优缺点都列出来，您看完再决定"'
+      ],
+      suggestions: [
+        '🗣 犹豫时不要催：越催越不敢决定。给时间和空间，客户反而更容易自己下判断。',
+        '🗣 制造参照物：让客户对比两个选项，而不是凭空犹豫。'
+      ]
+    }
+  };
+  return scripts[scenario] || {insights:[],suggestions:[]};
+}
+
+function mockScriptResultHTML(scenario) {
+  var scripts = mockScriptResult(scenario);
+  var html = '<div style="margin-bottom:12px;font-size:13px;font-weight:700;color:var(--p)">🗣 专业话术</div>';
+  scripts.insights.forEach(function(s,i) {
+    html += '<div style="padding:10px;background:#fff;border-radius:8px;margin-bottom:8px;border-left:3px solid var(--p)"><span style="font-size:12px;color:var(--p);font-weight:700;margin-right:6px">A'+(i+1)+'</span>'+s+'</div>';
+  });
+  if (scripts.suggestions.length > 0) {
+    html += '<div style="margin:12px 0;font-size:13px;font-weight:700;color:var(--fire)">💡 操作提示</div>';
+    scripts.suggestions.forEach(function(s) {
+      html += '<div style="padding:10px;background:#fff8f5;border-radius:8px;margin-bottom:8px;font-size:13px;color:#555;line-height:1.7">'+s+'</div>';
+    });
+  }
+  return html;
+}
+
+function mockVerifyResult(input) {
+  return {};
+}
+
+// ============================================================
+// 追踪
+// ============================================================
+function track(event, params) {
+  try {
+    var data = Object.assign({event: event, page: '/breeder', ts: Date.now()}, params);
+    if (window.fsTracker) window.fsTracker.track(data);
+    fetch('/api/track', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(function(){});
+  } catch(e) {}
+}
+
+// ============================================================
+// 反馈组件
+// ============================================================
+(function() {
+  var s = document.querySelectorAll('#fs-fb-stars .fs-star');
+  var l = document.getElementById('fs-fb-score-label');
+  var b = document.getElementById('fs-fb-submit');
+  var t = document.getElementById('fs-fb-text');
+  var r = document.getElementById('fs-fb-result');
+  var n = 0;
+  var labels = ['','☆ 1分·不可用','☆ 2分·需改进','☆ 3分·一般','★ 4分·好用','★ 5分·超预期'];
+  s.forEach(function(star) {
+    star.addEventListener('click', function() {
+      n = parseInt(star.dataset.score);
+      s.forEach(function(st, j) {
+        st.textContent = j < n ? '★' : '☆';
+        st.classList.toggle('active', j < n);
+      });
+      l.textContent = labels[n];
+      b.disabled = false;
+    });
+  });
+  b.addEventListener('click', function() {
+    if (!n) return;
+    b.disabled = true; b.textContent = '提交中...';
+    fetch('/api/feedback', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({module:'breeder', score:n, content:t.value.trim()||null, source:'web'})
+    }).then(function(x){ return x.json(); })
+    .then(function(d) {
+      if (d.ok) {
+        r.textContent = '✓ 反馈已收到，谢谢！';
+        r.className = 'fs-fb-result';
+        t.value = ''; n=0;
+        s.forEach(function(st){ st.textContent='☆'; st.classList.remove('active'); });
+        l.textContent='点击星星评分';
+        b.disabled=true; b.textContent='提交反馈';
+      } else throw new Error();
+    }).catch(function() {
+      r.textContent = '提交失败，请稍后重试';
+      r.className = 'fs-fb-result';
+      b.disabled=false; b.textContent='重新提交';
+    });
+  });
+})();
+</script>
 </body>
 </html>
