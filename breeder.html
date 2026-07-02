@@ -403,13 +403,8 @@ async function doStep2() {
   };
 
   try {
-    var res = await fetch('https://fengsheng.tech/api/decode/v2', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ input: scenarioMap[selectedScenario].prompt, type: 'script' })
-    });
-    var data = await res.json();
-    renderStep2Result(data, content);
+    // Step2用本地话术库（API不支持场景话术）
+    renderStep2Result(mockScriptResult(selectedScenario), content);
   } catch(e) {
     renderStep2Result(mockScriptResult(selectedScenario), content);
   }
@@ -463,13 +458,8 @@ async function doStep3() {
   resultBox.classList.add('hidden');
 
   try {
-    var res = await fetch('https://fengsheng.tech/api/decode/v2', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ input: input, type: 'verify' })
-    });
-    var data = await res.json();
-    renderStep3Result(data, content);
+    // Step3用本地规则核验（API不支持房源核验）
+    renderStep3Result(mockVerifyResult(input), content);
   } catch(e) {
     renderStep3Result(mockVerifyResult(input), content);
   }
