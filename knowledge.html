@@ -4197,24 +4197,30 @@ function closeEntry() {
     if (domain) domain.style.display = 'none';
   }, 300);
 }
-// 绑定所有 [data-entry] 元素 · 事件委托(小豆子6.30修复:滚动后动态元素也能响应)
-document.addEventListener('click', (e) => {
-  const el = e.target.closest('[data-entry]');
-  if (el) {
-    e.stopPropagation();
-    const id = el.getAttribute('data-entry');
-    openEntry(id);
+// DOM ready 后绑定事件
+window.addEventListener('DOMContentLoaded', () => {
+  // 绑定所有 [data-entry] 元素 · 事件委托
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('[data-entry]');
+    if (el) {
+      e.stopPropagation();
+      const id = el.getAttribute('data-entry');
+      openEntry(id);
+    }
+  });
+
+  // 点遮罩关闭
+  const modal = document.getElementById('entryModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target.id === 'entryModal') closeEntry();
+    });
   }
-});
 
-// 点遮罩关闭
-document.getElementById('entryModal').addEventListener('click', (e) => {
-  if (e.target.id === 'entryModal') closeEntry();
-});
-
-// ESC 关闭
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeEntry();
+  // ESC 关闭
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeEntry();
+  });
 });
 </script>
 
