@@ -1858,11 +1858,6 @@ function renderRoles() {
   `).join('');
 }
 
-// 启动
-renderHeroStats();
-renderDomains();
-renderRoles();
-
 /* ===== 词条详情 · 正反话术版 ===== */
 
 // 词条数据库(2026.6.29 15:50 升级 · 接入小鱼儿真实数据)
@@ -4124,7 +4119,11 @@ const entryDatabase = {
     "servicer": ""
   }
 };
-;
+
+// 启动(必须在 entryDatabase/businessDomains/talentRoles 定义之后)
+renderHeroStats();
+renderDomains();
+renderRoles();
 
 function openEntry(entryId) {
   // DOMAIN-{code} → 显示该域下所有词条
