@@ -1147,12 +1147,12 @@ footer {
         <ul class="cl-list">
           <li><b>房产交易</b> 20 — 真房源/带看/签约/资金监管</li>
           <li><b>房屋租赁</b> 26 — 长租/押金/续租/租赁备案</li>
-          <li><b>整装家居</b> 18 — 包工包料/设计/施工/验收</li>
+          <li><b>整装家居</b> 15 — 整装交付/验收/预算/质保</li>
           <li><b>家政保洁</b> 15 — 保洁/月嫂/育儿/养老</li>
           <li><b>品质居住(客)</b> 6 — 七维美好居住标准</li>
           <li><b>品质居住(服)</b> 4 — 服务者 4 维关怀</li>
-          <li><b>人才字典</b> 18 — 9 岗位 × 5 能力 = 45 能力点</li>
-          <li><b>十五五政策</b> 23 — 顶层政策/行业趋势/数据</li>
+          <li><b>人才字典</b> 27 — 9 岗位 × 5 能力 = 45 能力点</li>
+          <li><b>十五五政策</b> 18 — 顶层政策/行业趋势/数据</li>
         </ul>
         <div class="cl-foot">→ 每个域 = 一类工作场景,场景锚点写明"什么情况下查这个域"</div>
       </div>
@@ -1894,7 +1894,7 @@ footer {
 // 122 = trade 20 + rental 26 + decor 15 + homekeep 15 + quality-customer 6 + quality-server 4 + talent 18 + policy 18
 // 🔴 P0 已修(7.3 样版交付前,生哥 16:00 拍板:已废止法规是"错误"不是"缺失",不能拖到 7.4)
 // 5 条 RNT 词条(RNT-010/011/012/018/024)已替换为《商品房屋租赁管理办法》(2011 住建部令第 6 号)
-// 8 大业务域(7.6 09:36 加 sceneAnchor 场景锚点 · 7.2 封版 133 词条已含)
+// 8 大业务域(7.6 09:36 加 sceneAnchor 场景锚点 · 7.6 词条对齐版 122 词条)
 const businessDomains = [
   { entry_id: 'TRADE',  code: 'trade',         title: '域 1 · 房产交易',     icon: '🏘', count: 20, status: 'active', isPlaceholder: false, sceneAnchor: '签单前查这里 · 真房源/带看/签约/资金监管', sample_words: ['真房源', '带看', '签约', '资金监管'], more_count: 16, sample_ids: ['TRX-001', 'TRX-002', 'TRX-004', 'TRX-005'] },
   { entry_id: 'RENTAL', code: 'rental',        title: '域 2 · 房屋租赁',     icon: '🏠', count: 26, status: 'active', isPlaceholder: false, sceneAnchor: '租房签约前查这里 · 长租/押金/续租/备案', sample_words: ['长租公寓', '押金退还', '续租', '租赁备案'], more_count: 22, sample_ids: ['RNT-001', 'RNT-004', 'RNT-011', 'RNT-010'] },
@@ -1921,10 +1921,9 @@ const talentRoles = [
   { code: 'E1', name: '物业管家',        icon: '🏢', domain: 'property',        gb: '✅ 国标 4-06-01-01', src: '《物业管理条例》+《民法典》物权编' }
 ];
 
-// Hero 6 个数据点(2026.7.2 16:00 升级:133 业务词条 / 含 7.1 增量 8+2+4 - 9 STAGE 场景轴)
-// Hero 6 数据点(7.6 09:36 小豆子 真实数据核对 · 7.2 封版 133 词条 / 8 域 / 9 岗位 / 45 能力点 / 7 维 · 与 7.2 17:08 封板一致)
+// Hero 6 个数据点(2026.7.6 词条对齐版:122 业务词条 / 8 域 / 9 岗位 / 45 能力点 / 7 维)
 const heroStats = [
-  { num: '133',    label: '词条·全量',         anchor: '#dictIndex', placeholder: false },
+  { num: '122',    label: '词条·全量',         anchor: '#dictIndex', placeholder: false },
   { num: '8',       label: '业务域',           anchor: '#dictIndex', placeholder: false },
   { num: '9',       label: '服务岗位',         anchor: '#dictIndex', placeholder: false },
   { num: '45',      label: '岗位能力点',       anchor: '#dictIndex', placeholder: false },
@@ -1978,15 +1977,15 @@ function renderDomains() {
     `;
   }).join('');
 
-  // 统计(7.2 16:00 升级:133 业务词条 = 122(6.30) + 8 POL/DEC + 2 TAL + 4 DDJ - 3 留待小鱼儿补 = 133;9 STAGE 场景轴不计)
+  // 统计(7.6 词条对齐版:122 业务词条 = 权威数据 122 条全量)
   const ready = businessDomains.filter(d => !d.isPlaceholder).length;
   const total = businessDomains.length;
   const readyCount = businessDomains.filter(d => !d.isPlaceholder).reduce((s,d) => s+d.count, 0);
-  const pendingCount = 133 - readyCount;
+  const pendingCount = 122 - readyCount;
   const badge = document.getElementById('dictVerifyBadge');
   if (ready === total) {
     badge.className = 'di-verify';
-    badge.textContent = '✓ 全部就绪 · 133 条全量';
+    badge.textContent = '✓ 全部就绪 · 122 条全量';
   } else {
     badge.className = 'di-verify partial';
     badge.textContent = `⏳ ${ready}/${total} 域就绪 · ${pendingCount} 词条待补`;
