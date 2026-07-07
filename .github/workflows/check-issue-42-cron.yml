@@ -1,0 +1,64 @@
+name: Check Issue #42 for Cloudflare Credentials
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run mode (1=only detect, 0=deploy)'
+        required: false
+        default: '1'
+        type: choice
+        options:
+          - '1'
+          - '0'
+      force_recheck:
+        description: 'Force recheck even if already deployed'
+        required: false
+        default: '0'
+        type: choice
+        options:
+          - '0'
+          - '1'
+
+jobs:
+  check:
+    name: Check Issue #42
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+      actions: write
+      repository-projects: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install cryptography --quiet
+
+      - name: Run credential check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || '1' }}
+          FORCE_RECHECK: ${{ inputs.force_recheck || '0' }}
+        run: |
+          python scripts/check_issue_42.py
+
+      - name: Update step summary
+        run: |
+          if [ -f .agent/memory/deploy_progress.json ]; then
+            echo "## 🔍 Issue #42 检查结果" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat .agent/memory/deploy_progress.json | python3 -m json.tool >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 🔍 Issue #42 检查结果" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "状态文件未生成" >> $GITHUB_STEP_SUMMARY
+          fi
