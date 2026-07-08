@@ -11,11 +11,13 @@ OWNER = "fengsheng-shengge"
 REPO = "fengsheng-tasks"
 STATE_FILE = ".agent/memory/deploy_progress.json"
 
-DRY_RUN = os.environ.get("DRY_RUN", "1") == "1"
+DRY_RUN = os.environ.get("DRY_RUN", "0") == "1"
 FORCE_RECHECK = os.environ.get("FORCE_RECHECK", "0") == "1"
 
-ACCOUNT_ID_PATTERN = re.compile(r'(account[_-]?id|account[_-]?id)\s*[:=]\s*([a-f0-9]{32})', re.IGNORECASE)
-API_TOKEN_PATTERN = re.compile(r'(api[_-]?token|token)\s*[:=]\s*([a-f0-9]{40})', re.IGNORECASE)
+ACCOUNT_ID_PATTERN = re.compile(r'(?:account[_-]?id|CLOUDFLARE_ACCOUNT_ID)\s*[:=]\s*`?([a-f0-9]{32})`?', re.IGNORECASE)
+API_TOKEN_PATTERN = re.compile(r'(?:api[_-]?token|CLOUDFLARE_API_TOKEN|token)\s*[:=]\s*`?(cfut_[A-Za-z0-9_-]{20,}|[a-f0-9]{40})`?', re.IGNORECASE)
+# Fallback: match bare cfut_ tokens not captured by the structured pattern
+CFUT_TOKEN_PATTERN = re.compile(r'(cfut_[A-Za-z0-9_-]{20,})')
 
 
 def run_gh_command(args):
@@ -48,26 +50,43 @@ def extract_credentials(comments):
     account_id = None
     api_token = None
     found_by = None
+    found_comment_id = None
 
-    for comment in comments:
+    # Search ALL comments (not just CozeBot/小鱼儿), prioritize recent ones
+    for comment in reversed(comments):
         body = comment.get("body", "")
         user_login = comment.get("user", {}).get("login", "")
-        
-        if user_login == "CozeBot" or "小鱼儿" in comment.get("body", ""):
-            account_match = ACCOUNT_ID_PATTERN.search(body)
-            token_match = API_TOKEN_PATTERN.search(body)
-            
-            if account_match:
-                account_id = account_match.group(2)
-                found_by = user_login
-            if token_match:
-                api_token = token_match.group(2)
-                found_by = user_login
+        comment_id = comment.get("id", "")
 
-            if account_id and api_token:
-                break
+        # Skip our own bot comments to avoid re-extracting already-processed credentials
+        if user_login in ("fengsheng-shengge", "github-actions[bot]"):
+            # Still scan for cfut_ tokens even in bot comments (they may quote 小鱼儿's reply)
+            pass
 
-    return account_id, api_token, found_by
+        account_match = ACCOUNT_ID_PATTERN.search(body)
+        token_match = API_TOKEN_PATTERN.search(body)
+
+        # Fallback: try bare cfut_ pattern
+        if not token_match:
+            cfut_match = CFUT_TOKEN_PATTERN.search(body)
+            if cfut_match:
+                api_token = cfut_match.group(1)
+                found_by = user_login
+                found_comment_id = comment_id
+
+        if account_match:
+            account_id = account_match.group(1)
+            found_by = user_login
+            found_comment_id = comment_id
+        if token_match:
+            api_token = token_match.group(1)
+            found_by = user_login
+            found_comment_id = comment_id
+
+        if account_id and api_token:
+            break
+
+    return account_id, api_token, found_by, found_comment_id
 
 
 def load_state():
@@ -129,8 +148,20 @@ def main():
     state = load_state()
     
     if state["status"] == "FOUND_DEPLOYED" and not FORCE_RECHECK:
-        print("[INFO] Credentials already deployed, skipping (use FORCE_RECHECK=1 to recheck)")
-        return 0
+        # Still check if credentials have changed
+        comments = get_issue_comments()
+        if comments:
+            account_id_new, api_token_new, _, _ = extract_credentials(comments)
+            prev_creds = state.get("credentials_detected", {})
+            if (account_id_new == prev_creds.get("account_id_raw") and
+                api_token_new == prev_creds.get("api_token_raw")):
+                print("[INFO] Credentials unchanged and already deployed, skipping")
+                return 0
+            else:
+                print("[INFO] New credentials detected, will re-deploy")
+        else:
+            print("[INFO] Credentials already deployed, skipping (use FORCE_RECHECK=1 to recheck)")
+            return 0
 
     comments = get_issue_comments()
     if not comments:
@@ -142,7 +173,13 @@ def main():
 
     print(f"[INFO] Found {len(comments)} comments")
     
-    account_id, api_token, found_by = extract_credentials(comments)
+    account_id, api_token, found_by, found_comment_id = extract_credentials(comments)
+
+    # Check if credentials are new/changed compared to last known state
+    prev_creds = state.get("credentials_detected", {})
+    prev_account = prev_creds.get("account_id_raw") if prev_creds else None
+    prev_token = prev_creds.get("api_token_raw") if prev_creds else None
+    creds_changed = (account_id != prev_account or api_token != prev_token)
 
     if account_id and api_token:
         print(f"[FOUND] Credentials detected from {found_by}")
@@ -154,7 +191,10 @@ def main():
             state["credentials_detected"] = {
                 "account_id_masked": mask_secret(account_id),
                 "api_token_masked": mask_secret(api_token),
-                "found_by": found_by
+                "account_id_raw": account_id,
+                "api_token_raw": api_token,
+                "found_by": found_by,
+                "comment_id": found_comment_id
             }
             state["last_checked"] = datetime.now().isoformat()
             save_state(state)
@@ -183,7 +223,10 @@ def main():
         state["credentials_detected"] = {
             "account_id_masked": mask_secret(account_id),
             "api_token_masked": mask_secret(api_token),
-            "found_by": found_by
+            "account_id_raw": account_id,
+            "api_token_raw": api_token,
+            "found_by": found_by,
+            "comment_id": found_comment_id
         }
         state["deployed_at"] = datetime.now().isoformat()
         state["last_checked"] = datetime.now().isoformat()

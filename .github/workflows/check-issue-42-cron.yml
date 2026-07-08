@@ -8,7 +8,7 @@ on:
       dry_run:
         description: 'Dry run mode (1=only detect, 0=apply and deploy)'
         required: false
-        default: '1'
+        default: '0'
         type: string
       force_recheck:
         description: 'Force recheck even if already deployed'
@@ -20,6 +20,11 @@ jobs:
   check-credentials:
     name: Check Issue #42
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      actions: write
+      secrets: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,7 +37,7 @@ jobs:
 
       - name: Run credential check script
         env:
-          DRY_RUN: ${{ inputs.dry_run || '1' }}
+          DRY_RUN: ${{ inputs.dry_run || '0' }}
           FORCE_RECHECK: ${{ inputs.force_recheck || '0' }}
         run: python3 scripts/check_issue_42.py
 
