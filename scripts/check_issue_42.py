@@ -1,27 +1,6 @@
 #!/usr/bin/env python3
 """
 每小时检查 GitHub Issue #42，提取 Cloudflare 部署凭证。
-
-执行流程：
-  1. 调 GitHub API 读取 Issue #42 全部评论
-  2. 过滤"小鱼儿 / xiao-yu-er / Coze"标识的最新回复
-  3. 正则提取 Account ID 和 API Token
-  4. 与 .agent/memory/deploy_progress.json 比对，避免重复触发
-  5. 写入仓库 GitHub Secrets（CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN）
-  6. 触发 .github/workflows/deploy.yml（workflow_dispatch）
-  7. 在 Issue 下回复凭证摘要（脱敏）
-
-环境变量：
-  GH_TOKEN / GITHUB_TOKEN        必填，GitHub PAT（需 repo + actions 权限）
-  GITHUB_REPO_OWNER              默认 fengsheng-shengge
-  GITHUB_REPO_NAME               默认 fengsheng-tasks
-  ISSUE_NUMBER                   默认 42
-  DEPLOY_WORKFLOW                默认 deploy.yml
-  DRY_RUN                        默认 1（不写 Secrets、不触发 deploy）
-
-退出码：
-  0 = FOUND_READY / FOUND_DEPLOYED / NOT_FOUND
-  2 = ERROR
 """
 
 import base64
@@ -59,7 +38,7 @@ RE_ACCOUNT_ID = re.compile(
     re.IGNORECASE,
 )
 RE_API_TOKEN = re.compile(
-    r"(?:API\s*Token|api[_- ]?token|API_TOKEN|CF_API_TOKEN|Cloudflare\s*Token)\s*[:=]\s*[`'\" ]?([A-Za-z0-9_-]{40})[`'\" ]?",
+    r"(?:API\s*Token|api[\-_ ]?token|API_TOKEN|CF_API_TOKEN|Cloudflare\s*Token)\s*[:=]\s*[`'\" ]?([A-Za-z0-9\-_]{40})[`'\" ]?",
     re.IGNORECASE,
 )
 
