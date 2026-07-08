@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>IP角色设计 · 风声</title>
-<meta name="description" content="输入描述，AI即时生成你的专属IP角色头像——6种风格可选，下载即用。">
+<meta name="description" content="输入角色信息，AI为你生成专属IP角色形象——6种风格可选，对话即得。">
 <style>
-:root{--bg:#f7f4ef;--dk:#1a1a1a;--p:#3d5a3e;--fire:#c46a3a;--ts:#555;--td:#888;--card:#fff;--border:#e8e4d9;--r:12px}
+:root{--bg:#f7f4ef;--dk:#1a1a1a;--p:#3d5a3e;--fire:#c46a3a;--ts:#555;--td:#888;--card:#fff;--border:#e8e4d9;--r:8px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--dk);line-height:1.6}
 
@@ -23,69 +23,72 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 .hero h1{font-size:26px;font-weight:800;margin-bottom:6px}
 .hero p{font-size:15px;color:var(--ts);margin-bottom:16px}
 
-.input-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:20px;transition:border-color .2s}
-.input-card:focus-within{border-color:var(--p)}
-.input-label{font-size:13px;font-weight:700;color:var(--p);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.input-area{width:100%;min-height:72px;padding:12px;border:none;font-size:14px;color:var(--dk);resize:vertical;font-family:inherit;outline:none;background:var(--bg);border-radius:6px;line-height:1.7}
-.input-area::placeholder{color:var(--td)}
-.input-hint{font-size:11px;color:var(--td);margin-top:8px;line-height:1.5}
-.input-examples{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.input-example{padding:6px 12px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--ts);cursor:pointer;transition:all .15s}
-.input-example:hover{background:var(--p);color:#fff;border-color:var(--p)}
+/* ===== 表单卡片 ===== */
+.form-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px;transition:border-color .2s}
+.form-card:focus-within{border-color:var(--p)}
+.form-row{margin-bottom:16px}
+.form-row:last-child{margin-bottom:0}
+.form-label{font-size:13px;font-weight:700;color:var(--p);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.form-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;color:var(--dk);font-family:inherit;outline:none;background:var(--bg);transition:border-color .2s}
+.form-input:focus{border-color:var(--p)}
+.form-input::placeholder{color:var(--td)}
+.form-select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;color:var(--dk);font-family:inherit;outline:none;background:var(--bg);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;cursor:pointer;transition:border-color .2s}
+.form-select:focus{border-color:var(--p)}
+.form-textarea{width:100%;min-height:60px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;color:var(--dk);resize:vertical;font-family:inherit;outline:none;background:var(--bg);line-height:1.7;transition:border-color .2s}
+.form-textarea:focus{border-color:var(--p)}
+.form-textarea::placeholder{color:var(--td)}
+.form-hint{font-size:11px;color:var(--td);margin-top:6px;line-height:1.5}
+.form-optional{font-size:11px;color:var(--td);font-weight:400;margin-left:4px}
 
+/* ===== 图片上传 ===== */
+.upload-zone{border:2px dashed var(--border);border-radius:var(--r);padding:28px 16px;text-align:center;cursor:pointer;transition:all .25s;background:var(--bg);position:relative;overflow:hidden}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--p);background:rgba(61,90,62,.03)}
+.upload-zone-icon{font-size:32px;margin-bottom:8px}
+.upload-zone-text{font-size:13px;color:var(--ts);line-height:1.6}
+.upload-zone-text strong{color:var(--p)}
+.upload-zone-hint{font-size:11px;color:var(--td);margin-top:6px}
+.upload-preview{display:none;position:relative;margin-top:12px;text-align:center}
+.upload-preview.active{display:block}
+.upload-preview img{max-width:180px;max-height:180px;border-radius:var(--r);border:2px solid var(--border);object-fit:cover}
+.upload-preview-remove{position:absolute;top:-6px;right:calc(50% - 96px);width:22px;height:22px;background:var(--fire);color:#fff;border:none;border-radius:50%;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:transform .15s}
+.upload-preview-remove:hover{transform:scale(1.15)}
+.upload-tag{display:inline-block;background:rgba(196,106,58,.08);color:var(--fire);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:8px}
+
+/* ===== 风格选择 ===== */
 .style-section{margin-bottom:20px}
 .style-label{font-size:13px;font-weight:700;color:var(--p);margin-bottom:10px}
 .style-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .style-card{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;transition:all .2s}
 .style-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .style-card.active{border-color:var(--p);background:rgba(61,90,62,.04)}
-.style-preview{width:100%;aspect-ratio:1;background:var(--bg);border-radius:6px;margin-bottom:8px;display:flex;align-items:center;justify-content:center}
-.style-preview svg{width:80%;height:80%}
+.style-preview{width:100%;aspect-ratio:1;background:var(--bg);border-radius:6px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.style-preview img{width:80%;height:80%;object-fit:contain;border-radius:4px}
 .style-name{font-size:12px;font-weight:700;margin-bottom:2px}
 .style-desc{font-size:10px;color:var(--td)}
 
-.gen-btn{display:block;width:100%;padding:14px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:6px;transition:all .2s}
+/* ===== 生成按钮 ===== */
+.gen-btn{display:block;width:100%;padding:14px;background:var(--p);color:#fff;border:none;border-radius:var(--r);font-size:16px;font-weight:700;cursor:pointer;margin-bottom:6px;transition:all .2s}
 .gen-btn:hover{background:#2d4a2e;transform:translateY(-1px)}
 .gen-btn:disabled{background:#bbb;cursor:not-allowed;transform:none}
 .gen-sub{text-align:center;font-size:11px;color:var(--td);margin-bottom:20px}
 
-.loading{display:none;text-align:center;padding:20px}
-.loading.active{display:block}
-.loading-text{font-size:14px;color:var(--ts);margin-bottom:10px}
-.loading-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;max-width:300px;margin:0 auto}
-.loading-fill{height:100%;width:0;background:var(--p);animation:load 2.5s ease-in-out forwards}
-@keyframes load{0%{width:0}50%{width:70%}100%{width:95%}}
+/* ===== 成功引导卡片 ===== */
+.success-card{display:none;background:var(--card);border:2px solid var(--p);border-radius:var(--r);padding:24px 20px;margin-bottom:20px;text-align:center}
+.success-card.active{display:block}
+.success-icon{font-size:40px;margin-bottom:10px}
+.success-title{font-size:17px;font-weight:800;color:var(--p);margin-bottom:8px}
+.success-desc{font-size:13px;color:var(--ts);line-height:1.7;margin-bottom:14px}
+.success-tips{text-align:left;font-size:12px;color:var(--ts);margin:12px 0;line-height:2}
+.success-tips li{list-style:none}
+.success-tips li::before{content:'✔ ';color:var(--p);font-weight:700}
+.success-dl-btn{padding:10px 24px;background:var(--fire);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.success-dl-btn:hover{background:#b05a2e;transform:translateY(-1px)}
+.success-mentor{display:block;width:100%;padding:12px;background:var(--p);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;margin-top:12px;text-decoration:none;text-align:center;transition:all .2s}
+.success-mentor:hover{background:#2d4a2e}
 
-.result-section{display:none;margin-bottom:20px}
-.result-section.active{display:block}
-.result-title{font-size:14px;font-weight:700;color:var(--p);margin-bottom:12px;text-align:center}
-.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
-.result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
-.result-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.result-card .tag{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700}
-.result-card .tag.recommend{background:var(--fire);color:#fff}
-.result-img{width:100%;aspect-ratio:1;background:var(--bg);border-radius:8px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.result-img canvas,.result-img svg{width:100%;height:100%}
-.result-name{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:2px}
-.result-style{font-size:10px;color:var(--td)}
-
-.action-bar{display:none;text-align:center;gap:10px;margin-bottom:20px}
-.action-bar.active{display:flex;justify-content:center;flex-wrap:wrap}
-.action-btn{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
-.action-btn.primary{background:var(--fire);color:#fff}
-.action-btn.secondary{background:var(--card);color:var(--p);border:1px solid var(--border)}
-
-.guide-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
-.guide-modal.active{display:flex}
-.guide-content{background:var(--card);border-radius:16px;padding:28px 24px;max-width:380px;width:90%;text-align:center}
-.guide-emoji{font-size:48px;margin-bottom:12px}
-.guide-title{font-size:18px;font-weight:800;margin-bottom:8px}
-.guide-desc{font-size:13px;color:var(--ts);line-height:1.7;margin-bottom:8px}
-.guide-list{text-align:left;font-size:12px;color:var(--ts);margin:12px 0;line-height:2}
-.guide-list li{list-style:none}
-.guide-list li::before{content:'✔ ';color:var(--p);font-weight:700}
-.guide-cta{display:block;width:100%;padding:12px;background:var(--fire);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin:12px 0;text-decoration:none}
-.guide-skip{background:none;border:none;color:var(--td);font-size:12px;cursor:pointer;text-decoration:underline}
+/* ===== Toast ===== */
+.toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dk);color:#fff;padding:12px 24px;border-radius:var(--r);font-size:14px;font-weight:700;z-index:300;opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 .safety-box{background:rgba(196,106,58,.05);border:1px dashed var(--fire);border-radius:var(--r);padding:12px 16px;margin:20px 0;font-size:11px;color:var(--fire);text-align:center;line-height:1.7}
 
@@ -94,8 +97,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 
 @media(max-width:480px){
   .style-grid{grid-template-columns:repeat(2,1fr)}
-  .result-grid{grid-template-columns:repeat(2,1fr)}
   .fs-nav-links a{padding:4px 6px;font-size:11px}
+  .success-card{padding:20px 16px}
 }
 </style>
 </head>
@@ -119,20 +122,52 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 <div class="hero">
   <div class="hero-badge">🎨 免费工具</div>
   <h1>设计你的专属IP角色形象</h1>
-  <p>输入一句话描述，AI为你绘制6种风格的个性化头像——拿来就能用</p>
+  <p>填写角色信息，AI为你生成6种风格的个性化IP形象——对话即得</p>
 </div>
 
-<div class="input-card">
-  <div class="input-label">💬 描述你的角色</div>
-  <textarea class="input-area" id="descInput" placeholder="例：一个温暖贴心的租房顾问，青年女生，喜欢穿浅色衣服，戴圆框眼镜，气质亲切" maxlength="200"></textarea>
-  <div class="input-hint">描述越具体效果越好：性别、年龄感、发型、穿搭、配饰、气质</div>
-  <div class="input-examples">
-    <span class="input-example" onclick="fillExample('一个专业干练的房产经纪人，资深男士，短发背头，穿深蓝西装，自信微笑')">🏢 商务风</span>
-    <span class="input-example" onclick="fillExample('一个亲切可爱的家政顾问，圆脸女生，系围裙，笑容温暖治愈')">🏠 亲民风</span>
-    <span class="input-example" onclick="fillExample('一个活力满满的年轻管家，短发女生，穿休闲衬衫，戴智能手表')">💻 活力风</span>
+<!-- ===== 表单：角色名 + 行业 + 补充描述 ===== -->
+<div class="form-card">
+  <div class="form-row">
+    <div class="form-label">👤 角色名</div>
+    <input class="form-input" id="nameInput" type="text" placeholder="例：租房侠、暖姐、管家小哥" maxlength="20">
+  </div>
+  <div class="form-row">
+    <div class="form-label">🏢 所属行业</div>
+    <select class="form-select" id="industrySelect">
+      <option value="">请选择行业</option>
+      <option value="房产经纪">房产经纪</option>
+      <option value="家政服务">家政服务</option>
+      <option value="物业管理">物业管理</option>
+      <option value="租房服务">租房服务</option>
+      <option value="装修设计">装修设计</option>
+      <option value="社区运营">社区运营</option>
+      <option value="其他">其他</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <div class="form-label">✏️ 补充描述 <span class="form-optional">（选填）</span></div>
+    <textarea class="form-textarea" id="descInput" placeholder="描述越具体效果越好，例如：青年女生，喜欢穿浅色衣服，戴圆框眼镜，气质亲切" maxlength="200"></textarea>
+    <div class="form-hint">可以补充：性别、发型、穿搭、配饰、气质等细节</div>
   </div>
 </div>
 
+<!-- ===== 上传本人照片 ===== -->
+<div class="form-card">
+  <div class="form-label">📸 上传本人照片 <span class="form-optional">（推荐，效果更好）</span></div>
+  <div class="upload-zone" id="uploadZone" onclick="document.getElementById('photoInput').click()">
+    <div class="upload-zone-icon">🖼️</div>
+    <div class="upload-zone-text"><strong>点击上传</strong>或拖拽照片到此处</div>
+    <div class="upload-zone-hint">支持 JPG/PNG，建议正面照，AI将基于照片生成卡通/素描风格形象</div>
+  </div>
+  <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handlePhoto(this)">
+  <div class="upload-preview" id="uploadPreview">
+    <button class="upload-preview-remove" onclick="removePhoto(event)">✕</button>
+    <img id="previewImg" src="" alt="预览">
+    <div class="upload-tag">✔ 照片已就绪，生成时将引导上传到AI对话</div>
+  </div>
+</div>
+
+<!-- ===== 风格选择 ===== -->
 <div class="style-section">
   <div class="style-label">🎨 选择风格（可多选，默认全选）</div>
   <div class="style-grid" id="styleGrid">
@@ -140,36 +175,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
   </div>
 </div>
 
-<button class="gen-btn" id="genBtn" onclick="generate()">✨ 免费生成头像</button>
-<div class="gen-sub">基于你的描述 · 6种风格 · 即时绘制 · 下载即用</div>
+<button class="gen-btn" id="genBtn" onclick="generate()">✨ 生成我的IP形象</button>
+<div class="gen-sub">基于你的描述 · 6种风格 · AI对话生成 · 高清下载</div>
 
-<div class="loading" id="loading">
-  <div class="loading-text">🎨 正在分析描述并绘制角色形象...</div>
-  <div class="loading-bar"><div class="loading-fill"></div></div>
-</div>
-
-<div class="result-section" id="resultSection">
-  <div class="result-title">✨ 你的专属IP角色头像</div>
-  <div class="result-grid" id="resultGrid"></div>
-  <div class="action-bar" id="actionBar">
-    <button class="action-btn primary" onclick="downloadAll()">⬇️ 下载全部</button>
-    <button class="action-btn secondary" onclick="regenerate()">🔄 重新生成</button>
-  </div>
-</div>
-
-<div class="guide-modal" id="guideModal">
-  <div class="guide-content">
-    <div class="guide-emoji">🎉</div>
-    <div class="guide-title">IP头像已生成！</div>
-    <div class="guide-desc">头像可以直接用于微信头像、小红书、朋友圈封面。想学习怎么用IP角色获客开单？</div>
-    <ul class="guide-list">
-      <li>用IP角色包装朋友圈/小红书人设</li>
-      <li>配合7步开单法提升转化</li>
-      <li>获客选择器帮你找对客户</li>
-    </ul>
-    <a href="/mentor" class="guide-cta" onclick="trackEvent('guide_cta')">🎯 免费体验开单导师</a>
-    <button class="guide-skip" onclick="closeGuide()">⏭ 关闭</button>
-  </div>
+<!-- ===== 成功引导卡片（点击生成后显示） ===== -->
+<div class="success-card" id="successCard">
+  <div class="success-icon">🚀</div>
+  <div class="success-title">AI设计窗口已打开</div>
+  <div class="success-desc">请在弹出的对话窗口中与AI交流，它将为你生成专属IP角色形象。</div>
+  <ul class="success-tips" id="successTips">
+    <li>AI会根据你填写的信息生成多种风格头像</li>
+    <li>可以继续对话调整细节，直到满意为止</li>
+    <li>生成完成后，请向AI索取高清图片文件</li>
+  </ul>
+  <button class="success-dl-btn" onclick="showToast('请在AI对话中索取高清图片文件')">⬇️ 下载高清图片</button>
+  <a href="/mentor" class="success-mentor">🎯 免费体验开单导师</a>
 </div>
 
 <div class="safety-box">
@@ -183,27 +203,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 
 </div>
 
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
 <script>
 // ===== 6种风格配置 =====
 const STYLES = [
-  {key:'warm',name:'温暖亲民',desc:'柔和色调，亲切感',bg:'#FFF5E6',skin:'#FFDBAC',hair:'#5D4037',cloth:'#E8A87C',acc:'#8D6E63'},
-  {key:'pro',name:'专业干练',desc:'商务配色，干练气质',bg:'#F0F4F0',skin:'#F5D0A9',hair:'#2C2C2C',cloth:'#2C3E50',acc:'#34495E'},
-  {key:'energy',name:'活力满满',desc:'明亮色彩，年轻感',bg:'#E8F8F5',skin:'#E8B89D',hair:'#D35400',cloth:'#F1C40F',acc:'#27AE60'},
-  {key:'art',name:'简约文艺',desc:'留白设计，格调感',bg:'#FAFAFA',skin:'#FFF0E0',hair:'#4A4A4A',cloth:'#D4C5B9',acc:'#9E9E9E'},
-  {key:'tech',name:'科技感',desc:'蓝紫渐变，未来感',bg:'#E8F4FD',skin:'#E0E0E0',hair:'#1A1A2E',cloth:'#6C5CE7',acc:'#00D2D3'},
-  {key:'cute',name:'可爱卡通',desc:'圆润线条，趣味性',bg:'#FFE4EC',skin:'#FFD1DC',hair:'#FF6B9D',cloth:'#FF9FF3',acc:'#48DBFB'}
+  {key:'warm',name:'温暖亲民',desc:'柔和色调，亲切感',color:'#E8A87C'},
+  {key:'pro',name:'专业干练',desc:'商务配色，干练气质',color:'#2C3E50'},
+  {key:'energy',name:'活力满满',desc:'明亮色彩，年轻感',color:'#F1C40F'},
+  {key:'art',name:'简约文艺',desc:'留白设计，格调感',color:'#D4C5B9'},
+  {key:'tech',name:'科技感',desc:'蓝紫渐变，未来感',color:'#6C5CE7'},
+  {key:'cute',name:'可爱卡通',desc:'圆润线条，趣味性',color:'#FF9FF3'}
 ];
 
 let selectedStyles = new Set(STYLES.map(s=>s.key));
-let generatedCanvases = [];
 
-// ===== 初始化风格选择 =====
+// ===== 初始化风格选择（纯色块预览，不再用emoji） =====
 function initStyles(){
   const grid = document.getElementById('styleGrid');
-  grid.innerHTML = STYLES.map((s,i)=>{
-    const svg = makePreviewSVG(s,i);
+  grid.innerHTML = STYLES.map(s=>{
     return `<div class="style-card active" data-key="${s.key}" onclick="toggleStyle(this,'${s.key}')">
-      <div class="style-preview">${svg}</div>
+      <div class="style-preview" style="background:${s.color}20"></div>
       <div class="style-name">${s.name}</div>
       <div class="style-desc">${s.desc}</div>
     </div>`;
@@ -216,351 +237,99 @@ function toggleStyle(el,key){
   }else{selectedStyles.add(key);el.classList.add('active');}
 }
 
-function makePreviewSVG(style,idx){
-  const faces = ['◠‿◠','◕‿◕','•‿•','^‿^'];
-  const face = faces[idx%faces.length];
-  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="50" r="46" fill="${style.bg}"/>
-    <circle cx="50" cy="55" r="28" fill="${style.skin}"/>
-    <ellipse cx="50" cy="32" rx="22" ry="14" fill="${style.hair}"/>
-    <text x="50" y="60" text-anchor="middle" font-size="14" fill="#333">${face}</text>
-    <path d="M38 72 Q50 82 62 72" stroke="${style.cloth}" stroke-width="8" fill="none" stroke-linecap="round"/>
-  </svg>`;
+// ===== 图片上传 =====
+let uploadedPhoto = null;
+
+function handlePhoto(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 10*1024*1024){showToast('图片不能超过10MB');return;}
+  const reader = new FileReader();
+  reader.onload = function(e){
+    uploadedPhoto = e.target.result;
+    document.getElementById('previewImg').src = uploadedPhoto;
+    document.getElementById('uploadPreview').classList.add('active');
+    document.getElementById('uploadZone').style.display = 'none';
+    if(typeof track==='function')track('ip_design_photo_upload',{size:file.size,type:file.type});
+  };
+  reader.readAsDataURL(file);
 }
 
-// ===== 关键词提取 =====
-function parseDesc(text){
-  const t = text.toLowerCase();
-  const r = {gender:'neutral',hair:'short',glasses:false,smile:true,age:'young',cloth:'casual'};
-  if(/男|先生|男士|boy|男生/.test(t)) r.gender='male';
-  else if(/女|小姐|女士|girl|女生|妹子/.test(t)) r.gender='female';
-  if(/长发|披肩|马尾/.test(t)) r.hair='long';
-  else if(/短发|寸头/.test(t)) r.hair='short';
-  else if(/丸子头|盘发|发髻/.test(t)) r.hair='bun';
-  else if(/卷发|波浪/.test(t)) r.hair='curly';
-  else if(/背头|油头|侧分/.test(t)) r.hair='slick';
-  else if(/光头|秃/.test(t)) r.hair='bald';
-  if(/眼镜|镜框|圆框|方框|金丝|黑框/.test(t)) r.glasses=true;
-  if(/严肃|冷静|面无表情|沉稳/.test(t)) r.smile=false;
-  else if(/大笑|开心|灿烂|活泼/.test(t)) r.smile='big';
-  if(/资深|老|中年|大叔|阿姨/.test(t)) r.age='middle';
-  else if(/年轻|青年|少女|少年/.test(t)) r.age='young';
-  if(/西装|正装|职业装|制服/.test(t)) r.cloth='suit';
-  else if(/衬衫|衬衣/.test(t)) r.cloth='shirt';
-  else if(/围裙|家政/.test(t)) r.cloth='apron';
-  else if(/T恤|休闲|卫衣/.test(t)) r.cloth='tshirt';
-  return r;
+function removePhoto(e){
+  e.stopPropagation();
+  uploadedPhoto = null;
+  document.getElementById('photoInput').value = '';
+  document.getElementById('uploadPreview').classList.remove('active');
+  document.getElementById('uploadZone').style.display = '';
 }
 
-// ===== 绘制头像（Canvas） =====
-function drawAvatar(canvas,style,profile,seed){
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  const rng = mulberry32(hashString(profile.gender+profile.hair+seed));
-
-  // 背景
-  ctx.fillStyle = style.bg;
-  ctx.fillRect(0,0,W,H);
-
-  // 头像背景圆
-  ctx.beginPath();
-  ctx.arc(W/2,H/2+8,W*0.42,0,Math.PI*2);
-  ctx.fillStyle = style.bg;
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(0,0,0,0.06)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  const cx = W/2, cy = H/2 + 6;
-  const faceR = W * 0.18;
-
-  // 脖子
-  ctx.fillStyle = darken(style.skin,0.1);
-  ctx.fillRect(cx-faceR*0.35,cy+faceR*0.6,faceR*0.7,faceR*0.5);
-
-  // 衣服
-  drawCloth(ctx,cx,cy+faceR*0.9,faceR,style,profile);
-
-  // 脸型
-  ctx.beginPath();
-  if(profile.gender==='female'){
-    ctx.ellipse(cx,cy,faceR*0.95,faceR*1.05,0,0,Math.PI*2);
-  }else if(profile.gender==='male'){
-    ctx.ellipse(cx,cy,faceR,faceR*1.08,0,0,Math.PI*2);
-  }else{
-    ctx.arc(cx,cy,faceR,0,Math.PI*2);
+// 拖拽上传
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover',function(e){e.preventDefault();zone.classList.add('dragover');});
+zone.addEventListener('dragleave',function(){zone.classList.remove('dragover');});
+zone.addEventListener('drop',function(e){
+  e.preventDefault();zone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if(file && file.type.startsWith('image/')){
+    const dt = new DataTransfer();dt.items.add(file);
+    document.getElementById('photoInput').files = dt.files;
+    handlePhoto(document.getElementById('photoInput'));
   }
-  ctx.fillStyle = style.skin;
-  ctx.fill();
+});
 
-  // 耳朵
-  ctx.fillStyle = style.skin;
-  ctx.beginPath();ctx.ellipse(cx-faceR*1.02,cy,faceR*0.15,faceR*0.22,0,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx+faceR*1.02,cy,faceR*0.15,faceR*0.22,0,0,Math.PI*2);ctx.fill();
-
-  // 头发
-  drawHair(ctx,cx,cy,faceR,style,profile,rng);
-
-  // 眉毛
-  ctx.strokeStyle = style.hair;
-  ctx.lineWidth = 2;
-  ctx.lineCap = 'round';
-  const browY = cy - faceR*0.25;
-  ctx.beginPath();ctx.moveTo(cx-faceR*0.4,browY);ctx.lineTo(cx-faceR*0.1,browY-(profile.smile===false?2:0));ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx+faceR*0.4,browY);ctx.lineTo(cx+faceR*0.1,browY-(profile.smile===false?2:0));ctx.stroke();
-
-  // 眼睛
-  drawEyes(ctx,cx,cy,faceR,style,profile);
-
-  // 鼻子
-  ctx.fillStyle = darken(style.skin,0.15);
-  ctx.beginPath();
-  ctx.ellipse(cx,cy+faceR*0.08,faceR*0.06,faceR*0.04,0,0,Math.PI*2);
-  ctx.fill();
-
-  // 嘴巴
-  drawMouth(ctx,cx,cy,faceR,style,profile);
-
-  // 眼镜
-  if(profile.glasses){
-    ctx.strokeStyle = style.acc;
-    ctx.lineWidth = 2;
-    ctx.beginPath();ctx.arc(cx-faceR*0.35,cy,faceR*0.22,0,Math.PI*2);ctx.stroke();
-    ctx.beginPath();ctx.arc(cx+faceR*0.35,cy,faceR*0.22,0,Math.PI*2);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(cx-faceR*0.13,cy);ctx.lineTo(cx+faceR*0.13,cy);ctx.stroke();
-    // 镜腿
-    ctx.beginPath();ctx.moveTo(cx-faceR*0.57,cy-faceR*0.05);ctx.lineTo(cx-faceR*0.95,cy-faceR*0.15);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(cx+faceR*0.57,cy-faceR*0.05);ctx.lineTo(cx+faceR*0.95,cy-faceR*0.15);ctx.stroke();
-  }
-
-  // 腮红（可爱风）
-  if(style.key==='cute' || style.key==='warm'){
-    ctx.fillStyle = 'rgba(255,100,100,0.15)';
-    ctx.beginPath();ctx.ellipse(cx-faceR*0.55,cy+faceR*0.15,faceR*0.12,faceR*0.08,0,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.ellipse(cx+faceR*0.55,cy+faceR*0.15,faceR*0.12,faceR*0.08,0,0,Math.PI*2);ctx.fill();
-  }
+// ===== Toast 提示 =====
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-function drawHair(ctx,cx,cy,r,style,p,rng){
-  ctx.fillStyle = style.hair;
-  ctx.beginPath();
-  switch(p.hair){
-    case 'long':
-      ctx.ellipse(cx,cy-r*0.3,r*1.15,r*0.9,0,Math.PI,Math.PI*2);
-      ctx.fill();
-      // 长发
-      ctx.beginPath();
-      ctx.ellipse(cx-r*0.6,cy+r*0.3,r*0.35,r*0.8,0.3,0,Math.PI*2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(cx+r*0.6,cy+r*0.3,r*0.35,r*0.8,-0.3,0,Math.PI*2);
-      ctx.fill();
-      break;
-    case 'bun':
-      ctx.ellipse(cx,cy-r*0.3,r*1.05,r*0.85,0,Math.PI,Math.PI*2);
-      ctx.fill();
-      ctx.beginPath();ctx.arc(cx,cy-r*1.1,r*0.25,0,Math.PI*2);ctx.fill();
-      break;
-    case 'curly':
-      for(let i=0;i<8;i++){
-        const a = Math.PI + (i/7)*Math.PI;
-        ctx.beginPath();ctx.arc(cx+Math.cos(a)*r*0.9,cy+Math.sin(a)*r*0.5,r*0.2,0,Math.PI*2);ctx.fill();
-      }
-      break;
-    case 'slick':
-      ctx.ellipse(cx,cy-r*0.35,r*1.05,r*0.6,0,Math.PI,Math.PI*2);
-      ctx.fill();
-      ctx.strokeStyle = style.hair;ctx.lineWidth=2;
-      for(let i=0;i<4;i++){
-        ctx.beginPath();ctx.moveTo(cx-r*0.6+i*r*0.4,cy-r*0.6);ctx.lineTo(cx-r*0.5+i*r*0.4,cy-r*0.3);ctx.stroke();
-      }
-      break;
-    case 'bald':
-      // 只画两侧
-      ctx.beginPath();ctx.arc(cx-r*0.85,cy-r*0.1,r*0.25,0,Math.PI*2);ctx.fill();
-      ctx.beginPath();ctx.arc(cx+r*0.85,cy-r*0.1,r*0.25,0,Math.PI*2);ctx.fill();
-      break;
-    case 'short':
-    default:
-      ctx.ellipse(cx,cy-r*0.35,r*1.05,r*0.75,0,Math.PI,Math.PI*2);
-      ctx.fill();
-      if(p.gender==='male'){
-        // 短发纹理
-        ctx.strokeStyle = darken(style.hair,0.2);ctx.lineWidth=1;
-        for(let i=0;i<5;i++){
-          ctx.beginPath();ctx.moveTo(cx-r*0.5+i*r*0.25,cy-r*0.5);ctx.lineTo(cx-r*0.45+i*r*0.25,cy-r*0.25);ctx.stroke();
-        }
-      }
-      break;
-  }
-}
-
-function drawEyes(ctx,cx,cy,r,style,p){
-  const eyeY = cy - r*0.08;
-  const eyeRx = r*0.18, eyeRy = r*0.22;
-  ctx.fillStyle = '#2C2C2C';
-
-  if(style.key==='cute'){
-    // 大眼睛
-    ctx.beginPath();ctx.ellipse(cx-r*0.35,eyeY,eyeRx*1.3,eyeRy*1.3,0,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.ellipse(cx+r*0.35,eyeY,eyeRx*1.3,eyeRy*1.3,0,0,Math.PI*2);ctx.fill();
-    // 高光
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();ctx.arc(cx-r*0.3,eyeY-eyeRy*0.5,r*0.06,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(cx+r*0.4,eyeY-eyeRy*0.5,r*0.06,0,Math.PI*2);ctx.fill();
-  }else if(style.key==='tech'){
-    // 科技感矩形眼
-    ctx.fillStyle = style.acc;
-    ctx.fillRect(cx-r*0.45,eyeY-eyeRy*0.5,eyeRx*0.9,eyeRy);
-    ctx.fillRect(cx+r*0.2,eyeY-eyeRy*0.5,eyeRx*0.9,eyeRy);
-  }else{
-    // 普通椭圆眼
-    ctx.beginPath();ctx.ellipse(cx-r*0.35,eyeY,eyeRx,eyeRy,0,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.ellipse(cx+r*0.35,eyeY,eyeRx,eyeRy,0,0,Math.PI*2);ctx.fill();
-    // 高光
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();ctx.arc(cx-r*0.32,eyeY-eyeRy*0.4,r*0.05,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(cx+r*0.38,eyeY-eyeRy*0.4,r*0.05,0,Math.PI*2);ctx.fill();
-  }
-}
-
-function drawMouth(ctx,cx,cy,r,style,p){
-  ctx.strokeStyle = darken(style.skin,0.35);
-  ctx.lineWidth = 2;
-  ctx.lineCap = 'round';
-  const my = cy + r*0.35;
-  if(p.smile===false){
-    ctx.beginPath();ctx.moveTo(cx-r*0.15,my);ctx.lineTo(cx+r*0.15,my);ctx.stroke();
-  }else if(p.smile==='big'){
-    ctx.beginPath();ctx.arc(cx,my-r*0.05,r*0.18,0.1*Math.PI,0.9*Math.PI);ctx.stroke();
-    ctx.fillStyle = '#FF6B6B';
-    ctx.beginPath();ctx.arc(cx,my+r*0.05,r*0.12,0,Math.PI*2);ctx.fill();
-  }else{
-    ctx.beginPath();ctx.arc(cx,my-r*0.03,r*0.12,0.1*Math.PI,0.9*Math.PI);ctx.stroke();
-  }
-}
-
-function drawCloth(ctx,cx,cy,r,style,p){
-  ctx.fillStyle = style.cloth;
-  switch(p.cloth){
-    case 'suit':
-      // 西装
-      ctx.beginPath();ctx.moveTo(cx-r*0.8,cy);ctx.lineTo(cx-r*0.4,cy+r*1.2);ctx.lineTo(cx+r*0.4,cy+r*1.2);ctx.lineTo(cx+r*0.8,cy);ctx.fill();
-      ctx.fillStyle = '#fff';ctx.fillRect(cx-r*0.08,cy,r*0.16,r*0.6);
-      ctx.fillStyle = style.acc;ctx.beginPath();ctx.moveTo(cx,cy+r*0.2);ctx.lineTo(cx+r*0.15,cy+r*0.5);ctx.lineTo(cx-r*0.15,cy+r*0.5);ctx.fill();
-      break;
-    case 'shirt':
-      // 衬衫
-      ctx.beginPath();ctx.moveTo(cx-r*0.7,cy);ctx.lineTo(cx-r*0.5,cy+r*1.2);ctx.lineTo(cx+r*0.5,cy+r*1.2);ctx.lineTo(cx+r*0.7,cy);ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.4)';ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(cx-r*0.55,cy+r*0.3);ctx.lineTo(cx-r*0.45,cy+r*1.1);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(cx+r*0.55,cy+r*0.3);ctx.lineTo(cx+r*0.45,cy+r*1.1);ctx.stroke();
-      break;
-    case 'apron':
-      // 围裙
-      ctx.beginPath();ctx.moveTo(cx-r*0.65,cy);ctx.lineTo(cx-r*0.5,cy+r*1.2);ctx.lineTo(cx+r*0.5,cy+r*1.2);ctx.lineTo(cx+r*0.65,cy);ctx.fill();
-      ctx.fillStyle = '#fff';ctx.fillRect(cx-r*0.4,cy+r*0.1,r*0.8,r*0.9);
-      ctx.fillStyle = style.cloth;ctx.fillRect(cx-r*0.35,cy+r*0.3,r*0.7,r*0.1);
-      ctx.fillRect(cx-r*0.35,cy+r*0.6,r*0.7,r*0.1);
-      break;
-    default:
-      // 圆领T恤/休闲
-      ctx.beginPath();ctx.arc(cx,cy-r*0.1,r*0.5,0,Math.PI,0);ctx.fill();
-      ctx.beginPath();ctx.moveTo(cx-r*0.65,cy);ctx.lineTo(cx-r*0.5,cy+r*1.2);ctx.lineTo(cx+r*0.5,cy+r*1.2);ctx.lineTo(cx+r*0.65,cy);ctx.fill();
-      break;
-  }
-}
-
-// ===== 工具函数 =====
-function darken(hex,amt){
-  const num = parseInt(hex.replace('#',''),16);
-  const r = Math.max(0,Math.min(255,(num>>16)-Math.round(255*amt)));
-  const g = Math.max(0,Math.min(255,((num>>8)&0x00FF)-Math.round(255*amt)));
-  const b = Math.max(0,Math.min(255,(num&0x0000FF)-Math.round(255*amt)));
-  return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
-}
-function hashString(str){let h=0;for(let i=0;i<str.length;i++)h=(h<<5)-h+str.charCodeAt(i);return Math.abs(h);}
-function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
-
-// ===== 生成流程 =====
-function fillExample(text){document.getElementById('descInput').value=text;}
-
+// ===== 核心：生成 → 跳转扣子Bot =====
 function generate(){
+  const name = document.getElementById('nameInput').value.trim();
+  const industry = document.getElementById('industrySelect').value;
   const desc = document.getElementById('descInput').value.trim();
-  if(!desc){alert('请先描述你的角色形象～');return;}
-  if(selectedStyles.size===0){alert('请至少选择一种风格');return;}
 
-  const btn = document.getElementById('genBtn');
-  btn.disabled = true;btn.textContent = '绘制中...';
-  document.getElementById('loading').classList.add('active');
-  document.getElementById('resultSection').classList.remove('active');
-  document.getElementById('actionBar').classList.remove('active');
+  // 校验
+  if(!name){showToast('请填写角色名');document.getElementById('nameInput').focus();return;}
+  if(!industry){showToast('请选择所属行业');document.getElementById('industrySelect').focus();return;}
+  if(selectedStyles.size===0){showToast('请至少选择一种风格');return;}
 
-  setTimeout(()=>{
-    const profile = parseDesc(desc);
-    const styles = STYLES.filter(s=>selectedStyles.has(s.key));
-    const grid = document.getElementById('resultGrid');
-    generatedCanvases = [];
+  // 拼接风格名
+  const styleNames = STYLES.filter(s=>selectedStyles.has(s.key)).map(s=>s.name).join('、');
 
-    grid.innerHTML = styles.map((s,i)=>{
-      const canvas = document.createElement('canvas');
-      canvas.width = 400;canvas.height = 400;
-      drawAvatar(canvas,s,profile,i);
-      generatedCanvases.push({canvas,style:s});
+  // 构建发给Bot的提示词
+  let prompt = `帮我设计IP角色形象，名字是${name}，行业是${industry}，风格是${styleNames}`;
+  if(desc){
+    prompt += `，补充描述：${desc}`;
+  }
+  if(uploadedPhoto){
+    prompt += `。请先参考我上传的照片，基于我的本人形象来生成卡通/插画风格的IP角色，保持我的核心外貌特征（发型、脸型、眼镜等）`;
+  }
 
-      const isRec = (i===0 && profile.smile!==false);
-      return `<div class="result-card" onclick="downloadOne(${i})" title="点击下载">
-        ${isRec?'<span class="tag recommend">推荐</span>':''}
-        <div class="result-img"><img src="${canvas.toDataURL('image/png')}" alt="${s.name}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"></div>
-        <div class="result-name">${s.name}</div>
-        <div class="result-style">点击下载</div>
-      </div>`;
-    }).join('');
+  // 构建Bot URL
+  const botUrl = 'https://www.coze.cn/s/iBGPJVnK/?q=' + encodeURIComponent(prompt);
 
-    document.getElementById('loading').classList.remove('active');
-    document.getElementById('resultSection').classList.add('active');
-    document.getElementById('actionBar').classList.add('active');
-    btn.disabled = false;btn.textContent = '🔄 重新生成';
+  // 新窗口打开Bot
+  window.open(botUrl, '_blank');
 
-    if(typeof track==='function')track('ip_design_complete',{styles:styles.length});
-  },2000);
+  // 更新成功引导卡片（有照片时追加上传提示）
+  const tips = document.getElementById('successTips');
+  if(uploadedPhoto){
+    tips.innerHTML = '<li>🎉 请在对话窗口中<strong>上传你刚才选的照片</strong>，AI会基于照片生成</li><li>AI会保持你的核心外貌特征（发型、脸型、眼镜等）</li><li>可以继续对话调整细节，直到满意为止</li><li>生成完成后，请向AI索取高清图片文件</li>';
+  } else {
+    tips.innerHTML = '<li>AI会根据你填写的信息生成多种风格头像</li><li>💡 建议在对话中上传本人照片，效果更精准</li><li>可以继续对话调整细节，直到满意为止</li><li>生成完成后，请向AI索取高清图片文件</li>';
+  }
+
+  // 显示成功引导卡片
+  document.getElementById('successCard').classList.add('active');
+  document.getElementById('successCard').scrollIntoView({behavior:'smooth',block:'center'});
+
+  if(typeof track==='function')track('ip_design_generate',{name,industry,styles:styleNames,hasPhoto:!!uploadedPhoto});
 }
 
-function regenerate(){generate();}
-
-function downloadOne(idx){
-  if(!generatedCanvases[idx])return;
-  const {canvas,style} = generatedCanvases[idx];
-  const link = document.createElement('a');
-  link.download = `风声IP_${style.name}_${Date.now()}.png`;
-  link.href = canvas.toDataURL('image/png');
-  link.click();
-}
-
-function downloadAll(){
-  generatedCanvases.forEach((item,i)=>{
-    setTimeout(()=>downloadOne(i),i*300);
-  });
-  setTimeout(()=>showGuide(),generatedCanvases.length*300+500);
-}
-
-function showGuide(){
-  document.getElementById('guideModal').classList.add('active');
-}
-function closeGuide(){
-  document.getElementById('guideModal').classList.remove('active');
-}
-function trackEvent(name){
-  if(typeof track==='function')track('ip_'+name);
-}
-
-// 点击modal背景关闭
-window.onclick = function(e){
-  const m = document.getElementById('guideModal');
-  if(e.target===m)m.classList.remove('active');
-}
-
-// 初始化
+// ===== 初始化 =====
 initStyles();
 if(typeof track==='function')track('page_view',{page:'/ip-design'});
 </script>
