@@ -1,6 +1,27 @@
 #!/usr/bin/env python3
 """
 每小时检查 GitHub Issue #42，提取 Cloudflare 部署凭证。
+
+执行流程：
+  1. 调 GitHub API 读取 Issue #42 全部评论
+  2. 过滤"小鱼儿 / xiao-yu-er / Coze"标识的最新回复
+  3. 正则提取 Account ID 和 API Token
+  4. 与 .agent/memory/deploy_progress.json 比对，避免重复触发
+  5. 写入仓库 GitHub Secrets（CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN）
+  6. 触发 .github/workflows/deploy.yml（workflow_dispatch）
+  7. 在 Issue 下回复凭证摘要（脱敏）
+
+环境变量：
+  GH_TOKEN / GITHUB_TOKEN        必填，GitHub PAT（需 repo + actions 权限）
+  GITHUB_REPO_OWNER              默认 fengsheng-shengge
+  GITHUB_REPO_NAME               默认 fengsheng-tasks
+  ISSUE_NUMBER                   默认 42
+  DEPLOY_WORKFLOW                默认 deploy.yml
+  DRY_RUN                        默认 1（不写 Secrets、不触发 deploy）
+
+退出码：
+  0 = FOUND_READY / FOUND_DEPLOYED / NOT_FOUND
+  2 = ERROR
 """
 
 import base64
@@ -20,9 +41,6 @@ DRY_RUN = os.environ.get("DRY_RUN", "1") == "1"
 API_BASE = "https://api.github.com"
 API_VERSION = "2022-11-28"
 
-MEMORY_DIR = Path(".agent/memory")
-STATE_FILE = MEMORY_DIR / "deploy_progress.json"
-
 XIAOYUER_MARKERS = (
     "小鱼儿",
     "xiao-yu-er",
@@ -38,9 +56,12 @@ RE_ACCOUNT_ID = re.compile(
     re.IGNORECASE,
 )
 RE_API_TOKEN = re.compile(
-    r"(?:API\s*Token|api[\-_ ]?token|API_TOKEN|CF_API_TOKEN|Cloudflare\s*Token)\s*[:=]\s*[`'\" ]?([A-Za-z0-9\-_]{40})[`'\" ]?",
+    r"(?:API\s*Token|api[_\- ]?token|API_TOKEN|CF_API_TOKEN|Cloudflare\s*Token)\s*[:=]\s*[`'\" ]?([A-Za-z0-9_\-]{40})[`'\" ]?",
     re.IGNORECASE,
 )
+
+MEMORY_DIR = Path(".agent") / "memory"
+STATE_FILE = MEMORY_DIR / "deploy_progress.json"
 
 
 def log(msg: str) -> None:
@@ -136,6 +157,7 @@ def upsert_secret(token: str, name: str, value: str):
 
     try:
         from nacl import encoding, public
+
         pk = public.PublicKey(key_payload["key"].encode("utf-8"), encoding.Base64Encoder())
         sealed = public.SealedBox(pk).encrypt(value.encode("utf-8"))
         encrypted = base64.b64encode(sealed).decode("utf-8")
@@ -181,106 +203,106 @@ def main() -> int:
 
     log(f"target = {OWNER}/{REPO}#{ISSUE_NUMBER}, dry_run = {DRY_RUN}")
 
-    state = load_state()
-    log(f"current state: {state['last_status']}")
-
     comments, status, err = list_all_comments(token)
     if status != 200:
-        log(f"ERROR: list_comments failed: {status} {err}")
-        state["last_status"] = "ERROR"
-        save_state(state)
+        log(f"ERROR: list comments failed: {status} {err}")
         return 2
 
     log(f"total comments: {len(comments)}")
 
-    valid_comments = []
-    for c in comments:
-        if is_xiaoyuer(c):
-            valid_comments.append(c)
+    state = load_state()
+    last_status = state.get("last_status", "NEVER_RUN")
+    log(f"last_status = {last_status}")
 
-    if not valid_comments:
-        log("NOT_FOUND: 未找到小鱼儿的回复")
+    candidates = [c for c in comments if is_xiaoyuer(c)]
+    log(f"xiaoyuer comments found: {len(candidates)}")
+
+    if not candidates:
+        state["last_status"] = "NOT_FOUND"
+        save_state(state)
+        log("NOT_FOUND: no xiaoyuer comment with credentials")
+        return 0
+
+    candidates.sort(key=lambda c: c.get("created_at", ""))
+    latest = candidates[-1]
+    body = latest.get("body", "")
+    created_at = latest.get("created_at", "")
+    comment_id = latest.get("id", "")
+
+    log(f"latest xiaoyuer comment: id={comment_id}, created={created_at}")
+
+    creds = extract_credentials(body)
+    if not creds:
+        log("NOT_FOUND: credentials not found in xiaoyuer comment")
         state["last_status"] = "NOT_FOUND"
         save_state(state)
         return 0
 
-    log(f"found {len(valid_comments)} 条小鱼儿的回复")
+    account_id = creds["account_id"]
+    api_token = creds["api_token"]
+    creds_hash = f"{account_id[:8]}-{len(api_token)}"
 
-    credentials = None
-    latest_comment = None
-    for c in reversed(valid_comments):
-        body = c.get("body", "")
-        creds = extract_credentials(body)
-        if creds:
-            credentials = creds
-            latest_comment = c
-            break
+    log(f"FOUND: account_id={mask(account_id)}, api_token={mask(api_token)}")
 
-    if not credentials:
-        log("NOT_FOUND: 小鱼儿的回复中未找到有效凭证")
-        state["last_status"] = "NOT_FOUND"
-        save_state(state)
-        return 0
-
-    log(f"FOUND: account_id={mask(credentials['account_id'])}, api_token={mask(credentials['api_token'])}")
-
-    cred_hash = f"{credentials['account_id'][:8]}..{credentials['api_token'][:8]}"
-    if state.get("deployed_hash") == cred_hash:
-        log("FOUND_DEPLOYED: 相同凭证已部署过，跳过")
-        state["last_status"] = "FOUND_DEPLOYED"
-        save_state(state)
+    if state.get("deployed_hash") == creds_hash and last_status == "FOUND_DEPLOYED":
+        log("FOUND_DEPLOYED: same credentials already deployed, skip")
         return 0
 
     if DRY_RUN:
-        log("DRY_RUN=1: 跳过写 Secrets 和触发 deploy")
+        log("DRY_RUN=1: skip writing secrets and triggering deploy")
         state["last_status"] = "FOUND_READY"
-        state["deployed_hash"] = cred_hash
+        state["deployed_hash"] = creds_hash
+        state["comments_seen"].append(comment_id)
         save_state(state)
         return 0
 
-    log("开始写入 GitHub Secrets...")
-    success, msg = upsert_secret(token, "CLOUDFLARE_ACCOUNT_ID", credentials["account_id"])
-    if not success:
-        log(f"ERROR: 写入 CLOUDFLARE_ACCOUNT_ID 失败: {msg}")
-        state["last_status"] = "ERROR"
-        save_state(state)
+    log("writing CLOUDFLARE_ACCOUNT_ID to secrets...")
+    ok, msg = upsert_secret(token, "CLOUDFLARE_ACCOUNT_ID", account_id)
+    if not ok:
+        log(f"ERROR: upsert CLOUDFLARE_ACCOUNT_ID failed: {msg}")
         return 2
-    log("✓ CLOUDFLARE_ACCOUNT_ID 已写入")
+    log("OK: CLOUDFLARE_ACCOUNT_ID updated")
 
-    success, msg = upsert_secret(token, "CLOUDFLARE_API_TOKEN", credentials["api_token"])
-    if not success:
-        log(f"ERROR: 写入 CLOUDFLARE_API_TOKEN 失败: {msg}")
-        state["last_status"] = "ERROR"
-        save_state(state)
+    log("writing CLOUDFLARE_API_TOKEN to secrets...")
+    ok, msg = upsert_secret(token, "CLOUDFLARE_API_TOKEN", api_token)
+    if not ok:
+        log(f"ERROR: upsert CLOUDFLARE_API_TOKEN failed: {msg}")
         return 2
-    log("✓ CLOUDFLARE_API_TOKEN 已写入")
+    log("OK: CLOUDFLARE_API_TOKEN updated")
 
-    log("触发部署 workflow...")
+    log("triggering deploy workflow...")
     status, resp = trigger_deploy(token)
-    if status != 204:
-        log(f"ERROR: 触发 deploy 失败: {status} {resp}")
-        state["last_status"] = "ERROR"
-        save_state(state)
+    if status not in (200, 204):
+        log(f"ERROR: trigger deploy failed: {status} {resp}")
         return 2
-    log("✓ deploy.yml 已触发")
+    log("OK: deploy workflow triggered")
 
-    log("在 Issue 下添加评论...")
-    comment_body = (
-        f"## ✅ 小扣子已收到凭证并触发部署\n\n"
-        f"- **Account ID**: `{mask(credentials['account_id'])}`\n"
-        f"- **API Token**: `{mask(credentials['api_token'])}`\n\n"
-        f"已写入 GitHub Secrets，部署已触发。请关注 Actions 进度。"
-    )
+    comment_body = f"""
+## 🔐 凭证已收到并配置完成
+
+**检测来源**：小鱼儿的评论（{created_at}）
+
+**脱敏凭证**：
+- Account ID: `{mask(account_id)}`
+- API Token: `{mask(api_token)}`
+
+**执行结果**：
+- ✅ CLOUDFLARE_ACCOUNT_ID 已写入 GitHub Secrets
+- ✅ CLOUDFLARE_API_TOKEN 已写入 GitHub Secrets
+- ✅ 已触发 deploy.yml 部署流水线
+
+部署完成后可访问：https://fengsheng.tech
+"""
     status, resp = add_comment(token, comment_body)
     if status != 201:
-        log(f"WARN: 添加评论失败: {status} {resp}")
+        log(f"WARN: add comment failed: {status} {resp}")
 
     state["last_status"] = "FOUND_DEPLOYED"
-    state["deployed_hash"] = cred_hash
-    state["deployed_at"] = latest_comment.get("created_at", "") if latest_comment else ""
+    state["deployed_hash"] = creds_hash
+    state["comments_seen"].append(comment_id)
     save_state(state)
-    log("完成！")
 
+    log("FOUND_DEPLOYED: all done")
     return 0
 
 
