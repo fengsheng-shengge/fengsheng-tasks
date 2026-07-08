@@ -1,88 +1,70 @@
-name: Check Issue #42 for Cloudflare Credentials
+name: 每小时检查 Issue #42（Cloudflare 凭证）
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: "0 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Dry run mode (1=only detect, 0=apply and deploy)'
+        description: "DRY_RUN 模式（1=只检测不写 Secrets/触发 deploy，0=真执行）"
         required: false
-        default: '0'
-        type: string
+        default: "1"
+        type: choice
+        options: ["1", "0"]
       force_recheck:
-        description: 'Force recheck even if already deployed'
+        description: "忽略本地状态缓存（1=重置已部署标记）"
         required: false
-        default: '0'
-        type: string
+        default: "0"
+        type: choice
+        options: ["0", "1"]
+
+permissions:
+  contents: read
+  issues: write
+  actions: write
 
 jobs:
-  check-credentials:
-    name: Check Issue #42
+  check:
+    name: 检查并自动部署
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      issues: write
-      actions: write
+    timeout-minutes: 10
+    env:
+      GITHUB_REPO_OWNER: fengsheng-shengge
+      GITHUB_REPO_NAME: fengsheng-tasks
+      ISSUE_NUMBER: "42"
+      DEPLOY_WORKFLOW: deploy.yml
+      DRY_RUN: ${{ inputs.dry_run || '1' }}
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run credential check script
-        env:
-          DRY_RUN: ${{ inputs.dry_run || '0' }}
-          FORCE_RECHECK: ${{ inputs.force_recheck || '0' }}
-          GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
-        run: python3 scripts/check_issue_42.py
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-      - name: Update step summary
+      - name: 安装 PyNaCl（Secrets 加密需要）
+        run: pip install pynacl==1.5.0
+
+      - name: 运行检查脚本
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ inputs.force_recheck }}" = "1" ] && [ -f .agent/memory/deploy_progress.json ]; then
+            echo "force_recheck=1，重置 deploy_progress.json"
+            rm -f .agent/memory/deploy_progress.json
+          fi
+          python scripts/check_issue_42.py
+
+      - name: 状态摘要
         if: always()
         run: |
-          if [ -f .agent/memory/deploy_progress.json ]; then
-            echo "## 🔍 Issue #42 检查结果" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "| 状态 | 说明 |" >> $GITHUB_STEP_SUMMARY
-            echo "|------|------|" >> $GITHUB_STEP_SUMMARY
-
-            STATUS=$(jq -r '.status' .agent/memory/deploy_progress.json)
-            LAST_CHECKED=$(jq -r '.last_checked' .agent/memory/deploy_progress.json)
-
-            case $STATUS in
-              "NOT_FOUND")
-                echo "| ❌ NOT_FOUND | 未在评论中找到 Cloudflare 凭证 |" >> $GITHUB_STEP_SUMMARY
-                ;;
-              "FOUND_READY")
-                echo "| ⚠️ FOUND_READY | 已检测到凭证（Dry Run 模式） |" >> $GITHUB_STEP_SUMMARY
-                ;;
-              "FOUND_DEPLOYED")
-                echo "| ✅ FOUND_DEPLOYED | 凭证已配置并触发部署 |" >> $GITHUB_STEP_SUMMARY
-                ;;
-              "ERROR")
-                echo "| 🔴 ERROR | 检查过程中发生错误 |" >> $GITHUB_STEP_SUMMARY
-                ;;
-              *)
-                echo "| ⚡ UNKNOWN | 未知状态 |" >> $GITHUB_STEP_SUMMARY
-                ;;
-            esac
-
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**最后检查时间**: $LAST_CHECKED" >> $GITHUB_STEP_SUMMARY
-
-            if [ "$STATUS" = "FOUND_READY" ] || [ "$STATUS" = "FOUND_DEPLOYED" ]; then
-              ACCOUNT_MASK=$(jq -r '.credentials_detected.account_id_masked' .agent/memory/deploy_progress.json)
-              TOKEN_MASK=$(jq -r '.credentials_detected.api_token_masked' .agent/memory/deploy_progress.json)
-              FOUND_BY=$(jq -r '.credentials_detected.found_by' .agent/memory/deploy_progress.json)
-
-              echo "" >> $GITHUB_STEP_SUMMARY
-              echo "**检测到的凭证（脱敏）**:" >> $GITHUB_STEP_SUMMARY
-              echo "- CLOUDFLARE_ACCOUNT_ID: \`$ACCOUNT_MASK\`" >> $GITHUB_STEP_SUMMARY
-              echo "- CLOUDFLARE_API_TOKEN: \`$TOKEN_MASK\`" >> $GITHUB_STEP_SUMMARY
-              echo "- 来源: $FOUND_BY" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🛰️ Issue #42 检查结果"
+            echo
+            if [ -f .agent/memory/deploy_progress.json ]; then
+              cat .agent/memory/deploy_progress.json
+            else
+              echo "_未生成 deploy_progress.json_"
             fi
-          else
-            echo "## 🔍 Issue #42 检查结果" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "| 状态 | 说明 |" >> $GITHUB_STEP_SUMMARY
-            echo "|------|------|" >> $GITHUB_STEP_SUMMARY
-            echo "| ⚡ NO_STATE | 状态文件不存在 |" >> $GITHUB_STEP_SUMMARY
-          fi
+          } >> "$GITHUB_STEP_SUMMARY"
