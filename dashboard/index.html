@@ -3,588 +3,850 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<title>管理看板 · 风声 fengsheng.tech</title>
-<meta name="description" content="风声产品质量看板 — 追踪交互深度、用户粘性、反馈密度、验证线进度。">
-<meta name="keywords" content="运营看板,产品质量,交互深度,300人验证,风声,fengsheng,dashboard">
-<meta name="theme-color" content="#0f172a">
-<meta property="og:title" content="质量看板 · 风声 fengsheng.tech">
-<meta property="og:description" content="追踪交互深度、用户粘性、反馈密度、验证线进度。">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
+<title>风声·运营看板 v5.0</title>
 <style>
-*,*::before,*::after{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
-a{color:#60a5fa;text-decoration:none}
-.skip-nav{position:absolute;left:-9999px;top:0;background:#3b82f6;color:#fff;padding:12px 20px;z-index:100;border-radius:0 0 12px 0}
-.skip-nav:focus{left:0}
-.container{max-width:1440px;margin:0 auto;padding:20px 24px}
-/* header */
-.header{background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);padding:20px 32px;border-bottom:1px solid #1e293b;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
-.header h1{font-size:22px;font-weight:700;margin:0;color:#f8fafc}
-.header .sub{font-size:13px;color:#94a3b8;margin-top:2px}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f172a;--card:#1e293b;--card2:#263548;--border:#334155;
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --blue:#3b82f6;--green:#22c55e;--yellow:#f59e0b;--purple:#a855f7;--red:#ef4444;--cyan:#06b6d4;
+  --radius:14px;
+  /* 五把尺子专属色 */
+  --ruler-out:#3b82f6;  /* 输出量-蓝 */
+  --ruler-cpx:#22c55e;  /* 复杂度-绿 */
+  --ruler-skl:#f59e0b;  /* 技能复用-黄 */
+  --ruler-run:#a855f7;  /* 运行时长-紫 */
+  --ruler-con:#ef4444;  /* 并发度-红 */
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+
+/* ===== Password Overlay ===== */
+#auth-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .5s ease}
+#auth-overlay.hidden{opacity:0;pointer-events:none}
+.auth-box{text-align:center;width:360px;padding:40px}
+.auth-logo{font-size:3rem;margin-bottom:12px}
+.auth-box h2{font-size:1.4rem;margin-bottom:6px;color:var(--text);font-weight:700}
+.auth-box .auth-sub{color:var(--text3);font-size:.82rem;margin-bottom:28px}
+.auth-input{width:100%;padding:14px 18px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);font-size:1rem;outline:none;text-align:center;letter-spacing:3px;transition:border-color .2s}
+.auth-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.auth-btn{margin-top:18px;width:100%;padding:13px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;font-size:.95rem;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.auth-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(59,130,246,.3)}
+.auth-error{color:var(--red);font-size:.82rem;margin-top:14px;min-height:20px;transition:opacity .2s}
+
+/* ===== Main App ===== */
+#app{display:none;max-width:1200px;margin:0 auto;padding:20px 24px 60px}
+#app.show{display:block}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:32px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.header-left h1{font-size:1.6rem;font-weight:700;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header-left .sub{font-size:.78rem;color:var(--text3);margin-top:2px}
 .header-right{display:flex;align-items:center;gap:12px}
-.btn-refresh{background:#1e293b;color:#e2e8f0;border:1px solid #334155;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s}
-.btn-refresh:hover{background:#334155;border-color:#475569}
-.badge{display:inline-block;font-size:11px;padding:4px 10px;border-radius:12px;font-weight:600}
-.badge-live{background:#14532d;color:#86efac}
-.badge-demo{background:#713f12;color:#fbbf24}
-/* KPI row */
-.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
-.kpi-card{background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;display:flex;flex-direction:column;gap:6px}
-.kpi-card.primary{border-left:4px solid #3b82f6}
-.kpi-card.success{border-left:4px solid #22c55e}
-.kpi-card.warning{border-left:4px solid #f59e0b}
-.kpi-card.accent{border-left:4px solid #a855f7}
-.kpi-card.danger{border-left:4px solid #ef4444}
-.kpi-label{font-size:12px;color:#94a3b8;letter-spacing:.5px}
-.kpi-value{font-size:32px;font-weight:700;line-height:1.1}
-.kpi-value .unit{font-size:14px;color:#64748b;font-weight:500;margin-left:4px}
-.kpi-sub{font-size:12px;color:#64748b;margin-top:2px}
-.kpi-bar{height:4px;background:#334155;border-radius:2px;margin-top:4px;overflow:hidden}
-.kpi-bar-fill{height:100%;border-radius:2px;transition:width .8s}
-/* quality score */
-.quality-ring{display:flex;align-items:center;gap:16px}
-.quality-svg{flex-shrink:0}
-.quality-detail{font-size:12px;color:#94a3b8;line-height:1.8}
-.quality-detail span{color:#e2e8f0;font-weight:600}
-/* section */
-.section{margin-bottom:24px}
-.section-title{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #1e293b}
-.section-title h2{font-size:16px;font-weight:700;margin:0;color:#f8fafc}
-.section-title .tag{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600}
-.tag-m1{background:#1e3a5f;color:#60a5fa}
-.tag-m2{background:#3b0764;color:#d8b4fe}
-.tag-m3{background:#713f12;color:#fbbf24}
-.tag-m4{background:#14532d;color:#86efac}
-/* milestones */
-.milestones{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
-.milestone{background:#1e293b;border-radius:14px;padding:16px 20px;border:1px solid #334155;transition:transform .15s}
-.milestone:hover{transform:translateY(-2px);border-color:#475569}
-.milestone .m-label{font-size:11px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
-.milestone .m-name{font-size:16px;font-weight:700;color:#f8fafc;margin-bottom:2px}
-.milestone .m-date{font-size:12px;color:#64748b;margin-bottom:2px}
-.milestone .m-target{font-size:12px;color:#94a3b8;line-height:1.5}
-.milestone .m-bar{height:6px;background:#334155;border-radius:3px;margin-top:8px;overflow:hidden}
-.milestone .m-bar-fill{height:100%;border-radius:3px;transition:width 1s}
-.milestone.active{border-color:#3b82f6;box-shadow:0 0 20px rgba(59,130,246,.1)}
-.milestone.done{opacity:.7}
-/* products grid */
-.products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.product-card{background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;transition:transform .15s}
-.product-card:hover{transform:translateY(-2px);border-color:#475569}
-.product-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.product-name{font-size:15px;font-weight:700;color:#f8fafc}
-.product-owner{font-size:11px;color:#64748b;margin-top:2px}
-.product-metrics{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:8px}
-.pm-item{font-size:11px;color:#94a3b8}
-.pm-item .pm-val{color:#e2e8f0;font-weight:700;font-size:14px}
-.pm-item .pm-unit{color:#64748b;font-size:11px;font-weight:500}
-.product-bar{height:6px;background:#334155;border-radius:3px;margin-bottom:8px;overflow:hidden}
-.product-bar-fill{height:100%;border-radius:3px;transition:width .8s}
-.product-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:8px;font-weight:600;margin-right:4px}
-.tag-hot{background:#450a0a;color:#fca5a5}
-.tag-growing{background:#14532d;color:#86efac}
-.tag-cold{background:#1e293b;color:#64748b;border:1px solid #334155}
-/* agents grid */
-.agents{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.agent-card{background:#1e293b;border-radius:14px;padding:16px 18px;border:1px solid #334155}
-.agent-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.agent-name{font-size:14px;font-weight:700}
-.agent-role{font-size:10px;color:#64748b;margin-top:2px}
-.agent-status{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
-.agent-status.on{background:#14532d;color:#86efac}
-.agent-status.warn{background:#713f12;color:#fbbf24}
-.agent-status.off{background:#450a0a;color:#fca5a5}
-.agent-tasks{font-size:11px;color:#94a3b8;line-height:1.5;margin:0;padding-left:14px}
-.agent-tasks li{margin-bottom:2px}
-.agent-tasks li::marker{color:#64748b}
-/* chart area */
-.chart-area{background:#1e293b;border-radius:14px;padding:20px 24px;border:1px solid #334155;margin-bottom:24px}
-.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.chart-header h2{font-size:16px;font-weight:700;margin:0;color:#f8fafc}
-.chart-legend{display:flex;gap:16px;font-size:12px;color:#94a3b8}
-.chart-legend span{display:flex;align-items:center;gap:6px}
-.chart-legend .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
-.chart-svg{width:100%;height:auto}
-/* health row */
-.health-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
-.health-card{background:#1e293b;border-radius:14px;padding:14px 18px;border:1px solid #334155;display:flex;align-items:center;gap:12px}
-.health-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-.health-dot.ok{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.4)}
-.health-dot.degraded{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.4)}
-.health-dot.fail{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.4)}
-.health-label{font-size:12px;color:#94a3b8}
-.health-value{font-size:14px;font-weight:600;color:#f8fafc}
-/* feedback stream */
-.feedback-stream{max-height:200px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#334155 transparent}
-.fb-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #1e293b;font-size:12px}
-.fb-item:last-child{border-bottom:none}
-.fb-product{color:#60a5fa;font-weight:600;min-width:80px}
-.fb-text{color:#94a3b8;flex:1}
-.fb-time{color:#475569;font-size:11px;min-width:50px;text-align:right}
-/* footer */
-.footer{text-align:center;padding:20px;font-size:11px;color:#475569;border-top:1px solid #1e293b;margin-top:24px}
-.hidden{display:none}
+.update-time{font-size:.72rem;color:var(--text3)}
+.refresh-btn{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text2);font-size:.78rem;cursor:pointer;transition:all .2s}
+.refresh-btn:hover{border-color:var(--blue);color:var(--blue)}
+
+/* Section */
+.section{margin-bottom:36px}
+.section-title{font-size:1.1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title .badge{font-size:.62rem;padding:2px 8px;border-radius:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.badge-p0{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.badge-p1{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
+.badge-sprint{background:rgba(168,85,247,.12);color:var(--purple);border:1px solid rgba(168,85,247,.2)}
+.badge-new{background:rgba(6,182,212,.12);color:var(--cyan);border:1px solid rgba(6,182,212,.2)}
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:32px 0}
+
+/* ===== 1. 商业闭环 ===== */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi-card{background:var(--card);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;border:1px solid var(--border)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi-card.c-blue::before{background:var(--blue)}.kpi-card.c-green::before{background:var(--green)}
+.kpi-card.c-yellow::before{background:var(--yellow)}.kpi-card.c-purple::before{background:var(--purple)}
+.kpi-label{font-size:.72rem;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kpi-label .target{font-size:.62rem;opacity:.6}
+.kpi-value{font-size:2rem;font-weight:700;line-height:1.1}
+.kpi-card.c-blue .kpi-value{color:var(--blue)}.kpi-card.c-green .kpi-value{color:var(--green)}
+.kpi-card.c-yellow .kpi-value{color:var(--yellow)}.kpi-card.c-purple .kpi-value{color:var(--purple)}
+.kpi-sub{font-size:.68rem;color:var(--text3);margin-top:6px}
+
+/* Funnel */
+.funnel-box{background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid var(--border);margin-bottom:20px}
+.funnel-box .funnel-header{font-size:.82rem;color:var(--text2);margin-bottom:18px;font-weight:500}
+.funnel-stages{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:nowrap}
+.funnel-stage{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.funnel-bar{border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .5s ease;min-height:40px;position:relative}
+.funnel-bar-inner{color:var(--text);font-weight:700;font-size:1.1rem;text-shadow:0 1px 3px rgba(0,0,0,.3)}
+.funnel-arrow{color:var(--text3);font-size:1.2rem;flex-shrink:0;padding:0 4px}
+.funnel-label{font-size:.72rem;color:var(--text3);margin-top:6px;font-weight:500}
+.funnel-pct{font-size:.65rem;color:var(--text3);margin-top:2px;opacity:.8}
+
+/* Sprint Progress */
+.sprint-bar-box{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border)}
+.sprint-bar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sprint-bar-header .left{font-size:.82rem;color:var(--text2);font-weight:500}
+.sprint-bar-header .right{font-size:.72rem;color:var(--text3)}
+.progress-track{width:100%;height:24px;background:var(--card2);border-radius:12px;overflow:hidden;position:relative}
+.progress-fill{height:100%;border-radius:12px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.progress-fill.sprint-gradient{background:linear-gradient(90deg,var(--blue),var(--purple))}
+.progress-label{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:.68rem;color:var(--text2);font-weight:600}
+.sprint-milestones{display:flex;justify-content:space-between;margin-top:6px;font-size:.62rem;color:var(--text3)}
+
+/* ===== 2. 数字员工考核·五把尺子 ===== */
+.ruler-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:18px;padding:10px 16px;background:var(--card);border-radius:10px;border:1px solid var(--border)}
+.ruler-legend-item{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--text2)}
+.ruler-legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+.agents-v5-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+.agent-v5-card{background:var(--card);border-radius:var(--radius);padding:18px 20px;border:1px solid var(--border);transition:border-color .25s,box-shadow .25s;position:relative;overflow:hidden}
+.agent-v5-card:hover{border-color:rgba(59,130,246,.25);box-shadow:0 2px 20px rgba(59,130,246,.06)}
+/* 左侧色条 */
+.agent-v5-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px}
+.agent-v5-card.r-on::before{background:var(--green)}.agent-v5-card.r-warn::before{background:var(--yellow)}.agent-v5-card.r-off::before{background:var(--red)}
+
+.av5-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.av5-header-left{display:flex;align-items:center;gap:10px}
+.av5-emoji{font-size:1.6rem}
+.av5-name{font-size:.92rem;font-weight:700;color:var(--text)}
+.av5-role{font-size:.66rem;color:var(--text3);margin-top:1px}
+.av5-status{display:flex;align-items:center;gap:5px;font-size:.7rem;font-weight:600;padding:3px 10px;border-radius:8px}
+.av5-status.on{background:rgba(34,197,94,.1);color:var(--green)}
+.av5-status.warn{background:rgba(245,158,11,.1);color:var(--yellow)}
+.av5-status.off{background:rgba(239,68,68,.1);color:var(--red)}
+.av5-status-dot{width:7px;height:7px;border-radius:50%}
+.av5-status.on .av5-status-dot{background:var(--green);box-shadow:0 0 6px rgba(34,197,94,.6)}
+.av5-status.warn .av5-status-dot{background:var(--yellow);box-shadow:0 0 6px rgba(245,158,11,.6)}
+.av5-status.off .av5-status-dot{background:var(--red);box-shadow:0 0 6px rgba(239,68,68,.6)}
+
+/* 五把尺子行 */
+.ruler-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.ruler-row{display:flex;align-items:center;gap:8px}
+.ruler-label{font-size:.68rem;color:var(--text3);width:52px;flex-shrink:0;text-align:right;letter-spacing:.3px}
+.ruler-bar-wrap{flex:1;min-width:0}
+.ruler-bar-track{width:100%;height:7px;background:var(--card2);border-radius:4px;overflow:hidden;position:relative}
+.ruler-bar-fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+/* 复杂度三段条 */
+.cpx-bar{display:flex;height:7px;border-radius:4px;overflow:hidden;gap:1px}
+.cpx-seg{height:100%;transition:width .6s ease}
+
+.ruler-val{font-size:.7rem;font-weight:600;min-width:58px;text-align:right;flex-shrink:0}
+.ruler-val.v-out{color:var(--ruler-out)}
+.ruler-val.v-cpx{color:var(--ruler-cpx)}
+.ruler-val.v-skl{color:var(--ruler-skl)}
+.ruler-val.v-run{color:var(--ruler-run)}
+.ruler-val.v-con{color:var(--ruler-con)}
+
+/* 运行时长特殊条 */
+.runtime-bar{position:relative}
+.runtime-scale{display:flex;justify-content:space-between;margin-top:2px;font-size:.55rem;color:var(--text3)}
+.runtime-marker{position:absolute;top:-2px;width:1px;height:11px;background:var(--text3)}
+
+/* 关键任务行 */
+.av5-tasks{border-top:1px solid var(--border);padding-top:10px;display:flex;flex-direction:column;gap:4px}
+.av5-task{font-size:.68rem;color:var(--text2);display:flex;align-items:flex-start;gap:5px;line-height:1.4}
+.av5-task-ic{flex-shrink:0;font-size:.72rem}
+.av5-task-ic.ok{color:var(--green)}.av5-task-ic.warn{color:var(--yellow)}.av5-task-ic.err{color:var(--red)}
+
+/* ===== 3. 知识底座 ===== */
+.knowledge-layers{display:flex;flex-direction:column;gap:14px}
+.layer-card{background:var(--card);border-radius:var(--radius);padding:16px 20px;border:1px solid var(--border)}
+.layer-tag{font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.layer-tag.foundation{color:var(--green)}.layer-tag.pillar{color:var(--purple)}.layer-tag.product{color:var(--blue)}
+.layer-content{font-size:.85rem;color:var(--text);display:flex;align-items:center;gap:8px}
+.layer-content .check{color:var(--green)}
+
+.pillars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:4px}
+.pillar-card{background:var(--card2);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.pillar-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.pillar-card.pc1::after{background:var(--blue)}.pillar-card.pc2::after{background:var(--green)}
+.pillar-card.pc3::after{background:var(--yellow)}.pillar-card.pc4::after{background:var(--purple)}
+.pillar-name{font-size:.82rem;font-weight:600;margin-bottom:4px}
+.pillar-count{font-size:1.4rem;font-weight:700;color:var(--blue)}
+.pillar-detail{font-size:.62rem;color:var(--text3);margin-top:4px;line-height:1.5}
+
+.ks-bar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.ks-total{font-size:.85rem;color:var(--text2)}.ks-total strong{color:var(--text);font-size:1.1rem}
+.ks-pct{font-size:1rem;font-weight:700;color:var(--green)}
+
+.products-chips{display:flex;flex-wrap:wrap;gap:8px}
+.p-chip{padding:5px 14px;border-radius:8px;background:var(--card2);font-size:.78rem;color:var(--text2);border:1px solid var(--border)}
+
+/* ===== 4. 品质·风险 ===== */
+.triple-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.triple-panel{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border)}
+.triple-panel h3{font-size:.88rem;font-weight:600;margin-bottom:14px;color:var(--text2)}
+.qi-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.qi-row:last-child{border-bottom:none}
+.qi-label{font-size:.8rem;color:var(--text2)}.qi-target{font-size:.62rem;color:var(--text3);margin-top:1px}
+.qi-value{font-size:.82rem;font-weight:600}.qi-value.pending{color:var(--text3);font-style:italic;font-weight:400}
+.risk-item{padding:7px 0;display:flex;align-items:flex-start;gap:8px}
+.risk-dot{flex-shrink:0;width:8px;height:8px;border-radius:50%;margin-top:5px}
+.risk-dot.red{background:var(--red);box-shadow:0 0 4px rgba(239,68,68,.4)}
+.risk-dot.yellow{background:var(--yellow);box-shadow:0 0 4px rgba(245,158,11,.4)}
+.risk-dot.green{background:var(--green)}
+.risk-text{font-size:.76rem;color:var(--text2);line-height:1.4}
+
+/* ===== 5. 7日趋势 ===== */
+.trend-box{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border)}
+.trend-box h3{font-size:.88rem;font-weight:600;color:var(--text2);margin-bottom:12px}
+.trend-legend{display:flex;gap:20px;justify-content:center;margin-top:8px;font-size:.72rem;color:var(--text3)}
+
+/* ===== Footer Quote ===== */
+.footer-quote{text-align:center;margin-top:40px;padding:24px 16px;border-top:1px solid var(--border)}
+.footer-quote p{font-size:.8rem;color:var(--text3);line-height:1.7;font-style:italic;max-width:680px;margin:0 auto}
+.footer-quote .em{color:var(--text2);font-weight:500;font-style:normal}
+
+/* ===== Responsive ===== */
 @media(max-width:960px){
-  .kpi-row{grid-template-columns:repeat(3,1fr)}
-  .milestones{grid-template-columns:repeat(2,1fr)}
-  .products{grid-template-columns:repeat(2,1fr)}
-  .agents{grid-template-columns:repeat(2,1fr)}
-  .health-row{grid-template-columns:repeat(2,1fr)}
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .pillars-grid{grid-template-columns:repeat(2,1fr)}
+  .agents-v5-grid{grid-template-columns:repeat(2,1fr)}
+  .triple-grid{grid-template-columns:1fr}
+  .funnel-stages{gap:0}
 }
 @media(max-width:640px){
-  .kpi-row{grid-template-columns:repeat(2,1fr)}
-  .milestones,.products,.agents,.health-row{grid-template-columns:1fr}
-  .container{padding:12px}
+  #app{padding:12px 14px 40px}
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .pillars-grid{grid-template-columns:1fr 1fr}
+  .agents-v5-grid{grid-template-columns:1fr}
+  .header{flex-direction:column;align-items:flex-start}
+  .funnel-bar{min-height:30px}
+  .funnel-bar-inner{font-size:.85rem}
+  .ruler-legend{gap:10px}
 }
 </style>
 </head>
 <body>
-<a class="skip-nav" href="#main">跳到主要内容</a>
-<div class="header">
-  <div>
-    <h1>🌊 风声 · 质量看板</h1>
-    <div class="sub">v3.0 · 产品质量优先 · 交互深度 / 用户粘性 / 反馈密度 / 验证线</div>
-  </div>
-  <div class="header-right">
-    <span id="status-badge" class="badge badge-demo">▲ 静态数据</span>
-    <span id="last-update" style="font-size:11px;color:#64748b"></span>
-    <button class="btn-refresh" onclick="refreshAll()" title="手动刷新">⟳ 刷新</button>
-  </div>
-</div>
 
-<div id="main" class="container">
-
-  <!-- KPI: 质量优先 -->
-  <div class="kpi-row">
-    <div class="kpi-card primary">
-      <div class="kpi-label">交互深度</div>
-      <div class="kpi-value" id="kpi-depth" style="color:#3b82f6">—</div>
-      <div class="kpi-sub">人均交互次数 (click+action)/UV</div>
-    </div>
-    <div class="kpi-card success">
-      <div class="kpi-label">人均浏览</div>
-      <div class="kpi-value" id="kpi-pages" style="color:#22c55e">—</div>
-      <div class="kpi-sub">页/人 · 越高内容越吸引</div>
-    </div>
-    <div class="kpi-card warning">
-      <div class="kpi-label">反馈密度</div>
-      <div class="kpi-value" id="kpi-feedback" style="color:#f59e0b">—</div>
-      <div class="kpi-sub">反馈率 <span id="kpi-fb-rate">—</span></div>
-    </div>
-    <div class="kpi-card accent">
-      <div class="kpi-label">验证线进度</div>
-      <div class="kpi-value" id="kpi-verify" style="color:#a855f7">—</div>
-      <div class="kpi-sub">目标 300 人真实使用（解码器100+其余5产品各40）</div>
-      <div class="kpi-bar"><div class="kpi-bar-fill" id="kpi-verify-bar" style="width:0%;background:#a855f7"></div></div>
-    </div>
-    <div class="kpi-card danger">
-      <div class="kpi-label">产品质量分</div>
-      <div class="quality-ring">
-        <svg class="quality-svg" width="64" height="64" viewBox="0 0 64 64" id="quality-ring-svg">
-          <circle cx="32" cy="32" r="28" fill="none" stroke="#334155" stroke-width="4"/>
-          <circle cx="32" cy="32" r="28" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="176" stroke-dashoffset="176" stroke-linecap="round" transform="rotate(-90 32 32)" id="quality-ring-circle"/>
-          <text x="32" y="36" text-anchor="middle" font-size="16" font-weight="700" fill="#e2e8f0" id="quality-ring-text">—</text>
-        </svg>
-        <div class="quality-detail" id="quality-detail">加载中…</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- AI提及率GEO追踪 #115 -->
-  <div class="section-title" style="margin-top:24px"><h2>🤖 AI提及率 · GEO监测</h2><span class="tag" style="background:#1e3a5f;color:#60a5fa">#115数据基建</span></div>
-  <div id="ai-mentions-section" style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;margin-bottom:16px">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
-      <div id="ai-mentions-rate" style="font-size:28px;font-weight:900;color:#94a3b8">—</div>
-      <div>
-        <div style="font-size:14px;font-weight:700;color:#e2e8f0">AI提及率</div>
-        <div style="font-size:11px;color:#64748b" id="ai-mentions-sub">累计 0 次检查 · 0 次提及</div>
-      </div>
-    </div>
-    <div id="ai-engines-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
-    <div style="margin-top:12px;font-size:11px;color:#475569;text-align:right">每周手动更新一次 · 关键词：风声科技/居住服务</div>
-  </div>
-
-  <!-- milestones -->
-  <div class="section-title"><h2>🎯 里程碑</h2><span class="tag tag-m1">产品质量驱动</span></div>
-  <div class="milestones" id="milestones">
-    <div class="milestone active"><div class="m-label">M1</div><div class="m-name">质量基线</div><div class="m-date">6.30 · 剩4天</div><div class="m-target">交互深度≥3次/人✅ · 反馈率≥5%(当前1.2%) · Agent培养师≥20人(差16)</div><div class="m-bar"><div class="m-bar-fill" style="width:65%;background:#3b82f6"></div></div></div>
-    <div class="milestone"><div class="m-label">M2</div><div class="m-name">粘性验证</div><div class="m-date">7.15</div><div class="m-target">人均浏览≥4页(✅已达标4.5) · 回访率≥15% · 客户解码器≥15人</div><div class="m-bar"><div class="m-bar-fill" style="width:30%;background:#a855f7"></div></div></div>
-    <div class="milestone"><div class="m-label">M3</div><div class="m-name">深度闭环</div><div class="m-date">7.31</div><div class="m-target">交互深度≥5 · 反馈闭环≤24h · 全产品≥15人</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#f59e0b"></div></div></div>
-    <div class="milestone"><div class="m-label">M4</div><div class="m-name">全面达标</div><div class="m-date">9.01</div><div class="m-target">300人验证线 · 产品质量分≥70 · 商业闭环跑通</div><div class="m-bar"><div class="m-bar-fill" style="width:0%;background:#22c55e"></div></div></div>
-  </div>
-
-  <!-- 7-day trend -->
-  <div class="chart-area">
-    <div class="chart-header">
-      <h2>📈 7日质量趋势</h2>
-      <div class="chart-legend">
-        <span><span class="dot blue"></span>交互深度</span>
-        <span><span class="dot purple"></span>人均浏览</span>
-        <span><span class="dot green"></span>反馈</span>
-      </div>
-    </div>
-    <div id="chart-container"><div class="loading">加载中…</div></div>
-  </div>
-
-  <!-- 项目矩阵 -->
-  <div class="section-title" style="margin-top:24px"><h2>🏗️ 风声项目矩阵</h2><span class="tag" style="background:#1e3a5f;color:#60a5fa">三层架构</span></div>
-  <div id="project-matrix" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px">
-    <div style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;border-left:4px solid #2D6A4F">
-      <div style="font-size:15px;font-weight:700;color:#f8fafc;margin-bottom:4px">🌬️ 风声主站</div>
-      <div style="font-size:12px;color:#94a3b8;margin-bottom:10px">fengsheng.tech · C端服务者 · 300人验证</div>
-      <div style="font-size:12px;color:#64748b;line-height:1.8">
-        <div>📌 六维品质测评 · 客户解码器 · 关怀测评</div>
-        <div>📌 能力测评 · Agent培养师 · 业务字典</div>
-        <div>📌 验房报告 · 知识底座 · 数字团队</div>
-        <div style="margin-top:6px;color:#52B788">状态：<b>线上运行</b> | MVP聚焦：解码器+品质测评(6.25五步法修正)</div>
-      </div>
-    </div>
-    <div style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;border-left:4px solid #3b82f6">
-      <div style="font-size:15px;font-weight:700;color:#f8fafc;margin-bottom:4px">📱 微信小程序·风声助手</div>
-      <div style="font-size:12px;color:#94a3b8;margin-bottom:10px">微信生态 · 引流闭环 · 轻量体验</div>
-      <div style="font-size:12px;color:#64748b;line-height:1.8">
-        <div>📌 MVP：客户解码器+六维品质测评</div>
-        <div>📌 引流链路：抖音→公众号→小程序</div>
-        <div>📌 uni-app三端共用后端 Workers+D1</div>
-        <div style="margin-top:6px;color:#f59e0b">状态：<b>🔥开发中</b> | 小扣子推进·MVP 7.14上线</div>
-      </div>
-    </div>
-    <div style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;border-left:4px solid #a855f7">
-      <div style="font-size:15px;font-weight:700;color:#f8fafc;margin-bottom:4px">🏢 机构版 · 本地化部署</div>
-      <div style="font-size:12px;color:#94a3b8;margin-bottom:10px">B端客户 · 私有部署 · 企业赋能</div>
-      <div style="font-size:12px;color:#64748b;line-height:1.8">
-        <div>📌 管理后台（学员/团队/数据看板）</div>
-        <div>📌 批量测评+组织能力诊断</div>
-        <div>📌 AI盒子+本地化部署+数据隔离</div>
-        <div style="margin-top:6px;color:#a855f7">状态：<b>方案设计中</b> | #95小豆子6.26交付方案</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Products -->
-  <div class="section-title"><h2>📦 产品质量矩阵</h2><span class="tag tag-m4">交互深度·粘性·反馈</span></div>
-  <div class="products" id="products-grid"></div>
-
-  <!-- Agents -->
-  <div class="section-title" style="margin-top:24px"><h2>🤖 六Agent 作战状态</h2><span class="tag tag-m2">6.26任务</span></div>
-  <div class="agents" id="agents-grid"></div>
-
-  <!-- Health -->
-  <div class="section-title" style="margin-top:24px"><h2>🔧 基础设施</h2></div>
-  <div class="health-row" id="health-row"></div>
-
-  <div class="footer">
-    风声 · fengsheng.tech | 质量看板 v3.2 | 交互深度 / 粘性 / 反馈密度 / AI提及率 | 数据来源：D1 /api/stats | 更新：2026-06-29
+<!-- ===== PASSWORD OVERLAY ===== -->
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-logo">🛡️</div>
+    <h2>风声·运营看板</h2>
+    <div class="auth-sub">仅限授权人员访问</div>
+    <input type="password" id="auth-pwd" class="auth-input" placeholder="输入访问密码" autofocus>
+    <button id="auth-btn" class="auth-btn">进入看板</button>
+    <div id="auth-error" class="auth-error"></div>
   </div>
 </div>
+
+<!-- ===== MAIN DASHBOARD ===== -->
+<div id="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>风声·运营看板 v5.0</h1>
+      <div class="sub">帮助服务者用独立价值赢得尊重</div>
+    </div>
+    <div class="header-right">
+      <span class="update-time" id="update-time">加载中…</span>
+      <button class="refresh-btn" onclick="loadAll()">🔄 刷新</button>
+    </div>
+  </div>
+
+  <!-- ========== 板块1：商业闭环（P0） ========== -->
+  <div class="section">
+    <div class="section-title">💰 商业闭环 <span class="badge badge-p0">P0 最核心</span></div>
+
+    <!-- 4 KPI Cards -->
+    <div class="kpi-row">
+      <div class="kpi-card c-blue">
+        <div class="kpi-label">UV总量 <span class="target">目标300</span></div>
+        <div class="kpi-value" id="kpi-uv">—</div>
+        <div class="kpi-sub">累计独立访客</div>
+      </div>
+      <div class="kpi-card c-green">
+        <div class="kpi-label">体验用户 <span class="target">使用免费轮次</span></div>
+        <div class="kpi-value" id="kpi-trial">—</div>
+        <div class="kpi-sub">开单导师体验人数</div>
+      </div>
+      <div class="kpi-card c-yellow">
+        <div class="kpi-label">付费用户 <span class="target">目标30</span></div>
+        <div class="kpi-value" id="kpi-paid">0</div>
+        <div class="kpi-sub">扣子Bot工作流已发布·支付宝审核中</div>
+      </div>
+      <div class="kpi-card c-purple">
+        <div class="kpi-label">收入金额 <span class="target">目标¥1,470</span></div>
+        <div class="kpi-value" id="kpi-revenue">¥0</div>
+        <div class="kpi-sub">30×49 = ¥1,470</div>
+      </div>
+    </div>
+
+    <!-- Conversion Funnel -->
+    <div class="funnel-box">
+      <div class="funnel-header">📊 转化漏斗</div>
+      <div class="funnel-stages" id="funnel-stages"></div>
+    </div>
+
+    <!-- Sprint Progress -->
+    <div class="sprint-bar-box">
+      <div class="sprint-bar-header">
+        <span class="left">🏃 7.6–7.15 两周冲刺 · 付费闭环跑通</span>
+        <span class="right" id="sprint-days"></span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill sprint-gradient" id="sprint-fill" style="width:0%"></div>
+        <span class="progress-label" id="sprint-label">0%</span>
+      </div>
+      <div class="sprint-milestones">
+        <span>D1 · 7.6</span><span>D5 · 7.10</span><span>D10 · 7.15</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ========== 板块2：数字员工考核·五把尺子 ========== -->
+  <div class="section">
+    <div class="section-title">📏 数字员工考核·五把尺子 <span class="badge badge-new">NEW · 瑞泊框架</span></div>
+
+    <!-- 五把尺子图例 -->
+    <div class="ruler-legend">
+      <div class="ruler-legend-item"><span class="ruler-legend-dot" style="background:var(--ruler-out)"></span>输出量</div>
+      <div class="ruler-legend-item"><span class="ruler-legend-dot" style="background:var(--ruler-cpx)"></span>复杂度</div>
+      <div class="ruler-legend-item"><span class="ruler-legend-dot" style="background:var(--ruler-skl)"></span>技能复用</div>
+      <div class="ruler-legend-item"><span class="ruler-legend-dot" style="background:var(--ruler-run)"></span>运行时长</div>
+      <div class="ruler-legend-item"><span class="ruler-legend-dot" style="background:var(--ruler-con)"></span>并发度</div>
+    </div>
+
+    <!-- 6 Agent Cards -->
+    <div class="agents-v5-grid" id="agents-v5-grid"></div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ========== 板块3：知识底座·三层架构 ========== -->
+  <div class="section">
+    <div class="section-title">📚 知识底座·三层架构 <span class="badge badge-p1">7.7 Schema直拍锁定</span></div>
+    <div class="knowledge-layers">
+      <div class="layer-card">
+        <div class="layer-tag foundation">▸ 底层支撑</div>
+        <div class="layer-content"><span class="check">✅</span> 使命·愿景·价值观 v2.0</div>
+      </div>
+      <div class="layer-card" style="padding-bottom:8px">
+        <div class="layer-tag pillar">▸ 知识支柱层</div>
+        <div class="pillars-grid">
+          <div class="pillar-card pc1">
+            <div class="pillar-name">📘 业务词典</div>
+            <div class="pillar-count">101</div>
+            <div class="pillar-detail">品质9 · 租赁26 · 交易18<br>装修15 · 家政15 · 政策18</div>
+          </div>
+          <div class="pillar-card pc2">
+            <div class="pillar-name">📗 人才词典</div>
+            <div class="pillar-count">27</div>
+            <div class="pillar-detail">TAL人才能力</div>
+          </div>
+          <div class="pillar-card pc3">
+            <div class="pillar-name">📙 认知词典</div>
+            <div class="pillar-count">11</div>
+            <div class="pillar-detail">道德经4 · 品质维度7</div>
+          </div>
+          <div class="pillar-card pc4">
+            <div class="pillar-name">📕 AI工具词典</div>
+            <div class="pillar-count" style="color:var(--text3)">18</div>
+            <div class="pillar-detail">规划中 · 小眼镜填充中</div>
+          </div>
+        </div>
+      </div>
+      <div class="layer-card">
+        <div class="ks-bar">
+          <div class="ks-total">总计 <strong>139</strong> / 157条 · ✅v3已部署上线(62KB)</div>
+          <div class="ks-pct">完成度 88.5%</div>
+        </div>
+      </div>
+      <div class="layer-card">
+        <div class="layer-tag product">▸ 产品应用层</div>
+        <div class="products-chips">
+          <span class="p-chip">🔥 开单导师 · CTA已接通</span>
+          <span class="p-chip">🎨 IP角色设计</span>
+          <span class="p-chip">⚡ 品质测评</span>
+          <span class="p-chip">📱 小程序</span>
+          <span class="p-chip">💬 客户解码器</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ========== 板块4：品质·风险 ========== -->
+  <div class="section">
+    <div class="section-title">🛡️ 品质 · 风险</div>
+    <div class="triple-grid">
+      <div class="triple-panel">
+        <h3>✅ 品质指标</h3>
+        <div id="quality-metrics"></div>
+      </div>
+      <div class="triple-panel">
+        <h3>⚠️ 风险预警</h3>
+        <div id="risk-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ========== 板块5：7日趋势 ========== -->
+  <div class="section">
+    <div class="trend-box">
+      <h3>📈 7日趋势</h3>
+      <svg id="trend-chart" viewBox="0 0 700 200" style="width:100%;max-width:700px;margin:0 auto;display:block"></svg>
+      <div class="trend-legend" id="trend-legend"></div>
+    </div>
+  </div>
+
+  <!-- Footer Quote -->
+  <div class="footer-quote">
+    <p>"<span class="em">活跃用户数、会话数这些旧指标正在失效</span>，成熟的标志是<span class="em">人在委派、监控、审阅、协调</span>多条工作流。"</p>
+  </div>
+
+</div><!-- #app -->
 
 <script>
+// ============================================================
+//  PASSWORD AUTH
+// ============================================================
 (function(){
-  const API_BASE = '/api/stats';
-  const GOALS = {
-    total: 300,
-    /* 质量目标 */
-    interaction_depth: 5,    // 目标5次/人
-    pages_per_user: 4,       // 目标4页/人
-    feedback_rate: 5,        // 目标5%
-    quality_score: 70,       // 目标70分
-    products: {
-      breeder:      {users:40, depth:5, pages:4},
-      knowledge:    {users:40, depth:3, pages:3},
-      'care-test':  {users:40, depth:4, pages:3},
-      assessment:   {users:40, depth:4, pages:3},
-      reply:        {users:100, depth:3, pages:2},
-      'quality-test':{users:40, depth:4, pages:3}
-    }
-  };
-
-  // Product metadata — v3.0更新
-  const PRODUCT_META = {
-    breeder:       {name:'Agent培养师', owner:'小眼镜', color:'#3b82f6', emoji:'🧑‍🎓', desc:'AI能力6步方法论+实景练习'},
-    knowledge:     {name:'业务字典', owner:'小豆子', color:'#22c55e', emoji:'📚', desc:'9域176词条·行业唯一'},
-    'care-test':   {name:'六维品质测评', owner:'小酒窝儿', color:'#f59e0b', emoji:'⚡', desc:'品质标准+自检方法'},
-    assessment:    {name:'能力测评', owner:'小豆子', color:'#ef4444', emoji:'📈', desc:'能力维度+成长规划'},
-    reply:         {name:'客户解码器', owner:'小豆子', color:'#14b8a6', emoji:'💬', desc:'4域26场景·话术解码'},
-    'quality-test':{name:'品质检测', owner:'小酒窝儿', color:'#a855f7', emoji:'🔍', desc:'居住品质检测工具'}
-  };
-
-  // Agent data — 六Agent v3.1 · 6.26更新
-  const AGENTS = [
-    {name:'小鱼儿', role:'运营指挥·结果兜底', status:'on', emoji:'🐟',
-     tasks:['M1引流Day2(差16人/剩4天)','小扣子恢复确认','#109知识底座v2.0检查','6.26调度+看板']},
-    {name:'小扣子', role:'CTO·全栈开发', status:'off', emoji:'🤖',
-     tasks:['🔴断线中·铁令未认卡','#109知识底座v2.0开发','CF Token续期','小程序恢复']},
-    {name:'小豆子', role:'产品经理·闭环设计', status:'on', emoji:'💻',
-     tasks:['#103人才字典v7.2(6.26截止)','#99解码器测学练考评对齐','品质测评三层呈现','知识底座v4执行']},
-    {name:'小眼镜', role:'教研开发·课程', status:'warn', emoji:'👓',
-     tasks:['#11教案5-8课(逾期5天+)','1-4课终稿完善','#99课程侧对齐','行为设计补丁']},
-    {name:'小酒窝儿', role:'品质飞轮·检核', status:'warn', emoji:'🔍',
-     tasks:['V3自修能力编码','#101品控对接持续','内容品控9项(85%→闭环)','反馈闭环']},
-    {name:'小马丫', role:'本地桥梁·视频生产', status:'warn', emoji:'🐴',
-     tasks:['EP01短视频制作','300人引流素材','行业雷达后续','长图系列生产']}
-  ];
-
-  // ---- API helpers ----
-  async function fetchJSON(url) {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(res.status);
-    return res.json();
+  if(sessionStorage.getItem('fs_auth')==='1'){
+    document.getElementById('auth-overlay').classList.add('hidden');
+    document.getElementById('app').classList.add('show');
+    initDashboard();
+    return;
   }
-  function safeFetch(url) {
-    return fetchJSON(url).catch(e => { console.warn('API:', url, e.message); return null; });
-  }
-
-  // ---- Quality Score Calculation ----
-  // 综合评分 = 交互深度分(30%) + 粘性分(25%) + 反馈分(25%) + 验证进度分(20%)
-  function calcQualityScore(summary, daily) {
-    let depthScore = 0, stickinessScore = 0, feedbackScore = 0, verifyScore = 0;
-    if (summary && summary.total_users > 0) {
-      // 交互深度: clicks+actions / users, 目标5次/人
-      const totalClicks = (summary.per_product || []).reduce((s, p) => s + (p.clicks || 0), 0);
-      const depth = totalClicks / summary.total_users;
-      depthScore = Math.min(30, (depth / GOALS.interaction_depth) * 30);
-      // 粘性: pages/user, 目标4页/人
-      const ppu = summary.total_pageviews / summary.total_users;
-      stickinessScore = Math.min(25, (ppu / GOALS.pages_per_user) * 25);
-      // 反馈率
-      feedbackScore = Math.min(25, ((summary.feedback_rate_pct || 0) / GOALS.feedback_rate) * 25);
-      // 验证进度
-      verifyScore = Math.min(20, ((summary.total_users || 0) / GOALS.total) * 20);
+  var btn=document.getElementById('auth-btn');
+  var inp=document.getElementById('auth-pwd');
+  var err=document.getElementById('auth-error');
+  function tryAuth(){
+    if(inp.value==='fengsheng2026'){
+      sessionStorage.setItem('fs_auth','1');
+      document.getElementById('auth-overlay').classList.add('hidden');
+      document.getElementById('app').classList.add('show');
+      initDashboard();
+    }else{
+      err.textContent='密码错误，请重试';
+      inp.value='';
+      inp.focus();
     }
-    const total = Math.round(depthScore + stickinessScore + feedbackScore + verifyScore);
-    return {
-      total,
-      depth: depthScore.toFixed(1),
-      stickiness: stickinessScore.toFixed(1),
-      feedback: feedbackScore.toFixed(1),
-      verify: verifyScore.toFixed(1)
-    };
   }
-
-  // ---- Render functions ----
-  function renderKPIs(summary, daily) {
-    if (!summary) return;
-    const users = summary.total_users || 0;
-    const pvs = summary.total_pageviews || 0;
-    const fb = summary.total_feedback || 0;
-    const fbRate = summary.feedback_rate_pct || 0;
-
-    // 交互深度
-    const totalInteractions = (summary.per_product || []).reduce((s, p) => s + (p.clicks || 0) + (p.actions || 0), 0);
-    // 如果summary没有clicks字段，从daily算
-    let interactionDepth = 0;
-    if (totalInteractions > 0 && users > 0) {
-      interactionDepth = (totalInteractions / users).toFixed(1);
-    } else if (daily && daily.daily) {
-      const recentDay = daily.daily[daily.daily.length - 1];
-      if (recentDay && recentDay.unique_uids > 0) {
-        interactionDepth = ((recentDay.clicks || 0) / recentDay.unique_uids).toFixed(1);
-      }
-    }
-    document.getElementById('kpi-depth').innerHTML = (interactionDepth || '0') + '<span class="unit">次/人</span>';
-
-    // 人均浏览
-    const ppu = users > 0 ? (pvs / users).toFixed(1) : '0';
-    document.getElementById('kpi-pages').innerHTML = ppu + '<span class="unit">页/人</span>';
-
-    // 反馈密度
-    document.getElementById('kpi-feedback').innerHTML = fb + '<span class="unit">条</span>';
-    document.getElementById('kpi-fb-rate').textContent = fbRate + '%';
-
-    // 验证线
-    const progress = Math.min(100, Math.round(users / GOALS.total * 100));
-    document.getElementById('kpi-verify').innerHTML = users + '<span class="unit">/ ' + GOALS.total + '</span>';
-    document.getElementById('kpi-verify-bar').style.width = progress + '%';
-
-    // 产品质量分
-    const qs = calcQualityScore(summary, daily);
-    document.getElementById('quality-ring-text').textContent = qs.total;
-    const offset = 176 - (176 * qs.total / 100);
-    const ringColor = qs.total >= 70 ? '#22c55e' : (qs.total >= 40 ? '#f59e0b' : '#ef4444');
-    document.getElementById('quality-ring-circle').setAttribute('stroke-dashoffset', offset);
-    document.getElementById('quality-ring-circle').setAttribute('stroke', ringColor);
-    document.getElementById('quality-detail').innerHTML =
-      '深度 <span>' + qs.depth + '</span>/30<br>' +
-      '粘性 <span>' + qs.stickiness + '</span>/25<br>' +
-      '反馈 <span>' + qs.feedback + '</span>/25<br>' +
-      '验证 <span>' + qs.verify + '</span>/20';
-  }
-
-  function renderChart(dailyData) {
-    const container = document.getElementById('chart-container');
-    if (!dailyData || !dailyData.daily || dailyData.daily.length === 0) {
-      container.innerHTML = '<div style="color:#64748b;font-size:13px;padding:20px;text-align:center">暂无趋势数据</div>';
-      return;
-    }
-    const days = dailyData.daily;
-    // 算每日交互深度和人均浏览
-    const depthVals = days.map(d => d.unique_uids > 0 ? ((d.clicks || 0) / d.unique_uids) : 0);
-    const ppuVals = days.map(d => d.unique_uids > 0 ? ((d.pageviews || 0) / d.unique_uids) : 0);
-    const fbVals = days.map(d => d.feedbacks || 0);
-    const globalMax = Math.max(1, ...depthVals, ...ppuVals, ...fbVals);
-
-    const w = 600, h = 200, pad = {l:50, r:20, t:15, b:30};
-    const pw = w - pad.l - pad.r;
-    const ph = h - pad.t - pad.b;
-    function y(v) { return pad.t + ph - (v / globalMax * ph); }
-    function x(i) { return pad.l + (i / Math.max(1, days.length-1)) * pw; }
-
-    function polyline(arr, color) {
-      let path = '';
-      for (let i = 0; i < arr.length; i++) path += (i === 0 ? 'M' : 'L') + x(i).toFixed(1) + ',' + y(arr[i]).toFixed(1) + ' ';
-      return '<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
-    }
-    function dots(arr, color) {
-      return arr.map((v,i) => '<circle cx="'+x(i).toFixed(1)+'" cy="'+y(v).toFixed(1)+'" r="3" fill="'+color+'"/>').join('');
-    }
-    const labels = days.map((d,i) => '<text x="'+x(i).toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle" font-size="10" fill="#64748b">'+d.date.slice(5)+'</text>').join('');
-
-    container.innerHTML = '<svg viewBox="0 0 '+w+' '+h+'" class="chart-svg" role="img" aria-label="7日质量趋势">' +
-      '<line x1="'+pad.l+'" y1="'+pad.t+'" x2="'+pad.l+'" y2="'+(pad.t+ph)+'" stroke="#334155" stroke-width="1"/>' +
-      '<line x1="'+pad.l+'" y1="'+(pad.t+ph)+'" x2="'+(pad.l+pw)+'" y2="'+(pad.t+ph)+'" stroke="#334155" stroke-width="1"/>' +
-      polyline(depthVals, '#3b82f6') + dots(depthVals, '#3b82f6') +
-      polyline(ppuVals, '#a855f7') + dots(ppuVals, '#a855f7') +
-      polyline(fbVals, '#22c55e') + dots(fbVals, '#22c55e') +
-      labels + '</svg>';
-  }
-
-  function renderProducts(data) {
-    const grid = document.getElementById('products-grid');
-    if (!data || !data.per_product) { grid.innerHTML = '<div style="color:#64748b">加载中…</div>'; return; }
-    const map = {};
-    data.per_product.forEach(p => { map[p.product] = p; });
-    let html = '';
-
-    const order = ['breeder','knowledge','care-test','assessment','reply','quality-test'];
-    for (const key of order) {
-      const meta = PRODUCT_META[key] || {name:key, owner:'—', color:'#64748b', emoji:'📦', desc:''};
-      const d = map[key] || {users:0, pageviews:0, feedback:0, clicks:0};
-      const goals = GOALS.products[key] || {users:10, depth:3, pages:3};
-      const pct = goals.users > 0 ? Math.round((d.users / goals.users) * 100) : 0;
-      const barColor = pct >= 100 ? '#22c55e' : (pct > 50 ? '#3b82f6' : (pct > 20 ? '#f59e0b' : '#64748b'));
-
-      // 交互深度（用人均浏览页数代替，因API无clicks字段）
-      const depth = d.users > 0 ? (d.pageviews / d.users).toFixed(1) : '0';
-      const depthColor = parseFloat(depth) >= goals.depth ? '#22c55e' : (parseFloat(depth) >= goals.depth/2 ? '#f59e0b' : '#ef4444');
-      // 人均浏览
-      const ppu = d.users > 0 ? (d.pageviews / d.users).toFixed(1) : '0';
-      const ppuColor = parseFloat(ppu) >= goals.pages ? '#22c55e' : (parseFloat(ppu) >= goals.pages/2 ? '#f59e0b' : '#ef4444');
-
-      // 热度标签
-      let tag = '';
-      if (d.users >= goals.users) tag = '<span class="product-tag tag-hot">🔥达标</span>';
-      else if (d.users > 0) tag = '<span class="product-tag tag-growing">📈增长中</span>';
-      else tag = '<span class="product-tag tag-cold">待启动</span>';
-
-      html += '<div class="product-card">' +
-        '<div class="product-top"><div><div class="product-name">'+meta.emoji+' '+meta.name+tag+'</div><div class="product-owner">'+meta.owner+' · '+meta.desc+'</div></div></div>' +
-        '<div class="product-metrics">' +
-          '<div class="pm-item">验证 <span class="pm-val" style="color:'+barColor+'">'+d.users+'</span><span class="pm-unit">/'+goals.users+'</span></div>' +
-          '<div class="pm-item">深度 <span class="pm-val" style="color:'+depthColor+'">'+depth+'</span><span class="pm-unit">次/人</span></div>' +
-          '<div class="pm-item">浏览 <span class="pm-val" style="color:'+ppuColor+'">'+ppu+'</span><span class="pm-unit">页/人</span></div>' +
-          '<div class="pm-item">反馈 <span class="pm-val">'+d.feedback+'</span><span class="pm-unit">条</span></div>' +
-        '</div>' +
-        '<div class="product-bar"><div class="product-bar-fill" style="width:'+pct+'%;background:'+barColor+'"></div></div>' +
-        '</div>';
-    }
-    grid.innerHTML = html;
-  }
-
-  function renderAgents() {
-    const grid = document.getElementById('agents-grid');
-    let html = '';
-    for (const a of AGENTS) {
-      const statusClass = a.status === 'on' ? 'on' : (a.status === 'warn' ? 'warn' : 'off');
-      const statusText = a.status === 'on' ? '在岗' : (a.status === 'warn' ? '关键期' : '待到位');
-      const tasks = a.tasks.map(t => '<li>'+t+'</li>').join('');
-      html += '<div class="agent-card">' +
-        '<div class="agent-top"><div><div class="agent-name">'+a.emoji+' '+a.name+'</div><div class="agent-role">'+a.role+'</div></div><span class="agent-status '+statusClass+'">'+statusText+'</span></div>' +
-        '<ul class="agent-tasks">'+tasks+'</ul>' +
-        '</div>';
-    }
-    grid.innerHTML = html;
-  }
-
-  function renderAiMentions(data) {
-    const rateEl = document.getElementById('ai-mentions-rate');
-    const subEl = document.getElementById('ai-mentions-sub');
-    const gridEl = document.getElementById('ai-engines-grid');
-    if (!data || !data.engines) {
-      rateEl.textContent = '—';
-      rateEl.style.color = '#94a3b8';
-      subEl.textContent = 'AI提及率数据加载中…';
-      gridEl.innerHTML = '<div style="color:#64748b;font-size:12px;grid-column:1/-1;text-align:center;padding:20px">首次加载需在D1中执行 schema-115.sql 建表</div>';
-      return;
-    }
-    const rate = data.overall_mention_rate_pct || 0;
-    rateEl.textContent = rate + '%';
-    rateEl.style.color = rate > 30 ? '#22c55e' : rate > 10 ? '#f59e0b' : '#94a3b8';
-    subEl.textContent = `累计 ${data.total_checks || 0} 次检查 · ${data.total_mentions || 0} 次提及 · ${Object.keys(data.engines).length} 个引擎`;
-    // 渲染引擎卡片
-    const engineLabels = { metaso:'秘塔AI搜索', kimi:'Kimi', doubao:'豆包', baidu:'文心一言', perplexity:'Perplexity' };
-    gridEl.innerHTML = Object.entries(data.engines).map(([eng, info]) => {
-      const checks = info.total_checks || 0;
-      const mentions = info.mention_count || 0;
-      const engRate = info.mention_rate || 0;
-      const statusColor = engRate > 30 ? '#22c55e' : engRate > 10 ? '#f59e0b' : '#475569';
-      const latest = info.latest;
-      const lastDate = latest ? latest.date : '—';
-      return `<div style="background:#0f172a;border-radius:10px;padding:12px;border:1px solid #334155">
-        <div style="font-size:12px;font-weight:700;color:#e2e8f0;margin-bottom:6px">${engineLabels[eng] || eng}</div>
-        <div style="font-size:22px;font-weight:900;color:${statusColor}">${engRate}%</div>
-        <div style="font-size:11px;color:#64748b">提及率 · ${checks}次检查/${mentions}次提及</div>
-        <div style="font-size:10px;color:#475569;margin-top:4px">最新:${lastDate}</div>
-      </div>`;
-    }).join('');
-  }
-
-  function renderHealth(data) {
-    const row = document.getElementById('health-row');
-    if (!data) { row.innerHTML = '<div style="color:#64748b">检查中…</div>'; return; }
-    const ok = data.status === 'ok';
-    row.innerHTML =
-      '<div class="health-card"><div class="health-dot '+(ok?'ok':'fail')+'"></div><div><div class="health-label">D1 数据库</div><div class="health-value">'+(data.db_connected?'已连接':'断开')+'</div></div></div>' +
-      '<div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">事件记录</div><div class="health-value">'+(data.events_count||0)+' 条</div></div></div>' +
-      '<div class="health-card"><div class="health-dot '+(data.feedback_count>0?'ok':'degraded')+'"></div><div><div class="health-label">用户反馈</div><div class="health-value">'+(data.feedback_count||0)+' 条</div></div></div>' +
-      '<div class="health-card"><div class="health-dot '+(ok?'ok':'degraded')+'"></div><div><div class="health-label">API 服务</div><div class="health-value">'+(ok?'正常':'异常')+'</div></div></div>';
-  }
-
-  // ---- Main refresh ----
-  async function refreshAll() {
-    document.getElementById('status-badge').textContent = '⟳ 刷新中…';
-    const ts = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-
-    const [summary, daily, health, aiMentions] = await Promise.all([
-      safeFetch(API_BASE + '/summary'),
-      safeFetch(API_BASE + '/daily?days=7'),
-      safeFetch(API_BASE + '/health'),
-      safeFetch(API_BASE + '/ai-mentions').catch(() => null)
-    ]);
-
-    if (summary) {
-      document.getElementById('status-badge').className = 'badge badge-live';
-      document.getElementById('status-badge').textContent = '● 实时数据';
-      renderKPIs(summary, daily);
-      renderProducts(summary);
-    } else {
-      document.getElementById('status-badge').className = 'badge badge-demo';
-      document.getElementById('status-badge').textContent = '▲ 演示数据';
-      renderKPIs({total_users:0, total_pageviews:0, total_feedback:0, feedback_rate_pct:0, per_product:[]}, null);
-      renderProducts({per_product: Object.keys(GOALS.products).map(k => ({product:k, users:0, pageviews:0, feedback:0, clicks:0}))});
-    }
-
-    renderChart(daily || {daily:[]});
-    renderHealth(health || {status:'degraded', events_count:-1, feedback_count:-1, db_connected:false});
-    renderAiMentions(aiMentions);
-    renderAgents();
-    document.getElementById('last-update').textContent = '更新：' + ts;
-  }
-
-  refreshAll().then(() => { setInterval(refreshAll, 300_000); });
+  btn.addEventListener('click',tryAuth);
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')tryAuth()});
 })();
+
+// ============================================================
+//  AGENT DATA — 五把尺子硬编码
+// ============================================================
+var AGENTS_V5=[
+  {
+    emoji:'🐟',name:'小鱼儿',role:'运营总指挥·结果兜底',
+    status:'on', // 🟢
+    output:{daily:12,desc:'日程调度5+部署1+审核2+决策4',max:15},
+    complexity:{min:10,hour:30,day:60,top:'全站部署',topLevel:'天级'},
+    skillReuse:{skills:6,rate:78},
+    runtime:{hours:6.5,max:8,desc:'心跳+日程+主对话',triggers:'日程+心跳+主对话'},
+    concurrency:{active:5,peak:5},
+    tasks:[
+      {t:'付费闭环80%落地',s:'ok'},{t:'价值表达v1.0定稿',s:'ok'},
+      {t:'Schema直拍锁定',s:'ok'},{t:'#129付费配置包初稿',s:'warn'}
+    ]
+  },
+  {
+    emoji:'🤖',name:'小扣子',role:'CTO·全栈开发',
+    status:'warn', // 🟡
+    output:{daily:3,desc:'代码交付',max:15,alert:'⚠️近3天实际0产出'},
+    complexity:{min:10,hour:50,day:40,top:'JWT修复',topLevel:'天级·逾期17天'},
+    skillReuse:{skills:3,rate:45},
+    runtime:{hours:1.5,max:8,desc:'串行执行',triggers:'主对话'},
+    concurrency:{active:1,peak:1},
+    tasks:[
+      {t:'JWT硬编码未修(#114)·逾期17天',s:'err'},
+      {t:'3项P0全部逾期未push',s:'err'},
+      {t:'knowledge退步需根治',s:'err'},
+      {t:'近3天0产出',s:'err'}
+    ]
+  },
+  {
+    emoji:'💻',name:'小豆子',role:'产品经理·闭环设计',
+    status:'warn', // 🟡
+    output:{daily:4,desc:'设计稿/PRD/方案',max:15,alert:'⚠️近6天0闭单'},
+    complexity:{min:10,hour:40,day:50,top:'首页v2.1重设计',topLevel:'天级·逾期'},
+    skillReuse:{skills:2,rate:30},
+    runtime:{hours:1,max:8,desc:'串行执行',triggers:'主对话'},
+    concurrency:{active:1,peak:1},
+    tasks:[
+      {t:'#137 Logo终稿24:00承诺已过',s:'err'},
+      {t:'Schema定稿20:00未交付',s:'err'},
+      {t:'首页v2.1设计稿逾期',s:'err'},
+      {t:'近6天0闭单',s:'err'}
+    ]
+  },
+  {
+    emoji:'👓',name:'小眼镜',role:'教研开发·知识库管理',
+    status:'on', // 🟢
+    output:{daily:5,desc:'运营分析/数据追踪/CTA优化',max:15},
+    complexity:{min:30,hour:70,day:0,top:'漏斗归因分析',topLevel:'小时级'},
+    skillReuse:{skills:2,rate:55},
+    runtime:{hours:2,max:8,desc:'分析任务',triggers:'主对话+日程'},
+    concurrency:{active:1,peak:1},
+    tasks:[
+      {t:'运营分析输出稳定',s:'ok'},
+      {t:'CTA优化方案推进中',s:'ok'},
+      {t:'数据追踪日报',s:'ok'}
+    ]
+  },
+  {
+    emoji:'🔍',name:'小酒窝儿',role:'品质飞轮·检控',
+    status:'on', // 🟢
+    output:{daily:6,desc:'品控巡检/审核/红线检查',max:15},
+    complexity:{min:40,hour:60,day:0,top:'全站品质审核',topLevel:'小时级'},
+    skillReuse:{skills:2,rate:50},
+    runtime:{hours:1.5,max:8,desc:'品控巡检',triggers:'日程+主对话'},
+    concurrency:{active:1,peak:1},
+    tasks:[
+      {t:'品控巡检稳定执行',s:'ok'},
+      {t:'红线检查每日输出',s:'ok'},
+      {t:'审核流程正常',s:'ok'}
+    ]
+  },
+  {
+    emoji:'🐴',name:'小马丫',role:'内容获客·视频生产',
+    status:'on', // 🟢
+    output:{daily:3,desc:'文案/海报/脚本',max:15},
+    complexity:{min:20,hour:80,day:0,top:'5张海报系列',topLevel:'小时级'},
+    skillReuse:{skills:1,rate:25},
+    runtime:{hours:1,max:8,desc:'内容产出',triggers:'主对话'},
+    concurrency:{active:1,peak:1},
+    tasks:[
+      {t:'#130推广视频推进中',s:'warn'},
+      {t:'文案产出稳定',s:'ok'},
+      {t:'技能沉淀不足(复用率25%)',s:'warn'}
+    ]
+  }
+];
+
+// ============================================================
+//  EXISTING DATA CONFIG
+// ============================================================
+var PRODUCTS=[
+  {id:'mentor',name:'开单导师🔥',tag:'P0',tagCls:'hot',ver:'V5.2',desc:'付费闭环80%·Bot工作流已发布·支付宝审核中',users:0,goal:30,pages:0},
+  {id:'ip-design',name:'IP角色设计🎨',tag:'引流',tagCls:'free',ver:'V1.0',desc:'🔴线上为Canvas模拟壳子·待接真实API',users:0,goal:50,pages:0},
+  {id:'knowledge',name:'知识底座📚',tag:'底座',tagCls:'free',ver:'V2.1',desc:'🔴退回老版113KB·应为335KB·7.8根治',users:0,goal:200,pages:0},
+  {id:'reply',name:'客户解码器💬',tag:'工具',tagCls:'free',ver:'V1.0',desc:'4域26场景',users:0,goal:20,pages:0},
+  {id:'care-test',name:'品质测评⚡',tag:'测评',tagCls:'free',ver:'V1.0',desc:'美好居住7维度',users:0,goal:50,pages:0},
+  {id:'assessment',name:'能力测评📈',tag:'测评',tagCls:'free',ver:'V1.0',desc:'9岗位45能力点',users:0,goal:30,pages:0},
+  {id:'breeder',name:'Agent培养师🧑‍🎓',tag:'AI',tagCls:'free',ver:'V1.0',desc:'AI能力6步法',users:0,goal:20,pages:0},
+  {id:'quality-test',name:'品质检测🔍',tag:'检测',tagCls:'free',ver:'V1.0',desc:'居住品质检测',users:0,goal:30,pages:0}
+];
+
+var RISKS=[
+  {level:'red',text:'knowledge退回老版335KB→113KB · GitHub自动部署覆盖 · 7.8根治'},
+  {level:'red',text:'豆包7.15下线 · 导流话术未启动'},
+  {level:'red',text:'小扣子3项P0全部逾期 · JWT逾期17天 · 近3天0产出'},
+  {level:'red',text:'小豆子连续6天0闭单 · Logo/Schema承诺均未兑现'},
+  {level:'yellow',text:'首页6月4日旧版 · 产品与用户看到的不符'},
+  {level:'yellow',text:'API daily接口空数据 · 7日趋势不可用'},
+  {level:'yellow',text:'支付宝应用审核中(1-3天) · 商户入驻待生哥完成'},
+  {level:'yellow',text:'小马丫技能复用率仅25% · 工作流未沉淀'}
+];
+
+var QUALITY_METRICS=[
+  {label:'内容审核通过率',target:'目标≥95%',value:'待接入',pending:true},
+  {label:'VI偏差数',target:'目标≤3处/月',value:'待接入',pending:true},
+  {label:'投诉响应率',target:'目标100%',value:'待接入',pending:true}
+];
+
+// ============================================================
+//  API
+// ============================================================
+function getApiBase(){
+  return location.hostname==='fengsheng.tech'
+    ?'https://fengsheng-ee9.pages.dev/api/stats'
+    :'/api/stats';
+}
+var API=getApiBase();
+var summaryData=null, dailyData=null, healthData=null;
+
+async function fetchAPI(path){
+  try{
+    var r=await fetch(API+path,{headers:{'Accept':'application/json'}});
+    if(!r.ok)throw new Error(r.status);
+    return await r.json();
+  }catch(e){console.warn('API error:',path,e);return null}
+}
+
+async function loadAll(){
+  document.getElementById('update-time').textContent='加载中…';
+  var res=await Promise.all([
+    fetchAPI('/summary'),
+    fetchAPI('/daily?days=7'),
+    fetchAPI('/health')
+  ]);
+  summaryData=res[0]; dailyData=res[1]; healthData=res[2];
+  renderAll();
+  document.getElementById('update-time').textContent='更新于 '+new Date().toLocaleString('zh-CN',{hour12:false});
+}
+
+// ============================================================
+//  RENDER
+// ============================================================
+function renderAll(){
+  renderKPI(); renderFunnel(); renderSprintProgress();
+  renderAgentsV5(); renderQuality(); renderRisks();
+  renderTrend();
+}
+
+// -- 1. KPI --
+function renderKPI(){
+  var uv='—', trial='—';
+  if(summaryData){
+    uv=summaryData.total_users||0;
+    if(summaryData.per_product){
+      var m=summaryData.per_product.find(function(p){return p.product==='mentor'});
+      if(m) trial=m.users||0;
+      summaryData.per_product.forEach(function(p){
+        var prod=PRODUCTS.find(function(x){return x.id===p.product});
+        if(prod){prod.users=p.users||0;prod.pages=p.pageviews||0}
+      });
+    }
+  }
+  document.getElementById('kpi-uv').textContent=uv;
+  document.getElementById('kpi-trial').textContent=trial;
+}
+
+// -- 1. Funnel --
+function renderFunnel(){
+  var uv=0, trial=0, paid=0;
+  if(summaryData){
+    uv=summaryData.total_users||0;
+    if(summaryData.per_product){
+      var m=summaryData.per_product.find(function(p){return p.product==='mentor'});
+      if(m) trial=m.users||0;
+    }
+  }
+  var revenue=paid*49;
+  var t1=uv?((trial/uv)*100).toFixed(1):'0.0';
+  var t2=trial?((paid/trial)*100).toFixed(1):'0.0';
+  var w1=100;
+  var w2=uv?Math.max(Math.round(trial/uv*100),8):8;
+  var w3=trial?Math.max(Math.round(paid/trial*100),5):5;
+  var w4=5;
+  var stages=[
+    {label:'UV',val:uv,pct:'100%',w:w1,color:'var(--blue)',bg:'rgba(59,130,246,.15)'},
+    {label:'体验',val:trial,pct:t1+'%',w:w2,color:'var(--green)',bg:'rgba(34,197,94,.15)'},
+    {label:'付费',val:paid,pct:t2+'%',w:w3,color:'var(--yellow)',bg:'rgba(245,158,11,.15)'},
+    {label:'收入',val:'¥'+revenue,pct:'',w:w4,color:'var(--purple)',bg:'rgba(168,85,247,.15)'}
+  ];
+  var html='';
+  stages.forEach(function(s,i){
+    if(i>0) html+='<span class="funnel-arrow">›</span>';
+    html+='<div class="funnel-stage">'+
+      '<div class="funnel-bar" style="width:'+s.w+'%;background:'+s.bg+';border:1px solid '+s.color+'">'+
+        '<span class="funnel-bar-inner" style="color:'+s.color+'">'+s.val+'</span>'+
+      '</div>'+
+      '<div class="funnel-label">'+s.label+'</div>'+
+      (s.pct?'<div class="funnel-pct">'+s.pct+'</div>':'')+
+    '</div>';
+  });
+  document.getElementById('funnel-stages').innerHTML=html;
+}
+
+// -- 1. Sprint Progress --
+function renderSprintProgress(){
+  var start=new Date(2026,6,6), end=new Date(2026,6,15);
+  var now=new Date();
+  var total=10, elapsed=Math.floor((now-start)/864e5);
+  if(elapsed<0)elapsed=0;if(elapsed>total)elapsed=total;
+  var pct=Math.round(elapsed/total*100);
+  document.getElementById('sprint-fill').style.width=pct+'%';
+  document.getElementById('sprint-label').textContent='D'+elapsed+' · '+pct+'%';
+  document.getElementById('sprint-days').textContent='Day '+elapsed+' / 10';
+}
+
+// -- 2. Agents V5 (五把尺子) --
+function renderAgentsV5(){
+  var html='';
+  AGENTS_V5.forEach(function(a){
+    var statusCls=a.status==='on'?'on':(a.status==='warn'?'warn':'off');
+    var statusText=a.status==='on'?'🟢 正常':(a.status==='warn'?'🟡 预警':'🔴 异常');
+    var cardCls=a.status==='on'?'r-on':(a.status==='warn'?'r-warn':'r-off');
+
+    // 输出量 bar
+    var outPct=Math.round(a.output.daily/a.output.max*100);
+    var outAlertHtml=a.output.alert?'<span style="color:var(--red);font-size:.6rem;margin-left:4px">'+a.output.alert+'</span>':'';
+    var outVal=a.output.daily+'项/天'+outAlertHtml;
+
+    // 复杂度三段条
+    var totalCpx=a.complexity.min+a.complexity.hour+a.complexity.day;
+    var minW=Math.round(a.complexity.min/totalCpx*100);
+    var hourW=Math.round(a.complexity.hour/totalCpx*100);
+    var dayW=Math.round(a.complexity.day/totalCpx*100);
+    var cpxVal='分'+minW+'/时'+hourW+'/天'+dayW;
+    var cpxTopHtml='<span style="color:var(--text3)">最高:</span> '+a.complexity.top+'('+a.complexity.topLevel+')';
+
+    // 技能复用
+    var sklVal=a.skillReuse.rate+'% · '+a.skillReuse.skills+'个Skill';
+
+    // 运行时长
+    var runPct=Math.round(a.runtime.hours/a.runtime.max*100);
+    var runVal=a.runtime.hours+'h/天';
+
+    // 并发度
+    var conVal=a.concurrency.active+'个 · 峰值'+a.concurrency.peak;
+
+    // 关键任务
+    var taskHtml=a.tasks.map(function(t){
+      var ic=sTaskIcon(t.s);
+      var cls=t.s==='ok'?'ok':(t.s==='warn'?'warn':'err');
+      return '<div class="av5-task"><span class="av5-task-ic '+cls+'">'+ic+'</span><span>'+t.t+'</span></div>';
+    }).join('');
+
+    html+='<div class="agent-v5-card '+cardCls+'">'+
+      '<div class="av5-header">'+
+        '<div class="av5-header-left">'+
+          '<span class="av5-emoji">'+a.emoji+'</span>'+
+          '<div><div class="av5-name">'+a.name+'</div><div class="av5-role">'+a.role+'</div></div>'+
+        '</div>'+
+        '<div class="av5-status '+statusCls+'"><span class="av5-status-dot"></span> '+statusText+'</div>'+
+      '</div>'+
+
+      '<div class="ruler-rows">'+
+        // 1. 输出量
+        '<div class="ruler-row">'+
+          '<span class="ruler-label">输出量</span>'+
+          '<div class="ruler-bar-wrap">'+
+            '<div class="ruler-bar-track"><div class="ruler-bar-fill" style="width:'+outPct+'%;background:linear-gradient(90deg,var(--ruler-out),#60a5fa)"></div></div>'+
+          '</div>'+
+          '<span class="ruler-val v-out">'+outVal+'</span>'+
+        '</div>'+
+
+        // 2. 复杂度
+        '<div class="ruler-row">'+
+          '<span class="ruler-label">复杂度</span>'+
+          '<div class="ruler-bar-wrap">'+
+            '<div class="cpx-bar">'+
+              '<div class="cpx-seg" style="width:'+minW+'%;background:var(--ruler-cpx);opacity:.5"></div>'+
+              '<div class="cpx-seg" style="width:'+hourW+'%;background:var(--ruler-cpx);opacity:.75"></div>'+
+              '<div class="cpx-seg" style="width:'+dayW+'%;background:var(--ruler-cpx)"></div>'+
+            '</div>'+
+            '<div style="font-size:.58rem;color:var(--text3);margin-top:2px">'+cpxTopHtml+'</div>'+
+          '</div>'+
+          '<span class="ruler-val v-cpx">'+cpxVal+'</span>'+
+        '</div>'+
+
+        // 3. 技能复用
+        '<div class="ruler-row">'+
+          '<span class="ruler-label">技能复用</span>'+
+          '<div class="ruler-bar-wrap">'+
+            '<div class="ruler-bar-track"><div class="ruler-bar-fill" style="width:'+a.skillReuse.rate+'%;background:linear-gradient(90deg,var(--ruler-skl),#fbbf24)"></div></div>'+
+          '</div>'+
+          '<span class="ruler-val v-skl">'+sklVal+'</span>'+
+        '</div>'+
+
+        // 4. 运行时长
+        '<div class="ruler-row">'+
+          '<span class="ruler-label">运行时长</span>'+
+          '<div class="ruler-bar-wrap runtime-bar">'+
+            '<div class="ruler-bar-track"><div class="ruler-bar-fill" style="width:'+runPct+'%;background:linear-gradient(90deg,var(--ruler-run),#c084fc)"></div></div>'+
+            '<div class="runtime-scale"><span>0h</span><span>4h</span><span>8h</span></div>'+
+          '</div>'+
+          '<span class="ruler-val v-run">'+runVal+'</span>'+
+        '</div>'+
+
+        // 5. 并发度
+        '<div class="ruler-row">'+
+          '<span class="ruler-label">并发度</span>'+
+          '<div class="ruler-bar-wrap">'+
+            '<div class="ruler-bar-track"><div class="ruler-bar-fill" style="width:'+Math.round(a.concurrency.peak/6*100)+'%;background:linear-gradient(90deg,var(--ruler-con),#f87171)"></div></div>'+
+          '</div>'+
+          '<span class="ruler-val v-con">'+conVal+'</span>'+
+        '</div>'+
+      '</div>'+
+
+      '<div class="av5-tasks">'+taskHtml+'</div>'+
+    '</div>';
+  });
+  document.getElementById('agents-v5-grid').innerHTML=html;
+}
+
+function sTaskIcon(s){
+  if(s==='ok') return '✅';
+  if(s==='warn') return '⚠️';
+  return '❌';
+}
+
+// -- Quality --
+function renderQuality(){
+  document.getElementById('quality-metrics').innerHTML=QUALITY_METRICS.map(function(q){
+    return '<div class="qi-row">'+
+      '<div><div class="qi-label">'+q.label+'</div><div class="qi-target">'+q.target+'</div></div>'+
+      '<span class="qi-value '+(q.pending?'pending':'')+'">'+q.value+'</span>'+
+    '</div>';
+  }).join('');
+}
+
+// -- Risks --
+function renderRisks(){
+  document.getElementById('risk-list').innerHTML=RISKS.map(function(r){
+    return '<div class="risk-item"><span class="risk-dot '+r.level+'"></span><span class="risk-text">'+r.text+'</span></div>';
+  }).join('');
+}
+
+// -- Trend Chart --
+function renderTrend(){
+  var svg=document.getElementById('trend-chart');
+  var legend=document.getElementById('trend-legend');
+  if(!dailyData||!dailyData.daily||!dailyData.daily.length){
+    svg.innerHTML='<text x="350" y="100" text-anchor="middle" fill="#64748b" font-size="13">暂无7日数据</text>';
+    return;
+  }
+  var data=dailyData.daily.slice(-7);
+  var maxPV=0,maxUU=0;
+  data.forEach(function(d){
+    if(d.pageviews>maxPV)maxPV=d.pageviews;
+    if(d.unique_uids>maxUU)maxUU=d.unique_uids;
+  });
+  maxPV=Math.max(maxPV,1);maxUU=Math.max(maxUU,1);
+  var W=700,H=200,pL=50,pR=20,pT=20,pB=40;
+  var cw=W-pL-pR,ch=H-pT-pB;
+  var s='';
+  s+='<line x1="'+pL+'" y1="'+pT+'" x2="'+pL+'" y2="'+(H-pB)+'" stroke="#334155" stroke-width=".5"/>';
+  s+='<line x1="'+pL+'" y1="'+(H-pB)+'" x2="'+(W-pR)+'" y2="'+(H-pB)+'" stroke="#334155" stroke-width=".5"/>';
+  for(var g=0;g<5;g++){
+    var gy=pT+ch*g/4;
+    s+='<line x1="'+pL+'" y1="'+gy+'" x2="'+(W-pR)+'" y2="'+gy+'" stroke="#1e293b" stroke-width=".5" stroke-dasharray="4"/>';
+  }
+  var step=data.length>1?cw/(data.length-1):0;
+  var pvArea=data.map(function(d,i){return(pL+step*i)+','+(pT+ch-(d.pageviews/maxPV)*ch)});
+  pvArea.push((pL+step*(data.length-1))+','+(H-pB));
+  pvArea.push(pL+','+(H-pB));
+  s+='<polygon points="'+pvArea.join(' ')+'" fill="rgba(59,130,246,.08)"/>';
+  var pvPts=data.map(function(d,i){return(pL+step*i)+','+(pT+ch-(d.pageviews/maxPV)*ch)});
+  s+='<polyline points="'+pvPts.join(' ')+'" fill="none" stroke="#3b82f6" stroke-width="2"/>';
+  var uuPts=data.map(function(d,i){return(pL+step*i)+','+(pT+ch-(d.unique_uids/maxUU)*ch)});
+  s+='<polyline points="'+uuPts.join(' ')+'" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="6,3"/>';
+  data.forEach(function(d,i){
+    var x=pL+step*i;
+    var yPV=pT+ch-(d.pageviews/maxPV)*ch;
+    var yUU=pT+ch-(d.unique_uids/maxUU)*ch;
+    s+='<circle cx="'+x+'" cy="'+yPV+'" r="3.5" fill="#3b82f6"/>';
+    s+='<circle cx="'+x+'" cy="'+yUU+'" r="3.5" fill="#22c55e"/>';
+    var ds=d.date?d.date.slice(5):'';
+    s+='<text x="'+x+'" y="'+(H-pB+16)+'" text-anchor="middle" fill="#64748b" font-size="10">'+ds+'</text>';
+  });
+  s+='<text x="'+(pL-6)+'" y="'+(pT+5)+'" text-anchor="end" fill="#64748b" font-size="9">'+maxPV+'</text>';
+  s+='<text x="'+(pL-6)+'" y="'+(H-pB+3)+'" text-anchor="end" fill="#64748b" font-size="9">0</text>';
+  svg.innerHTML=s;
+  legend.innerHTML='<span style="color:#3b82f6">● PV浏览量</span><span style="color:#22c55e">● UV独立访客</span>';
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+function initDashboard(){
+  loadAll();
+  setInterval(loadAll,5*60*1000);
+}
 </script>
 </body>
 </html>
