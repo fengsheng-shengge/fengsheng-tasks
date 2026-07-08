@@ -36,14 +36,29 @@ def run_gh_command(args):
 
 
 def get_issue_comments():
-    output = run_gh_command(["api", f"repos/{OWNER}/{REPO}/issues/{ISSUE_NUMBER}/comments"])
-    if not output:
-        return []
-    try:
-        return json.loads(output)
-    except json.JSONDecodeError:
-        print("[ERROR] Failed to parse comments JSON")
-        return []
+    """Fetch all issue comments with pagination."""
+    all_comments = []
+    page = 1
+    per_page = 100
+    while True:
+        result = run_gh_command([
+            "api", f"repos/{OWNER}/{REPO}/issues/{ISSUE_NUMBER}/comments?per_page={per_page}&page={page}"
+        ])
+        if not result:
+            break
+        try:
+            page_comments = json.loads(result)
+        except json.JSONDecodeError:
+            print("[ERROR] Failed to parse comments JSON")
+            break
+        if not page_comments:
+            break
+        all_comments.extend(page_comments)
+        if len(page_comments) < per_page:
+            break
+        page += 1
+    print(f"[INFO] Fetched {len(all_comments)} total comments across {page} page(s)")
+    return all_comments
 
 
 def extract_credentials(comments):
