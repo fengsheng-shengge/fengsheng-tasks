@@ -1,70 +1,62 @@
-name: 每小时检查 Issue #42（Cloudflare 凭证）
+name: Check Issue #42 for Cloudflare Credentials
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: '0 * * * *'
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "DRY_RUN 模式（1=只检测不写 Secrets/触发 deploy，0=真执行）"
+        description: 'Dry run mode (1=only check, 0=deploy)'
         required: false
-        default: "1"
+        default: '1'
         type: choice
-        options: ["1", "0"]
+        options:
+          - '1'
+          - '0'
       force_recheck:
-        description: "忽略本地状态缓存（1=重置已部署标记）"
+        description: 'Force recheck even if already deployed'
         required: false
-        default: "0"
+        default: '0'
         type: choice
-        options: ["0", "1"]
-
-permissions:
-  contents: read
-  issues: write
-  actions: write
+        options:
+          - '0'
+          - '1'
 
 jobs:
   check:
-    name: 检查并自动部署
+    name: Check Issue #42
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      GITHUB_REPO_OWNER: fengsheng-shengge
-      GITHUB_REPO_NAME: fengsheng-tasks
-      ISSUE_NUMBER: "42"
-      DEPLOY_WORKFLOW: deploy.yml
-      DRY_RUN: ${{ inputs.dry_run || '1' }}
+    permissions:
+      contents: read
+      issues: read
+      actions: write
+      repository-projects: read
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.10'
 
-      - name: 安装 PyNaCl（Secrets 加密需要）
-        run: pip install pynacl==1.5.0
-
-      - name: 运行检查脚本
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies
         run: |
-          if [ "${{ inputs.force_recheck }}" = "1" ] && [ -f .agent/memory/deploy_progress.json ]; then
-            echo "force_recheck=1，重置 deploy_progress.json"
-            rm -f .agent/memory/deploy_progress.json
-          fi
+          python -m pip install --upgrade pip
+          pip install pynacl
+
+      - name: Run check script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || '1' }}
+        run: |
           python scripts/check_issue_42.py
 
-      - name: 状态摘要
+      - name: Generate status summary
         if: always()
         run: |
-          {
-            echo "## 🛰️ Issue #42 检查结果"
-            echo
-            if [ -f .agent/memory/deploy_progress.json ]; then
-              cat .agent/memory/deploy_progress.json
-            else
-              echo "_未生成 deploy_progress.json_"
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
+          if [ -f ".agent/memory/deploy_progress.json" ]; then
+            cat .agent/memory/deploy_progress.json >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No progress file found" >> $GITHUB_STEP_SUMMARY
+          fi

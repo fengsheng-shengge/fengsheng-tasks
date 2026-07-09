@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 每小时检查 GitHub Issue #42，提取 Cloudflare 部署凭证。
 
@@ -29,8 +28,9 @@ import json
 import os
 import re
 import sys
+import urllib.error
+import urllib.parse
 import urllib.request
-from pathlib import Path
 
 OWNER = os.environ.get("GITHUB_REPO_OWNER", "fengsheng-shengge")
 REPO = os.environ.get("GITHUB_REPO_NAME", "fengsheng-tasks")
@@ -40,6 +40,9 @@ DRY_RUN = os.environ.get("DRY_RUN", "1") == "1"
 
 API_BASE = "https://api.github.com"
 API_VERSION = "2022-11-28"
+
+MEMORY_DIR = os.path.join(os.path.dirname(__file__), "..", ".agent", "memory")
+STATE_FILE = os.path.join(MEMORY_DIR, "deploy_progress.json")
 
 XIAOYUER_MARKERS = (
     "小鱼儿",
@@ -60,8 +63,10 @@ RE_API_TOKEN = re.compile(
     re.IGNORECASE,
 )
 
-MEMORY_DIR = Path(".agent") / "memory"
-STATE_FILE = MEMORY_DIR / "deploy_progress.json"
+STATE_NOT_FOUND = "NOT_FOUND"
+STATE_FOUND_READY = "FOUND_READY"
+STATE_FOUND_DEPLOYED = "FOUND_DEPLOYED"
+STATE_ERROR = "ERROR"
 
 
 def log(msg: str) -> None:
@@ -98,17 +103,19 @@ def gh_request(method: str, url: str, token: str, body=None):
 
 
 def load_state() -> dict:
-    if not STATE_FILE.exists():
-        return {"last_status": "NEVER_RUN", "deployed_hash": None, "comments_seen": []}
+    if not os.path.exists(STATE_FILE):
+        return {"state": STATE_NOT_FOUND, "last_checked": None, "account_id_masked": None, "token_masked": None}
     try:
-        return json.loads(STATE_FILE.read_text(encoding="utf-8"))
+        with open(STATE_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
     except Exception:
-        return {"last_status": "NEVER_RUN", "deployed_hash": None, "comments_seen": []}
+        return {"state": STATE_NOT_FOUND, "last_checked": None, "account_id_masked": None, "token_masked": None}
 
 
 def save_state(state: dict) -> None:
-    MEMORY_DIR.mkdir(parents=True, exist_ok=True)
-    STATE_FILE.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
+    os.makedirs(MEMORY_DIR, exist_ok=True)
+    with open(STATE_FILE, "w", encoding="utf-8") as f:
+        json.dump(state, f, ensure_ascii=False, indent=2)
 
 
 def list_all_comments(token: str):
@@ -118,12 +125,13 @@ def list_all_comments(token: str):
         url = f"{API_BASE}/repos/{OWNER}/{REPO}/issues/{ISSUE_NUMBER}/comments?per_page=100&page={page}"
         status, payload = gh_request("GET", url, token)
         if status != 200 or not isinstance(payload, list):
-            return comments, status, payload
+            log(f"Failed to fetch comments: HTTP {status}")
+            return comments
         comments.extend(payload)
         if len(payload) < 100:
             break
         page += 1
-    return comments, 200, None
+    return comments
 
 
 def is_xiaoyuer(comment: dict) -> bool:
@@ -196,6 +204,7 @@ def add_comment(token: str, body_text: str):
 
 
 def main() -> int:
+    import time
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
         log("ERROR: GH_TOKEN/GITHUB_TOKEN is required")
@@ -203,106 +212,98 @@ def main() -> int:
 
     log(f"target = {OWNER}/{REPO}#{ISSUE_NUMBER}, dry_run = {DRY_RUN}")
 
-    comments, status, err = list_all_comments(token)
-    if status != 200:
-        log(f"ERROR: list comments failed: {status} {err}")
-        return 2
-
-    log(f"total comments: {len(comments)}")
-
     state = load_state()
-    last_status = state.get("last_status", "NEVER_RUN")
-    log(f"last_status = {last_status}")
-
-    candidates = [c for c in comments if is_xiaoyuer(c)]
-    log(f"xiaoyuer comments found: {len(candidates)}")
-
-    if not candidates:
-        state["last_status"] = "NOT_FOUND"
-        save_state(state)
-        log("NOT_FOUND: no xiaoyuer comment with credentials")
+    if state.get("state") == STATE_FOUND_DEPLOYED:
+        log(f"Already deployed with credentials {state.get('account_id_masked', '?')}")
         return 0
 
-    candidates.sort(key=lambda c: c.get("created_at", ""))
-    latest = candidates[-1]
-    body = latest.get("body", "")
-    created_at = latest.get("created_at", "")
-    comment_id = latest.get("id", "")
+    comments = list_all_comments(token)
+    log(f"Found {len(comments)} comments")
 
-    log(f"latest xiaoyuer comment: id={comment_id}, created={created_at}")
+    account_id = None
+    api_token = None
 
-    creds = extract_credentials(body)
-    if not creds:
-        log("NOT_FOUND: credentials not found in xiaoyuer comment")
-        state["last_status"] = "NOT_FOUND"
-        save_state(state)
+    for comment in reversed(comments):
+        if is_xiaoyuer(comment):
+            body = comment.get("body", "")
+            credentials = extract_credentials(body)
+            if credentials:
+                account_id = credentials["account_id"]
+                api_token = credentials["api_token"]
+                user_login = (comment.get("user") or {}).get("login", "unknown")
+                log(f"Found credentials in comment by {user_login}")
+                break
+
+    if not account_id or not api_token:
+        log("No Cloudflare credentials found in Issue #42 comments")
+        save_state({"state": STATE_NOT_FOUND, "last_checked": time.strftime("%Y-%m-%dT%H:%M:%SZ")})
         return 0
 
-    account_id = creds["account_id"]
-    api_token = creds["api_token"]
-    creds_hash = f"{account_id[:8]}-{len(api_token)}"
+    account_id_masked = mask(account_id)
+    api_token_masked = mask(api_token)
 
-    log(f"FOUND: account_id={mask(account_id)}, api_token={mask(api_token)}")
-
-    if state.get("deployed_hash") == creds_hash and last_status == "FOUND_DEPLOYED":
-        log("FOUND_DEPLOYED: same credentials already deployed, skip")
-        return 0
+    log(f"CLOUDFLARE_ACCOUNT_ID: {account_id_masked}")
+    log(f"CLOUDFLARE_API_TOKEN: {api_token_masked}")
 
     if DRY_RUN:
-        log("DRY_RUN=1: skip writing secrets and triggering deploy")
-        state["last_status"] = "FOUND_READY"
-        state["deployed_hash"] = creds_hash
-        state["comments_seen"].append(comment_id)
-        save_state(state)
+        log("DRY_RUN mode: Not setting secrets or triggering deploy")
+        save_state({
+            "state": STATE_FOUND_READY,
+            "last_checked": time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "account_id_masked": account_id_masked,
+            "token_masked": api_token_masked
+        })
         return 0
 
-    log("writing CLOUDFLARE_ACCOUNT_ID to secrets...")
+    log("Setting GitHub Secrets...")
+    success = True
+
     ok, msg = upsert_secret(token, "CLOUDFLARE_ACCOUNT_ID", account_id)
     if not ok:
-        log(f"ERROR: upsert CLOUDFLARE_ACCOUNT_ID failed: {msg}")
-        return 2
-    log("OK: CLOUDFLARE_ACCOUNT_ID updated")
+        log(f"Failed to set CLOUDFLARE_ACCOUNT_ID: {msg}")
+        success = False
 
-    log("writing CLOUDFLARE_API_TOKEN to secrets...")
     ok, msg = upsert_secret(token, "CLOUDFLARE_API_TOKEN", api_token)
     if not ok:
-        log(f"ERROR: upsert CLOUDFLARE_API_TOKEN failed: {msg}")
-        return 2
-    log("OK: CLOUDFLARE_API_TOKEN updated")
+        log(f"Failed to set CLOUDFLARE_API_TOKEN: {msg}")
+        success = False
 
-    log("triggering deploy workflow...")
-    status, resp = trigger_deploy(token)
-    if status not in (200, 204):
-        log(f"ERROR: trigger deploy failed: {status} {resp}")
+    if not success:
+        log("Failed to set secrets")
+        save_state({"state": STATE_ERROR, "last_checked": time.strftime("%Y-%m-%dT%H:%M:%SZ")})
         return 2
-    log("OK: deploy workflow triggered")
+
+    log("Triggering deploy workflow...")
+    status, resp = trigger_deploy(token)
+    if status != 204:
+        log(f"Failed to trigger deploy: HTTP {status} {resp}")
+        save_state({"state": STATE_ERROR, "last_checked": time.strftime("%Y-%m-%dT%H:%M:%SZ")})
+        return 2
 
     comment_body = f"""
-## 🔐 凭证已收到并配置完成
+## 🔐 凭证已提取并配置
 
-**检测来源**：小鱼儿的评论（{created_at}）
+小扣子已从本 Issue 中提取 Cloudflare 部署凭证：
 
-**脱敏凭证**：
-- Account ID: `{mask(account_id)}`
-- API Token: `{mask(api_token)}`
+| 凭证 | 状态 |
+|------|------|
+| CLOUDFLARE_ACCOUNT_ID | ✅ 已配置 `{account_id_masked}` |
+| CLOUDFLARE_API_TOKEN | ✅ 已配置 `{api_token_masked}` |
 
-**执行结果**：
-- ✅ CLOUDFLARE_ACCOUNT_ID 已写入 GitHub Secrets
-- ✅ CLOUDFLARE_API_TOKEN 已写入 GitHub Secrets
-- ✅ 已触发 deploy.yml 部署流水线
+部署流程已触发，将通过 GitHub Actions 自动部署到 Cloudflare Pages。
 
-部署完成后可访问：https://fengsheng.tech
+👉 [查看部署状态](https://github.com/{OWNER}/{REPO}/actions/workflows/{DEPLOY_WORKFLOW})
 """
-    status, resp = add_comment(token, comment_body)
-    if status != 201:
-        log(f"WARN: add comment failed: {status} {resp}")
 
-    state["last_status"] = "FOUND_DEPLOYED"
-    state["deployed_hash"] = creds_hash
-    state["comments_seen"].append(comment_id)
-    save_state(state)
+    add_comment(token, comment_body)
 
-    log("FOUND_DEPLOYED: all done")
+    save_state({
+        "state": STATE_FOUND_DEPLOYED,
+        "last_checked": time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "account_id_masked": account_id_masked,
+        "token_masked": api_token_masked
+    })
+    log("All done! Credentials configured and deploy triggered")
     return 0
 
 
