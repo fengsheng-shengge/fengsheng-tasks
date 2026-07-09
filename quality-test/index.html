@@ -1,187 +1,161 @@
-<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="description" content="风声数智能力测评：评估服务者的AI工具使用能力、数据思维、数字化工作方式。AI做效率，人做意义。">
-<meta name="keywords" content="数智能力测评,服务者能力评估,AI能力,智能工具,居住服务信息化,经纪人能力,风声,fengsheng">
-<title>风声 · 数智新居住顾问能力测评</title>
-<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>风声·六维品质测评</title>
+<meta property="og:title" content="六维品质测评 · 风声">
+<meta property="og:description" content="1分钟测测你的居住品质偏好，发现你真正在意的居住体验。">
+<meta property="og:image" content="https://fengsheng.tech/og-image.png">
+<meta property="og:url" content="https://fengsheng.tech/quality-test/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<!-- 微信分享优化 -->
+<meta name="description" content="1分钟测测你的居住品质偏好，发现你真正在意的居住体验">
+<meta name="keywords" content="品质居住测评,六维品质,居住体验,买房测评,房产品质,居住偏好,品质住宅">
+<link rel="canonical" href="https://fengsheng.tech/quality-test/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"六维品质居住测评","url":"https://fengsheng.tech/quality-test/","applicationCategory":"LifestyleApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"description":"1分钟测出你的居住品质偏好，六维模型：安全·健康·整洁·温暖·美观·舒适"}</script>
+<meta itemprop="name" content="风声·六维品质测评">
+<meta itemprop="description" content="专业房产顾问邀请你做一次品质居住测评">
 <style>
-:root{--bg:#f7f4ef;--bg2:#e8e4d9;--card:#ffffff;--border:rgba(80,90,70,.09);
---p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--fire:#c46a3a;--fire-l:#d89060;
---dk:#1a1a1a;--tx:#555555;--ts:#7a8478;--r:8px;
---safe:#5e7e5c;--health:#6d8f55;--neat:#3d5a3e;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e}
-*{margin:0;padding:0;box-sizing:border-box}
-html{font-size:16px;-webkit-text-size-adjust:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;
-background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;
--webkit-font-smoothing:antialiased;overflow-x:hidden}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif; background: linear-gradient(135deg, #3d5a3e 0%, #c46a3a 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .container { background: white; border-radius: 20px; max-width: 420px; width: 100%; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
 
-/* 通用 */
-.screen{display:none;min-height:100vh;padding:24px 16px}
-.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
-padding:14px 32px;border-radius:var(--r);font-size:16px;font-weight:600;
-cursor:pointer;border:none;transition:all .2s}
-.btn-primary{background:var(--p);color:#fff}
-.btn-primary:hover{background:var(--p-d);transform:translateY(-1px)}
-.btn-fire{background:var(--fire);color:#fff}
-.btn-fire:hover{background:var(--fire-l)}
-.btn-outline{background:transparent;color:var(--p);border:2px solid var(--p)}
-.btn-outline:hover{background:var(--p);color:#fff}
+  /* ========== 经纪人设置页（首页） ========== */
+  .broker-setup { padding: 0; }
+  .setup-header { background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; padding: 36px 24px 24px; text-align: center; }
+  .setup-header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .setup-header p { font-size: 13px; opacity: 0.9; line-height: 1.5; }
+  .setup-body { padding: 24px; }
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 13px; color: #555; margin-bottom: 4px; display: block; font-weight: 500; }
+  .form-input { width: 100%; padding: 12px 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.2s; font-family: inherit; }
+  .form-input:focus { border-color: #3d5a3e; box-shadow: 0 0 0 3px rgba(61,90,62,0.15); }
+  .form-hint { font-size: 11px; color: #aaa; margin-top: 2px; }
 
-/* 首页 */
-.welcome-logo{font-size:42px;font-weight:700;color:var(--dk);margin-bottom:8px;letter-spacing:2px}
-.welcome-sub{font-size:18px;color:var(--ts);margin-bottom:32px}
-.welcome-desc{max-width:480px;text-align:center;margin-bottom:40px;line-height:1.8;color:var(--tx)}
-.welcome-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;
-color:var(--p-d);background:rgba(61,90,62,.06);border:1px solid rgba(61,90,62,.12);
-border-radius:16px;padding:4px 14px;margin-bottom:20px;letter-spacing:2px}
-.welcome-meta{font-size:13px;color:var(--ts);margin-top:24px}
+  /* 生成链接区域 */
+  .share-result { margin-top: 20px; display: none; }
+  .share-result.show { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+  .share-url-box { background: #f8f9ff; border: 2px solid #3d5a3e; border-radius: 12px; padding: 14px; margin-bottom: 14px; position: relative; word-break: break-all; }
+  .share-url-text { font-size: 12px; color: #333; line-height: 1.5; }
+  .share-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .share-btn { flex: 1; min-width: 120px; padding: 11px; border-radius: 10px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+  .share-btn-copy { background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; }
+  .share-btn-copy:hover { opacity: 0.9; transform: translateY(-1px); }
+  .share-btn-preview { background: white; color: #3d5a3e; border: 2px solid #3d5a3e; }
+  .share-btn-preview:hover { background: #f0f5ee; }
+  .share-tips { margin-top: 16px; background: #fff8e1; border-radius: 10px; padding: 14px; }
+  .share-tips h4 { font-size: 13px; color: #f57c00; margin-bottom: 6px; }
+  .share-tips p { font-size: 12px; color: #888; line-height: 1.6; }
+  .share-success-toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0.8); background: rgba(0,0,0,0.75); color: white; padding: 14px 28px; border-radius: 12px; font-size: 15px; z-index: 9999; opacity: 0; pointer-events: none; transition: all 0.25s ease; }
+  .share-success-toast.show { opacity: 1; transform: translate(-50%,-50%) scale(1); }
 
-/* 角色选择 */
-.role-title{font-size:24px;font-weight:700;color:var(--dk);margin-bottom:8px;text-align:center}
-.role-subtitle{font-size:14px;color:var(--ts);margin-bottom:32px;text-align:center}
-.role-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:520px;width:100%}
-.role-card{background:var(--card);border:2px solid var(--border);border-radius:12px;
-padding:20px 16px;cursor:pointer;transition:all .2s;text-align:center}
-.role-card:hover{border-color:var(--p-l);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.06)}
-.role-card.selected{border-color:var(--p);background:rgba(61,90,62,.04);box-shadow:0 0 0 3px rgba(61,90,62,.12)}
-.role-icon{font-size:28px;margin-bottom:8px}
-.role-name{font-size:14px;font-weight:600;color:var(--dk)}
-.role-tag{font-size:11px;color:var(--ts);margin-top:4px}
+  /* ========== 客户入口页（带经纪人信息） ========== */
+  .client-entry { padding: 0; }
+  .entry-header { background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; padding: 28px 24px 20px; text-align: center; position: relative; }
+  .entry-header h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .entry-header p { font-size: 12px; opacity: 0.9; }
+  .from-agent-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 6px 14px; margin-top: 12px; font-size: 12px; backdrop-filter: blur(4px); }
+  .from-agent-avatar { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .entry-body { padding: 24px; }
+  .start-btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 14px; background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; font-size: 17px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(61,90,62,0.35); }
+  .start-btn:active { transform: scale(0.98); }
+  .entry-info { text-align: center; font-size: 12px; color: #aaa; }
+  .entry-info span { color: #3d5a3e; font-weight: 600; }
 
-/* 答题 */
-.quiz-container{max-width:600px;width:100%}
-.progress-bar{width:100%;height:4px;background:var(--bg2);border-radius:2px;margin-bottom:24px;overflow:hidden}
-.progress-fill{height:100%;background:var(--p);border-radius:2px;transition:width .3s}
-.progress-text{font-size:12px;color:var(--ts);margin-bottom:8px;text-align:right}
-.q-dimension{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
-padding:3px 10px;border-radius:12px;margin-bottom:16px;letter-spacing:1px}
-.q-scene{font-size:17px;font-weight:600;color:var(--dk);margin-bottom:8px;line-height:1.6}
-.q-text{font-size:15px;color:var(--tx);margin-bottom:6px;line-height:1.7}
-.q-prompt{font-size:13px;color:var(--fire);margin-bottom:20px;font-weight:500}
-.option-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
-.option-item{background:var(--card);border:2px solid var(--border);border-radius:10px;
-padding:14px 16px;cursor:pointer;transition:all .15s;font-size:14px;line-height:1.6;color:var(--tx)}
-.option-item:hover{border-color:var(--p-l);background:rgba(61,90,62,.02)}
-.option-item.selected{border-color:var(--p);background:rgba(61,90,62,.06);color:var(--dk);font-weight:500}
-.option-item.multi-selected{border-color:var(--p);background:rgba(61,90,62,.06)}
-.option-label{font-weight:700;color:var(--p);margin-right:8px}
+  /* ========== 题目通用样式 ========== */
+  .step { padding: 32px 24px; }
+  .header { background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; padding: 28px 24px 18px; text-align: center; }
+  .header h1 { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
+  .header p { font-size: 12px; opacity: 0.85; }
+  .step-title { font-size: 16px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; line-height: 1.5; }
+  .step-subtitle { font-size: 12px; color: #888; margin-bottom: 18px; line-height: 1.4; }
+  .progress-bar { height: 4px; background: #eee; border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #3d5a3e, #c46a3a); border-radius: 2px; transition: width 0.4s ease; }
+  .option-btn { display: block; width: 100%; padding: 13px 15px; margin-bottom: 9px; border: 2px solid #e8e8e8; border-radius: 12px; background: white; text-align: left; font-size: 14px; color: #333; cursor: pointer; transition: all 0.2s; line-height: 1.5; }
+  .option-btn:hover { border-color: #3d5a3e; background: #f0f5ee; }
+  .option-btn.selected { border-color: #3d5a3e; background: #f0f5ee; box-shadow: 0 2px 8px rgba(61,90,62,0.15); }
+  .checkbox-btn { display: flex; align-items: center; padding: 11px 13px; border: 2px solid #e8e8e8; border-radius: 10px; cursor: pointer; transition: all 0.2s; font-size: 14px; color: #333; margin-bottom: 7px; }
+  .checkbox-btn:hover { border-color: #3d5a3e; background: #f0f5ee; }
+  .checkbox-btn.checked { border-color: #3d5a3e; background: #f0f5ee; }
+  .checkbox-icon { width: 20px; height: 20px; border: 2px solid #ccc; border-radius: 4px; margin-right: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; font-size: 12px; }
+  .checkbox-btn.checked .checkbox-icon { background: #3d5a3e; border-color: #3d5a3e; color: white; }
+  .next-btn { display: block; width: 100%; padding: 14px; margin-top: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .next-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .next-btn:not(:disabled):hover { opacity: 0.9; }
+  .next-btn-red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
 
-/* 报告 */
-.report{max-width:700px;width:100%;padding-bottom:60px}
-.report-header{text-align:center;margin-bottom:36px;padding:40px 0 24px;border-bottom:2px solid var(--bg2)}
-.report-title{font-size:22px;font-weight:700;color:var(--dk);margin-bottom:4px}
-.report-role{font-size:14px;color:var(--ts)}
-.report-date{font-size:12px;color:var(--ts)}
-.report-section{margin-bottom:32px}
-.report-section-title{font-size:17px;font-weight:700;color:var(--dk);margin-bottom:16px;
-padding-left:12px;border-left:3px solid var(--p)}
-.report-score-big{font-size:64px;font-weight:800;color:var(--p);line-height:1}
-.report-score-label{font-size:14px;color:var(--ts);margin-top:4px}
-.report-verdict{font-size:16px;font-weight:600;color:var(--fire);margin:12px 0;line-height:1.6}
-.report-sentence{font-size:14px;color:var(--tx);line-height:1.8;background:rgba(196,106,58,.04);
-border-left:3px solid var(--fire);padding:12px 16px;border-radius:0 8px 8px 0}
+  /* ========== 报告页 ========== */
+  .report-page { padding: 0; }
+  .report-header { background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; padding: 28px 24px; text-align: center; }
+  .report-header h2 { font-size: 19px; margin-bottom: 2px; }
+  .report-header .subtitle { font-size: 12px; opacity: 0.85; }
+  .score-display { font-size: 52px; font-weight: 800; margin: 14px 0 2px; }
+  .score-label { font-size: 13px; opacity: 0.85; }
+  .report-body { padding: 20px; }
+  .radar-section { text-align: center; margin-bottom: 20px; }
+  .radar-section h3 { font-size: 14px; color: #333; margin-bottom: 10px; }
+  .radar-svg { width: 220px; height: 220px; }
+  .profile-card { background: linear-gradient(135deg, #f8f9ff, #f0f5ee); border-radius: 12px; padding: 16px; margin-bottom: 16px; border-left: 4px solid #3d5a3e; }
+  .profile-card h4 { font-size: 14px; color: #333; margin-bottom: 5px; }
+  .profile-card p { font-size: 13px; color: #666; line-height: 1.55; }
+  .dim-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+  .dim-item:last-child { border-bottom: none; }
+  .dim-dot { width: 9px; height: 9px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
+  .dim-name { font-size: 13px; color: #333; width: 54px; flex-shrink: 0; }
+  .dim-bar-wrap { flex: 1; height: 7px; background: #f0f0f0; border-radius: 3.5px; margin: 0 10px; overflow: hidden; }
+  .dim-bar { height: 100%; border-radius: 3.5px; transition: width 0.6s ease; }
+  .dim-score { font-size: 12px; font-weight: 600; color: #333; width: 30px; text-align: right; }
+  .redline-box { background: linear-gradient(135deg, #fff5f5, #ffebee); border: 2px solid #ffcdd2; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .redline-box h4 { font-size: 14px; color: #c62828; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+  .redline-tag { display: inline-block; padding: 5px 10px; background: #ffebee; color: #c62828; border-radius: 16px; font-size: 12px; margin: 3px 3px 3px 0; border: 1px dashed #ef9a9a; }
+  .suggestion-box { background: #f8f9ff; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .suggestion-box h4 { font-size: 14px; color: #333; margin-bottom: 10px; }
+  .sug-item { display: flex; align-items: flex-start; margin-bottom: 8px; }
+  .sug-item:last-child { margin-bottom: 0; }
+  .sug-icon { width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; color: white; }
+  .sug-text { font-size: 12.5px; color: #555; line-height: 1.5; }
+  .agent-contact-box { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 12px; padding: 18px; margin-bottom: 16px; text-align: center; }
+  .agent-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #3d5a3e, #c46a3a); color: white; font-size: 21px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; }
+  .agent-name { font-size: 17px; font-weight: 700; color: #1a237e; margin-bottom: 2px; }
+  .agent-title { font-size: 11.5px; color: #3949ab; margin-bottom: 12px; }
+  .agent-info-row { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 6px; font-size: 13px; color: #1565c0; }
+  .agent-info-icon { width: 20px; height: 20px; border-radius: 5px; background: white; display: flex; align-items: center; justify-content: center; font-size: 11px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .cta-box { background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 12px; padding: 16px; text-align: center; }
+  .cta-box p { font-size: 13.5px; color: #e65100; font-weight: 500; margin-bottom: 10px; }
+  .cta-btn { display: inline-block; padding: 10px 26px; background: #ff8f00; color: white; border-radius: 20px; text-decoration: none; font-size: 14px; font-weight: 600; }
+  .restart-btn { display: block; width: 100%; padding: 11px; margin-top: 14px; border: 2px solid #ddd; border-radius: 12px; background: white; color: #666; font-size: 13px; cursor: pointer; }
+  .restart-btn:hover { border-color: #3d5a3e; color: #3d5a3e; }
+  .hidden { display: none !important; }
+  .question-counter { font-size: 11.5px; color: #999; margin-bottom: 14px; }
+  .redline-question { background: #fff5f5; border-left: 3px solid #e74c3c; padding: 14px; border-radius: 0 12px 12px 0; margin-bottom: 14px; }
+  .redline-question .step-title { color: #c62828; font-size: 15px; }
 
-/* 三层 */
-.triple-bar{display:flex;gap:16px;margin:16px 0}
-.triple-item{flex:1;text-align:center}
-.triple-score{font-size:28px;font-weight:700}
-.triple-label{font-size:12px;color:var(--ts);margin-top:2px}
-.triple-desc{font-size:11px;color:var(--ts);margin-top:4px;line-height:1.4}
+  /* 分享提示浮层 */
+  .share-guide-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9998; display: none; align-items: flex-start; justify-content: flex-end; padding: 20px; }
+  .share-guide-overlay.show { display: flex; }
+  .share-guide-bubble { background: white; border-radius: 14px; padding: 18px 20px; margin-top: 30px; margin-right: 10px; max-width: 280px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+  .share-guide-bubble h4 { font-size: 15px; color: #333; margin-bottom: 6px; }
+  .share-guide-bubble p { font-size: 13px; color: #666; line-height: 1.5; }
 
-/* 雷达图 */
-.radar-wrap{width:100%;max-width:480px;margin:0 auto}
-#radar-chart{width:100%;height:400px}
-
-/* 六维 */
-.dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.dim-card{background:var(--card);border:1px solid var(--border);border-radius:10px;
-padding:14px;display:flex;align-items:center;gap:10px}
-.dim-icon{font-size:22px}
-.dim-info{flex:1}
-.dim-name{font-size:13px;font-weight:600;color:var(--dk)}
-.dim-scores{font-size:12px;color:var(--ts)}
-.dim-bar-wrap{width:100%;height:4px;background:var(--bg2);border-radius:2px;margin-top:4px}
-.dim-bar{height:100%;border-radius:2px;transition:width .5s}
-
-/* 短板/优势 */
-.item-list{display:flex;flex-direction:column;gap:8px}
-.item-row{display:flex;align-items:flex-start;gap:10px;padding:12px;
-background:var(--card);border-radius:8px;border:1px solid var(--border)}
-.item-rank{font-size:20px;font-weight:700;color:var(--bg2);min-width:28px}
-.item-content{flex:1}
-.item-title{font-size:14px;font-weight:600;color:var(--dk)}
-.item-desc{font-size:12px;color:var(--ts);margin-top:2px;line-height:1.5}
-
-/* 建议 */
-.advice-card{background:var(--card);border:1px solid var(--border);border-radius:10px;
-padding:16px;margin-bottom:10px}
-.advice-num{font-size:11px;font-weight:700;color:var(--fire);margin-bottom:4px}
-.advice-title{font-size:14px;font-weight:600;color:var(--dk);margin-bottom:4px}
-.advice-text{font-size:13px;color:var(--tx);line-height:1.7}
-
-/* 页脚 */
-.report-footer{text-align:center;padding:32px 0;border-top:1px solid var(--bg2);margin-top:40px}
-.report-footer-text{font-size:11px;color:var(--ts);line-height:1.8}
-
-/* 加载 */
-.loading{display:flex;flex-direction:column;align-items:center;gap:16px}
-.spinner{width:36px;height:36px;border:3px solid var(--bg2);border-top-color:var(--p);
-border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* 响应式 */
-@media(max-width:480px){
-.welcome-logo{font-size:32px}
-.role-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-.role-card{padding:14px 10px}
-.dim-grid{grid-template-columns:1fr}
-.report-score-big{font-size:48px}
-.triple-bar{gap:8px}
-.triple-score{font-size:22px}
-}
-
-/* 游戏化+即时反馈 */
-.progress-bar-wrap{background:var(--bg2,#e8e4d9);border-radius:12px;height:8px;margin:8px 0 16px;overflow:hidden}
-.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--p,#3d5a3e),var(--fire,#c46a3a));border-radius:12px;transition:width .4s ease}
-.instant-feedback{position:fixed;top:20%;left:50%;transform:translateX(-50%);background:rgba(61,90,62,.95);color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;text-align:center;max-width:80%}
-.instant-feedback.show{opacity:1}
-.achievement-popup{position:fixed;bottom:20%;left:50%;transform:translateX(-50%) scale(.8);background:linear-gradient(135deg,#3d5a3e,#5a8a4e);color:#fff;padding:16px 24px;border-radius:16px;font-size:13px;z-index:9999;opacity:0;transition:all .4s;pointer-events:none;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.2)}
-.achievement-popup.show{opacity:1;transform:translateX(-50%) scale(1)}
-.achievement-popup .ach-icon{font-size:32px;margin-bottom:4px}
-.achievement-popup .ach-title{font-size:15px;font-weight:800}
-.achievement-popup .ach-desc{font-size:11px;opacity:.85;margin-top:2px}
-.question-counter{font-size:12px;color:var(--td,#888);text-align:center;margin-bottom:4px}
-.question-counter span{font-weight:800;color:var(--p,#3d5a3e)}
-
-
-/* 引流卡片 - 开单导师 */
-.cta-lead-card{background:rgba(196,106,58,.08);border:1px solid rgba(196,106,58,.18);
-border-radius:10px;padding:20px;margin-top:24px;display:flex;align-items:flex-start;gap:14px}
-.cta-lead-icon{font-size:28px;flex-shrink:0;line-height:1}
-.cta-lead-body{flex:1}
-.cta-lead-title{font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:4px}
-.cta-lead-desc{font-size:13px;color:#555;line-height:1.7;margin-bottom:12px}
-.cta-lead-btn{display:inline-flex;align-items:center;justify-content:center;
-padding:10px 24px;border-radius:6px;font-size:14px;font-weight:600;
-background:#c46a3a;color:#fff;border:none;cursor:pointer;transition:all .2s;text-decoration:none}
-.cta-lead-btn:hover{background:#b35a2e;transform:translateY(-1px)}
-
-/* 引流卡片 - IP设计（次要） */
-.cta-ip-link{display:flex;align-items:center;gap:6px;margin-top:12px;
-font-size:12px;color:#999;text-decoration:none;transition:color .2s}
-.cta-ip-link:hover{color:#c46a3a}
+  /* ========== 身份识别 & 使用统计 ========== */
+  .remember-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; margin-bottom: 6px; font-size: 13px; color: #555; cursor: pointer; }
+  .remember-row input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+  .welcome-back { background: linear-gradient(135deg,#e8f5e9,#c8e6c9); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: none; align-items: center; gap: 10px; }
+  .welcome-back.show { display: flex; }
+  .welcome-back-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#3d5a3e,#c46a3a); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; flex-shrink: 0; }
+  .welcome-back-text { font-size: 13px; color: #2e7d32; line-height: 1.5; }
+  .welcome-back-change { font-size: 12px; color: #666; margin-left: auto; white-space: nowrap; cursor: pointer; text-decoration: underline; flex-shrink: 0; }
+  .stats-box { background: #f8f9ff; border-radius: 12px; padding: 16px; margin-top: 16px; display: none; }
+  .stats-box.show { display: block; }
+  .stats-box h4 { font-size: 14px; color: #333; margin-bottom: 10px; }
+  .stats-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #e8e8f0; font-size: 13px; color: #555; }
+  .stats-row:last-child { border-bottom: none; }
+  .stats-val { font-weight: 700; color: #3d5a3e; }
 </style>
-<meta property="og:title" content="六维品质测评 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/assessment"><meta name="twitter:card" content="summary_large_image"><!-- 全站数据追踪器 v1.0 -->
-<script src="/tracker.js" async></script>
-<link rel="canonical" href="https://fengsheng.tech/assessment">
 </head>
 <body>
-
 <!-- 风声统一导航栏 -->
 <nav class="fs-nav">
   <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
@@ -189,1135 +163,808 @@ font-size:12px;color:#999;text-decoration:none;transition:color .2s}
     <a href="/">首页</a>
     <a href="/quality-test/">品质测评</a>
     <a href="/care-test/">关怀测评</a>
-    <a href="/reply/">客户解码</a>
     <a href="/s1-report/">带看报告</a>
-    <a href="/knowledge">知识底座</a>
-    <a href="/dashboard/">管理看板</a>
+    <a href="/breeder">培养师</a>
   </div>
   <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
 </nav>
 <style>
-.fs-nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:#fff;border-bottom:1px solid rgba(80,90,70,.09);position:sticky;top:0;z-index:100}
-.fs-nav-brand{font-size:16px;font-weight:700;color:#3d5a3e;text-decoration:none;display:flex;align-items:center;gap:4px}
-.fs-nav-links{display:flex;gap:6px}
-.fs-nav-links a{padding:5px 10px;font-size:12px;color:#555;text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
-.fs-nav-links a:hover{background:rgba(61,90,62,.06);color:#3d5a3e}
-.fs-nav-menu{display:none;background:none;border:none;font-size:20px;cursor:pointer;color:#3d5a3e;padding:8px}
-@media (max-width:767px){
-  .fs-nav-links{display:none;position:absolute;top:52px;left:0;right:0;background:#fff;flex-direction:column;padding:10px;border-bottom:1px solid rgba(80,90,70,.09);box-shadow:0 4px 12px rgba(0,0,0,.08)}
-  .fs-nav.open .fs-nav-links{display:flex}
-  .fs-nav-menu{display:block}
+.fs-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 52px; background: #fff; border-bottom: 1px solid rgba(80,90,70,.09); position: sticky; top: 0; z-index: 100; }
+.fs-nav-brand { font-size: 16px; font-weight: 700; color: #3d5a3e; text-decoration: none; display: flex; align-items: center; gap: 4px; }
+.fs-nav-links { display: flex; gap: 6px; }
+.fs-nav-links a { padding: 5px 10px; font-size: 12px; color: #555; text-decoration: none; border-radius: 6px; transition: all .15s; white-space: nowrap; }
+.fs-nav-links a:hover { background: rgba(61,90,62,.06); color: #3d5a3e; }
+.fs-nav-menu { display: none; background: none; border: none; font-size: 20px; cursor: pointer; color: #3d5a3e; padding: 8px; }
+@media (max-width: 767px) {
+  .fs-nav-links { display: none; position: absolute; top: 52px; left: 0; right: 0; background: #fff; flex-direction: column; padding: 10px; border-bottom: 1px solid rgba(80,90,70,.09); box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+  .fs-nav.open .fs-nav-links { display: flex; }
+  .fs-nav-menu { display: block; }
 }
 </style>
 
-<!-- 首页 -->
-<div id="screen-welcome" class="screen active">
-  <div class="welcome-tag">🏠 风声出品</div>
-  <div class="welcome-logo">数智新居住顾问<br>能力测评</div>
-  <div class="welcome-sub">测你帮客户实现美好居住的能力</div>
-  <div class="welcome-desc">
-    不是考知识，是看你<strong>懂不懂客户</strong>、<strong>帮不帮得了客户</strong>。<br>
-    共情客户 × 提供决策，2维×品质居住6维 = 12个测评点。<br>
-    大约5-8分钟，共28题。
+<div class="container" id="app">
+
+  <!-- ==================== PAGE A: 经纪人设置页 ==================== -->
+  <div class="broker-setup" id="page-setup">
+    <div class="setup-header">
+      <h1>🏠 风声·六维品质测评</h1>
+      <p>填写你的信息，生成专属分享链接<br>发给客户，1分钟出报告，自动带你的联系方式</p>
+    </div>
+    <div class="setup-body">
+    <!-- 欢迎回来横幅（身份已记住时显示） -->
+    <div class="welcome-back" id="welcome-back">
+      <div class="welcome-back-avatar" id="wb-avatar">?</div>
+      <div class="welcome-back-text">欢迎回来，<strong id="wb-name"></strong>！已自动填充你的信息<br><span style="font-size:11px;color:#888;">身份：<span id="wb-phone"></span> · <span id="wb-company"></span></span></div>
+      <div class="welcome-back-change" onclick="forgetIdentity()">切换身份</div>
+    </div>
+
+      <div class="form-group">
+        <label class="form-label">你的名字 *</label>
+        <input type="text" class="form-input" id="setup-name" placeholder="例如：张经理 / 李姐" maxlength="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label">手机号 *</label>
+        <input type="tel" class="form-input" id="setup-phone" placeholder="客户可以直接拨打">
+      </div>
+      <div class="form-group">
+        <label class="form-label">微信号</label>
+        <input type="text" class="form-input" id="setup-wechat" placeholder="方便客户加微信">
+        <div class="form-hint">客户可复制微信号添加</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">一句话介绍</label>
+        <input type="text" class="form-input" id="setup-bio" placeholder="例如："从业8年，服务过200+家庭"" maxlength="30">
+      </div>
+      <div class="form-group">
+        <label class="form-label">门店名称</label>
+        <input type="text" class="form-input" id="setup-company" placeholder="增加信任背书">
+      </div>
+
+      <!-- 记住我 -->
+      <label class="remember-row">
+        <input type="checkbox" id="remember-me" checked> 记住我的身份（下次自动填充）
+      </label>
+
+      <button class="start-btn" style="margin-top:8px;border-radius:12px;padding:15px;font-size:16px;" onclick="generateShareLink()">
+        🔗 生成我的专属分享链接
+      </button>
+
+      <!-- 生成的链接和按钮 -->
+      <div class="share-result" id="share-result">
+        <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:10px;text-align:center;">📋 你的专属链接（点击复制）</div>
+        <div class="share-url-box" onclick="copyLink()" style="cursor:pointer;">
+          <div class="share-url-text" id="share-url-text"></div>
+          <div style="font-size:11px;color:#999;margin-top:6px;">👆 点击上方链接即可复制</div>
+        </div>
+        <div class="share-btns">
+          <button class="share-btn share-btn-copy" onclick="copyLink()">📋 复制链接</button>
+          <button class="share-btn share-btn-preview" onclick="previewAsClient()">👁️ 预览客户视角</button>
+        </div>
+        <div class="share-tips">
+          <h4>💡 如何使用？</h4>
+          <p>
+            ① 复制上面的链接<br>
+            ② 发到微信群、朋友圈、或直接发给客户<br>
+            ③ 客户点开就能答题，完成后报告自动带你的联系卡<br><br>
+            ✅ 微信、QQ、短信、任何平台都能发<br>
+            ✅ 每个客户的报告都有你的联系方式<br>
+            ✅ 客户答完后可以直接打电话给你
+          </p>
+        </div>
+      </div>
+      <!-- 使用统计 -->
+      <div class="stats-box" id="stats-box">
+        <h4>📈 使用统计</h4>
+        <div class="stats-row"><span>累计生成链接</span><span class="stats-val" id="stats-links">0</span></div>
+        <div class="stats-row"><span>累计完成测评</span><span class="stats-val" id="stats-completions">0</span></div>
+        <div class="stats-row"><span>本月生成链接</span><span class="stats-val" id="stats-month-links">0</span></div>
+        <div class="stats-row"><span>本月完成测评</span><span class="stats-val" id="stats-month-completions">0</span></div>
+      </div>
+    </div>
   </div>
-  <button class="btn btn-primary" onclick="showScreen('screen-role')">开始测评 →</button>
-  <div class="welcome-meta">品质居住六维标准 · 清华大学建筑学院 × 贝壳研究院 联合验证</div>
+
+  <!-- ==================== PAGE B: 客户入口页 ==================== -->
+  <div class="client-entry hidden" id="page-entry">
+    <div class="entry-header">
+      <h1>🏠 风声·六维品质测评</h1>
+      <p>1分钟搞清你的居住品质偏好</p>
+      <div class="from-agent-badge" id="from-agent-badge">
+        <div class="from-agent-avatar" id="entry-avatar">?</div>
+        <span id="entry-from-text"></span>
+      </div>
+    </div>
+    <div class="entry-body">
+      <button class="start-btn" onclick="startAssessment()">开始测评 →</button>
+      <p class="entry-info">共 <span>6+2</span> 题 · 约 <span>1</span> 分钟 · 免费</p>
+      <div style="margin-top:20px;background:#f8f9ff;border-radius:12px;padding:14px;">
+        <p style="font-size:12px;color:#666;line-height:1.6;">✨ 测评后你将获得：<br>
+          📊 六维雷达图 + 居住画像<br>
+          🖼️ 你的理想居住画面分析<br>
+          🚫 帮你避开不喜欢的房子<br>
+          💡 TOP3 改善建议</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 场景选择 ==================== -->
+  <div class="step hidden" id="step-scenario">
+    <div class="header">
+      <h1>🏠 六维品质测评</h1>
+      <p>了解你的居住品质认知</p>
+    </div>
+    <div style="padding: 24px;">
+      <div class="step-title">你目前是哪种情况？</div>
+      <div class="step-subtitle">不同场景，六维权重不同，结果更准</div>
+      <button class="option-btn" onclick="selectScenario('rent')">🏙️ <b>租房</b><br><small style="color:#999">目前在租房，想换更好的</small></button>
+      <button class="option-btn" onclick="selectScenario('first')">🔑 <b>首次购房</b><br><small style="color:#999">第一次买房，不太清楚要什么</small></button>
+      <button class="option-btn" onclick="selectScenario('improve')">🏡 <b>改善置换</b><br><small style="color:#999">已有住房，想换更好的</small></button>
+      <button class="option-btn" onclick="selectScenario('invest')">💰 <b>投资购房</b><br><small style="color:#999">主要考虑保值增值</small></button>
+      <button class="option-btn" onclick="selectScenario('elderly')">👴 <b>养老居住</b><br><small style="color:#999">为父母或自己养老准备</small></button>
+      <button class="option-btn" onclick="selectScenario('single')">✨ <b>单身独居</b><br><small style="color:#999">一个人住，注重个人感受</small></button>
+    </div>
+  </div>
+
+  <!-- ==================== 题目 ==================== -->
+  <div class="step hidden" id="step-question">
+    <div class="header">
+      <h1>🏠 六维品质测评</h1>
+      <p id="header-subtitle">了解你的居住品质认知</p>
+    </div>
+    <div style="padding: 24px;">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="question-counter" id="question-counter"></div>
+      <div class="step-title" id="q-title"></div>
+      <div class="step-subtitle" id="q-subtitle"></div>
+      <div id="q-options"></div>
+      <button class="next-btn" id="next-btn" disabled onclick="nextQuestion()">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- ==================== 居住画面感 ==================== -->
+  <div class="step hidden" id="step-scene-desc">
+    <div class="header">
+      <h1>🖼️ 你的理想居住画面</h1>
+      <p>帮我们更懂你的生活偏好</p>
+    </div>
+    <div style="padding: 24px;">
+      <div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>
+      <div class="question-counter">生活偏好 · 第7/8题</div>
+      <div class="step-title">想象一下：周末下午你在家里最舒服的状态是什么？</div>
+      <div class="step-subtitle">这个答案能帮我们理解你最在意的居住体验</div>
+      <div id="scene-opts">
+        <button class="option-btn" onclick="selectScene(this,'sofa')">
+          🛋️ <b>窝在客厅沙发里</b><br><small style="color:#999">看电视、听音乐、或者发发呆</small>
+        </button>
+        <button class="option-btn" onclick="selectScene(this,'kitchen')">
+          🍳 <b>在厨房里做饭</b><br><small style="color:#999">干净整洁的台面，阳光照进来，做顿好吃的</small>
+        </button>
+        <button class="option-btn" onclick="selectScene(this,'balcony')">
+          🌿 <b>坐在阳台或飘窗上</b><br><small style="color:#999">喝杯茶/咖啡，看看风景，晒太阳</small>
+        </button>
+        <button class="option-btn" onclick="selectScene(this,'bedroom')">
+          📚 <b>窝在卧室床上</b><br><small style="color:#999">看书、刷手机、追剧，关上门就是自己的小世界</small>
+        </button>
+        <button class="option-btn" onclick="selectScene(this,'dining')">
+          👨‍👩‍👧‍👦 <b>和家人们一起在餐厅</b><br><small style="color:#999">吃饭聊天，孩子跑来跑去，热闹又温馨</small>
+        </button>
+        <button class="option-btn" onclick="selectScene(this,'work')">
+          💻 <b>在家有个工作角落</b><br><small style="color:#999">书桌前专注做事，累了抬头看看窗外</small>
+        </button>
+      </div>
+      <button class="next-btn" id="scene-next-btn" disabled onclick="goToRedline()">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- ==================== 最忌讳（红线） ==================== -->
+  <div class="step hidden" id="step-redline">
+    <div class="header" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">
+      <h1>🚫 你的居住底线</h1>
+      <p>了解你绝对不能接受的是什么</p>
+    </div>
+    <div style="padding: 24px;">
+      <div class="progress-bar"><div class="progress-fill" style="width:97%"></div></div>
+      <div class="question-counter" style="color:#e74c3c;font-weight:600;">⚠️ 关键信息 · 第8题</div>
+      <div class="redline-question">
+        <div class="step-title" style="margin-bottom:8px">选房时，以下哪些是你<strong>绝对不能接受</strong>的？（多选）</div>
+        <div class="step-subtitle" style="color:#c62828">这些是硬性排除项，我们会帮你避开</div>
+        <div id="redline-opts"></div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="step-title">除了以上选项，还有什么特别在意或不能接受的？</div>
+        <div class="step-subtitle">比如：离地铁超过500米不行 / 楼层不能太高</div>
+        <textarea id="redline-extra" placeholder="可以写具体要求，也可以留空跳过..." rows="3"
+          style="width:100%;padding:12px;border:2px solid #e8e8e8;border-radius:10px;font-size:14px;resize:none;font-family:inherit;"></textarea>
+      </div>
+      <button class="next-btn next-btn-red" onclick="goToReport()">查看报告 →</button>
+    </div>
+  </div>
+
+  <!-- ==================== 报告页 ==================== -->
+  <div class="report-page hidden" id="step-report">
+    <div class="report-header">
+      <h2>📊 你的居住品质报告</h2>
+      <div class="subtitle" id="report-scenario"></div>
+      <div class="score-display" id="report-score">--</div>
+      <div class="score-label" id="report-grade">评估中...</div>
+    </div>
+    <div class="report-body">
+      <div class="radar-section"><h3>六维雷达图</h3><svg class="radar-svg" id="radar-svg" viewBox="0 0 240 240"></svg></div>
+      <div class="profile-card"><h4>🏷️ 居住画像</h4><p id="profile-text">加载中...</p></div>
+      <div class="profile-card" style="border-left-color:#ff8f00;background:linear-gradient(135deg,#fff8e1,#ffecb3)" id="scene-card">
+        <h4 style="color:#e65100">🖼️ 理想居住画面</h4><p id="scene-text" style="color:#bf360c"></p>
+      </div>
+      <div id="dim-list" style="margin-bottom:16px;"></div>
+      <div class="redline-box" id="redline-result"><h4>🚫 绝对不能接受的</h4><div id="redline-tags"></div></div>
+      <div class="suggestion-box"><h4>💡 TOP 3 改善建议</h4><div id="suggestions"></div></div>
+      <div class="agent-contact-box" id="agent-contact">
+        <div class="agent-avatar" id="agent-avatar-text">?</div>
+        <div class="agent-name" id="display-agent-name">--</div>
+        <div class="agent-title" id="display-agent-bio"></div>
+        <div class="agent-info-row" id="display-phone-row"><span class="agent-info-icon">📱</span><span id="display-phone"></span></div>
+        <div class="agent-info-row" id="display-wechat-row" style="display:none"><span class="agent-info-icon">💬</span><span>微信：<span id="display-wechat"></span></span></div>
+        <div class="agent-info-row" id="display-company-row" style="display:none"><span class="agent-info-icon">🏢</span><span id="display-company"></span></div>
+      </div>
+      <div class="cta-box">
+        <p>🎯 想看看符合你标准的房子吗？</p>
+        <a class="cta-btn" href="#" id="cta-call-btn">立即咨询 →</a>
+      </div>
+      <button class="restart-btn" onclick="restart()">🔄 重新测评</button>
+      <button class="restart-btn" style="border-color:#3d5a3e;color:#3d5a3e;margin-top:8px;" onclick="shareReport()">📤 转发这份报告</button>
+    </div>
+  </div>
+
 </div>
 
-<!-- 选角色 -->
-<div id="screen-role" class="screen">
-  <div class="role-title">你是哪个岗位？</div>
-  <div class="role-subtitle">不同岗位，六维权重不同</div>
-  <div class="role-grid" id="role-grid"></div>
-  <div style="margin-top:24px">
-    <button class="btn btn-primary" id="btn-start-quiz" onclick="startQuiz()" disabled>确认，开始答题</button>
-  </div>
-</div>
-
-<!-- 答题 -->
-<div id="screen-quiz" class="screen">
-  <div class="quiz-container">
-    <div class="progress-text" id="progress-text">1 / 28</div>
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-    <div id="q-dimension" class="q-dimension"></div>
-    <div id="q-scene" class="q-scene"></div>
-    <div id="q-text" class="q-text"></div>
-    <div id="q-prompt" class="q-prompt"></div>
-    <div class="option-list" id="option-list"></div>
-    <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()" style="display:none">下一题 →</button>
-  </div>
-</div>
-
-<!-- 计算中 -->
-<div id="screen-loading" class="screen">
-  <div class="loading">
-    <div class="spinner"></div>
-    <div style="font-size:15px;color:var(--ts)">正在生成测评报告...</div>
-  </div>
-</div>
-
-<!-- 报告 -->
-<div id="screen-report" class="screen">
-  <div class="report" id="report-content"></div>
-</div>
+<!-- Toast -->
+<div class="share-success-toast" id="toast"></div>
 
 <script>
-// ========== 数据 ==========
-
-const ROLES = [
-  {id:'agent',icon:'🏠',name:'房产经纪人',tag:'域1·房产交易',w:{safe:.25,health:.20,neat:.10,warm:.15,beauty:.05,cozy:.25}},
-  {id:'rental',icon:'📋',name:'租赁管家',tag:'域2·房产租赁',w:{safe:.20,health:.10,neat:.25,warm:.10,beauty:.05,cozy:.30}},
-  {id:'newhouse',icon:'🏗️',name:'新房顾问',tag:'域3·新房选购',w:{safe:.30,health:.20,neat:.05,warm:.15,beauty:.10,cozy:.20}},
-  {id:'decor',icon:'🔨',name:'家装顾问/设计师',tag:'域4·家装规划',w:{safe:.15,health:.30,neat:.15,warm:.10,beauty:.20,cozy:.10}},
-  {id:'soft',icon:'🛋️',name:'家居/软装顾问',tag:'域5·软装搭配',w:{safe:.05,health:.10,neat:.15,warm:.20,beauty:.35,cozy:.15}},
-  {id:'property',icon:'🏢',name:'物业管家',tag:'域9·物业优化',w:{safe:.25,health:.15,neat:.25,warm:.15,beauty:.05,cozy:.15}},
-  {id:'manager',icon:'👔',name:'商圈经理',tag:'管理岗',w:{safe:.20,health:.15,neat:.10,warm:.15,beauty:.10,cozy:.30}},
-  {id:'boss',icon:'💼',name:'店东/老板',tag:'经营岗',w:{safe:.25,health:.10,neat:.10,warm:.10,beauty:.05,cozy:.40}}
+// ============ 6道精简题（每维1题）+ 场景+红线 ============
+const QUESTIONS=[
+  {id:'s1',dim:'安全',dimColor:'#e74c3c',title:'你目前住的地方，晚上一个人回家敢走楼道吗？',subtitle:'安全感是品质居住的底线',type:'radio',
+    options:[{text:'敢，灯亮监控全，很有安全感',score:5},{text:'还行，但有些角落有点怕',score:3},{text:'不太敢，尽量早点回家',score:1}]},
+  {id:'h1',dim:'健康',dimColor:'#2ecc71',title:'近5年住过的地方，有没有让你觉得"身体变好了或变差了"？',subtitle:'空气、噪音、采光真的影响健康',type:'radio',
+    options:[{text:'明显感觉！搬家后状态完全不同',score:5},{text:'有一点，但不确定是不是房子的问题',score:3},{text:'没感觉，身体和房子关系不大',score:1}]},
+  {id:'t1',dim:'整洁',dimColor:'#3498db',title:'你现在的住处，会主动邀请朋友来做客吗？',subtitle:'整洁不只是卫生，更是面子+归属感',type:'radio',
+    options:[{text:'经常邀请，随时都能见人',score:5},{text:'偶尔，但要提前收拾很久',score:3},{text:'很少，不想让人看到家里',score:1}]},
+  {id:'w1',dim:'温暖',dimColor:'#e67e22',title:'搬到现在这地方，多久有了"到家了"的感觉？',subtitle:'归属感是最温暖的居住体验',type:'radio',
+    options:[{text:'一搬进来就有，很安心',score:5},{text:'住了1-2个月慢慢有了',score:3},{text:'住了很久还觉得只是睡觉的地方',score:1}]},
+  {id:'a1',dim:'美观',dimColor:'#9b59b6',title:'选住处时，会为了"看着舒服"多花多少钱？',subtitle:'审美溢价意愿反映重视程度',type:'radio',
+    options:[{text:'愿意多花10%以上，好看很重要',score:5},{text:'多花5%以内可以考虑',score:3},{text:'实用为主，好看是加分项',score:1}]},
+  {id:'c1',dim:'惬意',dimColor:'#1abc9c',title:'你选房时会不会专门考虑"休闲空间"？',subtitle:'阳台/飘窗/书房，惬意是品质的终极目标',type:'radio',
+    options:[{text:'必须有！没休闲空间不考虑',score:5},{text:'有最好，没有也能接受',score:3},{text:'在家时间不多，不需要',score:1}]},
 ];
 
-const DIM_META = {
-  safe:{icon:'🔒',name:'安全',color:'#5e7e5c'},
-  health:{icon:'💚',name:'健康',color:'#6d8f55'},
-  neat:{icon:'🧹',name:'整洁',color:'#3d5a3e'},
-  warm:{icon:'🏠',name:'温暖',color:'#c46a3a'},
-  beauty:{icon:'🎨',name:'美观',color:'#7e6a90'},
-  cozy:{icon:'☕',name:'惬意',color:'#4e7e8e'}
+// ============ 红线选项 ============
+const REDLINE_OPTIONS=[
+  {tag:'临街噪音',icon:'🔊'}, {tag:'采光不好',icon:'☁️'}, {tag:'无电梯/楼层高',icon:'🪜'},
+  {tag:'周边杂乱脏乱',icon:'🗑️'}, {tag:'离地铁远',icon:'🚇'}, {tag:'物业差劲',icon:'👮'},
+  {tag:'户型奇葩不通透',icon:'📐'}, {tag:'停车位紧张',icon:'🅿️'}, {tag:'邻居素质差',icon:'👤'},
+  {tag:'学区不好/无学校',icon:'🎒'}, {tag:'房龄太老',icon:'🏚️'}, {tag:'价格超预算',icon:'💸'},
+];
+
+// ============ 场景画面映射 ============
+const SCENE_MAP={
+  sofa:'喜欢窝在客厅沙发里放松，享受家庭影音娱乐时光，需要一个舒适的客厅空间',
+  kitchen:'享受下厨的乐趣，喜欢干净明亮的厨房，烹饪是生活中重要的一部分',
+  balcony:'热爱阳台/飘窗上的悠闲时刻，看重景观和自然光线，需要一处安静的独处空间',
+  bedroom:'卧室是个人最重要的领地，注重私密性和舒适度，需要能让人彻底放松的休息环境',
+  dining:'非常重视家人共处的时光，餐厅是家的核心，热闹温馨的家庭氛围最重要',
+  work:'需要一个专注的工作/学习角落，居家办公是日常，书房或工作区的功能性很重要',
 };
 
-// 题库 - 28题
-const QUESTIONS = [
-  // ===== 共情题 (16题) =====
-  // 安全·共情·L1
-  {
-    id:1, dim:'safe', ability:'empathy', level:'L1',
-    scene:'客户说："6楼没电梯，我妈腿不好..."',
-    text:'客户这句话，核心关切属于哪个维度？',
-    dimLabel:'安全·共情·L1 听出来',
-    dimColor:'#5e7e5c',
-    multi:false,
-    options:[
-      {label:'A',text:'惬意——楼层高不方便',score:4},
-      {label:'B',text:'安全——老人跌倒风险',score:10},
-      {label:'C',text:'健康——爬楼伤膝盖',score:7},
-      {label:'D',text:'温暖——住得不舒服',score:2}
-    ]
-  },
-  // 安全·共情·L2
-  {
-    id:2, dim:'safe', ability:'empathy', level:'L2',
-    scene:'同样一句"6楼没电梯"——对哪种客户影响最大？',
-    text:'',
-    dimLabel:'安全·共情·L2 掂出来',
-    dimColor:'#5e7e5c',
-    multi:false,
-    options:[
-      {label:'A',text:'30岁独居上班族',score:2},
-      {label:'B',text:'带5岁小孩的家庭',score:7},
-      {label:'C',text:'和80岁老母亲同住',score:10},
-      {label:'D',text:'所有客户影响差不多',score:4}
-    ]
-  },
-  // 安全·共情·L2
-  {
-    id:3, dim:'safe', ability:'empathy', level:'L2',
-    scene:'客户反复问"产权清楚吗？有没有抵押？会不会被查封？"',
-    text:'他为什么反复确认？这对他意味着什么？',
-    dimLabel:'安全·共情·L2 掂出来',
-    dimColor:'#5e7e5c',
-    multi:false,
-    options:[
-      {label:'A',text:'他只是谨慎，不用太在意',score:2},
-      {label:'B',text:'他可能有过被坑的经历，交易安全是他的核心焦虑',score:10},
-      {label:'C',text:'他不太懂流程，解释清楚就行',score:4},
-      {label:'D',text:'他想压价，故意找问题',score:7}
-    ]
-  },
-  // 安全·共情·L3
-  {
-    id:4, dim:'safe', ability:'empathy', level:'L3',
-    scene:'客户看了半天房，说"总觉得不太踏实"',
-    text:'你怎么帮他明确不安的具体来源？',
-    dimLabel:'安全·共情·L3 引出来',
-    dimColor:'#5e7e5c',
-    multi:false,
-    options:[
-      {label:'A',text:'"这小区挺安全的，有门禁有监控"',score:2},
-      {label:'B',text:'"不太踏实是指哪方面？是担心小区安全，还是房子本身让您不放心的？"',score:10},
-      {label:'C',text:'"那再看看别的吧"',score:4},
-      {label:'D',text:'"很多人第一次看房都有这种感觉"',score:2}
-    ]
-  },
-  // 健康·共情·L1
-  {
-    id:5, dim:'health', ability:'empathy', level:'L1',
-    scene:'客户说："这味儿闻着不舒服"',
-    text:'这背后是哪个维度的关切？',
-    dimLabel:'健康·共情·L1 听出来',
-    dimColor:'#6d8f55',
-    multi:false,
-    options:[
-      {label:'A',text:'整洁——房间不干净',score:4},
-      {label:'B',text:'健康——可能是甲醛等有害气体',score:10},
-      {label:'C',text:'惬意——住着不舒服',score:7},
-      {label:'D',text:'美观——装修味道大',score:2}
-    ]
-  },
-  // 健康·共情·L2
-  {
-    id:6, dim:'health', ability:'empathy', level:'L2',
-    scene:'带看时客户提到"小孩刚3岁"，你带看的是新装修的房子',
-    text:'客户没直说，但他心里在想什么？',
-    dimLabel:'健康·共情·L2 掂出来',
-    dimColor:'#6d8f55',
-    multi:false,
-    options:[
-      {label:'A',text:'小孩喜欢什么样的房间',score:2},
-      {label:'B',text:'新装修对孩子健康有没有影响——这是核心焦虑',score:10},
-      {label:'C',text:'房子够不够大，孩子有没有活动空间',score:7},
-      {label:'D',text:'学区好不好',score:4}
-    ]
-  },
-  // 整洁·共情·L1
-  {
-    id:7, dim:'neat', ability:'empathy', level:'L1',
-    scene:'客户说："厨房油渍这么厚...卫生间地漏反味"',
-    text:'客户在表达什么维度的关切？',
-    dimLabel:'整洁·共情·L1 听出来',
-    dimColor:'#3d5a3e',
-    multi:false,
-    options:[
-      {label:'A',text:'健康——油渍发霉有害',score:7},
-      {label:'B',text:'整洁——厨卫状况直接影响生活品质',score:10},
-      {label:'C',text:'美观——看着难受',score:4},
-      {label:'D',text:'惬意——住着不舒服',score:2}
-    ]
-  },
-  // 整洁·共情·L3
-  {
-    id:8, dim:'neat', ability:'empathy', level:'L3',
-    scene:'客户看了几套房，说"总觉得这些房子住着不够干净"，但又说不出来具体哪不干净',
-    text:'你怎么帮他明确？',
-    dimLabel:'整洁·共情·L3 引出来',
-    dimColor:'#3d5a3e',
-    multi:false,
-    options:[
-      {label:'A',text:'"老小区都这样，您重新装修就好了"',score:2},
-      {label:'B',text:'"您说的不干净，是墙面地面那种看得见的脏，还是厨房卫生间那种气味上的？"',score:10},
-      {label:'C',text:'"那我带您看新装修的吧"',score:4},
-      {label:'D',text:'"确实需要好好打扫"',score:2}
-    ]
-  },
-  // 温暖·共情·L1
-  {
-    id:9, dim:'warm', ability:'empathy', level:'L1',
-    scene:'客户说："冬天冷得要命，暖气不够热，窗户漏风"',
-    text:'这是哪个维度的事？',
-    dimLabel:'温暖·共情·L1 听出来',
-    dimColor:'#c46a3a',
-    multi:false,
-    options:[
-      {label:'A',text:'安全——窗户漏风有隐患',score:4},
-      {label:'B',text:'温暖——没有归属感，"冷"不只是温度',score:10},
-      {label:'C',text:'惬意——住着不舒服',score:7},
-      {label:'D',text:'整洁——房子维护差',score:2}
-    ]
-  },
-  // 温暖·共情·L2
-  {
-    id:10, dim:'warm', ability:'empathy', level:'L2',
-    scene:'客户说："住了3年邻居都不认识，小区冷冷清清的"',
-    text:'这对客户意味着什么？影响有多大？',
-    dimLabel:'温暖·共情·L2 掂出来',
-    dimColor:'#c46a3a',
-    multi:false,
-    options:[
-      {label:'A',text:'不太重要，邻居认不认识跟居住品质没关系',score:2},
-      {label:'B',text:'有点遗憾，但不影响买房决策',score:4},
-      {label:'C',text:'"不认识邻居"说明社区温度低，这是归属感缺失的核心信号',score:10},
-      {label:'D',text:'正常，城市都这样',score:2}
-    ]
-  },
-  // 美观·共情·L1
-  {
-    id:11, dim:'beauty', ability:'empathy', level:'L1',
-    scene:'客户说："前业主装修太土了，看得难受"',
-    text:'这是哪个维度？',
-    dimLabel:'美观·共情·L1 听出来',
-    dimColor:'#7e6a90',
-    multi:false,
-    options:[
-      {label:'A',text:'整洁——装修旧',score:4},
-      {label:'B',text:'美观——风格杂乱，审美不适',score:10},
-      {label:'C',text:'惬意——看着不舒服',score:7},
-      {label:'D',text:'温暖——没归属感',score:2}
-    ]
-  },
-  // 美观·共情·L3
-  {
-    id:12, dim:'beauty', ability:'empathy', level:'L3',
-    scene:'客户在客厅站了很久，说"这墙漆颜色...挺特别的"',
-    text:'你怎么接？',
-    dimLabel:'美观·共情·L3 引出来',
-    dimColor:'#7e6a90',
-    multi:false,
-    options:[
-      {label:'A',text:'"确实挺有个性的是吧？"',score:2},
-      {label:'B',text:'"您不太喜欢这个颜色？换个墙漆成本不高，几千块就能换个您喜欢的"',score:10},
-      {label:'C',text:'"前业主的审美，您可以重新刷"',score:7},
-      {label:'D',text:'"这个颜色确实不太常见"',score:4}
-    ]
-  },
-  // 惬意·共情·L1
-  {
-    id:13, dim:'cozy', ability:'empathy', level:'L1',
-    scene:'客户说："上班1个半小时，每天6点就得起"',
-    text:'这背后是哪个维度？',
-    dimLabel:'惬意·共情·L1 听出来',
-    dimColor:'#4e7e8e',
-    multi:false,
-    options:[
-      {label:'A',text:'安全——早起有风险',score:2},
-      {label:'B',text:'惬意——通勤远压缩了生活质量',score:10},
-      {label:'C',text:'温暖——离家远没归属',score:4},
-      {label:'D',text:'整洁——挤地铁不干净',score:2}
-    ]
-  },
-  // 惨意·共情·L2（多选）
-  {
-    id:14, dim:'cozy', ability:'empathy', level:'L2',
-    scene:'客户说"上班1个半小时，每天6点就得起"——这对他意味着什么？',
-    text:'选出影响最大的（多选）',
-    dimLabel:'惬意·共情·L2 掂出来',
-    dimColor:'#4e7e8e',
-    multi:true,
-    options:[
-      {label:'A',text:'通勤消耗精力，降低生活品质',score:10,correct:true},
-      {label:'B',text:'他需要离公司更近的房子',score:7,correct:true},
-      {label:'C',text:'年轻人起早点没事',score:2,correct:false},
-      {label:'D',text:'长期通勤压力可能影响健康和工作状态',score:10,correct:true}
-    ]
-  },
-  // 惨意·共情·L2
-  {
-    id:15, dim:'cozy', ability:'empathy', level:'L2',
-    scene:'客户说"楼下广场舞每天6点半"——对哪种客户影响最大？',
-    text:'',
-    dimLabel:'惬意·共情·L2 掂出来',
-    dimColor:'#4e7e8e',
-    multi:false,
-    options:[
-      {label:'A',text:'退休在家的大爷——他也早起',score:2},
-      {label:'B',text:'倒班护士，白天需要补觉',score:10},
-      {label:'C',text:'上班族，7点也要起床',score:4},
-      {label:'D',text:'影响差不多',score:2}
-    ]
-  },
-  // 惨意·共情·L3
-  {
-    id:16, dim:'cozy', ability:'empathy', level:'L3',
-    scene:'客户看了好几套房，说"就觉得差点意思"',
-    text:'你怎么帮他明确"差"在哪里？',
-    dimLabel:'惬意·共情·L3 引出来',
-    dimColor:'#4e7e8e',
-    multi:false,
-    options:[
-      {label:'A',text:'"那咱们再看看别的"',score:2},
-      {label:'B',text:'"差点意思是指哪方面？是通勤不方便、周边配套不够，还是住进去觉得不够舒服？"',score:10},
-      {label:'C',text:'"这已经算不错的了"',score:2},
-      {label:'D',text:'"您预算有限，要求别太高"',score:2}
-    ]
-  },
-  // ===== 决策题 (12题) =====
-  // 安全·决策
-  {
-    id:17, dim:'safe', ability:'decision', level:'',
-    scene:'客户问："这房子有没有被查封？有没有抵押？"',
-    text:'你怎么帮客户确认？',
-    dimLabel:'安全·决策',
-    dimColor:'#5e7e5c',
-    multi:false,
-    options:[
-      {label:'A',text:'"房东说没问题，您放心"',score:2},
-      {label:'B',text:'"我帮您做产调，查产权状态、抵押情况和查封记录，出书面报告"',score:10},
-      {label:'C',text:'"您可以去房管局查"',score:4},
-      {label:'D',text:'"中介都会核实，不会出问题"',score:7}
-    ]
-  },
-  // 安全·决策
-  {
-    id:18, dim:'safe', ability:'decision', level:'',
-    scene:'带看时发现消防通道被杂物堵死，客户没注意到',
-    text:'你怎么处理？',
-    dimLabel:'安全·决策',
-    dimColor:'#5e7e5c',
-    multi:false,
-    options:[
-      {label:'A',text:'不说，客户没问就不提',score:2},
-      {label:'B',text:'主动告知，并评估物业整改能力和消防通道标准，判断风险等级',score:10},
-      {label:'C',text:'顺嘴提一句"楼道有点乱"',score:4},
-      {label:'D',text:'拍照留证据，但不说',score:7}
-    ]
-  },
-  // 健康·决策
-  {
-    id:19, dim:'health', ability:'decision', level:'',
-    scene:'带看时，客户指着卫生间墙角发霉的痕迹说"这能住吗"',
-    text:'你怎么回应？',
-    dimLabel:'健康·决策',
-    dimColor:'#6d8f55',
-    multi:false,
-    options:[
-      {label:'A',text:'"老小区都这样，擦擦就行了"',score:2},
-      {label:'B',text:'"这是防潮问题，我帮您看看是管道渗水还是通风不良，不同原因处理方式不同"',score:10},
-      {label:'C',text:'"确实有点发霉，您可以买除霉剂处理"',score:7},
-      {label:'D',text:'"这房子不太行，我带您看别的"',score:4}
-    ]
-  },
-  // 健康·决策
-  {
-    id:20, dim:'health', ability:'decision', level:'',
-    scene:'客户问："临街的房子会不会太吵？"',
-    text:'你怎么帮他判断？',
-    dimLabel:'健康·决策',
-    dimColor:'#6d8f55',
-    multi:false,
-    options:[
-      {label:'A',text:'"装个双层玻璃就好了"',score:4},
-      {label:'B',text:'"我帮您分析：看临什么路（主干道/支路）、车流量高峰期、楼层影响、隔音条件，不同情况方案不同"',score:10},
-      {label:'C',text:'"确实会吵，不建议买"',score:7},
-      {label:'D',text:'"习惯了就好"',score:2}
-    ]
-  },
-  // 健康·决策
-  {
-    id:21, dim:'health', ability:'decision', level:'',
-    scene:'客户问："这房子新装修的，甲醛超不超标？"',
-    text:'你怎么回答？',
-    dimLabel:'健康·决策',
-    dimColor:'#6d8f55',
-    multi:false,
-    options:[
-      {label:'A',text:'"装修完都这样，通通风就好了"',score:2},
-      {label:'B',text:'"我建议您做甲醛检测，国标0.08mg/m³，如果超标可以要求房东治理或推迟入住"',score:10},
-      {label:'C',text:'"应该没事，用的是环保材料"',score:4},
-      {label:'D',text:'"您可以买个检测仪测一下"',score:7}
-    ]
-  },
-  // 整洁·决策
-  {
-    id:22, dim:'neat', ability:'decision', level:'',
-    scene:'客户说："卫生间地漏反味，受不了"',
-    text:'你怎么帮他解决？',
-    dimLabel:'整洁·决策',
-    dimColor:'#3d5a3e',
-    multi:false,
-    options:[
-      {label:'A',text:'"换个防臭地漏就行，几十块钱"',score:7},
-      {label:'B',text:'"地漏反味原因有几种：存水弯干涸、管道老化、密封不好，我帮您判断是哪种，对症处理"',score:10},
-      {label:'C',text:'"老小区都这样"',score:2},
-      {label:'D',text:'"可以用除味剂"',score:4}
-    ]
-  },
-  // 整洁·决策
-  {
-    id:23, dim:'neat', ability:'decision', level:'',
-    scene:'客户说："楼道灯坏了好几盏没人修，电梯里脏得下不去脚"',
-    text:'你怎么评估和回应？',
-    dimLabel:'整洁·决策',
-    dimColor:'#3d5a3e',
-    multi:false,
-    options:[
-      {label:'A',text:'"跟物业反映一下"',score:4},
-      {label:'B',text:'"这说明物业管理不到位。我帮您查查这个小区的物业评级和业主评价，判断是偶发还是常态"',score:10},
-      {label:'C',text:'"不影响您自家住"',score:2},
-      {label:'D',text:'"公区是物业的事，不是您操心"',score:2}
-    ]
-  },
-  // 温暖·决策
-  {
-    id:24, dim:'warm', ability:'decision', level:'',
-    scene:'客户说："窗户漏风，冬天冷得要命"',
-    text:'你怎么帮客户解决？',
-    dimLabel:'温暖·决策',
-    dimColor:'#c46a3a',
-    multi:false,
-    options:[
-      {label:'A',text:'"装个厚窗帘就好了"',score:4},
-      {label:'B',text:'"窗户漏风有几种方案：换密封条几百块、换断桥铝窗几千到上万、加保温膜最便宜。根据您预算来"',score:10},
-      {label:'C',text:'"这是老房子的通病"',score:2},
-      {label:'D',text:'"冬天开暖气就行"',score:2}
-    ]
-  },
-  // 温暖·决策
-  {
-    id:25, dim:'warm', ability:'decision', level:'',
-    scene:'客户说："不想回家，回去就觉得压抑"',
-    text:'你怎么从居住角度帮他？',
-    dimLabel:'温暖·决策',
-    dimColor:'#c46a3a',
-    multi:false,
-    options:[
-      {label:'A',text:'"工作压力大吧，跟房子没关系"',score:2},
-      {label:'B',text:'"压抑可能跟几个因素有关：采光不够觉得暗、空间太小觉得闷、配色太深觉得沉。我帮您逐一排查"',score:10},
-      {label:'C',text:'"换个房子就好了"',score:4},
-      {label:'D',text:'"多跟朋友聚聚就好了"',score:2}
-    ]
-  },
-  // 美观·决策
-  {
-    id:26, dim:'beauty', ability:'decision', level:'',
-    scene:'客户说："各房间风格完全不一样，看着难受"',
-    text:'你怎么给方案？',
-    dimLabel:'美观·决策',
-    dimColor:'#7e6a90',
-    multi:false,
-    options:[
-      {label:'A',text:'"重新装修统一风格"',score:4},
-      {label:'B',text:'"不一定要全部重装。统一色调的软装（窗帘/地毯/抱枕）就能串联各房间，成本低见效快"',score:10},
-      {label:'C',text:'"您慢慢改吧"',score:2},
-      {label:'D',text:'"习惯就好"',score:2}
-    ]
-  },
-  // 美观·决策
-  {
-    id:27, dim:'beauty', ability:'decision', level:'',
-    scene:'客户说："进门就是厕所，太别扭了"',
-    text:'你怎么判断和处理？',
-    dimLabel:'美观·决策',
-    dimColor:'#7e6a90',
-    multi:false,
-    options:[
-      {label:'A',text:'"很多户型都这样"',score:2},
-      {label:'B',text:'"这属于布局问题。看能不能改——如果非承重墙可以调整动线，不行的话用隔断或屏风化解"',score:10},
-      {label:'C',text:'"放个帘子挡一下"',score:7},
-      {label:'D',text:'"不建议买这户型"',score:4}
-    ]
-  },
-  // 惨意·决策
-  {
-    id:28, dim:'cozy', ability:'decision', level:'',
-    scene:'客户说："附近连个超市都没有，看病得开40分钟车"',
-    text:'你怎么评估这个配套？',
-    dimLabel:'惬意·决策',
-    dimColor:'#4e7e8e',
-    multi:false,
-    options:[
-      {label:'A',text:'"这边还在发展，以后会有的"',score:4},
-      {label:'B',text:'"我帮您算真实生活圈：步行15分钟能到什么、开车10分钟能到什么。有些配套虽然远但有替代方案"',score:10},
-      {label:'C',text:'"确实不方便"',score:7},
-      {label:'D',text:'"安静，适合养老"',score:2}
-    ]
+// ============ 全局状态 ============
+let currentScenario='',currentQ=0,answers={},checkboxStates={};
+let selectedScene='',selectedRedlines=[];
+const SCENARIO_NAMES={rent:'租房',first:'首次购房',improve:'改善置换',invest:'投资购房',elderly:'养老居住',single:'单身独居'};
+const SCENARIO_WEIGHTS={
+  rent:{安全:1.0,健康:1.0,整洁:1.2,温暖:1.0,美观:0.9,惬意:0.9},
+  first:{安全:1.2,健康:1.2,整洁:1.0,温暖:1.0,美观:0.9,惬意:0.8},
+  improve:{安全:1.0,健康:1.2,整洁:1.0,温暖:1.2,美观:1.1,惬意:1.2},
+  invest:{安全:1.2,健康:0.8,整洁:0.9,温暖:0.7,美观:1.0,惬意:0.7},
+  elderly:{安全:1.5,健康:1.5,整洁:1.0,温暖:1.2,美观:0.8,惬意:1.0},
+  single:{安全:0.8,健康:1.0,整洁:1.2,温暖:0.8,美观:1.2,惬意:1.3},
+};
+
+// ============ URL 参数解析 ============
+function getAgentFromURL(){
+  const p=new URLSearchParams(window.location.search);
+  return {
+    name:p.get('agent')||'',phone:p.get('phone')||'',
+    wechat:p.get('wechat')||'',bio:p.get('bio')||'',
+    company:p.get('company')||'',
+  };
+}
+function hasAgentParams(){
+  const p=new URLSearchParams(window.location.search);
+  return !!p.get('agent')&&!!p.get('phone');
+}
+
+// ============ 页面初始化 ============
+(function init(){
+  if(hasAgentParams()){
+    // 有参数 = 客户模式 → 显示客户入口页
+    window.agentInfo=getAgentFromURL();
+    showClientEntry();
+  }else{
+    // 无参数 = 经纪人模式 → 显示设置页
+    showBrokerSetup();
   }
-];
+})();
 
-// ========== 状态 ==========
-let selectedRole = null;
-let currentQ = 0;
-let answers = []; // {qId, score, multiScores}
-
-// ========== 界面 ==========
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
+// ============ 经纪人模式 ============
+function showBrokerSetup(){
+  document.getElementById('page-setup').classList.remove('hidden');
 }
 
-// 角色选择
-function initRoleGrid() {
-  const grid = document.getElementById('role-grid');
-  grid.innerHTML = ROLES.map(r => `
-    <div class="role-card" data-role="${r.id}" onclick="selectRole('${r.id}')">
-      <div class="role-icon">${r.icon}</div>
-      <div class="role-name">${r.name}</div>
-      <div class="role-tag">${r.tag}</div>
-    </div>
-  `).join('');
+function generateShareLink(){
+  const name=document.getElementById('setup-name').value.trim();
+  const phone=document.getElementById('setup-phone').value.trim();
+  if(!name||!phone){ showToast('请至少填写名字和手机号'); return; }
+
+  const wechat=document.getElementById('setup-wechat').value.trim();
+  const bio=document.getElementById('setup-bio').value.trim();
+  const company=document.getElementById('setup-company').value.trim();
+
+  // 构建当前URL作为基础，加上参数
+  let baseUrl=window.location.href.split('?')[0];
+  // 如果是file://协议，保持原样；如果是http，使用当前域名
+  const params=new URLSearchParams();
+  params.set('agent',encodeURIComponent(name));
+  params.set('phone',encodeURIComponent(phone));
+  if(wechat) params.set('wechat',encodeURIComponent(wechat));
+  if(bio) params.set('bio',encodeURIComponent(bio));
+  if(company) params.set('company',encodeURIComponent(company));
+
+  const shareUrl=baseUrl+'?'+params.toString();
+
+  // 保存到全局供后续报告使用
+  window.agentInfo={name,phone,wechat,bio,company};
+
+  // 显示结果
+  document.getElementById('share-url-text').textContent=shareUrl;
+  document.getElementById('share-result').classList.add('show');
+
+  // 自动滚动到底部
+  setTimeout(()=>document.getElementById('share-result').scrollIntoView({behavior:'smooth'}),100);
 }
 
-function selectRole(id) {
-  selectedRole = ROLES.find(r => r.id === id);
-  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
-  document.querySelector(`.role-card[data-role="${id}"]`).classList.add('selected');
-  document.getElementById('btn-start-quiz').disabled = false;
+function copyLink(){
+  const url=document.getElementById('share-url-text').textContent;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(()=>showToast('✅ 链接已复制！快去发给客户吧'));
+  } else {
+    // fallback for non-secure contexts (file://)
+    const ta=document.createElement('textarea');
+    ta.value=url; ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ 链接已复制！快去发给客户吧');
+  }
 }
 
-function startQuiz() {
-  track("quiz_start", {role: selectedRole ? selectedRole.name : ""});
-  currentQ = 0;
-  answers = [];
-  showScreen('screen-quiz');
+function previewAsClient(){
+  // 用当前生成的链接在新标签打开（模拟客户视角）
+  const url=document.getElementById('share-url-text').textContent;
+  window.open(url,'_blank');
+}
+
+// ============ 客户模式 ============
+function showClientEntry(){
+  const a=window.agentInfo;
+  document.getElementById('page-entry').classList.remove('hidden');
+  document.getElementById('entry-avatar').textContent=a.name.charAt(0);
+  document.getElementById('entry-from-text').textContent=
+    `${a.name} 邀请你做一次品质居住测评`;
+  if(a.company){
+    document.getElementById('entry-from-text').textContent+=` · ${a.company}`;
+  }
+}
+
+function startAssessment(){
+  document.getElementById('page-entry').classList.add('hidden');
+  document.getElementById('step-scenario').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ============ 题目逻辑 ============
+function selectScenario(s){
+  currentScenario=s; currentQ=0; answers={}; checkboxStates={};
+  selectedScene=''; selectedRedlines=[];
+  document.getElementById('step-scenario').classList.add('hidden');
+  document.getElementById('step-question').classList.remove('hidden');
   renderQuestion();
 }
 
-function renderQuestion() {
-  const q = QUESTIONS[currentQ];
-  document.getElementById('progress-text').textContent = `${currentQ + 1} / ${QUESTIONS.length}`;
-  document.getElementById('progress-fill').style.width = `${((currentQ + 1) / QUESTIONS.length) * 100}%`;
-  
-  const dimBadge = document.getElementById('q-dimension');
-  dimBadge.textContent = q.dimLabel;
-  dimBadge.style.background = q.dimColor + '12';
-  dimBadge.style.color = q.dimColor;
-  
-  document.getElementById('q-scene').textContent = q.scene;
-  document.getElementById('q-text').textContent = q.text;
-  
-  const prompt = q.multi ? '☑️ 可多选' : '◉ 单选';
-  document.getElementById('q-prompt').textContent = prompt;
-  
-  const optList = document.getElementById('option-list');
-  optList.innerHTML = q.options.map((o, i) => `
-    <div class="option-item ${q.multi ? '' : ''}" data-idx="${i}" onclick="${q.multi ? 'toggleMulti(this)' : 'selectSingle(this)'}">
-      <span class="option-label">${o.label}.</span>${o.text}
-    </div>
-  `).join('');
-  
-  document.getElementById('btn-next').style.display = 'none';
-}
-
-function selectSingle(el) {
-  const q = QUESTIONS[currentQ];
-  document.querySelectorAll('.option-item').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  const idx = parseInt(el.dataset.idx);
-  answers[currentQ] = {qId: q.id, score: q.options[idx].score, multiScores: null};
-  
-  // 自动下一题
-  setTimeout(() => nextQuestion(), 350);
-}
-
-function toggleMulti(el) {
-  el.classList.toggle('multi-selected');
-  // 显示确认按钮
-  document.getElementById('btn-next').style.display = 'inline-flex';
-}
-
-function nextQuestion() {
-  const q = QUESTIONS[currentQ];
-  if (q.multi) {
-    const selected = document.querySelectorAll('.option-item.multi-selected');
-    if (selected.length === 0) return;
-    let totalScore = 0;
-    let maxScore = 0;
-    selected.forEach(el => {
-      const idx = parseInt(el.dataset.idx);
-      totalScore += q.options[idx].score;
-      if (q.options[idx].correct) maxScore += q.options[idx].score;
+function renderQuestion(){
+  const q=QUESTIONS[currentQ]; const total=QUESTIONS.length;
+  document.getElementById('header-subtitle').textContent=`${q.dim}维度 · 第${currentQ+1}/${total}题`;
+  document.getElementById('progress-fill').style.width=`${(currentQ/total)*100}%`;
+  document.getElementById('question-counter').textContent=`维度 ${q.dim}（${q.dimColor}●）· ${currentQ+1}/${total}`;
+  document.getElementById('q-title').textContent=q.title;
+  document.getElementById('q-subtitle').textContent=q.subtitle;
+  const optDiv=document.getElementById('q-options'); optDiv.innerHTML='';
+  if(q.type==='radio'){
+    q.options.forEach((opt,i)=>{
+      const btn=document.createElement('button');
+      btn.className='option-btn'; btn.innerHTML=`${opt.text}`;
+      btn.onclick=()=>selectRadio(q.id,i,opt.score,q.options.length,btn);
+      optDiv.appendChild(btn);
     });
-    // 多选评分：选对核心项得分，选错扣分
-    const wrongSelected = Array.from(selected).filter(el => {
-      const idx = parseInt(el.dataset.idx);
-      return q.options[idx].correct === false;
+  } else if(q.type==='checkbox'){
+    const hint=document.createElement('div');
+    hint.style.cssText='font-size:12px;color:#999;margin-bottom:10px;';
+    hint.textContent=`（最多选${q.max}项，已选 ${(checkboxStates[q.id]||[]).length}/${q.max}）`;
+    optDiv.appendChild(hint);
+    q.options.forEach((opt,i)=>{
+      const checked=(checkboxStates[q.id]||[]).includes(i);
+      const btn=document.createElement('label');
+      btn.className='checkbox-btn'+(checked?' checked':'');
+      btn.innerHTML=`<span class="checkbox-icon">${checked?'✓':''}</span><span>${opt.text}</span>`;
+      btn.onclick=()=>toggleCheckbox(q.id,i,q.max,hint);
+      optDiv.appendChild(btn);
     });
-    let finalScore = maxScore;
-    if (wrongSelected.length > 0) finalScore = Math.max(0, maxScore - wrongSelected.length * 3);
-    if (maxScore === 0) finalScore = 0;
-    answers[currentQ] = {qId: q.id, score: finalScore, multiScores: true};
   }
-  
-  currentQ++;
-  if (currentQ >= QUESTIONS.length) {
-    showScreen('screen-loading');
-    setTimeout(generateReport, 800);
+  document.getElementById('next-btn').disabled=!isAnswered(q);
+}
+
+function selectRadio(qId,optIdx,score,totalBtns,btnEl){
+  answers[qId]=score;
+  document.querySelectorAll('#q-options .option-btn').forEach(b=>b.classList.remove('selected'));
+  btnEl.classList.add('selected');
+  document.getElementById('next-btn').disabled=false;
+}
+
+function toggleCheckbox(qId,optIdx,max,hintEl){
+  if(!checkboxStates[qId]) checkboxStates[qId]=[];
+  const arr=checkboxStates[qId]; const idx=arr.indexOf(optIdx);
+  if(idx>=0) arr.splice(idx,1);
+  else if(arr.length<max) arr.push(optIdx);
+  else return;
+  const q=QUESTIONS.find(x=>x.id===qId);
+  answers[qId]=arr.length>0?Math.max(...arr.map(i=>q.options[i].score)):0;
+  renderQuestion();
+}
+
+function isAnswered(q){ return q.type==='radio'?(answers[q.id]!==undefined):(checkboxStates[q.id]||[]).length>0; }
+function nextQuestion(){ currentQ++; if(currentQ>=QUESTIONS.length){ goToSceneDesc(); return; } renderQuestion(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+// 画面感
+function goToSceneDesc(){
+  document.getElementById('step-question').classList.add('hidden');
+  document.getElementById('step-scene-desc').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function selectScene(btn,key){
+  document.querySelectorAll('#scene-opts .option-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected'); selectedScene=key;
+  document.getElementById('scene-next-btn').disabled=false;
+}
+
+// 红线
+function goToRedline(){
+  if(!selectedScene){ alert('请先选择一个场景'); return; }
+  document.getElementById('step-scene-desc').classList.add('hidden');
+  document.getElementById('step-redline').classList.remove('hidden');
+  const rlDiv=document.getElementById('redline-opts'); rlDiv.innerHTML='';
+  REDLINE_OPTIONS.forEach((opt,i)=>{
+    const label=document.createElement('label');
+    label.className='checkbox-btn'+(selectedRedlines.includes(i)?' checked':'');
+    label.innerHTML=`<span class="checkbox-icon">${selectedRedlines.includes(i)?'✓':''}</span><span>${opt.icon} <b>${opt.tag}</b></span>`;
+    label.onclick=function(){
+      this.classList.toggle('checked');
+      this.querySelector('.checkbox-icon').textContent=this.classList.contains('checked')?'✓':'';
+      const idx=selectedRedlines.indexOf(i);
+      if(idx>=0) selectedRedlines.splice(idx,1); else selectedRedlines.push(i);
+    };
+    rlDiv.appendChild(label);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// 直接出报告（跳过经纪人表单）
+function goToReport(){
+  document.getElementById('step-redline').classList.add('hidden');
+  showReport();
+}
+
+// ============ 评分 & 报告 ============
+function calcScores(){
+  const dims={'安全':[],'健康':[],'整洁':[],'温暖':[],'美观':[],'惬意':[]};
+  QUESTIONS.forEach(q=>{ if(answers[q.id]) dims[q.dim].push(answers[q.id]); });
+  const avg={}, weights=SCENARIO_WEIGHTS[currentScenario]||SCENARIO_WEIGHTS.rent;
+  for(const d of Object.keys(dims)){
+    const arr=dims[d];
+    // 每维只有1题，直接 score*20*weight 得百分制
+    avg[d]=arr.length>0?Math.min(100,Math.round(arr[0]*20*(weights[d]||1))):0;
+  }
+  return {avg,total:Math.round(Object.values(avg).reduce((a,b)=>a+b,0)/6)};
+}
+
+function showReport(){
+  document.getElementById('step-report').classList.remove('hidden');
+  const {avg,total}=calcScores();
+  const a=window.agentInfo;
+
+  document.getElementById('report-scenario').textContent=`场景：${SCENARIO_NAMES[currentScenario]} · 完成6+2题测评`;
+  document.getElementById('report-score').textContent=total;
+
+  const gradeEl=document.getElementById('report-grade');
+  if(total>=85){gradeEl.textContent='A+ 居住品质意识超强';gradeEl.style.color='#2ecc71';}
+  else if(total>=70){gradeEl.textContent='A 居住品质意识良好';gradeEl.style.color='#3498db';}
+  else if(total>=55){gradeEl.textContent='B 居住品质意识一般';gradeEl.style.color='#f39c12';}
+  else if(total>=40){gradeEl.textContent='C 居住品质意识待提升';gradeEl.style.color='#e67e22';}
+  else{gradeEl.textContent='D 居住品质意识需关注';gradeEl.style.color='#e74c3c';}
+
+  // 画像
+  const high=Object.entries(avg).sort((a,b)=>b[1]-a[1]).slice(0,2).map(x=>x[0]);
+  const low=Object.entries(avg).sort((a,b)=>a[1]-b[1]).slice(0,2).map(x=>x[0]);
+  document.getElementById('profile-text').textContent=
+    `你最在意「${high[0]}」和「${high[1]}」，对「${low[0]}」和「${low[1]}」相对没那么敏感。在${SCENARIO_NAMES[currentScenario]}场景下，你的居住品质认知偏向注重${high[0]}感。`;
+
+  // 理想画面
+  document.getElementById('scene-text').textContent=SCENE_MAP[selectedScene]||'';
+
+  // 雷达图
+  const svg=document.getElementById('radar-svg'),cx=120,cy=120,r=90;
+  const dims=['安全','健康','整洁','温暖','美观','惬意'];
+  const angles=dims.map((_,i)=>(Math.PI*2*i/6)-Math.PI/2);
+  const toCoord=(angle,val)=>[cx+r*val/100*Math.cos(angle),cy+r*val/100*Math.sin(angle)];
+  const toV=(a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];
+  let h='';
+  for(let s=1;s<=4;s++){const f=s/4,p=angles.map(a=>`${cx+r*f*Math.cos(a)},${cy+r*f*Math.sin(a)}`).join(' ');h+=`<polygon points="${p}" fill="none" stroke="#e0e0e0" stroke-width="0.5" opacity="0.6"/>`;}
+  angles.forEach(a=>{h+=`<line x1="${cx}" y1="${cy}" x2="${toV(a)[0]}" y2="${toV(a)[1]}" stroke="#e0e0e0" stroke-width="0.5"/>`;});
+  const dp=angles.map((a,d)=>toCoord(a,avg[dims[d]]).join(',')).join(' ');
+  h+=`<polygon points="${dp}" fill="rgba(61,90,62,0.25)" stroke="#3d5a3e" stroke-width="2"/>`;
+  angles.forEach((a,d)=>{const[x,y]=toCoord(a,avg[dims[d]]);h+=`<circle cx="${x}" cy="${y}" r="4" fill="#3d5a3e"/>`;});
+  angles.forEach((a,d)=>{const[x,y]=[cx+(r+18)*Math.cos(a),cy+(r+18)*Math.sin(a)];h+=`<text x="${x}" y="${y}" font-size="11" fill="#555" text-anchor="middle" dominant-baseline="middle">${dims[d]}</text>`;});
+  svg.innerHTML=h;
+
+  // 维度条
+  const colors={安全:'#e74c3c',健康:'#2ecc71',整洁:'#3498db',温暖:'#e67e22',美观:'#9b59b6',惬意:'#1abc9c'};
+  const list=document.getElementById('dim-list');
+  list.innerHTML='<div style="font-size:13px;font-weight:600;color:#333;margin-bottom:8px;">各维度得分</div>';
+  Object.entries(avg).forEach(([dim,score])=>{
+    const c=colors[dim]||'#999';
+    list.innerHTML+=`<div class="dim-item"><div class="dim-dot" style="background:${c}"></div><div class="dim-name">${dim}</div>`+
+      `<div class="dim-bar-wrap"><div class="dim-bar" style="width:${score}%;background:${c}"></div></div>`+
+      `<div class="dim-score">${score}</div></div>`;
+  });
+
+  // 红线
+  const rlDiv=document.getElementById('redline-tags'); rlDiv.innerHTML='';
+  const extraText=(document.getElementById('redline-extra')?.value||'').trim();
+  if(selectedRedlines.length===0&&!extraText){
+    rlDiv.innerHTML='<p style="font-size:12.5px;color:#999;text-align:center;padding:6px 0">暂无特别忌讳项</p>';
+  }else{
+    selectedRedlines.forEach(i=>{
+      rlDiv.innerHTML+=`<span class="redline-tag">${REDLINE_OPTIONS[i].icon} ${REDLINE_OPTIONS[i].tag}</span>`;
+    });
+    if(extraText) rlDiv.innerHTML+=`<p style="font-size:12.5px;color:#c62828;margin-top:8px;line-height:1.5;">📝 其他要求：${extraText}</p>`;
+  }
+
+  // 建议
+  const sugDiv=document.getElementById('suggestions'); sugDiv.innerHTML='';
+  const sugs={
+    安全:{icon:'🔒',color:'#e74c3c',text:'优先确认房源的门禁、监控、消防通道，安全是底线。'},
+    健康:{icon:'🌿',color:'#2ecc71',text:'关注空气质量、噪音和采光，长期健康的关键。'},
+    整洁:{icon:'✨',color:'#3498db',text:'优先考虑收纳空间充足的户型，住久了才舒服。'},
+    温暖:{icon:'☀️',color:'#e67e22',text:'日照和朝向非常重要，朝南的房子住着心情就是不一样。'},
+    美观:{icon:'🎨',color:'#9b59b6',text:'在预算范围内，优先保证客厅和卧室的视觉舒适度。'},
+    惬意:{icon:'🛋️',color:'#1abc9c',text:'阳台、飘窗、安静度——这些决定每天的幸福感。'},
+  };
+  low.forEach((dim,i)=>{
+    const s=sugs[dim];if(!s)return;
+    sugDiv.innerHTML+=`<div class="sug-item"><div class="sug-icon" style="background:${s.color}">${s.icon}</div>`+
+      `<div class="sug-text"><b>${i===0?'🔴 优先改善':'🟡 重点考虑'} · ${dim}（${avg[dim]}分）</b><br>${s.text}</div></div>`;
+  });
+  const highDim=Object.entries(avg).sort((a,b)=>b[1]-a[1])[0];
+  sugDiv.innerHTML+=`<div class="sug-item"><div class="sug-icon" style="background:#3d5a3e">✅</div>`+
+    `<div class="sug-text"><b>确认优势维度 · ${highDim[0]}（${highDim[1]}分）</b><br>看房时重点感受这个维度，不要妥协。</div></div>`;
+
+  // 经纪人联系卡（从URL参数读取）
+  if(a&&a.name){
+    document.getElementById('agent-avatar-text').textContent=a.name.charAt(0).toUpperCase();
+    document.getElementById('display-agent-name').textContent=a.name;
+    document.getElementById('display-agent-bio').textContent=a.bio||'专业房产顾问';
+    document.getElementById('display-phone').textContent=a.phone;
+    document.getElementById('display-phone-row').style.display='flex';
+    if(a.wechat){ document.getElementById('display-wechat').textContent=a.wechat; document.getElementById('display-wechat-row').style.display='flex'; }
+    else{ document.getElementById('display-wechat-row').style.display='none'; }
+    if(a.company){ document.getElementById('display-company').textContent=a.company; document.getElementById('display-company-row').style.display='flex'; }
+    else{ document.getElementById('display-company-row').style.display='none'; }
+    document.getElementById('cta-call-btn').href=`tel:${a.phone}`;
   } else {
-    renderQuestion();
+    // 无经纪人信息时隐藏联系卡
+    document.getElementById('agent-contact').style.display='none';
+    document.getElementById('cta-box').style.display='none';
+  }
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ============ 重置 & 分享 ============
+function restart(){
+  currentScenario='';currentQ=0;answers={};checkboxStates={};
+  selectedScene='';selectedRedlines=[];
+  document.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('.checkbox-btn').forEach(b=>b.classList.remove('checked'));
+  if(document.getElementById('redline-extra')) document.getElementById('redline-extra').value='';
+  document.getElementById('step-report').classList.add('hidden');
+  if(hasAgentParams()||window.agentInfo?.name){
+    document.getElementById('page-entry').classList.remove('hidden');
+  }else{
+    document.getElementById('step-scenario').classList.remove('hidden');
   }
 }
 
-// ========== 报告生成 ==========
-function generateReport() {
-  const role = selectedRole;
-  const w = role.w;
-  
-  // 计算各维度得分
-  const dims = ['safe','health','neat','warm','beauty','cozy'];
-  const empathyScores = {};
-  const decisionScores = {};
-  const empathyLevels = {L1:[], L2:[], L3:[]};
-  
-  dims.forEach(d => {
-    const eScores = answers.filter((a, i) => QUESTIONS[i].dim === d && QUESTIONS[i].ability === 'empathy');
-    const dScores = answers.filter((a, i) => QUESTIONS[i].dim === d && QUESTIONS[i].ability === 'decision');
-    
-    empathyScores[d] = eScores.length > 0 ? eScores.reduce((s, a) => s + a.score, 0) / eScores.length : 0;
-    decisionScores[d] = dScores.length > 0 ? dScores.reduce((s, a) => s + a.score, 0) / dScores.length : 0;
-    
-    // 标准化到百分制 (最高分10分=100分)
-    empathyScores[d] = Math.min(100, Math.round(empathyScores[d] * 10));
-    decisionScores[d] = Math.min(100, Math.round(decisionScores[d] * 10));
-    
-    // 共情层级得分
-    dims.forEach(dd => {
-      ['L1','L2','L3'].forEach(lv => {
-        const lvScores = answers.filter((a, i) => QUESTIONS[i].dim === dd && QUESTIONS[i].ability === 'empathy' && QUESTIONS[i].level === lv);
-        if (lvScores.length > 0) {
-          empathyLevels[lv].push(lvScores.reduce((s, a) => s + a.score, 0) / lvScores.length);
-        }
-      });
-    });
-  });
-  
-  // 共情三层得分
-  const L1 = empathyLevels.L1.length > 0 ? Math.min(100, Math.round(empathyLevels.L1.reduce((s,v)=>s+v,0)/empathyLevels.L1.length * 10)) : 0;
-  const L2 = empathyLevels.L2.length > 0 ? Math.min(100, Math.round(empathyLevels.L2.reduce((s,v)=>s+v,0)/empathyLevels.L2.length * 10)) : 0;
-  const L3 = empathyLevels.L3.length > 0 ? Math.min(100, Math.round(empathyLevels.L3.reduce((s,v)=>s+v,0)/empathyLevels.L3.length * 10)) : 0;
-  
-  // 加权综合分
-  let empathyTotal = 0, decisionTotal = 0;
-  dims.forEach(d => {
-    empathyTotal += empathyScores[d] * w[d];
-    decisionTotal += decisionScores[d] * w[d];
-  });
-  empathyTotal = Math.round(empathyTotal);
-  decisionTotal = Math.round(decisionTotal);
-  const overall = Math.round(empathyTotal * 0.4 + decisionTotal * 0.6);
-  
-  // 等级
-  let grade, gradeDesc;
-  if (overall >= 85) { grade = '能帮客户实现'; gradeDesc = '共情和决策都强，客户信任你'; }
-  else if (overall >= 70) { grade = '能理解客户，部分能帮到'; gradeDesc = '有短板但基础在，补短板效果明显'; }
-  else if (overall >= 55) { grade = '能感知客户，但帮不了多少'; gradeDesc = '共情有但决策弱，急需提升专业能力'; }
-  else if (overall >= 40) { grade = '对客户感知不足，也帮不上忙'; gradeDesc = '两个维度都弱，先从共情练起'; }
-  else { grade = '需要重新理解"帮客户实现美好居住"'; gradeDesc = '基础缺失，建议从实战中重新建立认知'; }
-  
-  // 一句话诊断
-  let sentence;
-  if (empathyTotal >= 70 && decisionTotal < 55) sentence = '你懂客户，但帮不了客户——从"理解"到"实现"差一截';
-  else if (decisionTotal >= 70 && empathyTotal < 55) sentence = '你方案能力强，但不太懂客户——客户不是数据，得先听明白';
-  else if (empathyTotal >= 70 && decisionTotal >= 70) sentence = '你既能理解客户，也能帮客户实现——保持，精进细节';
-  else if (empathyTotal < 55 && decisionTotal < 55) sentence = '对客户感知不足，也帮不上忙——先从"听客户说话"练起';
-  else sentence = '基础可以但两面都不够硬——共情和决策需要同步提升';
-  
-  // 六维逐项
-  const dimData = dims.map(d => ({
-    key: d, ...DIM_META[d],
-    empathy: empathyScores[d],
-    decision: decisionScores[d]
-  }));
-  
-  // 排序找短板和优势
-  const allPoints = [];
-  dims.forEach(d => {
-    allPoints.push({dim: d, ability: 'empathy', score: empathyScores[d], label: DIM_META[d].name + '·共情', icon: DIM_META[d].icon, color: DIM_META[d].color});
-    allPoints.push({dim: d, ability: 'decision', score: decisionScores[d], label: DIM_META[d].name + '·决策', icon: DIM_META[d].icon, color: DIM_META[d].color});
-  });
-  allPoints.sort((a, b) => a.score - b.score);
-  const weak3 = allPoints.slice(0, 3);
-  const strong3 = allPoints.slice(-3).reverse();
-  
-  // 短板建议
-  const adviceMap = {
-    'safe_empathy': {title:'安全·共情',text:'练习"听到安全信号就警觉"——客户说"裂缝""没电梯""漏电"时，立即识别这是安全维度的事，不能轻描淡写'},
-    'safe_decision': {title:'安全·决策',text:'掌握产调流程、消防隐患排查、环境安全评估3个基本动作，带看时主动检查安全项'},
-    'health_empathy': {title:'健康·共情',text:'关注"身体不舒服"信号——客户说"味儿""吵""闷"时，先想"这是不是健康隐患"，不是"住住就好了"'},
-    'health_decision': {title:'健康·决策',text:'掌握甲醛检测+治理流程、噪音判断方法、防潮除霉方案，带看时主动检查健康项'},
-    'neat_empathy': {title:'整洁·共情',text:'"越住越乱"是失控感，"公区脏"是品质滑坡——听出整洁背后的心理影响'},
-    'neat_decision': {title:'整洁·决策',text:'学会厨卫翻新成本预估、收纳规划方案、物业评估标准，给客户具体改善路径'},
-    'warm_empathy': {title:'温暖·共情',text:'"不想回家"是温暖缺失的终极信号，"不认识邻居"是归属感的崩塌——别把这些当正常'},
-    'warm_decision': {title:'温暖·决策',text:'学会保温改造方案、社区匹配方法、氛围营造技巧——从"住得暖"到"想回家"'},
-    'beauty_empathy': {title:'美观·共情',text:'客户多看两眼就是信号，"挺特别"就是不喜欢——在意客户的审美反应'},
-    'beauty_decision': {title:'美观·决策',text:'掌握配色原则、软装中和方案、布局优化方法——低成本改美观是拿手活'},
-    'cozy_empathy': {title:'惬意·共情',text:'"6点起"是被压缩的生活质量，"没超市"是生活不便的缩影——掂出惬意缺失的分量'},
-    'cozy_decision': {title:'惬意·决策',text:'学会真实通勤测算、生活圈分析、隐私保护方案——帮客户优化"住得舒心"'}
-  };
-  
-  // 共情短板诊断
-  let empathyWeakText = '';
-  if (L1 < 60) empathyWeakText += 'L1听不准：客户说的话你判断不出是哪个维度的事——先练"听到关键词→关联维度"；';
-  if (L2 < 60) empathyWeakText += 'L2掂不重：知道是哪个维度但掂不出分量——追问"这对您影响有多大？"；';
-  if (L3 < 60) empathyWeakText += 'L3引不出：客户说不清你也接不住——试试3句追问模板："您最担心的是？""如果不解决，最影响您什么？""能具体说说哪种感觉吗？"';
-  
-  // ===== 渲染报告 =====
-  const report = document.getElementById('report-content');
-  report.innerHTML = `
-    <div class="report-header">
-      <div class="report-title">📋 风声·能力测评报告</div>
-      <div class="report-role">${role.icon} ${role.name}</div>
-      <div class="report-date">${new Date().toLocaleDateString('zh-CN')}</div>
-    </div>
-    
-    <!-- 一、综合诊断 -->
-    <div class="report-section">
-      <div class="report-section-title">一、综合诊断</div>
-      <div style="text-align:center;margin-bottom:16px">
-        <div class="report-score-big">${overall}</div>
-        <div class="report-score-label">综合评分（满分100）</div>
-      </div>
-      <div class="report-verdict">${grade}</div>
-      <div style="font-size:13px;color:var(--ts);margin-bottom:12px">${gradeDesc}</div>
-      <div class="report-sentence">${sentence}</div>
-      <div style="margin-top:12px;font-size:13px;color:var(--ts)">
-        共情分 <strong style="color:var(--p)">${empathyTotal}</strong> × 40% + 决策分 <strong style="color:var(--fire)">${decisionTotal}</strong> × 60% = <strong style="color:var(--dk)">${overall}</strong>
-      </div>
-    </div>
-    
-    <!-- 二、共情三层诊断 -->
-    <div class="report-section">
-      <div class="report-section-title">二、共情能力三层诊断</div>
-      <div class="triple-bar">
-        <div class="triple-item">
-          <div class="triple-score" style="color:${L1>=70?'var(--p)':L1>=50?'var(--fire)':'#c44'}">${L1}</div>
-          <div class="triple-label">L1 听出来</div>
-          <div class="triple-desc">识别维度<br>${L1>=70?'你能判断客户说的是哪个维度的事':L1>=50?'部分维度能识别，其他容易混淆':'经常判断错维度，需要加强识别力'}</div>
-        </div>
-        <div class="triple-item">
-          <div class="triple-score" style="color:${L2>=70?'var(--p)':L2>=50?'var(--fire)':'#c44'}">${L2}</div>
-          <div class="triple-label">L2 掂出来</div>
-          <div class="triple-desc">评估影响<br>${L2>=70?'你能掂出问题对不同客户的分量':L2>=50?'部分场景能评估，对人的敏感度不够':'经常轻描淡写，掂不出轻重'}</div>
-        </div>
-        <div class="triple-item">
-          <div class="triple-score" style="color:${L3>=70?'var(--p)':L3>=50?'var(--fire)':'#c44'}">${L3}</div>
-          <div class="triple-label">L3 引出来</div>
-          <div class="triple-desc">引导明确<br>${L3>=70?'客户说不清你能帮他说清楚':L3>=50?'偶尔能追问，但不够系统':'客户说不清你也接不住，需要练追问力'}</div>
-        </div>
-      </div>
-      ${empathyWeakText ? `<div class="report-sentence" style="margin-top:12px">${empathyWeakText}</div>` : ''}
-    </div>
-    
-    <!-- 三、雷达图 -->
-    <div class="report-section">
-      <div class="report-section-title">三、2维×6维雷达图</div>
-      <div class="radar-wrap">
-        <div id="radar-chart"></div>
-      </div>
-    </div>
-    
-    <!-- 四、六维逐项 -->
-    <div class="report-section">
-      <div class="report-section-title">四、六维逐项诊断</div>
-      <div class="dim-grid">
-        ${dimData.map(d => `
-          <div class="dim-card">
-            <div class="dim-icon">${d.icon}</div>
-            <div class="dim-info">
-              <div class="dim-name">${d.name}</div>
-              <div class="dim-scores">共情 <strong style="color:var(--p)">${d.empathy}</strong> / 决策 <strong style="color:var(--fire)">${d.decision}</strong></div>
-              <div class="dim-bar-wrap">
-                <div class="dim-bar" style="width:${d.empathy}%;background:${d.color}"></div>
-              </div>
-              <div class="dim-bar-wrap">
-                <div class="dim-bar" style="width:${d.decision}%;background:var(--fire)"></div>
-              </div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-    
-    <!-- 五、3个短板 -->
-    <div class="report-section">
-      <div class="report-section-title">五、最突出的3个能力短板</div>
-      <div class="item-list">
-        ${weak3.map((w, i) => `
-          <div class="item-row">
-            <div class="item-rank" style="color:${w.color}">${i+1}</div>
-            <div class="item-content">
-              <div class="item-title">${w.icon} ${w.label}：${w.score}分</div>
-              <div class="item-desc">${getDimDesc(w)}</div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-    
-    <!-- 六、3个优势 -->
-    <div class="report-section">
-      <div class="report-section-title">六、最突出的3个能力优势</div>
-      <div class="item-list">
-        ${strong3.map((s, i) => `
-          <div class="item-row">
-            <div class="item-rank" style="color:${s.color}">${i+1}</div>
-            <div class="item-content">
-              <div class="item-title">${s.icon} ${s.label}：${s.score}分</div>
-              <div class="item-desc">${getDimDesc(s, true)}</div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-    
-    <!-- 七、共情短板专项 -->
-    <div class="report-section">
-      <div class="report-section-title">七、共情短板专项</div>
-      <div class="report-sentence">
-        共情三层得分：${L1}/${L2}/${L3} → ${L1>=L2&&L1>=L3?'你听得出来但掂不出来引不出来，需要练"评估力+追问力"':L2>=L1&&L2>=L3?'你能掂出分量但引不出来，需要练"追问力"':'你需要先练"识别力"，听准了才能掂准、引准'}
-      </div>
-      ${empathyWeakText ? `<div class="advice-card" style="margin-top:12px"><div class="advice-text">${empathyWeakText}</div></div>` : ''}
-    </div>
-    
-    <!-- 八、务实建议 -->
-    <div class="report-section">
-      <div class="report-section-title">八、务实建议</div>
-      ${weak3.map((w, i) => {
-        const key = w.dim + '_' + w.ability;
-        const adv = adviceMap[key] || {title: w.label, text: '针对性练习这个测评点'};
-        return `
-          <div class="advice-card">
-            <div class="advice-num">短板${i+1}：${adv.title}（${w.score}分）</div>
-            <div class="advice-title">${adv.title}怎么补</div>
-            <div class="advice-text">${adv.text}</div>
-          </div>
-        `;
-      }).join('')}
-      <div class="advice-card">
-        <div class="advice-num">共情提升</div>
-        <div class="advice-title">练3句追问模板</div>
-        <div class="advice-text">①"您最担心的是？"<br>②"如果不解决这个，最影响您什么？"<br>③"能具体说说哪种感觉吗？"</div>
-      </div>
-    </div>
-    
-
-    <!-- 引流：开单导师 -->
-    <div class="cta-lead-card">
-      <div class="cta-lead-icon">🔥</div>
-      <div class="cta-lead-body">
-        <div class="cta-lead-title">开单导师帮你补短板</div>
-        <div class="cta-lead-desc">基于你的测评结果，AI开单导师为你定制提升方案，0.99元体验</div>
-        <a class="cta-lead-btn" href="https://www.coze.cn/s/iBGPJVnK/" target="_blank">立即体验 →</a>
-      </div>
-    </div>
-    <!-- 引流：IP设计（次要） -->
-    <a class="cta-ip-link" href="/ip-design/" target="_blank">🎨 免费生成你的专属IP形象 →</a>
-    <!-- 页脚 -->
-    <div class="report-footer">
-      <div class="report-footer-text">
-        品质居住六维标准 · 清华大学建筑学院 × 贝壳研究院 联合验证<br>
-        安全 > 健康 > 整洁 > 温暖 > 美观 > 惬意<br>
-        评分基于行业标准 + 12项能力测评 + 角色差异化权重综合评定
-      </div>
-    </div>
-  `;
-  
-  showScreen('screen-report');
-  
-  // 渲染雷达图
-  setTimeout(() => {
-    const chart = echarts.init(document.getElementById('radar-chart'));
-    chart.setOption({
-      tooltip: {},
-      legend: {
-        data: ['共情（你懂不懂客户）', '决策（你帮不帮得了客户）'],
-        bottom: 0,
-        textStyle: {fontSize: 12, color: '#555'}
-      },
-      radar: {
-        indicator: dims.map(d => ({name: DIM_META[d].icon + ' ' + DIM_META[d].name, max: 100})),
-        shape: 'polygon',
-        splitNumber: 4,
-        axisName: {color: '#555', fontSize: 12},
-        splitLine: {lineStyle: {color: '#e8e4d9'}},
-        splitArea: {areaStyle: {color: ['rgba(61,90,62,.02)','rgba(61,90,62,.04)']}},
-        axisLine: {lineStyle: {color: '#e8e4d9'}}
-      },
-      series: [{
-        type: 'radar',
-        data: [
-          {
-            value: dims.map(d => empathyScores[d]),
-            name: '共情（你懂不懂客户）',
-            lineStyle: {color: '#3d5a3e', width: 2},
-            areaStyle: {color: 'rgba(61,90,62,.15)'},
-            itemStyle: {color: '#3d5a3e'}
-          },
-          {
-            value: dims.map(d => decisionScores[d]),
-            name: '决策（你帮不帮得了客户）',
-            lineStyle: {color: '#c46a3a', width: 2},
-            areaStyle: {color: 'rgba(196,106,58,.12)'},
-            itemStyle: {color: '#c46a3a'}
-          }
-        ]
-      }]
-    });
-    window.addEventListener('resize', () => chart.resize());
-  }, 300);
-  
-  // 数据回传
-  submitData(role, overall, empathyTotal, decisionTotal, L1, L2, L3, empathyScores, decisionScores);
-}
-
-function getDimDesc(point, isStrength) {
-  const descs = {
-    safe_empathy: isStrength ? '你能听出客户对安全的隐忧，这是帮客户的第一步' : '懂客户怕什么，但可能还不够敏感',
-    safe_decision: isStrength ? '你能帮客户识别和排除安全风险，客户信任你' : '知道客户怕什么，但排不了风险',
-    health_empathy: isStrength ? '你能感知客户对健康的顾虑，不会忽视身体信号' : '知道客户担心，但感知不够敏锐',
-    health_decision: isStrength ? '你能帮客户判断和改善健康隐患' : '知道客户担心，但给不出方案',
-    neat_empathy: isStrength ? '你能理解客户对整洁的痛点' : '对整洁痛点感知一般',
-    neat_decision: isStrength ? '你能帮客户规划和实现整洁方案' : '方案也一般',
-    warm_empathy: isStrength ? '你能共情客户对温暖的渴望' : '能共情但不够深',
-    warm_decision: isStrength ? '你能帮客户营造和提升居住温暖感' : '能共情但不会营造温暖',
-    beauty_empathy: isStrength ? '你在意客户对美观的追求' : '不太在意客户对美的追求',
-    beauty_decision: isStrength ? '你能帮客户设计和匹配美观方案' : '不太会做美观方案',
-    cozy_empathy: isStrength ? '你特别懂客户对惬意生活的需求' : '对惬意需求关注不足',
-    cozy_decision: isStrength ? '帮客户优化惬意生活是拿手活' : '优化惬意度的能力有待提升'
-  };
-  return descs[point.dim + '_' + point.ability] || '';
-}
-
-function submitData(role, overall, empathy, decision, L1, L2, L3, eScores, dScores) {
-  const data = {
-    role: role.name,
-    overall: overall,
-    empathy: empathy,
-    decision: decision,
-    L1: L1, L2: L2, L3: L3,
-    safe_e: eScores.safe, safe_d: dScores.safe,
-    health_e: eScores.health, health_d: dScores.health,
-    neat_e: eScores.neat, neat_d: dScores.neat,
-    warm_e: eScores.warm, warm_d: dScores.warm,
-    beauty_e: eScores.beauty, beauty_d: dScores.beauty,
-    cozy_e: eScores.cozy, cozy_d: dScores.cozy,
-    source: 'assessment'
-  };
-  
-  // v2.1: 移除 formsubmit.co 和 web3forms 邮箱推送，防止垃圾邮件
-  // 数据仅通过 tracker.js 上报到 /api/event
-  if (typeof track === 'function') track('quiz_complete', data);
-}
-
-// ========== 数据监测 ==========
-const _startTime = Date.now();
-function track(eventType, extra = {}) {
-  const data = {
-    event_type: eventType,
-    page: "/assessment",
-    timestamp: new Date().toISOString(),
-    duration_sec: eventType === 'page_view' ? 0 : Math.round((Date.now() - _startTime) / 1000),
-    ...extra
-  };
-  // 仅内部上报，不再外发邮箱
-  if (window._fsQueue) {
-    window._fsQueue.push(data);
+function shareReport(){
+  // 尝试调用 Web Share API 或复制当前URL
+  if(navigator.share && navigator.canShare){
+    navigator.share({title:'我的居住品质报告','url':window.location.href}).catch(()=>{});
+  } else {
+    copyCurrentUrl();
   }
 }
-document.addEventListener("visibilitychange", function() {
-  if (document.visibilityState === "hidden") {
-    if (typeof track === 'function') track("page_leave", {
-      duration_sec: Math.round((Date.now()-_startTime)/1000)
-    });
+
+function copyCurrentUrl(){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(window.location.href).then(()=>showToast('✅ 已复制报告链接'));
+  } else {
+    const ta=document.createElement('textarea');
+    ta.value=window.location.href; ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); showToast('✅ 已复制报告链接');
+  }
+}
+
+// ============ Toast ============
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2000);
+}
+
+// ============ 身份识别 & 使用追踪 ============
+const IDENTITY_KEY='fengsheng_broker_identity';
+const USAGE_KEY='fengsheng_broker_usage';
+
+function loadIdentity(){
+  try{
+    const d=JSON.parse(localStorage.getItem(IDENTITY_KEY));
+    if(d&&d.phone&&d.company) return d;
+  }catch(e){}
+  return null;
+}
+function saveIdentity(info){
+  if(!info.remember) { localStorage.removeItem(IDENTITY_KEY); return; }
+  localStorage.setItem(IDENTITY_KEY, JSON.stringify(info));
+}
+function loadUsage(){
+  try{ return JSON.parse(localStorage.getItem(USAGE_KEY))||{}; }catch(e){ return {}; }
+}
+function saveUsage(u){ localStorage.setItem(USAGE_KEY, JSON.stringify(u)); }
+
+// ============ 页面切换 ============
+function showPage(pageId){
+  // 隐藏所有页面
+  ['page-setup','page-entry','step-scenario','step-question',
+   'step-scene-desc','step-redline','step-report','page-stats'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.classList.add('hidden');
+  });
+  // 显示目标页面
+  var target = document.getElementById(pageId);
+  if(target) target.classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function forgetIdentity(){
+  localStorage.removeItem(IDENTITY_KEY);
+  localStorage.removeItem(USAGE_KEY);
+  document.getElementById('welcome-back')?.classList.remove('show');
+  showPage('page-setup');
+}
+
+// 填充表单
+function fillBrokerForm(info){
+  if(!info) return;
+  if(info.name) document.getElementById('setup-name').value=info.name;
+  if(info.phone) document.getElementById('setup-phone').value=info.phone;
+  if(info.wechat) document.getElementById('setup-wechat').value=info.wechat;
+  if(info.bio) document.getElementById('setup-bio').value=info.bio;
+  if(info.company) document.getElementById('setup-company').value=info.company;
+  document.getElementById('remember-me').checked=true;
+}
+
+// 显示欢迎横幅
+function showWelcome(info){
+  const wb=document.getElementById('welcome-back');
+  if(!wb||!info) return;
+  document.getElementById('wb-avatar').textContent=(info.name||'?').charAt(0);
+  document.getElementById('wb-name').textContent=info.name||'';
+  document.getElementById('wb-phone').textContent=info.phone||'';
+  document.getElementById('wb-company').textContent=info.company||'';
+  wb.classList.add('show');
+}
+
+// 事件追踪
+function trackEvent(type, data){
+  const identity=loadIdentity();
+  const usage=loadUsage();
+  const key=identity?identity.phone:'anonymous';
+  if(!usage[key]) usage[key]={totalLinks:0,totalCompletions:0,month:null,monthLinks:0,monthCompletions:0,history:[]};
+  const u=usage[key];
+  const now=new Date(), ym=now.getFullYear()*100+now.getMonth();
+  if(u.month!==ym){ u.month=ym; u.monthLinks=0; u.monthCompletions=0; }
+  if(type==='link_generated'){ u.totalLinks++; u.monthLinks++; }
+  if(type==='assessment_completed'){ u.totalCompletions++; u.monthCompletions++; }
+  u.history.push({type,time:now.toISOString(),data});
+  saveUsage(usage);
+  // 上报到 Web3Forms API（静默提交，不发邮件）
+  fetch('https://api.web3forms.com/submit', {
+    method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body: JSON.stringify({access_key:'27c926eb-07d8-4a71-8bf8-f30ad73f8e39',type,identity,data,_subject:'六维品质测评数据'})
+  }).catch(()=>{});
+  updateStatsDisplay(key);
+}
+
+function updateStatsDisplay(phone){
+  const usage=loadUsage();
+  const u=usage[phone]; if(!u) return;
+  const el=id=>document.getElementById(id);
+  if(el('stats-links')) el('stats-links').textContent=u.totalLinks||0;
+  if(el('stats-completions')) el('stats-completions').textContent=u.totalCompletions||0;
+  if(el('stats-month-links')) el('stats-month-links').textContent=u.monthLinks||0;
+  if(el('stats-month-completions')) el('stats-month-completions').textContent=u.monthCompletions||0;
+}
+
+// 修改 generateShareLink：保存身份 + 追踪事件
+const _origGen=generateShareLink;
+generateShareLink=function(){
+  const name=document.getElementById('setup-name').value.trim();
+  const phone=document.getElementById('setup-phone').value.trim();
+  const company=document.getElementById('setup-company').value.trim();
+  if(!name||!phone||!company){ showToast('请填写名字、手机号和门店名称'); return; }
+  const remember=document.getElementById('remember-me')?.checked;
+  if(remember){
+    saveIdentity({name,phone,wechat:document.getElementById('setup-wechat').value.trim(),bio:document.getElementById('setup-bio').value.trim(),company,remember});
+  }
+  // 调用原始逻辑（不重复执行，直接跳转）
+  _origGen.call(this);
+  // 追踪事件
+  trackEvent('link_generated',{name,phone,company});
+};
+
+
+
+
+// 在 showReport 中追踪「测评完成」事件（客户视角）
+const _origShowReport=showReport;
+showReport=function(){
+  _origShowReport.call(this);
+  // 如果有 agent 参数，说明是经纪人分享的链接，追踪完成事件
+  if(hasAgentParams()){
+    const p=new URLSearchParams(window.location.search);
+    trackEvent('assessment_completed',{agentPhone:p.get('phone'),scenario:currentScenario});
+  }
+};
+
+console.log('[六维测评] 身份识别+使用追踪模块已加载');
+
+// 页面加载完毕后初始化身份（比改 IIFE 更可靠）
+document.addEventListener('DOMContentLoaded', function(){
+  const identity=loadIdentity();
+  if(identity&&!hasAgentParams()){
+    fillBrokerForm(identity);
+    showWelcome(identity);
+    updateStatsDisplay(identity.phone);
+    document.getElementById('stats-box')?.classList.add('show');
   }
 });
+// ============ 结束身份识别 ============
 
-// ========== 初始化 ==========
-initRoleGrid();
-track("page_view", {referrer: document.referrer});
 </script>
-
-<script>
-/* 数据监测: 放弃+反馈 */
-window.addEventListener("beforeunload", function() {
-  var prog = document.getElementById("progress-fill");
-  if (prog && prog.style.width && parseInt(prog.style.width) > 0 && parseInt(prog.style.width) < 100) {
-    if (typeof track === 'function') track("quiz_abandon", {progress: prog.style.width});
-  }
-});
-
-/* 游戏化+即时反馈系统 */
-(function(){
-  // 即时反馈语库
-  const dimFeedback={
-    '共情力':['你的共情力很敏锐！🔍','你善于捕捉客户情绪 🎯','客户的心声你听到了 💬'],
-    '专业力':['专业知识扎实！📚','你的专业判断很准确 🎓','行业标准你很清楚 ⚖️'],
-    '执行力':['执行力到位！⚡','行动力是你的强项 💪','说干就干，好品质 🚀'],
-    '沟通力':['沟通高手！🗣️','表达清晰有力 📡','沟通是成交的关键 🤝'],
-    '洞察力':['洞察力满分！👁️','你看到了别人看不到的 🔎','深挖需求，你最行 🧠'],
-    '学习力':['学习能力很强！📖','持续进步中 📈','学无止境，你在路上 🎓'],
-    '品质意识':['品质意识很棒！🏠','客户居住品质，你放在心上 ✨','好品质从你开始 💎'],
-    '服务意识':['服务意识到位！🛡️','把客户当家人 🤗','好服务=好口碑 🌟'],
-    '抗压能力':['抗压能力很强！🛡️','压力之下见真章 💪','逆风翻盘的料 🔥'],
-    '职业尊严':['职业尊严感很强！👔','为自己行业正名 🏆','专业自信最吸引人 ✨']
-  };
-  const defaultFeedback=['答得好！继续加油 💪','不错的判断！🎯','思路很清晰 🧠','继续保持！🔥','越来越顺手了 ✨'];
-  
-  let answeredCount=0;
-  let totalQuestions=28;
-  
-  // 显示即时反馈
-  window.showInstantFeedback=function(dimKey){
-    const pool=dimFeedback[dimKey]||defaultFeedback;
-    const msg=pool[Math.floor(Math.random()*pool.length)];
-    let el=document.getElementById('instant-feedback');
-    if(!el){
-      el=document.createElement('div');
-      el.id='instant-feedback';
-      el.className='instant-feedback';
-      document.body.appendChild(el);
-    }
-    el.textContent=msg;
-    el.classList.add('show');
-    setTimeout(()=>el.classList.remove('show'),1800);
-    answeredCount++;
-    updateProgress();
-    checkAchievements();
-  };
-  
-  // 更新进度条
-  function updateProgress(){
-    const fill=document.querySelector('.progress-bar-fill');
-    const counter=document.querySelector('.question-counter');
-    if(fill)fill.style.width=Math.round(answeredCount/totalQuestions*100)+'%';
-    if(counter)counter.innerHTML='第 <span>'+answeredCount+'</span> / '+totalQuestions+' 题';
-  }
-  
-  // 成就检查
-  const achievements={
-    first:{icon:'🎯',title:'测评先锋',desc:'完成了第一道题',triggered:false},
-    quarter:{icon:'🔥',title:'势不可挡',desc:'完成25%测评',triggered:false},
-    half:{icon:'⚡',title:'半程英雄',desc:'完成50%测评',triggered:false},
-    finish:{icon:'🏆',title:'品质服务者',desc:'完成全部测评',triggered:false}
-  };
-  
-  function checkAchievements(){
-    const pct=answeredCount/totalQuestions;
-    if(answeredCount===1&&!achievements.first.triggered){showAchievement('first');achievements.first.triggered=true;}
-    if(pct>=0.25&&!achievements.quarter.triggered){showAchievement('quarter');achievements.quarter.triggered=true;}
-    if(pct>=0.5&&!achievements.half.triggered){showAchievement('half');achievements.half.triggered=true;}
-    if(pct>=1&&!achievements.finish.triggered){showAchievement('finish');achievements.finish.triggered=true;}
-  }
-  
-  function showAchievement(key){
-    const a=achievements[key];
-    let el=document.getElementById('achievement-popup');
-    if(!el){
-      el=document.createElement('div');
-      el.id='achievement-popup';
-      el.className='achievement-popup';
-      document.body.appendChild(el);
-    }
-    el.innerHTML='<div class="ach-icon">'+a.icon+'</div><div class="ach-title">'+a.title+'</div><div class="ach-desc">'+a.desc+'</div>';
-    setTimeout(()=>el.classList.add('show'),100);
-    setTimeout(()=>el.classList.remove('show'),3000);
-  }
-  
-  // 拦截选项点击，触发即时反馈
-  // 通过MutationObserver监听测评区域的点击事件
-  document.addEventListener('click',function(e){
-    const opt=e.target.closest('.option-item, .option-btn, .opt-btn, [data-action="select"], button[class*="option"]');
-    if(opt){
-      // 从选项上下文推断维度
-      const qCard=opt.closest('.question-card, .q-card, [class*="question"]');
-      let dimKey='';
-      if(qCard){
-        const text=qCard.textContent||'';
-        Object.keys(dimFeedback).forEach(k=>{if(text.includes(k))dimKey=k;});
-      }
-      showInstantFeedback(dimKey);
-    }
-  },true);
-})();
-</script>
-
-
-<div id="fs-feedback" style="margin:24px auto;max-width:700px;text-align:center;padding:16px;background:rgba(255,255,255,0.6);border-radius:8px;">
-  <p style="font-size:14px;color:#666;margin-bottom:8px;">这个结果对你有用吗？</p>
-  <button onclick="fsTrack('feedback_useful',{value:'yes'});this.parentElement.innerHTML='<p style=font-size:14px;color:#2D6A4F;>👍 谢谢！你的反馈帮我们做得更好</p>'" style="background:#2D6A4F;color:#fff;border:none;padding:8px 20px;border-radius:20px;margin:0 6px;cursor:pointer;font-size:14px;">👍 有用</button>
-  <button onclick="fsTrack('feedback_useful',{value:'no'});this.parentElement.innerHTML='<p style=font-size:14px;color:#666;>👎 谢谢反馈，我们会持续改进</p>'" style="background:#f0f0f0;color:#666;border:none;padding:8px 20px;border-radius:20px;margin:0 6px;cursor:pointer;font-size:14px;">👎 没用</button>
-</div>
-  <div class="page-footer" style="text-align:center;padding:20px;border-top:1px solid #e0e0e0;margin-top:30px;font-size:12px;color:#999">
-  <div style="margin-bottom:8px">© 2026 风声 · 保留所有权利</div>
-  </div>
-
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"e02e5265cf6f49c09196db4252d69e7c","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
-<!-- v20260605c -->
 </html>

@@ -1,19 +1,20 @@
-<!-- v20260611-rev3 | 快回·客户解码器 · 四域版 | 风声VI统一版 -->
+<!-- v20260608-1250 | 快回·客户解码器 · 风声VI统一版 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>快回·客户解码器 | 风声</title>
-<meta name="description" content="客户的所有'不'都是一种'我还没准备好'——帮服务者看到客户行为背后的真实原因，知道该做什么。">
-<meta name="keywords" content="客户解码器,客户话术,销售话术,经纪人应答,客户沟通,居住服务,风声,fengsheng">
+<meta name="description" content="客户的所有'不'都是一种'我还没准备好'——帮经纪人看到客户行为背后的真实原因，知道该做什么。">
 <meta property="og:title" content="快回·客户解码器 | 风声">
-<meta property="og:description" content="选业务域→选客户表现→看到真实原因→知道该做什么">
+<meta property="og:description" content="选客户表现→看到真实原因→知道该做什么→参考话术">
 <meta property="og:image" content="https://fengsheng.tech/og-image.png">
 <meta property="og:url" content="https://fengsheng.tech/reply/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="keywords" content="客户解码器,房产经纪人话术,客户犹豫,客户比价,客户失联,经纪人回复技巧,房产销售话术,客户心理分析">
 <link rel="canonical" href="https://fengsheng.tech/reply/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"快回·客户解码器","url":"https://fengsheng.tech/reply/","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"description":"帮房产经纪人看到客户行为背后的真实原因，8大场景×道法术三层解码"}</script>
 <style>
 :root{
   --bg:#f7f4ef;--bg2:#e8e4d9;--card:#fff;--card-h:#faf8f5;
@@ -32,62 +33,54 @@ html{font-size:16px;-webkit-text-size-adjust:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:var(--fire);text-decoration:none}
 
+/* 顶栏 */
 .topbar{position:sticky;top:0;z-index:100;background:rgba(247,244,239,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:10px}
 .topbar .back{display:flex;align-items:center;gap:4px;color:var(--ts);font-size:13px;cursor:pointer;padding:4px 10px;border-radius:6px;transition:.2s;text-decoration:none}
 .topbar .back:hover{color:var(--p);background:var(--p-bg)}
 .topbar .title{font-size:15px;font-weight:800;color:var(--dk);letter-spacing:.5px}
 .topbar .title span{color:var(--fire)}
 
-.hero{padding:32px 8% 20px;text-align:center;background:linear-gradient(180deg,var(--p-bg) 0%,transparent 100%)}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--p-d);background:var(--p-bg);border:1px solid rgba(61,90,62,.12);border-radius:16px;padding:4px 12px;margin-bottom:12px;letter-spacing:2px}
+/* Hero */
+.hero{padding:36px 8% 24px;text-align:center;background:linear-gradient(180deg,var(--p-bg) 0%,transparent 100%)}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--p-d);background:var(--p-bg);border:1px solid rgba(61,90,62,.12);border-radius:16px;padding:4px 12px;margin-bottom:14px;letter-spacing:2px}
 .hero-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--p-l);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.hero h1{font-size:26px;font-weight:800;color:var(--dk);letter-spacing:-.3px;line-height:1.3;margin-bottom:8px}
+.hero h1{font-size:28px;font-weight:800;color:var(--dk);letter-spacing:-.3px;line-height:1.3;margin-bottom:8px}
 .hero h1 em{font-style:normal;color:var(--fire)}
-.hero .slogan{font-size:13px;color:var(--ts);max-width:320px;margin:0 auto 14px;line-height:1.7}
+.hero .slogan{font-size:14px;color:var(--ts);max-width:320px;margin:0 auto 16px;line-height:1.7}
 .hero .brand{display:inline-block;font-size:11px;color:var(--td);border:1px solid var(--border);border-radius:20px;padding:3px 12px}
 
-.layers{display:flex;gap:8px;padding:0 8% 16px;justify-content:center;flex-wrap:wrap}
-.layer-tag{display:flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600}
+/* 三层说明 */
+.layers{display:flex;gap:8px;padding:0 8% 20px;justify-content:center;flex-wrap:wrap}
+.layer-tag{display:flex;align-items:center;gap:4px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600}
 .layer-tag.dao{background:var(--dao-bg);color:var(--dao)}
 .layer-tag.fa{background:var(--fa-bg);color:var(--fa)}
 .layer-tag.shu{background:var(--shu-bg);color:var(--shu)}
 
+/* 场景选择 */
 .section-hd{padding:0 8%;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .section-dot{width:6px;height:6px;border-radius:50%;background:var(--fire)}
 .section-title{font-size:16px;font-weight:800;color:var(--dk)}
-
-/* 域选择 */
-.domains{padding:0 8%;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
-.domain-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:16px 14px;cursor:pointer;transition:all .25s;position:relative;box-shadow:var(--shadow)}
-.domain-card:hover{border-color:var(--p);box-shadow:0 2px 12px rgba(61,90,62,.1)}
-.domain-card:active{transform:scale(.97)}
-.domain-card.active{border-color:var(--p);background:var(--p-bg)}
-.domain-card .icon{font-size:28px;margin-bottom:6px}
-.domain-card .name{font-size:14px;font-weight:700;color:var(--dk);margin-bottom:2px}
-.domain-card .hint{font-size:11px;color:var(--td)}
-.domain-card .count{position:absolute;top:10px;right:10px;font-size:10px;padding:2px 8px;border-radius:10px;background:var(--p-bg);color:var(--p);font-weight:700}
-
-.scenes{padding:0 8%;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
-.scene-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 12px;cursor:pointer;transition:all .25s;position:relative;box-shadow:var(--shadow)}
+.scenes{padding:0 8%;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:28px}
+.scene-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 14px;cursor:pointer;transition:all .25s;position:relative;box-shadow:var(--shadow)}
 .scene-card:hover{border-color:var(--fire);box-shadow:0 2px 12px rgba(196,106,58,.1)}
 .scene-card:active{transform:scale(.97)}
 .scene-card.active{border-color:var(--fire);background:var(--fire-bg)}
-.scene-card .icon{font-size:22px;margin-bottom:4px}
-.scene-card .name{font-size:13px;font-weight:700;color:var(--dk);margin-bottom:2px}
+.scene-card .icon{font-size:24px;margin-bottom:6px}
+.scene-card .name{font-size:14px;font-weight:700;color:var(--dk);margin-bottom:2px}
 .scene-card .hint{font-size:11px;color:var(--td)}
-.scene-card .badge{position:absolute;top:8px;right:8px;font-size:9px;padding:2px 7px;border-radius:10px;background:var(--dao-bg);color:var(--dao);font-weight:600}
+.scene-card .badge{position:absolute;top:10px;right:10px;font-size:9px;padding:2px 7px;border-radius:10px;background:var(--dao-bg);color:var(--dao);font-weight:600}
 
+/* 解码面板 */
 .decoder{padding:0 8% 100px;display:none}
 .decoder.show{display:block}
-.decoder-back{display:inline-flex;align-items:center;gap:4px;color:var(--ts);font-size:13px;cursor:pointer;margin-bottom:16px;padding:6px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);transition:.2s;text-decoration:none;font-family:inherit}
-.decoder-back:hover{color:var(--p);border-color:var(--p)}
-button.decoder-back{outline:none}
+.decoder-back{display:inline-flex;align-items:center;gap:4px;color:var(--ts);font-size:13px;cursor:pointer;margin-bottom:16px;padding:6px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);transition:.2s;text-decoration:none}
 .decoder-back:hover{color:var(--p);border-color:var(--p)}
 .scene-header{margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
-.scene-header h2{font-size:20px;font-weight:900;color:var(--dk);margin-bottom:4px}
+.scene-header h2{font-size:22px;font-weight:900;color:var(--dk);margin-bottom:4px}
 .scene-header .sub{font-size:13px;color:var(--ts)}
 
+/* 道·法·术 卡片 */
 .insight-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 16px;margin-bottom:14px;position:relative;box-shadow:var(--shadow)}
 .insight-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
 .insight-card.dao-card::before{background:var(--dao)}
@@ -97,9 +90,10 @@ button.decoder-back{outline:none}
 .card-label.dao{background:var(--dao-bg);color:var(--dao)}
 .card-label.fa{background:var(--fa-bg);color:var(--fa)}
 .card-label.shu{background:var(--shu-bg);color:var(--shu)}
-.card-title{font-size:15px;font-weight:800;color:var(--dk);margin-bottom:6px}
+.card-title{font-size:16px;font-weight:800;color:var(--dk);margin-bottom:6px}
 .card-desc{font-size:13px;color:var(--tx);line-height:1.8}
 
+/* 对话树 */
 .tree{margin-top:12px}
 .tree-round{margin-bottom:16px;border-left:2px solid var(--border);padding-left:14px;position:relative}
 .tree-round::before{content:'';position:absolute;left:-5px;top:14px;width:8px;height:8px;border-radius:50%;border:2px solid var(--border);background:var(--bg)}
@@ -117,41 +111,24 @@ button.decoder-back{outline:none}
 .script-bubble:hover .copy-btn{opacity:1}
 .script-bubble .copy-btn:hover{color:var(--fire);border-color:var(--fire)}
 .script-bubble .copy-btn.copied{color:var(--fa);border-color:var(--fa)}
+
+/* 分支 */
 .branch{margin-top:6px;padding:8px 10px;background:var(--p-bg);border-radius:6px;border:1px solid rgba(61,90,62,.1)}
 .branch .branch-label{font-size:10px;color:var(--p);font-weight:700;margin-bottom:3px}
 .branch .branch-text{font-size:12px;color:var(--ts);line-height:1.6}
 
+/* 底部CTA */
 .bottom-cta{position:fixed;bottom:0;left:0;right:0;padding:10px 16px;background:rgba(247,244,239,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;gap:8px;z-index:50}
 .bottom-cta .btn{flex:1;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit}
 .bottom-cta .btn:active{transform:scale(.96)}
 .bottom-cta .btn.primary{background:var(--fire);color:#fff;box-shadow:0 3px 10px rgba(196,106,58,.3)}
 .bottom-cta .btn.secondary{background:var(--card);color:var(--p-d);border:1px solid var(--border)}
-.bottom-cta .btn.ghost{background:var(--p);color:#fff;border:none;box-shadow:0 3px 10px rgba(61,90,62,.2)}
 
-.toast{position:fixed;top:50%;left:50%;transform:translateX(-50%) translateY(-50%) scale(.95);background:rgba(30,42,31,.92);color:#fff;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;opacity:0;transition:.25s;z-index:500;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,.25)}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(-50%) scale(1)}
+/* Toast */
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--p);color:#fff;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:.3s;z-index:200;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* 面包屑 */
-.breadcrumb{display:flex;align-items:center;gap:6px;padding:10px 8% 6px;font-size:12px;color:var(--ts);flex-wrap:wrap}
-.breadcrumb .bc-home{cursor:pointer;color:var(--ts);padding:2px 8px;border-radius:6px;transition:.15s}
-.breadcrumb .bc-home:hover{background:var(--p-bg);color:var(--p)}
-.breadcrumb .bc-mid{cursor:pointer;color:var(--ts);padding:2px 8px;border-radius:6px;transition:.15s}
-.breadcrumb .bc-mid:hover{background:var(--p-bg);color:var(--p)}
-.breadcrumb .bc-current{color:var(--charcoal);font-weight:600;padding:2px 8px;border-radius:6px}
-.breadcrumb .bc-sep{color:var(--border);font-weight:500}
-
-/* 豆包智能体弹窗 */
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:300;display:none;align-items:center;justify-content:center;padding:16px}
-.modal-overlay.show{display:flex}
-.modal{background:var(--card);border-radius:12px;max-width:520px;width:100%;max-height:80vh;overflow-y:auto;padding:24px 20px;position:relative}
-.modal h3{font-size:18px;font-weight:800;color:var(--dk);margin-bottom:6px}
-.modal .modal-sub{font-size:12px;color:var(--ts);margin-bottom:16px}
-.modal pre{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12px;line-height:1.7;white-space:pre-wrap;word-break:break-all;color:var(--tx);max-height:50vh;overflow-y:auto;font-family:inherit}
-.modal .modal-close{position:absolute;top:16px;right:16px;font-size:20px;color:var(--td);cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--border);background:var(--card)}
-.modal .modal-close:hover{color:var(--fire);border-color:var(--fire)}
-.modal .modal-actions{margin-top:14px;display:flex;gap:8px}
-.modal .modal-actions .btn{flex:1}
-
+/* 更多工具入口 */
 .more-tools{padding:0 8% 24px}
 .tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tool-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 14px;transition:all .25s;text-decoration:none;display:block;box-shadow:var(--shadow)}
@@ -161,87 +138,16 @@ button.decoder-back{outline:none}
 .tool-name{font-size:14px;font-weight:700;color:var(--dk);margin-bottom:2px}
 .tool-desc{font-size:11px;color:var(--td);line-height:1.5}
 
-/* AI 智能解码样式 */
-.ai-decode-section{padding:0 0 24px}
-.ai-chat-container{max-width:640px;margin:0 auto;padding:0 8%}
-.ai-welcome{display:flex;gap:12px;margin-bottom:20px;align-items:flex-start}
-.ai-avatar{width:36px;height:36px;border-radius:50%;background:var(--p-bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.ai-bubble{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;flex:1;box-shadow:var(--shadow)}
-.ai-bubble p{font-size:13px;color:var(--tx);line-height:1.7;margin-bottom:6px}
-.ai-bubble p:last-child{margin-bottom:0}
-.ai-bubble strong{color:var(--p-d)}
-.ai-messages{margin-bottom:16px}
-.ai-message{display:flex;gap:12px;margin-bottom:16px;align-items:flex-start;animation:fadeIn .3s ease}
-.ai-message.user{flex-direction:row-reverse}
-.ai-message .msg-bubble{max-width:80%;padding:12px 14px;border-radius:12px;font-size:13px;line-height:1.7}
-.ai-message.ai .msg-bubble{background:var(--card);border:1px solid var(--border);color:var(--tx);box-shadow:var(--shadow)}
-.ai-message.user .msg-bubble{background:var(--p);color:#fff}
-.ai-message .msg-time{font-size:10px;color:var(--td);margin-top:4px;text-align:right}
-.ai-message.ai .msg-time{text-align:left}
-.ai-dao-fa-shu{margin-top:12px;padding:14px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
-.ai-dao-fa-shu .dfs-row{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.ai-dao-fa-shu .dfs-row:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
-.ai-dao-fa-shu .dfs-label{font-size:11px;font-weight:700;margin-bottom:4px;display:inline-block;padding:2px 8px;border-radius:4px}
-.ai-dao-fa-shu .dfs-label.dao{background:var(--dao-bg);color:var(--dao)}
-.ai-dao-fa-shu .dfs-label.fa{background:var(--fa-bg);color:var(--fa)}
-.ai-dao-fa-shu .dfs-label.shu{background:var(--shu-bg);color:var(--shu)}
-.ai-dao-fa-shu .dfs-text{font-size:13px;color:var(--tx);line-height:1.7}
-.ai-input-area{display:flex;gap:8px;margin-bottom:8px}
-.ai-input-area textarea{flex:1;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;resize:none;outline:none;transition:.2s;background:var(--card)}
-.ai-input-area textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(61,90,62,.08)}
-.ai-send-btn{padding:10px 20px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
-.ai-send-btn:hover{background:var(--p-d)}
-.ai-send-btn:disabled{background:var(--td);cursor:not-allowed}
-.ai-send-btn svg{flex-shrink:0}
-.ai-hint{text-align:center;font-size:11px;color:var(--td);padding:0 8%}
-.ai-loading{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:16px}
-.ai-loading .loading-dots{display:flex;gap:4px}
-.ai-loading .loading-dots span{width:6px;height:6px;border-radius:50%;background:var(--p-l);animation:dotPulse 1.4s infinite}
-.ai-loading .loading-dots span:nth-child(2){animation-delay:.2s}
-.ai-loading .loading-dots span:nth-child(3){animation-delay:.4s}
-@keyframes dotPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.2)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
+/* 响应式 */
 @media(min-width:768px){
-  .domains{grid-template-columns:repeat(4,1fr);max-width:720px;margin:0 auto 24px}
-  .scenes{grid-template-columns:repeat(3,1fr);max-width:720px;margin:0 auto 24px}
+  .scenes{grid-template-columns:repeat(4,1fr);max-width:720px;margin:0 auto 28px}
   .decoder{max-width:640px;margin:0 auto;padding:0 8% 100px}
-  .hero h1{font-size:34px}
+  .hero h1{font-size:36px}
   .hero .slogan{max-width:480px}
 }
 </style>
-<!-- 全站数据追踪器 v1.0 -->
-<script src="/tracker.js" async></script>
 </head>
 <body>
-
-<!-- 风声统一导航栏 -->
-<nav class="fs-nav">
-  <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
-  <div class="fs-nav-links">
-    <a href="/">首页</a>
-    <a href="/quality-test/">品质测评</a>
-    <a href="/care-test/">关怀测评</a>
-    <a href="/reply/">客户解码</a>
-    <a href="/s1-report/">带看报告</a>
-    <a href="/knowledge">知识底座</a>
-    <a href="/dashboard/">管理看板</a>
-  </div>
-  <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
-</nav>
-<style>
-.fs-nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:#fff;border-bottom:1px solid rgba(80,90,70,.09);position:sticky;top:0;z-index:100}
-.fs-nav-brand{font-size:16px;font-weight:700;color:#3d5a3e;text-decoration:none;display:flex;align-items:center;gap:4px}
-.fs-nav-links{display:flex;gap:6px}
-.fs-nav-links a{padding:5px 10px;font-size:12px;color:#555;text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
-.fs-nav-links a:hover{background:rgba(61,90,62,.06);color:#3d5a3e}
-.fs-nav-menu{display:none;background:none;border:none;font-size:20px;cursor:pointer;color:#3d5a3e;padding:8px}
-@media (max-width:767px){
-  .fs-nav-links{display:none;position:absolute;top:52px;left:0;right:0;background:#fff;flex-direction:column;padding:10px;border-bottom:1px solid rgba(80,90,70,.09);box-shadow:0 4px 12px rgba(0,0,0,.08)}
-  .fs-nav.open .fs-nav-links{display:flex}
-  .fs-nav-menu{display:block}
-}
-</style>
 
 <div class="toast" id="toast"></div>
 
@@ -251,136 +157,88 @@ button.decoder-back{outline:none}
 </div>
 
 <div class="hero">
-  <div class="hero-badge">P0 · 服务者实战工具</div>
+  <div class="hero-badge">P0 · 经纪人实战工具</div>
   <h1>客户说"不"，<br>你看到了<em>什么</em>？</h1>
-  <p class="slogan">客户的所有"不"都是一种"我还没准备好"<br>——不是给话术，是给规律，懂人性，自己找方法</p>
-  <span class="brand">风声 · 四域解码</span>
+  <p class="slogan">客户的所有"不"都是一种"我还没准备好"<br>——经纪人的工作不是推动客户，是帮客户准备好</p>
+  <span class="brand">风声 · 帮服务者配得上被客户好好对待</span>
 </div>
 
-<!-- 道/法/术三层标签（纯信息标签，不是按钮） -->
 <div class="layers">
   <span class="layer-tag dao">👁 道 · 人性规律</span>
   <span class="layer-tag fa">🎯 法 · 坚持原则</span>
   <span class="layer-tag shu">💬 术 · 参考话术</span>
 </div>
 
-<!-- 面包屑：动态显示当前层级 -->
-<div class="breadcrumb" id="breadcrumb" style="display:none"></div>
-
 <div class="section-hd">
-  <div class="section-dot" style="background:var(--p)"></div>
-  <div class="section-title">选择业务域</div>
-</div>
-<div class="domains" id="domains"></div>
-
-<div class="section-hd" id="sceneSection" style="display:none">
   <div class="section-dot"></div>
   <div class="section-title">选择客户表现</div>
 </div>
-<div class="scenes" id="scenes" style="display:none"></div>
+<div class="scenes" id="scenes"></div>
 
+<!-- 更多工具入口 - 分享流量导流 -->
 <div class="more-tools" id="moreTools">
   <div class="section-hd" style="padding:0;margin-bottom:10px">
     <div class="section-dot" style="background:var(--p)"></div>
     <div class="section-title">同行都在用</div>
   </div>
   <div class="tools-grid">
-    <div class="tool-card" onclick="showAiDecode()" style="cursor:pointer;border-color:var(--p);background:var(--p-bg)">
-      <div class="tool-icon">🤖</div>
-      <div class="tool-name" style="color:var(--p-d)">AI 智能解码</div>
-      <div class="tool-desc">不用选场景，直接描述客户表现，AI自动识别并给出道·法·术三层解码</div>
-    </div>
-    <a class="tool-card" href="/care-test/">
+    <a class="tool-card" href="/care-test/" onclick="track('tool_click','care-test')">
       <div class="tool-icon">🎯</div>
       <div class="tool-name">共情力测评</div>
       <div class="tool-desc">3分钟测出你的客户共情等级</div>
+    </a>
+    <a class="tool-card" href="/survey/" onclick="track('tool_click','survey')">
+      <div class="tool-icon">📊</div>
+      <div class="tool-name">成长调研</div>
+      <div class="tool-desc">聊聊你工作中的真实痛点</div>
     </a>
   </div>
 </div>
 
 <div class="decoder" id="decoder">
-  <button class="decoder-back" onclick="closeDecoder(event)">← 换一个场景</button>
+  <a class="decoder-back" onclick="closeDecoder()">← 换一个场景</a>
   <div class="scene-header" id="sceneHeader"></div>
   <div id="insightCards"></div>
 </div>
 
-<!-- AI 智能解码入口 -->
-<div class="ai-decode-section" id="aiDecodeSection" style="display:none">
-  <div class="section-hd" style="padding:0 8%;margin-bottom:12px">
-    <div class="section-dot" style="background:linear-gradient(135deg,#3d5a3e,#c46a3a)"></div>
-    <div class="section-title">🤖 AI 智能解码</div>
-  </div>
-  <div class="ai-chat-container" id="aiChatContainer">
-    <div class="ai-welcome">
-      <div class="ai-avatar">🌬️</div>
-      <div class="ai-bubble">
-        <p>你好，我是风声 AI 解码助手。</p>
-        <p>直接告诉我你遇到的客户表现，我帮你从<strong>道·法·术</strong>三层解码——不用选场景，AI 自动识别。</p>
-      </div>
-    </div>
-    <div class="ai-messages" id="aiMessages"></div>
-    <div class="ai-input-area">
-      <textarea id="aiInput" placeholder="例如：客户看了3次房，每次都说'考虑考虑'，但就是不成交..." rows="2"></textarea>
-      <button class="ai-send-btn" id="aiSendBtn" onclick="sendAiDecode()">
-        <span>解码</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-      </button>
-    </div>
-    <div class="ai-hint">💡 试试追问："接下来怎么跟进？" 或 "客户同意了怎么收口？"</div>
-  </div>
-</div>
-
 <div class="bottom-cta">
-  <button class="btn secondary" onclick="openAgentModal()">生成豆包智能体</button>
+  <button class="btn secondary" onclick="location.href='/care-test/'">测一测我的共情力</button>
   <button class="btn primary" onclick="shareThis()">分享给同事</button>
 </div>
 
-<!-- 豆包智能体弹窗 -->
-<div class="modal-overlay" id="agentModal">
-  <div class="modal">
-    <div class="modal-close" onclick="closeAgentModal()">✕</div>
-    <h3>生成豆包智能体</h3>
-    <div class="modal-sub">复制以下 Prompt 到豆包「创建智能体」中，即可生成当前域的独立交互式解码助手</div>
-    <pre id="agentPrompt"></pre>
-    <div class="modal-actions">
-      <button class="btn secondary" onclick="closeAgentModal()">关闭</button>
-      <button class="btn ghost" onclick="copyAgentPrompt()">复制 Prompt</button>
-    </div>
-  </div>
-</div>
-
 <script>
-// ===================== 数据层 =====================
-const DOMAINS=[
-  {id:'trade',icon:'🔑',name:'房产交易',hint:'二手房/经纪/产权',count:8},
-  {id:'rental',icon:'📋',name:'房屋租赁',hint:'长租/管理/租客',count:6},
-  {id:'decor',icon:'🔧',name:'整装家居',hint:'整装/交付/施工',count:6},
-  {id:'homekeep',icon:'✨',name:'家政保洁',hint:'保洁/照护/标准化',count:6}
-];
-
 const SCENES=[
-// ========== 房产交易 ==========
-  {id:'hesitate',domain:'trade',icon:'🤔',name:'客户犹豫不决',hint:'说了好几次再看看',badge:'损失厌恶',
+  {
+    id:'hesitate',icon:'🤔',name:'客户犹豫不决',hint:'说了好几次再看看',badge:'损失厌恶',
     daoTitle:'犹豫 ≠ 不想要，是怕选错',
     daoDesc:'客户犹豫的本质是"损失厌恶"——不是不想买，是怕买了后悔。大脑对损失的敏感度是收益的2.5倍。他不是在比较A和B，是在反复确认"选错了怎么办"。',
     faTitle:'不要推他选，帮他排除风险',
     faDesc:'原则1：永远不说"这套很好你赶紧定"——这是在加大他的决策压力\n原则2：把"为什么该买"变成"不买会怎样"——从收益框架切换到损失框架\n原则3：给他一个"反悔权"——降低他的心理试错成本',
     rounds:[
-      {label:'开场探因',labelSub:'第一轮',
+      {
+        label:'开场探因',labelSub:'第一轮',
         scripts:[
           {role:'经纪人说',text:'哥，我观察您看这几套房子的状态，每次走到阳台都会站很久——您是不是在担心视野和采光的问题？'},
           {role:'经纪人说',text:'姐，您说"再看看"我特别理解，说实话买房子这种事谁都不敢随便定。我能问一下，您心里最纠结的是哪一点吗？'}
         ],
-        branches:[{label:'客户说"怕买贵了"',text:'→ 转入"比价"场景的解码逻辑'},{label:'客户说"怕买完降"',text:'→ 这是"损失厌恶"核心——转入第二轮'}]
+        branches:[
+          {label:'客户说"怕买贵了"',text:'→ 转入"比价"场景的解码逻辑'},
+          {label:'客户说"怕买完降"',text:'→ 这是"损失厌恶"核心——转入第二轮'}
+        ]
       },
-      {label:'分支跟进',labelSub:'第二轮',
+      {
+        label:'分支跟进',labelSub:'第二轮',
         scripts:[
           {role:'经纪人说',text:'我给您看一组数据：这个小区同户型去年成交价和现在的对比，您感受一下趋势。我不催您做决定，但这个信息对您的判断有用。'},
           {role:'经纪人说',text:'哥，我给您一个建议——咱们先不算"买不买"，先算"不买会怎样"。如果这套被别人定了，您看下一套大概等多久，等来的会不会更好？'}
         ],
-        branches:[{label:'客户开始算',text:'→ 他在用你的框架思考了，进入第三轮'},{label:'客户说"我再想想"',text:'→ 给他24小时承诺："我帮您锁定这套的底价，明天这个时间之前有效"'}]
+        branches:[
+          {label:'客户开始算',text:'→ 他在用你的框架思考了，进入第三轮'},
+          {label:'客户说"我再想想"',text:'→ 给他24小时承诺："我帮您锁定这套的底价，明天这个时间之前有效"'}
+        ]
       },
-      {label:'收口锁定',labelSub:'第三轮',
+      {
+        label:'收口锁定',labelSub:'第三轮',
         scripts:[
           {role:'经纪人说',text:'哥，我帮您把风险列出来：①价格波动——我这边有近3年数据；②楼层选择——您最在意采光还是安静？③违约责任——合同里都写清楚了。这三条您确认没问题，这事儿就没有"选错"的空间了。'},
           {role:'经纪人说',text:'姐，咱们这样——我帮您申请一个48小时的保留期，您不用现在做决定，但也不用担心看中的房子被别人拿走。两天时间，足够您想清楚了。'}
@@ -388,27 +246,37 @@ const SCENES=[
       }
     ]
   },
-  {id:'compare',domain:'trade',icon:'💰',name:'客户到处比价',hint:'总说别人家更便宜',badge:'锚定效应',
+  {
+    id:'compare',icon:'💰',name:'客户到处比价',hint:'总说别人家更便宜',badge:'锚定效应',
     daoTitle:'比价 ≠ 想便宜，是缺价值锚',
     daoDesc:'客户疯狂比价的本质是"锚定效应"缺失——他没有一个明确的参照标准来判断"值不值"。当你只报价格，他就只能用价格比。他不是在找最便宜的，是在找"买了不亏的确定性"。',
     faTitle:'不要拼价格，建立价值锚',
     faDesc:'原则1：永远不在价格上跟竞品比——那是在帮他确认"这东西只值这个价"\n原则2：先定义"什么才算好"，再谈价格——先锚标准，再锚价格\n原则3：用"单位价值"代替"总价"——把数字变小，把意义放大',
     rounds:[
-      {label:'开场探因',labelSub:'第一轮',
+      {
+        label:'开场探因',labelSub:'第一轮',
         scripts:[
           {role:'经纪人说',text:'哥，您说别的家更便宜，我信。但我特别想了解——您比下来，觉得价格差在哪了？是同样的东西标了不同价，还是东西本身就不一样？'},
           {role:'经纪人说',text:'姐，我特别理解您要多比比，买房子不该冲动。能问一下，您比价的时候最在意的是总价，还是觉得有些收费项看不懂？'}
         ],
-        branches:[{label:'客户说"就是觉得贵"',text:'→ 他缺价值锚，不是真穷——转入第二轮'},{label:'客户说"有家确实便宜"',text:'→ 让他具体说便宜在哪，多数人说不出'}]
+        branches:[
+          {label:'客户说"就是觉得贵"',text:'→ 他缺价值锚，不是真穷——转入第二轮'},
+          {label:'客户说"有家确实便宜"',text:'→ 让他具体说便宜在哪，多数人说不出'}
+        ]
       },
-      {label:'分支跟进',labelSub:'第二轮',
+      {
+        label:'分支跟进',labelSub:'第二轮',
         scripts:[
           {role:'经纪人说',text:'哥，我不跟您报总价，咱们算笔细账：这套房您住5年，摊下来每天XX块——比您现在租房还少。而且这个小区的物业、学位、增值空间，是不是您比价的时候没算进去的？'},
           {role:'经纪人说',text:'姐，我跟您说个判断标准——看一套房子值不值，别光看单价，看三样：①这个地段5年内的规划；②同小区过去3年的成交走势；③您每天通勤能省多少时间。这三样加一起，才是真实的"每平米价值"。'}
         ],
-        branches:[{label:'客户开始问细节',text:'→ 他接受了你的锚定框架，进入第三轮'},{label:'客户说"那也不便宜"',text:'→ 回到他的核心：不是便宜问题，是信任问题'}]
+        branches:[
+          {label:'客户开始问细节',text:'→ 他接受了你的锚定框架，进入第三轮'},
+          {label:'客户说"那也不便宜"',text:'→ 回到他的核心：不是便宜问题，是信任问题'}
+        ]
       },
-      {label:'收口锁定',labelSub:'第三轮',
+      {
+        label:'收口锁定',labelSub:'第三轮',
         scripts:[
           {role:'经纪人说',text:'哥，我帮您做一个"价值清单"——把您看过的几套房子，按我刚才说的三个维度打分。您一看就知道哪套"不亏"。价格是您看到的，价值是我帮您算清楚的。'},
           {role:'经纪人说',text:'姐，我有一个建议：您看中的那套便宜X万，我帮您查一下它为什么便宜——是楼层问题、产权问题、还是业主急售？搞清楚这个，您心里就有底了。我帮您查，您不用自己跑。'}
@@ -416,111 +284,151 @@ const SCENES=[
       }
     ]
   },
-  {id:'quality',domain:'trade',icon:'🔍',name:'客户挑品质毛病',hint:'总觉得哪里不对',badge:'信任凭证',
+  {
+    id:'quality',icon:'🔍',name:'客户挑品质毛病',hint:'总觉得哪里不对',badge:'信任凭证',
     daoTitle:'挑毛病 ≠ 眼光高，是缺信任凭证',
     daoDesc:'客户反复挑毛病的本质是"信任缺失"——他不是真的发现了问题，是在用挑毛病的方式索取"你值得信任"的证据。每个毛病背后都是一个问题："你能不能给我一个让我放心的理由？"',
     faTitle:'不要辩解，提供凭证',
     faDesc:'原则1：永远不说"这个没问题"——没凭据的保证比沉默更可疑\n原则2：每个毛病都用"证据"回应，不用"保证"回应\n原则3：主动暴露小缺陷——主动承认的不完美比被动发现的可信10倍',
     rounds:[
-      {label:'开场探因',labelSub:'第一轮',
+      {
+        label:'开场探因',labelSub:'第一轮',
         scripts:[
           {role:'经纪人说',text:'哥，您说的这个墙面问题我记下了。我直说——您是不是担心买完发现更多隐藏问题？这个担心特别合理。'},
           {role:'经纪人说',text:'姐，您看得仔细，说明您是真在意品质。我这边有这套房的验房报告，咱们对着逐条看，比您自己找问题更系统。'}
         ],
-        branches:[{label:'客户说"你们都这么说"',text:'→ 信任问题，不是品质问题——转入第二轮'},{label:'客户愿意看报告',text:'→ 他在给你机会证明自己'}]
+        branches:[
+          {label:'客户说"你们都这么说"',text:'→ 信任问题，不是品质问题——转入第二轮'},
+          {label:'客户愿意看报告',text:'→ 他在给你机会证明自己'}
+        ]
       },
-      {label:'分支跟进',labelSub:'第二轮',
+      {
+        label:'分支跟进',labelSub:'第二轮',
         scripts:[
           {role:'经纪人说',text:'哥，我不光给您看验房报告，我还主动说两个这个小区的共性问题——X栋靠马路那排有噪音，低楼层返潮。我没必要藏着，因为您迟早会发现。我先把问题摆出来，咱们再谈哪些能解决、哪些能接受。'},
           {role:'经纪人说',text:'姐，我建议咱们这样——您挑出最在意的3个点，我每个点都给您书面承诺：如果是开发商的问题，我帮您走质保流程；如果是使用问题，我告诉您维护成本。白纸黑字，比嘴上说"放心"管用。'}
         ],
-        branches:[{label:'客户态度软化',text:'→ 信任在建立，进入第三轮'},{label:'客户还在挑',text:'→ 停止回应具体问题，回到信任层面'}]
+        branches:[
+          {label:'客户态度软化',text:'→ 信任在建立，进入第三轮'},
+          {label:'客户还在挑',text:'→ 停止回应具体问题，回到信任层面'}
+        ]
       },
-      {label:'收口锁定',labelSub:'第三轮',
+      {
+        label:'收口锁定',labelSub:'第三轮',
         scripts:[
           {role:'经纪人说',text:'哥，我理解您谨慎。这样——我帮您约一次第三方验房，费用我出。验完您决定，如果验出大问题，您不用买；如果没问题，您心里也踏实了。我把选择权交给您，也把专业判断交给第三方。'},
-          {role:'经纪人说',text:'姐，我做了5年这个小区，手上成交了30多套，每套的验房记录我都有。您这是第4套让我验的，前3套业主现在住得好好的。我不是在卖房子给您，我是在帮您确认这个决定对不对。'}
+          {role:'经纪人说',text:'姐，我做了5年这个小区，手上成交了30多套，每套的验房记录我都有。您这是第4套让我验的，前3套业主现在美好居住好的。我不是在卖房子给您，我是在帮您确认这个决定对不对。'}
         ]
       }
     ]
   },
-  {id:'delay',domain:'trade',icon:'🐢',name:'客户说不急',hint:'总是慢慢来不着急',badge:'没痛点',
+  {
+    id:'delay',icon:'🐢',name:'客户说不急',hint:'总是慢慢来不着急',badge:'没痛点',
     daoTitle:'不急 ≠ 不需要，是没痛点',
     daoDesc:'客户说"不急"的本质是"缺乏紧迫感"——不是真不需要，是没感受到"晚一天有什么损失"。人在没有痛感的情况下不会行动。你的任务不是催他，是帮他看见"不行动的代价"。',
     faTitle:'不要催促，制造合理紧迫感',
     faDesc:'原则1：永远不说"这套快没了"——硬催只会让他更防备\n原则2：用事实制造紧迫感，不用话术——数据比"快点"有力100倍\n原则3：把"不急"的代价量化——不是"晚买贵"，是"晚买少什么"',
     rounds:[
-      {label:'开场探因',labelSub:'第一轮',
+      {
+        label:'开场探因',labelSub:'第一轮',
         scripts:[
           {role:'经纪人说',text:'哥，您说不急我理解——现在市场确实不像前几年那么紧张。我能问一下，您大概打算什么时候定下来？是今年还是明年？我帮您看看时机。'},
           {role:'经纪人说',text:'姐，不急是对的，买房子急不得。不过我想确认一点——您是"现在不想买"还是"想买但不着急定"？这两个策略完全不一样。'}
         ],
-        branches:[{label:'客户说"今年肯定买"',text:'→ 有时间框架，进入第二轮'},{label:'客户说"看情况"',text:'→ 缺痛点，帮他看见成本'}]
+        branches:[
+          {label:'客户说"今年肯定买"',text:'→ 有时间框架，进入第二轮'},
+          {label:'客户说"看情况"',text:'→ 缺痛点，帮他看见成本'}
+        ]
       },
-      {label:'分支跟进',labelSub:'第二轮',
+      {
+        label:'分支跟进',labelSub:'第二轮',
         scripts:[
-          {role:'经纪人说',text:'哥，我帮您算个账：这个片区今年新盘供应量比去年少了40%，您看中的这个户型整个小区就剩X套。我不是催您，是帮您确认——如果您今年要定，现在可能是选择最多的时候。'},
+          {role:'经纪人说',text:'哥，我帮您算个账：这个片区今年新盘供应量比去年少了40%，您看中的这个户型整个小区就剩X套。我不是催您，是帮您确认——如果您今年要定，现在可能是选择最多的时候。等到Q4，不是贵不贵的问题，是有没有的问题。'},
           {role:'经纪人说',text:'姐，我给您看个数据——这个小区过去12个月的成交周期：平均45天从挂牌到成交。您现在看的这套，已经挂了30天了。我不催您做决定，但这个信息对您的判断有用。'}
         ],
-        branches:[{label:'客户开始问"还有几套"',text:'→ 紧迫感建立了，进入第三轮'},{label:'客户说"那不急再看看"',text:'→ 可能是真不急，降低频率保持联系'}]
+        branches:[
+          {label:'客户开始问"还有几套"',text:'→ 紧迫感建立了，进入第三轮'},
+          {label:'客户说"那不急再看看"',text:'→ 可能是真不急，降低频率保持联系'}
+        ]
       },
-      {label:'收口锁定',labelSub:'第三轮',
+      {
+        label:'收口锁定',labelSub:'第三轮',
         scripts:[
-          {role:'经纪人说',text:'哥，我帮您做一个"时间成本清单"——从现在到年底，每个季度可选房源的变化、贷款政策可能的变化、您家庭计划的时间节点。您一看就知道什么时候出手最合适。'},
+          {role:'经纪人说',text:'哥，我帮您做一个"时间成本清单"——从现在到年底，每个季度可选房源的变化、贷款政策可能的变化、您家庭计划的时间节点。您一看就知道什么时候出手最合适。不催您，我帮您把时间线理清楚。'},
           {role:'经纪人说',text:'姐，这样——我帮您设一个"监测"：这套房如果有价格变动或者新出同户型，我第一时间通知您。您不用天天盯，我来帮您盯。什么时候感觉对了，随时找我。'}
         ]
       }
     ]
   },
-  {id:'poach',domain:'trade',icon:'⚡',name:'客户被同行抢单',hint:'跟了很久突然找别人买了',badge:'转换成本低',
+  {
+    id:'poach',icon:'⚡',name:'客户被同行抢单',hint:'跟了很久突然找别人买了',badge:'转换成本低',
     daoTitle:'被抢单 ≠ 对手强，是忠诚度不够',
     daoDesc:'客户被抢单的本质是"转换成本太低"——你和客户之间没有建立足够深的信任壁垒。客户不是觉得对手更好，是觉得"换一个也差不多"。你被替代，不是因为对手做了什么，而是你没做到什么。',
     faTitle:'不要骂对手，建立不可替代性',
     faDesc:'原则1：永远不说对手坏话——贬低对手不会抬高你\n原则2：每次接触都存一笔"信任存款"——信息、帮助、关怀，让换人的成本变高\n原则3：把服务前置——成交前就开始交付，让客户觉得"已经欠你了"',
     rounds:[
-      {label:'开场探因',labelSub:'第一轮',
+      {
+        label:'开场探因',labelSub:'第一轮',
         scripts:[
           {role:'经纪人说',text:'哥，我听说您在别处看了。我不追问原因，但我想确认一下——是我哪里没做好，还是您在那边发现了什么我没提供的东西？这个对我特别重要，您说实话。'},
           {role:'经纪人说',text:'姐，我反思了一下，可能是我在某些方面没做到位让您犹豫了。不管您最后选谁，我能帮您把关那边的合同吗？至少保证您不吃亏。'}
         ],
-        branches:[{label:'客户说"那边便宜"',text:'→ 他没感受到你的差异价值，转入第二轮'},{label:'客户说"也没什么原因"',text:'→ 转换成本太低，说明你的服务没有记忆点'}]
+        branches:[
+          {label:'客户说"那边便宜"',text:'→ 他没感受到你的差异价值，转入第二轮'},
+          {label:'客户说"也没什么原因"',text:'→ 转换成本太低，说明你的服务没有记忆点'}
+        ]
       },
-      {label:'分支跟进',labelSub:'第二轮',
+      {
+        label:'分支跟进',labelSub:'第二轮',
         scripts:[
           {role:'经纪人说',text:'哥，我理解。但我想让您知道一件事——您在我这看房这半个月，我帮您查的学区信息、跑的3次物业确认、整理的那份对比表，这些我都还在更新。不管您找谁买，这些信息对您都有用，我发给您。'},
           {role:'经纪人说',text:'姐，我不争了。但有一点——那边的经纪人知不知道您孩子明年要上学？知不知道您婆婆膝盖不好要电梯房？这些是我跟您聊天时了解的，换了人他得重新了解您。您确定要重新来一遍吗？'}
         ],
-        branches:[{label:'客户犹豫了',text:'→ 他在衡量切换成本，进入第三轮'},{label:'客户说"算了吧"',text:'→ 这次留不住了，但留下好印象为下次铺路'}]
+        branches:[
+          {label:'客户犹豫了',text:'→ 他在衡量切换成本，进入第三轮'},
+          {label:'客户说"算了吧"',text:'→ 这次留不住了，但留下好印象为下次铺路'}
+        ]
       },
-      {label:'收口锁定',labelSub:'第三轮',
+      {
+        label:'收口锁定',labelSub:'第三轮',
         scripts:[
           {role:'经纪人说',text:'哥，我给您一个选择——那边看也行，但我这边的信息和服务不停。您两边比较着来，我做那个让您心里有底的参考线。最后不管您选谁，我都保证您做的是充分了解后的决定。'},
-          {role:'经纪人说',text:'姐，不管怎样，我跟您的承诺不变——签约前的任何问题，随时找我。我做的这些不是为了这单生意，是为了让您整个买房过程少踩坑。这个态度，不会因为您找谁买而变。'}
+          {role:'经纪人说',text:'姐，不管怎样，我跟您的承诺不变——签约前的任何问题，随时找我。我做的这些不是为了这单生意，是为了让您在贝家的整个买房过程少踩坑。这个态度，不会因为您找谁买而变。'}
         ]
       }
     ]
   },
-  {id:'ghost',domain:'trade',icon:'👻',name:'客户突然失联',hint:'微信不回电话不接',badge:'逃避冲突',
+  {
+    id:'ghost',icon:'👻',name:'客户突然失联',hint:'微信不回电话不接',badge:'逃避冲突',
     daoTitle:'失联 ≠ 不想要，是逃避冲突',
     daoDesc:'客户失联的本质是"逃避冲突"——他不知道怎么拒绝你，所以选择消失。亚洲文化里直接说"不"很难，沉默是最安全的拒绝方式。但他失联恰恰说明他还有顾虑，真正不感兴趣的人会说"不用了谢谢"。',
     faTitle:'不要追问，降低回复压力',
     faDesc:'原则1：永远不连环追问——3条未回就停，再发就变成骚扰\n原则2：给他"不用回复"的退路——降低他的回复压力反而更容易回\n原则3：发"价值信息"而非"催促信息"——让他觉得回你是赚到了',
     rounds:[
-      {label:'开场探因',labelSub:'第一轮·3天后',
+      {
+        label:'开场探因',labelSub:'第一轮·3天后',
         scripts:[
           {role:'经纪人说',text:'哥，好久没联系，您不用回我这条。就是看到这套房降了X万，想到您之前关注过，顺手发给您。有需要再看，没需要忽略就行。'},
           {role:'经纪人说',text:'姐，打扰了，这个不用回。上次您问的学区划片政策，我帮您确认了——XX小学明年的划片范围不变。存着备用就好。'}
         ],
-        branches:[{label:'客户回了"谢谢"',text:'→ 通道打开了，转入第二轮'},{label:'客户还是没回',text:'→ 再等5天，发第二条价值信息'}]
+        branches:[
+          {label:'客户回了"谢谢"',text:'→ 通道打开了，转入第二轮'},
+          {label:'客户还是没回',text:'→ 再等5天，发第二条价值信息'}
+        ]
       },
-      {label:'分支跟进',labelSub:'第二轮',
+      {
+        label:'分支跟进',labelSub:'第二轮',
         scripts:[
           {role:'经纪人说',text:'哥，我知道您可能最近忙，或者有了别的打算，都正常。我就确认一下——不管您现在什么想法，我这边的信息和服务都在。您什么时候方便，一个字就行。'},
           {role:'经纪人说',text:'姐，我不催您做任何决定。但我想说——如果您是对之前那套有什么顾虑不想跟我说，完全没问题，您可以直说。我更怕您因为不好意思拒绝而硬扛，那对您不好。'}
         ],
-        branches:[{label:'客户说出顾虑',text:'→ 失联原因找到了，按对应场景解码'},{label:'客户说"最近忙"',text:'→ 给台阶，约下次联系时间'}]
+        branches:[
+          {label:'客户说出顾虑',text:'→ 失联原因找到了，按对应场景解码'},
+          {label:'客户说"最近忙"',text:'→ 给台阶，约下次联系时间'}
+        ]
       },
-      {label:'收口锁定',labelSub:'第三轮',
+      {
+        label:'收口锁定',labelSub:'第三轮',
         scripts:[
           {role:'经纪人说',text:'哥，这样——我帮您设个提醒，两周后我发您一次市场简报，不用回我。您什么时候想聊，随时找我。我在这行就是因为不喜欢催客户，但我会一直在这里。'},
           {role:'经纪人说',text:'姐，我理解。我这边帮您盯着就行，有适合您的我通知您，没有我就不打扰。买房子这事儿，缘分到了自然成。'}
@@ -528,27 +436,37 @@ const SCENES=[
       }
     ]
   },
-  {id:'policy',domain:'trade',icon:'📜',name:'客户担心政策变化',hint:'怕买了政策变',badge:'控制感缺失',
+  {
+    id:'policy',icon:'📜',name:'客户担心政策变化',hint:'怕买了政策变',badge:'控制感缺失',
     daoTitle:'怕政策 ≠ 谨慎，是控制感缺失',
     daoDesc:'客户焦虑政策的本质是"控制感缺失"——政策是他完全无法影响的外部变量，这让他极度不安。他不是真的在研究政策，是在找一个"万一政策变了我不亏"的安全感。',
     faTitle:'不要预测政策，建立应对方案',
     faDesc:'原则1：永远不替客户判断政策走向——预测错了比不预测更糟\n原则2：帮客户区分"确定性"和"不确定性"——让他看到哪些是确定的\n原则3：为每种不确定性准备"对冲方案"——可控感=应对方案×可行度',
     rounds:[
-      {label:'开场探因',labelSub:'第一轮',
+      {
+        label:'开场探因',labelSub:'第一轮',
         scripts:[
           {role:'经纪人说',text:'哥，您担心政策我太理解了。但我想帮您理清一件事——您最担心的是哪种政策变化？是利率、限购、还是税费？搞清楚了，我帮您逐条分析有没有影响。'},
           {role:'经纪人说',text:'姐，政策这事儿谁都没法打包票。但有一条是确定的——您的需求是真实的，政策变化影响的是时机，不是需求本身。咱们先确认您真正担心的是什么。'}
         ],
-        branches:[{label:'客户说"怕利率涨"',text:'→ 具体焦虑点，转入第二轮'},{label:'客户说"说不清就是怕"',text:'→ 泛化焦虑，需要帮他拆解'}]
+        branches:[
+          {label:'客户说"怕利率涨"',text:'→ 具体焦虑点，转入第二轮'},
+          {label:'客户说"说不清就是怕"',text:'→ 泛化焦虑，需要帮他拆解'}
+        ]
       },
-      {label:'分支跟进',labelSub:'第二轮',
+      {
+        label:'分支跟进',labelSub:'第二轮',
         scripts:[
           {role:'经纪人说',text:'哥，我帮您算笔账：现在利率X%，如果涨0.5%，您月供多XX块；如果跌0.5%，少XX块。我再帮您看一下过去5年的利率走势——涨跌幅都在什么范围。数据给您，您自己判断值不值这个风险。'},
           {role:'经纪人说',text:'姐，我把政策风险分成三类：①确定性高的（已有红头文件）→ 影响可控；②可能性中的（有信号但未定）→ 我帮您盯着；③纯猜的 → 不用想。您看，其实真正需要担心的就那么一两件事。'}
         ],
-        branches:[{label:'客户开始理性分析',text:'→ 焦虑降低，进入第三轮'},{label:'客户说"还是不放心"',text:'→ 需要兜底方案'}]
+        branches:[
+          {label:'客户开始理性分析',text:'→ 焦虑降低，进入第三轮'},
+          {label:'客户说"还是不放心"',text:'→ 需要兜底方案'}
+        ]
       },
-      {label:'收口锁定',labelSub:'第三轮',
+      {
+        label:'收口锁定',labelSub:'第三轮',
         scripts:[
           {role:'经纪人说',text:'哥，我帮您做一个"政策对冲方案"：如果利率涨了，我们有这3种还款策略调整；如果限购变了，您有这套备选方案。不确定的部分，我帮您盯，有变化24小时内通知您。您不是在赌政策，是在做有预案的决定。'},
           {role:'经纪人说',text:'姐，最坏的情况是什么？利率涨1%？那月供多XXX，对您生活影响多大？我帮您量化了——不是劝您买，是让您看到"最坏也没那么可怕"。想清楚了这一点，比听谁说"放心买"都管用。'}
@@ -556,601 +474,87 @@ const SCENES=[
       }
     ]
   },
-  {id:'complaint',domain:'trade',icon:'🔥',name:'客户投诉不满',hint:'对服务或房子不满意',badge:'还在乎',
+  {
+    id:'complaint',icon:'🔥',name:'客户投诉不满',hint:'对服务或房子不满意',badge:'还在乎',
     daoTitle:'投诉 ≠ 放弃，是还在乎',
     daoDesc:'客户投诉的本质是"还在乎"——真正放弃的人不会投诉，他直接消失。投诉是客户在用最激烈的方式说："我对你还有期待，但你让我失望了。"这是最后的信任窗口，处理好了比没投诉的客户更忠诚。',
     faTitle:'不要解释，先接住情绪',
     faDesc:'原则1：永远不先解释——解释=辩解，客户听到的不是理由是推脱\n原则2：先承认他的感受，再解决问题——"情绪接住了，耳朵才打开"\n原则3：超出他的预期来补偿——投诉客户不是要"公平"，是要"被重视"',
     rounds:[
-      {label:'开场探因',labelSub:'第一轮',
+      {
+        label:'开场探因',labelSub:'第一轮',
         scripts:[
           {role:'经纪人说',text:'哥，您说的这个情况我完全理解您生气。这事儿是我没做到位，我先认。您给我说详细点，我保证给您一个交代。'},
           {role:'经纪人说',text:'姐，对不起，这事让您不痛快了，是我的问题。您的感受是最重要的，您先说完，我认真听。'}
         ],
-        branches:[{label:'客户继续诉苦',text:'→ 他在释放情绪，让他说完，别打断'},{label:'客户说"算了"',text:'→ 这才是最危险的——他在放弃'}]
+        branches:[
+          {label:'客户继续诉苦',text:'→ 他在释放情绪，让他说完，别打断'},
+          {label:'客户说"算了"',text:'→ 这才是最危险的——他在放弃'}
+        ]
       },
-      {label:'分支跟进',labelSub:'第二轮',
+      {
+        label:'分支跟进',labelSub:'第二轮',
         scripts:[
           {role:'经纪人说',text:'哥，我给您三个方案：①这个问题我24小时内修好；②修不好我帮您协调换房；③如果两个都不行，费用我承担。您选一个，我来执行。'},
           {role:'经纪人说',text:'姐，我不光解决这个问题——我多走一步，帮您做一次全面检查，把可能出问题的地方都过一遍。这次是我疏忽了，我不让它再发生。'}
         ],
-        branches:[{label:'客户接受方案',text:'→ 危机转信任，进入第三轮'},{label:'客户说"不用了"',text:'→ 情绪还没接住，回到倾听'}]
+        branches:[
+          {label:'客户接受方案',text:'→ 危机转信任，进入第三轮'},
+          {label:'客户说"不用了"',text:'→ 情绪还没接住，回到倾听'}
+        ]
       },
-      {label:'收口锁定',labelSub:'第三轮',
+      {
+        label:'收口锁定',labelSub:'第三轮',
         scripts:[
           {role:'经纪人说',text:'哥，这事处理完了，但我不想就这么过去。我给您留一个直达我的通道——以后任何问题，不用走客服，直接找我。我欠您一个让步，这次我记着。'},
           {role:'经纪人说',text:'姐，感谢您愿意跟我说这些问题——很多客户不满意就直接走了，您愿意投诉说明您还信任我能解决。这个信任我不会再辜负。接下来我每周给您一个进度更新，直到您满意为止。'}
         ]
       }
     ]
-  },
-// ========== 房屋租赁 ==========
-  {id:'r-price',domain:'rental',icon:'💸',name:'租客嫌租金贵',hint:'总说太贵了能不能少',badge:'价值锚缺失',
-    daoTitle:'嫌贵 ≠ 没钱，是看不到值在哪',
-    daoDesc:'租客嫌贵的本质不是支付能力问题，是"价值锚缺失"——他把租金当纯支出，没看到背后的服务、便利、省心。当你说"这个价已经很低了"，你只是在帮他确认"这东西就值这个价"。',
-    faTitle:'不要降价，重新定义"贵不贵"',
-    faDesc:'原则1：永远不说"这个价已经很便宜了"——你在帮他认为确实贵\n原则2：把月租金拆成"每天成本"——数字变小，心理负担降低\n原则3：把"租金"变成"居住投资"——住得近省通勤、住得好省维修、住得稳省折腾',
-    rounds:[
-      {label:'重新锚定',labelSub:'第一轮',
-        scripts:[
-          {role:'管家说',text:'姐，您说贵我理解。我帮您算个账：这个价格摊到每天XX块，比您每天通勤多花的2小时值不值？时间才是最贵的。'},
-          {role:'管家说',text:'哥，我直说——同小区确实有便宜的，但您去看过的那套，公共区域没人管、维修自己掏钱、合同到期随时被赶。您比的不是价格，是居住体验。'}
-        ],
-        branches:[{label:'租客说"那也还是贵"',text:'→ 价值锚还没立住，进入第二轮'},{label:'租客开始问配套',text:'→ 他在用你的框架衡量了'}]
-      },
-      {label:'价值拆解',labelSub:'第二轮',
-        scripts:[
-          {role:'管家说',text:'姐，咱们把"贵"拆开看：您说的贵，是总价贵，还是觉得有些服务您用不上白花钱了？如果是后者，我帮您看看有没有更匹配的房型。'},
-          {role:'管家说',text:'哥，我给您列个清单：维修免费、公共区域每日保洁、24小时安保、合同期内不涨租。这些您自己搞，一年至少多花XX。您看到的租金，其实已经包含了一半的居住成本。'}
-        ],
-        branches:[{label:'租客说"有道理"',text:'→ 价值感建立，进入第三轮'},{label:'租客说"我考虑一下"',text:'→ 给他留白，不强推'}]
-      },
-      {label:'信任收口',labelSub:'第三轮',
-        scripts:[
-          {role:'管家说',text:'姐，我建议您先住一个月试试——不满意，按合同退租，费用我帮您降到最低。我敢这么说是因为住过的人90%都续了。贵不贵，住过才知道。'},
-          {role:'管家说',text:'哥，我不劝您。但我把同小区三套在租的房子信息都给您，您自己去比。比完您就知道，价格差的是哪，值不值您自己判断。'}
-        ]
-      }
-    ]
-  },
-  {id:'r-picky',domain:'rental',icon:'🔎',name:'租客要求太多',hint:'各种条件反复改',badge:'控制感需求',
-    daoTitle:'要求多 ≠ 挑剔，是想掌控生活',
-    daoDesc:'租客要求多的本质是"控制感需求"——租房意味着住在一个"不完全属于自己"的空间里，这让人本能地不安。每一个要求背后，都是在说"我想在这个空间里找到「我的感觉」"。',
-    faTitle:'不要嫌烦，把要求变成约定',
-    faDesc:'原则1：永远不说"这也不行那也不行"——你在否定他的生活方式\n原则2：把每个要求都变成"可商量的约定"——不是行不行，是怎么行\n原则3：帮他区分"必须的"和"想要的"——核心需求满足，其余可以妥协',
-    rounds:[
-      {label:'倾听分类',labelSub:'第一轮',
-        scripts:[
-          {role:'管家说',text:'姐，您说的这些我都记下了。我帮您分个类——哪些是"必须有"的，哪些是"有更好"的。先保证必须的，其余的我们逐条想办法。'},
-          {role:'管家说',text:'哥，您要求多说明您在意居住品质，这是好事。我一项项跟您确认，保证每条都有回应。'}
-        ],
-        branches:[{label:'租客说"都是必须的"',text:'→ 他在试探你的底线，转入第二轮'},{label:'租客愿意分类',text:'→ 他在配合你，进入第三轮'}]
-      },
-      {label:'协商置换',labelSub:'第二轮',
-        scripts:[
-          {role:'管家说',text:'姐，您要的这5条我看了，3条现成能做到，1条我帮您跟业主申请，1条确实做不到但我有替代方案——您听听看？'},
-          {role:'管家说',text:'哥，我理解您想养宠物，但这个小区确实不让。不过隔壁小区有个同户型的可以，我帮您问？或者您看这个小区的阳台够大，猫不出门其实也行。'}
-        ],
-        branches:[{label:'租客愿意听替代方案',text:'→ 他在妥协，进入第三轮'},{label:'租客说"一条不行就不租"',text:'→ 这不是真需求，是控制感测试'}]
-      },
-      {label:'书面确认',labelSub:'第三轮',
-        scripts:[
-          {role:'管家说',text:'姐，咱们把确认的这些都写进合同补充条款，白纸黑字。以后不管谁管这套房，您的权益都有保障。'},
-          {role:'管家说',text:'哥，您的要求我都答应了对吧？但我也跟您提一个请求——入住后有任何问题先跟我说，给我一次解决的机会，别直接投诉。咱们互相信任，住得都舒心。'}
-        ]
-      }
-    ]
-  },
-  {id:'r-repair',domain:'rental',icon:'🔧',name:'业主不肯维修',hint:'房子有问题业主不管',badge:'责任逃避',
-    daoTitle:'不修 ≠ 不认账，是觉得能糊弄过去',
-    daoDesc:'业主不肯修的本质是"责任逃避"——不是不承认该修，是觉得你不追究他就省了。租房市场的信息不对称让业主有天然优势：他知道你搬走比他修东西容易得多。',
-    faTitle:'不要吵架，用规则说话',
-    faDesc:'原则1：永远不口头争论——情绪对立只会让业主更不想修\n原则2：用合同条款+拍照取证——把"该不该修"变成"合同说了算"\n原则3：给业主"修比不修划算"的理由——修的成本vs不修的后果',
-    rounds:[
-      {label:'取证确认',labelSub:'第一轮',
-        scripts:[
-          {role:'管家说',text:'姐，您反映的问题我拍了照录了视频，时间戳都有。我帮您对照合同——这条属于业主维修范围，我把依据发给您，您转发给业主就行。'},
-          {role:'管家说',text:'哥，这个问题按合同第X条属于业主负责。我帮您出一份书面维修申请，您签字我递交，走正式流程比打电话管用。'}
-        ],
-        branches:[{label:'业主说"你先修我报销"',text:'→ 他在找台阶，进入第二轮'},{label:'业主说"租客弄坏的"',text:'→ 需要专业判断，申请第三方鉴定'}]
-      },
-      {label:'成本施压',labelSub:'第二轮',
-        scripts:[
-          {role:'管家说',text:'姐，我跟业主说了：这个问题如果不修，租客有权要求减租或者解除合同。减租的损失比维修费高多了。业主也是讲道理的，算一算就明白了。'},
-          {role:'管家说',text:'哥，我帮您把这个问题的维修报价拿到了——XX元。跟业主沟通后他同意了，但希望用他推荐的维修师傅，价格能便宜30%。您看行不行？'}
-        ],
-        branches:[{label:'业主同意修了',text:'→ 进入第三轮确认'},{label:'业主还是拖',text:'→ 启动合同维权流程'}]
-      },
-      {label:'闭环确认',labelSub:'第三轮',
-        scripts:[
-          {role:'管家说',text:'姐，维修完成了我帮您验收了，质量没问题。我把维修记录存档了，以后退租时不会因为这个问题扣您的押金。'},
-          {role:'管家说',text:'哥，这次维修我帮您全程跟进了。下次有问题直接找我，不用自己跟业主交涉，这是我的工作。'}
-        ]
-      }
-    ]
-  },
-  {id:'r-leave',domain:'rental',icon:'🚪',name:'租客要提前退租',hint:'住了一半说不想住了',badge:'沉没成本',
-    daoTitle:'退租 ≠ 不满意，是预期落差',
-    daoDesc:'提前退租的本质是"预期落差"——他住进来时的期待和现实不一致。落差越大，走得越坚决。不是房子变了，是他发现了一些之前没看到的东西，或者他的生活发生了变化。',
-    faTitle:'不要卡押金，先找到真正原因',
-    faDesc:'原则1：永远不先用押金威胁——那只会让他更想走\n原则2：找到退租的真实原因——30%的退租是可以挽回的\n原则3：如果留不住，让退租变成"暂停"而不是"结束"——留下转介绍的种子',
-    rounds:[
-      {label:'探因挽留',labelSub:'第一轮',
-        scripts:[
-          {role:'管家说',text:'哥，您说要退租我能理解。但我想确认——是房子的问题，还是您个人的情况变了？如果是房子的问题，我能解决的我不让您将就。'},
-          {role:'管家说',text:'姐，我先不说退租的事。您跟我说说，住这段时间最不满意的是什么？可能我帮您解决了，就不用折腾搬家了。'}
-        ],
-        branches:[{label:'租客说"噪音太大"',text:'→ 具体问题，可以解决，进入第二轮'},{label:'租客说"工作变动"',text:'→ 不可抗力，转入退租流程'}]
-      },
-      {label:'方案挽回',labelSub:'第二轮',
-        scripts:[
-          {role:'管家说',text:'哥，噪音这个事我帮您处理——我给物业提了加装隔音窗的申请，加一层隔音窗帘效果立竿见影。您给我一周时间，如果还吵，退租押金全退。'},
-          {role:'管家说',text:'姐，如果您是觉得这个户型不合适，我帮您在同小区换一套——不用重新签合同，也不用再交中介费，就当换了个房间。省得搬家折腾。'}
-        ],
-        branches:[{label:'租客愿意试试',text:'→ 60%概率留下，进入第三轮'},{label:'租客还是要走',text:'→ 帮他顺利退租，留下好感'}]
-      },
-      {label:'体面收尾',labelSub:'第三轮',
-        scripts:[
-          {role:'管家说',text:'哥，不管您走不走，我帮您把退租流程理清了——押金按合同7天退还，不留尾巴。以后如果还需要租房，我帮您留个VIP通道。'},
-          {role:'管家说',text:'姐，退租手续我帮您走最快的。不过我有个请求——您住这段时间的感受，好的不好的都跟我说说，我改进了，下一个租客住得更好。您的意见对我特别有价值。'}
-        ]
-      }
-    ]
-  },
-  {id:'r-renew',domain:'rental',icon:'🔄',name:'续租谈价僵持',hint:'业主想涨租客想降',badge:'损失厌恶',
-    daoTitle:'涨租 ≠ 贪心，是怕自己吃亏',
-    daoDesc:'续租谈价僵持的本质是"双方都在防亏损"——业主怕低于市场价亏了，租客怕高于去年亏了。两个人都不是在谈价格，是在谈"公平感"。',
-    faTitle:'不要站队，做双方的数据桥梁',
-    faDesc:'原则1：永远不当传话筒——单纯传话只会放大矛盾\n原则2：用数据替代情绪——市场价、同小区成交、通胀率，客观才可信\n原则3：帮双方找到"都不亏"的区间——不是50/50，是各自觉得值',
-    rounds:[
-      {label:'数据锚定',labelSub:'第一轮',
-        scripts:[
-          {role:'管家说',text:'姐，我帮您查了——同小区同户型今年成交价是XX，业主涨的X%其实低于市场涨幅。我不是替他说话，是让您看到真实行情。'},
-          {role:'管家说',text:'哥，我理解您不想涨。但我也得跟您说——这个价如果放到市场上重新招租，可能不止这个数。业主给您续约价，其实留了诚意。'}
-        ],
-        branches:[{label:'双方愿意看数据',text:'→ 有了共同参照，进入第二轮'},{label:'一方坚持不让',text:'→ 不是价格问题，是面子问题'}]
-      },
-      {label:'折中方案',labelSub:'第二轮',
-        scripts:[
-          {role:'管家说',text:'我有个折中方案：涨一半，另一半用服务抵——比如免费加一次深度保洁、维修响应升级到2小时。业主涨到了，租客也多得了实惠。'},
-          {role:'管家说',text:'或者这样——签两年约，今年涨X%，明年不涨。业主锁定了长期收益，租客也有预算确定性。双方都不亏。'}
-        ],
-        branches:[{label:'双方同意折中',text:'→ 谈判成功，进入第三轮'},{label:'一方还不同意',text:'→ 问清底线，最后尝试'}]
-      },
-      {label:'确认签约',labelSub:'第三轮',
-        scripts:[
-          {role:'管家说',text:'姐，新合同我帮您准备好了，价格和服务条款都按咱们谈的写。今天签了，明天就不用操这个心了。'},
-          {role:'管家说',text:'哥，续约这事能谈成，说明双方都是讲道理的人。以后住着有什么问题随时找我，我一直在。'}
-        ]
-      }
-    ]
-  },
-  {id:'r-complaint',domain:'rental',icon:'🔥',name:'租客投诉居住问题',hint:'噪音/漏水/邻居',badge:'还在乎',
-    daoTitle:'投诉 ≠ 找茬，是还在乎这个家',
-    daoDesc:'租客投诉居住问题的本质和买卖一样——"还在乎"。真不在乎的人直接搬走。投诉说明他想留下来，但需要你帮他解决。这是建立信任的最佳时机。',
-    faTitle:'不要推诿，先解决再说',
-    faDesc:'原则1：永远不说"这不归我管"——哪怕真不归你管，你也得帮他找到管的人\n原则2：响应速度比解决速度重要——24小时内必须有回应\n原则3：跟进到闭环——不是"我报了"，是"修好了您确认"',
-    rounds:[
-      {label:'快速响应',labelSub:'第一轮',
-        scripts:[
-          {role:'管家说',text:'哥，收到了，我现在就去看。您方便的话我半小时到，帮您确认问题。'},
-          {role:'管家说',text:'姐，抱歉让您遇到了这个问题。我先记录，今天之内给您回复处理方案。'}
-        ],
-        branches:[{label:'问题紧急（漏水/断电）',text:'→ 2小时内必须到场'},{label:'问题不紧急（噪音/邻居）',text:'→ 24小时内协调'}]
-      },
-      {label:'方案执行',labelSub:'第二轮',
-        scripts:[
-          {role:'管家说',text:'哥，我确认了，是楼上管道老化。我已经联系维修了，明天上午来修，修之前我帮您放个接水桶应急。'},
-          {role:'管家说',text:'姐，邻居噪音的事我帮您跟物业沟通了，物业明天上门提醒。如果一周内没改善，我帮您申请换到安静楼层。'}
-        ],
-        branches:[{label:'问题解决了',text:'→ 进入第三轮闭环'},{label:'问题没解决',text:'→ 升级处理，启动替代方案'}]
-      },
-      {label:'闭环回访',labelSub:'第三轮',
-        scripts:[
-          {role:'管家说',text:'哥，修好了我帮您验收了，不再漏了。这次维修记录我存档了，退租时不会因为这个扣您的钱。'},
-          {role:'管家说',text:'姐，问题处理完了，我过三天再确认一次。以后有任何问题，您直接找我比走客服快3倍。'}
-        ]
-      }
-    ]
-  },
-// ========== 整装家居 ==========
-  {id:'d-price',domain:'decor',icon:'💰',name:'客户嫌报价贵',hint:'觉得整装报价太高',badge:'价值感知模糊',
-    daoTitle:'嫌贵 ≠ 真觉得贵，是看不清钱花哪了',
-    daoDesc:'整装客户嫌贵的本质是"价值感知模糊"——整装涉及设计费、主材、辅材、人工、管理费等十几个项目，客户看到的只是一个总数。他不是觉得贵，是觉得"不透明"。',
-    faTitle:'不要总价解释，拆开让他看每一分钱',
-    faDesc:'原则1：永远不先报总价——先让他理解构成，再谈数字\n原则2：每个项目都给市场对比——不是"我们便宜"，是"市场价在这，我们在这"\n原则3：把"花了多少"变成"省了多少"——预算即决算，就是帮他省了增项的钱',
-    rounds:[
-      {label:'拆单展示',labelSub:'第一轮',
-        scripts:[
-          {role:'设计师说',text:'哥，报价我帮您拆成6个大项，每一项的明细和单价都在这张表上。您先看有没有看不懂的，我逐项解释。'},
-          {role:'设计师说',text:'姐，这个总价看着高，但我帮您对比一下——同样配置去外面做，单项加起来比我们贵15%。因为我们集采省了中间商差价。'}
-        ],
-        branches:[{label:'客户说"某项还是贵"',text:'→ 针对性解释，转入第二轮'},{label:'客户说"能不能总价再少"',text:'→ 不是贵，是想要心理优惠'}]
-      },
-      {label:'价值对照',labelSub:'第二轮',
-        scripts:[
-          {role:'设计师说',text:'哥，您看这项人工费——我们用的是持证工人，施工标准按GB 50210走。游击队便宜30%，但他不按标准来，出了问题您再修一次比这贵多了。'},
-          {role:'设计师说',text:'姐，我帮您算个"5年持有成本"：报价差2万，但5年内维修、更换、返工的成本，正规施工基本为零，游击队可能再花5万。这2万不是花了，是省了。'}
-        ],
-        branches:[{label:'客户开始问细节',text:'→ 他在认真比了，进入第三轮'},{label:'客户说"我再比比"',text:'→ 给他对比清单让他去比'}]
-      },
-      {label:'承诺收口',labelSub:'第三轮',
-        scripts:[
-          {role:'设计师说',text:'哥，我给您一个承诺：预算即决算，超出的部分我承担。这个承诺写进合同。您不用怕开工后不停加钱。'},
-          {role:'设计师说',text:'姐，您拿我们的报价去比，比完如果觉得我们值，我帮您锁定这个价格30天。不急，选对的比选便宜的更重要。'}
-        ]
-      }
-    ]
-  },
-  {id:'d-change',domain:'decor',icon:'🔄',name:'客户不停改方案',hint:'设计改了又改',badge:'决策恐惧',
-    daoTitle:'改方案 ≠ 喜新厌旧，是怕定下来',
-    daoDesc:'客户反复改方案的本质是"决策恐惧"——整装一旦开工就很难回头，这种不可逆性让他焦虑。每改一次，不是对设计不满意，是对"万一后悔"的恐惧。',
-    faTitle:'不要催定，帮他建立"可逆感"',
-    faDesc:'原则1：永远不说"您赶紧定吧"——你在加大他的焦虑\n原则2：把"最终版"改成"第一版"——告诉他方案可以迭代，不是一锤子买卖\n原则3：设定决策框架——先定大方向，再定细节，不让他面对所有选择同时做决定',
-    rounds:[
-      {label:'框架约束',labelSub:'第一轮',
-        scripts:[
-          {role:'设计师说',text:'姐，咱们这样——今天只定风格和格局，材质和颜色下次再定。一步步来，不用一次全想清楚。'},
-          {role:'设计师说',text:'哥，我帮您把决策分成3步：①整体风格；②空间布局；③材质细节。今天先走第1步，走完了您心里就有方向了。'}
-        ],
-        branches:[{label:'客户愿意分步',text:'→ 焦虑降低，进入第二轮'},{label:'客户说"我再想想"',text:'→ 给他3天期限，附带灵感图'}]
-      },
-      {label:'锁定推进',labelSub:'第二轮',
-        scripts:[
-          {role:'设计师说',text:'姐，风格定了现代简约，我帮您出了3套布局方案，您选一个最接近的，细节我们在这个基础上微调。不用推翻重来。'},
-          {role:'设计师说',text:'哥，您上一版选的布局其实很好，只是卧室想调整。我帮您在原方案上改卧室，其他不动。这样不用全盘重来，效率高。'}
-        ],
-        branches:[{label:'客户接受微调',text:'→ 他在学会在框架内决策，进入第三轮'},{label:'客户又推翻了',text:'→ 回到恐惧根源：问他"最担心的是什么"'}]
-      },
-      {label:'确认承诺',labelSub:'第三轮',
-        scripts:[
-          {role:'设计师说',text:'姐，方案定了。但我跟您说——开工前您还有2次免费调整机会，开工后也可以微调，只是需要走变更流程。不是定死了不能改，是有序地改。'},
-          {role:'设计师说',text:'哥，签字不是终点，是起点。施工过程中我会每周给您发进度照片，发现问题随时说。做整装最怕的不是改方案，是改了不说，说出来已经晚了。'}
-        ]
-      }
-    ]
-  },
-  {id:'d-quality',domain:'decor',icon:'🔍',name:'客户质疑施工质量',hint:'觉得做工粗糙',badge:'信任凭证',
-    daoTitle:'质疑 ≠ 挑刺，是怕你糊弄他',
-    daoDesc:'客户质疑施工质量的本质是"信任赤字"——整装是信息高度不对称的服务，客户看不懂工艺，只能凭直觉判断。每一个质疑都是他在说："我看不懂，你能不能让我看到你在认真做？"',
-    faTitle:'不要保证，让他亲眼看到',
-    faDesc:'原则1：永远不说"放心，没问题"——看不到的保证等于没有\n原则2：主动展示工艺细节——在他问之前就让他看到\n原则3：邀请他参与验收——让他从"被服务者"变成"监督者"',
-    rounds:[
-      {label:'透明展示',labelSub:'第一轮',
-        scripts:[
-          {role:'项目经理说',text:'哥，您说的这个位置我帮您看了——来，我拍个特写给您看细节。我们的标准是接缝不超过1mm，您量量看。'},
-          {role:'项目经理说',text:'姐，我每周给您发一份施工日志，每道工序都有照片和验收标准。您不用来现场也能看到每一步。'}
-        ],
-        branches:[{label:'客户说"我想去现场看"',text:'→ 主动参与是好事，安排到场验收'},{label:'客户说"照片看不放心"',text:'→ 邀请第三方监理，进入第二轮'}]
-      },
-      {label:'专业背书',labelSub:'第二轮',
-        scripts:[
-          {role:'项目经理说',text:'哥，我帮您约了第三方监理，下周二来验收水电。费用我们出。监理说合格，您放心；说不合格，我们返工，费用也是我们的。'},
-          {role:'项目经理说',text:'姐，这是我们施工的验收标准，对照的是国标GB 50210。每一项都有具体指标，不是我觉得合格就行，是标准说了算。'}
-        ],
-        branches:[{label:'客户接受了标准',text:'→ 信任重建，进入第三轮'},{label:'客户还是不放心',text:'→ 给他选择权：不满意可以换施工队'}]
-      },
-      {label:'闭环保障',labelSub:'第三轮',
-        scripts:[
-          {role:'项目经理说',text:'哥，验收通过了。我帮您把验收报告存一份，质保期内有问题凭报告找我们，白纸黑字。'},
-          {role:'项目经理说',text:'姐，以后每个节点我都会提前通知您来验收，不验收不进行下一步。您是最终确认人，不是旁观者。'}
-        ]
-      }
-    ]
-  },
-  {id:'d-delay',domain:'decor',icon:'⏰',name:'客户工期延误投诉',hint:'说好了日期没完成',badge:'时间焦虑',
-    daoTitle:'投诉延误 ≠ 针对你，是生活被打乱了',
-    daoDesc:'工期投诉的本质是"时间焦虑"——客户不是心疼那几天，是他的生活计划被打乱了。租房到期要续、家具预定要改、搬家日期要推，每一个延误都在制造连锁反应。',
-    faTitle:'不要找借口，先解决连锁问题',
-    faDesc:'原则1：永远不说"延期很正常"——对你是正常，对他是灾难\n原则2：先解决他的连锁问题，再解决工期问题——租房续约、家具暂存\n原则3：给出新时间线+赔偿方案——不是"尽快"，是"具体到天"',
-    rounds:[
-      {label:'接住情绪',labelSub:'第一轮',
-        scripts:[
-          {role:'项目经理说',text:'哥，延期了是我的责任，我先认。我现在最关心的是——您那边的租房到期了吗？家具怎么办？这些连锁问题我帮您一起解决。'},
-          {role:'项目经理说',text:'姐，对不起，耽误您时间了。您跟我说说，延期对您影响最大的是什么？我先帮您处理最紧急的。'}
-        ],
-        branches:[{label:'客户说"租房要续了"',text:'→ 最紧急的连锁问题，进入第二轮'},{label:'客户说"就是气"',text:'→ 情绪优先，先听他说完'}]
-      },
-      {label:'方案+赔偿',labelSub:'第二轮',
-        scripts:[
-          {role:'项目经理说',text:'哥，我帮您办了：①跟您房东协商续租1个月，费用我们出；②新工期我排好了，X号一定完工；③延误按合同赔偿，每天XX元。'},
-          {role:'项目经理说',text:'姐，新的时间线我给您了——精确到每天做什么。从现在起我每天给您发进度照片，您看着我们在往前走就不会焦虑了。'}
-        ],
-        branches:[{label:'客户接受方案',text:'→ 进入第三轮确认'},{label:'客户说"我不信了"',text:'→ 邀请他随时来现场盯工'}]
-      },
-      {label:'执行确认',labelSub:'第三轮',
-        scripts:[
-          {role:'项目经理说',text:'哥，今天进度正常，明天做水电验收。如果后续再延误，不用您催，我主动赔。这是我给自己加的压力。'},
-          {role:'项目经理说',text:'姐，完工后我多送一次深度保洁，算是耽误您时间的补偿。您搬进来就是干干净净的。'}
-        ]
-      }
-    ]
-  },
-  {id:'d-add',domain:'decor',icon:'➕',name:'客户要求增项退款',hint:'觉得被坑了要求退',badge:'公平感知',
-    daoTitle:'退增项 ≠ 想占便宜，是觉得被套路了',
-    daoDesc:'增项退款的本质是"公平感知破裂"——客户不是心疼那点钱，是觉得自己被"低价引诱、中途加价"套路了。当信任被打破，每个增项都变成了"你是不是一开始就在骗我"的证据。',
-    faTitle:'不要辩解，重建公平感',
-    faDesc:'原则1：永远不说"增项很正常"——你在告诉他套路是合理的\n原则2：区分"合理增项"和"恶意增项"——客户改变需求vs施工方漏报\n原则3：超出预期地处理——恶意增项双倍返还，比客户要求的多还一点',
-    rounds:[
-      {label:'定性分类',labelSub:'第一轮',
-        scripts:[
-          {role:'项目经理说',text:'哥，我帮您把增项分成两类：一类是您主动改需求产生的，一类是我们漏报的。我们漏报的部分，我承担，不用您付。'},
-          {role:'项目经理说',text:'姐，我看了增项明细——这3项是您改了方案产生的，这2项是我们预算没覆盖到。我们的问题我认，该退的退。'}
-        ],
-        branches:[{label:'客户说"你们是不是故意漏报"',text:'→ 公平感严重破裂，进入第二轮'},{label:'客户接受分类',text:'→ 进入第三轮'}]
-      },
-      {label:'超额补偿',labelSub:'第二轮',
-        scripts:[
-          {role:'项目经理说',text:'哥，我们漏报的部分不仅退，我再加10%的补偿。不是为了摆平您，是因为我们做错了就该多承担。这个态度您看行不行？'},
-          {role:'项目经理说',text:'姐，我给您一个承诺：从现在起，任何新增项都必须您签字确认才执行，没确认的我们不做、不收费。以后不会再有"意外增项"。'}
-        ],
-        branches:[{label:'客户态度缓和',text:'→ 进入第三轮'},{label:'客户说要投诉',text:'→ 尊重他的权利，但先让他看到你的诚意'}]
-      },
-      {label:'制度保证',labelSub:'第三轮',
-        scripts:[
-          {role:'项目经理说',text:'哥，这次的教训我记了。我帮您把合同里关于增项的条款修改了——以后所有增项必须提前书面确认、单价不超过市场价、您有权拒绝。白纸黑字。'},
-          {role:'项目经理说',text:'姐，我帮您出了一份"增项管理清单"，以后每一条变更都有编号、原因、金额、您的签字。全程透明，您随时可以复盘。'}
-        ]
-      }
-    ]
-  },
-  {id:'d-warranty',domain:'decor',icon:'🛡️',name:'客户担心质保不兑现',hint:'怕出问题找不到人',badge:'安全感缺失',
-    daoTitle:'担心质保 ≠ 多疑，是被骗怕了',
-    daoDesc:'客户担心质保不兑现的本质是"安全感缺失"——整装行业口碑不佳，"质保5年变5天"的故事他听过太多了。他不是不信你，是不信这个行业。',
-    faTitle:'不要口头保证，用机制说话',
-    faDesc:'原则1：永远不说"您放心，出了问题找我"——口头承诺在整装行业等于空头支票\n原则2：把质保写进合同+明确每项的期限和责任——不是"整体质保"，是逐项列明\n原则3：提供第三方质保保险——你的承诺可能失效，但保险不会',
-    rounds:[
-      {label:'逐项列明',labelSub:'第一轮',
-        scripts:[
-          {role:'项目经理说',text:'哥，我帮您把质保逐项列清楚了：水电5年、防水5年、装修2年、主体终身。每一项的起算日期、责任范围、联系方式都写进合同。'},
-          {role:'项目经理说',text:'姐，我们的质保不是口头说的——这是质保服务卡，上面有400电话、微信客服、线上报修入口。3种方式都能找到我们。'}
-        ],
-        branches:[{label:'客户说"别家公司也这么说的"',text:'→ 需要更强的信用背书，进入第二轮'},{label:'客户想看合同条款',text:'→ 他在认真对待了'}]
-      },
-      {label:'第三方保险',labelSub:'第二轮',
-        scripts:[
-          {role:'项目经理说',text:'哥，我知道口头承诺您不信。我帮您买了一份第三方质保保险——如果我公司不在了，保险公司接赔付。这样不管发生什么，您的质保都有人兜底。'},
-          {role:'项目经理说',text:'姐，质保期内报修，我承诺2小时响应、48小时上门。超时一天赔您100元。这个写进合同，不是我说说而已。'}
-        ],
-        branches:[{label:'客户问"保险多少钱"',text:'→ 他在认真考虑了，进入第三轮'},{label:'客户说"还是不放心"',text:'→ 给他看质保理赔案例'}]
-      },
-      {label:'案例收口',labelSub:'第三轮',
-        scripts:[
-          {role:'项目经理说',text:'哥，这是我们去年质保服务的记录——一共23单报修，全部48小时内上门处理，客户满意度98%。数据比承诺管用。'},
-          {role:'项目经理说',text:'姐，我帮您把所有质保文件整理成一个电子档案，手机随时能查。以后不管谁接待您，扫一下码就能看到完整记录。'}
-        ]
-      }
-    ]
-  },
-// ========== 家政保洁 ==========
-  {id:'h-price',domain:'homekeep',icon:'💸',name:'客户嫌服务贵',hint:'觉得家政收费太高',badge:'劳动价值低估',
-    daoTitle:'嫌贵 ≠ 小气，是低估了劳动价值',
-    daoDesc:'客户嫌家政贵的本质是"劳动价值低估"——他觉得保洁"就是擦擦洗洗"，没看到背后的专业技能、时间成本和体力付出。你越说"不贵"，他越觉得你在忽悠他。',
-    faTitle:'不要辩解，让他看到专业差在哪',
-    faDesc:'原则1：永远不说"这个价很便宜了"——你在否定他的感受\n原则2：展示专业和非专业的差距——让他看到"省的钱"要付出什么代价\n原则3：把服务拆成"时间+技能+责任"——劳动不是商品，是人',
-    rounds:[
-      {label:'价值展示',labelSub:'第一轮',
-        scripts:[
-          {role:'管家说',text:'姐，我理解您觉得贵。但我帮您对比一下——您自己打扫，4小时只能做表面；我们2小时做到深度，还包含消毒和死角。省的不只是钱，是时间和精力。'},
-          {role:'管家说',text:'哥，我们的阿姨是持证上岗的，经过120小时培训。路边找人便宜一半，但她不懂清洁剂分类、不知道哪些表面不能用酸洗。万一损坏了，修的钱比省的多。'}
-        ],
-        branches:[{label:'客户说"自己也能做"',text:'→ 低估劳动价值，进入第二轮'},{label:'客户说"那也不值这个价"',text:'→ 给他体验一次'}]
-      },
-      {label:'体验对比',labelSub:'第二轮',
-        scripts:[
-          {role:'管家说',text:'姐，这样——我帮您安排一次体验服务，做您最在意的厨房和卫生间。做完您自己评价值不值。不满意不收费。'},
-          {role:'管家说',text:'哥，我给您看个对比图：这是我们阿姨做完的vs普通保洁做完的。同样的厨房，清洁度和细节差一个级别。图片比我说一万句管用。'}
-        ],
-        branches:[{label:'客户愿意体验',text:'→ 70%会转化，进入第三轮'},{label:'客户还是犹豫',text:'→ 给他小规格起步方案'}]
-      },
-      {label:'长期价值',labelSub:'第三轮',
-        scripts:[
-          {role:'管家说',text:'姐，体验过了您觉得怎么样？我帮您算一下——每周一次2小时，月费XX元，相当于每天XX块。用这点钱换一个干净的家和周末自由，值不值？'},
-          {role:'管家说',text:'哥，我帮您出个"季度套餐"，比单次便宜20%。先试3个月，觉得值就续，不值随时停。没有捆绑，只有诚意。'}
-        ]
-      }
-    ]
-  },
-  {id:'h-complaint',domain:'homekeep',icon:'🔥',name:'客户投诉阿姨没做好',hint:'说打扫不干净',badge:'期待落差',
-    daoTitle:'投诉 ≠ 针对阿姨，是期待没被满足',
-    daoDesc:'投诉保洁不干净的本质是"期待落差"——客户以为花了钱就能达到某种效果，但没人和他确认过"什么算干净"。标准和感受之间的gap，才是投诉的真正原因。',
-    faTitle:'不要护短，先重建标准',
-    faDesc:'原则1：永远不说"阿姨已经很认真了"——你在否定客户的感受\n原则2：建立清晰的"干净标准"——不是阿姨觉得干净，是客户觉得干净\n原则3：投诉是改善的机会——处理好了的客户比没投诉的忠诚3倍',
-    rounds:[
-      {label:'接住+确认',labelSub:'第一轮',
-        scripts:[
-          {role:'管家说',text:'姐，您说的地方我记了。能帮我看一下——是这里没擦到位，还是您的标准是更高的那种？我好帮阿姨调整。'},
-          {role:'管家说',text:'哥，不好意思让您不满意了。我帮您重新做一次，这次我跟阿姨一起到，您当面指出哪里要重点做，保证做到您满意。'}
-        ],
-        branches:[{label:'客户说"算了不做了"',text:'→ 最危险的信号，进入第二轮'},{label:'客户愿意再说',text:'→ 他在给你机会'}]
-      },
-      {label:'重建标准',labelSub:'第二轮',
-        scripts:[
-          {role:'管家说',text:'姐，我帮您出了一份"清洁标准清单"——每个区域做到什么程度算合格，写清楚了。以后阿姨按这个标准做，您按这个标准验收，不会有歧义。'},
-          {role:'管家说',text:'哥，这次重新做完了您看看。如果还有不满意的地方，我们继续做到您满意为止，不另外收费。之后每次做完，阿姨会请您确认签字。'}
-        ],
-        branches:[{label:'客户满意了',text:'→ 进入第三轮'},{label:'客户说"换阿姨"',text:'→ 尊重选择，帮他匹配合适的'}]
-      },
-      {label:'长期保障',labelSub:'第三轮',
-        scripts:[
-          {role:'管家说',text:'姐，以后每次服务后我会在APP上推送验收确认，您点"满意"才算完成。不满意随时点"返工"，我们48小时内免费重做。'},
-          {role:'管家说',text:'哥，感谢您愿意反馈——很多客户不满意不说直接走了。您的意见帮我们把标准提高了，下一个客户也受益。'}
-        ]
-      }
-    ]
-  },
-  {id:'h-change',domain:'homekeep',icon:'🔄',name:'客户频繁换阿姨',hint:'总觉得不合适',badge:'匹配焦虑',
-    daoTitle:'换人 ≠ 挑剔，是没找到对的人',
-    daoDesc:'频繁换阿姨的本质是"匹配焦虑"——家政服务是人与人的服务，合不合拍比能力强弱更重要。客户不是在找"最好的阿姨"，是在找"最对的那个人"。',
-    faTitle:'不要推荐最强的，推荐最对的',
-    faDesc:'原则1：永远不问"您想要什么样的阿姨"——他自己也说不清\n原则2：用3个问题锁定匹配维度——性格、节奏、关注点\n原则3：给匹配过程一个"试用期"——不是一次定终身',
-    rounds:[
-      {label:'匹配诊断',labelSub:'第一轮',
-        scripts:[
-          {role:'管家说',text:'姐，您换了3个阿姨了，我想帮您找到真正合适的。我问您3个问题：①您希望阿姨是安静做事还是边做边聊？②您家最需要重点做的是厨房还是卫生间？③您对时间灵活度有要求吗？'},
-          {role:'管家说',text:'哥，之前几个阿姨哪里不合适？不是能力问题吧——是做事风格不对路？我帮您精准匹配。'}
-        ],
-        branches:[{label:'客户说"做事太慢"',text:'→ 需要节奏快的阿姨'},{label:'客户说"不够细心"',text:'→ 需要注重细节的阿姨'}]
-      },
-      {label:'精准推荐',labelSub:'第二轮',
-        scripts:[
-          {role:'管家说',text:'姐，根据您说的，我帮您匹配了张阿姨——她做了8年、性格安静、厨房是强项。先做2次试试，您感受一下合不合拍。'},
-          {role:'管家说',text:'哥，我帮您安排了李姐，她做事节奏快，2小时能做完3小时的活。您试一次，不满意我继续帮您换。'}
-        ],
-        branches:[{label:'客户说"试试吧"',text:'→ 60%概率匹配成功'},{label:'客户说"别换了烦"',text:'→ 他在放弃，需要降低门槛'}]
-      },
-      {label:'稳定维护',labelSub:'第三轮',
-        scripts:[
-          {role:'管家说',text:'姐，张阿姨做了两次您觉得怎么样？如果合拍，我帮您固定她的档期，每周同一个时间。稳定的阿姨越做越熟悉您家，效率也越来越高。'},
-          {role:'管家说',text:'哥，匹配到了就别轻易换——阿姨熟悉您家后效率提升30%，相当于免费多做了一次。有什么不满意的跟我说，我帮您和阿姨沟通，比换人更快。'}
-        ]
-      }
-    ]
-  },
-  {id:'h-privacy',domain:'homekeep',icon:'🔐',name:'客户担心隐私安全',hint:'怕阿姨乱翻东西',badge:'控制感缺失',
-    daoTitle:'担心隐私 ≠ 多疑，是把家交给了陌生人',
-    daoDesc:'担心隐私安全的本质是"控制感缺失"——让一个陌生人进入最私密的空间，本能的不安是正常的。这不是信任问题，是人类的自我保护机制。',
-    faTitle:'不要说"放心"，用机制消除顾虑',
-    faDesc:'原则1：永远不说"我们阿姨都很靠谱"——你在要求他无条件信任\n原则2：主动提供安全保障——保险、监控建议、物品登记\n原则3：给他"看得见"的控制感——不是让他放权，是让他感到可控',
-    rounds:[
-      {label:'主动防护',labelSub:'第一轮',
-        scripts:[
-          {role:'管家说',text:'姐，我理解您的顾虑。我帮您做三件事：①贵重物品我们一起登记拍照；②阿姨服务期间您可以开客厅摄像头；③我们有家政保险，万一有问题全额赔付。'},
-          {role:'管家说',text:'哥，我们的阿姨都有身份核验和无犯罪记录证明。我帮您把阿姨的资质信息发给您，您心里有底。'}
-        ],
-        branches:[{label:'客户说"有保险就好"',text:'→ 安全感初步建立，进入第二轮'},{label:'客户说"还是不放心"',text:'→ 提供陪同服务选项'}]
-      },
-      {label:'控制感建立',labelSub:'第二轮',
-        scripts:[
-          {role:'管家说',text:'姐，我建议您前3次在家，看着阿姨做。一方面您放心，另一方面阿姨也知道您的要求。之后熟了就不用担心了。'},
-          {role:'管家说',text:'哥，每次服务前后我们会拍照打卡——进门拍、做完拍。您可以对比物品位置，有任何异常我们第一时间处理。'}
-        ],
-        branches:[{label:'客户愿意先陪同',text:'→ 信任在建立，进入第三轮'},{label:'客户说"没空在家"',text:'→ 帮他装智能门锁+摄像头'}]
-      },
-      {label:'长期信任',labelSub:'第三轮',
-        scripts:[
-          {role:'管家说',text:'姐，做了几次您应该感觉到了——固定的阿姨熟悉了就不用担心了。我帮您固定这个阿姨，以后都是她来，不用每次换人重新适应。'},
-          {role:'管家说',text:'哥，如果以后有任何物品方面的疑虑，直接找我，不用不好意思。我帮您查服务记录、调监控，24小时内给结果。这是我的承诺。'}
-        ]
-      }
-    ]
-  },
-  {id:'h-discount',domain:'homekeep',icon:'🏷️',name:'客户要求打折',hint:'总想压价要优惠',badge:'锚定效应',
-    daoTitle:'要折扣 ≠ 真想省那点钱，是想要"被重视感"',
-    daoDesc:'客户要折扣的本质是"锚定效应"+"被重视需求"——他不是付不起那个差价，是想要一个"你愿意为我让步"的信号。折扣是他的语言，"你重视我"是他真正想听到的。',
-    faTitle:'不要直接打折，用"增值"代替"降价"',
-    faDesc:'原则1：永远不轻易降价——每一次让步都在告诉他"原本就值不了那么多"\n原则2：用"多给"代替"少收"——送一次服务比减50块有感知10倍\n原则3：让折扣有条件——不是谁都能拿，让他觉得"这是专属的"',
-    rounds:[
-      {label:'感受回应',labelSub:'第一轮',
-        scripts:[
-          {role:'管家说',text:'姐，我理解您想优惠。我帮您申请了一个老客户专属——不是降价，是多送一次深度保洁，价值XX元。比降50块实在多了。'},
-          {role:'管家说',text:'哥，价格我帮您问了，这个已经是最优了。但我可以帮您加一项——空气净化服务，原价XX元，给您免费加。这样总价值比降价更多。'}
-        ],
-        branches:[{label:'客户说"还是要降"',text:'→ 他要的不是价值，是"你让步了"，进入第二轮'},{label:'客户接受了增值',text:'→ 进入第三轮'}]
-      },
-      {label:'有限让步',labelSub:'第二轮',
-        scripts:[
-          {role:'管家说',text:'姐，我帮您申请了一个季度的9折——只限前3个月，之后恢复原价。这个折扣是我专门为您争取的，不是对谁都有的。'},
-          {role:'管家说',text:'哥，这样——您签年约的话，我帮您申请95折+送2次深度保洁。单次不打折，长期合作我们互相让一步。'}
-        ],
-        branches:[{label:'客户接受了',text:'→ 进入第三轮'},{label:'客户说"再少点"',text:'→ 坚守底线，不能无限让步'}]
-      },
-      {label:'价值确认',labelSub:'第三轮',
-        scripts:[
-          {role:'管家说',text:'姐，协议签好了。我多嘴一句——您拿到的这个方案，是同一栋楼里最优惠的了。不是因为我能降价，是因为我愿意为您争取。'},
-          {role:'管家说',text:'哥，合作愉快。以后续约的时候，老客户还有专属优惠——不是我今天说的，是我们一贯的规矩。'}
-        ]
-      }
-    ]
-  },
-  {id:'h-cancel',domain:'homekeep',icon:'❌',name:'客户突然取消服务',hint:'做了几次说不做了',badge:'逃避冲突',
-    daoTitle:'取消 ≠ 不需要，是不满意但不好意思说',
-    daoDesc:'取消服务的本质是"逃避冲突"——和失联一样，亚洲文化里直接表达不满很难。他不是不需要家政，是对某次服务不满意但不知道怎么跟你说，于是选择最安全的方式——不做了。',
-    faTitle:'不要挽留，先让他说出真实原因',
-    faDesc:'原则1：永远不说"为什么不用了嘛"——追问只会让他更想逃\n原则2：给他"安全退出"的通道——告诉他取消很方便，降低他的愧疚感\n原则3：真诚请教他的意见——让他觉得"反馈比离开更有价值"',
-    rounds:[
-      {label:'安全退出',labelSub:'第一轮',
-        scripts:[
-          {role:'管家说',text:'姐，收到了，取消手续我帮您办。不过方便的话跟我说说——是服务哪里让您不满意了？不是为了挽留您，是我想改进。'},
-          {role:'管家说',text:'哥，没问题的，取消很方便。我做一个小调查——您不用多写，就说一条最不满意的地方就行。这对我们特别重要。'}
-        ],
-        branches:[{label:'客户说了原因',text:'→ 真正的原因找到了，进入第二轮'},{label:'客户说"没什么原因"',text:'→ 他还在逃避，降低门槛'}]
-      },
-      {label:'改进反馈',labelSub:'第二轮',
-        scripts:[
-          {role:'管家说',text:'姐，您说的问题我记了，已经反馈给阿姨和管理了。我帮您保留账户——如果以后想回来，直接预约就行，不用重新注册。'},
-          {role:'管家说',text:'哥，感谢您愿意说。这个问题我们一周内改进，我到时候发给您看看——不是为了让您回来，是想让您知道您的意见被认真对待了。'}
-        ],
-        branches:[{label:'客户说"改了我会考虑"',text:'→ 50%会回来，进入第三轮'},{label:'客户说"算了"',text:'→ 尊重选择，保持联系'}]
-      },
-      {label:'留门不打扰',labelSub:'第三轮',
-        scripts:[
-          {role:'管家说',text:'姐，您的账户我帮您保留了。以后每个月我会发一次服务动态给您，不用回。什么时候想试了，一键预约。'},
-          {role:'管家说',text:'哥，感谢您用过我们的服务。走之前我帮您把家里做个收尾保洁，免费的。不管您以后用不用我们，走得干干净净总没错。'}
-        ]
-      }
-    ]
   }
 ];
 
-// ===================== 逻辑层 =====================
-let currentDomain='';
-let currentScene=null;
-
-// 渲染域选择
-const domainsEl=document.getElementById('domains');
-DOMAINS.forEach(d=>{
+// 渲染场景卡片
+const scenesEl=document.getElementById('scenes');
+SCENES.forEach(s=>{
   const card=document.createElement('div');
-  card.className='domain-card';
-  card.dataset.id=d.id;
-  card.innerHTML=`<div class="icon">${d.icon}</div><div class="name">${d.name}</div><div class="hint">${d.hint}</div><div class="count">${d.count}场景</div>`;
-  card.onclick=()=>{selectDomain(d.id);};
-  domainsEl.appendChild(card);
+  card.className='scene-card';
+  card.dataset.id=s.id;
+  card.innerHTML=`<div class="icon">${s.icon}</div><div class="name">${s.name}</div><div class="hint">${s.hint}</div><div class="badge">${s.badge}</div>`;
+  card.onclick=()=>{track('scene_click',s.id);openDecoder(s);};
+  scenesEl.appendChild(card);
 });
 
-function selectDomain(domainId){
-  currentDomain=domainId;
-  document.querySelectorAll('.domain-card').forEach(c=>c.classList.toggle('active',c.dataset.id===domainId));
-  const domain=DOMAINS.find(d=>d.id===domainId);
-  const scenes=SCENES.filter(s=>s.domain===domainId);
-  const scenesEl=document.getElementById('scenes');
-  scenesEl.innerHTML='';
-  scenes.forEach(s=>{
-    const card=document.createElement('div');
-    card.className='scene-card';
-    card.dataset.id=s.id;
-    card.innerHTML=`<div class="icon">${s.icon}</div><div class="name">${s.name}</div><div class="hint">${s.hint}</div><div class="badge">${s.badge}</div>`;
-    card.onclick=()=>{openDecoder(s);};
-    scenesEl.appendChild(card);
-  });
-  document.getElementById('sceneSection').style.display='flex';
-  scenesEl.style.display='grid';
-  // 更新面包屑：进入了场景选择层
-  updateBreadcrumb({domain:domain.name});
-  setTimeout(()=>{scenesEl.scrollIntoView({behavior:'smooth',block:'start'});},100);
-  if(typeof track==='function') track('domain_select',domainId);
-}
-
 function openDecoder(s){
-  currentScene=s;
   document.querySelectorAll('.scene-card').forEach(c=>c.classList.remove('active'));
   document.querySelector(`.scene-card[data-id="${s.id}"]`).classList.add('active');
-  const domain=DOMAINS.find(d=>d.id===s.domain);
-  document.getElementById('sceneHeader').innerHTML=`<h2>${s.icon} ${s.name}</h2><div class="sub">${s.hint}</div>`;
+  
+  document.getElementById('sceneHeader').innerHTML=`
+    <h2>${s.icon} ${s.name}</h2>
+    <div class="sub">${s.hint}</div>
+  `;
+  
   let html='';
+  
+  // 道卡片
   html+=`<div class="insight-card dao-card">
     <div class="card-label dao">👁 道 · 人性规律</div>
     <div class="card-title">${s.daoTitle}</div>
     <div class="card-desc">${s.daoDesc.replace(/\n/g,'<br>')}</div>
   </div>`;
+  
+  // 法卡片
   html+=`<div class="insight-card fa-card">
     <div class="card-label fa">🎯 法 · 坚持原则</div>
     <div class="card-title">${s.faTitle}</div>
     <div class="card-desc">${s.faDesc.replace(/\n/g,'<br>')}</div>
   </div>`;
+  
+  // 术卡片
   html+=`<div class="insight-card shu-card">
     <div class="card-label shu">💬 术 · 对话决策树</div>
     <div class="tree">`;
+  
   s.rounds.forEach((r,i)=>{
     html+=`<div class="tree-round r${i+1}">
       <div class="round-label">${r.label} <span>· ${r.labelSub}</span></div>`;
@@ -1163,398 +567,100 @@ function openDecoder(s){
     });
     if(r.branches){
       r.branches.forEach(b=>{
-        html+=`<div class="branch"><div class="branch-label">${b.label}</div><div class="branch-text">${b.text}</div></div>`;
+        html+=`<div class="branch">
+          <div class="branch-label">${b.label}</div>
+          <div class="branch-text">${b.text}</div>
+        </div>`;
       });
     }
     html+=`</div>`;
   });
+  
   html+=`</div></div>`;
+  
   document.getElementById('insightCards').innerHTML=html;
   document.getElementById('decoder').classList.add('show');
-  // 更新面包屑：进入了解码详情层
-  updateBreadcrumb({domain:domain.name,scene:s.name});
-  setTimeout(()=>{document.getElementById('decoder').scrollIntoView({behavior:'smooth',block:'start'});},50);
-  if(typeof track==='function') track('scene_click',s.id);
+  // 滚动到解码面板顶部，让内容立即可见
+  setTimeout(()=>{
+    const decoder=document.getElementById('decoder');
+    decoder.scrollIntoView({behavior:'smooth',block:'start'});
+  },50);
 }
 
-function closeDecoder(e){
-  if(e && e.preventDefault) e.preventDefault();
+function closeDecoder(){
   document.getElementById('decoder').classList.remove('show');
   document.querySelectorAll('.scene-card').forEach(c=>c.classList.remove('active'));
-  currentScene=null;
-  const domain=DOMAINS.find(d=>d.id===currentDomain);
-  // 面包屑回到"业务域选择"层
-  updateBreadcrumb({domain:domain.name});
-  setTimeout(()=>{document.getElementById('scenes').scrollIntoView({behavior:'smooth',block:'start'});},50);
-}
-
-// 面包屑更新：根据当前层级显示不同内容
-function updateBreadcrumb(state){
-  const bc=document.getElementById('breadcrumb');
-  let html='<span class="bc-home" onclick="goHome()">风声</span>';
-  html+='<span class="bc-sep">›</span>';
-  html+='<span class="bc-current">客户解码器</span>';
-  if(state && state.domain){
-    html+='<span class="bc-sep">›</span>';
-    html+=`<span class="bc-mid" onclick="backToDomains()">${state.domain}</span>`;
-  }
-  if(state && state.scene){
-    html+='<span class="bc-sep">›</span>';
-    html+=`<span class="bc-current">${state.scene}</span>`;
-  }
-  bc.innerHTML=html;
-  bc.style.display='flex';
-}
-
-function goHome(){ window.location.href='/'; }
-
-function backToDomains(){
-  // 回到当前域的"场景列表"（保持 currentDomain，仅关闭解码器）
-  document.getElementById('decoder').classList.remove('show');
-  document.querySelectorAll('.scene-card').forEach(c=>c.classList.remove('active'));
-  currentScene=null;
-  const domain=DOMAINS.find(d=>d.id===currentDomain);
-  if(domain){
-    // 当前处于场景详情层，点击"业务域"应回到该域的场景列表，面包屑为 风声 › 客户解码器 › 业务域
-    updateBreadcrumb({domain:domain.name});
-    setTimeout(()=>{document.getElementById('scenes').scrollIntoView({behavior:'smooth',block:'start'});},50);
-  }else{
-    // 没有 currentDomain，视为回到业务域选择层
-    document.getElementById('scenes').style.display='none';
-    document.getElementById('sceneSection').style.display='none';
-    document.querySelectorAll('.domain-card').forEach(c=>c.classList.remove('active'));
-    document.getElementById('moreTools').style.display='block';
-    updateBreadcrumb({});
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
+  window.scrollTo({top:document.querySelector('.scenes').offsetTop-60,behavior:'smooth'});
 }
 
 function copyScript(el){
   const text=el.querySelector('.text').textContent;
   const btn=el.querySelector('.copy-btn');
-  if(typeof track==='function') track('script_copy',text.substring(0,30));
-  function onCopied(){
-    btn.textContent='已复制';btn.classList.add('copied');showToast('✓ 话术已复制');
+  const currentScene=document.querySelector('.scene-card.active');
+  const sceneId=currentScene?currentScene.dataset.id:'unknown';
+  track('script_copy',sceneId+'_'+text.substring(0,20));
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='已复制';
+    btn.classList.add('copied');
+    showToast('话术已复制到剪贴板');
     setTimeout(()=>{btn.textContent='复制';btn.classList.remove('copied');},2000);
-  }
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(onCopied).catch(()=>fallbackCopy(text,onCopied));
-  }else{
-    fallbackCopy(text,onCopied);
-  }
-}
-
-function fallbackCopy(text,onDone){
-  const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();
-  try{ document.execCommand('copy'); }catch(e){}
-  document.body.removeChild(ta);
-  onDone();
+  }).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    btn.textContent='已复制';btn.classList.add('copied');
+    showToast('话术已复制到剪贴板');
+    setTimeout(()=>{btn.textContent='复制';btn.classList.remove('copied');},2000);
+  });
 }
 
 function showToast(msg){
-  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2000);
 }
 
 function shareThis(){
-  if(typeof track==='function') track('share_click','native_or_link');
-  const title='快回·客户解码器';
-  const desc='客户说"不"，你看到了什么？四域解码，懂人性找方法';
-  const url=location.href;
-  // 1) 先试试原生 Web Share API（移动端微信/浏览器）
+  track('share_click','native_or_link');
   if(navigator.share){
-    navigator.share({title:title,text:desc,url:url}).catch(()=>fallbackShare(url));
-    return;
-  }
-  // 2) 桌面端兜底：复制链接到剪贴板
-  fallbackShare(url);
-}
-
-function fallbackShare(url){
-  function done(){ showToast('✓ 链接已复制，发给同事吧'); }
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(url).then(done).catch(()=>fallbackCopy(url,done));
+    navigator.share({title:'快回·客户解码器',text:'客户说"不"，你看到了什么？',url:location.href});
   }else{
-    fallbackCopy(url,done);
+    navigator.clipboard.writeText(location.href).then(()=>showToast('链接已复制，发给同事吧'));
   }
 }
 
-// ===================== 豆包智能体生成 =====================
-function generateAgentPrompt(domainId){
-  const domain=DOMAINS.find(d=>d.id===domainId);
-  const scenes=SCENES.filter(s=>s.domain===domainId);
-  let prompt=`# ${domain.name}客户解码智能体
-
-## 角色定义
-你是"风声·${domain.name}客户解码器"智能体，专门帮助${domain.hint}领域的服务者理解客户行为背后的真实原因。
-
-## 核心理念
-你不是话术机器，你是规律导师。你的工作不是告诉服务者"该说什么"，而是帮他们理解"客户为什么这样说"。只有懂了人性规律，服务者才能自己找到方法。
-
-## 解码框架：道·法·术
-每个客户场景都从三层解码：
-- **道（人性规律）**：客户行为背后的心理学原理——不是他"不讲理"，是他有你没看到的需求
-- **法（坚持原则）**：你永远不该做的事，和你一定要坚持的底线——原则比技巧重要
-- **术（参考话术）**：三轮对话树，从探因→跟进→收口——参考用，不要照搬
-
-## 交互规则
-1. 用户描述客户表现后，先判断属于哪个场景，再给出三层解码
-2. 永远先说"道"（规律），再说"法"（原则），最后才说"术"（话术）
-3. 话术只是参考，鼓励服务者理解规律后用自己的方式表达
-4. 如果用户描述的场景不在列表中，用道法术框架自行分析
-5. 不要说教，用提问引导服务者自己思考
-
-## ${domain.name}场景解码库
-
-`;
-  scenes.forEach((s,i)=>{
-    prompt+=`### 场景${i+1}：${s.name}
-- 客户表现：${s.hint}
-- 心理标签：${s.badge}
-- **道**：${s.daoTitle}\n  ${s.daoDesc}
-- **法**：${s.faTitle}\n  ${s.faDesc.replace(/\n/g,'；')}
-- **术·对话树**：
-`;
-    s.rounds.forEach((r,ri)=>{
-      prompt+=`  第${ri+1}轮·${r.label}：\n`;
-      r.scripts.forEach(sc=>{
-        prompt+=`    ${sc.role}："${sc.text}"\n`;
-      });
-      if(r.branches){
-        r.branches.forEach(b=>{
-          prompt+=`    分支→${b.label}：${b.text}\n`;
-        });
-      }
-    });
-    prompt+='\n';
-  });
-
-  prompt+=`## 开场白
-你好，我是风声·${domain.name}客户解码器。告诉我你遇到的客户表现，我帮你看到背后的真实原因。不是给你话术，是给你规律——懂了人性，你自己就能找到方法。
-
-## 注意事项
-- 保持温暖但专业的语气
-- 不要评判服务者，只帮他理解
-- 鼓励服务者基于规律灵活运用，不要死记硬背话术
-- 每次只解码一个场景，深度优先
-`;
-  return prompt;
+// 追踪 - 双通道：Web3Forms(实时行为) + FormSubmit(邮箱存档)
+function track(action,label){
+  const payload={action:action,label:label,page:'reply',ts:new Date().toISOString(),ua:navigator.userAgent.substring(0,80),ref:document.referrer||'direct'};
+  // 通道1: Web3Forms (行为追踪，不发邮件)
+  try{
+    const fd=new FormData();
+    fd.append('access_key','27c926eb-07d8-4a71-8bf8-f30ad73f8e39');
+    fd.append('subject','[风声追踪] 快回·客户解码器');
+    fd.append('message',JSON.stringify(payload));
+    if(navigator.sendBeacon){navigator.sendBeacon('https://api.web3forms.com/submit',fd);}
+  }catch(e){}
+  // 通道2: FormSubmit (邮箱存档，可查可分析)
+  try{
+    const fd2=new FormData();
+    fd2.append('access_key','d818fa3cece5258aea8205bd492316de');
+    fd2.append('subject','[快回追踪] '+action+': '+label);
+    fd2.append('message',JSON.stringify(payload));
+    fd2.append('_template','box');
+    if(navigator.sendBeacon){navigator.sendBeacon('https://formsubmit.co/ajax/yu-er@coze.email',fd2);}
+  }catch(e){}
+  // 本地计数 (页面内即时统计)
+  try{
+    const k='fs_reply_stats';
+    const s=JSON.parse(localStorage.getItem(k)||'{}');
+    s[action]=(s[action]||0)+1;
+    s.last_action=action;
+    s.last_label=label;
+    s.last_ts=payload.ts;
+    localStorage.setItem(k,JSON.stringify(s));
+  }catch(e){}
 }
-
-function openAgentModal(){
-  if(!currentDomain){
-    showToast('请先选择一个业务域');
-    return;
-  }
-  const prompt=generateAgentPrompt(currentDomain);
-  document.getElementById('agentPrompt').textContent=prompt;
-  document.getElementById('agentModal').classList.add('show');
-  if(typeof track==='function') track('agent_generate',currentDomain);
-}
-
-function closeAgentModal(){
-  document.getElementById('agentModal').classList.remove('show');
-}
-
-function copyAgentPrompt(){
-  const text=document.getElementById('agentPrompt').textContent;
-  navigator.clipboard.writeText(text).then(()=>{
-    showToast('Prompt已复制，粘贴到豆包创建智能体即可');
-    closeAgentModal();
-  }).catch(()=>{
-    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();
-    document.execCommand('copy');document.body.removeChild(ta);
-    showToast('Prompt已复制');
-    closeAgentModal();
-  });
-}
-
-// ===================== AI 智能解码 =====================
-const AI_SYSTEM_PROMPT = `你是"风声·客户解码器"AI助手，专门帮助居住服务领域的服务者理解客户行为背后的真实原因。
-
-## 核心理念
-你不是话术机器，你是规律导师。不是告诉服务者"该说什么"，而是帮他理解"客户为什么这样说"。
-
-## 解码框架：道·法·术
-每个客户场景都从三层解码：
-- **道（人性规律）**：客户行为背后的心理学/社会学原理——不是他"不讲理"，是他有你没看到的需求
-- **法（坚持原则）**：服务者永远不该做的事，和一定要坚持的底线——原则比技巧重要
-- **术（参考话术）**：具体可参考的沟通策略和话术——参考用，不要照搬
-
-## 输出格式
-必须用以下格式回复：
-
-**道 · 人性规律**
-[1-2句话，点明核心心理学原理]
-
-**法 · 坚持原则**
-[2-3条原则，告诉服务者什么该做、什么不该做]
-
-**术 · 参考话术**
-[1-2段具体可参考的沟通话术]
-
-## 交互规则
-1. 用户描述客户表现后，先判断属于哪个业务域（房产交易/房屋租赁/整装家居/家政保洁），再给出三层解码
-2. 永远先说"道"（规律），再说"法"（原则），最后说"术"（话术）
-3. 话术只是参考，鼓励服务者理解规律后用自己的方式表达
-4. 如果用户追问"接下来怎么跟进"，给出第二轮跟进策略
-5. 如果用户追问"客户同意了怎么收口"，给出第三轮收口建议
-6. 保持温暖但专业的语气，不要评判服务者
-7. 每次回复控制在300字以内，简洁有力`;
-
-let aiChatHistory = [];
-
-function showAiDecode(){
-  document.getElementById('aiDecodeSection').style.display = 'block';
-  document.getElementById('aiDecodeSection').scrollIntoView({behavior:'smooth'});
-}
-
-function sendAiDecode(){
-  const input = document.getElementById('aiInput');
-  const btn = document.getElementById('aiSendBtn');
-  const text = input.value.trim();
-  if(!text) return;
-
-  // 添加用户消息
-  addAiMessage('user', text);
-  input.value = '';
-  btn.disabled = true;
-  btn.innerHTML = '<span>解码中</span><div class="loading-dots" style="display:flex;gap:3px"><span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:dotPulse 1.4s infinite"></span><span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:dotPulse 1.4s infinite;animation-delay:.2s"></span><span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:dotPulse 1.4s infinite;animation-delay:.4s"></span></div>';
-
-  // 模拟AI回复（MVP阶段用模拟数据，后续接入真实API）
-  setTimeout(()=>{
-    const response = simulateAiResponse(text);
-    addAiMessage('ai', response);
-    btn.disabled = false;
-    btn.innerHTML = '<span>解码</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
-  }, 1500);
-}
-
-function addAiMessage(role, content){
-  const container = document.getElementById('aiMessages');
-  const time = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
-  const div = document.createElement('div');
-  div.className = 'ai-message ' + role;
-
-  if(role === 'ai' && typeof content === 'object'){
-    // 结构化输出（道·法·术）
-    div.innerHTML = `
-      <div class="msg-bubble">
-        <div class="ai-dao-fa-shu">
-          <div class="dfs-row">
-            <span class="dfs-label dao">👁 道 · 人性规律</span>
-            <div class="dfs-text">${content.dao}</div>
-          </div>
-          <div class="dfs-row">
-            <span class="dfs-label fa">🎯 法 · 坚持原则</span>
-            <div class="dfs-text">${content.fa}</div>
-          </div>
-          <div class="dfs-row">
-            <span class="dfs-label shu">💬 术 · 参考话术</span>
-            <div class="dfs-text">${content.shu}</div>
-          </div>
-        </div>
-        <div class="msg-time">${time}</div>
-      </div>`;
-  } else {
-    div.innerHTML = `<div class="msg-bubble">${content}<div class="msg-time">${time}</div></div>`;
-  }
-
-  container.appendChild(div);
-  div.scrollIntoView({behavior:'smooth'});
-}
-
-// MVP模拟AI响应（基于关键词匹配）
-function simulateAiResponse(text){
-  const t = text.toLowerCase();
-
-  // 犹豫场景
-  if(t.includes('犹豫') || t.includes('考虑') || t.includes('想想') || t.includes('再看看')){
-    return {
-      dao: '客户犹豫的本质是"损失厌恶"——不是不想买，是怕买了后悔。大脑对损失的敏感度是收益的2.5倍。他不是在比较A和B，是在反复确认"选错了怎么办"。',
-      fa: '1. 永远不说"这套很好你赶紧定"——这是在加大他的决策压力\n2. 把"为什么该买"变成"不买会怎样"——从收益框架切换到损失框架\n3. 给他一个"反悔权"——降低他的心理试错成本',
-      shu: '"哥，我观察您看这几套房子的状态，每次走到阳台都会站很久——您是不是在担心视野和采光的问题？"\n\n"姐，您说再看看我特别理解，说实话买房子这种事谁都不敢随便定。我能问一下，您心里最纠结的是哪一点吗？"'
-    };
-  }
-
-  // 比价场景
-  if(t.includes('贵') || t.includes('便宜') || t.includes('比价') || t.includes('别家')){
-    return {
-      dao: '客户疯狂比价的本质是"锚定效应"缺失——他没有一个明确的参照标准来判断"值不值"。当你只报价格，他就只能用价格比。他不是在找最便宜的，是在找"买了不亏的确定性"。',
-      fa: '1. 永远不在价格上跟竞品比——那是在帮他确认"这东西只值这个价"\n2. 先定义"什么才算好"，再谈价格——先锚标准，再锚价格\n3. 用"单位价值"代替"总价"——把数字变小，把意义放大',
-      shu: '"哥，您说别的家更便宜，我信。但我特别想了解——您比下来，觉得价格差在哪了？是同样的东西标了不同价，还是东西本身就不一样？"\n\n"姐，我不跟您报总价，咱们算笔细账：这套房您住5年，摊下来每天XX块——比您现在租房还少。"'
-    };
-  }
-
-  // 挑毛病场景
-  if(t.includes('毛病') || t.includes('问题') || t.includes('不好') || t.includes('不满意')){
-    return {
-      dao: '客户反复挑毛病的本质是"信任缺失"——他不是真的发现了问题，是在用挑毛病的方式索取"你值得信任"的证据。每个毛病背后都是一个问题："你能不能给我一个让我放心的理由？"',
-      fa: '1. 永远不说"这个没问题"——没凭据的保证比沉默更可疑\n2. 每个毛病都用"证据"回应，不用"保证"回应\n3. 主动暴露小缺陷——主动承认的不完美比被动发现的可信10倍',
-      shu: '"哥，您提的这个问题我特别重视。我帮您查一下具体的检测报告/维修记录，有凭有据地跟您说。"\n\n"姐，说实话这个户型确实有个小问题——北向卧室的采光下午会弱一些。但正因为这个，业主在价格上让了X万，您算算值不值？"'
-    };
-  }
-
-  // 默认响应
-  return {
-    dao: '客户的每个"不"都是一种"我还没准备好"。表面上是拒绝，背后往往是信息不足、信任不够、或者时机不对。服务者的任务不是说服他"买"，而是帮他"准备好"。',
-    fa: '1. 不要对抗客户的拒绝——对抗只会让他更坚定\n2. 用提问代替陈述——让客户自己说出真实顾虑\n3. 给台阶比给压力更有效——"不着急，您想清楚了再决定"',
-    shu: '"哥/姐，我特别理解您的顾虑。能问一下，如果这个问题解决了，您会觉得怎么样？"\n\n"没关系，买房子是大事，多想想是对的。我这边帮您保留着，您随时找我。"'
-  };
-}
-
-// 回车发送
-function initAiInput(){
-  const input = document.getElementById('aiInput');
-  if(input){
-    input.addEventListener('keydown', function(e){
-      if(e.key === 'Enter' && !e.shiftKey){
-        e.preventDefault();
-        sendAiDecode();
-      }
-    });
-  }
-}
-
-// ============ 页面初始化 ============
-// 首次加载时就显示最基础的面包屑
-updateBreadcrumb({});
-initAiInput();
-
-// ============ 反馈成功回调 ============
-window.FEEDBACK_SUCCESS = function(module, score) {
-  localStorage.setItem('reply_free2', 'true');
-  var free2 = document.getElementById('free2-section');
-  if (free2) {
-    free2.style.display = 'block';
-    free2.scrollIntoView({ behavior: 'smooth' });
-  }
-};
-// 页面追踪
-if(typeof track==='function') track('page_view',{page:'reply_v2'});
+track('page_view','reply_index');
 </script>
-<script src="/feedback-widget.js"></script>
-  <!-- 第2次免费分析（反馈后解锁） -->
-  <div id="free2-section" style="display:none;max-width:640px;margin:32px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(44,95,58,0.10)">
-    <h3 style="font-size:18px;color:#2C5F3A;margin-bottom:12px">🎁 第2次免费分析已解锁</h3>
-    <p style="font-size:14px;color:#555">感谢你的反馈！你可以再次使用客户解码器：</p>
-    <button onclick="location.reload()" style="margin-top:12px;padding:10px 20px;background:#2C5F3A;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer">再次分析</button>
-  </div>
-
-<div id="fs-feedback" style="margin:24px 0;text-align:center;padding:16px;background:rgba(255,255,255,0.6);border-radius:8px;">
-  <p style="font-size:14px;color:#666;margin-bottom:8px;">这个结果对你有用吗？</p>
-  <button onclick="fsTrack('feedback_useful',{value:'yes'});this.parentElement.innerHTML='<p style=font-size:14px;color:#2D6A4F;>👍 谢谢！你的反馈帮我们做得更好</p>'" style="background:#2D6A4F;color:#fff;border:none;padding:8px 20px;border-radius:20px;margin:0 6px;cursor:pointer;font-size:14px;">👍 有用</button>
-  <button onclick="fsTrack('feedback_useful',{value:'no'});this.parentElement.innerHTML='<p style=font-size:14px;color:#666;>👎 谢谢反馈，我们会持续改进</p>'" style="background:#f0f0f0;color:#666;border:none;padding:8px 20px;border-radius:20px;margin:0 6px;cursor:pointer;font-size:14px;">👎 没用</button>
-</div>
-
-<div id="fs-cross-sell" style="margin:20px 0;padding:16px;background:linear-gradient(135deg,#F0FFF4,#E8F5E9);border-radius:12px;border-left:4px solid #2D6A4F;">
-  <p style="font-size:15px;font-weight:bold;color:#2D6A4F;margin:0 0 12px 0;">✨ 想提升服务品质？试试这些工具</p>
-  <div style="display:flex;flex-wrap:wrap;gap:8px;">
-    <a href="/quality-test/" onclick="fsTrack('cross_sell',{from:'reply',to:'quality-test'})" style="display:inline-block;background:#2D6A4F;color:#fff;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:13px;">🎯 六维品质测评</a>
-    <a href="/care-test/" onclick="fsTrack('cross_sell',{from:'reply',to:'care-test'})" style="display:inline-block;background:#40916C;color:#fff;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:13px;">❤️ 服务者关怀测评</a>
-    <a href="/assessment" onclick="fsTrack('cross_sell',{from:'reply',to:'assessment'})" style="display:inline-block;background:#52B788;color:#fff;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:13px;">📊 能力测评</a>
-    <a href="/breeder" onclick="fsTrack('cross_sell',{from:'reply',to:'breeder'})" style="display:inline-block;background:#74C69D;color:#fff;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:13px;">🤖 Agent培养师</a>
-  </div>
-</div>
 </body>
 </html>

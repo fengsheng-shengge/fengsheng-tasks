@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>居住服务一线调研</title>
+<meta name="description" content="聊聊你在房产经纪工作中的真实痛点，2分钟填写，帮行业更好地服务服务者">
+<meta name="keywords" content="房产经纪人调研,居住服务调研,经纪人痛点,房产经纪成长,行业调研">
+<link rel="canonical" href="https://fengsheng.tech/survey/">
+<meta property="og:title" content="居住服务一线调研 · 风声">
+<meta property="og:description" content="聊聊你在房产经纪工作中的真实痛点，帮行业更好地服务服务者">
+<meta property="og:url" content="https://fengsheng.tech/survey/">
+<meta property="og:type" content="website">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:#f5f0eb;color:#2d2d2d;line-height:1.7;min-height:100vh}
+.container{max-width:420px;margin:0 auto;padding:16px 16px 80px}
+.page{display:none;background:#fff;border-radius:16px;padding:24px 20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.page.active{display:block}
+.page-title{font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:6px}
+.page-subtitle{font-size:13px;color:#999;margin-bottom:20px}
+.progress{height:4px;background:#eee;border-radius:2px;margin-bottom:24px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#c8956c,#e8b88a);border-radius:2px;transition:width .3s}
+.q-block{margin-bottom:22px}
+.q-label{font-size:15px;font-weight:600;color:#2d2d2d;margin-bottom:8px;display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap}
+.q-num{background:#c8956c;color:#fff;border-radius:50%;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
+.q-required{color:#c8956c;font-size:12px;font-weight:400}
+.q-hint{font-size:12px;color:#aaa;margin-bottom:8px;padding-left:28px}
+input[type=text]{width:100%;border:1.5px solid #e0dcd8;border-radius:10px;padding:10px 14px;font-size:15px;color:#2d2d2d;background:#faf9f7;outline:none;transition:border-color .2s}
+input[type=text]:focus{border-color:#c8956c;background:#fff}
+.radio-group,.checkbox-group{display:flex;flex-direction:column;gap:8px;padding-left:4px}
+.radio-item,.checkbox-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid #e0dcd8;border-radius:10px;cursor:pointer;transition:all .2s;font-size:14px;-webkit-tap-highlight-color:transparent;user-select:none;min-height:44px}
+.radio-item:active,.checkbox-item:active{background:#faf5ef}
+.radio-item.selected{border-color:#c8956c;background:#faf5ef}
+.checkbox-item.checked{border-color:#c8956c;background:#faf5ef}
+.radio-item input,.checkbox-item input{position:absolute;opacity:0;pointer-events:none}
+.dot{width:18px;height:18px;border:2px solid #ccc;border-radius:50%;flex-shrink:0;position:relative;transition:border-color .2s}
+.radio-item.selected .dot{border-color:#c8956c}
+.radio-item.selected .dot::after{content:'';position:absolute;top:3px;left:3px;width:8px;height:8px;background:#c8956c;border-radius:50%}
+.box{width:18px;height:18px;border:2px solid #ccc;border-radius:4px;flex-shrink:0;position:relative;transition:border-color .2s}
+.checkbox-item.checked .box{border-color:#c8956c;background:#c8956c}
+.checkbox-item.checked .box::after{content:'✓';position:absolute;top:-2px;left:2px;color:#fff;font-size:12px;font-weight:700}
+.other-input{margin-top:6px;padding-left:28px}
+.other-input input{width:100%;border:1.5px solid #e0dcd8;border-radius:8px;padding:8px 12px;font-size:14px}
+.btn-row{display:flex;gap:12px;margin-top:8px}
+.btn{flex:1;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-next{background:linear-gradient(135deg,#c8956c,#e8b88a);color:#fff}
+.btn-next:active{transform:scale(.97)}
+.btn-prev{background:#f0ebe5;color:#888}
+.btn-submit{background:linear-gradient(135deg,#c8956c,#e8b88a);color:#fff}
+.hero{text-align:center;padding:28px 20px 20px}
+.hero-icon{font-size:44px;margin-bottom:10px}
+.hero h1{font-size:22px;font-weight:700;color:#1a1a1a;margin-bottom:8px}
+.hero p{font-size:14px;color:#888}
+.skill-tag{display:inline-block;background:#faf5ef;color:#c8956c;border-radius:20px;padding:3px 10px;font-size:11px;margin:2px}
+.skill-tags{text-align:center;margin-top:12px}
+.thanks{text-align:center;padding:40px 20px}
+.thanks h2{font-size:20px;color:#1a1a1a;margin-bottom:12px}
+.thanks p{font-size:14px;color:#888;margin-bottom:20px}
+.copy-btn{background:linear-gradient(135deg,#c8956c,#e8b88a);color:#fff;border:none;border-radius:12px;padding:14px 32px;font-size:16px;font-weight:600;cursor:pointer}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;padding:10px 24px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+.gold-tip{background:#faf5ef;border:1.5px solid #e8c89c;border-radius:10px;padding:10px 14px;font-size:12px;color:#8b6914;margin-bottom:16px;line-height:1.6}
+.submit-status{font-size:13px;color:#999;margin-top:8px}
+.dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.dim-card{border:1.5px solid #e0dcd8;border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .2s;text-align:center;user-select:none;-webkit-tap-highlight-color:transparent}
+.dim-card:active{background:#faf5ef}
+.dim-card.selected{border-color:#c8956c;background:#faf5ef}
+.dim-card .dim-icon{font-size:22px;margin-bottom:2px}
+.dim-card .dim-name{font-size:14px;font-weight:600;color:#2d2d2d}
+.dim-card .dim-desc{font-size:11px;color:#999;margin-top:1px}
+.dim-card.selected .dim-name{color:#8b6914}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- 首页 -->
+<div class="page active" id="page0">
+<div class="hero"><div class="hero-icon">🏠</div><h1>居住服务一线调研</h1><p>5分钟 · 帮客户住得更好</p></div>
+<div class="gold-tip">🌟 我们在做一件事：帮居住服务者更好地帮客户实现美好居住。你的回答直接决定我们做什么工具。</div>
+<div class="skill-tags"><span class="skill-tag">品质居住</span><span class="skill-tag">一线痛点</span><span class="skill-tag">AI工具</span><span class="skill-tag">付费意愿</span></div>
+<div style="margin-top:28px"><div class="btn btn-next" onclick="goPage(1)">开始 →</div></div>
+</div>
+
+<!-- 第1页：你是谁 -->
+<div class="page" id="page1">
+<div class="page-title">先认识一下</div><div class="page-subtitle">第1页/共5页</div>
+<div class="progress"><div class="progress-bar" style="width:20%"></div></div>
+<div class="q-block"><div class="q-label"><span class="q-num">1</span>你怎么称呼？<span class="q-required"> *必填</span></div><input type="text" id="q1" placeholder="叫什么都行"></div>
+<div class="q-block"><div class="q-label"><span class="q-num">2</span>你做什么岗位？<span class="q-required"> *必填</span></div>
+<div class="radio-group" data-q="q2">
+<label class="radio-item" onclick="selectRadio(this);onRoleChange('agent')"><span class="dot"></span><input type="radio" value="房产经纪人">房产经纪人</label>
+<label class="radio-item" onclick="selectRadio(this);onRoleChange('rent')"><span class="dot"></span><input type="radio" value="租赁管家">租赁管家</label>
+<label class="radio-item" onclick="selectRadio(this);onRoleChange('deco')"><span class="dot"></span><input type="radio" value="家装顾问/设计师">家装顾问/设计师</label>
+<label class="radio-item" onclick="selectRadio(this);onRoleChange('home')"><span class="dot"></span><input type="radio" value="家居/软装顾问">家居/软装顾问</label>
+<label class="radio-item" onclick="selectRadio(this);onRoleChange('prop')"><span class="dot"></span><input type="radio" value="物业管家">物业管家</label>
+<label class="radio-item" onclick="selectRadio(this);onRoleChange('finance')"><span class="dot"></span><input type="radio" value="居住金融顾问">居住金融顾问</label>
+<label class="radio-item" onclick="selectRadio(this);onRoleChange('manager')"><span class="dot"></span><input type="radio" value="商圈经理/店东">商圈经理/店东</label>
+<label class="radio-item" onclick="selectRadio(this);onRoleChange('other')"><span class="dot"></span><input type="radio" value="其他居住服务">其他居住服务</label>
+</div></div>
+<div class="q-block"><div class="q-label"><span class="q-num">3</span>哪个城市？<span class="q-required"> *必填</span></div><input type="text" id="q3" placeholder="比如北京、成都"></div>
+<div class="q-block"><div class="q-label"><span class="q-num">4</span>干这行多久了？<span class="q-required"> *必填</span></div>
+<div class="radio-group" data-q="q4">
+<label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="1年以内">1年以内</label>
+<label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="1-3年">1-3年</label>
+<label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="3-5年">3-5年</label>
+<label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="5年以上">5年以上</label>
+</div></div>
+<div class="btn-row"><div class="btn btn-next" onclick="tryGoPage(1,2)">下一页 →</div></div>
+</div>
+
+<!-- 第2页：品质居住认知 -->
+<div class="page" id="page2">
+<div class="page-title">品质居住</div><div class="page-subtitle">第2页/共5页 · 客户心里什么是"美好居住"</div>
+<div class="progress"><div class="progress-bar" style="width:40%"></div></div>
+<div class="gold-tip">💡 品质居住=6个维度：温暖（想回家）、惬意（能放松）、整洁（不乱好找）、美观（统一舒服）、安全（不出事）、健康（不伤身）。你接触的客户最在意哪个？</div>
+<div class="q-block">
+<div class="q-label"><span class="q-num">5</span>你接触的客户，最想要什么样的家？<span class="q-required"> *可多选</span></div>
+<div class="q-hint">选你觉得客户最在意的，最多选3个</div>
+<div class="dim-grid">
+<div class="dim-card" onclick="toggleDim(this)" data-val="温暖"><div class="dim-icon">🌡️</div><div class="dim-name">温暖</div><div class="dim-desc">想回家·有归属感</div></div>
+<div class="dim-card" onclick="toggleDim(this)" data-val="惬意"><div class="dim-icon">🧘</div><div class="dim-name">惬意</div><div class="dim-desc">能放松·不被打扰</div></div>
+<div class="dim-card" onclick="toggleDim(this)" data-val="整洁"><div class="dim-icon">✨</div><div class="dim-name">整洁</div><div class="dim-desc">不乱·好找·顺手</div></div>
+<div class="dim-card" onclick="toggleDim(this)" data-val="美观"><div class="dim-icon">🎨</div><div class="dim-name">美观</div><div class="dim-desc">统一·舒服·好看</div></div>
+<div class="dim-card" onclick="toggleDim(this)" data-val="安全"><div class="dim-icon">🛡️</div><div class="dim-name">安全</div><div class="dim-desc">不出事·底线</div></div>
+<div class="dim-card" onclick="toggleDim(this)" data-val="健康"><div class="dim-icon">💚</div><div class="dim-name">健康</div><div class="dim-desc">不伤身·长期</div></div>
+</div>
+</div>
+<div class="q-block">
+<div class="q-label"><span class="q-num">6</span><span id="q6_text">客户最常抱怨"住得不好"的地方是？</span><span class="q-required"> *可多选</span></div>
+<div class="checkbox-group" data-q="q6" id="q6_group"></div>
+<div class="other-input" id="q6_other" style="display:none"><input type="text" placeholder="客户还抱怨啥" id="q6_other_input"></div>
+</div>
+<div class="q-block">
+<div class="q-label"><span class="q-num">7</span>你觉得"品质居住"这四个字，客户听得懂吗？<span class="q-required"> *必填</span></div>
+<div class="radio-group" data-q="q7">
+<label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="听得懂，就是想要好房子">听得懂，就是想要好房子</label>
+<label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="半懂不懂，说不出具体要啥">半懂不懂，说不出具体要啥</label>
+<label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="听不懂，客户只关心价格">听不懂，客户只关心价格</label>
+<label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="客户懂，但觉得跟自己没关系">客户懂，但觉得跟自己没关系</label>
+</div></div>
+<div class="btn-row"><div class="btn btn-prev" onclick="goPage(1)">← 上一页</div><div class="btn btn-next" onclick="tryGoPage(2,3)">下一页 →</div></div>
+</div>
+
+<!-- 第3页：服务痛点（角色差异化） -->
+<div class="page" id="page3">
+<div class="page-title">一线痛点</div><div class="page-subtitle" id="page3_sub">第3页/共5页 · 帮客户美好居住，卡在哪</div>
+<div class="progress"><div class="progress-bar" style="width:60%"></div></div>
+<div class="q-block" id="q8_block">
+<div class="q-label"><span class="q-num">8</span><span id="q8_text">你在帮客户实现"美好居住"的过程中，最卡在哪？</span><span class="q-required"> *可多选</span></div>
+<div class="checkbox-group" data-q="q8" id="q8_group"></div>
+<div class="other-input" id="q8_other" style="display:none"><input type="text" placeholder="还卡在哪"></div>
+</div>
+<div class="q-block">
+<div class="q-label"><span class="q-num">9</span><span id="q9_text">客户选你而不是别人，最关键的原因是什么？</span><span class="q-required"> *可多选</span></div>
+<div class="checkbox-group" data-q="q9" id="q9_group"></div>
+<div class="other-input" id="q9_other" style="display:none"><input type="text" placeholder="还有别的原因"></div>
+</div>
+<div class="btn-row"><div class="btn btn-prev" onclick="goPage(2)">← 上一页</div><div class="btn btn-next" onclick="tryGoPage(3,4)">下一页 →</div></div>
+</div>
+
+<!-- 第4页：AI工具需求 -->
+<div class="page" id="page4">
+<div class="page-title">AI工具需求</div><div class="page-subtitle">第4页/共5页 · 如果有个AI帮你干活</div>
+<div class="progress"><div class="progress-bar" style="width:80%"></div></div>
+<div class="q-block">
+<div class="q-label"><span class="q-num">10</span><span id="q10_text">日常工作中，哪些事最想有个AI帮你干？</span><span class="q-required"> *可多选</span></div>
+<div class="checkbox-group" data-q="q10" id="q10_group"></div>
+<div class="other-input" id="q10_other" style="display:none"><input type="text" placeholder="还有啥想让它干的"></div>
+</div>
+<div class="q-block">
+<div class="q-label"><span class="q-num">11</span>你现在用什么工具？管用吗？<span class="q-required"> *可多选</span></div>
+<div class="checkbox-group" data-q="q11">
+<label class="checkbox-item" onclick="toggleCheck(this)"><span class="box"></span><input type="checkbox" value="用公司系统，凑合">用公司系统，凑合</label>
+<label class="checkbox-item" onclick="toggleCheck(this)"><span class="box"></span><input type="checkbox" value="自己找工具，管用但贵">自己找工具，管用但贵</label>
+<label class="checkbox-item" onclick="toggleCheck(this)"><span class="box"></span><input type="checkbox" value="没工具，全靠经验硬扛">没工具，全靠经验硬扛</label>
+<label class="checkbox-item" onclick="toggleCheck(this)"><span class="box"></span><input type="checkbox" value="试过AI但不会用">试过AI但不会用</label>
+</div></div>
+<div class="q-block">
+<div class="q-label"><span class="q-num">12</span><span id="q12_text">如果能培养一个"懂你"的AI助手，你愿意花时间教它吗？</span><span class="q-required"> *必填</span></div>
+<div class="radio-group" data-q="q12">
+<label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="愿意，越懂我越好">愿意，越懂我越好</label>
+<label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="看看麻烦不麻烦">看看麻烦不麻烦</label>
+<label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="不想折腾">不想折腾</label>
+</div></div>
+<div class="btn-row"><div class="btn btn-prev" onclick="goPage(3)">← 上一页</div><div class="btn btn-next" onclick="tryGoPage(4,5)">下一页 →</div></div>
+</div>
+
+<!-- 第5页：付费+联系 -->
+<div class="page" id="page5">
+<div class="page-title">最后两题</div><div class="page-subtitle">第5页/共5页</div>
+<div class="progress"><div class="progress-bar" style="width:100%"></div></div>
+<div class="q-block">
+<div class="q-label"><span class="q-num">13</span>如果有个工具能帮你更好地帮客户实现品质居住，你每月愿意花多少？<span class="q-required"> *必填</span></div>
+<div class="radio-group" data-q="q13" id="q13_group"></div>
+</div>
+<div class="q-block">
+<div class="q-label"><span class="q-num">14</span>愿意留个微信吗？好的工具出来第一时间通知你</div>
+<div class="q-hint">选填，留了有优先体验权</div>
+<input type="text" id="q14" placeholder="微信号或手机号">
+</div>
+<div class="btn-row"><div class="btn btn-prev" onclick="goPage(4)">← 上一页</div><div class="btn btn-submit" onclick="trySubmit()">提交 ✓</div></div>
+</div>
+
+<!-- 完成页 -->
+<div class="page" id="page6">
+<div class="thanks">
+<div style="font-size:48px;margin-bottom:16px">🎉</div>
+<h2>谢谢你的时间！</h2>
+<p>我们在做帮居住服务者更好地服务客户的工具<br>帮客户无限接近美好居住的梦想<br>有了结果第一时间告诉你</p>
+<div id="submitStatus" class="submit-status"></div>
+<div style="margin-top:24px"><div class="copy-btn" onclick="copyResult()">📋 复制我的回答</div></div>
+<p style="margin-top:12px;font-size:12px;color:#bbb">复制后可发给助手</p>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<iframe id="_fs_iframe" name="_fs_iframe" style="display:none"></iframe>
+
+<script>
+var currentRole='agent';
+var selectedDims=[];
+
+var ROLE_CONFIG={
+  agent:{
+    role_label:'房产经纪人',domain_label:'房产交易',
+    q6:{options:['房子跟预期差太远','社区环境差/邻居吵','装修过时/空间不合理','物业服务跟不上','周边配套不方便','户型采光通风不好']},
+    q8:{text:'帮客户找到理想的家，你最卡在哪？',options:['客户说不清想要什么','带看了很多还是不满意','房源信息不够全不准','政策变动跟不上节奏','交易流程太复杂客户怕','同行竞争太激烈']},
+    q9:{text:'客户选你而不是别人，最关键的原因是？',options:['专业靠谱，能讲清房子真实优劣','态度好，客户觉得你真心在帮他','信息全，好房子第一时间推给他','价格透明，不藏着掖着','跟进勤，不让客户觉得被冷落','关系到位，客户信任你这个人']},
+    q10:{options:['写房源描述/讲房子亮点','回复客户消息/解答疑问','房源对比分析/帮客户决策','税费/贷款计算','政策解读/合规提醒','带看路线规划/看房记录整理','市场行情/板块分析']},
+    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q13:{options:['免费就行','10元/月以内','10-30元/月','30-50元/月','50元/月也行']}
+  },
+  rent:{
+    role_label:'租赁管家',domain_label:'房屋租赁',
+    q6:{options:['房子跟预期差太远','社区环境差/邻居吵','装修过时/空间不合理','物业服务跟不上','周边配套不方便','户型采光通风不好','房东难沟通']},
+    q8:{text:'帮客户租到合适的家，你最卡在哪？',options:['客户需求说不清','匹配房源效率低','租后服务客户不满意','续租/退租纠纷多','房东要求太苛刻','租金谈不拢']},
+    q9:{text:'租客选你而不是别人，最关键的原因是？',options:['房源多，总能匹配到合适的','响应快，租住问题及时解决','专业靠谱，条款讲得清楚','态度好，住着安心','租后服务好，出了事有人管','价格实在，不乱收费']},
+    q10:{options:['房源匹配/推荐','租约管理/续租提醒','租金计算/费用拆解','客户沟通/需求跟进','租后服务/维修对接','合规提醒/政策解读','市场行情/租金趋势']},
+    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q13:{options:['免费就行','10元/月以内','10-30元/月','30-50元/月','50元/月也行']}
+  },
+  deco:{
+    role_label:'家装顾问/设计师',domain_label:'家装装修',
+    q6:{options:['装修完跟效果图差太远','材料不环保/有异味','收纳空间不够用','设计不好看/风格不统一','施工质量差/老出问题','工期拖延/预算超支','隔音/采光/通风不好']},
+    q8:{text:'帮客户装修出理想的家，你最卡在哪？',options:['客户说不清想要什么风格','报价拆不透明客户不信任','施工质量难以把控','材料选择太多客户纠结','工期总拖/变更频繁','设计方案和落地差距大']},
+    q9:{text:'客户选你而不是别人，最关键的原因是？',options:['设计好看，效果图说话','报价透明，不藏着掖着','施工靠谱，品质有保障','沟通到位，客户觉得你懂他','工期准，说什么时候完就什么时候完','售后好，出了问题有人管']},
+    q10:{options:['设计风格推荐/效果图生成','装修报价拆解/预算管控','材料对比/环保检测说明','施工进度跟踪/质量检查','客户沟通/需求确认','政策法规/合规提醒','案例库/灵感参考']},
+    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q13:{options:['免费就行','30元/月以内','30-50元/月','50-100元/月','100元/月也行']}
+  },
+  home:{
+    role_label:'家居/软装顾问',domain_label:'家居软装',
+    q6:{options:['家里看着不协调/风格混乱','收纳空间不够/东西乱放','家具不舒服/不好用','灯光氛围不对','色彩搭配不好看','缺乏个性和温度']},
+    q8:{text:'帮客户配置理想的家，你最卡在哪？',options:['客户说不清自己喜欢什么','产品太多不知道怎么搭','预算有限选不出好东西','客户家户型限制多','搭配效果说不清楚客户不敢买','送货安装售后问题多']},
+    q9:{text:'客户选你而不是别人，最关键的原因是？',options:['眼光好，搭配出来好看','性价比高，花小钱出效果','服务好，从选到装到售后一条龙','专业，能根据户型和家庭情况出方案','速度快，不拖沓','口碑好，朋友推荐来的']},
+    q10:{options:['风格搭配推荐/效果预览','产品对比/性价比分析','空间规划/收纳方案','客户沟通/需求挖掘','趋势洞察/热门搭配','案例库/灵感参考','订单跟踪/售后对接']},
+    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q13:{options:['免费就行','30元/月以内','30-50元/月','50-100元/月','100元/月也行']}
+  },
+  prop:{
+    role_label:'物业管家',domain_label:'房屋管理',
+    q6:{options:['社区环境差/绿化不好','安保不好/担心安全','设施老化/老出故障','停车难/车位不够','物业费高但服务差','噪音/邻里纠纷']},
+    q8:{text:'帮业主维护好居住品质，你最卡在哪？',options:['业主诉求多但人手不够','维修响应慢业主不满意','费用收缴难/业主抗拒','安保/消防压力大','设施老化但资金不足','业主沟通/矛盾调解难']},
+    q9:{text:'业主认可你的服务，最关键的原因是？',options:['响应快，问题及时解决','态度好，业主觉得被尊重','专业，能给出靠谱方案','主动，不等业主催','透明，费用开支说清楚','长期陪伴，业主信任你']},
+    q10:{options:['报修管理/工单跟踪','费用收缴/账目管理','业主沟通/满意度回访','设施巡检/维护计划','安保监控/应急预案','社区活动/邻里建设','政策法规/合规提醒']},
+    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q13:{options:['免费就行','公司掏钱就行','10-30元/月','30-50元/月','不自掏腰包']}
+  },
+  finance:{
+    role_label:'居住金融顾问',domain_label:'居住金融',
+    q6:{options:['月供压力大/还不起','贷款利率太高','税费算不明白','首付凑不齐','公积金搞不懂','担心还贷风险']},
+    q8:{text:'帮客户用合理的钱实现品质居住，你最卡在哪？',options:['客户资质复杂方案难做','产品太多不知道怎么选','客户算不明白账不敢下手','政策变动快跟不上节奏','银行审批慢/流程长','同行价格战利润薄']},
+    q9:{text:'客户选你而不是别人，最关键的原因是？',options:['方案靠谱，帮客户省到钱','专业，复杂情况也能搞定','透明，每一笔账算得清楚','速度快，不耽误时间','态度好，客户觉得放心','长期跟踪，贷后也有人管']},
+    q10:{options:['贷款方案对比/计算','税费精算/政策解读','客户资质评估/方案推荐','银行产品更新/利率追踪','合规风险检查/提醒','客户沟通/需求跟进','市场行情/政策动态']},
+    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q13:{options:['免费就行','30元/月以内','30-50元/月','50-100元/月','100元/月也行']}
+  },
+  manager:{
+    role_label:'商圈经理/店东',domain_label:'经营管理',
+    q6:{options:['业主投诉品质差/居住问题多','经纪人说客户嫌房子不好','社区投诉/纠纷多','装修交付跟承诺差太远','租户投诉租住体验差','售后问题多/客户不满意']},
+    q8:{text:'带团队帮客户实现品质居住，你最卡在哪？',options:['团队专业度参差不齐','新人成长慢/带不动','客户需求越来越复杂','数据分散/决策靠感觉','经纪人流失快','上面压指标下面不给力']},
+    q9:{text:'客户选你的团队，最关键的原因是？',options:['团队专业，能讲清真实优劣','服务到位，客户觉得被重视','信息全，好房子第一时间推','价格透明，不藏着掖着','跟到底，不让客户操心','口碑好，老客户带新客户']},
+    q10:{options:['团队数据分析/业绩追踪','新人培训/能力诊断','客户需求洞察/匹配分析','市场行情/竞对动态','写周报月报/汇报材料','政策解读/合规提醒','营销推广/获客方案']},
+    q12_text:'如果能培养一个"懂你团队"的AI助手，你愿意花时间教它吗？',
+    q13:{options:['免费就行','30-50元/月','50-100元/月','100-200元/月','200元+/月']}
+  },
+  other:{
+    role_label:'居住服务者',domain_label:'居住服务',
+    q6:{options:['房子跟预期差太远','社区环境差','装修/空间不合理','物业服务跟不上','周边配套不方便','安全性/健康问题']},
+    q8:{text:'帮客户实现品质居住，你最卡在哪？',options:['客户需求说不清','专业能力有短板','工具不够用','信息不够全不准','流程太复杂','同行竞争激烈']},
+    q9:{text:'客户选你的服务，最关键的原因是？',options:['专业靠谱','态度好/真心帮忙','信息全/速度快','价格实在','服务到位/跟到底','口碑好/朋友推荐']},
+    q10:{options:['客户沟通/需求挖掘','专业信息查询/解读','流程管理/进度跟踪','数据分析/方案推荐','市场行情/趋势洞察','政策法规/合规提醒']},
+    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q13:{options:['免费就行','10-30元/月','30-50元/月','50-100元/月','100元+/月']}
+  }
+};
+
+function toggleDim(el){
+  var val=el.dataset.val;
+  var idx=selectedDims.indexOf(val);
+  if(idx>-1){selectedDims.splice(idx,1);el.classList.remove('selected')}
+  else{
+    if(selectedDims.length>=3){showToast('最多选3个');return}
+    selectedDims.push(val);el.classList.add('selected')
+  }
+}
+
+function onRoleChange(role){
+  currentRole=role;
+  var cfg=ROLE_CONFIG[role];
+  document.getElementById('page3_sub').textContent='第3页/共5页 · '+cfg.domain_label+'一线痛点';
+  renderCheckboxes('q6_group',cfg.q6.options,'q6');
+  document.getElementById('q6_other').style.display='none';
+  document.getElementById('q8_text').textContent=cfg.q8.text;
+  renderCheckboxes('q8_group',cfg.q8.options,'q8');
+  document.getElementById('q8_other').style.display='none';
+  document.getElementById('q9_text').textContent=cfg.q9.text;
+  renderCheckboxes('q9_group',cfg.q9.options,'q9');
+  document.getElementById('q9_other').style.display='none';
+  renderCheckboxes('q10_group',cfg.q10.options,'q10');
+  document.getElementById('q10_other').style.display='none';
+  document.getElementById('q12_text').textContent=cfg.q12_text;
+  renderRadios('q13_group',cfg.q13.options,'q13');
+}
+
+function renderCheckboxes(groupId,options,qName){
+  var g=document.getElementById(groupId);
+  var html='';
+  for(var i=0;i<options.length;i++){
+    html+='<label class="checkbox-item" onclick="toggleCheck(this)"><span class="box"></span><input type="checkbox" value="'+options[i]+'">'+options[i]+'</label>';
+  }
+  html+='<label class="checkbox-item" onclick="toggleCheckOther(this)" data-other="'+qName+'"><span class="box"></span><input type="checkbox" value="其他">其他</label>';
+  g.innerHTML=html;
+}
+function renderRadios(groupId,options,qName){
+  var g=document.getElementById(groupId);
+  var html='';
+  for(var i=0;i<options.length;i++){
+    html+='<label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="'+options[i]+'">'+options[i]+'</label>';
+  }
+  g.innerHTML=html;
+}
+
+onRoleChange('agent');
+
+function goPage(n){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById('page'+n).classList.add('active');window.scrollTo(0,0)}
+function validatePage(pn){
+  if(pn===1){if(!document.getElementById('q1').value.trim()){showToast('请填写称呼');return false}if(!getRadio('q2')){showToast('请选择岗位');return false}if(!document.getElementById('q3').value.trim()){showToast('请填写城市');return false}if(!getRadio('q4')){showToast('请选择从业年限');return false}}
+  if(pn===2){if(selectedDims.length===0){showToast('请至少选1个维度');return false}if(getCheckbox('q6').length===0){showToast('请至少选1个');return false}if(!getRadio('q7')){showToast('请选择');return false}}
+  if(pn===3){if(getCheckbox('q8').length===0){showToast('请至少选1个痛点');return false}if(getCheckbox('q9').length===0){showToast('请至少选1个原因');return false}}
+  if(pn===4){if(getCheckbox('q10').length===0){showToast('请至少选1个AI需求');return false}if(getCheckbox('q11').length===0){showToast('请至少选1个');return false}if(!getRadio('q12')){showToast('请选择');return false}}
+  if(pn===5){if(!getRadio('q13')){showToast('请选择付费意愿');return false}}
+  return true;
+}
+function tryGoPage(from,to){if(!validatePage(from))return;goPage(to)}
+function trySubmit(){if(!validatePage(5))return;var q14v=document.getElementById('q14').value.trim();if(q14v&&/^\d+$/.test(q14v)&&!/^1\d{10}$/.test(q14v)){showToast('手机号应为11位，1开头');return}submitSurvey()}
+function selectRadio(el){var g=el.closest('.radio-group');g.querySelectorAll('.radio-item').forEach(function(i){i.classList.remove('selected')});el.classList.add('selected')}
+function toggleCheck(el){if(event)event.preventDefault();var cb=el.querySelector('input[type=checkbox]');if(!cb)return;cb.checked=!cb.checked;if(cb.checked){el.classList.add('checked')}else{el.classList.remove('checked')}var oid=el.dataset.other;if(oid){var oi=document.getElementById(oid+'_other');if(oi)oi.style.display=cb.checked?'block':'none'}}
+function toggleCheckOther(el){toggleCheck(el)}
+function getRadio(q){var g=document.querySelector('[data-q="'+q+'"]');if(!g)return'';var s=g.querySelector('.radio-item.selected');if(!s)return'';return s.querySelector('input').value}
+function getCheckbox(q){var g=document.querySelector('[data-q="'+q+'"]');if(!g)return[];var vals=[];g.querySelectorAll('.checkbox-item.checked').forEach(function(el){var v=el.querySelector('input').value;if(v==='其他'){var oid=el.dataset.other;if(oid){var oi=document.getElementById(oid+'_other');if(oi){var inp=oi.querySelector('input');if(inp&&inp.value){vals.push('其他：'+inp.value);return}}}}vals.push(v)});return vals}
+
+function submitSurvey(){
+  var cfg=ROLE_CONFIG[currentRole];
+  var data={
+    姓名:document.getElementById('q1').value.trim(),
+    岗位:getRadio('q2'),
+    城市:document.getElementById('q3').value.trim(),
+    从业年限:getRadio('q4'),
+    品质居住维度:selectedDims.join('、'),
+    客户抱怨住不好:getCheckbox('q6').join('、'),
+    品质居住客户懂吗:getRadio('q7'),
+    一线痛点:getCheckbox('q8').join('、'),
+    客户选你因为:getCheckbox('q9').join('、'),
+    AI助手需求:getCheckbox('q10').join('、'),
+    现在用什么工具:getCheckbox('q11').join('、'),
+    愿意教AI:getRadio('q12'),
+    每月付费:getRadio('q13'),
+    微信:document.getElementById('q14').value.trim(),
+    角色类型:currentRole,
+    业务域:cfg.domain_label,
+    时间:new Date().toLocaleString('zh-CN'),
+    _ts:Date.now()
+  };
+  localStorage.setItem('survey_'+Date.now(),JSON.stringify(data));
+  window._lastSurvey=data;
+  goPage(6);
+  try{
+    var _form=document.createElement('form');
+    _form.action='https://formsubmit.co/d818fa3cece5258aea8205bd492316de';
+    _form.method='POST';_form.target='_fs_iframe';_form.style.display='none';var _iframe=document.createElement('iframe');_iframe.name='_fs_iframe';_iframe.style.display='none';document.body.appendChild(_iframe);
+    var _map={_subject:'居住服务一线调研-新提交',_template:'table',_captcha:'false'};
+    for(var k in data){_map[k]=data[k]}
+    for(var _k in _map){var _inp=document.createElement('input');_inp.type='hidden';_inp.name=_k;_inp.value=_map[_k];_form.appendChild(_inp)}
+    document.body.appendChild(_form);_form.submit();setTimeout(function(){_form.remove()},3000);
+    /* Web3Forms removed 20260608: data now unified to FormSubmit only (yu-er@coze.email) */
+    document.getElementById('submitStatus').innerHTML='<span style="color:#4caf50">✓ 数据已提交</span>';
+  }catch(e){
+    document.getElementById('submitStatus').innerHTML='<span style="color:#ff9800">数据已保存在本地，可复制后发给助手</span>';
+  }
+}
+
+function copyResult(){
+  if(!window._lastSurvey){var keys=Object.keys(localStorage).filter(function(k){return k.startsWith('survey_')});if(keys.length)window._lastSurvey=JSON.parse(localStorage.getItem(keys[keys.length-1]))}
+  if(!window._lastSurvey){showToast('没有可复制的数据');return}
+  var d=window._lastSurvey;
+  var t='📋 居住服务一线调研\n━━━━━━━━━━\n称呼：'+d.姓名+'\n岗位：'+d.岗位+'\n城市：'+d.城市+'\n从业：'+d.从业年限+'\n━━━━━━━━━━\n品质居住维度：'+d.品质居住维度+'\n客户抱怨：'+d.客户抱怨住不好+'\n客户懂品质居住吗：'+d.品质居住客户懂吗+'\n━━━━━━━━━━\n一线痛点：'+d.一线痛点+'\n客户选你因为：'+d.客户选你因为+'\n━━━━━━━━━━\nAI需求：'+d.AI助手需求+'\n现在用啥工具：'+d.现在用什么工具+'\n愿意教AI：'+d.愿意教AI+'\n━━━━━━━━━━\n每月付费：'+d.每月付费+'\n微信：'+d.微信+'\n时间：'+d.时间;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){showToast('已复制！发给助手即可')}).catch(function(){fallbackCopy(t)})}else{fallbackCopy(t)}
+}
+
+function fallbackCopy(t){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('已复制！')}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2000)}
+</script>
+</body>
+</html>

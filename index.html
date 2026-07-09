@@ -1,14 +1,13 @@
-<!-- v20260622-v2 ｜ 新增开单导师+IP设计入口 -->
+<!-- v20260604-2040 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>风声 · 帮助服务者用独立价值赢得尊重</title>
-<meta name="description" content="风声 · 帮助服务者用独立价值赢得尊重。六维标准定义品质，四维关怀守护服务者，三条路径实现商业闭环。">
+<title>风声 · 帮助服务者配得上被好好对待</title>
+<meta name="description" content="风声 · 帮助服务者配得上被好好对待。六维标准定义品质，四维关怀守护服务者，三条路径实现商业闭环。">
 <meta name="keywords" content="风声,居住服务,品质居住,六维标准,四维关怀,服务者关怀,居住品质,AI工具,经纪人赋能,质量管理">
-<meta property="og:title" content="风声 · 帮助服务者用独立价值赢得尊重">
+<meta property="og:title" content="风声 · 帮助服务者配得上被好好对待">
 <meta property="og:description" content="六维标准定义品质，四维关怀守护服务者，三条路径实现商业闭环。">
 <meta property="og:image" content="https://fengsheng.tech/og-image.png">
 <meta property="og:url" content="https://fengsheng.tech/">
@@ -118,7 +117,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 /* 三路径 */
 .path-section{padding:60px 8% 20px}
 .path-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
-.path-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px 16px;text-align:center;display:flex;flex-direction:column;cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent}
+.path-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px 16px;text-align:center;display:flex;flex-direction:column;cursor:default;transition:all .3s;-webkit-tap-highlight-color:transparent}
 .path-card:active{transform:scale(.97);border-color:var(--border-h)}
 .path-card.a{border-top:3px solid var(--pathA)}
 .path-card.b{border-top:3px solid var(--pathB)}
@@ -148,7 +147,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
 /* 产品矩阵 */
 .product-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.product-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;border-top:3px solid transparent}
+.product-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;cursor:default;transition:all .3s;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;border-top:3px solid transparent}
 .product-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(60,50,40,.12);border-color:rgba(60,80,50,.15)}
 .product-card:active{transform:scale(.98);border-color:var(--border-h)}
 .product-top{display:flex;align-items:center;gap:8px}
@@ -267,13 +266,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
   <div class="fs-nav-links">
     <a href="/">首页</a>
+    <a href="/mentor/">开单导师</a>
     <a href="/quality-test/">品质测评</a>
     <a href="/care-test/">关怀测评</a>
     <a href="/reply/">客户解码</a>
-    <a href="/s1-report/">带看报告</a>
-    <a href="/knowledge">知识底座</a>
-    <a href="/mentor/">开单导师</a>
     <a href="/ip-design/">IP设计</a>
+    <a href="/knowledge">知识底座</a>
     <a href="/dashboard/">管理看板</a>
   </div>
   <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
@@ -303,9 +301,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   <div class="hero-sub">AI帮你把效率活干了，让你腾出手做更重要的判断和担当</div>
   <div class="hero-desc">AI替你干活，你替客户担责——能承担的人，才配得上被好好对待</div>
   <div class="hero-cta">
-    <a class="cta-btn cta-primary" href="/quality-test/">🏠 客户·六维品质居住测评</a>
-    <a class="cta-btn cta-secondary" href="/care-test/">💚 服务者·四维关怀测评</a>
-    <a class="cta-btn cta-fire" href="/mentor/">🔥 租赁开单导师·0.99元体验</a>
+    <a class="cta-btn cta-fire" href="/mentor/">🔥 开单导师·AI帮你开单</a>
+    <a class="cta-btn cta-primary" href="/quality-test/">🏠 六维品质测评</a>
+    <a class="cta-btn cta-secondary" href="/care-test/">💚 四维关怀测评</a>
+    <a class="cta-btn cta-secondary" href="/ip-design/">🎨 IP角色设计</a>
   </div>
 
   <!-- 110人验证线 -->
@@ -397,7 +396,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
       <div class="path-sub">路径B</div>
       <div class="path-earn b">赚未来的势</div>
       <div class="path-who">高校/政府<br>政策杠杆<br>产教融合</div>
-      <a class="path-btn b" href="#" style="background:rgba(78,126,142,.12);color:#4e7e8e" onclick="return false;">谈合作 · 敬请期待</a>
+      <a class="path-btn b" href="#" style="background:rgba(78,126,142,.12);color:#4e7e8e;pointer-events:none" onclick="return false;">谈合作 · 敬请期待</a>
     </div>
     <div class="path-card c">
       <div class="path-ico">⚖️</div>
@@ -419,10 +418,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     <div class="cat-dot" style="background:var(--p)"></div>
     <div class="cat-name">面对客户</div>
     <span class="cat-desc">获客引流 &middot; 专业交付 &middot; 信任建立</span>
-    <span class="cat-badge live">4个工具</span>
+    <span class="cat-badge live">5个工具</span>
   </div>
   <div class="product-grid">
-    <!-- C位引流入口：客户解码器（快回） -->
+    <!-- 🔥C位：开单导师 -->
+    <div class="product-card" style="border-left:4px solid var(--fire)">
+      <div class="product-top">
+        <div class="product-ico">🔥</div>
+        <div class="product-info">
+          <div class="product-name">&#9733; 开单导师</div>
+          <div class="product-value">AI帮你拆解客户真需求，23年行业老兵Knowhow你直接用</div>
+          <div class="product-stat">客户解码&middot;场景话术&middot;开单策略</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/mentor/" style="background:var(--fire);color:#fff;" data-track="product:mentor">开始对话</a></div>
+    </div>
+    <!-- 客户解码器（快回） -->
     <div class="product-card" style="border-left:4px solid var(--fire)">
       <div class="product-top">
         <div class="product-ico">&#128295;</div>
@@ -512,6 +523,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     </div>
   </div>
 
+  <!-- 品牌打造 -->
+  <div class="product-category">
+    <div class="cat-dot" style="background:var(--beauty)"></div>
+    <div class="cat-name">品牌打造</div>
+    <span class="cat-desc">IP形象 &middot; 差异化呈现</span>
+    <span class="cat-badge live">1个工具</span>
+  </div>
+  <div class="product-grid">
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">🎨</div>
+        <div class="product-info">
+          <div class="product-name">&#9733; IP角色设计</div>
+          <div class="product-value">输入描述，AI即时生成你的专属IP角色——6种风格可选，下载即用</div>
+          <div class="product-stat">半写实商务插画&middot;多风格&middot;支持照片参考</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/ip-design/" data-track="product:ip-design">免费使用</a></div>
+    </div>
+  </div>
+
   <!-- 底座：知识库 -->
   <div class="product-category" style="margin-top:8px">
     <div class="cat-dot" style="background:var(--pathC)"></div>
@@ -530,38 +562,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
         </div>
       </div>
       <div class="product-action"><a class="live" href="/knowledge" data-track="product:knowledge">体验查询</a></div>
-    </div>
-  </div>
-
-  <!-- 场景四：商业闭环 — 开单·IP·成交 -->
-  <div class="product-category">
-    <div class="cat-dot" style="background:var(--fire)"></div>
-    <div class="cat-name">商业闭环</div>
-    <span class="cat-desc">开单成交 &middot; 个人IP &middot; 信任变现</span>
-    <span class="cat-badge live">2个工具</span>
-  </div>
-  <div class="product-grid">
-    <div class="product-card" style="border-left:4px solid var(--fire)">
-      <div class="product-top">
-        <div class="product-ico">🔥</div>
-        <div class="product-info">
-          <div class="product-name">&#9733; 开单导师</div>
-          <div class="product-value">AI教你开第一单</div>
-          <div class="product-stat">7步法精准匹配&middot;高效逼定&middot;成交闭环</div>
-        </div>
-      </div>
-      <div class="product-action"><a class="live" href="/mentor/" style="background:var(--fire);color:#fff;" data-track="product:mentor">0.99元体验</a></div>
-    </div>
-    <div class="product-card" style="border-left:4px solid var(--p)">
-      <div class="product-top">
-        <div class="product-ico">🎨</div>
-        <div class="product-info">
-          <div class="product-name">&#9733; IP角色设计</div>
-          <div class="product-value">免费生成你的专属IP形象</div>
-          <div class="product-stat">半写实商务风格&middot;6张资产包一键生成</div>
-        </div>
-      </div>
-      <div class="product-action"><a class="live" href="/ip-design/" data-track="product:ip-design">免费使用</a></div>
     </div>
   </div>
 </div><!-- 路径B已冻结至9月，以下内容隐藏
