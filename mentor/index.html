@@ -100,6 +100,26 @@
     .modal .success-msg .go-btn{display:inline-block;background:#c46a3a;color:#fff;padding:12px 32px;border-radius:6px;font-size:16px;font-weight:700;text-decoration:none}
     .modal .form-area{display:block}
 
+    /* Pay Modal */
+    .pay-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(26,26,26,.5);z-index:1100;justify-content:center;align-items:center}
+    .pay-overlay.active{display:flex}
+    .pay-modal{background:#fff;border-radius:8px;padding:32px;max-width:380px;width:90%;position:relative;text-align:center}
+    .pay-modal h3{font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+    .pay-modal .pay-amount{font-size:32px;font-weight:800;color:#c46a3a;margin:16px 0}
+    .pay-modal .pay-amount small{font-size:16px;font-weight:400;color:#999}
+    .pay-ways{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+    .pay-way{display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid #e8e4d9;border-radius:8px;cursor:pointer;transition:all .2s;text-align:left;background:#fff}
+    .pay-way:hover{border-color:#3d5a3e;background:#f0f4ef}
+    .pay-way:active{transform:scale(.98)}
+    .pay-way-icon{font-size:22px;flex-shrink:0}
+    .pay-way-info{flex:1}
+    .pay-way-info .pay-name{font-size:15px;font-weight:600;color:#1a1a1a}
+    .pay-way-info .pay-desc{font-size:12px;color:#999;margin-top:2px}
+    .pay-way-arrow{color:#ccc;font-size:16px}
+    .pay-modal .close-btn{position:absolute;top:12px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#999;line-height:1}
+    .pay-modal .close-btn:hover{color:#1a1a1a}
+    .pay-modal .pay-note{font-size:12px;color:#bbb;margin-top:16px}
+
     /* Inline Chat */
     .chat-section{padding:64px 0;background:#f0f4ef;display:none}
     .chat-section.active{display:block}
@@ -174,6 +194,34 @@
     </div>
   </div>
 
+  <!-- Pay Modal -->
+  <div class="pay-overlay" id="payModal">
+    <div class="pay-modal">
+      <button class="close-btn" onclick="closePayModal()">&times;</button>
+      <h3>选择支付方式</h3>
+      <div class="pay-amount" id="payAmount">¥0.99<small>/次</small></div>
+      <div class="pay-ways">
+        <div class="pay-way" onclick="doPay('alipay')">
+          <span class="pay-way-icon">💙</span>
+          <div class="pay-way-info">
+            <div class="pay-name">支付宝支付</div>
+            <div class="pay-desc">跳转支付宝收银台付款</div>
+          </div>
+          <span class="pay-way-arrow">›</span>
+        </div>
+        <div class="pay-way" onclick="doPay('wechat')">
+          <span class="pay-way-icon">💚</span>
+          <div class="pay-way-info">
+            <div class="pay-name">微信支付</div>
+            <div class="pay-desc">使用微信扫码或小程序付款</div>
+          </div>
+          <span class="pay-way-arrow">›</span>
+        </div>
+      </div>
+      <p class="pay-note">支付即表示同意 <a href="https://fengsheng.tech/privacy.html">服务协议</a></p>
+    </div>
+  </div>
+
   <!-- Nav -->
   <nav class="nav">
     <div class="container">
@@ -237,7 +285,7 @@
             <li>场景化实战方案</li>
             <li>7月底前体验价</li>
           </ul>
-          <button class="price-btn primary" onclick="openModal()">立即咨询</button>
+          <button class="price-btn primary" onclick="openPay('single', 0.99, '次')">立即咨询</button>
         </div>
         <div class="price-card">
           <h3>月度畅聊</h3>
@@ -248,7 +296,7 @@
             <li>专属话术定制</li>
             <li>新场景优先体验</li>
           </ul>
-          <button class="price-btn secondary" onclick="openModal()">立即开通</button>
+          <button class="price-btn secondary" onclick="openPay('monthly', 9.9, '月')">立即开通</button>
         </div>
       </div>
       <p class="price-note">注册后即可与AI导师对话，付费功能将在对话内引导完成</p>
@@ -328,6 +376,7 @@
   <script>
     var chatSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
     var chatWaiting = false;
+    var pendingPayPlan = null;
 
     function openChat(){
       document.getElementById('chatSection').classList.add('active');
@@ -337,6 +386,47 @@
     function openModal(){document.getElementById('unlockModal').classList.add('active')}
     function closeModal(){document.getElementById('unlockModal').classList.remove('active');document.getElementById('formArea').style.display='block';document.getElementById('successArea').style.display='none'}
     document.getElementById('unlockModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+    // 支付弹窗
+    function openPay(plan, amount, unit) {
+      pendingPayPlan = plan;
+      document.getElementById('payAmount').innerHTML = '¥' + amount.toFixed(2) + '<small>/' + unit + '</small>';
+      document.getElementById('payModal').classList.add('active');
+    }
+    function closePayModal() {
+      document.getElementById('payModal').classList.remove('active');
+      pendingPayPlan = null;
+    }
+    document.getElementById('payModal').addEventListener('click', function(e){if(e.target===this)closePayModal()});
+
+    function doPay(method) {
+      if (!pendingPayPlan) return;
+      var plan = pendingPayPlan;
+      closePayModal();
+
+      if (method === 'alipay') {
+        // 调用支付宝API创建订单 → 跳转收银台
+        fetch('/api/pay/alipay', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan: plan, mode: 'page' })
+        }).then(function(r){ return r.json() }).then(function(data) {
+          if (data.pay_url) {
+            window.location.href = data.pay_url;
+          } else if (data.mock_url) {
+            // mock模式：直接跳回并标记mock支付成功
+            window.location.href = data.mock_url;
+          } else {
+            alert('支付创建失败，请稍后重试');
+          }
+        }).catch(function() {
+          alert('网络异常，请稍后重试');
+        });
+      } else if (method === 'wechat') {
+        // 微信支付需要微信环境（小程序内），网页端提示
+        alert('微信支付请在微信内打开，或使用支付宝完成支付');
+      }
+    }
 
     function submitUnlock(){
       var name=document.getElementById('userName').value.trim();
@@ -419,14 +509,15 @@
       sendChat();
     }
 
-    // 已注册用户：按钮直接展开聊天区
+    // 已注册用户：免费按钮开聊天，付费按钮走支付
     window.addEventListener('DOMContentLoaded',function(){
       if(localStorage.getItem('fs_mentor_unlocked')==='1'){
-        var btns=document.querySelectorAll('.nav-cta,.hero-cta,.cta-big,.price-btn');
-        btns.forEach(function(b){
+        // 导航栏和CTA大按钮 → 开聊天
+        document.querySelectorAll('.nav-cta,.hero-cta,.cta-big').forEach(function(b){
           if(b.tagName==='A')return;
           b.onclick=function(){openChat()};
         });
+        // 付费按钮保持支付弹窗（openPay已是默认行为，不需要覆盖）
       }
     });
   </script>
