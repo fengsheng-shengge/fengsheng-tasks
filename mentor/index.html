@@ -100,6 +100,40 @@
     .modal .success-msg .go-btn{display:inline-block;background:#c46a3a;color:#fff;padding:12px 32px;border-radius:6px;font-size:16px;font-weight:700;text-decoration:none}
     .modal .form-area{display:block}
 
+    /* Inline Chat */
+    .chat-section{padding:64px 0;background:#f0f4ef;display:none}
+    .chat-section.active{display:block}
+    .chat-section h2{text-align:center;font-size:28px;font-weight:700;margin-bottom:8px}
+    .chat-section .subtitle{text-align:center;color:#777;margin-bottom:24px;font-size:15px}
+    .chat-box{max-width:640px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;border:1px solid #e8e4d9;box-shadow:0 4px 20px rgba(0,0,0,.06);display:flex;flex-direction:column;height:480px}
+    .chat-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#3d5a3e;color:#fff;flex-shrink:0}
+    .chat-header-left{display:flex;align-items:center;gap:8px}
+    .chat-avatar{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:14px}
+    .chat-bot-name{font-size:13px;font-weight:700}
+    .chat-bot-status{font-size:11px;opacity:.8}
+    .chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+    .chat-messages::-webkit-scrollbar{width:4px}
+    .chat-messages::-webkit-scrollbar-thumb{background:#ccc;border-radius:2px}
+    .msg{max-width:85%;padding:10px 14px;border-radius:8px;font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word;animation:msgIn .25s ease-out}
+    @keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .msg-user{align-self:flex-end;background:#3d5a3e;color:#fff;border-bottom-right-radius:2px}
+    .msg-bot{align-self:flex-start;background:#fff;color:#1a1a1a;border:1px solid #e8e4d9;border-bottom-left-radius:2px}
+    .msg-loading{align-self:flex-start;display:flex;gap:4px;padding:10px 14px;background:#fff;border:1px solid #e8e4d9;border-radius:8px;border-bottom-left-radius:2px}
+    .msg-loading span{width:7px;height:7px;border-radius:50%;background:#ccc;animation:bounce 1.2s infinite}
+    .msg-loading span:nth-child(2){animation-delay:.2s}
+    .msg-loading span:nth-child(3){animation-delay:.4s}
+    @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+    .chat-input-area{flex-shrink:0;padding:10px 12px;background:#fff;border-top:1px solid #e8e4d9;display:flex;gap:8px;align-items:flex-end}
+    .chat-input{flex:1;border:1px solid #e8e4d9;border-radius:6px;padding:10px 12px;font-size:14px;font-family:inherit;resize:none;outline:none;max-height:80px;min-height:40px;line-height:1.5}
+    .chat-input:focus{border-color:#3d5a3e}
+    .chat-send{flex-shrink:0;width:40px;height:40px;border:none;border-radius:6px;background:#c46a3a;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .chat-send:active{transform:scale(.92)}
+    .chat-send:disabled{background:#ccc;cursor:not-allowed}
+    .scenario-row{display:flex;gap:8px;max-width:640px;margin:12px auto 0;flex-wrap:wrap;justify-content:center}
+    .scenario-chip{padding:8px 14px;border:1px solid #e8e4d9;border-radius:20px;font-size:13px;cursor:pointer;background:#fff;transition:all .2s;font-family:inherit}
+    .scenario-chip:hover{border-color:#3d5a3e;background:#f0f4ef}
+    .scenario-chip:active{transform:scale(.96)}
+
     @media(max-width:600px){
       .hero{padding:48px 0 40px}
       .hero h1{font-size:26px}
@@ -242,6 +276,38 @@
     </div>
   </section>
 
+  <!-- AI Chat -->
+  <section class="chat-section" id="chatSection">
+    <div class="container">
+      <h2>跟AI开单导师对话</h2>
+      <p class="subtitle">描述客户情况，AI帮你拆需求、出话术、验房源</p>
+      <div class="chat-box">
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="chat-avatar">🤖</div>
+            <div>
+              <div class="chat-bot-name">风声·开单导师</div>
+              <div class="chat-bot-status">在线</div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="msg msg-bot">你好！我是开单导师，可以直接描述你遇到的客户情况。比如：客户预算3000想离地铁近，说再看看。</div>
+        </div>
+        <div class="chat-input-area">
+          <textarea class="chat-input" id="chatInput" placeholder="描述客户情况..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+          <button class="chat-send" id="chatSend" onclick="sendChat()">➤</button>
+        </div>
+      </div>
+      <div class="scenario-row">
+        <button class="scenario-chip" onclick="quickChat('客户预算3000，想离地铁近，跟老人住，说再看看')">🔍 拆需求</button>
+        <button class="scenario-chip" onclick="quickChat('明天带看两居室，客户之前嫌贵，怎么准备话术？')">🗣 出话术</button>
+        <button class="scenario-chip" onclick="quickChat('房东押二付三月租2800包物业，步行5分钟到地铁，有坑吗？')">🛡 验房源</button>
+        <button class="scenario-chip" onclick="quickChat('客户看3套纠结，A采光好贵，B便宜远地铁，怎么帮决策？')">🤔 帮决策</button>
+      </div>
+    </div>
+  </section>
+
   <!-- CTA -->
   <section class="cta-section">
     <div class="container">
@@ -260,6 +326,14 @@
   </footer>
 
   <script>
+    var chatSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+    var chatWaiting = false;
+
+    function openChat(){
+      document.getElementById('chatSection').classList.add('active');
+      document.getElementById('chatSection').scrollIntoView({behavior:'smooth',block:'start'});
+    }
+
     function openModal(){document.getElementById('unlockModal').classList.add('active')}
     function closeModal(){document.getElementById('unlockModal').classList.remove('active');document.getElementById('formArea').style.display='block';document.getElementById('successArea').style.display='none'}
     document.getElementById('unlockModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
@@ -275,27 +349,23 @@
       var btn=document.getElementById('submitBtn');
       btn.disabled=true;btn.textContent='提交中...';
 
-      // 提交用户数据到formsubmit（免费邮件通知）
       fetch('https://formsubmit.co/ajax/xiaoyuer@coze.email',{
         method:'POST',
         headers:{'Content-Type':'application/json','Accept':'application/json'},
         body:JSON.stringify({
           _subject:'风声开单导师-新用户注册',
-          姓名:name,
-          手机号:phone,
-          身份:role,
-          来源:'mentor页面',
+          姓名:name,手机号:phone,身份:role,来源:'mentor页面',
           时间:new Date().toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'})
         })
       }).then(function(r){return r.json()}).then(function(d){
-        // 无论formsubmit是否成功，都解锁
         document.getElementById('formArea').style.display='none';
         document.getElementById('successArea').style.display='block';
-        // 本地标记已注册
         localStorage.setItem('fs_mentor_unlocked','1');
         localStorage.setItem('fs_mentor_user',JSON.stringify({name:name,phone:phone,role:role,time:new Date().toISOString()}));
+        // 展开聊天区而不是跳外链
+        var goBtn = document.querySelector('.success-msg .go-btn');
+        if(goBtn) goBtn.onclick = function(){closeModal();openChat()};
       }).catch(function(e){
-        // 即使网络失败也解锁
         document.getElementById('formArea').style.display='none';
         document.getElementById('successArea').style.display='block';
         localStorage.setItem('fs_mentor_unlocked','1');
@@ -303,13 +373,59 @@
       });
     }
 
-    // 已注册用户直接跳Bot
+    // 聊天逻辑 — 调用 /api/chat/breeder
+    function appendMsg(text,role){
+      var el=document.getElementById('chatMessages');
+      var msg=document.createElement('div');
+      msg.className='msg msg-'+role;
+      msg.textContent=text;
+      el.appendChild(msg);
+      el.scrollTop=el.scrollHeight;
+    }
+    function appendLoading(){
+      var el=document.getElementById('chatMessages');
+      var ld=document.createElement('div');
+      ld.className='msg-loading';ld.id='msgLoading';
+      ld.innerHTML='<span></span><span></span><span></span>';
+      el.appendChild(ld);el.scrollTop=el.scrollHeight;
+    }
+    function removeLoading(){var ld=document.getElementById('msgLoading');if(ld)ld.remove()}
+
+    function sendChat(){
+      if(chatWaiting)return;
+      var input=document.getElementById('chatInput');
+      var text=input.value.trim();
+      if(!text||text.length<2)return;
+      appendMsg(text,'user');
+      input.value='';chatWaiting=true;
+      document.getElementById('chatSend').disabled=true;
+      appendLoading();
+      fetch('/api/chat/breeder',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({message:text,sessionId:chatSessionId})
+      }).then(function(r){return r.json()}).then(function(data){
+        removeLoading();chatWaiting=false;
+        document.getElementById('chatSend').disabled=false;
+        appendMsg(data.reply||data.error||'暂时无法回复，请稍后重试。','bot');
+        if(data.sessionId)chatSessionId=data.sessionId;
+      }).catch(function(){
+        removeLoading();chatWaiting=false;
+        document.getElementById('chatSend').disabled=false;
+        appendMsg('网络异常，请稍后重试。','bot');
+      });
+    }
+    function quickChat(text){
+      document.getElementById('chatInput').value=text;
+      sendChat();
+    }
+
+    // 已注册用户：按钮直接展开聊天区
     window.addEventListener('DOMContentLoaded',function(){
       if(localStorage.getItem('fs_mentor_unlocked')==='1'){
         var btns=document.querySelectorAll('.nav-cta,.hero-cta,.cta-big,.price-btn');
         btns.forEach(function(b){
           if(b.tagName==='A')return;
-          b.onclick=function(){window.open('https://www.coze.cn/s/iBGPJVnK/','_blank')};
+          b.onclick=function(){openChat()};
         });
       }
     });
