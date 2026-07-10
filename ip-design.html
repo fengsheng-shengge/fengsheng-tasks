@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>IP角色设计 · 风声</title>
-<meta name="description" content="输入角色信息，AI为你生成专属IP角色形象——6种风格可选，对话即得。">
+<meta name="description" content="输入角色信息，快速生成专属IP角色形象——6种风格可选，对话即得。">
 <meta property="og:title" content="IP角色设计 · 风声">
-<meta property="og:description" content="输入角色信息，AI为你生成专属IP角色形象——6种风格可选，对话即得。">
+<meta property="og:description" content="输入角色信息，快速生成专属IP角色形象——6种风格可选，对话即得。">
 <meta property="og:image" content="https://fengsheng.tech/og-image.png">
 <meta property="og:url" content="https://fengsheng.tech/ip-design/">
 <style>
@@ -133,7 +133,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 <div class="hero">
   <div class="hero-badge">🎨 免费工具</div>
   <h1>设计你的专属IP角色形象</h1>
-  <p>填写角色信息，AI为你生成6种风格的个性化IP形象——对话即得</p>
+  <p>填写角色信息，快速生成6种风格的个性化IP形象——对话即得</p>
 </div>
 
 <!-- 表单 -->
@@ -168,13 +168,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
   <div class="upload-zone" id="uploadZone" onclick="document.getElementById('photoInput').click()">
     <div class="upload-zone-icon">🖼️</div>
     <div class="upload-zone-text"><strong>点击上传</strong>或拖拽照片到此处</div>
-    <div class="upload-zone-hint">支持 JPG/PNG，建议正面照，AI将基于照片生成卡通/素描风格形象</div>
+    <div class="upload-zone-hint">支持 JPG/PNG，建议正面照，我们将基于照片生成卡通/素描风格形象</div>
   </div>
   <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handlePhoto(this)">
   <div class="upload-preview" id="uploadPreview">
     <button class="upload-preview-remove" onclick="removePhoto(event)">✕</button>
     <img id="previewImg" src="" alt="预览">
-    <div class="upload-tag">✔ 照片已就绪，生成时请上传到AI对话中</div>
+    <div class="upload-tag">✔ 照片已就绪，生成时上传到IP设计对话中使用</div>
   </div>
 </div>
 
@@ -185,18 +185,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 </div>
 
 <button class="gen-btn" id="genBtn" onclick="generate()">✨ 生成我的IP形象</button>
-<div class="gen-sub">基于你的描述 · 6种风格 · AI对话生成 · 高清下载</div>
+<div class="gen-sub">基于你的描述 · 6种风格 · 智能生成 · 高清下载</div>
 
 <!-- 提示词展示+复制区 -->
 <div class="prompt-banner" id="promptBanner">
-  <strong>📋 请在下方AI对话中发送以下内容：</strong>
+  <strong>📋 请在下方IP设计对话中发送以下内容：</strong>
   <code id="promptCode"></code>
   <button class="copy-btn" onclick="copyPrompt()">一键复制</button>
 </div>
 
-<!-- AI聊天容器 -->
+<!-- 聊天容器 -->
 <div class="chat-wrap" id="chatWrap">
-  <div class="chat-container" id="coze-chat-container">
+  <div class="chat-container" id="ipdesign-chat-container">
     <div class="chat-loading" id="chatLoading">
       <div class="spinner"></div>
       <div>正在连接IP设计师...</div>
@@ -204,13 +204,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
   </div>
   <div class="chat-error" id="chatError">
     <h3>⚠️ 连接失败</h3>
-    <p>IP设计师暂时无法连接，请复制上方提示词到扣子中搜索"风声·开单导师"使用</p>
+    <p>IP设计师暂时无法连接，请复制上方提示词到Coze中搜索"风声·开单导师"使用</p>
   </div>
 </div>
 
 <div class="safety-box">
   ⚠️ <strong>免责声明</strong><br>
-  AI生成头像仅供参考，不构成专业设计建议。用户需独立判断并对使用结果负责。
+  生成头像仅供参考，不构成专业设计建议。用户需独立判断并对使用结果负责。
 </div>
 
 <div class="sec-footer">
@@ -301,7 +301,7 @@ function copyPrompt(){
   const code = document.getElementById('promptCode');
   if(navigator.clipboard){
     navigator.clipboard.writeText(code.textContent).then(()=>{
-      showToast('✅ 已复制，请在下方AI对话框中粘贴发送');
+      showToast('✅ 已复制，请在下方IP设计对话框中粘贴发送');
     }).catch(()=>{
       // fallback
       const range = document.createRange();
@@ -309,7 +309,7 @@ function copyPrompt(){
       window.getSelection().removeAllRanges();
       window.getSelection().addRange(range);
       document.execCommand('copy');
-      showToast('✅ 已复制，请在下方AI对话框中粘贴发送');
+      showToast('✅ 已复制，请在下方IP设计对话框中粘贴发送');
     });
   } else {
     const range = document.createRange();
@@ -317,7 +317,7 @@ function copyPrompt(){
     window.getSelection().removeAllRanges();
     window.getSelection().addRange(range);
     document.execCommand('copy');
-    showToast('✅ 已复制，请在下方AI对话框中粘贴发送');
+    showToast('✅ 已复制，请在下方IP设计对话框中粘贴发送');
   }
 }
 
@@ -325,7 +325,7 @@ function initSDK(){
   if(sdkInitialized) return;
   sdkInitialized = true;
   
-  var container = document.getElementById('coze-chat-container');
+  var container = document.getElementById('ipdesign-chat-container');
   var loading = document.getElementById('chatLoading');
   var errorEl = document.getElementById('chatError');
   var uid = 'fs-ipdesign-' + Math.random().toString(36).substr(2,9);
