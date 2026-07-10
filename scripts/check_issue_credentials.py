@@ -257,7 +257,7 @@ def main():
     
     if account_id and api_token:
         log_success("找到 Cloudflare 凭证!")
-        log_info(f"Account ID: {account_id[:8]}...{account_id[-4:}")
+        log_info(f"Account ID: {account_id[:8]}...{account_id[-4:]}")
         log_info(f"API Token: {api_token[:8]}...{api_token[-4:]}")
         
         # 设置 GitHub Secrets
