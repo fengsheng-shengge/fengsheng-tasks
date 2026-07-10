@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>风声 · 开单导师</title>
-<meta name="description" content="AI开单导师——帮你拆解客户真需求，手把手教你开单。23年行业老兵的Knowhow，你直接用。">
+<meta name="description" content="专属开单导师——帮你拆解客户真需求，手把手教你开单。23年行业老兵的Knowhow，你直接用。">
 <meta property="og:title" content="开单导师 · 风声">
-<meta property="og:description" content="AI帮你拆解客户真需求，手把手教你开单">
+<meta property="og:description" content="帮你拆解客户真需求，手把手教你开单">
 <meta property="og:image" content="https://fengsheng.tech/og-image.png">
 <meta property="og:url" content="https://fengsheng.tech/mentor/">
 <meta name="twitter:card" content="summary_large_image">
@@ -109,7 +109,7 @@ background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;
 <!-- Hero -->
 <div class="hero">
   <div class="hero-badge">🔥 风声·开单导师</div>
-  <h1>AI帮你开单</h1>
+  <h1>导师帮你开单</h1>
   <div class="hero-sub">23年行业老兵的Knowhow，你直接用</div>
   <div class="hero-desc">客户说"再看看""太贵了""我考虑考虑"——背后到底什么意思？<br>开单导师帮你拆解真需求，手把手教你开单。</div>
   <div class="hero-tags">
@@ -122,7 +122,7 @@ background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;
 
 <!-- 聊天区域 -->
 <div class="chat-wrap">
-  <div class="chat-container" id="coze-chat-container">
+  <div class="chat-container" id="mentor-chat-container">
     <div class="chat-loading" id="chatLoading">
       <div class="spinner"></div>
       <div>正在连接开单导师...</div>
@@ -130,8 +130,8 @@ background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;
   </div>
   <div class="chat-error" id="chatError">
     <h3>⚠️ 连接失败</h3>
-    <p>开单导师暂时无法连接，请稍后重试或直接在扣子中搜索"风声·开单导师"</p>
-    <a href="https://www.coze.cn/s/iBGPJVnK/" target="_blank" rel="noopener">在扣子中打开</a>
+    <p>开单导师暂时无法连接，请稍后重试或直接在Coze中搜索"风声·开单导师"</p>
+    <a href="https://www.coze.cn/s/iBGPJVnK/" target="_blank" rel="noopener">在Coze中打开</a>
   </div>
 </div>
 
@@ -164,7 +164,7 @@ background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;
 
 <!-- CTA -->
 <div class="cta-section">
-  <button class="cta-btn cta-fire" onclick="document.getElementById('coze-chat-container').scrollIntoView({behavior:'smooth',block:'center'})">👇 开始对话，让导师帮你开单</button>
+  <button class="cta-btn cta-fire" onclick="document.getElementById('mentor-chat-container').scrollIntoView({behavior:'smooth',block:'center'})">👇 开始对话，让导师帮你开单</button>
 </div>
 
 <!-- 底部 -->
@@ -177,7 +177,7 @@ background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;
 <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.17/libs/cn/index.js"></script>
 <script>
 (function(){
-  var container = document.getElementById('coze-chat-container');
+  var container = document.getElementById('mentor-chat-container');
   var loading = document.getElementById('chatLoading');
   var errorEl = document.getElementById('chatError');
   var uid = 'fs-mentor-' + Math.random().toString(36).substr(2,9);

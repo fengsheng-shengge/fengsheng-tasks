@@ -79,7 +79,7 @@ input[type=text]:focus{border-color:#c8956c;background:#fff}
 <div class="page active" id="page0">
 <div class="hero"><div class="hero-icon">🏠</div><h1>居住服务一线调研</h1><p>5分钟 · 帮客户住得更好</p></div>
 <div class="gold-tip">🌟 我们在做一件事：帮居住服务者更好地帮客户实现美好居住。你的回答直接决定我们做什么工具。</div>
-<div class="skill-tags"><span class="skill-tag">品质居住</span><span class="skill-tag">一线痛点</span><span class="skill-tag">AI工具</span><span class="skill-tag">付费意愿</span></div>
+<div class="skill-tags"><span class="skill-tag">品质居住</span><span class="skill-tag">一线痛点</span><span class="skill-tag">工具</span><span class="skill-tag">付费意愿</span></div>
 <div style="margin-top:28px"><div class="btn btn-next" onclick="goPage(1)">开始 →</div></div>
 </div>
 
@@ -160,12 +160,12 @@ input[type=text]:focus{border-color:#c8956c;background:#fff}
 <div class="btn-row"><div class="btn btn-prev" onclick="goPage(2)">← 上一页</div><div class="btn btn-next" onclick="tryGoPage(3,4)">下一页 →</div></div>
 </div>
 
-<!-- 第4页：AI工具需求 -->
+<!-- 第4页：工具需求 -->
 <div class="page" id="page4">
-<div class="page-title">AI工具需求</div><div class="page-subtitle">第4页/共5页 · 如果有个AI帮你干活</div>
+<div class="page-title">工具需求</div><div class="page-subtitle">第4页/共5页 · 如果有个工具帮你干活</div>
 <div class="progress"><div class="progress-bar" style="width:80%"></div></div>
 <div class="q-block">
-<div class="q-label"><span class="q-num">10</span><span id="q10_text">日常工作中，哪些事最想有个AI帮你干？</span><span class="q-required"> *可多选</span></div>
+<div class="q-label"><span class="q-num">10</span><span id="q10_text">日常工作中，哪些事最想有个工具帮你干？</span><span class="q-required"> *可多选</span></div>
 <div class="checkbox-group" data-q="q10" id="q10_group"></div>
 <div class="other-input" id="q10_other" style="display:none"><input type="text" placeholder="还有啥想让它干的"></div>
 </div>
@@ -175,10 +175,10 @@ input[type=text]:focus{border-color:#c8956c;background:#fff}
 <label class="checkbox-item" onclick="toggleCheck(this)"><span class="box"></span><input type="checkbox" value="用公司系统，凑合">用公司系统，凑合</label>
 <label class="checkbox-item" onclick="toggleCheck(this)"><span class="box"></span><input type="checkbox" value="自己找工具，管用但贵">自己找工具，管用但贵</label>
 <label class="checkbox-item" onclick="toggleCheck(this)"><span class="box"></span><input type="checkbox" value="没工具，全靠经验硬扛">没工具，全靠经验硬扛</label>
-<label class="checkbox-item" onclick="toggleCheck(this)"><span class="box"></span><input type="checkbox" value="试过AI但不会用">试过AI但不会用</label>
+<label class="checkbox-item" onclick="toggleCheck(this)"><span class="box"></span><input type="checkbox" value="试过工具但不会用">试过工具但不会用</label>
 </div></div>
 <div class="q-block">
-<div class="q-label"><span class="q-num">12</span><span id="q12_text">如果能培养一个"懂你"的AI助手，你愿意花时间教它吗？</span><span class="q-required"> *必填</span></div>
+<div class="q-label"><span class="q-num">12</span><span id="q12_text">如果能培养一个"懂你"的助手，你愿意花时间教它吗？</span><span class="q-required"> *必填</span></div>
 <div class="radio-group" data-q="q12">
 <label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="愿意，越懂我越好">愿意，越懂我越好</label>
 <label class="radio-item" onclick="selectRadio(this)"><span class="dot"></span><input type="radio" value="看看麻烦不麻烦">看看麻烦不麻烦</label>
@@ -231,7 +231,7 @@ var ROLE_CONFIG={
     q8:{text:'帮客户找到理想的家，你最卡在哪？',options:['客户说不清想要什么','带看了很多还是不满意','房源信息不够全不准','政策变动跟不上节奏','交易流程太复杂客户怕','同行竞争太激烈']},
     q9:{text:'客户选你而不是别人，最关键的原因是？',options:['专业靠谱，能讲清房子真实优劣','态度好，客户觉得你真心在帮他','信息全，好房子第一时间推给他','价格透明，不藏着掖着','跟进勤，不让客户觉得被冷落','关系到位，客户信任你这个人']},
     q10:{options:['写房源描述/讲房子亮点','回复客户消息/解答疑问','房源对比分析/帮客户决策','税费/贷款计算','政策解读/合规提醒','带看路线规划/看房记录整理','市场行情/板块分析']},
-    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q12_text:'如果能培养一个"懂你业务"的助手，你愿意花时间教它吗？',
     q13:{options:['免费就行','10元/月以内','10-30元/月','30-50元/月','50元/月也行']}
   },
   rent:{
@@ -240,7 +240,7 @@ var ROLE_CONFIG={
     q8:{text:'帮客户租到合适的家，你最卡在哪？',options:['客户需求说不清','匹配房源效率低','租后服务客户不满意','续租/退租纠纷多','房东要求太苛刻','租金谈不拢']},
     q9:{text:'租客选你而不是别人，最关键的原因是？',options:['房源多，总能匹配到合适的','响应快，租住问题及时解决','专业靠谱，条款讲得清楚','态度好，住着安心','租后服务好，出了事有人管','价格实在，不乱收费']},
     q10:{options:['房源匹配/推荐','租约管理/续租提醒','租金计算/费用拆解','客户沟通/需求跟进','租后服务/维修对接','合规提醒/政策解读','市场行情/租金趋势']},
-    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q12_text:'如果能培养一个"懂你业务"的助手，你愿意花时间教它吗？',
     q13:{options:['免费就行','10元/月以内','10-30元/月','30-50元/月','50元/月也行']}
   },
   deco:{
@@ -249,7 +249,7 @@ var ROLE_CONFIG={
     q8:{text:'帮客户装修出理想的家，你最卡在哪？',options:['客户说不清想要什么风格','报价拆不透明客户不信任','施工质量难以把控','材料选择太多客户纠结','工期总拖/变更频繁','设计方案和落地差距大']},
     q9:{text:'客户选你而不是别人，最关键的原因是？',options:['设计好看，效果图说话','报价透明，不藏着掖着','施工靠谱，品质有保障','沟通到位，客户觉得你懂他','工期准，说什么时候完就什么时候完','售后好，出了问题有人管']},
     q10:{options:['设计风格推荐/效果图生成','装修报价拆解/预算管控','材料对比/环保检测说明','施工进度跟踪/质量检查','客户沟通/需求确认','政策法规/合规提醒','案例库/灵感参考']},
-    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q12_text:'如果能培养一个"懂你业务"的助手，你愿意花时间教它吗？',
     q13:{options:['免费就行','30元/月以内','30-50元/月','50-100元/月','100元/月也行']}
   },
   home:{
@@ -258,7 +258,7 @@ var ROLE_CONFIG={
     q8:{text:'帮客户配置理想的家，你最卡在哪？',options:['客户说不清自己喜欢什么','产品太多不知道怎么搭','预算有限选不出好东西','客户家户型限制多','搭配效果说不清楚客户不敢买','送货安装售后问题多']},
     q9:{text:'客户选你而不是别人，最关键的原因是？',options:['眼光好，搭配出来好看','性价比高，花小钱出效果','服务好，从选到装到售后一条龙','专业，能根据户型和家庭情况出方案','速度快，不拖沓','口碑好，朋友推荐来的']},
     q10:{options:['风格搭配推荐/效果预览','产品对比/性价比分析','空间规划/收纳方案','客户沟通/需求挖掘','趋势洞察/热门搭配','案例库/灵感参考','订单跟踪/售后对接']},
-    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q12_text:'如果能培养一个"懂你业务"的助手，你愿意花时间教它吗？',
     q13:{options:['免费就行','30元/月以内','30-50元/月','50-100元/月','100元/月也行']}
   },
   prop:{
@@ -267,7 +267,7 @@ var ROLE_CONFIG={
     q8:{text:'帮业主维护好居住品质，你最卡在哪？',options:['业主诉求多但人手不够','维修响应慢业主不满意','费用收缴难/业主抗拒','安保/消防压力大','设施老化但资金不足','业主沟通/矛盾调解难']},
     q9:{text:'业主认可你的服务，最关键的原因是？',options:['响应快，问题及时解决','态度好，业主觉得被尊重','专业，能给出靠谱方案','主动，不等业主催','透明，费用开支说清楚','长期陪伴，业主信任你']},
     q10:{options:['报修管理/工单跟踪','费用收缴/账目管理','业主沟通/满意度回访','设施巡检/维护计划','安保监控/应急预案','社区活动/邻里建设','政策法规/合规提醒']},
-    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q12_text:'如果能培养一个"懂你业务"的助手，你愿意花时间教它吗？',
     q13:{options:['免费就行','公司掏钱就行','10-30元/月','30-50元/月','不自掏腰包']}
   },
   finance:{
@@ -276,7 +276,7 @@ var ROLE_CONFIG={
     q8:{text:'帮客户用合理的钱实现品质居住，你最卡在哪？',options:['客户资质复杂方案难做','产品太多不知道怎么选','客户算不明白账不敢下手','政策变动快跟不上节奏','银行审批慢/流程长','同行价格战利润薄']},
     q9:{text:'客户选你而不是别人，最关键的原因是？',options:['方案靠谱，帮客户省到钱','专业，复杂情况也能搞定','透明，每一笔账算得清楚','速度快，不耽误时间','态度好，客户觉得放心','长期跟踪，贷后也有人管']},
     q10:{options:['贷款方案对比/计算','税费精算/政策解读','客户资质评估/方案推荐','银行产品更新/利率追踪','合规风险检查/提醒','客户沟通/需求跟进','市场行情/政策动态']},
-    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q12_text:'如果能培养一个"懂你业务"的助手，你愿意花时间教它吗？',
     q13:{options:['免费就行','30元/月以内','30-50元/月','50-100元/月','100元/月也行']}
   },
   manager:{
@@ -285,7 +285,7 @@ var ROLE_CONFIG={
     q8:{text:'带团队帮客户实现品质居住，你最卡在哪？',options:['团队专业度参差不齐','新人成长慢/带不动','客户需求越来越复杂','数据分散/决策靠感觉','经纪人流失快','上面压指标下面不给力']},
     q9:{text:'客户选你的团队，最关键的原因是？',options:['团队专业，能讲清真实优劣','服务到位，客户觉得被重视','信息全，好房子第一时间推','价格透明，不藏着掖着','跟到底，不让客户操心','口碑好，老客户带新客户']},
     q10:{options:['团队数据分析/业绩追踪','新人培训/能力诊断','客户需求洞察/匹配分析','市场行情/竞对动态','写周报月报/汇报材料','政策解读/合规提醒','营销推广/获客方案']},
-    q12_text:'如果能培养一个"懂你团队"的AI助手，你愿意花时间教它吗？',
+    q12_text:'如果能培养一个"懂你团队"的助手，你愿意花时间教它吗？',
     q13:{options:['免费就行','30-50元/月','50-100元/月','100-200元/月','200元+/月']}
   },
   other:{
@@ -294,7 +294,7 @@ var ROLE_CONFIG={
     q8:{text:'帮客户实现品质居住，你最卡在哪？',options:['客户需求说不清','专业能力有短板','工具不够用','信息不够全不准','流程太复杂','同行竞争激烈']},
     q9:{text:'客户选你的服务，最关键的原因是？',options:['专业靠谱','态度好/真心帮忙','信息全/速度快','价格实在','服务到位/跟到底','口碑好/朋友推荐']},
     q10:{options:['客户沟通/需求挖掘','专业信息查询/解读','流程管理/进度跟踪','数据分析/方案推荐','市场行情/趋势洞察','政策法规/合规提醒']},
-    q12_text:'如果能培养一个"懂你业务"的AI助手，你愿意花时间教它吗？',
+    q12_text:'如果能培养一个"懂你业务"的助手，你愿意花时间教它吗？',
     q13:{options:['免费就行','10-30元/月','30-50元/月','50-100元/月','100元+/月']}
   }
 };
@@ -352,7 +352,7 @@ function validatePage(pn){
   if(pn===1){if(!document.getElementById('q1').value.trim()){showToast('请填写称呼');return false}if(!getRadio('q2')){showToast('请选择岗位');return false}if(!document.getElementById('q3').value.trim()){showToast('请填写城市');return false}if(!getRadio('q4')){showToast('请选择从业年限');return false}}
   if(pn===2){if(selectedDims.length===0){showToast('请至少选1个维度');return false}if(getCheckbox('q6').length===0){showToast('请至少选1个');return false}if(!getRadio('q7')){showToast('请选择');return false}}
   if(pn===3){if(getCheckbox('q8').length===0){showToast('请至少选1个痛点');return false}if(getCheckbox('q9').length===0){showToast('请至少选1个原因');return false}}
-  if(pn===4){if(getCheckbox('q10').length===0){showToast('请至少选1个AI需求');return false}if(getCheckbox('q11').length===0){showToast('请至少选1个');return false}if(!getRadio('q12')){showToast('请选择');return false}}
+  if(pn===4){if(getCheckbox('q10').length===0){showToast('请至少选1个需求');return false}if(getCheckbox('q11').length===0){showToast('请至少选1个');return false}if(!getRadio('q12')){showToast('请选择');return false}}
   if(pn===5){if(!getRadio('q13')){showToast('请选择付费意愿');return false}}
   return true;
 }
@@ -376,9 +376,9 @@ function submitSurvey(){
     品质居住客户懂吗:getRadio('q7'),
     一线痛点:getCheckbox('q8').join('、'),
     客户选你因为:getCheckbox('q9').join('、'),
-    AI助手需求:getCheckbox('q10').join('、'),
+    助手需求:getCheckbox('q10').join('、'),
     现在用什么工具:getCheckbox('q11').join('、'),
-    愿意教AI:getRadio('q12'),
+    愿意教助手:getRadio('q12'),
     每月付费:getRadio('q13'),
     微信:document.getElementById('q14').value.trim(),
     角色类型:currentRole,
@@ -397,7 +397,7 @@ function submitSurvey(){
     for(var k in data){_map[k]=data[k]}
     for(var _k in _map){var _inp=document.createElement('input');_inp.type='hidden';_inp.name=_k;_inp.value=_map[_k];_form.appendChild(_inp)}
     document.body.appendChild(_form);_form.submit();setTimeout(function(){_form.remove()},3000);
-    /* Web3Forms removed 20260608: data now unified to FormSubmit only (yu-er@coze.email) */
+    /* Web3Forms removed 20260608: data now unified to FormSubmit only (feedback@fengsheng.tech) */
     document.getElementById('submitStatus').innerHTML='<span style="color:#4caf50">✓ 数据已提交</span>';
   }catch(e){
     document.getElementById('submitStatus').innerHTML='<span style="color:#ff9800">数据已保存在本地，可复制后发给助手</span>';
@@ -408,7 +408,7 @@ function copyResult(){
   if(!window._lastSurvey){var keys=Object.keys(localStorage).filter(function(k){return k.startsWith('survey_')});if(keys.length)window._lastSurvey=JSON.parse(localStorage.getItem(keys[keys.length-1]))}
   if(!window._lastSurvey){showToast('没有可复制的数据');return}
   var d=window._lastSurvey;
-  var t='📋 居住服务一线调研\n━━━━━━━━━━\n称呼：'+d.姓名+'\n岗位：'+d.岗位+'\n城市：'+d.城市+'\n从业：'+d.从业年限+'\n━━━━━━━━━━\n品质居住维度：'+d.品质居住维度+'\n客户抱怨：'+d.客户抱怨住不好+'\n客户懂品质居住吗：'+d.品质居住客户懂吗+'\n━━━━━━━━━━\n一线痛点：'+d.一线痛点+'\n客户选你因为：'+d.客户选你因为+'\n━━━━━━━━━━\nAI需求：'+d.AI助手需求+'\n现在用啥工具：'+d.现在用什么工具+'\n愿意教AI：'+d.愿意教AI+'\n━━━━━━━━━━\n每月付费：'+d.每月付费+'\n微信：'+d.微信+'\n时间：'+d.时间;
+  var t='📋 居住服务一线调研\n━━━━━━━━━━\n称呼：'+d.姓名+'\n岗位：'+d.岗位+'\n城市：'+d.城市+'\n从业：'+d.从业年限+'\n━━━━━━━━━━\n品质居住维度：'+d.品质居住维度+'\n客户抱怨：'+d.客户抱怨住不好+'\n客户懂品质居住吗：'+d.品质居住客户懂吗+'\n━━━━━━━━━━\n一线痛点：'+d.一线痛点+'\n客户选你因为：'+d.客户选你因为+'\n━━━━━━━━━━\n工具需求：'+d.助手需求+'\n现在用啥工具：'+d.现在用什么工具+'\n愿意教助手：'+d.愿意教助手+'\n━━━━━━━━━━\n每月付费：'+d.每月付费+'\n微信：'+d.微信+'\n时间：'+d.时间;
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){showToast('已复制！发给助手即可')}).catch(function(){fallbackCopy(t)})}else{fallbackCopy(t)}
 }
 
