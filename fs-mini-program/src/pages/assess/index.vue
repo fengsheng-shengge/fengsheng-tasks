@@ -2,7 +2,7 @@
   <view class="page">
     <view class="header">
       <view class="title">品质测评</view>
-      <view class="sub">7维度评估你的居住品质</view>
+      <view class="sub">6维度评估你的居住品质</view>
     </view>
 
     <!-- 测评未开始 -->
@@ -107,6 +107,7 @@ const DIM_LABELS = {
 }
 
 const QUESTIONS = [
+  // === 安全(5题) ===
   { dim: 'safety', text: '你的住所消防通道是否畅通？', options: [
     { text: '畅通无阻，定期检查', score: 10 },
     { text: '基本畅通', score: 6 },
@@ -125,6 +126,20 @@ const QUESTIONS = [
     { text: '坏了才修', score: 4 },
     { text: '从没检查过', score: 2 },
   ]},
+  { dim: 'safety', text: '小区安保措施如何？', options: [
+    { text: '24小时保安+门禁+监控', score: 10 },
+    { text: '有门禁和监控', score: 6 },
+    { text: '只有门卫', score: 4 },
+    { text: '无任何安保', score: 2 },
+  ]},
+  { dim: 'safety', text: '房屋结构是否存在安全隐患？', options: [
+    { text: '新房/次新房，结构完好', score: 10 },
+    { text: '老房但无裂缝渗漏', score: 6 },
+    { text: '有轻微裂缝', score: 4 },
+    { text: '有明显结构问题', score: 2 },
+  ]},
+
+  // === 健康(5题) ===
   { dim: 'health', text: '室内空气质量（甲醛等）是否检测过？', options: [
     { text: 'CMA检测达标', score: 10 },
     { text: '自测盒检测过', score: 6 },
@@ -137,6 +152,26 @@ const QUESTIONS = [
     { text: '直接饮用自来水', score: 4 },
     { text: '水质明显有问题', score: 2 },
   ]},
+  { dim: 'health', text: '室内湿度是否适宜？', options: [
+    { text: '恒温恒湿系统', score: 10 },
+    { text: '有加湿器/除湿机', score: 6 },
+    { text: '偶尔感觉干燥或潮湿', score: 4 },
+    { text: '常年潮湿或有霉味', score: 2 },
+  ]},
+  { dim: 'health', text: '噪音水平是否影响睡眠？', options: [
+    { text: '非常安静，睡眠质量好', score: 10 },
+    { text: '偶尔有噪音但不影响睡眠', score: 6 },
+    { text: '噪音较多，睡眠受影响', score: 4 },
+    { text: '噪音严重，经常失眠', score: 2 },
+  ]},
+  { dim: 'health', text: '室内光照是否充足？', options: [
+    { text: '全天自然采光充足', score: 10 },
+    { text: '上午或下午有阳光', score: 6 },
+    { text: '需要人工照明', score: 4 },
+    { text: '几乎无自然光', score: 2 },
+  ]},
+
+  // === 便利(5题) ===
   { dim: 'convenience', text: '到最近的地铁站/公交站步行多久？', options: [
     { text: '5分钟以内', score: 10 },
     { text: '10分钟以内', score: 6 },
@@ -149,12 +184,58 @@ const QUESTIONS = [
     { text: '部分缺失', score: 4 },
     { text: '很不方便', score: 2 },
   ]},
+  { dim: 'convenience', text: '停车是否方便？', options: [
+    { text: '专属车位，充电桩齐全', score: 10 },
+    { text: '小区有车位', score: 6 },
+    { text: '路边停车，有时难找', score: 4 },
+    { text: '完全没地方停车', score: 2 },
+  ]},
+  { dim: 'convenience', text: '快递外卖是否方便送达？', options: [
+    { text: '快递柜+外卖送上楼', score: 10 },
+    { text: '快递柜+下楼取外卖', score: 6 },
+    { text: '需到小区门口取', score: 4 },
+    { text: '外卖快递都不方便', score: 2 },
+  ]},
+  { dim: 'convenience', text: '周边休闲设施如何？', options: [
+    { text: '公园商场餐饮齐全', score: 10 },
+    { text: '有基本休闲配套', score: 6 },
+    { text: '选择较少', score: 4 },
+    { text: '几乎没有', score: 2 },
+  ]},
+
+  // === 经济(5题) ===
   { dim: 'economy', text: '住房支出占收入比例？', options: [
     { text: '30%以下', score: 10 },
     { text: '30-40%', score: 6 },
     { text: '40-50%', score: 4 },
     { text: '超过50%', score: 2 },
   ]},
+  { dim: 'economy', text: '物业费是否合理？', options: [
+    { text: '性价比高，服务匹配价格', score: 10 },
+    { text: '合理', score: 6 },
+    { text: '偏贵但能接受', score: 4 },
+    { text: '太贵且服务差', score: 2 },
+  ]},
+  { dim: 'economy', text: '日常水电燃气费用？', options: [
+    { text: '节能型，月均很低', score: 10 },
+    { text: '正常水平', score: 6 },
+    { text: '偏高', score: 4 },
+    { text: '非常高', score: 2 },
+  ]},
+  { dim: 'economy', text: '房屋维修成本预期？', options: [
+    { text: '新房无维修担忧', score: 10 },
+    { text: '偶尔小修，费用可控', score: 6 },
+    { text: '需要中修，有预算压力', score: 4 },
+    { text: '大修迫在眉睫', score: 2 },
+  ]},
+  { dim: 'economy', text: '房产增值/保值预期？', options: [
+    { text: '核心地段，保值增值强', score: 10 },
+    { text: '成熟区域，保值稳定', score: 6 },
+    { text: '一般区域', score: 4 },
+    { text: '贬值风险大', score: 2 },
+  ]},
+
+  // === 舒适(5题) ===
   { dim: 'comfort', text: '室内隔音效果如何？', options: [
     { text: '几乎听不到噪音', score: 10 },
     { text: '偶尔有噪音', score: 6 },
@@ -167,6 +248,26 @@ const QUESTIONS = [
     { text: '采光一般', score: 4 },
     { text: '阴暗潮湿', score: 2 },
   ]},
+  { dim: 'comfort', text: '室内温度是否舒适？', options: [
+    { text: '中央空调/地暖，四季如春', score: 10 },
+    { text: '有空调暖气', score: 6 },
+    { text: '只有风扇或取暖器', score: 4 },
+    { text: '冬冷夏热', score: 2 },
+  ]},
+  { dim: 'comfort', text: '居住空间是否够用？', options: [
+    { text: '空间充裕，功能区齐全', score: 10 },
+    { text: '刚好够用', score: 6 },
+    { text: '略显拥挤', score: 4 },
+    { text: '严重不够', score: 2 },
+  ]},
+  { dim: 'comfort', text: '卫浴设施舒适度？', options: [
+    { text: '干湿分离+智能马桶+浴缸', score: 10 },
+    { text: '干湿分离+基本设施', score: 6 },
+    { text: '老旧但能用', score: 4 },
+    { text: '设施破损不便', score: 2 },
+  ]},
+
+  // === 美观(5题) ===
   { dim: 'beauty', text: '室内装修和整洁度？', options: [
     { text: '精装+整洁有序', score: 10 },
     { text: '简装+基本整洁', score: 6 },
@@ -178,6 +279,24 @@ const QUESTIONS = [
     { text: '基本够用', score: 6 },
     { text: '经常不够用', score: 4 },
     { text: '完全没有收纳', score: 2 },
+  ]},
+  { dim: 'beauty', text: '窗外景观如何？', options: [
+    { text: '花园/江景/城市天际线', score: 10 },
+    { text: '小区绿化景观', score: 6 },
+    { text: '普通街景', score: 4 },
+    { text: '对着墙/垃圾站', score: 2 },
+  ]},
+  { dim: 'beauty', text: '家具风格是否协调？', options: [
+    { text: '统一风格，品质感强', score: 10 },
+    { text: '基本协调', score: 6 },
+    { text: '混搭风格', score: 4 },
+    { text: '杂乱不协调', score: 2 },
+  ]},
+  { dim: 'beauty', text: '绿植/装饰品布置？', options: [
+    { text: '绿植丰富+艺术品点缀', score: 10 },
+    { text: '有少量绿植', score: 6 },
+    { text: '几乎没有装饰', score: 4 },
+    { text: '完全没有', score: 2 },
   ]},
 ]
 
@@ -242,7 +361,6 @@ export default {
         score: q.options[this.answers[i]]?.score || 0,
       }))
 
-      // 本地计算分数（API不可用时降级）
       const scores = {}
       const dimCount = {}
       answers.forEach(a => {
@@ -254,8 +372,8 @@ export default {
       })
       const total = Object.values(scores).reduce((a, b) => a + b, 0)
       let level = 'C'
-      if (total >= 600) level = 'A'
-      else if (total >= 420) level = 'B'
+      if (total >= 500) level = 'A'
+      else if (total >= 350) level = 'B'
 
       this.result = {
         scores,
@@ -264,7 +382,6 @@ export default {
       }
       track.assess(level)
 
-      // 尝试提交到服务器（不阻塞）
       try {
         await submitAssess(answers)
       } catch {}
