@@ -126,8 +126,9 @@ export default {
       try {
         await useUserStore().login()
         uni.showToast({ title: '登录成功', icon: 'success' })
-      } catch {
-        // 登录失败不阻塞
+      } catch (e) {
+        uni.showToast({ title: '登录失败，请重试', icon: 'none' })
+        console.error('login failed:', e)
       }
     },
   },

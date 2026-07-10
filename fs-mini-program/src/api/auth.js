@@ -12,7 +12,6 @@ export async function wxLogin() {
     // 1. 获取微信登录凭证
     uni.login({
       provider: 'weixin',
-      onlyAuthorize: true,
       success: async (loginRes) => {
         const { code } = loginRes
         if (!code) {
