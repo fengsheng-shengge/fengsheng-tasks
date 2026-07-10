@@ -58,6 +58,7 @@
 
     <view class="footer">
       <view class="footer-text">风声 · fengsheng.tech</view>
+      <view class="footer-icp">京ICP备2026041809号</view>
       <view class="footer-ver">v1.0.0</view>
     </view>
   </view>
@@ -115,7 +116,9 @@ export default {
       try {
         await useUserStore().login()
         uni.showToast({ title: '登录成功', icon: 'success' })
-      } catch {}
+      } catch (e) {
+        uni.showToast({ title: '登录失败，请重试', icon: 'none' })
+      }
     },
     doLogout() {
       uni.showModal({
@@ -190,5 +193,6 @@ export default {
 
 .footer { text-align: center; padding: 30rpx; }
 .footer-text { font-size: 24rpx; color: #aaa; }
+.footer-icp { font-size: 22rpx; color: #bbb; margin-top: 6rpx; }
 .footer-ver { font-size: 22rpx; color: #ccc; margin-top: 4rpx; }
 </style>
