@@ -3,7 +3,7 @@
     <!-- Hero 区域 -->
     <view class="hero">
       <view class="hero-title">风声助手</view>
-      <view class="hero-sub">居住服务从业者的专属AI工具</view>
+      <view class="hero-sub">帮助服务者用独立价值赢得尊重</view>
     </view>
 
     <!-- 产品入口 -->
@@ -11,15 +11,15 @@
       <view class="product-card mentor-card" @click="goTo('mentor')">
         <view class="product-icon">🔥</view>
         <view class="product-name">开单导师</view>
-        <view class="product-desc">租赁开单·AI陪练</view>
-        <view class="product-tag">AI推荐</view>
+        <view class="product-desc">租赁开单陪练</view>
+        <view class="product-tag">推荐</view>
       </view>
 
       <view class="product-card" @click="goTo('decode')">
         <view class="product-icon">🔑</view>
         <view class="product-name">客户解码器</view>
         <view class="product-desc">3个问题，读懂客户</view>
-        <view class="product-tag">AI推荐</view>
+        <view class="product-tag">推荐</view>
       </view>
 
       <view class="product-card" @click="goTo('assess')">
@@ -32,7 +32,7 @@
       <view class="product-card" @click="goTo('agent')">
         <view class="product-icon">🤖</view>
         <view class="product-name">Agent培养师</view>
-        <view class="product-desc">打造你的专属AI助理</view>
+        <view class="product-desc">打造你的专属业务助理</view>
         <view class="product-tag free">免费</view>
       </view>
     </view>

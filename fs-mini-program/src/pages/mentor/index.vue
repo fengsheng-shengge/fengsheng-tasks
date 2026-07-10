@@ -1,12 +1,10 @@
 <template>
   <view class="page">
-    <!-- Header -->
     <view class="chat-header">
       <view class="header-title">开单导师</view>
-      <view class="header-sub">租赁开单·AI陪练</view>
+      <view class="header-sub">租赁开单陪练</view>
     </view>
 
-    <!-- Chat messages -->
     <scroll-view class="chat-body" scroll-y :scroll-top="scrollTop" :scroll-with-animation="true">
       <view v-for="(msg, i) in messages" :key="i" :class="['msg-row', msg.role === 'user' ? 'msg-right' : 'msg-left']">
         <view :class="['msg-bubble', msg.role === 'user' ? 'bubble-user' : 'bubble-bot']">
@@ -20,7 +18,6 @@
       </view>
     </scroll-view>
 
-    <!-- Input bar -->
     <view class="input-bar">
       <input
         class="chat-input"
@@ -35,7 +32,6 @@
       </view>
     </view>
 
-    <!-- Footer -->
     <view class="footer">
       <text class="footer-icp">京ICP备2026041809号</text>
     </view>
@@ -78,33 +74,29 @@ export default {
           responseType: 'text',
         })
 
-        // Parse SSE stream
+        // Parse SSE stream - extract answer content
         let fullText = ''
-        const rawData = res.data || ''
+        const rawData = typeof res.data === 'string' ? res.data : JSON.stringify(res.data)
         const lines = rawData.split('\n')
         for (const line of lines) {
           if (line.startsWith('data:')) {
+            const dataStr = line.slice(5).trim()
+            if (dataStr === '[DONE]') continue
             try {
-              const json = JSON.parse(line.slice(5).trim())
+              const json = JSON.parse(dataStr)
+              // Extract conversation_id
+              if (json.conversation_id && !this.conversationId) {
+                this.conversationId = json.conversation_id
+              }
+              // Extract answer from completed message
               if (json.type === 'answer' && json.content) {
                 fullText += json.content
               }
-              if (json.conversation_id) {
-                this.conversationId = json.conversation_id
+              // Also check completed event with full content
+              if (json.role === 'assistant' && json.type === 'answer' && json.content && !json.content.includes('delta')) {
+                fullText = json.content
               }
             } catch {}
-          }
-        }
-
-        if (!fullText) {
-          // Fallback: try to extract any text content
-          for (const line of lines) {
-            if (line.startsWith('data:') && !line.includes('[DONE]')) {
-              try {
-                const json = JSON.parse(line.slice(5).trim())
-                if (json.content) fullText += json.content
-              } catch {}
-            }
           }
         }
 
