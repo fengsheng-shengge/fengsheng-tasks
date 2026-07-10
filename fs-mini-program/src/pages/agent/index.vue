@@ -44,8 +44,8 @@
       <view class="prompt-card" @click="copyPrompt">
         <view class="prompt-icon">📋</view>
         <view class="prompt-info">
-          <view class="prompt-title">复制扣子Bot Prompt</view>
-          <view class="prompt-desc">复制Prompt到扣子平台创建你的业务助手</view>
+          <view class="prompt-title">复制Bot Prompt</view>
+          <view class="prompt-desc">复制Prompt到对应平台创建你的业务助手</view>
         </view>
         <view class="prompt-arrow">→</view>
       </view>
@@ -55,6 +55,7 @@
     <view class="cta-banner" @click="goDecode">
       <text class="cta-text">实战练习 → 用解码器拆解客户需求</text>
     </view>
+    <view class="page-footer"><text class="footer-icp">京ICP备2026041809号</text></view>
   </view>
 </template>
 
@@ -193,4 +194,6 @@ export default {
 
 .cta-banner { background: linear-gradient(135deg, #3d5a3e, #5a7a5f); border-radius: 16rpx; padding: 24rpx; text-align: center; margin: 16rpx 10rpx; }
 .cta-text { color: #fff; font-size: 26rpx; }
+.page-footer { text-align: center; padding: 24rpx 0 40rpx; }
+.footer-icp { font-size: 20rpx; color: #bbb; }
 </style>
