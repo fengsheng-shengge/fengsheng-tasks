@@ -8,6 +8,13 @@
 
     <!-- 产品入口 -->
     <view class="product-grid">
+      <view class="product-card mentor-card" @click="goTo('mentor')">
+        <view class="product-icon">🔥</view>
+        <view class="product-name">开单导师</view>
+        <view class="product-desc">租赁开单·AI陪练</view>
+        <view class="product-tag">AI推荐</view>
+      </view>
+
       <view class="product-card" @click="goTo('decode')">
         <view class="product-icon">🔑</view>
         <view class="product-name">客户解码器</view>
@@ -19,7 +26,7 @@
         <view class="product-icon">🎯</view>
         <view class="product-name">品质测评</view>
         <view class="product-desc">知己知彼，服务更有底</view>
-        <view class="product-tag">免费</view>
+        <view class="product-tag free">免费</view>
       </view>
 
       <view class="product-card" @click="goTo('agent')">
@@ -56,6 +63,11 @@
         <view class="stat-l">付费用户</view>
       </view>
     </view>
+
+    <!-- ICP备案 -->
+    <view class="footer">
+      <text class="footer-icp">京ICP备2026041809号</text>
+    </view>
   </view>
 </template>
 
@@ -85,7 +97,6 @@ export default {
   },
   methods: {
     async loadData() {
-      // 加载公开统计数据
       try {
         const res = await uni.request({
           url: 'https://fengsheng.tech/api/stats?key=fs-admin-2026&product=mini-program',
@@ -97,13 +108,19 @@ export default {
     },
     goTo(page) {
       const map = {
+        mentor: '/pages/mentor/index',
         decode: '/pages/decode/index',
         assess: '/pages/assess/index',
         agent: '/pages/agent/index',
         subscribe: '/pages/subscribe/index',
       }
       track.click(`home_goto_${page}`)
-      uni.switchTab({ url: map[page] || map.decode })
+      const url = map[page] || map.decode
+      if (page === 'decode' || page === 'assess' || page === 'agent') {
+        uni.switchTab({ url })
+      } else {
+        uni.navigateTo({ url })
+      }
     },
     async doLogin() {
       try {
@@ -152,6 +169,18 @@ export default {
   padding: 30rpx;
   position: relative;
   box-shadow: 0 2rpx 12rpx rgba(0,0,0,.06);
+}
+.mentor-card {
+  background: linear-gradient(135deg, #3d5a3e, #5a7a5f);
+}
+.mentor-card .product-name {
+  color: #fff;
+}
+.mentor-card .product-desc {
+  color: rgba(255,255,255,0.8);
+}
+.mentor-card .product-tag {
+  background: #c46a3a;
 }
 .product-icon {
   font-size: 60rpx;
@@ -215,4 +244,7 @@ export default {
 .stat-item { text-align: center; }
 .stat-n { font-size: 36rpx; font-weight: 900; color: #3d5a3e; }
 .stat-l { font-size: 22rpx; color: #888; margin-top: 4rpx; }
+
+.footer { text-align: center; padding: 20rpx; }
+.footer-icp { font-size: 20rpx; color: #bbb; }
 </style>
