@@ -1,19 +1,13 @@
 <script>
 export default {
   onLaunch() {
-    console.log('风声助手 onLaunch')
-    const token = uni.getStorageSync('fs_token')
-    if (token) {
-      console.log('已登录')
-    } else {
-      console.log('未登录')
-    }
+    console.log('风声知识库 onLaunch')
   },
   onShow() {
-    console.log('风声助手 onShow')
+    console.log('风声知识库 onShow')
   },
   onHide() {
-    console.log('风声助手 onHide')
+    console.log('风声知识库 onHide')
   }
 }
 </script>

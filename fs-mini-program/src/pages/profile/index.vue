@@ -4,10 +4,10 @@
       <view class="title">我的</view>
     </view>
 
-    <!-- 用户信息 -->
+    <!-- 用户信息（无登录，纯展示） -->
     <view class="user-card">
       <view class="avatar">
-        <view class="avatar-default">👤</view>
+        <view class="avatar-default">📚</view>
       </view>
       <view class="user-info">
         <view class="user-name">风声用户</view>
@@ -24,7 +24,7 @@
       </view>
     </view>
 
-    <!-- 统计 -->
+    <!-- 使用统计 -->
     <view class="stats-section">
       <view class="stats-title">我的数据</view>
       <view class="stats-grid">
@@ -43,7 +43,7 @@
       </view>
       <view class="footer-text">风声 · fengsheng.tech</view>
       <view class="footer-icp">京ICP备2026041809号</view>
-      <view class="footer-ver">v1.1.0</view>
+      <view class="footer-ver">v1.0.5</view>
     </view>
   </view>
 </template>
@@ -71,8 +71,13 @@ export default {
   methods: {
     loadStats() {
       const firstUse = uni.getStorageSync('fs_first_use')
-      const days = firstUse ? Math.ceil((Date.now() - firstUse) / 86400000) : 0
-      this.stats = { days }
+      if (!firstUse) {
+        uni.setStorageSync('fs_first_use', Date.now())
+        this.stats = { days: 1 }
+      } else {
+        const days = Math.ceil((Date.now() - firstUse) / 86400000)
+        this.stats = { days }
+      }
     },
     onMenuClick(key) {
       track.click(`profile_menu_${key}`)
@@ -86,10 +91,10 @@ export default {
           uni.showModal({ title: '意见反馈', content: '请发送邮件至 feedback@fengsheng.tech', showCancel: false })
           break
         case 'about':
-          uni.showModal({ title: '关于风声', content: '风声 · 居住服务工具\nfengsheng.tech\n让服务者先被看见', showCancel: false })
+          uni.showModal({ title: '关于风声', content: '风声 · 居住服务行业知识库\nfengsheng.tech\n让服务者先被看见', showCancel: false })
           break
         case 'share':
-          uni.setClipboardData({ data: '风声助手小程序，居住服务从业者的专属工具' })
+          uni.setClipboardData({ data: '风声知识库小程序，居住服务行业知识查询工具' })
           break
       }
     },
