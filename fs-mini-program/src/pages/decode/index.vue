@@ -2,7 +2,7 @@
   <view class="page">
     <view class="header">
       <view class="title">客户解码器</view>
-      <view class="sub">输入客户一句话，AI帮你拆解真实需求</view>
+      <view class="sub">输入客户一句话，帮你拆解真实需求</view>
     </view>
 
     <!-- 输入区 -->

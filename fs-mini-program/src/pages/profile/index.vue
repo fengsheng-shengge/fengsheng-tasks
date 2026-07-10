@@ -142,10 +142,10 @@ export default {
           uni.showModal({ title: '意见反馈', content: '请发送邮件至 feedback@fengsheng.tech', showCancel: false })
           break
         case 'about':
-          uni.showModal({ title: '关于风声', content: '风声 · 居住服务AI工具\nfengsheng.tech\n让服务者先被看见', showCancel: false })
+          uni.showModal({ title: '关于风声', content: '风声 · 居住服务工具\nfengsheng.tech\n让服务者先被看见', showCancel: false })
           break
         case 'share':
-          uni.setClipboardData({ data: '风声助手小程序，居住服务从业者的AI工具' })
+          uni.setClipboardData({ data: '风声助手小程序，居住服务从业者的专属工具' })
           break
       }
     },

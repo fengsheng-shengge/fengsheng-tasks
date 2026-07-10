@@ -45,7 +45,7 @@
         <view class="prompt-icon">📋</view>
         <view class="prompt-info">
           <view class="prompt-title">复制扣子Bot Prompt</view>
-          <view class="prompt-desc">粘贴到coze.cn即可创建你的AI助手</view>
+          <view class="prompt-desc">复制Prompt到扣子平台创建你的业务助手</view>
         </view>
         <view class="prompt-arrow">→</view>
       </view>
