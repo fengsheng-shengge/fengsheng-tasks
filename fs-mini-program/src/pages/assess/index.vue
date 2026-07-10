@@ -94,6 +94,7 @@
 
       <view class="retry-btn" @click="resetAssess">重新测评</view>
     </view>
+    <view class="page-footer"><text class="footer-icp">京ICP备2026041809号</text></view>
   </view>
 </template>
 
@@ -453,4 +454,6 @@ export default {
 .cta-banner { background: linear-gradient(135deg, #3d5a3e, #5a7a5f); border-radius: 16rpx; padding: 24rpx; text-align: center; margin-bottom: 16rpx; }
 .cta-text { color: #fff; font-size: 26rpx; }
 .retry-btn { text-align: center; font-size: 28rpx; color: #888; padding: 20rpx; }
+.page-footer { text-align: center; padding: 24rpx 0 40rpx; }
+.footer-icp { font-size: 20rpx; color: #bbb; }
 </style>

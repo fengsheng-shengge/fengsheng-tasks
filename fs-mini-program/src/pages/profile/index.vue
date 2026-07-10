@@ -57,6 +57,11 @@
     <view v-if="user.isLoggedIn" class="logout-btn" @click="doLogout">退出登录</view>
 
     <view class="footer">
+      <view class="footer-links">
+        <text class="footer-link" @click="openPrivacy">隐私政策</text>
+        <text class="footer-link-divider">|</text>
+        <text class="footer-link" @click="openAgreement">用户协议</text>
+      </view>
       <view class="footer-text">风声 · fengsheng.tech</view>
       <view class="footer-icp">京ICP备2026041809号</view>
       <view class="footer-ver">v1.0.0</view>
@@ -152,6 +157,12 @@ export default {
     goSubscribe() {
       uni.switchTab({ url: '/pages/subscribe/index' })
     },
+    openPrivacy() {
+      uni.navigateTo({ url: '/pages/webview/index?url=' + encodeURIComponent('https://fengsheng.tech/privacy.html') })
+    },
+    openAgreement() {
+      uni.navigateTo({ url: '/pages/webview/index?url=' + encodeURIComponent('https://fengsheng.tech/agreement.html') })
+    },
   },
 }
 </script>
@@ -192,6 +203,9 @@ export default {
 .logout-btn { text-align: center; font-size: 28rpx; color: #e74c3c; padding: 24rpx; margin: 20rpx 10rpx; background: #fff; border-radius: 16rpx; }
 
 .footer { text-align: center; padding: 30rpx; }
+.footer-links { margin-bottom: 12rpx; }
+.footer-link { font-size: 24rpx; color: #3d5a3e; }
+.footer-link-divider { font-size: 24rpx; color: #ddd; margin: 0 16rpx; }
 .footer-text { font-size: 24rpx; color: #aaa; }
 .footer-icp { font-size: 22rpx; color: #bbb; margin-top: 6rpx; }
 .footer-ver { font-size: 22rpx; color: #ccc; margin-top: 4rpx; }

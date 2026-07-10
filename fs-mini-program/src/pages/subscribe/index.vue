@@ -17,22 +17,31 @@
 
     <!-- 订阅方案 -->
     <view v-else class="plans-section">
-      <view class="plan-card" :class="{ popular: plan.popular }" v-for="plan in plans" :key="plan.key">
-        <view v-if="plan.popular" class="popular-badge">推荐</view>
-        <view class="plan-name">{{ plan.name }}</view>
-        <view class="plan-price">
-          <text class="price-symbol">¥</text>
-          <text class="price-num">{{ plan.price }}</text>
-          <text class="price-unit">/{{ plan.unit }}</text>
-        </view>
-        <view class="plan-desc">{{ plan.desc }}</view>
-        <view class="plan-features">
-          <view class="feature" v-for="f in plan.features" :key="f">
-            <text class="feature-check">✓</text>
-            <text class="feature-text">{{ f }}</text>
+      <!-- iOS端：虚拟支付禁令，显示联系客服 -->
+      <view v-if="isIOS" class="ios-notice">
+        <view class="ios-notice-title">iOS端订阅</view>
+        <view class="ios-notice-text">因苹果政策，iOS端暂不支持在线订阅</view>
+        <view class="ios-contact" @click="contactService">联系客服开通</view>
+      </view>
+      <!-- 非iOS端：正常显示订阅方案 -->
+      <view v-else>
+        <view class="plan-card" :class="{ popular: plan.popular }" v-for="plan in plans" :key="plan.key">
+          <view v-if="plan.popular" class="popular-badge">推荐</view>
+          <view class="plan-name">{{ plan.name }}</view>
+          <view class="plan-price">
+            <text class="price-symbol">¥</text>
+            <text class="price-num">{{ plan.price }}</text>
+            <text class="price-unit">/{{ plan.unit }}</text>
           </view>
+          <view class="plan-desc">{{ plan.desc }}</view>
+          <view class="plan-features">
+            <view class="feature" v-for="f in plan.features" :key="f">
+              <text class="feature-check">✓</text>
+              <text class="feature-text">{{ f }}</text>
+            </view>
+          </view>
+          <view class="plan-btn" @click="subscribe(plan.key)">立即订阅</view>
         </view>
-        <view class="plan-btn" @click="subscribe(plan.key)">立即订阅</view>
       </view>
     </view>
 
@@ -63,6 +72,7 @@
         · 如有疑问请联系客服：feedback@fengsheng.tech
       </view>
     </view>
+    <view class="page-footer"><text class="footer-icp">京ICP备2026041809号</text></view>
   </view>
 </template>
 
@@ -105,6 +115,7 @@ export default {
     return {
       plans: PLANS,
       compareData: COMPARE,
+      isIOS: false,
     }
   },
   computed: {
@@ -112,11 +123,23 @@ export default {
       return useUserStore().subscription
     },
   },
+  onLoad() {
+    // iOS虚拟支付禁令检测
+    const sysInfo = uni.getSystemInfoSync()
+    this.isIOS = sysInfo.platform === 'ios'
+  },
   onShow() {
     uni.setStorageSync('__current_page', '/pages/subscribe/index')
     track.pageview({ page: '/pages/subscribe/index' })
   },
   methods: {
+    contactService() {
+      uni.showModal({
+        title: '联系客服',
+        content: '请发送邮件至 feedback@fengsheng.tech\n或添加客服微信开通订阅',
+        showCancel: false,
+      })
+    },
     async subscribe(planKey) {
       track.click('subscribe_click', { plan: planKey })
 
@@ -193,6 +216,12 @@ export default {
 .current-status { background: rgba(255,255,255,0.2); color: #fff; font-size: 24rpx; padding: 8rpx 20rpx; border-radius: 20rpx; }
 
 .plans-section { padding: 20rpx 10rpx; }
+
+.ios-notice { background: #fff; border-radius: 20rpx; padding: 60rpx 40rpx; text-align: center; margin-bottom: 20rpx; }
+.ios-notice-title { font-size: 36rpx; font-weight: 700; color: #3d5a3e; margin-bottom: 16rpx; }
+.ios-notice-text { font-size: 28rpx; color: #888; margin-bottom: 32rpx; }
+.ios-contact { background: #3d5a3e; color: #fff; font-size: 30rpx; padding: 20rpx 0; border-radius: 48rpx; }
+
 .plan-card { background: #fff; border-radius: 20rpx; padding: 36rpx 30rpx; margin-bottom: 16rpx; position: relative; overflow: hidden; }
 .plan-card.popular { border: 4rpx solid #3d5a3e; }
 .popular-badge { position: absolute; top: 0; right: 0; background: #3d5a3e; color: #fff; font-size: 22rpx; padding: 6rpx 20rpx; border-bottom-left-radius: 16rpx; }
@@ -220,4 +249,6 @@ export default {
 .notice-section { padding: 24rpx 10rpx; }
 .notice-title { font-size: 24rpx; color: #888; margin-bottom: 8rpx; }
 .notice-text { font-size: 22rpx; color: #aaa; line-height: 2; }
+.page-footer { text-align: center; padding: 24rpx 0 40rpx; }
+.footer-icp { font-size: 20rpx; color: #bbb; }
 </style>
