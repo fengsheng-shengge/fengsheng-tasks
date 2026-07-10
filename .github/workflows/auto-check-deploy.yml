@@ -1,6 +1,8 @@
 name: Auto Check Credentials & Deploy
 
 on:
+  schedule:
+    - cron: '0 * * * *'
   push:
     branches: [main]
     paths:
@@ -58,21 +60,33 @@ jobs:
             TEMP_ID=""
             TEMP_TOKEN=""
             
-            if echo "$BODY" | grep -qiE '(account.?id|account_id|CLOUDFLARE_ACCOUNT)'; then
-              TEMP_ID=$(echo "$BODY" | grep -oiE '(CLOUDFLARE_ACCOUNT_ID|Account ID|AccountID|account_id|账号ID)[=:：\s]*[`\"]?([a-f0-9]{32})[`\"]?' | head -1 | grep -oE '[a-f0-9]{32}' || true)
-              if [ -z "$TEMP_ID" ]; then
-                TEMP_ID=$(echo "$BODY" | grep -oE '\b[a-f0-9]{32}\b' | head -1 || true)
+            # 提取 Account ID (32位十六进制)
+            ID_MATCH=$(echo "$BODY" | grep -oiE 'CLOUDFLARE_ACCOUNT_ID[=:：\s]+[`\"]?[a-f0-9]{32}[`\"]?' || true)
+            if [ -n "$ID_MATCH" ]; then
+              TEMP_ID=$(echo "$ID_MATCH" | grep -oE '[a-f0-9]{32}' | head -1)
+            else
+              ID_MATCH2=$(echo "$BODY" | grep -oiE '(Account ID|AccountID|account_id|账号ID)[=:：\s]+[`\"]?[a-f0-9]{32}[`\"]?' || true)
+              if [ -n "$ID_MATCH2" ]; then
+                TEMP_ID=$(echo "$ID_MATCH2" | grep -oE '[a-f0-9]{32}' | head -1)
               fi
             fi
             
-            if echo "$BODY" | grep -qiE '(api.?token|api_token|CLOUDFLARE_API|API密钥)'; then
-              TEMP_TOKEN=$(echo "$BODY" | grep -oiE '(CLOUDFLARE_API_TOKEN|API Token|APIToken|api_token|API令牌)[=:：\s]*[`\"]?([A-Za-z0-9_\-]{20,})[`\"]?' | head -1 | grep -oE '[A-Za-z0-9_\-]{20,}$' || true)
-              if [ -z "$TEMP_TOKEN" ]; then
-                TEMP_TOKEN=$(echo "$BODY" | grep -oE '\b[A-Za-z0-9_\-]{30,}\b' | grep -v '^ghp_' | grep -v '^http' | head -1 || true)
+            # 提取 API Token (以 cfut_ 开头或长字符串)
+            TOKEN_MATCH=$(echo "$BODY" | grep -oiE 'CLOUDFLARE_API_TOKEN[=:：\s]+[`\"]?[A-Za-z0-9_\-]+[`\"]?' || true)
+            if [ -n "$TOKEN_MATCH" ]; then
+              TEMP_TOKEN=$(echo "$TOKEN_MATCH" | sed -E 's/.*CLOUDFLARE_API_TOKEN[=:：\s]+[`\"]?([A-Za-z0-9_\-]+)[`\"]?.*/\1/i' | head -1)
+            else
+              TOKEN_MATCH2=$(echo "$BODY" | grep -oiE '(API Token|APIToken|api_token|API令牌)[=:：\s]+[`\"]?[A-Za-z0-9_\-]+[`\"]?' || true)
+              if [ -n "$TOKEN_MATCH2" ]; then
+                TEMP_TOKEN=$(echo "$TOKEN_MATCH2" | sed -E 's/.*(API Token|APIToken|api_token|API令牌)[=:：\s]+[`\"]?([A-Za-z0-9_\-]+)[`\"]?.*/\2/i' | head -1)
               fi
             fi
             
-            if [ -n "$TEMP_ID" ] && [ -n "$TEMP_TOKEN" ]; then
+            if [ -z "$TEMP_TOKEN" ]; then
+              TEMP_TOKEN=$(echo "$BODY" | grep -oE 'cfut_[A-Za-z0-9_\-]+' | head -1 || true)
+            fi
+            
+            if [ -n "$TEMP_ID" ] && [ -n "$TEMP_TOKEN" ] && [ "$TEMP_ID" != "$TEMP_TOKEN" ]; then
               ACCOUNT_ID="$TEMP_ID"
               API_TOKEN="$TEMP_TOKEN"
               FOUND_USER="$USER"
@@ -97,14 +111,16 @@ jobs:
           COUNT="${{ steps.get_comments.outputs.count }}"
           
           if [ "$FOUND" = "true" ]; then
+            ACCOUNT_MASKED=$(echo "${{ steps.extract.outputs.account_id }}" | awk '{print substr($0,1,8)"..."substr($0,length($0)-3,4)}')
+            TOKEN_MASKED=$(echo "${{ steps.extract.outputs.api_token }}" | awk '{print substr($0,1,8)"..."substr($0,length($0)-3,4)}')
             cat > deploy-result.json << ENDJSON
           {
             "status": "credentials_found",
             "timestamp": "$TIMESTAMP",
             "comments_checked": $COUNT,
             "credentials_author": "$AUTHOR",
-            "account_id_masked": "$(echo '${{ steps.extract.outputs.account_id }}' | sed 's/^\(........\).*\(....\)$/\1...\2/')",
-            "api_token_masked": "$(echo '${{ steps.extract.outputs.api_token }}' | sed 's/^\(........\).*\(....\)$/\1...\2/')"
+            "account_id_masked": "$ACCOUNT_MASKED",
+            "api_token_masked": "$TOKEN_MASKED"
           }
           ENDJSON
             echo "凭证已找到，来自 $AUTHOR"
@@ -158,7 +174,7 @@ jobs:
       - name: 等待并验证
         run: |
           echo "等待部署生效..."
-          sleep 20
+          sleep 30
           
           echo "=== 验证 https://fengsheng.tech ==="
           CODE=$(curl -s -o /dev/null -w "%{http_code}" https://fengsheng.tech --max-time 15)
@@ -173,7 +189,7 @@ jobs:
   notify:
     name: 通知结果
     needs: [check-and-deploy, deploy, verify]
-    if: always()
+    if: always() && needs.check-and-deploy.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: 评论 Issue
@@ -187,7 +203,7 @@ jobs:
             if [ "$DEPLOY_RESULT" = "success" ]; then
               STATUS="✅ 部署成功"
             else
-              STATUS="⚠️ 部署进行中"
+              STATUS="⚠️ 部署进行中/失败"
             fi
             BODY="## 🚀 凭证检测与部署完成
 
@@ -202,7 +218,7 @@ jobs:
 
           ---
           _由小扣子（Trae）自动检查并部署_
-          
+
           > 💡 建议：将凭证配置到 GitHub Secrets 以便后续持续部署。"
           else
             BODY="## 🔍 每小时凭证检查
@@ -210,8 +226,8 @@ jobs:
           ⏳ 尚未在评论中找到 Cloudflare 部署凭证。
 
           请小鱼儿回复以下信息：
-          - \CLOUDFLARE_ACCOUNT_ID\`
-          - \CLOUDFLARE_API_TOKEN\`
+          - \`CLOUDFLARE_ACCOUNT_ID\`
+          - \`CLOUDFLARE_API_TOKEN\`
 
           下次检查：1 小时后。"
           fi
