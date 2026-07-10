@@ -1,7 +1,7 @@
 // FengSheng Pages Worker - handles all API routes
 const COZE_API = 'https://api.coze.cn';
 const BOT_ID = '7657006281966452790';
-const PAT_TOKEN = 'COZE_PAT_TOKEN_PLACEHOLDER';
+const WX_API = 'https://api.weixin.qq.com/sns/jscode2session';
 
 export default {
   async fetch(request, env) {
@@ -14,24 +14,34 @@ export default {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         },
       });
     }
 
-    // Mentor chat API - uses /mentor-api/ path to avoid old Worker interception on /api/*
-    if (path === '/mentor-api/chat' && request.method === 'POST') {
-      return handleChat(request);
+    // WeChat Mini Program Login
+    if (path === '/api/auth/wx-login' && request.method === 'POST') {
+      return handleWxLogin(request, env);
     }
 
-    // Health check (on both paths for compatibility)
+    // Mentor chat API
+    if (path === '/mentor-api/chat' && request.method === 'POST') {
+      return handleChat(request, env);
+    }
+
+    // Health check
     if (path === '/mentor-api/health' || path === '/api/health') {
       return jsonResponse({ status: 'ok', time: new Date().toISOString() });
     }
 
-    // Legacy /api/chat route (may be intercepted by old Worker on custom domain)
+    // Legacy /api/chat route
     if (path === '/api/chat' && request.method === 'POST') {
-      return handleChat(request);
+      return handleChat(request, env);
+    }
+
+    // Stats API (public, read-only)
+    if (path === '/api/stats' && request.method === 'GET') {
+      return handleStats(request, env);
     }
 
     // All other requests → pass through to static assets
@@ -39,13 +49,88 @@ export default {
   },
 };
 
-async function handleChat(request) {
+async function handleWxLogin(request, env) {
+  try {
+    const body = await request.json();
+    const { code } = body;
+
+    if (!code) {
+      return jsonResponse({ error: 'code is required' }, 400);
+    }
+
+    const WX_APPID = env.WX_APPID || 'wxb87aa256991cc9c6';
+    const WX_SECRET = env.WX_SECRET;
+
+    if (!WX_SECRET) {
+      console.error('WX_SECRET not configured in worker environment');
+      return jsonResponse({ error: 'server config error' }, 500);
+    }
+
+    // Exchange code for openid + session_key
+    const wxUrl = `${WX_API}?appid=${WX_APPID}&secret=${WX_SECRET}&js_code=${code}&grant_type=authorization_code`;
+    const wxResp = await fetch(wxUrl);
+    const wxData = await wxResp.json();
+
+    if (wxData.errcode) {
+      console.error('WeChat API error:', wxData.errcode, wxData.errmsg);
+      return jsonResponse({ error: '微信登录失败', code: wxData.errcode }, 400);
+    }
+
+    const { openid, session_key } = wxData;
+
+    // Generate a simple JWT-like token (stateless, no DB needed for MVP)
+    const token = await generateToken(openid, env);
+    const userId = 'u_' + openid.slice(-8);
+
+    return jsonResponse({
+      token,
+      openid,
+      userId,
+    });
+  } catch (e) {
+    console.error('WxLogin error:', e);
+    return jsonResponse({ error: e.message }, 500);
+  }
+}
+
+async function generateToken(openid, env) {
+  const secret = env.JWT_SECRET || 'fengsheng-2026-default-secret';
+  const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const payload = btoa(JSON.stringify({
+    openid,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + 86400 * 30, // 30 days
+  }));
+  
+  // Simple HMAC using Web Crypto API
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(`${header}.${payload}`));
+  const sig = btoa(String.fromCharCode(...new Uint8Array(signature))).replace(/=/g, '');
+  
+  return `${header}.${payload}.${sig}`;
+}
+
+async function handleChat(request, env) {
   try {
     const body = await request.json();
     const { message, conversation_id, user_id } = body;
 
     if (!message || !message.trim()) {
       return jsonResponse({ error: 'message is required' }, 400);
+    }
+
+    const PAT_TOKEN = env.COZE_PAT_TOKEN;
+
+    if (!PAT_TOKEN) {
+      console.error('COZE_PAT_TOKEN not configured');
+      return jsonResponse({ error: 'server config error' }, 500);
     }
 
     const reqBody = {
@@ -92,6 +177,15 @@ async function handleChat(request) {
     console.error('Proxy error:', e);
     return jsonResponse({ error: e.message }, 500);
   }
+}
+
+async function handleStats(request, env) {
+  // Return basic public stats
+  return jsonResponse({
+    uv: 0,
+    subs: 0,
+    updated: new Date().toISOString().split('T')[0],
+  });
 }
 
 function jsonResponse(data, status = 200) {
