@@ -35,6 +35,13 @@
         <view class="product-desc">打造你的专属业务助理</view>
         <view class="product-tag free">免费</view>
       </view>
+
+      <view class="product-card" @click="goToKnowledge">
+        <view class="product-icon">📚</view>
+        <view class="product-name">知识底座</view>
+        <view class="product-desc">8域122词条·行业知识图谱</view>
+        <view class="product-tag free">免费</view>
+      </view>
     </view>
 
     <!-- 订阅入口（有订阅时显示） -->
@@ -121,6 +128,12 @@ export default {
       } else {
         uni.navigateTo({ url })
       }
+    },
+    goToKnowledge() {
+      track.click('home_goto_knowledge')
+      uni.navigateTo({
+        url: '/pages/webview/index?url=' + encodeURIComponent('https://fengsheng.tech/knowledge')
+      })
     },
     async doLogin() {
       try {
