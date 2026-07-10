@@ -156,7 +156,8 @@ jobs:
       - name: Check no hardcoded secrets
         run: |
           echo "=== 检查 10: 无硬编码密钥 ==="
-          SECRET_MATCHES=$(find . -name "*.html" -o -name "*.js" -not -path "./node_modules/*" | xargs grep -iE 'password|secret|token' 2>/dev/null | grep -E '=[[:space:]]*["'"'"'][^"'"'"']{8,}["'"'"']' || true)
+          # 排除 *.min.js 第三方压缩库（echarts 等，含 token 等字样为误报）
+          SECRET_MATCHES=$(find . \( -name "*.html" -o -name "*.js" \) -not -path "./node_modules/*" -not -name "*.min.js" | xargs grep -iE 'password|secret|token' 2>/dev/null | grep -E '=[[:space:]]*["'"'"'][^"'"'"']{8,}["'"'"']' || true)
           if [ -n "$SECRET_MATCHES" ]; then
             FILTERED=$(echo "$SECRET_MATCHES" | grep -vE 'fs-admin|fengsheng-ops|demo-admin' || true)
             if [ -n "$FILTERED" ]; then
