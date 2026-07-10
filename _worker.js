@@ -24,9 +24,18 @@ export default {
       return handleWxLogin(request, env);
     }
 
-    // Mentor chat API
+    // Mentor chat API (auth-protected)
     if (path === '/mentor-api/chat' && request.method === 'POST') {
-      return handleChat(request, env);
+      const authHeader = request.headers.get('Authorization');
+      const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+      if (!token) {
+        return jsonResponse({ error: 'unauthorized: missing token' }, 401);
+      }
+      const payload = await verifyToken(token, env);
+      if (!payload) {
+        return jsonResponse({ error: 'unauthorized: invalid or expired token' }, 401);
+      }
+      return handleChat(request, env, payload.openid);
     }
 
     // Health check
@@ -94,12 +103,15 @@ async function handleWxLogin(request, env) {
 }
 
 async function generateToken(openid, env) {
-  const secret = env.JWT_SECRET || 'fengsheng-2026-default-secret';
+  const secret = env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET not configured in worker environment');
+  }
   const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const payload = btoa(JSON.stringify({
     openid,
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 86400 * 30, // 30 days
+    exp: Math.floor(Date.now() / 1000) + 86400 * 7, // 7 days
   }));
   
   // Simple HMAC using Web Crypto API
@@ -117,10 +129,37 @@ async function generateToken(openid, env) {
   return `${header}.${payload}.${sig}`;
 }
 
-async function handleChat(request, env) {
+async function verifyToken(token, env) {
+  const secret = env.JWT_SECRET;
+  if (!secret) return null;
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const [h, p, s] = parts;
+    // Verify signature
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw', encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false, ['sign']
+    );
+    const sigBytes = Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+    const valid = await crypto.subtle.verify(
+      { name: 'HMAC', hash: 'SHA-256' },
+      key, sigBytes, encoder.encode(`${h}.${p}`)
+    );
+    if (!valid) return null;
+    const payload = JSON.parse(atob(p));
+    const now = Math.floor(Date.now() / 1000);
+    if (payload.exp && payload.exp < now) return null;
+    return payload;
+  } catch { return null; }
+}
+
+async function handleChat(request, env, authenticatedOpenid) {
   try {
     const body = await request.json();
-    const { message, conversation_id, user_id } = body;
+    const { message, conversation_id } = body;
 
     if (!message || !message.trim()) {
       return jsonResponse({ error: 'message is required' }, 400);
@@ -135,7 +174,7 @@ async function handleChat(request, env) {
 
     const reqBody = {
       bot_id: BOT_ID,
-      user_id: user_id || 'web_user',
+      user_id: authenticatedOpenid || 'web_user',
       stream: true,
       auto_save_history: true,
       additional_messages: [{

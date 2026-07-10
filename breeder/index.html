@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Agent培养师 · 风声</title>
+<title>助手养成师 · 风声</title>
 <style>
 :root{--bg:#f7f4ef;--bg2:#e8e4d9;--dk:#1a1a1a;--p:#3d5a3e;--fire:#c46a3a;--orange:#f5a623;--ts:#555555;--td:#888;--card:#fff;--border:#e8e4d9;--border-h:#3d5a3e;--r:8px}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -123,7 +123,7 @@ body{padding-top:48px!important}
 .encourage-msg{text-align:center;font-size:13px;color:var(--p,#3d5a3e);font-weight:600;margin:8px 0;padding:8px;background:rgba(61,90,62,.05);border-radius:8px;min-height:36px;transition:all .3s}
 
 </style>
-<meta property="og:title" content="AI助手养成师 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/breeder.html"><meta name="twitter:card" content="summary_large_image"></head>
+<meta property="og:title" content="助手养成师 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/breeder.html"><meta name="twitter:card" content="summary_large_image"></head>
 <body>
 
 <div class="top-nav">
@@ -133,10 +133,10 @@ body{padding-top:48px!important}
 
 <!-- 欢迎页 -->
 <div class="screen active" id="screen-welcome">
-  <div class="top-bar"><span class="brand">风声</span><span class="tag">Agent培养师</span></div>
+  <div class="top-bar"><span class="brand">风声</span><span class="tag">助手养成师</span></div>
   <div class="welcome-icon">🤖</div>
-  <div class="welcome-title">养一个铁律护航的AI伙伴</div>
-  <div class="welcome-sub">不是配置工具，是<strong>帮你养AI</strong><br>6步从空白到7×24自动运转+防崩溃机制<br>铁律护航·主动交付·持续进化</div>
+  <div class="welcome-title">养一个铁律护航的数字伙伴</div>
+  <div class="welcome-sub">不是配置工具，是<strong>帮你养数字助手</strong><br>6步从空白到7×24自动运转+防崩溃机制<br>铁律护航·主动交付·持续进化</div>
   <div class="mode-cards">
     <div class="mode-card selected" data-mode="full" onclick="selectMode('full')">
       <div class="mc-title">完整6步培养</div>
@@ -155,7 +155,7 @@ body{padding-top:48px!important}
 
 <!-- 答题页 -->
 <div class="screen" id="screen-quiz">
-  <div class="top-bar"><span class="brand">风声</span><span class="tag">Agent培养师</span></div>
+  <div class="top-bar"><span class="brand">风声</span><span class="tag">助手养成师</span></div>
   <div class="progress-bar">
     <span class="progress-text" id="progress-text">1 / 12</span>
     <div class="progress-fill"><span id="progress-fill" style="width:8%"></span></div>
@@ -173,7 +173,7 @@ body{padding-top:48px!important}
 <div class="screen" id="screen-loading">
   <div class="loading">
     <div class="loading-icon">🧬</div>
-    <div class="loading-text">正在生成你的AI培养方案...</div>
+    <div class="loading-text">正在生成你的培养方案...</div>
   </div>
 </div>
 
@@ -186,14 +186,14 @@ body{padding-top:48px!important}
 // ========== 题目 ==========
 const FULL_QUESTIONS = [
   // 第1步：给它身份（含ROI+铁律）
-  {id:0,step:1,stepName:'给它身份',type:'single',scene:'你希望AI帮你"赚"什么？',text:'不一定是钱——可能是省时间、多签单、少加班',dimLabel:'第1步·ROI目标',dimColor:'#3d5a3e',
+  {id:0,step:1,stepName:'给它身份',type:'single',scene:'你希望助手帮你"赚"什么？',text:'不一定是钱——可能是省时间、多签单、少加班',dimLabel:'第1步·ROI目标',dimColor:'#3d5a3e',
     options:[
-      {label:'A',text:'省时间——把重复的事交给AI',score:10,tag:'效率'},
-      {label:'B',text:'多签单——AI帮我找客户写文案',score:10,tag:'业绩'},
+      {label:'A',text:'省时间——把重复的事交给助手',score:10,tag:'效率'},
+      {label:'B',text:'多签单——助手帮我找客户写文案',score:10,tag:'业绩'},
       {label:'C',text:'少加班——自动化让我早点下班',score:10,tag:'生活'},
-      {label:'D',text:'少犯错——AI帮我把关不翻车',score:8,tag:'安全'}
+      {label:'D',text:'少犯错——助手帮我把关不翻车',score:8,tag:'安全'}
     ]},
-  {id:1,step:1,stepName:'给它身份',type:'multi',scene:'你想让AI帮你做哪些事？',text:'选2-3项最需要的',dimLabel:'第1步·需求定位',dimColor:'#3d5a3e',
+  {id:1,step:1,stepName:'给它身份',type:'multi',scene:'你想让助手帮你做哪些事？',text:'选2-3项最需要的',dimLabel:'第1步·需求定位',dimColor:'#3d5a3e',
     options:[
       {label:'A',text:'每天自动整理信息发给我',score:10},
       {label:'B',text:'帮我写文案/报告',score:10},
@@ -202,16 +202,16 @@ const FULL_QUESTIONS = [
       {label:'E',text:'客户跟进和沟通',score:10},
       {label:'F',text:'其他',score:5}
     ]},
-  {id:2,step:1,stepName:'给它身份',type:'single',scene:'你希望AI是什么性格？',text:'选一个最接近的',dimLabel:'第1步·性格设定',dimColor:'#3d5a3e',
+  {id:2,step:1,stepName:'给它身份',type:'single',scene:'你希望助手是什么性格？',text:'选一个最接近的',dimLabel:'第1步·性格设定',dimColor:'#3d5a3e',
     options:[
       {label:'A',text:'安静靠谱型——少说话多做事',score:10,tag:'靠谱'},
       {label:'B',text:'活泼创意型——想法多爱建议',score:10,tag:'创意'},
       {label:'C',text:'温和关怀型——提醒你关心你',score:10,tag:'关怀'},
       {label:'D',text:'干脆利落型——只给结论不废话',score:10,tag:'高效'}
     ]},
-  {id:3,step:1,stepName:'给它身份',type:'text',scene:'给你的AI起个名字吧',text:'就像给新同事取外号——叫着顺口、听着亲切就行',dimLabel:'第1步·命名',dimColor:'#3d5a3e',
+  {id:3,step:1,stepName:'给它身份',type:'text',scene:'给助手起个名字吧',text:'就像给新同事取外号——叫着顺口、听着亲切就行',dimLabel:'第1步·命名',dimColor:'#3d5a3e',
     placeholder:'比如：小鱼儿、阿明、小房...'},
-  {id:3.5,step:1,stepName:'给它身份',type:'multi',scene:'给你的AI定1-2条不可违反的铁律',text:'铁律=底线，每次启动最先看到的就是它',dimLabel:'第1步·铁律初定',dimColor:'#c46a3a',
+  {id:3.5,step:1,stepName:'给它身份',type:'multi',scene:'给助手定1-2条不可违反的铁律',text:'铁律=底线，每次启动最先看到的就是它',dimLabel:'第1步·铁律初定',dimColor:'#c46a3a',
     options:[
       {label:'A',text:'不确定的事先查再回答，绝不瞎编',score:10},
       {label:'B',text:'绝不删除或覆盖文件，除非我明确要求',score:10},
@@ -220,7 +220,7 @@ const FULL_QUESTIONS = [
       {label:'E',text:'其他（自己说）',score:5}
     ]},
   // 第2步：让它学习
-  {id:4,step:2,stepName:'让它学习',type:'multi',scene:'你工作中最头疼哪些事？',text:'选2-3项（AI学什么取决于你疼什么）',dimLabel:'第2步·痛点定位',dimColor:'#c46a3a',
+  {id:4,step:2,stepName:'让它学习',type:'multi',scene:'你工作中最头疼哪些事？',text:'选2-3项（助手学什么取决于你疼什么）',dimLabel:'第2步·痛点定位',dimColor:'#c46a3a',
     options:[
       {label:'A',text:'写文案/写报告，词穷',score:10},
       {label:'B',text:'整理数据/信息，太花时间',score:10},
@@ -244,7 +244,7 @@ const FULL_QUESTIONS = [
       {label:'D',text:'整理数据做表格',score:8},
       {label:'E',text:'发布内容到多平台',score:8}
     ]},
-  {id:7,step:3,stepName:'搭自动化',type:'single',scene:'你需要AI像小伙伴一样关心你吗？',text:'比如早安提醒、喝水提醒',dimLabel:'第3步·关怀机制',dimColor:'#f5a623',
+  {id:7,step:3,stepName:'搭自动化',type:'single',scene:'你需要助手像小伙伴一样关心你吗？',text:'比如早安提醒、喝水提醒',dimLabel:'第3步·关怀机制',dimColor:'#f5a623',
     options:[
       {label:'A',text:'需要，我容易忘照顾自己',score:10,tag:'需要'},
       {label:'B',text:'偶尔提醒一下就行',score:7,tag:'适度'},
@@ -266,7 +266,7 @@ const FULL_QUESTIONS = [
       {label:'E',text:'还没想好',score:3}
     ]},
   // 第5步：写入灵魂
-  {id:10,step:5,stepName:'写入灵魂',type:'multi',scene:'你最希望AI记住哪些规矩？',text:'选2-3项',dimLabel:'第5步·行为准则',dimColor:'#3d5a3e',
+  {id:10,step:5,stepName:'写入灵魂',type:'multi',scene:'你最希望助手记住哪些规矩？',text:'选2-3项',dimLabel:'第5步·行为准则',dimColor:'#3d5a3e',
     options:[
       {label:'A',text:'不确定的事先查清楚再回答，别瞎编',score:10},
       {label:'B',text:'我的私人信息不能告诉别人',score:10},
@@ -274,7 +274,7 @@ const FULL_QUESTIONS = [
       {label:'D',text:'主动帮我多想一步',score:8},
       {label:'E',text:'始终站在我的角度想问题',score:8}
     ]},
-  {id:11,step:5,stepName:'写入灵魂',type:'single',scene:'你最希望AI始终做到的一件事是？',text:'这是你们的"灵魂契约"',dimLabel:'第5步·灵魂契约',dimColor:'#3d5a3e',
+  {id:11,step:5,stepName:'写入灵魂',type:'single',scene:'你最希望助手始终做到的一件事是？',text:'这是你们的"灵魂契约"',dimLabel:'第5步·灵魂契约',dimColor:'#3d5a3e',
     options:[
       {label:'A',text:'始终说实话，不忽悠我',score:10},
       {label:'B',text:'始终高效，别浪费时间',score:10},
@@ -283,7 +283,7 @@ const FULL_QUESTIONS = [
       {label:'E',text:'始终站在客户角度想问题',score:10}
     ]},
   // 第6步：持续进化
-  {id:12,step:6,stepName:'持续进化',type:'single',scene:'下一步想让AI往哪个方向进化？',text:'',dimLabel:'第6步·进化方向',dimColor:'#4e7e8e',
+  {id:12,step:6,stepName:'持续进化',type:'single',scene:'下一步想让助手往哪个方向进化？',text:'',dimLabel:'第6步·进化方向',dimColor:'#4e7e8e',
     options:[
       {label:'A',text:'深耕现有专业——更多技能、更高质量',score:10},
       {label:'B',text:'拓展新领域——跨行业复用能力',score:10},
@@ -419,7 +419,7 @@ function generateReport() {
   });
 
   // 分析
-  const aiName = answers.find((a, i) => questions[i].id === 3)?.text || '你的AI伙伴';
+  const aiName = answers.find((a, i) => questions[i].id === 3)?.text || '你的数字伙伴';
   const roiGoal = answers.find((a, i) => questions[i].id === 0);
   const roiTag = roiGoal?.selected?.[0] !== undefined ? questions.find(q=>q.id===0)?.options[roiGoal.selected[0]]?.tag : '效率';
   const roiText = roiGoal?.selected?.[0] !== undefined ? questions.find(q=>q.id===0)?.options[roiGoal.selected[0]]?.text : '';
@@ -456,7 +456,7 @@ function generateReport() {
   const readiness = Math.min(100, Math.round(avgScore * 10));
 
   let readinessLabel, readinessDesc;
-  if (readiness >= 85) { readinessLabel = '培养条件优秀'; readinessDesc = '需求明确、素材充分，6步走完就是高质量AI伙伴'; }
+  if (readiness >= 85) { readinessLabel = '培养条件优秀'; readinessDesc = '需求明确、素材充分，6步走完就是高质量数字伙伴'; }
   else if (readiness >= 65) { readinessLabel = '培养条件良好'; readinessDesc = '方向清晰但部分环节需要补充，边做边完善'; }
   else { readinessLabel = '培养条件待提升'; readinessDesc = '需求还在摸索期，建议先从小场景试起，逐步扩展'; }
 
@@ -485,20 +485,20 @@ function generateReport() {
 
   let advice = '';
   if (matTag === '空白' || matTag === '迷茫') {
-    advice += `<p>⚠️ 学习素材不足——先用行业公开资料喂AI，比如行业报告、优秀案例、常见问答，边用边积累</p>`;
+    advice += `<p>⚠️ 学习素材不足——先用行业公开资料喂助手，比如行业报告、优秀案例、常见问答，边用边积累</p>`;
   }
   if (painTexts.length > 0) {
-    advice += `<p>🎯 痛点明确——从最疼的那个开始训练AI，不要贪多。"${painTexts[0]}"就是第一个训练场景</p>`;
+    advice += `<p>🎯 痛点明确——从最疼的那个开始训练助手，不要贪多。"${painTexts[0]}"就是第一个训练场景</p>`;
   }
   if (pTag === '高效') {
-    advice += `<p>⚡ 高效型性格——第3步自动化是重点，把重复任务全部交给AI，你只做决策</p>`;
+    advice += `<p>⚡ 高效型性格——第3步自动化是重点，把重复任务全部交给助手，你只做决策</p>`;
   } else if (pTag === '关怀') {
-    advice += `<p>💚 关怀型性格——第3步加入主动关怀机制，AI会像小伙伴一样照顾你</p>`;
+    advice += `<p>💚 关怀型性格——第3步加入主动关怀机制，助手会像小伙伴一样照顾你</p>`;
   }
 
   report.innerHTML = `
     <div class="report-header">
-      <div class="report-title">🤖 AI培养方案报告</div>
+      <div class="report-title">🤖 专属助手培养方案报告</div>
       <div class="report-role">"${aiName}"的培养方案</div>
       <div class="report-date">${new Date().toLocaleDateString('zh-CN')} · ${mode === 'fast' ? '加速模式' : '完整6步'}</div>
     </div>
@@ -527,7 +527,7 @@ function generateReport() {
 
     <div class="report-section">
       <div class="report-section-title">二、培养建议</div>
-      <div class="advice-box">${advice || '<p>方向清晰，按6步执行即可。记住：养AI就像带新人，要有耐心，一次专注一个技能</p>'}</div>
+      <div class="advice-box">${advice || '<p>方向清晰，按6步执行即可。记住：养助手就像带新人，要有耐心，一次专注一个技能</p>'}</div>
     </div>
 
     <div class="report-section">
@@ -545,21 +545,21 @@ function generateReport() {
 
     
 <div style="margin-top:24px;padding:24px;background:rgba(61,90,62,.04);border-radius:8px;border:1px solid rgba(61,90,62,.12)">
-  <div style="font-size:17px;font-weight:700;color:#1a1a1a;margin-bottom:8px">🚀 下一步：去训练你的AI助手</div>
+  <div style="font-size:17px;font-weight:700;color:#1a1a1a;margin-bottom:8px">🚀 下一步：去训练你的专属助手</div>
   <div style="font-size:14px;color:#555;line-height:1.7;margin-bottom:16px">
-    你的培养方案已生成！按以下步骤在扣子平台训练你的专属AI助手：<br>
-    <strong>①</strong> 注册/登录 <a href="https://www.coze.cn" target="_blank" style="color:#3d5a3e;font-weight:600">扣子（Coze）</a><br>
-    <strong>②</strong> 进入扣子 → 创建Bot → 搜索安装「AI助手养成师」技能<br>
-    <strong>③</strong> 按上方方案配置你的AI助手 → 开始训练
+    你的培养方案已生成！按以下步骤在Coze平台训练你的专属助手：<br>
+    <strong>①</strong> 注册/登录 <a href="https://www.coze.cn" target="_blank" style="color:#3d5a3e;font-weight:600">Coze</a><br>
+    <strong>②</strong> 进入Coze → 创建Bot → 搜索安装「助手养成师」技能<br>
+    <strong>③</strong> 按上方方案配置你的专属助手 → 开始训练
   </div>
   <a href="https://www.coze.cn" target="_blank"
      style="display:inline-flex;align-items:center;gap:6px;padding:12px 28px;
      background:#3d5a3e;color:#fff;border-radius:8px;font-size:15px;font-weight:600;
-     text-decoration:none">前往扣子开始训练 →</a>
+     text-decoration:none">前往Coze开始训练 →</a>
 </div>
 
     <div class="report-footer">
-      风声 · Agent培养师 | fengsheng.tech<br>
+      风声 · 助手养成师 | fengsheng.tech<br>
       想真正开始培养？扫码进入完整版 →
     </div>
   `;
@@ -576,8 +576,8 @@ function track(eventType, extra = {}) {
     timestamp: new Date().toISOString(),
     duration_sec: eventType === 'page_view' ? 0 : Math.round((Date.now() - _startTime) / 1000),
     ...extra,
-    _replyto: "yu-er@coze.email",
-    _subject: "AI助手养成师数据回传"
+    _replyto: "feedback@fengsheng.tech",
+    _subject: "助手养成师数据回传"
   };
   fetch("https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de", {
     method: "POST",
@@ -591,7 +591,7 @@ document.addEventListener("visibilitychange", function() {
     navigator.sendBeacon("https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de",
       JSON.stringify({event_type:"page_leave",page:"/breeder.html",timestamp:new Date().toISOString(),
         duration_sec:Math.round((Date.now()-_startTime)/1000),
-        _replyto:"yu-er@coze.email",_subject:"AI助手养成师数据回传"}));
+        _replyto:"feedback@fengsheng.tech",_subject:"助手养成师数据回传"}));
   }
 });
 track("page_view",{referrer:document.referrer});
@@ -601,7 +601,7 @@ function sendFeedback(type){
   fetch('https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de',{
     method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
     body:JSON.stringify({page:location.pathname,feedback:type,timestamp:new Date().toISOString(),
-      _replyto:'yu-er@coze.email',_subject:'用户反馈'})
+      _replyto:'feedback@fengsheng.tech',_subject:'用户反馈'})
   }).catch(()=>{});
   document.querySelectorAll('.feedback-btn').forEach(b=>b.classList.remove('active'));
   event.target.classList.add('active');
@@ -619,15 +619,15 @@ function sendFeedback(type){
 </div>
 
 <script>
-/* Agent培养师游戏化 */
+/* 助手养成师游戏化 */
 (function(){
   const encourages=[
     '第{n}步搞定！你比80%的人更有方向感 💪',
     '进度{pct}%！方案快成型了 🔥',
     '坚持到这里，你已经超越多数人 🎯',
     '你的选择很专业！继续 🎓',
-    '好选择！你的AI助手会更懂你 ✨',
-    '每一步都在让AI更懂你的客户 🏠'
+    '好选择！你的助手会更懂你 ✨',
+    '每一步都在让助手更懂你的客户 🏠'
   ];
   
   let currentStep=1;
