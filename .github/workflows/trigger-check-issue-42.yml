@@ -1,0 +1,33 @@
+name: Trigger Check Issue #42
+
+# 手动触发凭证检查：当 .deploy-trigger 文件被更新时，
+# 自动 dispatch check-issue-credentials.yml 工作流。
+# 该工作流会读取 Issue #42 评论、提取凭证、部署到 Cloudflare Pages。
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.deploy-trigger'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  trigger:
+    name: Dispatch credential check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger check-issue-credentials workflow
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'check-issue-credentials.yml',
+              ref: 'main'
+            });
+            console.log('Workflow dispatch status:', result.status);
+            console.log('check-issue-credentials.yml has been dispatched.');
