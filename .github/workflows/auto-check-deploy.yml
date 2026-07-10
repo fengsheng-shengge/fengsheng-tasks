@@ -1,0 +1,221 @@
+name: Auto Check Credentials & Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.auto-deploy-trigger'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: write
+  actions: write
+
+jobs:
+  check-and-deploy:
+    name: 检查凭证并部署
+    runs-on: ubuntu-latest
+    outputs:
+      found: ${{ steps.extract.outputs.found }}
+      account_id: ${{ steps.extract.outputs.account_id }}
+      api_token: ${{ steps.extract.outputs.api_token }}
+      author: ${{ steps.extract.outputs.author }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 获取所有评论
+        id: get_comments
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "=== 获取 Issue #42 所有评论 ==="
+          ALL_COMMENTS=$(gh api --paginate /repos/fengsheng-shengge/fengsheng-tasks/issues/42/comments -H "Accept: application/vnd.github.v3+json" 2>&1)
+          echo "$ALL_COMMENTS" > all_comments.json
+          COUNT=$(echo "$ALL_COMMENTS" | jq 'length')
+          echo "获取到 $COUNT 条评论"
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+
+      - name: 提取 Cloudflare 凭证
+        id: extract
+        run: |
+          echo "=== 从评论中提取 Cloudflare 凭证 ==="
+          
+          ACCOUNT_ID=""
+          API_TOKEN=""
+          FOUND_USER=""
+          FOUND=false
+          
+          while IFS= read -r comment; do
+            USER=$(echo "$comment" | jq -r '.user.login')
+            BODY=$(echo "$comment" | jq -r '.body')
+            CREATED=$(echo "$comment" | jq -r '.created_at')
+            
+            echo "---"
+            echo "检查用户: $USER | 时间: $CREATED"
+            
+            TEMP_ID=""
+            TEMP_TOKEN=""
+            
+            if echo "$BODY" | grep -qiE '(account.?id|account_id|CLOUDFLARE_ACCOUNT)'; then
+              TEMP_ID=$(echo "$BODY" | grep -oiE '(CLOUDFLARE_ACCOUNT_ID|Account ID|AccountID|account_id|账号ID)[=:：\s]*[`\"]?([a-f0-9]{32})[`\"]?' | head -1 | grep -oE '[a-f0-9]{32}' || true)
+              if [ -z "$TEMP_ID" ]; then
+                TEMP_ID=$(echo "$BODY" | grep -oE '\b[a-f0-9]{32}\b' | head -1 || true)
+              fi
+            fi
+            
+            if echo "$BODY" | grep -qiE '(api.?token|api_token|CLOUDFLARE_API|API密钥)'; then
+              TEMP_TOKEN=$(echo "$BODY" | grep -oiE '(CLOUDFLARE_API_TOKEN|API Token|APIToken|api_token|API令牌)[=:：\s]*[`\"]?([A-Za-z0-9_\-]{20,})[`\"]?' | head -1 | grep -oE '[A-Za-z0-9_\-]{20,}$' || true)
+              if [ -z "$TEMP_TOKEN" ]; then
+                TEMP_TOKEN=$(echo "$BODY" | grep -oE '\b[A-Za-z0-9_\-]{30,}\b' | grep -v '^ghp_' | grep -v '^http' | head -1 || true)
+              fi
+            fi
+            
+            if [ -n "$TEMP_ID" ] && [ -n "$TEMP_TOKEN" ]; then
+              ACCOUNT_ID="$TEMP_ID"
+              API_TOKEN="$TEMP_TOKEN"
+              FOUND_USER="$USER"
+              FOUND=true
+              echo "✅ 找到凭证! 用户: $USER"
+              echo "  Account ID: ${ACCOUNT_ID:0:8}...${ACCOUNT_ID: -4}"
+              echo "  API Token: ${API_TOKEN:0:8}...${API_TOKEN: -4}"
+              break
+            fi
+          done < <(jq -c '.[]' all_comments.json | tac)
+          
+          echo "found=$FOUND" >> $GITHUB_OUTPUT
+          echo "account_id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
+          echo "api_token=$API_TOKEN" >> $GITHUB_OUTPUT
+          echo "author=$FOUND_USER" >> $GITHUB_OUTPUT
+
+      - name: 写入结果文件
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          FOUND="${{ steps.extract.outputs.found }}"
+          AUTHOR="${{ steps.extract.outputs.author }}"
+          COUNT="${{ steps.get_comments.outputs.count }}"
+          
+          if [ "$FOUND" = "true" ]; then
+            cat > deploy-result.json << ENDJSON
+          {
+            "status": "credentials_found",
+            "timestamp": "$TIMESTAMP",
+            "comments_checked": $COUNT,
+            "credentials_author": "$AUTHOR",
+            "account_id_masked": "$(echo '${{ steps.extract.outputs.account_id }}' | sed 's/^\(........\).*\(....\)$/\1...\2/')",
+            "api_token_masked": "$(echo '${{ steps.extract.outputs.api_token }}' | sed 's/^\(........\).*\(....\)$/\1...\2/')"
+          }
+          ENDJSON
+            echo "凭证已找到，来自 $AUTHOR"
+          else
+            cat > deploy-result.json << ENDJSON
+          {
+            "status": "credentials_not_found",
+            "timestamp": "$TIMESTAMP",
+            "comments_checked": $COUNT,
+            "message": "尚未找到 Cloudflare 部署凭证"
+          }
+          ENDJSON
+            echo "未找到凭证，共检查 $COUNT 条评论"
+          fi
+          
+          cat deploy-result.json
+
+      - name: 提交结果
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add deploy-result.json
+          git commit -m "chore: 凭证检查结果 $(date -u +%H:%M)" || echo "无变更"
+          git push || echo "推送失败"
+
+  deploy:
+    name: 部署到 Cloudflare
+    needs: check-and-deploy
+    if: needs.check-and-deploy.outputs.found == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ needs.check-and-deploy.outputs.api_token }}
+          accountId: ${{ needs.check-and-deploy.outputs.account_id }}
+          projectName: fengsheng-tech
+          directory: ./
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '3'
+
+  verify:
+    name: 验证部署
+    needs: [check-and-deploy, deploy]
+    if: needs.check-and-deploy.outputs.found == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 等待并验证
+        run: |
+          echo "等待部署生效..."
+          sleep 20
+          
+          echo "=== 验证 https://fengsheng.tech ==="
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" https://fengsheng.tech --max-time 15)
+          echo "HTTP 状态码: $CODE"
+          
+          if [ "$CODE" = "200" ]; then
+            echo "✅ 部署成功!"
+          else
+            echo "⚠️ 可能还在部署中"
+          fi
+
+  notify:
+    name: 通知结果
+    needs: [check-and-deploy, deploy, verify]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: 评论 Issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FOUND: ${{ needs.check-and-deploy.outputs.found }}
+          AUTHOR: ${{ needs.check-and-deploy.outputs.author }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+        run: |
+          if [ "$FOUND" = "true" ]; then
+            if [ "$DEPLOY_RESULT" = "success" ]; then
+              STATUS="✅ 部署成功"
+            else
+              STATUS="⚠️ 部署进行中"
+            fi
+            BODY="## 🚀 凭证检测与部署完成
+
+          | 项目 | 状态 |
+          |------|------|
+          | 凭证来源 | @$AUTHOR |
+          | Account ID | ✅ 已提取 |
+          | API Token | ✅ 已提取 |
+          | 部署状态 | $STATUS |
+
+          👉 网站地址：https://fengsheng.tech
+
+          ---
+          _由小扣子（Trae）自动检查并部署_
+          
+          > 💡 建议：将凭证配置到 GitHub Secrets 以便后续持续部署。"
+          else
+            BODY="## 🔍 每小时凭证检查
+
+          ⏳ 尚未在评论中找到 Cloudflare 部署凭证。
+
+          请小鱼儿回复以下信息：
+          - \CLOUDFLARE_ACCOUNT_ID\`
+          - \CLOUDFLARE_API_TOKEN\`
+
+          下次检查：1 小时后。"
+          fi
+          
+          gh issue comment 42 \
+            --repo fengsheng-shengge/fengsheng-tasks \
+            --body "$BODY" 2>&1 || echo "评论失败"
