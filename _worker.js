@@ -24,18 +24,24 @@ export default {
       return handleWxLogin(request, env);
     }
 
-    // Mentor chat API (auth-protected)
+    // Mentor chat API (supports both authenticated and anonymous web access)
     if (path === '/mentor-api/chat' && request.method === 'POST') {
       const authHeader = request.headers.get('Authorization');
       const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-      if (!token) {
-        return jsonResponse({ error: 'unauthorized: missing token' }, 401);
+      let openid = null;
+      if (token) {
+        const payload = await verifyToken(token, env);
+        if (payload) {
+          openid = payload.openid;
+        }
       }
-      const payload = await verifyToken(token, env);
-      if (!payload) {
-        return jsonResponse({ error: 'unauthorized: invalid or expired token' }, 401);
+      // Anonymous web access: generate a stable visitor ID from IP+UA fingerprint
+      if (!openid) {
+        const clientIP = request.headers.get('CF-Connecting-IP') || request.headers.get('X-Real-IP') || 'anonymous';
+        const ua = request.headers.get('User-Agent') || '';
+        openid = 'web_' + await simpleHash(clientIP + ua);
       }
-      return handleChat(request, env, payload.openid);
+      return handleChat(request, env, openid);
     }
 
     // Health check
@@ -100,6 +106,14 @@ async function handleWxLogin(request, env) {
     console.error('WxLogin error:', e);
     return jsonResponse({ error: e.message }, 500);
   }
+}
+
+async function simpleHash(str) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 async function generateToken(openid, env) {
