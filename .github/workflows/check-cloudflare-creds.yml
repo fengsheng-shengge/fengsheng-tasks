@@ -1,0 +1,154 @@
+name: Check Cloudflare Credentials (Hourly)
+
+# 每小时检查 Issue #42，看小鱼儿是否回复了 Cloudflare 部署凭证
+# （CLOUDFLARE_ACCOUNT_ID + CLOUDFLARE_API_TOKEN）。
+#
+# 检测到完整凭证后：
+#   - 若仓库已配置 GH_PAT Secret：写入 CLOUDFLARE_* Secrets 并触发 deploy.yml；
+#   - 若未配置 GH_PAT：直接调用 cloudflare/pages-action 部署作为兜底；
+#   - 处理完成后在 Issue #42 留言并关闭（实现幂等，避免每小时重复部署）。
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # 每小时整点（UTC）
+  workflow_dispatch:        # 支持手动触发，用于立即检查
+    inputs:
+      force:
+        description: '强制重新处理（即使 Issue 已关闭）'
+        required: false
+        default: 'false'
+
+permissions:
+  issues: write       # 读取评论 + 评论/关闭 issue
+  actions: write      # 触发 deploy workflow
+  contents: read
+
+# 避免整点巡检与手动触发重叠运行
+concurrency:
+  group: check-cf-creds
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: 扫描 Issue #42 并部署
+    runs-on: ubuntu-latest
+    env:
+      ISSUE_NUMBER: '42'
+      DEPLOY_WORKFLOW: 'deploy.yml'
+      FORCE: ${{ github.event.inputs.force || 'false' }}
+      # 用 env 承载「GH_PAT 是否已配置」的布尔判断，供后续 step 的 if 使用
+      HAS_PAT: ${{ secrets.GH_PAT != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 拉取 Issue #42 并提取凭证
+        id: extract
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          ISSUE="$ISSUE_NUMBER"
+          STATE=$(gh issue view "$ISSUE" --json state -q .state)
+          echo "Issue #$ISSUE state: $STATE"
+          if [ "$STATE" = "CLOSED" ] && [ "$FORCE" != "true" ]; then
+            echo "Issue 已关闭（凭证已处理过），跳过本轮。"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+          # 汇总 issue 正文 + 全部评论
+          {
+            gh issue view "$ISSUE" --json body -q .body
+            gh api "repos/${{ github.repository }}/issues/$ISSUE/comments" --paginate --jq '.[].body'
+          } > /tmp/all_text.txt
+          echo "扫描了 $(wc -l < /tmp/all_text.txt) 行文本。"
+
+          # 提取 Account ID（32 位 hex）
+          ACCOUNT_ID=$(grep -oiE '(CLOUDFLARE_ACCOUNT_ID|account[ _-]?id)[^0-9a-f]{0,20}[0-9a-f]{32}' /tmp/all_text.txt \
+                       | grep -oiE '[0-9a-f]{32}$' | head -1 || true)
+          if [ -z "$ACCOUNT_ID" ]; then
+            ACCOUNT_ID=$(grep -oiE '\b[0-9a-f]{32}\b' /tmp/all_text.txt | head -1 || true)
+          fi
+
+          # 提取 API Token（>=30 位）
+          API_TOKEN=$(grep -oiE '(CLOUDFLARE_API_TOKEN|api[ _-]?token)[^A-Za-z0-9_-]{0,20}[A-Za-z0-9_-]{30,}' /tmp/all_text.txt \
+                      | sed -E 's/.*[^A-Za-z0-9_-]([A-Za-z0-9_-]{30,})$/\1/' | head -1 || true)
+          if [ -z "$API_TOKEN" ]; then
+            API_TOKEN=$(grep -oiE 'token[^A-Za-z0-9_-]{0,10}[A-Za-z0-9_-]{40,}' /tmp/all_text.txt \
+                        | sed -E 's/.*[^A-Za-z0-9_-]([A-Za-z0-9_-]{40,})$/\1/' | head -1 || true)
+          fi
+
+          # 掩码，防止日志泄露
+          [ -n "$ACCOUNT_ID" ] && echo "::add-mask::$ACCOUNT_ID"
+          [ -n "$API_TOKEN" ]  && echo "::add-mask::$API_TOKEN"
+
+          echo "account_id=$ACCOUNT_ID" >> "$GITHUB_OUTPUT"
+          echo "api_token=$API_TOKEN"   >> "$GITHUB_OUTPUT"
+          echo "account_found=$([ -n "$ACCOUNT_ID" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "token_found=$([ -n "$API_TOKEN" ]  && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## 扫描结果"
+            echo "- Account ID: $([ -n "$ACCOUNT_ID" ] && echo '✅ 已找到' || echo '❌ 未找到')"
+            echo "- API Token:  $([ -n "$API_TOKEN" ]  && echo '✅ 已找到' || echo '❌ 未找到')"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 凭证未到 → 等待下个整点
+        if: steps.extract.outputs.skip != 'true' && (steps.extract.outputs.account_found != 'true' || steps.extract.outputs.token_found != 'true')
+        run: echo "小鱼儿尚未回复完整凭证，本轮跳过，下个整点再查（不在 Issue 留言以免刷屏）。"
+
+      - name: 写入 Secrets 并触发 deploy.yml（GH_PAT 已配置）
+        id: patpath
+        if: steps.extract.outputs.skip != 'true' && steps.extract.outputs.account_found == 'true' && steps.extract.outputs.token_found == 'true' && env.HAS_PAT == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          ACCOUNT_ID: ${{ steps.extract.outputs.account_id }}
+          API_TOKEN: ${{ steps.extract.outputs.api_token }}
+        run: |
+          set -euo pipefail
+          gh secret set CLOUDFLARE_ACCOUNT_ID --body "$ACCOUNT_ID"
+          gh secret set CLOUDFLARE_API_TOKEN  --body "$API_TOKEN"
+          echo "✅ 两个 Cloudflare Secret 已写入。"
+          gh workflow run "$DEPLOY_WORKFLOW" --ref main
+          echo "✅ 已触发 $DEPLOY_WORKFLOW。"
+          echo "deployed=true" >> "$GITHUB_OUTPUT"
+
+      - name: 兜底直接部署（GH_PAT 未配置）
+        id: fallback
+        if: steps.extract.outputs.skip != 'true' && steps.extract.outputs.account_found == 'true' && steps.extract.outputs.token_found == 'true' && env.HAS_PAT != 'true'
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ steps.extract.outputs.api_token }}
+          accountId: ${{ steps.extract.outputs.account_id }}
+          projectName: fengsheng-tech
+          directory: ./
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '3'
+
+      - name: 评论并关闭 Issue
+        if: steps.extract.outputs.skip != 'true' && steps.extract.outputs.account_found == 'true' && steps.extract.outputs.token_found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          if [ "${{ steps.patpath.outputs.deployed }}" = "true" ]; then
+            DESC="已写入 CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN Secrets，并触发 deploy.yml 部署。"
+          else
+            DESC="已直接部署到 Cloudflare Pages（仓库未配置 GH_PAT，凭证未持久化为 Secrets；如需 push 自动部署，请配置 GH_PAT）。"
+          fi
+          {
+            echo "✅ **已检测到 Cloudflare 凭证并完成处理**（$NOW）"
+            echo ""
+            echo "- $DESC"
+            echo ""
+            echo "⚠️ **安全提醒**：凭证曾以明文出现在本 Issue 评论中，建议小鱼儿："
+            echo "  1. 删除包含 Token 的评论；"
+            echo "  2. 在 Cloudflare Dashboard 轮换（Rotate）该 API Token。"
+            echo ""
+            echo "本 Issue 将关闭。如需重新部署，可手动触发本工作流并勾选 force。"
+          } > /tmp/comment.md
+          gh issue comment "$ISSUE_NUMBER" --body-file /tmp/comment.md
+          gh issue close "$ISSUE_NUMBER" --reason completed
