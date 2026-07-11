@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>风声 · 帮服务者实现客户的美好居住</title>
+<style>
+:root{
+  --bg:#f7f4ef;--bg2:#e8e4d9;--card:#f7f4ef;--card-h:#f5f1ec;
+  --border:rgba(80,90,70,.09);--border-h:rgba(60,80,50,.2);
+  --p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--p-bg:rgba(61,90,62,.05);
+  --fire:#c46a3a;--fire-l:#d89060;--charcoal:#3a3a38;
+  --dk:#1a1a1a;--tx:#555555;--ts:#7a8478;--td:#a8b0a6;
+  --safe:#5e7e5c;--health:#6d8f55;--neat:#3d5a3e;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e;
+  --sc-body:#5e7e5c;--sc-mind:#6d8f55;--sc-dignity:#7e6a90;--sc-life:#4e7e8e;
+  --pathA:#c46a3a;--pathB:#4e7e8e;--pathC:#7e6a90;
+  --r:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+.main{position:relative;z-index:1;max-width:1200px;margin:0 auto}
+
+/* HERO */
+.hero{padding:120px 8% 40px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--p-d);background:var(--p-bg);border:1px solid rgba(61,90,62,.12);border-radius:16px;padding:4px 12px;margin-bottom:16px;letter-spacing:2px}
+.hero-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--p-l);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:48px;font-weight:700;color:var(--dk);letter-spacing:1px;line-height:1.2}
+.hero-sub{font-size:20px;color:var(--p-d);margin-top:8px;font-weight:600;letter-spacing:.5px}
+.hero-desc{font-size:16px;color:var(--ts);margin-top:8px;line-height:1.6;max-width:420px;margin-left:auto;margin-right:auto}
+.hero-cta{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.cta-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 32px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .25s;text-decoration:none}
+.cta-btn:active{transform:scale(.96)}
+.cta-primary{background:var(--p);color:#fff}
+.cta-secondary{background:var(--card);color:var(--p-d);border:1px solid var(--border)}
+.cta-fire{background:var(--fire);color:#fff}
+
+/* SECTION通用 */
+.section{padding:60px 8% 20px}
+.section-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:0 4px}
+.section-dot{width:6px;height:6px;border-radius:50%}
+.section-title{font-size:24px;font-weight:800;color:var(--dk);letter-spacing:.5px}
+.section-desc{font-size:10px;color:var(--td);margin-left:8px;font-weight:500}
+.section-line{width:100%;height:1px;background:var(--border);margin:4px 0 14px}
+
+/* 大矛盾 */
+.contradiction{padding:60px 8% 20px;text-align:center}
+.contra-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:440px;margin:0 auto}
+.contra-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center}
+.contra-ico{font-size:28px;margin-bottom:6px}
+.contra-name{font-size:18px;font-weight:600;color:var(--dk);margin-bottom:4px}
+.contra-stat{font-size:36px;font-weight:900;background:linear-gradient(to right,#3d5a3e,#c46a3a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.contra-label{font-size:9px;color:var(--td);margin-top:2px}
+.contra-desc{font-size:10px;color:var(--ts);margin-top:6px;line-height:1.5}
+.contra-bridge{grid-column:1/-1;text-align:center;padding:8px;font-size:11px;color:var(--p-d);font-weight:600;line-height:1.6;background:var(--p-bg);border-radius:var(--r)}
+
+/* 双维模型 */
+.dual-section{padding:60px 8% 20px}
+.dual-title{text-align:center;font-size:10px;color:var(--td);letter-spacing:3px;font-weight:700;margin-bottom:14px}
+.dual-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.dual-col{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.dual-col.customer{border-top:3px solid var(--p)}
+.dual-col.server{border-top:3px solid var(--fire)}
+.dual-label{font-size:11px;font-weight:800;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.dual-label.c{color:var(--p)}
+.dual-label.s{color:var(--fire)}
+.dim-list{display:flex;flex-direction:column;gap:5px}
+.dim-row{display:flex;align-items:center;gap:6px;font-size:11px}
+.dim-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dim-name{font-weight:700;color:var(--dk);min-width:36px}
+.dim-one{color:var(--ts);font-size:10px}
+.dual-link{display:block;text-align:center;margin-top:10px;font-size:11px;font-weight:700;color:var(--p);text-decoration:none;padding:6px 0}
+.dual-link:active{opacity:.7}
+.dual-causal{grid-column:1/-1;text-align:center;padding:10px;font-size:11px;color:var(--fire);font-weight:700;line-height:1.6;background:rgba(196,106,58,.05);border-radius:var(--r)}
+
+/* 三路径 */
+.path-section{padding:60px 8% 20px}
+.path-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+.path-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px 16px;text-align:center;display:flex;flex-direction:column;cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent}
+.path-card:active{transform:scale(.97);border-color:var(--border-h)}
+.path-card.a{border-top:3px solid var(--pathA)}
+.path-card.b{border-top:3px solid var(--pathB)}
+.path-card.c{border-top:3px solid var(--pathC)}
+.path-ico{font-size:24px;margin-bottom:6px}
+.path-name{font-size:16px;font-weight:600;color:var(--dk);margin-bottom:2px}
+.path-sub{font-size:9px;color:var(--td);margin-bottom:6px}
+.path-earn{font-size:10px;font-weight:700;margin-bottom:4px}
+.path-earn.a{color:var(--pathA)}
+.path-earn.b{color:var(--pathB)}
+.path-earn.c{color:var(--pathC)}
+.path-who{font-size:9px;color:var(--ts);line-height:1.4;margin-bottom:8px}
+.path-btn{display:inline-block;padding:5px 12px;border-radius:12px;font-size:9px;font-weight:700;text-decoration:none;margin-top:auto}
+.path-btn.a{background:rgba(196,106,58,.08);color:var(--pathA)}
+.path-btn.b{background:rgba(78,126,142,.08);color:var(--pathB)}
+.path-btn.c{background:rgba(126,106,144,.08);color:var(--pathC)}
+
+/* 产品矩阵 */
+.product-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.product-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column}
+.product-card:active{transform:scale(.97);border-color:var(--border-h)}
+.product-top{display:flex;align-items:center;gap:8px}
+.product-ico{font-size:22px;flex-shrink:0}
+.product-info{flex:1}
+.product-name{font-size:12px;font-weight:800;color:var(--dk);line-height:1.3}
+.product-stat{font-size:9px;color:var(--td);margin-top:1px}
+.product-action{margin-top:auto;padding-top:8px}
+.product-action a{display:inline-block;padding:4px 10px;border-radius:8px;font-size:9px;font-weight:700;text-decoration:none;background:rgba(61,90,62,.06);color:var(--p)}
+.product-action a.live{background:rgba(94,126,92,.1);color:var(--safe)}
+.product-action a.soon{background:var(--bg2);color:var(--td)}
+
+/* 知识底座入口 */
+.knowledge-entry{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--tx);transition:all .3s;-webkit-tap-highlight-color:transparent}
+.knowledge-entry:active{transform:scale(.98);border-color:var(--border-h)}
+.knowledge-ico{font-size:32px;flex-shrink:0}
+.knowledge-info{flex:1}
+.knowledge-name{font-size:14px;font-weight:800;color:var(--dk)}
+.knowledge-desc{font-size:10px;color:var(--ts);margin-top:2px;line-height:1.5}
+.knowledge-arrow{color:var(--p);font-size:18px;font-weight:700}
+
+/* 合作入口 */
+.partner-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.partner-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-decoration:none;color:var(--tx);transition:all .3s;-webkit-tap-highlight-color:transparent}
+.partner-card:active{transform:scale(.97);border-color:var(--border-h)}
+.partner-card.edu{border-top:3px solid var(--pathB)}
+.partner-card.gov{border-top:3px solid var(--p)}
+.partner-ico{font-size:28px;margin-bottom:6px}
+.partner-name{font-size:14px;font-weight:800;color:var(--dk);margin-bottom:4px}
+.partner-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.partner-tag{font-size:8px;padding:2px 6px;border-radius:3px;font-weight:700}
+.partner-tag.edu{background:rgba(78,126,142,.08);color:var(--pathB)}
+.partner-tag.gov{background:var(--p-bg);color:var(--p-d)}
+.partner-desc{font-size:10px;color:var(--ts);line-height:1.5}
+
+/* 简报入口 */
+.brief-entry{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--tx);transition:all .3s;-webkit-tap-highlight-color:transparent}
+.brief-entry:active{transform:scale(.98);border-color:var(--border-h)}
+.brief-ico{font-size:22px;flex-shrink:0}
+.brief-info{flex:1}
+.brief-name{font-size:14px;font-weight:800}
+.brief-desc{font-size:10px;color:var(--td);margin-top:1px}
+.brief-arrow{color:var(--p);font-size:16px;font-weight:700}
+
+/* 模式切换 */
+.mode-switch{position:fixed;top:16px;right:16px;z-index:200;display:flex;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:3px;box-shadow:0 1px 6px rgba(30,42,31,.05)}
+.mode-btn{padding:6px 14px;border-radius:17px;font-size:10px;font-weight:700;border:none;background:transparent;color:var(--td);cursor:pointer;transition:all .25s;letter-spacing:.5px}
+.mode-btn.active{background:var(--p);color:#fff}
+
+/* 管理模式 */
+.mgmt-section{display:none}
+.mode-mgmt .mgmt-section{display:block}
+.mode-mgmt .pub-section{display:none}
+.mgmt-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px}
+.mgmt-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px}
+.mgmt-stat{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center}
+.mgmt-stat .mv{font-size:18px;font-weight:900;color:var(--p)}
+.mgmt-stat .ml{font-size:8px;color:var(--td);margin-top:2px;font-weight:600}
+.mgmt-link{display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;text-decoration:none;color:var(--tx);transition:all .2s}
+.mgmt-link:active{background:var(--card-h)}
+.ml-ico{font-size:18px}
+.ml-label{flex:1;font-size:13px;font-weight:700}
+.ml-arrow{color:var(--p);font-size:14px;font-weight:700}
+.tl-item{display:flex;gap:8px;padding:4px 0;font-size:11px;color:var(--ts)}
+.tl-date{color:var(--fire);font-weight:700;min-width:32px}
+
+/* Footer */
+.footer{padding:32px 16px 24px;text-align:center;font-size:10px;color:var(--td);line-height:1.8}
+.footer-brand{font-size:13px;color:var(--p-d);font-weight:700;margin-bottom:4px}
+
+/* ====== 移动端适配 ====== */
+@media (max-width: 767px) {
+  :root { --r: 8px; }
+  .hero { padding: 80px 5% 24px !important; }
+  .hero h1 { font-size: 28px !important; line-height: 1.3 !important; }
+  .hero-sub { font-size: 16px !important; }
+  .hero-desc { font-size: 14px !important; }
+  .hero-cta { flex-direction: column; align-items: stretch; gap: 8px !important; }
+  .cta-btn { width: 100%; justify-content: center; }
+  
+  .section { padding: 40px 5% 16px !important; }
+  .contradiction { padding: 40px 5% 16px !important; }
+  .dual-section { padding: 40px 5% 16px !important; }
+  .path-section { padding: 40px 5% 16px !important; }
+  
+  .section-title { font-size: 20px !important; }
+  
+  .contra-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .dual-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .path-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .product-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .partner-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+  
+  .contra-stat { font-size: 28px !important; }
+  .mv { font-size: 36px !important; }
+  
+  .knowledge-entry { padding: 16px !important; }
+  
+  .mgmt-grid { grid-template-columns: 1fr !important; }
+}
+
+/* 平板 */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .hero h1 { font-size: 40px !important; }
+  .section { padding: 50px 6% 18px !important; }
+  .contradiction { padding: 50px 6% 18px !important; }
+  .dual-section { padding: 50px 6% 18px !important; }
+  .path-section { padding: 50px 6% 18px !important; }
+}
+/* 版权+反馈 */
+.page-footer{text-align:center;padding:24px 16px;margin-top:32px;
+  border-top:1px solid var(--border,rgba(80,90,70,.09));
+  font-size:11px;color:var(--ts,#7a8478);line-height:1.8}
+.page-footer .copyright{margin-bottom:8px}
+.feedback-bar{display:flex;align-items:center;justify-content:center;
+  gap:16px;margin-top:12px;padding:12px;background:var(--card,#fff);
+  border-radius:8px;border:1px solid var(--border,rgba(80,90,70,.09))}
+.feedback-bar span{font-size:13px;color:var(--tx,#555)}
+.feedback-btn{display:inline-flex;align-items:center;gap:4px;
+  padding:6px 14px;border-radius:6px;border:1px solid var(--border);
+  background:var(--bg,#f7f4ef);cursor:pointer;font-size:13px;
+  color:var(--tx,#555);transition:all .15s}
+.feedback-btn:hover{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
+.feedback-btn.active{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
+
+</style>
+<meta property="og:title" content="管理看板 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/okr.html"><meta name="twitter:card" content="summary_large_image"></head>
+<body>
+
+<div class="mode-switch">
+  <button class="mode-btn active" onclick="switchMode('pub',this)">产品</button>
+  <button class="mode-btn" onclick="switchMode('mgmt',this)">管理</button>
+</div>
+
+<div class="main">
+
+<!-- ====== 对外展示层 ====== -->
+
+<!-- HERO -->
+<div class="hero pub-section">
+  <div class="hero-badge">🌬️ 风声·新居住行业数字化引擎</div>
+  <h1>帮服务者实现客户的美好居住<br>帮服务者自己活好</h1>
+  <div class="hero-sub">谁定义了"美好居住"，谁就掌握居住服务的未来</div>
+  <div class="hero-desc">六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环</div>
+  <div class="hero-cta">
+    <a class="cta-btn cta-primary" href="/assessment/">免费测评</a>
+    <a class="cta-btn cta-secondary" href="/skills/">Skill工具箱</a>
+    <a class="cta-btn cta-fire" href="/partner/">合作入口</a>
+  </div>
+</div>
+
+<!-- 大矛盾 -->
+<div class="contradiction pub-section">
+  <div class="section-header"><div class="section-dot" style="background:var(--fire)"></div><div class="section-title">一个大矛盾</div><div class="section-desc">为什么要做风声</div></div>
+  <div class="contra-grid">
+    <div class="contra-card">
+      <div class="contra-ico">🏠</div>
+      <div class="contra-name">客户住不好</div>
+      <div class="contra-stat">71.4<span style="font-size:12px">分</span></div>
+      <div class="contra-label">居住满意度（中指院2025）</div>
+      <div class="contra-desc">90%说不清哪里不好<br>缺乏衡量标准</div>
+    </div>
+    <div class="contra-card">
+      <div class="contra-ico">😔</div>
+      <div class="contra-name">服务者留不住</div>
+      <div class="contra-stat">47.8<span style="font-size:12px">%</span></div>
+      <div class="contra-label">经纪人年度离职率（智联2023）</div>
+      <div class="contra-desc">高压+低收入+无尊严<br>自己住不好怎么帮别人</div>
+    </div>
+    <div class="contra-bridge">市面工具只管房源成交，没人管居住品质，也没人管经纪人自己活得怎样</div>
+  </div>
+</div>
+
+<!-- 双维模型 -->
+<div class="dual-section pub-section">
+  <div class="dual-title">双维模型 · 风声的核心逻辑</div>
+  <div class="dual-grid">
+    <div class="dual-col customer">
+      <div class="dual-label c">🏠 客户六维·品质居住</div>
+      <div class="dim-list">
+        <div class="dim-row"><div class="dim-dot" style="background:var(--safe)"></div><div class="dim-name">安全</div><div class="dim-one">不出事</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--health)"></div><div class="dim-name">健康</div><div class="dim-one">不伤身·长期</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--neat)"></div><div class="dim-name">整洁</div><div class="dim-one">不乱·好找</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--warm)"></div><div class="dim-name">温暖</div><div class="dim-one">想回家</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--beauty)"></div><div class="dim-name">美观</div><div class="dim-one">统一·舒服</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--cozy)"></div><div class="dim-name">惬意</div><div class="dim-one">放松·不被打扰</div></div>
+      </div>
+      <a class="dual-link" href="/knowledge/">了解六维标准 →</a>
+    </div>
+    <div class="dual-col server">
+      <div class="dual-label s">🤝 服务者四维·关怀</div>
+      <div class="dim-list">
+        <div class="dim-row"><div class="dim-dot" style="background:var(--sc-body)"></div><div class="dim-name">身体</div><div class="dim-one">你别先倒下</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--sc-mind)"></div><div class="dim-name">心理</div><div class="dim-one">你扛得住</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--sc-dignity)"></div><div class="dim-name">尊严</div><div class="dim-one">你觉得值</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--sc-life)"></div><div class="dim-name">质感</div><div class="dim-one">你先住好</div></div>
+      </div>
+      <a class="dual-link" href="/care/" style="color:var(--fire)">测一测你的关怀维度 →</a>
+    </div>
+    <div class="dual-causal">服务者四维不及格 → 客户六维一定做不好<br>自己先活好，才能帮别人活好</div>
+  </div>
+</div>
+
+<!-- 三条路径 -->
+<div class="path-section pub-section">
+  <div class="section-header"><div class="section-dot" style="background:var(--dk)"></div><div class="section-title">三条路径</div><div class="section-desc">风声怎么做</div></div>
+  <div class="path-grid">
+    <div class="path-card a">
+      <div class="path-ico">🔧</div>
+      <div class="path-name">存量赋能</div>
+      <div class="path-sub">路径A</div>
+      <div class="path-earn a">赚当下的钱</div>
+      <div class="path-who">在岗服务者<br>工具订阅<br>留存率≥40%</div>
+      <a class="path-btn a" href="#products">用起来</a>
+    </div>
+    <div class="path-card b">
+      <div class="path-ico">🏛️</div>
+      <div class="path-name">增量前置</div>
+      <div class="path-sub">路径B</div>
+      <div class="path-earn b">赚未来的势</div>
+      <div class="path-who">高校/政府<br>政策杠杆<br>产教融合</div>
+      <a class="path-btn b" href="/partner/">谈合作</a>
+    </div>
+    <div class="path-card c">
+      <div class="path-ico">⚖️</div>
+      <div class="path-name">标准认证</div>
+      <div class="path-sub">路径C</div>
+      <div class="path-earn c">赚定价权</div>
+      <div class="path-who">定义什么是好<br>行业评判权<br>米其林模式</div>
+      <a class="path-btn c" href="/knowledge/">看标准</a>
+    </div>
+  </div>
+</div>
+
+<!-- 产品矩阵（路径A） -->
+<div class="section pub-section" id="products">
+  <div class="section-header"><div class="section-dot" style="background:var(--pathA)"></div><div class="section-title">产品矩阵</div><div class="section-desc">路径A·工具入口</div></div>
+  <div class="product-grid">
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">🎯</div>
+        <div class="product-info">
+          <div class="product-name">能力测评</div>
+          <div class="product-stat">⭐3.7 · 25人使用</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/assessment/">免费使用</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">🤖</div>
+        <div class="product-info">
+          <div class="product-name">Agent培养师</div>
+          <div class="product-stat">⭐4.0 · 5人使用</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/breeder/">免费使用</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">📖</div>
+        <div class="product-info">
+          <div class="product-name">说文解道</div>
+          <div class="product-stat">⭐4.3 · 35人使用</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="https://xiaping.coze.com/skill/7331718d-e43d-4f1d-a63f-7014ad9804dd" target="_blank">免费使用</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">📚</div>
+        <div class="product-info">
+          <div class="product-name">居住服务业务字典</div>
+          <div class="product-stat">9大域·450+词条</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="soon" href="/knowledge/">即将上线</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">📝</div>
+        <div class="product-info">
+          <div class="product-name">居住服务调研</div>
+          <div class="product-stat">8角色·3分钟</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/survey/" target="_blank">参与调研</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- 知识底座（路径C入口） -->
+<div class="section pub-section">
+  <div class="section-header"><div class="section-dot" style="background:var(--pathC)"></div><div class="section-title">知识底座</div><div class="section-desc">路径C·标准认证入口</div></div>
+  <a class="knowledge-entry" href="/knowledge/">
+    <div class="knowledge-ico">🏛️</div>
+    <div class="knowledge-info">
+      <div class="knowledge-name">品质居住标准 · 风声知识底座</div>
+      <div class="knowledge-desc">六维标准详解 · 居住服务业务字典 · 服务者关怀词条 · 认证体系预告</div>
+    </div>
+    <div class="knowledge-arrow">›</div>
+  </a>
+</div>
+
+<!-- 合作入口（路径B入口） -->
+<div class="section pub-section">
+  <div class="section-header"><div class="section-dot" style="background:var(--pathB)"></div><div class="section-title">合作入口</div><div class="section-desc">路径B·政府/高校对接</div></div>
+  <div class="partner-grid">
+    <a class="partner-card edu" href="/partner/">
+      <div class="partner-ico">🎓</div>
+      <div class="partner-name">高校合作</div>
+      <div class="partner-tags"><span class="partner-tag edu">产教融合</span><span class="partner-tag edu">课程共建</span><span class="partner-tag edu">就业对接</span></div>
+      <div class="partner-desc">居住服务人才培养·数智化课程体系·实习就业一体化</div>
+    </a>
+    <a class="partner-card gov" href="/partner/">
+      <div class="partner-ico">🏛️</div>
+      <div class="partner-name">政府治理</div>
+      <div class="partner-tags"><span class="partner-tag gov">行业健康</span><span class="partner-tag gov">政策对接</span><span class="partner-tag gov">标准共建</span></div>
+      <div class="partner-desc">居住品质提升·行业规范治理·数字化转型赋能</div>
+    </a>
+  </div>
+</div>
+
+<!-- 每日简报入口 -->
+<div class="section pub-section">
+  <a class="brief-entry" href="/daily/">
+    <span class="brief-ico">📰</span>
+    <div class="brief-info">
+      <div class="brief-name">每日简报</div>
+      <div class="brief-desc">房产要闻 · 市场数据 · AI工具 · 行业洞察</div>
+    </div>
+    <span class="brief-arrow">›</span>
+  </a>
+</div>
+
+<!-- ====== 管理模式 ====== -->
+<div class="section mgmt-section">
+  <div class="section-header"><div class="section-dot"></div><div class="section-title">三路径进度</div></div>
+  <div class="mgmt-card">
+    <div style="font-size:11px;font-weight:700;color:var(--pathA);margin-bottom:4px">🔧 路径A·存量赋能 | 北极星：次月留存≥40%</div>
+    <div style="font-size:10px;color:var(--ts)">100人验证线：65/300 · 付费验证：进行中 · 种子门店：3家试用</div>
+  </div>
+  <div class="mgmt-card">
+    <div style="font-size:11px;font-weight:700;color:var(--pathB);margin-bottom:4px">🏛️ 路径B·增量前置 | 2026交付：1-2所高校+1项政策</div>
+    <div style="font-size:10px;color:var(--ts)">课程大纲v1.0 · 政策清单梳理中 · 7.1严政策到岗</div>
+  </div>
+  <div class="mgmt-card">
+    <div style="font-size:11px;font-weight:700;color:var(--pathC);margin-bottom:4px">⚖️ 路径C·标准认证 | 2026交付：白皮书+认证1.0</div>
+    <div style="font-size:10px;color:var(--ts)">六维标准定稿 · 认证分级设计中 · 白皮书10月发布</div>
+  </div>
+</div>
+
+<div class="section mgmt-section">
+  <div class="section-header"><div class="section-dot"></div><div class="section-title">数据看板</div></div>
+  <div class="mgmt-grid">
+    <div class="mgmt-stat"><div class="mv">65</div><div class="ml">Skill使用</div></div>
+    <div class="mgmt-stat"><div class="mv">3.99</div><div class="ml">加权评分</div></div>
+    <div class="mgmt-stat"><div class="mv">14</div><div class="ml">团队成员</div></div>
+  </div>
+</div>
+
+<div class="section mgmt-section">
+  <div class="section-header"><div class="section-dot"></div><div class="section-title">管理工具</div></div>
+  <a class="mgmt-link" href="/dashboard/" target="_blank"><span class="ml-ico">📋</span><span class="ml-label">管理看板</span><span class="ml-arrow">›</span></a>
+  <a class="mgmt-link" href="https://www.coze.cn/space/7592610463100796971" target="_blank"><span class="ml-ico">🤖</span><span class="ml-label">扣子工作区</span><span class="ml-arrow">›</span></a>
+  <a class="mgmt-link" href="https://dash.cloudflare.com/820ba2e41397586d11f7c6bbf47cda0f/pages/view/fengsheng" target="_blank"><span class="ml-ico">🌐</span><span class="ml-label">Cloudflare</span><span class="ml-arrow">›</span></a>
+</div>
+
+<div class="section mgmt-section">
+  <div class="section-header"><div class="section-dot"></div><div class="section-title">近期里程碑</div></div>
+  <div class="mgmt-card">
+    <div class="tl-item"><div class="tl-date">6.5</div><div>字典20词条 · Skill矩阵页</div></div>
+    <div class="tl-item"><div class="tl-date">6.15</div><div>常公正+品控官到岗 · 认证SOP</div></div>
+    <div class="tl-item"><div class="tl-date">7.1</div><div>严政策+管账房到岗 · GR启动</div></div>
+    <div class="tl-item"><div class="tl-date">9.1</div><div>100人验证线（生死线）</div></div>
+    <div class="tl-item"><div class="tl-date">10月</div><div>白皮书发布 · 认证1.0上线</div></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-brand">🌬️ 风声 · 帮服务者实现客户的美好居住</div>
+  <div>fengsheng.tech © 2026</div>
+</div>
+
+</div>
+
+<script>
+function switchMode(mode,btn){
+  document.querySelectorAll('.mode-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  document.body.classList.toggle('mode-mgmt',mode==='mgmt');
+}
+</script>
+<script>
+document.addEventListener('contextmenu',function(e){e.preventDefault()});
+document.addEventListener('selectstart',function(e){e.preventDefault()});
+</script>
+<div class="page-footer">
+  <div class="copyright">© 2026 风声 · 保留所有权利 · 未经授权禁止转载</div>
+  <div>风声 · 帮服务者实现客户的美好居住 · fengsheng.tech</div>
+</div>
+</body>
+</html>

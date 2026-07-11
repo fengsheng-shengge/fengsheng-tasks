@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>风声 · 知识底座</title>
+<meta name="description" content="风声知识底座 · 文化/使命/愿景/价值观 · 美好居住三层 · 8业务域122词条 · 9岗位45能力点 · 单文件零依赖">
+<style>
+:root {
+  --p: #3d5a3e;
+  --p-light: #5a7d5b;
+  --fire: #c46a3a;
+  --fire-light: #e08a3c;
+  --cream: #f7f4ef;
+  --cream-deep: #ede7dc;
+  --ink: #1a2b26;
+  --ink-soft: #5a6b65;
+  --wood: #c8956d;
+  --line: rgba(61,90,62,0.12);
+  --shadow-sm: 0 2px 8px rgba(61,90,62,0.06);
+  --shadow-md: 0 8px 24px rgba(61,90,62,0.10);
+  --shadow-lg: 0 20px 48px rgba(61,90,62,0.14);
+  /* 四柱色 */
+  --pillar-culture: #3d5a3e;
+  --pillar-mission: #c46a3a;
+  --pillar-vision: #6b5fa8;
+  --pillar-value: #c8956d;
+  /* 三层色 */
+  --layer-matter: #3d5a3e;
+  --layer-emotion: #c8956d;
+  --layer-spirit: #c46a3a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ===== Banner ===== */
+.banner{background:linear-gradient(90deg,var(--p) 0%,#4a7a4b 100%);color:#fff;text-align:center;padding:10px 16px;font-size:14px;font-weight:500}
+.banner strong{font-weight:700;background:rgba(255,255,255,0.18);padding:2px 10px;border-radius:12px;margin:0 4px}
+
+/* ===== Nav ===== */
+.nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.88);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1240px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:40px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+.brand-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--p),var(--p-light));display:grid;place-items:center;color:white;font-weight:800}
+.nav-links{display:flex;gap:4px;flex:1;flex-wrap:wrap}
+.nav-link{padding:8px 16px;border-radius:8px;font-size:14px;color:var(--ink-soft);transition:all .2s}
+.nav-link:hover{background:rgba(61,90,62,0.06);color:var(--p)}
+.nav-link.active{color:var(--p);font-weight:600;background:rgba(61,90,62,0.08)}
+.nav-link .dot{position:absolute;top:4px;right:4px;width:6px;height:6px;background:var(--fire);border-radius:50%}
+.nav-cta{padding:8px 18px;border-radius:8px;font-size:14px;background:var(--p);color:white;font-weight:500;transition:all .2s}
+.nav-cta:hover{background:var(--p-light);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+
+/* ===== Hero ===== */
+.hero{position:relative;padding:80px 32px 60px;max-width:1240px;margin:0 auto;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(196,106,58,0.15) 0%,transparent 70%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;background:rgba(61,90,62,0.08);color:var(--p);font-size:13px;font-weight:500;margin-bottom:24px}
+.hero-tag .pulse{width:6px;height:6px;background:var(--p);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:52px;font-weight:800;line-height:1.1;letter-spacing:-1.5px;margin-bottom:20px;max-width:800px}
+.hero h1 .accent{background:linear-gradient(135deg,var(--p),var(--fire));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:18px;color:var(--ink-soft);max-width:640px;margin-bottom:32px}
+
+/* 四柱图标行 */
+.pillar-icons{display:flex;gap:16px;margin-bottom:36px;flex-wrap:wrap}
+.pillar-icon-card{display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:12px;background:white;border:1.5px solid var(--line);transition:all .2s;cursor:pointer}
+.pillar-icon-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.pillar-icon-card .pi-emoji{font-size:24px}
+.pillar-icon-card .pi-label{font-size:14px;font-weight:700}
+.pillar-icon-card .pi-sub{font-size:11px;color:var(--ink-soft)}
+.pillar-icon-card[data-pillar="culture"]{border-color:var(--pillar-culture);border-left:4px solid var(--pillar-culture)}
+.pillar-icon-card[data-pillar="mission"]{border-color:var(--pillar-mission);border-left:4px solid var(--pillar-mission)}
+.pillar-icon-card[data-pillar="vision"]{border-color:var(--pillar-vision);border-left:4px solid var(--pillar-vision)}
+.pillar-icon-card[data-pillar="value"]{border-color:var(--pillar-value);border-left:4px solid var(--pillar-value)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-bottom:40px}
+.stat{background:white;border:1px solid var(--line);border-radius:16px;padding:20px 16px;transition:all .3s;cursor:pointer;color:inherit;display:block;text-align:center}
+.stat:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--p)}
+.stat-num{font-size:28px;font-weight:800;color:var(--p)}
+.stat-num .unit{font-size:14px;color:var(--ink-soft);font-weight:500}
+.stat-label{font-size:13px;color:var(--ink-soft);margin-top:4px}
+
+/* Search */
+.search-wrapper{position:relative;max-width:720px}
+.search-box{display:flex;align-items:center;gap:12px;padding:16px 20px;background:white;border:1.5px solid var(--line);border-radius:14px;box-shadow:var(--shadow-sm);transition:all .2s}
+.search-box:focus-within{border-color:var(--p);box-shadow:var(--shadow-md)}
+.search-box svg{color:var(--ink-soft);flex-shrink:0}
+.search-box input{flex:1;border:none;outline:none;font-size:15px;color:var(--ink);background:transparent;font-family:inherit}
+.search-box input::placeholder{color:var(--ink-soft)}
+.search-tip-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--ink-soft)}
+.tip-chip{padding:4px 10px;border-radius:100px;background:white;border:1px solid var(--line);font-size:12px;cursor:pointer;transition:all .15s;color:var(--ink)}
+.tip-chip:hover{background:var(--p);color:white;border-color:var(--p)}
+
+/* ===== 四柱 Tab 区域 ===== */
+.section{max-width:1240px;margin:0 auto;padding:48px 32px}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px;gap:24px;flex-wrap:wrap}
+.section-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:100px;background:rgba(61,90,62,0.08);color:var(--p);font-size:12px;font-weight:600;letter-spacing:0.5px;margin-bottom:12px}
+.section-title{font-size:36px;font-weight:800;letter-spacing:-1px}
+.section-sub{font-size:15px;color:var(--ink-soft);margin-top:8px;max-width:600px}
+
+/* 四柱 Tab */
+.pillar-tabs{display:flex;gap:0;margin-bottom:0;background:white;border:1px solid var(--line);border-radius:14px 14px 0 0;padding:6px;overflow:hidden}
+.pillar-tab{flex:1;padding:14px 12px;border-radius:10px;font-size:15px;font-weight:600;text-align:center;cursor:pointer;transition:all .25s;color:var(--ink-soft);position:relative}
+.pillar-tab:hover{background:var(--cream)}
+.pillar-tab.active{color:white}
+.pillar-tab[data-pillar="culture"].active{background:var(--pillar-culture)}
+.pillar-tab[data-pillar="mission"].active{background:var(--pillar-mission)}
+.pillar-tab[data-pillar="vision"].active{background:var(--pillar-vision)}
+.pillar-tab[data-pillar="value"].active{background:var(--pillar-value)}
+.pillar-tab .tab-emoji{margin-right:6px}
+.pillar-tab .tab-en{font-size:10px;font-weight:400;opacity:0.6;display:block;margin-top:2px}
+
+/* 四柱内容区 */
+.pillar-body{background:white;border:1px solid var(--line);border-top:none;border-radius:0 0 14px 14px;padding:40px 36px;min-height:400px}
+.pillar-panel{display:none}
+.pillar-panel.active{display:block;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* 柱内标题 */
+.pp-head{margin-bottom:28px}
+.pp-title{font-size:24px;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px}
+.pp-sub{color:var(--ink-soft);font-size:15px;max-width:700px;line-height:1.7}
+.pp-quote{margin:20px 0;padding:16px 20px;border-radius:12px;font-style:italic;font-size:15px;line-height:1.7;position:relative}
+.pp-quote::before{content:'"';font-size:48px;position:absolute;top:-8px;left:12px;opacity:0.15;font-style:normal}
+
+/* 柱内卡片组 */
+.pp-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin:24px 0}
+.pp-card{padding:20px;border-radius:14px;border:1px solid var(--line);background:var(--cream);transition:all .2s;cursor:pointer}
+.pp-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--p)}
+.pp-card-icon{font-size:28px;margin-bottom:8px}
+.pp-card-title{font-size:15px;font-weight:700;margin-bottom:6px}
+.pp-card-desc{font-size:13px;color:var(--ink-soft);line-height:1.6}
+.pp-card-tag{display:inline-block;margin-top:8px;font-size:11px;padding:3px 8px;border-radius:4px;background:rgba(61,90,62,0.08);color:var(--p);font-weight:500}
+
+/* 产品卡片（从底座长出来） */
+.product-section{margin-top:32px;padding-top:24px;border-top:1px dashed var(--line)}
+.product-section-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.product-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.product-card{padding:16px 20px;border-radius:12px;border:1.5px solid var(--line);background:white;transition:all .2s;position:relative}
+.product-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.product-card .pc-icon{font-size:24px;margin-bottom:8px}
+.product-card .pc-name{font-size:14px;font-weight:700;margin-bottom:4px}
+.product-card .pc-desc{font-size:12px;color:var(--ink-soft);line-height:1.5}
+.product-card .pc-status{position:absolute;top:12px;right:12px;font-size:10px;padding:2px 6px;border-radius:3px;background:rgba(61,90,62,0.1);color:var(--p);font-weight:600}
+
+/* ===== 三层 ===== */
+.three-layers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+.layer-card{padding:24px;border-radius:16px;border:1.5px solid;transition:all .2s;cursor:pointer}
+.layer-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.layer-card.matter{background:rgba(61,90,62,0.04);border-color:rgba(61,90,62,0.2)}
+.layer-card.emotion{background:rgba(200,149,109,0.06);border-color:rgba(200,149,109,0.3)}
+.layer-card.spirit{background:rgba(196,106,58,0.06);border-color:rgba(196,106,58,0.3)}
+.layer-card .lc-emoji{font-size:32px;margin-bottom:8px}
+.layer-card .lc-question{font-size:20px;font-weight:800;margin-bottom:8px}
+.layer-card.matter .lc-question{color:var(--layer-matter)}
+.layer-card.emotion .lc-question{color:var(--layer-emotion)}
+.layer-card.spirit .lc-question{color:var(--layer-spirit)}
+.layer-card .lc-title{font-size:15px;font-weight:700;margin-bottom:6px}
+.layer-card .lc-dims{font-size:12px;color:var(--ink-soft);line-height:1.6}
+.layer-card .lc-feeling{margin-top:10px;font-size:12px;color:var(--p);font-style:italic;padding-top:8px;border-top:1px dashed rgba(61,90,62,0.15)}
+
+/* ===== 人生阶段 ===== */
+.life-stages{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:24px 0}
+.stage-card{padding:16px;border-radius:12px;background:var(--cream);border:1px solid var(--line);transition:all .2s;cursor:pointer}
+.stage-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);border-color:var(--p)}
+.stage-card .sc-num{font-size:11px;color:var(--ink-soft);font-weight:600;margin-bottom:4px}
+.stage-card .sc-name{font-size:14px;font-weight:700;margin-bottom:4px}
+.stage-card .sc-age{font-size:11px;color:var(--ink-soft);margin-bottom:8px}
+.stage-card .sc-domains{display:flex;flex-wrap:wrap;gap:4px}
+.stage-card .sc-domain{font-size:10px;padding:2px 6px;border-radius:3px;background:white;border:1px solid var(--line);color:var(--ink-soft)}
+
+/* 三维映射表 */
+.mapping-section{margin-top:24px;overflow-x:auto}
+.mapping-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;background:white;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.mapping-table th{background:var(--cream-deep);padding:10px 14px;text-align:left;font-weight:700;font-size:12px;color:var(--ink)}
+.mapping-table td{padding:10px 14px;border-top:1px solid var(--line)}
+.mapping-table tr:hover td{background:rgba(61,90,62,0.03)}
+.mapping-table .td-tag{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;margin:1px;background:rgba(61,90,62,0.08);color:var(--p)}
+.mapping-table .td-tag.fire{background:rgba(196,106,58,0.1);color:var(--fire)}
+
+/* ===== 业务域 ===== */
+.di-domains{display:flex;flex-direction:column;gap:12px}
+.di-domain{background:var(--cream);border-radius:12px;padding:16px 20px;transition:all .15s;cursor:pointer}
+.di-domain:hover{background:rgba(61,90,62,0.05)}
+.di-domain-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.di-domain-icon{font-size:20px}
+.di-domain-name{font-size:15px;font-weight:700;flex:1}
+.di-domain-count{font-size:12px;color:var(--p);font-weight:600;padding:2px 10px;background:rgba(61,90,62,0.10);border-radius:100px}
+.di-words{display:flex;flex-wrap:wrap;gap:6px}
+.di-word{font-size:12px;padding:5px 12px;border-radius:6px;background:white;border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:all .15s}
+.di-word:hover{background:var(--p);color:white;border-color:var(--p)}
+
+/* ===== 岗位 ===== */
+.di-roles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.di-role{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s}
+.di-role:hover{background:white;transform:translateY(-2px);box-shadow:var(--shadow-sm);border-color:var(--p)}
+.di-role-emoji{font-size:24px;flex-shrink:0}
+.di-role-content{flex:1;min-width:0}
+.di-role-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.di-role-meta-row{display:flex;gap:4px;flex-wrap:wrap}
+.di-role-meta{font-size:10px;color:var(--ink-soft);padding:1px 5px;background:white;border-radius:3px;border:1px solid var(--line)}
+.di-role-level{font-size:10px;color:var(--p);font-weight:600;padding:2px 6px;background:rgba(61,90,62,0.10);border-radius:3px;flex-shrink:0;align-self:flex-start}
+
+/* ===== Guide ===== */
+.guide{background:white;border-top:1px solid var(--line);padding:60px 32px}
+.guide-inner{max-width:1240px;margin:0 auto}
+.guide-head{text-align:center;margin-bottom:36px}
+.guide-head h2{font-size:28px;font-weight:700;margin-bottom:8px}
+.guide-head p{color:var(--ink-soft)}
+.guide-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.guide-card{background:var(--cream);border:1px solid var(--line);border-radius:16px;padding:24px;color:var(--ink);transition:all .25s;position:relative}
+.guide-card:hover{background:white;transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--p)}
+.guide-icon{width:40px;height:40px;border-radius:10px;background:white;display:grid;place-items:center;font-size:20px;margin-bottom:14px}
+.guide-name{font-size:15px;font-weight:700;margin-bottom:4px}
+.guide-desc{font-size:12px;color:var(--ink-soft);line-height:1.5}
+
+/* ===== Entry Modal ===== */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,43,38,0.6);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:white;border-radius:20px;max-width:720px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.modal-head{padding:24px 28px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;position:sticky;top:0;background:white;z-index:1;border-radius:20px 20px 0 0}
+.modal-icon{font-size:28px}
+.modal-title{font-size:20px;font-weight:800}
+.modal-id{font-size:11px;color:var(--ink-soft);font-family:monospace;margin-top:2px}
+.modal-close{margin-left:auto;width:32px;height:32px;border-radius:50%;background:var(--cream);border:none;cursor:pointer;display:grid;place-items:center;font-size:18px}
+.modal-close:hover{background:var(--cream-deep)}
+.modal-body{padding:24px 28px}
+.modal-section{margin-bottom:20px}
+.modal-section-title{font-size:13px;font-weight:700;color:var(--p);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.modal-def{padding:12px 16px;background:var(--cream);border-left:3px solid var(--p);border-radius:8px;font-size:14px;line-height:1.7}
+.proscons{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.proscons-side{border-radius:10px;padding:14px}
+.proscons-side.consumer{background:rgba(61,90,62,0.04);border-left:3px solid var(--p)}
+.proscons-side.servicer{background:rgba(196,106,58,0.06);border-left:3px solid var(--fire)}
+.pc-label{font-size:11px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.proscons-side.consumer .pc-label{color:var(--p)}
+.proscons-side.servicer .pc-label{color:var(--fire)}
+.pc-quote{font-size:13px;line-height:1.6;color:var(--ink);padding:8px 12px;background:white;border-radius:6px;border:1px solid var(--line)}
+.pc-quote::before{content:'"'}
+.pc-quote::after{content:'"'}
+.modal-cta{display:flex;gap:8px;margin-top:16px;padding-top:16px;border-top:1px dashed var(--line)}
+.modal-cta-btn{flex:1;padding:10px;border-radius:8px;background:var(--p);color:white;border:none;font-size:12px;font-weight:600;cursor:pointer}
+.modal-cta-btn:hover{background:var(--p-light)}
+.modal-cta-btn.secondary{background:white;color:var(--p);border:1px solid var(--line)}
+
+/* ===== Footer ===== */
+footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft);font-size:13px}
+.footer-inner{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-links{display:flex;gap:20px}
+.footer-links a{color:var(--ink-soft)}
+.footer-links a:hover{color:var(--p)}
+
+/* ===== 响应式 ===== */
+@media(max-width:960px){
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .hero h1{font-size:36px}
+  .nav-links{display:none}
+  .three-layers{grid-template-columns:1fr}
+  .pillar-tabs{flex-wrap:wrap}
+  .pillar-tab{font-size:13px;padding:10px 8px}
+  .di-roles{grid-template-columns:1fr}
+  .guide-grid{grid-template-columns:1fr}
+  .pp-cards{grid-template-columns:1fr}
+  .product-cards{grid-template-columns:1fr}
+  .life-stages{grid-template-columns:repeat(2,1fr)}
+  .pillar-body{padding:24px 20px}
+  .proscons{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .life-stages{grid-template-columns:1fr}
+  .hero h1{font-size:28px}
+  .pillar-icon-card{flex:1;min-width:140px}
+  .pillar-icons{gap:8px}
+}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  🛠 <b>服务者模式</b> · 你的知识库，你的字典，你的能力图谱
+</div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand"><div class="brand-mark">风</div><span>风声</span></div>
+    <div class="nav-links">
+      <a class="nav-link" href="#">首页</a>
+      <a class="nav-link" href="#">六维测评</a>
+      <a class="nav-link" href="#">培养师</a>
+      <a class="nav-link" href="#">品质测评</a>
+      <a class="nav-link active" href="#pillars">知识底座<span class="dot"></span></a>
+      <a class="nav-link" href="#">数据看板</a>
+    </div>
+    <a class="nav-cta" href="#search">免费体验 →</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-tag"><span class="pulse"></span> 帮助服务者用独立价值赢得尊重</div>
+  <h1>风声知识底座<br><span class="accent">四柱撑起"美好居住"</span></h1>
+  <p class="hero-sub">
+    文化 · 使命 · 愿景 · 价值观 —— 四个支柱，上面长产品<br>
+    美好居住 = 物质得到保障 + 情感得到满足 + 精神得到尊重
+  </p>
+
+  <div class="pillar-icons">
+    <div class="pillar-icon-card" data-pillar="culture" onclick="switchPillar('culture')">
+      <span class="pi-emoji">🌱</span>
+      <div><div class="pi-label">文化</div><div class="pi-sub">损有余而补不足</div></div>
+    </div>
+    <div class="pillar-icon-card" data-pillar="mission" onclick="switchPillar('mission')">
+      <span class="pi-emoji">🎯</span>
+      <div><div class="pi-label">使命</div><div class="pi-sub">帮服务者贴近消费者认知</div></div>
+    </div>
+    <div class="pillar-icon-card" data-pillar="vision" onclick="switchPillar('vision')">
+      <span class="pi-emoji">🔭</span>
+      <div><div class="pi-label">愿景</div><div class="pi-sub">人人美好居住</div></div>
+    </div>
+    <div class="pillar-icon-card" data-pillar="value" onclick="switchPillar('value')">
+      <span class="pi-emoji">⚖️</span>
+      <div><div class="pi-label">价值观</div><div class="pi-sub">长而不宰</div></div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <a class="stat" href="#pillars"><div class="stat-num">4</div><div class="stat-label">核心支柱</div></a>
+    <a class="stat" href="#dictIndex"><div class="stat-num">122</div><div class="stat-label">词条·全量</div></a>
+    <a class="stat" href="#dictIndex"><div class="stat-num">8</div><div class="stat-label">业务域</div></a>
+    <a class="stat" href="#dictIndex"><div class="stat-num">9</div><div class="stat-label">服务岗位</div></a>
+    <a class="stat" href="#dictIndex"><div class="stat-num">45</div><div class="stat-label">岗位能力点</div></a>
+    <a class="stat" href="#search"><div class="stat-num">3</div><div class="stat-label">应用产品</div></a>
+  </div>
+
+  <div class="search-wrapper" id="search">
+    <div class="search-box">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="搜词条 / 场景 / SOP… 例如：物质层 · 安全保障" autocomplete="off">
+    </div>
+    <div class="search-tip-row">
+      <span>💡 试试：</span>
+      <span class="tip-chip" onclick="doSearch('美好居住')">美好居住</span>
+      <span class="tip-chip" onclick="doSearch('物质层')">物质层</span>
+      <span class="tip-chip" onclick="doSearch('租房')">租房</span>
+      <span class="tip-chip" onclick="doSearch('安全')">安全</span>
+      <span class="tip-chip" onclick="doSearch('服务者')">服务者</span>
+      <span class="tip-chip" onclick="doSearch('六维')">六维</span>
+    </div>
+  </div>
+</section>
+
+<!-- 四柱核心 -->
+<section class="section" id="pillars">
+  <div class="section-head">
+    <div>
+      <div class="section-tag">🏛 知识底座</div>
+      <h2 class="section-title">四个支柱，上面长产品</h2>
+      <p class="section-sub">文化定义我们是谁 → 使命定义我们做什么 → 愿景定义我们走向哪 → 价值观定义我们怎么做</p>
+    </div>
+  </div>
+
+  <div class="pillar-tabs">
+    <div class="pillar-tab active" data-pillar="culture" onclick="switchPillar('culture')">
+      <span class="tab-emoji">🌱</span>文化<span class="tab-en">Culture</span>
+    </div>
+    <div class="pillar-tab" data-pillar="mission" onclick="switchPillar('mission')">
+      <span class="tab-emoji">🎯</span>使命<span class="tab-en">Mission</span>
+    </div>
+    <div class="pillar-tab" data-pillar="vision" onclick="switchPillar('vision')">
+      <span class="tab-emoji">🔭</span>愿景<span class="tab-en">Vision</span>
+    </div>
+    <div class="pillar-tab" data-pillar="value" onclick="switchPillar('value')">
+      <span class="tab-emoji">⚖️</span>价值观<span class="tab-en">Values</span>
+    </div>
+  </div>
+
+  <div class="pillar-body">
+
+    <!-- ========== 文化柱 ========== -->
+    <div class="pillar-panel active" id="panel-culture">
+      <div class="pp-head">
+        <div class="pp-title" style="color:var(--pillar-culture)">🌱 文化 · 我们是谁</div>
+        <div class="pp-sub">风声的哲学根基来自道德经四层。不是技术公司，是用知识帮服务者赢得尊重的文化组织。</div>
+        <div class="pp-quote" style="background:rgba(61,90,62,0.04);border-left:4px solid var(--pillar-culture);color:var(--ink)">
+          "人是感情动物，有些东西说不出来描述不清楚，框架清晰就容易拆分开。" —— 生哥
+        </div>
+      </div>
+
+      <div class="pp-cards">
+        <div class="pp-card" data-entry="DDJ-001">
+          <div class="pp-card-icon">⚖️</div>
+          <div class="pp-card-title">损有余而补不足</div>
+          <div class="pp-card-desc">信息差必崩，补不足者存。帮服务者（信息差弱者）补足认知，而不是为客户做嫁衣。</div>
+          <div class="pp-card-tag">30/70 原则</div>
+        </div>
+        <div class="pp-card" data-entry="DDJ-002">
+          <div class="pp-card-icon">💧</div>
+          <div class="pp-card-title">水善利万物而不争</div>
+          <div class="pp-card-desc">人要的不是安全，是尊严。AI 工具是放大能力，不是替代决策。</div>
+          <div class="pp-card-tag">不做 AI 判断</div>
+        </div>
+        <div class="pp-card" data-entry="DDJ-003">
+          <div class="pp-card-icon">🔍</div>
+          <div class="pp-card-title">知人者智，自知者明</div>
+          <div class="pp-card-desc">放大人不替代人，支持不替代决策。服务者先被看见：9岗位 × 5维度 = 45能力点。</div>
+          <div class="pp-card-tag">服务者先被看见</div>
+        </div>
+        <div class="pp-card" data-entry="DDJ-004">
+          <div class="pp-card-icon">🌿</div>
+          <div class="pp-card-title">长而不宰</div>
+          <div class="pp-card-desc">让人觉得自主决定，方向恰好对。知识底座帮客户做认知，不替客户做决定。</div>
+          <div class="pp-card-tag">知识底座 ≠ 决策工具</div>
+        </div>
+      </div>
+
+      <div class="product-section">
+        <div class="product-section-title">🏗 从文化柱长出的产品</div>
+        <div class="product-cards">
+          <div class="product-card">
+            <div class="pc-icon">📚</div>
+            <div class="pc-name">知识底座（核心资产）</div>
+            <div class="pc-desc">9岗位 × 8域 × 双线 × 三层 —— 底层资产，不是产品。所有产品从这里长出来。</div>
+            <div class="pc-status">基石</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 使命柱 ========== -->
+    <div class="pillar-panel" id="panel-mission">
+      <div class="pp-head">
+        <div class="pp-title" style="color:var(--pillar-mission)">🎯 使命 · 帮助服务者贴近消费者的认知</div>
+        <div class="pp-sub">认知一拉齐，服务上就相对容易满足。之前就是都很模糊，客户觉得这样，服务又是那样，对不齐。</div>
+        <div class="pp-quote" style="background:rgba(196,106,58,0.06);border-left:4px solid var(--pillar-mission);color:var(--ink)">
+          "终极目标就是美好居住，所有产品都指向它。" —— 生哥
+        </div>
+      </div>
+
+      <!-- "美好居住"三层 -->
+      <div style="margin-bottom:8px;font-size:16px;font-weight:700;color:var(--pillar-mission)">🏠 "美好居住"三层定义</div>
+      <div style="font-size:13px;color:var(--ink-soft);margin-bottom:16px">美好居住 = 物质上得到保障 + 情感上得到满足 + 精神上得到尊重 · 三层递进，不可跳级</div>
+
+      <div class="three-layers">
+        <div class="layer-card matter" data-entry="DIM-PHYSICAL">
+          <div class="lc-emoji">🛡</div>
+          <div class="lc-question">能住吗？</div>
+          <div class="lc-title">物质层 · 得到保障</div>
+          <div class="lc-dims">
+            <b>安全保障</b>：会不会出事？<br>
+            <b>健康无害</b>：会不会慢性伤身？<br>
+            <b>功能有序</b>：东西有没有地方放？
+          </div>
+          <div class="lc-feeling">"住着踏实"</div>
+        </div>
+        <div class="layer-card emotion" data-entry="DIM-EMOTION">
+          <div class="lc-emoji">💗</div>
+          <div class="lc-question">想住吗？</div>
+          <div class="lc-title">情感层 · 得到满足</div>
+          <div class="lc-dims">
+            <b>温度归属</b>：想不想回家？<br>
+            <b>审美愉悦</b>：看着舒不舒服？<br>
+            <b>秩序安定</b>：心里慌不慌？<br>
+            <b>被懂被看见</b>：有没有人懂我？
+          </div>
+          <div class="lc-feeling">"推开门就想坐下"</div>
+        </div>
+        <div class="layer-card spirit" data-entry="DIM-SPIRIT">
+          <div class="lc-emoji">✨</div>
+          <div class="lc-question">值吗？</div>
+          <div class="lc-title">精神层 · 得到尊重</div>
+          <div class="lc-dims">
+            <b>生活品质</b>：日子过得好不好？<br>
+            <b>选择自由</b>：我能不能选？<br>
+            <b>尊严认同</b>：值不值？<br>
+            <b>自我实现</b>：我是谁？
+          </div>
+          <div class="lc-feeling">"住得像自己"</div>
+        </div>
+      </div>
+
+      <!-- 品质词条卡片 -->
+      <div style="margin-top:24px;font-size:15px;font-weight:700;margin-bottom:12px">🏷 品质维度词条（7维 → 三层）</div>
+      <div class="pp-cards" id="qualityCards"></div>
+
+      <div class="product-section">
+        <div class="product-section-title">🏗 从使命柱长出的产品</div>
+        <div class="product-cards">
+          <div class="product-card">
+            <div class="pc-icon">🔍</div>
+            <div class="pc-name">客户解码器</div>
+            <div class="pc-desc">客户说一句话 → AI 告诉你他在哪条线×哪个阶段×卡在哪层。帮服务者30秒读懂客户。</div>
+            <div class="pc-status">P1</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 愿景柱 ========== -->
+    <div class="pillar-panel" id="panel-vision">
+      <div class="pp-head">
+        <div class="pp-title" style="color:var(--pillar-vision)">🔭 愿景 · 人人美好居住</div>
+        <div class="pp-sub">根据不同业务域，客户处在不同人生阶段，会选择什么业务，对应的服务者能力要求是什么，什么岗位，提供什么服务——这不就都匹配上了吗？</div>
+        <div class="pp-quote" style="background:rgba(107,95,168,0.06);border-left:4px solid var(--pillar-vision);color:var(--ink)">
+          "美好居住不是一次性交付，是持续运营的结果。" —— 从阿那亚提炼
+        </div>
+      </div>
+
+      <!-- 人生6阶段 -->
+      <div style="font-size:16px;font-weight:700;color:var(--pillar-vision);margin-bottom:4px">📍 人生6阶段 · "谁在住？"</div>
+      <div style="font-size:13px;color:var(--ink-soft);margin-bottom:16px">阶段看状态不看年龄。每个阶段对应不同的"美好居住"重点。</div>
+
+      <div class="life-stages">
+        <div class="stage-card" data-entry="STAGE-1">
+          <div class="sc-num">①</div>
+          <div class="sc-name">独立起步</div>
+          <div class="sc-age">20-28 岁</div>
+          <div class="sc-domains">
+            <span class="sc-domain">域2·租赁</span>
+          </div>
+        </div>
+        <div class="stage-card" data-entry="STAGE-2">
+          <div class="sc-num">②</div>
+          <div class="sc-name">成家置业</div>
+          <div class="sc-age">28-35 岁</div>
+          <div class="sc-domains">
+            <span class="sc-domain">域1·交易</span>
+            <span class="sc-domain">域7·金融</span>
+          </div>
+        </div>
+        <div class="stage-card" data-entry="STAGE-3">
+          <div class="sc-num">③</div>
+          <div class="sc-name">子女教育</div>
+          <div class="sc-age">30-45 岁</div>
+          <div class="sc-domains">
+            <span class="sc-domain">域1·交易</span>
+            <span class="sc-domain">域3·整装</span>
+          </div>
+        </div>
+        <div class="stage-card" data-entry="STAGE-4">
+          <div class="sc-num">④</div>
+          <div class="sc-name">改善升级</div>
+          <div class="sc-age">35-50 岁</div>
+          <div class="sc-domains">
+            <span class="sc-domain">域1·交易</span>
+            <span class="sc-domain">域3·整装</span>
+          </div>
+        </div>
+        <div class="stage-card" data-entry="STAGE-5">
+          <div class="sc-num">⑤</div>
+          <div class="sc-name">资产配置</div>
+          <div class="sc-age">50-65 岁</div>
+          <div class="sc-domains">
+            <span class="sc-domain">域1·交易</span>
+            <span class="sc-domain">域7·金融</span>
+          </div>
+        </div>
+        <div class="stage-card" data-entry="STAGE-6">
+          <div class="sc-num">⑥</div>
+          <div class="sc-name">适老安享</div>
+          <div class="sc-age">65+ 岁</div>
+          <div class="sc-domains">
+            <span class="sc-domain">域3·适老</span>
+            <span class="sc-domain">域4·家政</span>
+            <span class="sc-domain">域6·社区</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 三维映射表 -->
+      <div style="font-size:15px;font-weight:700;margin-top:24px;margin-bottom:12px">🔗 三维锁定 · 业务域 × 人生阶段 × 服务者岗位</div>
+      <div class="mapping-section">
+        <table class="mapping-table">
+          <thead>
+            <tr><th>人生阶段</th><th>客户选什么业务</th><th>服务者岗位</th><th>帮客户实现哪层"美好居住"</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>①独立起步</td><td>租房 / 合租</td><td><span class="td-tag">租赁顾问</span></td><td><span class="td-tag">物质·安全</span> <span class="td-tag">情感·独立感</span></td></tr>
+            <tr><td>②成家置业</td><td>买房 / 按揭 / 装修</td><td><span class="td-tag">经纪人</span> <span class="td-tag">按揭顾问</span> <span class="td-tag">整装设计师</span></td><td><span class="td-tag fire">三层全覆</span></td></tr>
+            <tr><td>③子女教育</td><td>学区房 / 儿童房改造</td><td><span class="td-tag">经纪人</span> <span class="td-tag">整装设计师</span></td><td><span class="td-tag fire">三层全覆</span></td></tr>
+            <tr><td>④改善升级</td><td>换房 / 整装翻新</td><td><span class="td-tag">经纪人</span> <span class="td-tag">整装设计师</span></td><td><span class="td-tag fire">三层全覆</span></td></tr>
+            <tr><td>⑤资产配置</td><td>投资 / 资产优化 / 适老规划</td><td><span class="td-tag">经纪人</span> <span class="td-tag">估价师</span></td><td><span class="td-tag">物质·资产安全</span> <span class="td-tag">精神·选择自由</span></td></tr>
+            <tr><td>⑥适老安享</td><td>适老改造 / 居家照护 / 社区医养</td><td><span class="td-tag">整装设计师</span> <span class="td-tag">家政师</span> <span class="td-tag">社区管家</span></td><td><span class="td-tag">物质·安全能住</span> <span class="td-tag">情感·被陪被记挂</span> <span class="td-tag">精神·尊严</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 每个阶段的"美好居住"重点 -->
+      <div style="font-size:15px;font-weight:700;margin-top:28px;margin-bottom:12px">🎯 每个阶段的"美好居住"重点</div>
+      <div class="mapping-section">
+        <table class="mapping-table">
+          <thead>
+            <tr><th>阶段</th><th>物质层重点</th><th>情感层重点</th><th>精神层重点</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>①独立起步</td><td>安全底线+基本功能</td><td>独立感"终于有自己的空间"</td><td>选择自由"我能决定住哪"</td></tr>
+            <tr><td>②成家置业</td><td>安全+健康（孕婴关注）</td><td>温度归属"给家人一个家"</td><td>尊严认同"我有能力安家"</td></tr>
+            <tr><td>③子女教育</td><td>学区安全+成长空间</td><td>被懂被看见"不只是学区"</td><td>选择自由+尊严认同</td></tr>
+            <tr><td>④改善升级</td><td>品质升级+功能完善</td><td>审美愉悦+被懂被看见</td><td>生活品质+自我实现</td></tr>
+            <tr><td>⑤资产配置</td><td>风险控制+资产安全</td><td>秩序安定"别出岔子"</td><td>选择自由+尊严认同</td></tr>
+            <tr><td>⑥适老安享</td><td>适老安全+无障碍</td><td>温度归属+秩序安定</td><td>尊严认同+选择自由</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="product-section">
+        <div class="product-section-title">🏗 从愿景柱长出的产品</div>
+        <div class="product-cards">
+          <div class="product-card">
+            <div class="pc-icon">✅</div>
+            <div class="pc-name">品质评估</div>
+            <div class="pc-desc">六维品质体系 → 品质报告（可发给客户）→ 品质→推荐话术。帮服务者用专业判断帮客户做决策。</div>
+            <div class="pc-status">P2</div>
+          </div>
+          <div class="product-card">
+            <div class="pc-icon">📋</div>
+            <div class="pc-name">带看报告</div>
+            <div class="pc-desc">带看时随手记 → AI自动关联三层 + 品质评分 → 可发给客户的PDF。一份报告 = 一次专业背书。</div>
+            <div class="pc-status">P2</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 价值观柱 ========== -->
+    <div class="pillar-panel" id="panel-value">
+      <div class="pp-head">
+        <div class="pp-title" style="color:var(--pillar-value)">⚖️ 价值观 · 长而不宰</div>
+        <div class="pp-sub">运营能力是核心竞争力。价值观筛选客户。每份反馈都是金矿。服务者先被看见，才能帮客户被看见。</div>
+        <div class="pp-quote" style="background:rgba(200,149,109,0.08);border-left:4px solid var(--pillar-value);color:var(--ink)">
+          "认知一拉齐，服务上就相对容易满足。之前就是都很模糊，客户觉得这样，服务又是那样，对不齐。" —— 生哥
+        </div>
+      </div>
+
+      <!-- 服务者价值3句话 -->
+      <div style="font-size:16px;font-weight:700;color:var(--pillar-value);margin-bottom:16px">🫶 服务者核心价值</div>
+      <div class="pp-cards">
+        <div class="pp-card" style="border-left:4px solid var(--p)">
+          <div class="pp-card-icon">🫶</div>
+          <div class="pp-card-title">你是被服务的对象</div>
+          <div class="pp-card-desc">不是工具人。风声先服务服务者，服务者才能服务客户。</div>
+        </div>
+        <div class="pp-card" style="border-left:4px solid var(--wood)">
+          <div class="pp-card-icon">💪</div>
+          <div class="pp-card-title">你的能力被认可</div>
+          <div class="pp-card-desc">一线经验被收录进字典。9岗位 × 5能力维度 = 45能力点，每一项都有据可查。</div>
+        </div>
+        <div class="pp-card" style="border-left:4px solid var(--fire)">
+          <div class="pp-card-icon">🚀</div>
+          <div class="pp-card-title">你的成长被支持</div>
+          <div class="pp-card-desc">3个AI副驾 + 1套培养体系 + 客户对你的好评价。用独立价值赢得尊重。</div>
+        </div>
+      </div>
+
+      <!-- 服务者9岗位 -->
+      <div style="font-size:15px;font-weight:700;margin-top:28px;margin-bottom:12px">👥 9岗位 · 服务者能力图谱</div>
+      <div class="di-roles" id="rolesList"></div>
+
+      <!-- 服务者品质词条 -->
+      <div style="font-size:15px;font-weight:700;margin-top:28px;margin-bottom:12px">🏷 服务者品质词条</div>
+      <div class="pp-cards" id="serverQualityCards"></div>
+
+      <div class="product-section">
+        <div class="product-section-title">🏗 从价值观柱长出的产品</div>
+        <div class="product-cards">
+          <div class="product-card">
+            <div class="pc-icon">🛠</div>
+            <div class="pc-name">场景AI助手</div>
+            <div class="pc-desc">按岗位×按环节，每个场景有完整的"痛点→AI做什么→话术→关联知识→效果验证"。先做租赁线9环节。</div>
+            <div class="pc-status">P0</div>
+          </div>
+          <div class="product-card">
+            <div class="pc-icon">📊</div>
+            <div class="pc-name">能力认证（内嵌）</div>
+            <div class="pc-desc">用完场景助手 → "你在XX环节的能力得分：85分，超过72%的人"。暂缓独立产品，先做内嵌验证。</div>
+            <div class="pc-status">暂缓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 业务域索引 -->
+<section class="section" id="dictIndex">
+  <div class="section-head">
+    <div>
+      <div class="section-tag">📖 业务字典 · 8域122词条</div>
+      <h2 class="section-title">全量词条索引</h2>
+      <p class="section-sub">8大业务域 · 122个专业词条 · 每条词条含定义+正反话术+消费者问题+服务者回答</p>
+    </div>
+    <div id="dictVerifyBadge" style="font-size:11px;padding:4px 10px;border-radius:4px;background:var(--fire);color:white;font-weight:600"></div>
+  </div>
+  <div class="di-domains" id="domainsList"></div>
+</section>
+
+<!-- 引导到其他页面 -->
+<section class="guide">
+  <div class="guide-inner">
+    <div class="guide-head">
+      <h2>3个应用产品，从底座长出来</h2>
+      <p>不是先有产品再往知识底座靠，是知识底座长出产品</p>
+    </div>
+    <div class="guide-grid">
+      <div class="guide-card" style="border-top:3px solid var(--fire)">
+        <div class="guide-icon">🛠</div>
+        <div class="guide-name">场景AI助手</div>
+        <div class="guide-desc">P0 · 租赁线9环节场景卡。服务者卡住了→AI给专业指导+话术+关联知识。</div>
+      </div>
+      <div class="guide-card" style="border-top:3px solid var(--p)">
+        <div class="guide-icon">🔍</div>
+        <div class="guide-name">客户解码器</div>
+        <div class="guide-desc">P1 · 客户说一句话→解码他在哪条线×哪个阶段×卡在哪层。138用户基础。</div>
+      </div>
+      <div class="guide-card" style="border-top:3px solid var(--pillar-vision)">
+        <div class="guide-icon">✅</div>
+        <div class="guide-name">品质评估</div>
+        <div class="guide-desc">P2 · 六维品质体系→品质报告→推荐话术。帮服务者用专业判断帮客户做决策。</div>
+      </div>
+      <div class="guide-card" style="border-top:3px solid var(--wood)">
+        <div class="guide-icon">📚</div>
+        <div class="guide-name">知识底座</div>
+        <div class="guide-desc">核心资产 · 9岗位×8域×双线×三层 · 不是产品，是地基。所有产品从这里长出来。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>© 2026 风声 · 帮助服务者用独立价值赢得尊重</div>
+    <div class="footer-links">
+      <a href="#">知识底座</a>
+      <a href="#">品质测评</a>
+      <a href="#">客户解码器</a>
+      <a href="#">关于风声</a>
+    </div>
+  </div>
+</footer>
+
+<!-- 词条详情弹窗 -->
+<div class="modal-overlay" id="entryModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-icon" id="modalIcon">📄</span>
+      <div>
+        <div class="modal-title" id="modalTitle">词条详情</div>
+        <div class="modal-id" id="modalId">ID: ...</div>
+      </div>
+      <button class="modal-close" onclick="closeEntry()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">📖 词条定义</div>
+        <div class="modal-def" id="modalDef">...</div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">🎭 正反话术 · 五步法 ② 推演</div>
+        <div class="proscons">
+          <div class="proscons-side consumer">
+            <div class="pc-label">🗣 消费者怎么说</div>
+            <div class="pc-quote" id="modalConsumerQuote">...</div>
+          </div>
+          <div class="proscons-side servicer">
+            <div class="pc-label">🛠 服务者怎么回</div>
+            <div class="pc-quote" id="modalServicerQuote">...</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-cta">
+        <button class="modal-cta-btn" onclick="closeEntry()">📚 看完整词条</button>
+        <button class="modal-cta-btn secondary" onclick="closeEntry()">🤖 唤起 AI 副驾</button>
+        <button class="modal-cta-btn secondary" onclick="closeEntry()">📤 分享给客户</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ===== 数据层 ===== */
+const businessDomains = [
+  { entry_id:'TRADE', code:'trade', title:'域 1 · 房产交易', icon:'🏘', count:20, status:'active', isPlaceholder:false, sample_words:['真房源','带看','资金监管','签约'], more_count:16, sample_ids:['TRX-001','TRX-002','TRX-005','TRX-019'] },
+  { entry_id:'RENTAL', code:'rental', title:'域 2 · 房屋租赁', icon:'🏠', count:26, status:'active', isPlaceholder:false, sample_words:['长租公寓','押金退还','续租','租赁备案'], more_count:22, sample_ids:['RNT-001','RNT-004','RNT-011','RNT-010'] },
+  { entry_id:'DECOR', code:'decor', title:'域 3 · 整装家居', icon:'🪚', count:15, status:'active', isPlaceholder:false, sample_words:['包工包料','设计方案','施工验收'], more_count:12, sample_ids:['DEC-001','DEC-002','DEC-003'] },
+  { entry_id:'HMK', code:'homekeep', title:'域 4 · 家政保洁', icon:'🧹', count:15, status:'active', isPlaceholder:false, sample_words:['日常保洁','深度清洁','家电清洗'], more_count:12, sample_ids:['HMK-001','HMK-002','HMK-003'] },
+  { entry_id:'QLT-C', code:'quality-customer', title:'域 5 · 品质居住(消费者)', icon:'🌟', count:6, status:'active', isPlaceholder:false, sample_words:['安全','健康','整洁','温暖','美观','惬意'], more_count:0, sample_ids:['QLT-001','QLT-002','QLT-003','QLT-004','QLT-005','QLT-006'] },
+  { entry_id:'QLT-S', code:'quality-server', title:'域 6 · 品质居住(服务者)', icon:'💪', count:4, status:'active', isPlaceholder:false, sample_words:['身体健康','心理韧性','职业尊严','生活质感'], more_count:0, sample_ids:['QLT-007','QLT-008','QLT-009','QLT-010'] },
+  { entry_id:'TAL', code:'talent', title:'域 7 · 人才字典', icon:'👥', count:18, status:'active', isPlaceholder:false, sample_words:['房产经纪人','租赁管家','整装设计师','家政服务员'], more_count:14, sample_ids:['TAL-A1','TAL-B1','TAL-B2','TAL-C1'] },
+  { entry_id:'POL', code:'policy', title:'域 8 · 十五五政策', icon:'📜', count:18, status:'active', isPlaceholder:false, sample_words:['好房子','新模式','城市更新','改善性住房'], more_count:14, sample_ids:['POL-001','POL-002','POL-003','POL-004'] }
+];
+
+const talentRoles = [
+  { code:'A1', name:'房产经纪人', icon:'🏘', domain:'trade', gb:'✅ 国标 4-06-02-01' },
+  { code:'A2', name:'居住服务顾问', icon:'🏡', domain:'跨域', gb:'⚠️ 无独立国标' },
+  { code:'B1', name:'租赁管家', icon:'🏠', domain:'rental', gb:'⚠️ 无独立国标' },
+  { code:'B2', name:'整装设计师', icon:'🪚', domain:'decor', gb:'✅ 国标 4-08-08-07' },
+  { code:'B3', name:'家装工程监理', icon:'📐', domain:'decor', gb:'✅ 法规依据' },
+  { code:'C1', name:'家政服务员', icon:'🧹', domain:'homekeep', gb:'✅ 多项国标' },
+  { code:'C2', name:'收纳整理师', icon:'🧰', domain:'homekeep', gb:'⚠️ 行业标准' },
+  { code:'D1', name:'适老服务师', icon:'👴', domain:'elderly', gb:'✅ 法规支撑' },
+  { code:'E1', name:'物业管家', icon:'🏢', domain:'property', gb:'✅ 国标 4-06-01-01' }
+];
+
+const entryDatabase = {
+  'QLT-001':{icon:'🛡',title:'安全',id:'QLT-001',domain:'quality-customer',def:'居住空间不对人身造成即时或潜在危险的最低保障状态,是品质居住的不可妥协底线。',source:'《住宅设计规范》GB 50096-2011；《建筑设计防火规范》GB 50016',posSpeech:'这套房的安全指标全部达标,住着踏实',negSpeech:'安全不达标,其他都白搭',consumerQ:'住的房子安不安全?怎么判断?',consumer:'我想买房,这套房子的安全怎么判断?有什么硬指标吗?',servicer:'看4件事:①楼栋结构(钢筋混凝土+抗震等级)②设备(水/电/燃气/电梯)是否在检③环境(消防通道+烟感+喷淋)④食水(市政直供vs自备井)·这4项都过关,基本安全。'},
+  'QLT-002':{icon:'💚',title:'健康',id:'QLT-002',domain:'quality-customer',def:'居住空间不对人体造成长期隐性伤害(物理/化学/生物)的保障状态。',source:'《室内空气质量标准》GB/T 18883-2022',posSpeech:'甲醛0.03mg/m³,远低于国标0.08,孕婴可放心',negSpeech:'健康隐患看不见,但住久了身体会说话',consumerQ:'新房装修完会不会对身体不好?',consumer:'我刚装修完新房,担心甲醛超标,怎么测才靠谱?',servicer:'3步:①找CMA认证的检测机构②密闭12小时后测GB/T 18883-2022五项③甲醛≤0.08mg/m³为合格,孕婴建议≤0.05。'},
+  'QLT-003':{icon:'🧹',title:'整洁',id:'QLT-003',domain:'quality-customer',def:'居住空间物品有序归位、易于查找、动线合理的功能性状态,是"好住"的基础门槛。',source:'《住宅设计规范》GB 50096-2011(收纳面积建议≥12%套内面积)',posSpeech:'东西有地方放,找得着、放得下',negSpeech:'家里乱不是因为懒,是因为没地方放',consumerQ:'家里总是乱糟糟的怎么办?',consumer:'我家总是乱,我妈说我懒,是不是我的问题?',servicer:'可能不是你的问题,是房子没给你足够收纳——GB 50096-2011建议套内12%做收纳·你这户型做到8%吗?不够就加储物柜,先解决"有地方放",再谈"勤收拾"。'},
+  'QLT-004':{icon:'🕯',title:'温暖',id:'QLT-004',domain:'quality-customer',def:'居住空间让人产生"想回家"情感连接的心理状态,从"能用"到"想住"的分水岭。',source:'《建筑照明设计标准》GB 50034(居住空间照度建议)',posSpeech:'推开门就想坐下,这就是温暖',negSpeech:'房子是住了,但不像家',consumerQ:'什么样的房子住着有家的感觉?',consumer:'这房子功能上都行,但我总觉得差点"家"的感觉,差在哪?',servicer:'差3件"软"的:①光(主灯2700-3000K暖光)②材质(木地板>瓷砖,织物>塑料)③私密性(有能关起门发呆的角落)·这3件补上,房子就有"想回"的感觉。'},
+  'QLT-005':{icon:'🎨',title:'美观',id:'QLT-005',domain:'quality-customer',def:'居住空间在视觉上产生愉悦感受的状态,是品质居住的"加分项"而非必需项。',source:'清华×贝壳居住品质研究(2026)',posSpeech:'好看不是奢侈品,是每天回家第一眼的礼物',negSpeech:'审美没有标准答案,但有底线',consumerQ:'房子好看重要吗?',consumer:'我预算有限,好看这件事应该排在第几位?',servicer:'3步优先级:①物质层4维做扎实②情感层2维适度投·美观最容易花小钱办大事:换窗帘3000元/刷墙5000元/软装搭配1万,效果立竿见影。'},
+  'QLT-006':{icon:'☁',title:'惬意',id:'QLT-006',domain:'quality-customer',def:'居住空间让日常生活轻松顺畅的综合性感受,是品质居住的"终极体验"。',source:'清华×贝壳居住品质研究(2026)',posSpeech:'住得舒服不是奢侈,是基本权利',negSpeech:'通勤2小时的人,没资格谈生活品质',consumerQ:'什么样的房子住着才叫舒服?',consumer:'我买了远郊新房,户型挺好但通勤累,要不要换?',servicer:'别只看户型——惬意=通勤便利(30分钟内)+生活配套(5分钟生活圈)+空间灵活(能折腾)·你通勤多久?如果90分钟以上,住3年你一定会想换。'},
+  'QLT-007':{icon:'💪',title:'身体健康(服务者)',id:'QLT-007',domain:'quality-server',def:'服务者身体状况能支撑日常工作的基准状态。',consumer:'你看起来很累,服务能有质量吗?',servicer:'实话:我最近是累——这周已经带8组客户看房。但我答应您的事一定做,因为我也想用独立价值赢得尊重·我今天给您看3套,看完您觉得我撑不住,直接说。'},
+  'QLT-008':{icon:'🧠',title:'心理韧性(服务者)',id:'QLT-008',domain:'quality-server',def:'服务者面对拒绝、压力和不确定性时保持情绪稳定和持续行动的能力。',consumer:'我问题多,你看过的中介都被我问烦了,你不会也这样吧?',servicer:'不会。问得多=真的想买,我欢迎·我一周被50个人问,其中49个不成交,这是常态·您是第50个,我陪着问完,看您满意了再走。'},
+  'QLT-009':{icon:'🏆',title:'职业尊严(服务者)',id:'QLT-009',domain:'quality-server',def:'服务者对自身职业价值的认同感和被社会认可的程度。',consumer:'我朋友说中介就是为了赚佣金,你觉得呢?',servicer:'我赚佣金没错,但佣金只是结果·真正让我有尊严的是:①帮您避开3个坑②帮您多砍5万③帮您少走3周弯路·佣金是客户对我专业判断的投票,不是"赚信息差"。'},
+  'QLT-010':{icon:'☕',title:'生活质感(服务者)',id:'QLT-010',domain:'quality-server',def:'服务者自身生活质量达到合理水平的综合状态。',consumer:'你服务费不便宜,我觉得值不值?',servicer:'我一年能帮30个家庭买房,我的收入合理·我自己住在朝阳90平两居,有周末有空回您消息·我过得好,才有力气帮您看得细、谈得稳、签得踏实。'},
+  'DIM-PHYSICAL':{icon:'🛡',title:'物质层 · 能住吗?',id:'DIM-PHYSICAL',def:'物质层=4维(安全+健康+便利+经济)·是美好居住的"地基"·没有物质层,情感层和精神层都是空话。',consumer:'我看了几套房,这栋水管老旧,那栋电梯坏了,会不会有安全问题?',servicer:'安全这块我最在意,这三项我替您重点查:①水管②电梯③消防·便利方面,这个小区离地铁X米,日常通勤能控制在30分钟内。'},
+  'DIM-EMOTION':{icon:'💗',title:'情感层 · 想住吗?',id:'DIM-EMOTION',def:'情感层=2维(舒适+美观)·物质层之上的"氛围"·决定客户是否"想住"。',consumer:'我老婆说这个房子采光不行,墙面也旧,住进去估计不顺心,你看怎么改?',servicer:'采光不全是硬伤——客厅落地窗+浅色窗帘+主灯用4000K自然光,体验差很多·墙面局部翻新200元/平,1周能完工·软装一上来,舒适和美观两件事一起解决。'},
+  'DIM-SPIRIT':{icon:'✨',title:'精神层 · 值吗?',id:'DIM-SPIRIT',def:'精神层=1维(自在)·最高层·包含三件事:选择自由+不被将就+住得像自己。',consumer:'我朋友都劝我买这套,但我自己总觉得差点意思,是不是我太挑剔?',servicer:'不是挑剔,是"自在"这件事没满足·房子有3个判断点:①是不是您自己选的②有没有让您"将就"的地方③住进去像不像您想要的生活·这3点,任何一点模糊,都建议再等等。'},
+  'DIM-ALL':{icon:'🏠',title:'美好居住(总览)',id:'DIM-ALL',domain:'quality-customer',def:'美好居住=物质层4维(安全/健康/便利/经济)+情感层2维(舒适/美观)+精神层1维(自在)·7维是消费者可读懂、服务者可操作的统一语言。',posSpeech:'这7维把"美好居住"从模糊变可操作',negSpeech:'只看地段不看7维=买完才发现不对',consumerQ:'什么是"美好居住"?',consumer:'我听过"美好居住",但具体是什么意思?',servicer:'美好居住=物质+情感+精神3层·物质层4维(地基):安全、健康、便利、经济·情感层2维(氛围):舒适、美观·精神层1维(尊严):自在·顺序很重要——物质层没做扎实,情感层和精神层都是空话。'},
+  'DDJ-001':{icon:'⚖️',title:'损有余而补不足',id:'DDJ-001',def:'信息差必崩,补不足者存。帮服务者(信息差弱者)补足认知,而不是为客户做嫁衣。→ 30/70原则',consumer:'你们和贝壳有什么不同?',servicer:'贝壳帮客户找房源,我们帮服务者补认知·30%的服务者掌握70%的行业信息,我们要帮那70%的人补上。'},
+  'DDJ-002':{icon:'💧',title:'水善利万物而不争',id:'DDJ-002',def:'人要的不是安全,是尊严。AI工具是放大能力,不是替代决策。→ 不做AI判断',consumer:'AI能帮我选房吗?',servicer:'不能,也不应该·AI帮您看清选项(信息放大),但选哪个是您的决定(长而不宰)·我们给认知武器,不给决策结论。'},
+  'DDJ-003':{icon:'🔍',title:'知人者智,自知者明',id:'DDJ-003',def:'放大人不替代人,支持不替代决策。服务者先被看见:9岗位×5维度=45能力点。',consumer:'我做了5年中介,我的专业能力到底在什么水平?',servicer:'9岗位×5维度=45能力点,您在哪个岗位哪个维度薄弱,我们帮您看清·自知者明,先看清自己,再帮客户看清选项。'},
+  'DDJ-004':{icon:'🌿',title:'长而不宰',id:'DDJ-004',def:'让人觉得自主决定,方向恰好对。知识底座帮客户做认知,不替客户做决定。',consumer:'你们会不会用AI帮我做决定?',servicer:'不会。我们给您认知武器(词条+三层解码+品质评估),让您自己做决定时更清楚·选哪个是您的自由,我们只帮您看清。'},
+  'STAGE-1':{icon:'🏠',title:'①独立起步(20-28)',id:'STAGE-1',def:'走向社会,第一次租房。预算紧、要求快、不太挑。主业务域:域2·租赁。物质层重点:安全底线+基本功能。情感层:独立感。精神层:选择自由。',consumer:'我刚来这个城市,预算紧,想找个便宜方便的',servicer:'起步租房4步:①锁定通勤半径(公司5km内)②看地铁站800m内小区③押一付三是行规,认大平台④第一次别看太多,3套内做决定。'},
+  'STAGE-2':{icon:'🏡',title:'②成家置业(28-35)',id:'STAGE-2',def:'买房安家,第一次购房。首次置业、重视通勤与配套。主业务域:域1·交易+域7·金融。物质层:安全+健康。情感层:温度归属"给家人一个家"。精神层:尊严认同。',consumer:'我要买婚房,首套,不太懂怕踩坑',servicer:'首套=安全第一·3个硬指标:①现房②大开发商③地铁1km内·预算紧的时候,稳比好重要。'},
+  'STAGE-3':{icon:'📚',title:'③子女教育(30-45)',id:'STAGE-3',def:'孩子入学,教育驱动换房。学区优先、关注成长空间。主业务域:域1·交易+域3·整装。情感层重点:被懂被看见"我要的不只是学区,是孩子成长的好环境"。',consumer:'为了孩子上学想买学区房,但又觉得只看学区太窄',servicer:'您说得对·学区只是物质层的一维,孩子成长还需要:情感层(温度归属+被懂被看见)+精神层(选择自由)·我帮您不只看学区数据,看整个居住环境。'},
+  'STAGE-4':{icon:'🏠',title:'④改善升级(35-50)',id:'STAGE-4',def:'换房换生活。有经验、更挑剔、要更好。主业务域:域1·交易+域3·整装。三层全覆:品质升级+审美愉悦+自我实现。',consumer:'我现在住的房子什么都行,但总觉得差点意思,想换',servicer:'差点意思=有维没满足·我帮您把上次"没满足的感受"说出来,对应到三层哪一层卡住了,然后找对应方案。'},
+  'STAGE-5':{icon:'💰',title:'⑤资产配置(50-65)',id:'STAGE-5',def:'财务规划,为养老准备。有资产、求稳健、想传承。主业务域:域1·交易+域7·金融。物质层:风险控制+资产安全。情感层:秩序安定"别出岔子"。精神层:选择自由+尊严认同。',consumer:'有套闲置房,想变现又怕卖亏了',servicer:'3步:①先估价(我帮您出专业估价报告)②看持有成本vs出租收益③别只看收益率,看"这笔钱花得值"——精神层尊严认同。'},
+  'STAGE-6':{icon:'👴',title:'⑥适老安享(65+)',id:'STAGE-6',def:'退休养老,住得安心。安全第一、怕孤独、要尊严。主业务域:域3·适老+域4·家政+域6·社区。物质层:适老安全+无障碍。情感层:温度归属+秩序安定。精神层:尊严认同+选择自由。',consumer:'我爸妈70了,家里要做什么改造才能安全?',servicer:'按"动线"3步排查:①卫生间(扶手+防滑+坐便器高度)②厨房(防干烧+防滑)③卧室(床边扶手+应急呼叫)·一次评估2小时,出改造清单,3-5万改出基本安全。'},
+  'RNT-001':{icon:'🏢',title:'长租公寓',id:'RNT-001',domain:'rental',def:'由专业机构运营、统一装修、统一管理的集中式租赁住房形态。',source:'《住房租赁条例》国令第812号 第2条',posSpeech:'品牌公寓租约清晰,出了问题有主体可追',negSpeech:'没备案的小公寓=二手风险',consumerQ:'长租公寓能租吗?',consumer:'我想租长租公寓,有什么坑要避开?',servicer:'3件事:①必须是备案的主体②押金走监管账户③租约超6个月必须用书面合同·这3项过关,基本安全。'},
+  'RNT-004':{icon:'💰',title:'押金退还',id:'RNT-004',domain:'rental',def:'租赁关系解除时,出租人应按约返还承租人押金的法律义务。',source:'《民法典》第714条；《住房租赁条例》第24条',posSpeech:'押金不超月租2倍,超收可退',negSpeech:'不写明退还条件=押金可能被吞',consumerQ:'退租时押金会被扣吗?',consumer:'合同没写押金退还条件,中介说"惯例"扣一半,合理吗?',servicer:'不合理。3步:①合同必须写明押金金额+退还条件②退租时双方现场验收③有争议可申请调解·押金≤2个月租金是行规。'},
+  'RNT-010':{icon:'📋',title:'租赁备案',id:'RNT-010',domain:'rental',def:'房屋租赁合同签订后向住建部门登记备案的法律程序。',source:'《商品房屋租赁管理办法》住建部令第6号 第14条',posSpeech:'备案=合同有官方背书',negSpeech:'不备案=维权难',consumerQ:'租赁合同要备案吗?',consumer:'中介说"备案要交税",让我们别备案,合理吗?',servicer:'❌错。《商品房屋租赁管理办法》第14条明文要求30日内备案·备案是免费,是合同受官方保护的前提·不备案的合同,出了纠纷你拿不到官方支持。'},
+  'RNT-011':{icon:'🔁',title:'续租',id:'RNT-011',domain:'rental',def:'租期届满后承租人继续租赁的法律行为。',source:'《民法典》第734条',posSpeech:'续租提前30日书面',negSpeech:'不通知就续=涨租金被套',consumerQ:'怎么续租?',consumer:'租约7月到期,中介没提续租,我该怎么处理?',servicer:'3步:①《民法典》第734条:租期届满前30日通知②想续:跟房东书面谈新价③不想续:到期日搬走,押金按合同退。'},
+  'RNT-012':{icon:'🚪',title:'退租交接',id:'RNT-012',domain:'rental',def:'租赁关系终止时双方对房屋及物品验收交接的法律程序。',source:'《商品房屋租赁管理办法》+《民法典》合同解除通则',posSpeech:'现场验收+双方签字=押金7日内退',negSpeech:'没验收就退=押金被克扣',consumerQ:'退租怎么不被扣押金?',consumer:'退租时中介说墙面脏了要扣2000,合理吗?',servicer:'3步防扣:①退租前自己先拍50+张照片②中介验收时你也在场③有争议参考入住时照片·现场签交接单,押金7日内退。'},
+  'ROLE-A1':{icon:'🏘',title:'A1·房产经纪人',id:'ROLE-A1',def:'5能力维度·专业知识+服务规范+沟通能力+工具应用+职业素养。来源:《房地产经纪管理办法》+贝壳ACN+《民法典》962条。',consumer:'我想买800万左右3室,明年要小孩,买哪里好?',servicer:'先聊3件事:①工作地点②首付③学区是否刚需·我从这3点推3个候选,不强推·看房后我出带看报告(三层评分),您和家人慢慢看。'},
+  'ROLE-B1':{icon:'🏠',title:'B1·租赁管家',id:'ROLE-B1',def:'5能力维度·租赁法规+租客服务+需求连接+平台操作+公平透明。来源:《住房租赁条例》国令第812号。',consumer:'我是新租客,签合同要注意什么?',servicer:'3个重点:①合同必须用示范文本②押金+退还条件必须写明③维修责任划分清楚·入住当天拍照存证,退租时按图对比。'},
+  'ROLE-B2':{icon:'🪚',title:'B2·整装设计师',id:'ROLE-B2',def:'5能力维度·空间设计+设计交付+生活方式翻译+设计软件+预算诚信。来源:《住宅全案整装服务标准》2026.1.5。',consumer:'我想15万整装全包,但怕报价低后面加钱,怎么避坑?',servicer:'3招避坑:①合同写全包范围②增项上限≤5%③分阶段付款·我帮您审合同,标出红线。'},
+  'ROLE-C1':{icon:'🧹',title:'C1·家政服务员',id:'ROLE-C1',def:'5能力维度·服务规范+安全操作+雇主需求+信用平台+权益保护。来源:SB/T 10643-2011+商务部家政信用平台。',consumer:'找阿姨,上什么平台?',servicer:'3步:①商务部家政信用信息平台查②面试问3个问题③先试用1周·别只看价格,信用的"透明"比"便宜"重要。'},
+  'ROLE-D1':{icon:'👴',title:'D1·适老服务师',id:'ROLE-D1',def:'5能力维度·适老化评估+安全伦理+心理陪伴+数字化+资源连接。来源:《城市更新"十五五"规划》+住建部适老化指引。',consumer:'我父母70岁,家里要做什么改造才能让他们安全?',servicer:'按动线3步排查:①卫生间②厨房③卧室·一次评估2小时,出改造清单(按优先级),3-5万改出基本安全。'},
+  'ROLE-E1':{icon:'🏢',title:'E1·物业管家',id:'ROLE-E1',def:'5能力维度·物业法规+社区服务+投诉处理+物业系统+透明治理。来源:《物业管理条例》+《民法典》物权编。',consumer:'物业费每年都涨,服务又跟不上,业主怎么办?',servicer:'3步:①看合同有没有量化指标②成立业委会③每年业主大会审议物业费·业委会是业主的"管家"。'}
+};
+
+/* ===== 渲染 ===== */
+function renderDomains(){
+  const el=document.getElementById('domainsList');
+  el.innerHTML=businessDomains.map(d=>{
+    const chips=[
+      ...d.sample_words.map((w,i)=>'<span class="di-word" data-entry="'+d.sample_ids[i]+'">'+w+'</span>'),
+      '<span class="di-word" data-entry="DOMAIN-'+d.code+'">+ '+d.more_count+' 条</span>'
+    ].join('');
+    return '<div class="di-domain"><div class="di-domain-head"><span class="di-domain-icon">'+d.icon+'</span><span class="di-domain-name">'+d.title+'</span><span class="di-domain-count">'+d.count+' 条</span></div><div class="di-words">'+chips+'</div></div>';
+  }).join('');
+  const badge=document.getElementById('dictVerifyBadge');
+  badge.textContent='⏳ 122 词条 · 8 业务域 · 9 岗位';
+}
+
+function renderRoles(){
+  const el=document.getElementById('rolesList');
+  el.innerHTML=talentRoles.map(r=>`
+    <div class="di-role" data-entry="ROLE-${r.code}">
+      <div class="di-role-emoji">${r.icon}</div>
+      <div class="di-role-content">
+        <div class="di-role-name">${r.code}·${r.name}</div>
+        <div class="di-role-meta-row"><span class="di-role-meta">${r.domain}</span><span class="di-role-meta">${r.gb}</span></div>
+      </div>
+      <div class="di-role-level">5×1</div>
+    </div>
+  `).join('');
+}
+
+function renderQualityCards(){
+  const consumerQualities=['QLT-001','QLT-002','QLT-003','QLT-004','QLT-005','QLT-006'];
+  const layers=['物质层','物质层','物质层','情感层','情感层','精神层'];
+  const layerColors=['var(--layer-matter)','var(--layer-matter)','var(--layer-matter)','var(--layer-emotion)','var(--layer-emotion)','var(--layer-spirit)'];
+  document.getElementById('qualityCards').innerHTML=consumerQualities.map((id,i)=>{
+    const d=entryDatabase[id];
+    if(!d) return '';
+    return '<div class="pp-card" data-entry="'+id+'"><div class="pp-card-icon">'+d.icon+'</div><div class="pp-card-title">'+d.title+'</div><div class="pp-card-desc">'+d.def.substring(0,60)+'…</div><div class="pp-card-tag" style="color:'+layerColors[i]+';background:'+layerColors[i]+'12">'+layers[i]+'</div></div>';
+  }).join('');
+
+  const serverQualities=['QLT-007','QLT-008','QLT-009','QLT-010'];
+  document.getElementById('serverQualityCards').innerHTML=serverQualities.map(id=>{
+    const d=entryDatabase[id];
+    if(!d) return '';
+    return '<div class="pp-card" data-entry="'+id+'"><div class="pp-card-icon">'+d.icon+'</div><div class="pp-card-title">'+d.title+'</div><div class="pp-card-desc">'+d.def.substring(0,60)+'…</div></div>';
+  }).join('');
+}
+
+/* ===== 四柱切换 ===== */
+function switchPillar(pillar){
+  document.querySelectorAll('.pillar-tab').forEach(t=>t.classList.toggle('active',t.dataset.pillar===pillar));
+  document.querySelectorAll('.pillar-panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+pillar));
+  document.querySelectorAll('.pillar-icon-card').forEach(c=>c.style.boxShadow=c.dataset.pillar===pillar?'var(--shadow-md)':'none');
+}
+
+/* ===== 搜索 ===== */
+function doSearch(query){
+  const input=document.getElementById('searchInput');
+  input.value=query;
+  // Simple search: find matching entries and open first match
+  const q=query.toLowerCase();
+  let found=null;
+  for(const[id,d]of Object.entries(entryDatabase)){
+    const text=[d.title,d.def||'',d.consumer||'',d.servicer||'',d.posSpeech||'',d.negSpeech||''].join(' ').toLowerCase();
+    if(text.includes(q)){found=id;break;}
+  }
+  if(found) openEntry(found);
+  else{
+    // Switch to appropriate pillar based on query
+    if(q.includes('物质')||q.includes('安全')||q.includes('健康')||q.includes('美好居住')||q.includes('三层')) switchPillar('mission');
+    else if(q.includes('人生')||q.includes('阶段')||q.includes('学区')||q.includes('适老')) switchPillar('vision');
+    else if(q.includes('服务者')||q.includes('岗位')||q.includes('能力')) switchPillar('value');
+    else switchPillar('culture');
+  }
+}
+
+document.getElementById('searchInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter') doSearch(e.target.value);
+});
+
+/* ===== 词条详情 ===== */
+function openEntry(entryId){
+  const data=entryDatabase[entryId];
+  if(!data){
+    showEntry({icon:'📄',title:'词条详情',id:entryId,def:'词条详情待补全·数据源:风声业务字典',consumer:'消费者就"'+entryId+'"这个话题,通常会问:这是什么?为什么重要?',servicer:'服务者的标准回答路径:①一句话说清"这是什么"②一个例子让客户秒懂③给一个明确建议'});
+    return;
+  }
+  showEntry(data);
+}
+
+function showEntry(data){
+  document.getElementById('modalIcon').textContent=data.icon;
+  document.getElementById('modalTitle').textContent=data.title;
+  document.getElementById('modalId').textContent='ID: '+data.id;
+  document.getElementById('modalDef').textContent=data.def;
+  document.getElementById('modalConsumerQuote').textContent=data.consumer||'';
+  document.getElementById('modalServicerQuote').textContent=data.servicer||'';
+  document.getElementById('entryModal').classList.add('active');
+}
+
+function closeEntry(){document.getElementById('entryModal').classList.remove('active')}
+
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-entry]');
+  if(el){e.stopPropagation();openEntry(el.getAttribute('data-entry'));}
+});
+document.getElementById('entryModal').addEventListener('click',e=>{if(e.target.id==='entryModal')closeEntry()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeEntry()});
+
+/* ===== Init ===== */
+renderDomains();
+renderRoles();
+renderQualityCards();
+</script>
+</body>
+</html>
