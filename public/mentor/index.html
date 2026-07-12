@@ -69,10 +69,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .send-btn svg{width:18px;height:18px}
 
 /* Welcome state */
-.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:20px;text-align:center;gap:12px}
-.welcome-icon{font-size:48px}
-.welcome h2{font-size:18px;font-weight:800;color:var(--dk)}
-.welcome p{font-size:13px;color:var(--ts);line-height:1.7;max-width:300px}
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:32px 20px;text-align:center;gap:16px}
+.welcome-icon{width:80px;height:80px;opacity:.55}
+.welcome-icon svg{width:100%;height:100%}
+.welcome h2{font-size:20px;font-weight:800;color:var(--dk);letter-spacing:.02em}
+.welcome p{font-size:13.5px;color:var(--ts);line-height:1.8;max-width:320px}
 
 /* Error */
 .msg-error .msg-bubble{background:#fef2f2;border-color:#fecaca;color:#dc2626}
@@ -107,9 +108,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
 <div class="chat-body" id="chatBody">
   <div class="welcome" id="welcomeView">
-    <div class="welcome-icon">🌬️</div>
+    <div class="welcome-icon">
+      <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="52" cy="38" r="16" stroke="#3d5a3e" stroke-width="2.5" fill="none"/>
+        <path d="M36 54c0 0 2 28 16 28s16-28 16-28" stroke="#3d5a3e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M68 62c6-2 16 2 22 10" stroke="#3d5a3e" stroke-width="2" stroke-linecap="round" opacity=".5" fill="none">
+          <animate attributeName="opacity" values=".3;.6;.3" dur="3s" repeatCount="indefinite"/>
+        </path>
+        <path d="M70 70c5 0 14 5 18 12" stroke="#3d5a3e" stroke-width="1.8" stroke-linecap="round" opacity=".35" fill="none">
+          <animate attributeName="opacity" values=".2;.5;.2" dur="3.5s" repeatCount="indefinite"/>
+        </path>
+        <path d="M66 78c4 2 12 8 15 14" stroke="#3d5a3e" stroke-width="1.5" stroke-linecap="round" opacity=".25" fill="none">
+          <animate attributeName="opacity" values=".15;.4;.15" dur="4s" repeatCount="indefinite"/>
+        </path>
+      </svg>
+    </div>
     <h2>你好，我是开单导师</h2>
-    <p>帮你拆解客户真需求，手把手教你开单。说说你遇到的问题？</p>
+    <p>帮你拆解客户真需求，手把手教你开单。<br>说说你遇到的问题？</p>
   </div>
 </div>
 
