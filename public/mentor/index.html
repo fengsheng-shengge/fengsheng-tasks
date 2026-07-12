@@ -69,11 +69,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .send-btn svg{width:18px;height:18px}
 
 /* Welcome state */
-.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:32px 20px;text-align:center;gap:16px}
-.welcome-icon{width:80px;height:80px;opacity:.55}
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:28px 20px 16px;text-align:center;gap:12px;overflow-y:auto}
+.welcome-icon{width:64px;height:64px;opacity:.55}
 .welcome-icon svg{width:100%;height:100%}
-.welcome h2{font-size:20px;font-weight:800;color:var(--dk);letter-spacing:.02em}
-.welcome p{font-size:13.5px;color:var(--ts);line-height:1.8;max-width:320px}
+.welcome h2{font-size:19px;font-weight:800;color:var(--dk);letter-spacing:.02em}
+.welcome .welcome-desc{font-size:13px;color:var(--ts);line-height:1.7;max-width:340px}
+.welcome-features{display:flex;flex-direction:column;gap:8px;margin-top:4px;width:100%;max-width:340px}
+.welcome-feat{display:flex;align-items:flex-start;gap:10px;text-align:left;padding:10px 14px;background:#fff;border:1px solid var(--border);border-radius:var(--r)}
+.welcome-feat-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.welcome-feat-body{font-size:12.5px;line-height:1.6}
+.welcome-feat-title{font-weight:700;color:var(--dk);margin-bottom:1px}
+.welcome-feat-desc{color:var(--ts)}
+.welcome .welcome-cta{font-size:12.5px;color:var(--p);margin-top:4px;font-weight:600}
 
 /* Error */
 .msg-error .msg-bubble{background:#fef2f2;border-color:#fecaca;color:#dc2626}
@@ -143,7 +150,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 </div>
 
 <div class="page-footer">
-  🌬️ 风声 · 帮助服务者用独立价值赢得尊重 · fengsheng.tech © 2026 · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:inherit">京ICP备2026041809号</a>
+  🌬️ 风声 · 通过独立价值获得尊重 · fengsheng.tech © 2026 · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:inherit">京ICP备2026041809号</a>
 </div>
 
 <script>
