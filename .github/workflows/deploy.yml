@@ -38,7 +38,7 @@ jobs:
       - name: Verify JWT_SECRET not hardcoded (P0 security check)
         run: |
           echo "=== P0安全检查: 确认无硬编码JWT密钥 ==="
-          if grep -r "fs-mini-program-2026" functions/ 2>/dev/null; then
+          if grep -rE "fs-mini-program-2026|f[a-z]{2}-[a-z]{2,6}-[a-z]{2,6}-[0-9]{4}" _worker.js public/_worker.js 2>/dev/null; then
             echo "❌ 发现硬编码密钥！部署中止"
             exit 1
           fi

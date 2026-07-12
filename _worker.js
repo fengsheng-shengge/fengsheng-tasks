@@ -130,19 +130,55 @@ async function simpleHash(str) {
   return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// JWT-standard base64url encoding/decoding (RFC 7515)
+function base64urlEncode(str) {
+  // Use standard btoa then convert to base64url
+  const base64 = btoa(str);
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+function base64urlDecode(b64u) {
+  // Restore base64url → standard base64, then decode
+  const base64 = b64u.replace(/-/g, '+').replace(/_/g, '/');
+  // Pad to multiple of 4
+  const pad = base64.length % 4;
+  const padded = pad ? base64 + '='.repeat(4 - pad) : base64;
+  return atob(padded);
+}
+
+function arrayBufferToBase64url(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return base64urlEncode(binary);
+}
+
+function base64urlToArrayBuffer(b64u) {
+  const binary = base64urlDecode(b64u);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
 async function generateToken(openid, env) {
   const secret = env.JWT_SECRET;
   if (!secret) {
     throw new Error('JWT_SECRET not configured in worker environment');
   }
-  const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-  const payload = btoa(JSON.stringify({
+  const header = base64urlEncode(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const now = Math.floor(Date.now() / 1000);
+  const payload = base64urlEncode(JSON.stringify({
     openid,
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 86400 * 7, // 7 days
+    iat: now,
+    exp: now + 86400 * 7, // 7 days
+    jti: crypto.randomUUID ? crypto.randomUUID() : openid + '_' + now,
   }));
-  
-  // Simple HMAC using Web Crypto API
+
+  // HMAC-SHA256 signature using Web Crypto API
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(
     'raw',
@@ -152,8 +188,8 @@ async function generateToken(openid, env) {
     ['sign']
   );
   const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(`${header}.${payload}`));
-  const sig = btoa(String.fromCharCode(...new Uint8Array(signature))).replace(/=/g, '');
-  
+  const sig = arrayBufferToBase64url(signature);
+
   return `${header}.${payload}.${sig}`;
 }
 
@@ -164,20 +200,27 @@ async function verifyToken(token, env) {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
     const [h, p, s] = parts;
-    // Verify signature
+
+    // Verify signature using timing-safe Web Crypto
     const encoder = new TextEncoder();
     const key = await crypto.subtle.importKey(
-      'raw', encoder.encode(secret),
+      'raw',
+      encoder.encode(secret),
       { name: 'HMAC', hash: 'SHA-256' },
-      false, ['sign']
+      false,
+      ['verify']
     );
-    const sigBytes = Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+    const sigBytes = base64urlToArrayBuffer(s);
     const valid = await crypto.subtle.verify(
       { name: 'HMAC', hash: 'SHA-256' },
-      key, sigBytes, encoder.encode(`${h}.${p}`)
+      key,
+      sigBytes,
+      encoder.encode(`${h}.${p}`)
     );
     if (!valid) return null;
-    const payload = JSON.parse(atob(p));
+
+    // Decode payload and validate expiration
+    const payload = JSON.parse(base64urlDecode(p));
     const now = Math.floor(Date.now() / 1000);
     if (payload.exp && payload.exp < now) return null;
     return payload;
