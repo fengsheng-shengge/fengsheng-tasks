@@ -101,22 +101,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   <div class="chat-avatar">🌬️</div>
   <div>
     <div class="chat-title">开单导师</div>
-    <div class="chat-subtitle">23年行业老兵的Knowhow，你直接用</div>
+    <div class="chat-subtitle">专注租赁的AI陪练</div>
   </div>
 </div>
 
 <div class="chat-body" id="chatBody">
-  <div class="welcome" id="welcomeView">
-    <div class="welcome-icon">🌬️</div>
-    <h2>你好，我是开单导师</h2>
-    <p>帮你拆解客户真需求，手把手教你开单。说说你遇到的问题？</p>
-  </div>
 </div>
 
 <div class="suggestions" id="suggestions">
-  <button class="sug-btn" onclick="sendSuggestion(this)">客户说"再看看"怎么回？</button>
-  <button class="sug-btn" onclick="sendSuggestion(this)">怎么挖出客户真实预算？</button>
-  <button class="sug-btn" onclick="sendSuggestion(this)">客户犹豫不决怎么推？</button>
+  <button class="sug-btn" onclick="sendSuggestion(this)">客户说再看看，怎么推？</button>
+  <button class="sug-btn" onclick="sendSuggestion(this)">客户预算藏着不说，怎么挖？</button>
   <button class="sug-btn" onclick="sendSuggestion(this)">新人第一步该做什么？</button>
 </div>
 
@@ -128,7 +122,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 </div>
 
 <div class="page-footer">
-  🌬️ 风声 · 通过独立价值获得尊重 · fengsheng.tech © 2026
+  🌬️ 风声 · 通过独立价值获得尊重 · fengsheng.tech © 2026<br><a href="https://beian.miit.gov.cn/" target="_blank" style="color:inherit;text-decoration:none">京ICP备2026041809号</a>
 </div>
 
 <script>
@@ -137,10 +131,24 @@ const chatBody = document.getElementById('chatBody');
 const chatInput = document.getElementById('chatInput');
 const sendBtn = document.getElementById('sendBtn');
 const suggestions = document.getElementById('suggestions');
-const welcomeView = document.getElementById('welcomeView');
 
 let conversationId = null;
 let isStreaming = false;
+let hasUserMessage = false;
+
+// Show opening message on load
+function showOpeningMessage() {
+  const openingText = `你好！我是开单导师，专注租赁的AI陪练——帮你搞定从找客到签约的每一步。\n\n我能帮你：\n🔥 场景话术 — 客户说"再看看"、预算藏着不说，每个卡点都有回法\n🌊 客户读懂 — 帮你听出真需求、挖出真实预算\n📐 开单策略 — 7步走法，从带看到签约不再乱打乱撞\n📚 职业成长 — 从"做单"到"做专业"的路径\n\n每次对话给你可直接用的话术和策略，不是大道理。\n\n直接说你的情况👇`;
+  const msg = document.createElement('div');
+  msg.className = 'msg msg-bot';
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.style.whiteSpace = 'pre-line';
+  bubble.textContent = openingText;
+  msg.appendChild(bubble);
+  chatBody.appendChild(msg);
+  scrollToBottom();
+}
 
 // Auto-resize textarea
 chatInput.addEventListener('input', function() {
@@ -160,13 +168,15 @@ function sendSuggestion(btn) {
   sendMessage();
 }
 
-function hideWelcome() {
-  if (welcomeView) welcomeView.style.display = 'none';
+function hideSuggestions() {
   if (suggestions) suggestions.style.display = 'none';
 }
 
 function addMessage(role, text, isError) {
-  hideWelcome();
+  if (!hasUserMessage && role === 'user') {
+    hasUserMessage = true;
+    hideSuggestions();
+  }
   const msg = document.createElement('div');
   msg.className = 'msg msg-' + (role === 'user' ? 'user' : 'bot') + (isError ? ' msg-error' : '');
   msg.innerHTML = '<div class="msg-bubble"></div>';
@@ -295,22 +305,9 @@ function getOrCreateUserId() {
   return uid;
 }
 
-// Focus input on load
+// Show opening message and focus input on load
+showOpeningMessage();
 chatInput.focus();
-
-// Show welcome message in chat history (#155)
-(function initWelcome() {
-  // Hide the static welcome screen (replaced by chat message)
-  if (welcomeView) welcomeView.style.display = 'none';
-  var welcomeText = '你好！我是风声开单导师，专注租赁业务陪练。\n' +
-    '你可以问我：客户说"再看看"怎么回、怎么挖出真实预算、怎么让犹豫客户下决心……直接说你的情况就行。';
-  addMessage('bot', welcomeText);
-  // Scroll welcome into view
-  chatBody.scrollTop = chatBody.scrollHeight;
-})();
 </script>
-  <!-- 全站数据追踪器 -->
-  <script src="/tracker.js" async></script>
-
-  </body>
+</body>
 </html>

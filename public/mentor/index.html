@@ -4,40 +4,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>风声 · 开单导师</title>
-<meta name="description" content="开单导师——帮你拆解客户真需求，手把手教你开单。">
+<meta name="description" content="开单导师——你的AI带教师傅，手把手教你拆需求、配房源、逼定成交。">
 <meta property="og:title" content="开单导师 · 风声">
-<meta property="og:description" content="帮你拆解客户真需求，手把手教你开单">
+<meta property="og:description" content="你的AI带教师傅，手把手教你拆需求、配房源、逼定成交">
 <meta property="og:image" content="https://fengsheng.tech/og-image.png">
 <meta property="og:url" content="https://fengsheng.tech/mentor/">
 <style>
-:root{--bg:#f7f4ef;--border:rgba(80,90,70,.09);--p:#3d5a3e;--p-d:#2c4430;--fire:#c46a3a;--dk:#1a1a1a;--ts:#7a8478;--r:8px}
+:root{--bg:#f7f4ef;--border:rgba(80,90,70,.09);--p:#3d5a3e;--p-d:#2c4430;--fire:#c46a3a;--fire-h:#b05a2e;--dk:#1a1a1a;--ts:#7a8478;--cream:#f7f4ef;--r:8px}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:#555;height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:#555;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 
-/* Nav */
-.fs-nav{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:48px;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0;z-index:100}
+/* ===== Nav ===== */
+.fs-nav{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:48px;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0;z-index:100;position:sticky;top:0}
 .fs-nav-brand{font-size:15px;font-weight:700;color:var(--p);text-decoration:none;display:flex;align-items:center;gap:4px}
+.fs-nav-cta{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;font-size:12px;font-weight:600;color:#fff;background:var(--fire);border-radius:6px;text-decoration:none;transition:all .15s;white-space:nowrap;border:none;cursor:pointer}
+.fs-nav-cta:hover{background:var(--fire-h)}
+.fs-nav-right{display:flex;align-items:center;gap:12px}
 .fs-nav-links{display:flex;gap:4px}
 .fs-nav-links a{padding:4px 8px;font-size:11px;color:#555;text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
 .fs-nav-links a:hover{background:rgba(61,90,62,.05);color:var(--p)}
 .fs-nav-menu{display:none;background:none;border:none;font-size:18px;cursor:pointer;color:var(--p);padding:6px}
 @media(max-width:767px){
-  .fs-nav-links{display:none;position:absolute;top:48px;left:0;right:0;background:#fff;flex-direction:column;padding:8px;border-bottom:1px solid var(--border);box-shadow:0 4px 12px rgba(0,0,0,.08);z-index:99}
-  .fs-nav.open .fs-nav-links{display:flex}
+  .fs-nav-right .fs-nav-links{display:none;position:absolute;top:48px;left:0;right:0;background:#fff;flex-direction:column;padding:8px;border-bottom:1px solid var(--border);box-shadow:0 4px 12px rgba(0,0,0,.08);z-index:99}
+  .fs-nav.open .fs-nav-right .fs-nav-links{display:flex}
   .fs-nav-menu{display:block}
 }
 
-/* Chat Header */
-.chat-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0}
-.chat-avatar{width:36px;height:36px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+/* ===== Hero ===== */
+.hero{padding:52px 24px 40px;text-align:center;background:var(--bg)}
+.hero h1{font-size:28px;font-weight:900;color:var(--dk);letter-spacing:.02em;line-height:1.45;margin-bottom:6px}
+.hero h1 .fire{color:var(--fire)}
+.hero .subtitle{font-size:16px;color:#555;line-height:1.7;margin-bottom:24px;font-weight:400}
+.hero-cta{display:inline-flex;align-items:center;gap:6px;padding:13px 32px;font-size:14px;font-weight:600;color:#fff;background:var(--fire);border:none;border-radius:6px;cursor:pointer;transition:all .15s;text-decoration:none}
+.hero-cta:hover{background:var(--fire-h);transform:translateY(-1px);box-shadow:0 4px 12px rgba(196,106,58,.25)}
+.hero-hint{font-size:12px;color:var(--ts);margin-top:10px}
+
+/* ===== Abilities ===== */
+.abilities{padding:36px 20px 32px;background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.abilities .section-title{text-align:center;font-size:16px;font-weight:700;color:var(--dk);margin-bottom:22px}
+.abilities-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:560px;margin:0 auto}
+.ability-card{padding:16px 14px;border:1px solid var(--border);border-radius:var(--r);border-left:3px solid transparent;transition:all .2s;background:#fff}
+.ability-card:hover{border-left-color:var(--fire);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.ability-card .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--fire);color:#fff;font-size:11px;font-weight:700;margin-bottom:8px}
+.ability-card .title{font-size:14px;font-weight:700;color:var(--dk);margin-bottom:4px}
+.ability-card .desc{font-size:12px;color:var(--ts);line-height:1.6}
+@media(max-width:480px){.abilities-grid{grid-template-columns:1fr}}
+
+/* ===== Output ===== */
+.output-section{padding:32px 20px;text-align:center;background:var(--bg)}
+.output-section .section-title{font-size:16px;font-weight:700;color:var(--dk);margin-bottom:20px}
+.output-flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;max-width:580px;margin:0 auto}
+.output-item{padding:12px 20px;background:#fff;border:1px solid var(--border);border-radius:var(--r);font-size:13px;font-weight:600;color:var(--dk);transition:all .15s}
+.output-item.highlight{border-color:var(--fire);color:var(--fire)}
+.output-item:hover{box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.output-arrow{color:var(--ts);font-size:16px;font-weight:300}
+
+/* ===== Trust ===== */
+.trust{padding:16px 20px;text-align:center;font-size:12px;color:var(--ts);background:var(--bg);letter-spacing:.08em}
+
+/* ===== Chat Section (doubles as CTA) ===== */
+.chat-section{border-top:1px solid var(--border);background:#fff;display:flex;flex-direction:column;max-height:56vh;min-height:300px}
+.chat-cta-header{padding:14px 16px 0;text-align:center;font-size:15px;font-weight:700;color:var(--dk);line-height:1.5;flex-shrink:0}
+.chat-header{display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fff;flex-shrink:0}
+.chat-avatar{width:32px;height:32px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .chat-title{font-size:14px;font-weight:700;color:var(--dk)}
 .chat-subtitle{font-size:11px;color:var(--ts);margin-top:1px}
 
 /* Messages Area */
-.chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch}
+.chat-body{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch;min-height:40px}
 .chat-body::-webkit-scrollbar{width:4px}
 .chat-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:4px}
-
 .msg{max-width:85%;animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .msg-bot{align-self:flex-start}
@@ -54,12 +90,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 @keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
 
 /* Quick suggestions */
-.suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 8px;flex-shrink:0}
+.suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:4px 16px 6px;flex-shrink:0}
 .sug-btn{padding:6px 12px;font-size:12px;border:1px solid rgba(61,90,62,.2);background:rgba(61,90,62,.04);color:var(--p);border-radius:16px;cursor:pointer;transition:all .15s;white-space:nowrap}
 .sug-btn:hover{background:rgba(61,90,62,.1);border-color:rgba(61,90,62,.3)}
 
 /* Input Area */
-.chat-input-wrap{display:flex;gap:8px;padding:12px 16px;background:#fff;border-top:1px solid var(--border);flex-shrink:0;align-items:flex-end}
+.chat-input-wrap{display:flex;gap:8px;padding:10px 16px 12px;background:#fff;border-top:1px solid var(--border);flex-shrink:0;align-items:flex-end}
 .chat-input{flex:1;border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:13.5px;resize:none;outline:none;font-family:inherit;line-height:1.5;max-height:100px;background:var(--bg);color:var(--dk)}
 .chat-input:focus{border-color:rgba(61,90,62,.3)}
 .chat-input::placeholder{color:var(--ts)}
@@ -68,89 +104,110 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .send-btn:disabled{background:#ccc;cursor:not-allowed}
 .send-btn svg{width:18px;height:18px}
 
-/* Welcome state */
-.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:28px 20px 16px;text-align:center;gap:12px;overflow-y:auto}
-.welcome-icon{width:64px;height:64px;opacity:.55}
-.welcome-icon svg{width:100%;height:100%}
-.welcome h2{font-size:19px;font-weight:800;color:var(--dk);letter-spacing:.02em}
-.welcome .welcome-desc{font-size:13px;color:var(--ts);line-height:1.7;max-width:340px}
-.welcome-features{display:flex;flex-direction:column;gap:8px;margin-top:4px;width:100%;max-width:340px}
-.welcome-feat{display:flex;align-items:flex-start;gap:10px;text-align:left;padding:10px 14px;background:#fff;border:1px solid var(--border);border-radius:var(--r)}
-.welcome-feat-icon{font-size:18px;flex-shrink:0;margin-top:1px}
-.welcome-feat-body{font-size:12.5px;line-height:1.6}
-.welcome-feat-title{font-weight:700;color:var(--dk);margin-bottom:1px}
-.welcome-feat-desc{color:var(--ts)}
-.welcome .welcome-cta{font-size:12.5px;color:var(--p);margin-top:4px;font-weight:600}
-
 /* Error */
 .msg-error .msg-bubble{background:#fef2f2;border-color:#fecaca;color:#dc2626}
 
 /* Footer */
 .page-footer{text-align:center;padding:8px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--ts);flex-shrink:0;background:#fff}
+.page-footer a{color:inherit;text-decoration:none}
 </style>
 </head>
 <body>
 
 <nav class="fs-nav">
-  <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
-  <div class="fs-nav-links">
-    <a href="/">首页</a>
-    <a href="/quality-test/">品质测评</a>
-    <a href="/care-test/">关怀测评</a>
-    <a href="/reply/">客户解码</a>
-    <a href="/mentor/" style="color:var(--p);font-weight:700">开单导师</a>
-    <a href="/ip-design/">IP设计</a>
-    <a href="/knowledge">知识底座</a>
+  <a href="/" class="fs-nav-brand">🌬️ <span>风声·开单导师</span></a>
+  <div class="fs-nav-right">
+    <div class="fs-nav-links">
+      <a href="/">首页</a>
+      <a href="/quality-test/">品质测评</a>
+      <a href="/care-test/">关怀测评</a>
+      <a href="/reply/">客户解码</a>
+      <a href="/mentor/" style="color:var(--p);font-weight:700">开单导师</a>
+      <a href="/ip-design/">IP设计</a>
+      <a href="/knowledge">知识底座</a>
+    </div>
+    <button class="fs-nav-cta" onclick="scrollToChat()">说说你的客户 →</button>
   </div>
   <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
 </nav>
 
-<div class="chat-header">
-  <div class="chat-avatar">🌬️</div>
-  <div>
-    <div class="chat-title">开单导师</div>
-    <div class="chat-subtitle">23年行业老兵的Knowhow，你直接用</div>
-  </div>
-</div>
+<!-- Hero -->
+<section class="hero">
+  <h1>你的AI带教师傅</h1>
+  <p class="subtitle">手把手教你<span class="fire">拆需求、配房源、逼定成交</span></p>
+  <button class="hero-cta" onclick="scrollToChat()">说说你的客户 →</button>
+  <p class="hero-hint">随便说几句就行，AI导师会追问细节</p>
+</section>
 
-<div class="chat-body" id="chatBody">
-  <div class="welcome" id="welcomeView">
-    <div class="welcome-icon">
-      <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="52" cy="38" r="16" stroke="#3d5a3e" stroke-width="2.5" fill="none"/>
-        <path d="M36 54c0 0 2 28 16 28s16-28 16-28" stroke="#3d5a3e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-        <path d="M68 62c6-2 16 2 22 10" stroke="#3d5a3e" stroke-width="2" stroke-linecap="round" opacity=".5" fill="none">
-          <animate attributeName="opacity" values=".3;.6;.3" dur="3s" repeatCount="indefinite"/>
-        </path>
-        <path d="M70 70c5 0 14 5 18 12" stroke="#3d5a3e" stroke-width="1.8" stroke-linecap="round" opacity=".35" fill="none">
-          <animate attributeName="opacity" values=".2;.5;.2" dur="3.5s" repeatCount="indefinite"/>
-        </path>
-        <path d="M66 78c4 2 12 8 15 14" stroke="#3d5a3e" stroke-width="1.5" stroke-linecap="round" opacity=".25" fill="none">
-          <animate attributeName="opacity" values=".15;.4;.15" dur="4s" repeatCount="indefinite"/>
-        </path>
-      </svg>
+<!-- Abilities -->
+<section class="abilities">
+  <div class="section-title">导师能帮你做什么</div>
+  <div class="abilities-grid">
+    <div class="ability-card">
+      <div class="num">1</div>
+      <div class="title">听懂客户没说的</div>
+      <div class="desc">挖出预算、动机、决策权，不止听说的，更看没说的</div>
     </div>
-    <h2>你好，我是开单导师</h2>
-    <p>帮你拆解客户真需求，手把手教你开单。<br>说说你遇到的问题？</p>
+    <div class="ability-card">
+      <div class="num">2</div>
+      <div class="title">秒配对路房源</div>
+      <div class="desc">基于真实需求画像推荐，不再大海捞针</div>
+    </div>
+    <div class="ability-card">
+      <div class="num">3</div>
+      <div class="title">带看讲到位</div>
+      <div class="desc">逐套话术+异议预案+节奏把控，现场不慌</div>
+    </div>
+    <div class="ability-card">
+      <div class="num">4</div>
+      <div class="title">踩准成交节奏</div>
+      <div class="desc">意向判断→逼定时机→签约落地，不放过信号</div>
+    </div>
   </div>
-</div>
+</section>
 
-<div class="suggestions" id="suggestions">
-  <button class="sug-btn" onclick="sendSuggestion(this)">客户说"再看看"怎么回？</button>
-  <button class="sug-btn" onclick="sendSuggestion(this)">怎么挖出客户真实预算？</button>
-  <button class="sug-btn" onclick="sendSuggestion(this)">客户犹豫不决怎么推？</button>
-  <button class="sug-btn" onclick="sendSuggestion(this)">新人第一步该做什么？</button>
-</div>
+<!-- Output -->
+<section class="output-section">
+  <div class="section-title">你聊一次，导师给你什么</div>
+  <div class="output-flow">
+    <div class="output-item highlight">每个客户一套专属方案</div>
+    <span class="output-arrow">→</span>
+    <div class="output-item">7步走完，从接触到签约有路径</div>
+    <span class="output-arrow">→</span>
+    <div class="output-item">越用越懂你，话术越来越像你</div>
+  </div>
+</section>
 
-<div class="chat-input-wrap">
-  <textarea class="chat-input" id="chatInput" placeholder="比如：客户说预算3000，怎么推荐？" rows="1" onkeydown="handleKey(event)"></textarea>
-  <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-  </button>
-</div>
+<!-- Trust -->
+<div class="trust">沃土实训验证 · 23年一线经验 · 7步开单法</div>
+
+<!-- Chat Section -->
+<section class="chat-section" id="chatSection">
+  <div class="chat-cta-header">告诉我你正在跟的客户情况，我帮你拆</div>
+  <div class="chat-header">
+    <div class="chat-avatar">🌬️</div>
+    <div>
+      <div class="chat-title">开单导师</div>
+      <div class="chat-subtitle">拆需求·配房源·逼定成交</div>
+    </div>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="suggestions" id="suggestions">
+    <button class="sug-btn" onclick="sendSuggestion(this)">客户说太贵了怎么办？</button>
+    <button class="sug-btn" onclick="sendSuggestion(this)">客户说再看看怎么跟进？</button>
+    <button class="sug-btn" onclick="sendSuggestion(this)">怎么快速建立客户信任？</button>
+    <button class="sug-btn" onclick="sendSuggestion(this)">带看后客户不回消息了</button>
+  </div>
+  <div class="chat-input-wrap">
+    <textarea class="chat-input" id="chatInput" placeholder="说说你遇到的客户问题…" rows="1" onkeydown="handleKey(event)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    </button>
+  </div>
+</section>
 
 <div class="page-footer">
-  🌬️ 风声 · 通过独立价值获得尊重 · fengsheng.tech © 2026 · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:inherit">京ICP备2026041809号</a>
+  🌬️ 风声 · 通过独立价值获得尊重 · fengsheng.tech © 2026 · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">京ICP备2026041809号</a>
 </div>
 
 <script>
@@ -159,10 +216,16 @@ const chatBody = document.getElementById('chatBody');
 const chatInput = document.getElementById('chatInput');
 const sendBtn = document.getElementById('sendBtn');
 const suggestions = document.getElementById('suggestions');
-const welcomeView = document.getElementById('welcomeView');
+const chatSection = document.getElementById('chatSection');
 
 let conversationId = null;
 let isStreaming = false;
+
+// Scroll to chat section
+function scrollToChat() {
+  chatSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => chatInput.focus(), 400);
+}
 
 // Auto-resize textarea
 chatInput.addEventListener('input', function() {
@@ -182,13 +245,9 @@ function sendSuggestion(btn) {
   sendMessage();
 }
 
-function hideWelcome() {
-  if (welcomeView) welcomeView.style.display = 'none';
-  if (suggestions) suggestions.style.display = 'none';
-}
-
 function addMessage(role, text, isError) {
-  hideWelcome();
+  // Hide suggestions on first message
+  if (suggestions) suggestions.style.display = 'none';
   const msg = document.createElement('div');
   msg.className = 'msg msg-' + (role === 'user' ? 'user' : 'bot') + (isError ? ' msg-error' : '');
   msg.innerHTML = '<div class="msg-bubble"></div>';
@@ -199,7 +258,7 @@ function addMessage(role, text, isError) {
 }
 
 function addTypingIndicator() {
-  hideWelcome();
+  if (suggestions) suggestions.style.display = 'none';
   const el = document.createElement('div');
   el.className = 'typing';
   el.id = 'typingIndicator';
@@ -272,22 +331,19 @@ async function sendMessage() {
           if (!dataStr) continue;
           try {
             const data = JSON.parse(dataStr);
-            // Capture conversation_id
             if (data.conversation_id && !conversationId) {
               conversationId = data.conversation_id;
             }
-            // Handle answer deltas
             if (data.type === 'answer' && data.content) {
               fullText += data.content;
               bubble.textContent = fullText;
               scrollToBottom();
             }
-            // Handle completed answer
             if (data.type === 'answer' && data.is_last) {
-              // Stream complete for this message
+              // Stream complete
             }
           } catch (e) {
-            // Ignore parse errors for non-JSON lines
+            // Ignore parse errors
           }
         }
       }
@@ -316,23 +372,6 @@ function getOrCreateUserId() {
   }
   return uid;
 }
-
-// Focus input on load
-chatInput.focus();
-
-// Show welcome message in chat history (#155)
-(function initWelcome() {
-  // Hide the static welcome screen (replaced by chat message)
-  var welcomeView = document.getElementById('welcomeView');
-  if (welcomeView) welcomeView.style.display = 'none';
-  var welcomeText = '你好！我是风声开单导师，专注租赁业务陪练。\n' +
-    '你可以问我：客户说"再看看"怎么回、怎么挖出真实预算、怎么让犹豫客户下决心……直接说你的情况就行。';
-  addMessage('bot', welcomeText);
-  chatBody.scrollTop = chatBody.scrollHeight;
-})();
 </script>
-  <!-- 全站数据追踪器 -->
-  <script src="/tracker.js" async></script>
-
-  </body>
+</body>
 </html>
