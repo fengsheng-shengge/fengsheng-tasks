@@ -29,7 +29,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        id: deploy
+        uses: cloudflare/pages-action@v1.2.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -37,6 +38,12 @@ jobs:
           directory: ./
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
+
+      - name: 检查部署结果
+        run: |
+          echo "pages-action 输出:"
+          echo "${{ steps.deploy.outputs }}"
+          echo "退出码: $?"
 
   verify:
     name: 部署后验证
