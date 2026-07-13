@@ -28,8 +28,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to Cloudflare Pages
-        id: deploy
+      - name: Trigger Cloudflare Pages Rebuild via API
+        run: |
+          echo "=== 通过 Cloudflare Pages API 触发 Worker + 静态文件重建 ==="
+          echo "Account ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          echo "Project: fengsheng"
+
+          RESPONSE=$(curl -s -X POST \
+            "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/fengsheng/deployments" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -w "\nHTTP_CODE:%{http_code}")
+
+          echo "Response: $RESPONSE"
+          HTTP_CODE=$(echo "$RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
+          echo "HTTP Status: $HTTP_CODE"
+
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "201" ]; then
+            DEPLOYMENT_ID=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('result',{}).get('id','N/A'))" 2>/dev/null || echo "unknown")
+            echo "✅ 部署已触发！Deployment ID: $DEPLOYMENT_ID"
+            echo "deploy_id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
+          else
+            echo "❌ 部署触发失败，尝试使用 pages-action..."
+            # Fallback to pages-action
+          fi
+
+      - name: Deploy to Cloudflare Pages (fallback)
+        if: always()
         uses: cloudflare/pages-action@v1.2.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -39,19 +64,13 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
 
-      - name: 检查部署结果
-        run: |
-          echo "pages-action 输出:"
-          echo "${{ steps.deploy.outputs }}"
-          echo "退出码: $?"
-
   verify:
     name: 部署后验证
     needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: Wait for deployment
-        run: sleep 10
+        run: sleep 15
 
       - name: Verify site accessibility
         run: |
@@ -61,6 +80,22 @@ jobs:
             echo "  ✓ 网站正常响应 (HTTP $HTTP_CODE)"
           else
             echo "  ⚠ 网站响应 HTTP $HTTP_CODE（可能还在部署中）"
+          fi
+
+      - name: Verify API endpoints
+        run: |
+          echo "=== 验证 API 端点 ==="
+          # 验证 stats summary
+          STATS=$(curl -s https://fengsheng.tech/api/stats/summary --max-time 10)
+          echo "Stats Summary: $(echo $STATS | python3 -c 'import sys,json; d=json.load(sys.stdin); print(f\"users={d[\"total_users\"]}, pv={d[\"total_pageviews\"]}\")' 2>/dev/null || echo 'failed')"
+
+          # 验证 daily stats (检查 date:null 是否已修复)
+          DAILY=$(curl -s "https://fengsheng.tech/api/stats/daily?days=3" --max-time 10)
+          HAS_NULL=$(echo $DAILY | grep -c '"date":null' || true)
+          if [ "$HAS_NULL" = "0" ]; then
+            echo "  ✓ daily stats 无 date:null（Worker 已更新！）"
+          else
+            echo "  ⚠ daily stats 仍有 date:null（Worker 未更新）"
           fi
 
       - name: Verify key pages
