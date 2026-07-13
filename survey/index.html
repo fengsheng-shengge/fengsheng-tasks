@@ -415,5 +415,8 @@ function copyResult(){
 function fallbackCopy(t){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('已复制！')}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2000)}
 </script>
-</body>
+  <!-- 全站数据追踪器 -->
+  <script src="/tracker.js" async></script>
+
+  </body>
 </html>
