@@ -136,6 +136,42 @@ jobs:
             exit 1
           fi
 
+      - name: Check tracker.js coverage on key pages
+        run: |
+          echo "=== 检查 8b: 关键页面 tracker.js 覆盖率 ==="
+          MISSING=0
+          for page in \
+            "index.html" \
+            "mentor/index.html" \
+            "reply/index.html" \
+            "quality-test/index.html" \
+            "care-test/index.html" \
+            "knowledge/index.html" \
+            "breeder/index.html" \
+            "assessment/index.html" \
+            "ip-design/index.html" \
+            "about/index.html" \
+            "partner/index.html" \
+            "skills/index.html" \
+            "survey/index.html" \
+            "shuowenjiedao/index.html" \
+            "privacy.html" \
+            "agreement.html"; do
+            if [ -f "$page" ]; then
+              if grep -q 'tracker.js' "$page"; then
+                echo "  ✓ $page"
+              else
+                echo "  ✗ $page 缺少 tracker.js！"
+                MISSING=$((MISSING + 1))
+              fi
+            fi
+          done
+          if [ "$MISSING" -gt 0 ]; then
+            echo "  ✗ $MISSING 个页面缺少 tracker.js！"
+            exit 1
+          fi
+          echo "  ✓ 所有关键页面均包含 tracker.js"
+
       - name: Check dashboard.html has key auth
         continue-on-error: true  # 技术债：dashboard.html 缺URL参数鉴权，待安全专项任务处理
         run: |
