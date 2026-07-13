@@ -12,6 +12,9 @@ on:
         options:
           - production
           - preview
+  # 由 check-credentials.yml 在小鱼儿回复凭证后触发
+  repository_dispatch:
+    types: [deploy-from-credentials]
 
 permissions:
   contents: read
