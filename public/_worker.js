@@ -1,4 +1,5 @@
 // FengSheng Pages Worker - handles all API routes
+// Version: v20260713-1947 - forcing Worker rebuild via push to main
 const COZE_API = 'https://api.coze.cn';
 const BOT_ID = '7657006281966452790';
 const WX_API = 'https://api.weixin.qq.com/sns/jscode2session';
