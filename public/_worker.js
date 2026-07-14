@@ -1,5 +1,4 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260713-1947 - forcing Worker rebuild via push to main
 const COZE_API = 'https://api.coze.cn';
 const BOT_ID = '7657006281966452790';
 const WX_API = 'https://api.weixin.qq.com/sns/jscode2session';
@@ -85,6 +84,147 @@ export default {
       return handleStatsHealth(request, env);
     }
 
+    // Health check
+    if (path === '/mentor-api/health' || path === '/api/health') {
+      return jsonResponse({ status: 'ok', time: new Date().toISOString() });
+    }
+
+    // Legacy /api/chat route
+    if (path === '/api/chat' && request.method === 'POST') {
+      return handleChat(request, env);
+    }
+
+    // Mentor 支付初始化 — 生成支付宝当面付二维码
+    if (path === '/mentor-api/payment/init' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { user_id, amount, product } = body;
+
+        if (!user_id || !amount) {
+          return jsonResponse({ error: '缺少参数' }, 400);
+        }
+
+        // 生成唯一订单号
+        const outTradeNo = 'FS' + Date.now() + Math.random().toString(36).slice(2, 6);
+        const subject = product === 'mentor_unlock' ? '开单导师解锁' : '风声服务';
+        const notifyUrl = `${getBaseUrl(request)}/mentor-api/payment/notify`;
+
+        // 调用支付宝当面付 API
+        const alipayResp = await fetch('https://api.alipay.com/gateway.do', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            service: 'alipay.trade.precreate',
+            partner: env.ALIPAY_PARTNER || '',
+            seller_id: env.ALIPAY_SELLER_ID || '',
+            out_trade_no: outTradeNo,
+            total_amount: amount,
+            subject: subject,
+            notify_url: notifyUrl,
+            app_key: env.ALIPAY_APP_ID || '',
+          }).toString()
+        });
+
+        const alipayData = await alipayResp.json();
+        const qrCode = alipayData?.alipay_trade_precreate_response?.qr_code;
+
+        if (!qrCode) {
+          console.error('Alipay precreate failed:', JSON.stringify(alipayData));
+          return jsonResponse({
+            error: '支付码生成失败',
+            detail: alipayData?.error_response?.sub_msg || '未知错误'
+          }, 500);
+        }
+
+        // 存储订单状态（KV）
+        const orderData = {
+          out_trade_no: outTradeNo,
+          user_id,
+          amount,
+          product,
+          status: 'pending',
+          created_at: Date.now()
+        };
+
+        if (env.PAYMENT_ORDERS) {
+          await env.PAYMENT_ORDERS.put(outTradeNo, JSON.stringify(orderData));
+        }
+
+        return jsonResponse({
+          out_trade_no: outTradeNo,
+          qr_code: qrCode,
+          qr_code_url: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrCode)}`,
+          expires_in: 300
+        });
+
+      } catch (err) {
+        console.error('Payment init error:', err);
+        return jsonResponse({ error: '支付初始化失败: ' + err.message }, 500);
+      }
+    }
+
+    // Mentor 支付状态查询
+    if (path.startsWith('/mentor-api/payment/check') && request.method === 'GET') {
+      try {
+        const url = new URL(request.url);
+        const outTradeNo = url.searchParams.get('out_trade_no');
+        if (!outTradeNo) return jsonResponse({ error: '缺少订单号' }, 400);
+
+        const alipayResp = await fetch('https://api.alipay.com/gateway.do', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            service: 'alipay.trade.query',
+            partner: env.ALIPAY_PARTNER || '',
+            out_trade_no: outTradeNo,
+            app_key: env.ALIPAY_APP_ID || '',
+          }).toString()
+        });
+
+        const data = await alipayResp.json();
+        const tradeStatus = data?.alipay_trade_query_response?.trade_status;
+        const paid = tradeStatus === 'TRADE_SUCCESS' || tradeStatus === 'TRADE_FINISHED';
+
+        return jsonResponse({
+          out_trade_no: outTradeNo,
+          paid,
+          trade_status: tradeStatus || 'UNKNOWN'
+        });
+
+      } catch (err) {
+        console.error('Payment check error:', err);
+        return jsonResponse({ error: '查询失败: ' + err.message }, 500);
+      }
+    }
+
+    // Mentor 支付回调通知（支付宝异步通知）
+    if (path === '/mentor-api/payment/notify' && request.method === 'POST') {
+      try {
+        const params = await request.json();
+        const { out_trade_no, trade_status, trade_no } = params;
+
+        if (trade_status === 'TRADE_SUCCESS' || trade_status === 'TRADE_FINISHED') {
+          if (env.PAYMENT_ORDERS) {
+            const orderStr = await env.PAYMENT_ORDERS.get(out_trade_no);
+            if (orderStr) {
+              const order = JSON.parse(orderStr);
+              order.status = 'paid';
+              order.trade_no = trade_no;
+              order.paid_at = Date.now();
+              await env.PAYMENT_ORDERS.put(out_trade_no, JSON.stringify(order));
+            }
+          }
+          console.log(`Payment success: ${out_trade_no}`);
+        }
+
+        return jsonResponse({ success: true });
+      } catch (err) {
+        console.error('Payment notify error:', err);
+        return jsonResponse({ success: false, error: err.message }, 500);
+      }
+    }
+
+
     // All other requests → pass through to static assets
     return env.ASSETS.fetch(request);
   },
@@ -140,6 +280,12 @@ async function simpleHash(str) {
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function getBaseUrl(request) {
+  const proto = request.headers.get('X-Forwarded-Proto') || 'https';
+  const host = request.headers.get('Host') || 'fengsheng.tech';
+  return `${proto}://${host}`;
 }
 
 // JWT-standard base64url encoding/decoding (RFC 7515)
@@ -441,7 +587,7 @@ async function handleStatsDaily(request, env) {
   if (env.DB) {
     try {
       const daily = await env.DB.prepare(
-        `SELECT date(created_at, 'unixepoch') as date, COUNT(DISTINCT uid) as unique_uids, COUNT(CASE WHEN event_type='pageview' THEN 1 END) as pageviews, COUNT(CASE WHEN event_type='click' THEN 1 END) as clicks, COUNT(CASE WHEN event_type='reply_submit' THEN 1 END) as feedbacks FROM events WHERE created_at >= unixepoch('now', '-${days} days') AND date(created_at, 'unixepoch') IS NOT NULL GROUP BY date(created_at, 'unixepoch') ORDER BY date`
+        `SELECT date(created_at, 'unixepoch') as date, COUNT(DISTINCT uid) as unique_uids, COUNT(CASE WHEN event_type='pageview' THEN 1 END) as pageviews, COUNT(CASE WHEN event_type='click' THEN 1 END) as clicks, COUNT(CASE WHEN event_type='reply_submit' THEN 1 END) as feedbacks FROM events WHERE created_at >= unixepoch('now', '-${days} days') GROUP BY date(created_at, 'unixepoch') ORDER BY date`
       ).all();
 
       return jsonResponse({

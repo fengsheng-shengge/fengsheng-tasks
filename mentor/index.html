@@ -79,6 +79,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
 /* Footer */
 .page-footer{text-align:center;padding:8px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--ts);flex-shrink:0;background:#fff}
+
+/* ===== Paywall Modal ===== */
+.paywall-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:16px}
+.paywall-overlay.show{display:flex;align-items:center;justify-content:center}
+.paywall-modal{background:#fff;border-radius:16px;max-width:360px;width:100%;padding:28px 24px;text-align:center;animation:slideUp .3s ease;position:relative}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.paywall-icon{font-size:48px;margin-bottom:12px}
+.paywall-title{font-size:18px;font-weight:800;color:var(--dk);margin-bottom:8px}
+.paywall-desc{font-size:13px;color:var(--ts);line-height:1.7;margin-bottom:16px}
+.paywall-price{background:var(--bg);border-radius:12px;padding:12px;margin-bottom:16px}
+.paywall-price-tag{font-size:28px;font-weight:900;color:var(--p);display:block}
+.paywall-price-note{font-size:11px;color:var(--ts);margin-top:2px}
+.paywall-rounds{display:flex;gap:6px;justify-content:center;margin-bottom:16px}
+.paywall-round{flex:1;padding:6px;background:var(--bg);border-radius:8px;font-size:12px;color:var(--ts)}
+.paywall-round.used{background:rgba(61,90,62,.08);color:var(--p);font-weight:700}
+.paywall-round.current{background:rgba(196,106,58,.1);color:var(--fire);font-weight:700}
+.paywall-btn{display:block;width:100%;padding:13px;border-radius:10px;background:var(--p);color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;margin-bottom:8px;transition:all .15s}
+.paywall-btn:hover{background:var(--p-d);transform:translateY(-1px)}
+.paywall-btn:active{transform:translateY(0)}
+.paywall-btn-secondary{display:block;width:100%;padding:10px;border-radius:10px;background:transparent;color:var(--ts);font-size:12px;border:none;cursor:pointer}
+.paywall-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:18px;color:var(--ts);cursor:pointer}
+.paywall-btn:disabled{background:#ccc;cursor:not-allowed;transform:none}
+
+/* Paywall trigger on input */
+.paywall-hint{display:none;padding:8px 16px;background:rgba(196,106,58,.06);border-top:1px solid rgba(196,106,58,.15);font-size:12px;color:var(--fire);flex-shrink:0;text-align:center}
+.paywall-hint.show{display:block}
+
+/* Payment status */
+.paywall-status{font-size:12px;color:var(--ts);margin-top:8px}
+.paywall-qr{background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px;margin:12px 0;display:inline-block}
+.paywall-qr img{width:120px;height:120px}
 </style>
 </head>
 <body>
@@ -114,11 +145,84 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   <button class="sug-btn" onclick="sendSuggestion(this)">新人第一步该做什么？</button>
 </div>
 
-<div class="chat-input-wrap">
+<div class="chat-input-wrap" id="chatInputWrap">
   <textarea class="chat-input" id="chatInput" placeholder="比如：客户说预算3000，怎么推荐？" rows="1" onkeydown="handleKey(event)"></textarea>
   <button class="send-btn" id="sendBtn" onclick="sendMessage()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
   </button>
+</div>
+<div class="paywall-hint" id="paywallHint">
+  🔒 已用完免费对话次数，<a href="javascript:void(0)" onclick="showPaywallModal()" style="color:var(--fire);font-weight:700">解锁全部对话 →</a>
+</div>
+
+<!-- Paywall Modal -->
+<div class="paywall-overlay" id="paywallOverlay">
+  <div class="paywall-modal" id="paywallModal">
+    <button class="paywall-close" id="paywallClose" onclick="closePaywallModal()">×</button>
+
+    <!-- Step 1: 价格说明 -->
+    <div id="paywallStep1">
+      <div class="paywall-icon">🌬️</div>
+      <div class="paywall-title">解锁全部对话</div>
+      <div class="paywall-desc">
+        你已用完 <strong>3 次</strong>免费对话次数<br>
+        解锁后可与开单导师无限畅聊
+      </div>
+      <div class="paywall-rounds" id="roundIndicators">
+        <div class="paywall-round used">1/3</div>
+        <div class="paywall-round used">2/3</div>
+        <div class="paywall-round current">3/3 已用完</div>
+      </div>
+      <div class="paywall-price">
+        <span class="paywall-price-tag">¥0.99</span>
+        <span class="paywall-price-note">体验价 · 正式版 ¥9.9/月</span>
+      </div>
+      <button class="paywall-btn" id="payBtn" onclick="initiatePayment()">
+        🚀 支付宝扫码解锁
+      </button>
+      <button class="paywall-btn-secondary" onclick="closePaywallModal()">
+        稍后再说
+      </button>
+    </div>
+
+    <!-- Step 2: 扫码支付 -->
+    <div id="paywallStep2" style="display:none">
+      <div class="paywall-icon">💳</div>
+      <div class="paywall-title">扫码支付 ¥0.99</div>
+      <div class="paywall-desc">
+        使用支付宝扫码完成支付<br>
+        支付成功后自动解锁，继续对话
+      </div>
+      <div class="paywall-qr">
+        <img id="qrImg" src="" alt="支付宝扫码" style="width:120px;height:120px;display:none">
+        <div id="qrLoading" style="width:120px;height:120px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--ts);border:1px solid var(--border);border-radius:4px">加载中…</div>
+      </div>
+      <div class="paywall-price" style="margin-bottom:8px">
+        <span class="paywall-price-tag">¥0.99</span>
+        <span class="paywall-price-note">支付成功后自动解锁</span>
+      </div>
+      <button class="paywall-btn" id="checkPayBtn" style="background:#ccc" disabled>
+        ⏳ 等待支付…
+      </button>
+      <div class="paywall-status" id="payStatus">请使用支付宝扫码支付</div>
+      <button class="paywall-btn-secondary" onclick="closePaywallModal()">
+        取消
+      </button>
+    </div>
+
+    <!-- Step 3: 支付成功 -->
+    <div id="paywallStep3" style="display:none">
+      <div class="paywall-icon">🎉</div>
+      <div class="paywall-title">支付成功！</div>
+      <div class="paywall-desc">
+        已解锁开单导师全部对话功能<br>
+        继续你的问题👇
+      </div>
+      <button class="paywall-btn" onclick="closePaywallModal()">
+        继续对话 →
+      </button>
+    </div>
+  </div>
 </div>
 
 <div class="page-footer">
@@ -305,9 +409,282 @@ function getOrCreateUserId() {
   return uid;
 }
 
+/* ===== 付费墙 ===== */
+const PAYWALL_FREE_ROUNDS = 3;
+const PAYWALL_PRICE = '0.99';
+let pendingPayText = null;  // 存储第4条消息，等支付后发送
+let paymentPollingTimer = null;
+
+function getPaidStatus() {
+  return localStorage.getItem('fs_mentor_paid') === '1';
+}
+
+function getMessageCount() {
+  return parseInt(localStorage.getItem('fs_mentor_msg_count') || '0', 10);
+}
+
+function incrementMessageCount() {
+  const count = getMessageCount() + 1;
+  localStorage.setItem('fs_mentor_msg_count', count);
+  return count;
+}
+
+function updateFreeRoundsBanner() {
+  const count = getMessageCount();
+  const paid = getPaidStatus();
+  const remaining = Math.max(0, PAYWALL_FREE_ROUNDS - count);
+  const hint = document.getElementById('paywallHint');
+  if (!hint) return;
+
+  if (paid) {
+    hint.classList.remove('show');
+    hint.innerHTML = '🎉 已解锁全部对话';
+    hint.style.background = 'rgba(61,90,62,.06)';
+    hint.style.color = 'var(--p)';
+  } else if (count >= PAYWALL_FREE_ROUNDS) {
+    hint.classList.add('show');
+  } else {
+    hint.classList.remove('show');
+  }
+}
+
+function showPaywallModal(pendingText) {
+  pendingPayText = pendingText;
+  const overlay = document.getElementById('paywallOverlay');
+  const step1 = document.getElementById('paywallStep1');
+  const step2 = document.getElementById('paywallStep2');
+  const step3 = document.getElementById('paywallStep3');
+
+  step1.style.display = 'block';
+  step2.style.display = 'none';
+  step3.style.display = 'none';
+  overlay.classList.add('show');
+
+  // 填充轮次指示
+  const indicators = document.getElementById('roundIndicators');
+  if (indicators) {
+    indicators.innerHTML = '';
+    for (let i = 1; i <= 3; i++) {
+      const div = document.createElement('div');
+      div.className = 'paywall-round ' + (i <= getMessageCount() ? 'used' : 'current');
+      div.textContent = i <= getMessageCount() ? `${i}/3` : '3/3 已用完';
+      indicators.appendChild(div);
+    }
+  }
+}
+
+function closePaywallModal() {
+  const overlay = document.getElementById('paywallOverlay');
+  overlay.classList.remove('show');
+  pendingPayText = null;
+  if (paymentPollingTimer) {
+    clearInterval(paymentPollingTimer);
+    paymentPollingTimer = null;
+  }
+}
+
+async function initiatePayment() {
+  const payBtn = document.getElementById('payBtn');
+  payBtn.disabled = true;
+  payBtn.textContent = '⏳ 生成支付码…';
+
+  try {
+    const userId = getOrCreateUserId();
+    const resp = await fetch('/mentor-api/payment/init', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: userId,
+        amount: PAYWALL_PRICE,
+        product: 'mentor_unlock',
+      })
+    });
+
+    if (!resp.ok) throw new Error('支付初始化失败');
+
+    const data = await resp.json();
+
+    // 显示二维码
+    const step1 = document.getElementById('paywallStep1');
+    const step2 = document.getElementById('paywallStep2');
+    const qrImg = document.getElementById('qrImg');
+    const qrLoading = document.getElementById('qrLoading');
+
+    step1.style.display = 'none';
+    step2.style.display = 'block';
+
+    if (data.qr_code_url) {
+      qrImg.src = data.qr_code_url;
+      qrImg.style.display = 'block';
+      qrLoading.style.display = 'none';
+    } else {
+      qrLoading.textContent = '支付码加载失败，请刷新重试';
+    }
+
+    // 轮询支付状态
+    const payStatus = document.getElementById('payStatus');
+    const checkBtn = document.getElementById('checkPayBtn');
+    let pollCount = 0;
+    paymentPollingTimer = setInterval(async () => {
+      pollCount++;
+      const checkResp = await fetch(`/mentor-api/payment/check?out_trade_no=${data.out_trade_no}`);
+      if (checkResp.ok) {
+        const checkData = await checkResp.json();
+        if (checkData.paid) {
+          clearInterval(paymentPollingTimer);
+          paymentPollingTimer = null;
+          onPaymentSuccess();
+          return;
+        }
+      }
+      if (pollCount >= 60) {  // 5分钟超时
+        clearInterval(paymentPollingTimer);
+        paymentPollingTimer = null;
+        payStatus.textContent = '⏰ 支付超时，请刷新页面重试';
+        checkBtn.textContent = '支付超时';
+      } else {
+        payStatus.textContent = `等待支付… (${pollCount * 5}秒)`;
+      }
+    }, 5000);
+
+  } catch (err) {
+    console.error('Payment init error:', err);
+    payBtn.disabled = false;
+    payBtn.textContent = '🚀 支付宝扫码解锁';
+    alert('支付初始化失败，请稍后重试');
+  }
+}
+
+function onPaymentSuccess() {
+  // 解锁用户
+  localStorage.setItem('fs_mentor_paid', '1');
+
+  const step2 = document.getElementById('paywallStep2');
+  const step3 = document.getElementById('paywallStep3');
+  step2.style.display = 'none';
+  step3.style.display = 'block';
+
+  // 更新 banner
+  updateFreeRoundsBanner();
+
+  // 如果有待发送的消息，发送它
+  if (pendingPayText) {
+    const text = pendingPayText;
+    pendingPayText = null;
+    setTimeout(() => {
+      closePaywallModal();
+      chatInput.value = text;
+      sendMessage();
+    }, 1500);
+  }
+}
+
+// 修改 sendMessage：检查付费状态
+const originalSendMessage = sendMessage;
+async function sendMessage() {
+  const text = chatInput.value.trim();
+  if (!text || isStreaming) return;
+
+  const count = getMessageCount();
+  const paid = getPaidStatus();
+
+  // 第4条消息且未付费 → 弹出付费墙
+  if (!paid && count >= PAYWALL_FREE_ROUNDS) {
+    showPaywallModal(text);
+    return;
+  }
+
+  // 增加计数（已付费用户不受限制）
+  if (!paid) {
+    incrementMessageCount();
+  }
+
+  // 继续原有逻辑
+  isStreaming = true;
+  sendBtn.disabled = true;
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+
+  // Add user message
+  addMessage('user', text);
+
+  // Add typing indicator
+  addTypingIndicator();
+
+  try {
+    const body = { message: text, user_id: getOrCreateUserId() };
+    if (conversationId) body.conversation_id = conversationId;
+
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (!resp.ok) {
+      throw new Error('API请求失败: ' + resp.status);
+    }
+
+    removeTypingIndicator();
+
+    const botMsg = addMessage('bot', '');
+    const bubble = botMsg.querySelector('.msg-bubble');
+    let fullText = '';
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        if (line.startsWith('event:')) continue;
+        if (line.startsWith('data:')) {
+          const dataStr = line.slice(5).trim();
+          if (!dataStr) continue;
+          try {
+            const data = JSON.parse(dataStr);
+            if (data.conversation_id && !conversationId) {
+              conversationId = data.conversation_id;
+            }
+            if (data.type === 'answer' && data.content) {
+              fullText += data.content;
+              bubble.textContent = fullText;
+              scrollToBottom();
+            }
+            if (data.type === 'answer' && data.is_last) {}
+          } catch (e) {}
+        }
+      }
+    }
+
+    if (!fullText) {
+      bubble.textContent = '（未收到回复，请重试）';
+    }
+
+  } catch (err) {
+    removeTypingIndicator();
+    addMessage('bot', '连接失败: ' + err.message, true);
+    console.error('Chat error:', err);
+  } finally {
+    isStreaming = false;
+    sendBtn.disabled = false;
+    chatInput.focus();
+    // 更新 banner
+    updateFreeRoundsBanner();
+  }
+}
+
 // Show opening message and focus input on load
 showOpeningMessage();
 chatInput.focus();
+updateFreeRoundsBanner();
 </script>
 </body>
 </html>

@@ -20,6 +20,17 @@ export default {
       });
     }
 
+    // WeChat domain verification files - serve directly as plain text
+    if (path.startsWith('/MP_verify_') && path.endsWith('.txt')) {
+      const assetResp = await env.ASSETS.fetch(request);
+      if (assetResp.status === 200) {
+        const text = await assetResp.text();
+        return new Response(text, {
+          headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'public, max-age=3600' },
+        });
+      }
+    }
+
     // WeChat Mini Program Login
     if (path === '/api/auth/wx-login' && request.method === 'POST') {
       return handleWxLogin(request, env);
@@ -43,6 +54,139 @@ export default {
         openid = 'web_' + await simpleHash(clientIP + ua);
       }
       return handleChat(request, env, openid);
+    }
+
+    // Mentor 支付初始化 — 生成支付宝当面付二维码
+    if (path === '/mentor-api/payment/init' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { user_id, amount, product } = body;
+
+        if (!user_id || !amount) {
+          return jsonResponse({ error: '缺少参数' }, 400);
+        }
+
+        // 生成唯一订单号
+        const outTradeNo = 'FS' + Date.now() + Math.random().toString(36).slice(2, 6);
+        const subject = product === 'mentor_unlock' ? '开单导师解锁' : '风声服务';
+        const notifyUrl = `${getBaseUrl(request)}/mentor-api/payment/notify`;
+
+        // 调用支付宝当面付 API
+        const alipayResp = await fetch('https://api.alipay.com/gateway.do', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            service: 'alipay.trade.precreate',
+            partner: env.ALIPAY_PARTNER || '',
+            seller_id: env.ALIPAY_SELLER_ID || '',
+            out_trade_no: outTradeNo,
+            total_amount: amount,
+            subject: subject,
+            notify_url: notifyUrl,
+            app_key: env.ALIPAY_APP_ID || '',
+          }).toString()
+        });
+
+        const alipayData = await alipayResp.json();
+        const qrCode = alipayData?.alipay_trade_precreate_response?.qr_code;
+
+        if (!qrCode) {
+          console.error('Alipay precreate failed:', JSON.stringify(alipayData));
+          return jsonResponse({
+            error: '支付码生成失败',
+            detail: alipayData?.error_response?.sub_msg || '未知错误'
+          }, 500);
+        }
+
+        // 存储订单状态（KV or in-memory map for MVP）
+        const orderData = {
+          out_trade_no: outTradeNo,
+          user_id,
+          amount,
+          product,
+          status: 'pending',
+          created_at: Date.now()
+        };
+
+        if (env.PAYMENT_ORDERS) {
+          await env.PAYMENT_ORDERS.put(outTradeNo, JSON.stringify(orderData));
+        }
+
+        return jsonResponse({
+          out_trade_no: outTradeNo,
+          qr_code: qrCode,
+          qr_code_url: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrCode)}`,
+          expires_in: 300  // 5分钟有效期
+        });
+
+      } catch (err) {
+        console.error('Payment init error:', err);
+        return jsonResponse({ error: '支付初始化失败: ' + err.message }, 500);
+      }
+    }
+
+    // Mentor 支付状态查询
+    if (path.startsWith('/mentor-api/payment/check') && request.method === 'GET') {
+      try {
+        const url = new URL(request.url);
+        const outTradeNo = url.searchParams.get('out_trade_no');
+        if (!outTradeNo) return jsonResponse({ error: '缺少订单号' }, 400);
+
+        // 查询支付宝
+        const alipayResp = await fetch('https://api.alipay.com/gateway.do', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            service: 'alipay.trade.query',
+            partner: env.ALIPAY_PARTNER || '',
+            out_trade_no: outTradeNo,
+            app_key: env.ALIPAY_APP_ID || '',
+          }).toString()
+        });
+
+        const data = await alipayResp.json();
+        const tradeStatus = data?.alipay_trade_query_response?.trade_status;
+
+        const paid = tradeStatus === 'TRADE_SUCCESS' || tradeStatus === 'TRADE_FINISHED';
+
+        return jsonResponse({
+          out_trade_no: outTradeNo,
+          paid,
+          trade_status: tradeStatus || 'UNKNOWN'
+        });
+
+      } catch (err) {
+        console.error('Payment check error:', err);
+        return jsonResponse({ error: '查询失败: ' + err.message }, 500);
+      }
+    }
+
+    // Mentor 支付回调通知（支付宝异步通知）
+    if (path === '/mentor-api/payment/notify' && request.method === 'POST') {
+      try {
+        const params = await request.json();
+        const { out_trade_no, trade_status, trade_no } = params;
+
+        if (trade_status === 'TRADE_SUCCESS' || trade_status === 'TRADE_FINISHED') {
+          // 更新订单状态
+          if (env.PAYMENT_ORDERS) {
+            const orderStr = await env.PAYMENT_ORDERS.get(out_trade_no);
+            if (orderStr) {
+              const order = JSON.parse(orderStr);
+              order.status = 'paid';
+              order.trade_no = trade_no;
+              order.paid_at = Date.now();
+              await env.PAYMENT_ORDERS.put(out_trade_no, JSON.stringify(order));
+            }
+          }
+          console.log(`Payment success: ${out_trade_no}`);
+        }
+
+        return jsonResponse({ success: true });
+      } catch (err) {
+        console.error('Payment notify error:', err);
+        return jsonResponse({ success: false, error: err.message }, 500);
+      }
     }
 
     // Health check
@@ -487,4 +631,10 @@ function jsonResponse(data, status = 200) {
       'Access-Control-Allow-Origin': '*',
     },
   });
+}
+
+function getBaseUrl(request) {
+  const proto = request.headers.get('X-Forwarded-Proto') || 'https';
+  const host = request.headers.get('Host') || 'fengsheng.tech';
+  return `${proto}://${host}`;
 }
