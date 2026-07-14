@@ -844,6 +844,33 @@ const entryDatabase = {
   'ROLE-E1':{icon:'🏢',title:'E1·物业管家',id:'ROLE-E1',def:'5能力维度·物业法规+社区服务+投诉处理+物业系统+透明治理。来源:《物业管理条例》+《民法典》物权编。',consumer:'物业费每年都涨,服务又跟不上,业主怎么办?',servicer:'3步:①看合同有没有量化指标②成立业委会③每年业主大会审议物业费·业委会是业主的"管家"。'}
 };
 
+/* ===== 动态词条计数 ===== */
+async function loadEntriesData(){
+  try{
+    const resp=await fetch('/data/entries.json');
+    if(!resp.ok) return;
+    const entries=await resp.json();
+    const domainCounts={};
+    entries.forEach(e=>{
+      const d=e.domain||'unknown';
+      domainCounts[d]=(domainCounts[d]||0)+1;
+    });
+    // 更新 businessDomains 的 count 和 more_count
+    businessDomains.forEach(d=>{
+      const actual=domainCounts[d.code]||0;
+      if(actual>0){
+        d.count=actual;
+        d.more_count=Math.max(0,actual-d.sample_words.length);
+      }
+    });
+    // 重新渲染
+    renderDomains();
+    console.log('✅ 词条计数已动态更新:',domainCounts);
+  }catch(e){
+    console.warn('⚠️ 动态加载 entries.json 失败，使用默认计数',e);
+  }
+}
+
 /* ===== 渲染 ===== */
 function renderDomains(){
   const el=document.getElementById('domainsList');
@@ -995,6 +1022,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeEntry()});
 
 /* ===== Init ===== */
 renderDomains();
+loadEntriesData();  // 动态从 data/entries.json 加载实际词条数
 renderRoles();
 renderQualityCards();
 </script>
