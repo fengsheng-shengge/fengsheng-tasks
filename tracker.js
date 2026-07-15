@@ -98,52 +98,14 @@
     } catch (e) {}
   }
 
-  function deriveProduct() {
-    var path = window.location.pathname;
-    // 根目录HTML文件映射
-    var fileMap = {
-      '/': 'index',
-      '/index.html': 'index',
-      '/breeder.html': 'breeder',
-      '/assessment.html': 'assessment',
-      '/knowledge.html': 'knowledge',
-      '/shuowenjiedao.html': 'shuowenjiedao',
-      '/about.html': 'about',
-      '/course.html': 'course',
-      '/works.html': 'works',
-      '/partner.html': 'partner',
-      '/skills.html': 'skills',
-      '/standard.html': 'standard',
-      '/okr.html': 'okr',
-      '/agent-academy.html': 'agent-academy'
-    };
-    if (fileMap[path] !== undefined) return fileMap[path];
-    // 子目录路径
-    var m = path.match(/^\/([a-z0-9-]+)/);
-    if (!m) return 'other';
-    var whitelist = {
-      'quality-test':1,'reply':1,'assessment':1,'breeder':1,
-      'knowledge':1,'care-test':1,'s1-report':1,'dashboard':1,
-      'shuowenjiedao':1,'goals':1,'about':1
-    };
-    return whitelist[m[1]] ? m[1] : 'other';
-  }
-
   function buildPayload(type, data) {
     var source = getSource();
     return {
       type: type,
-      event_type: type,       // v2.2: 兼容后端event_type字段
       url: window.location.href,
-      page: window.location.pathname,  // v2.2: 显式传page字段
-      product: deriveProduct(),         // v2.2: 显式传product字段
       title: document.title,
       referrer: document.referrer,
       uid: getUid(),
-      utm_source: source.utm_source || null,    // v2.2: 扁平化utm字段
-      utm_medium: source.utm_medium || null,
-      utm_campaign: source.utm_campaign || null,
-      ref: source.ref || null,
       source: source,
       ts: Date.now(),
       ua: navigator.userAgent,
@@ -198,18 +160,6 @@
   window.fsTrack = function fsTrack(name, data) {
     try {
       queue(buildPayload(name || 'event', data || {}));
-    } catch (e) {}
-  };
-
-  // v3.0: 测评完成率追踪
-  window.fsTrackStart = function fsTrackStart(stepName) {
-    try {
-      queue(buildPayload('funnel_start', { step: stepName || 'default', product: deriveProduct() }));
-    } catch (e) {}
-  };
-  window.fsTrackComplete = function fsTrackComplete(stepName) {
-    try {
-      queue(buildPayload('funnel_complete', { step: stepName || 'default', product: deriveProduct() }));
     } catch (e) {}
   };
 
@@ -271,26 +221,8 @@
     setupAutoClick();
     setupCozeBot();
     setupReplyForm();
-    // removed: queue() already schedules send via setTimeout, flushPending() caused duplicate events
+    flushPending();
     window.addEventListener('online', flushPending);
-    // v3.0: 停留时长追踪
-    var _fsEnterTime = Date.now();
-    var _fsDurationReported = false;
-    function reportDuration() {
-      if (_fsDurationReported) return;
-      _fsDurationReported = true;
-      var dur = Math.round((Date.now() - _fsEnterTime) / 1000);
-      queue(buildPayload('duration', {
-        seconds: dur,
-        product: deriveProduct()
-      }));
-    }
-    // 页面离开时上报
-    window.addEventListener('beforeunload', reportDuration);
-    // 页面切到后台时上报（移动端友好）
-    document.addEventListener('visibilitychange', function() {
-      if (document.visibilityState === 'hidden') reportDuration();
-    });
   }
 
   if (document.readyState === 'loading') {

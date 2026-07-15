@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self';">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta name="description" content="六维品质测评：给客户的居住品质做一次体检，2分钟6个维度，生成可分享的品质报告 — 风声 fengsheng.tech">
+<meta name="theme-color" content="#2D5A3D">
+<meta property="og:title" content="六维品质测评 · 风声 fengsheng.tech">
+<meta property="og:description" content="给客户的居住品质做一次体检：采光与通风、安静程度、温度舒适、空间布局、邻里关系、配套便利。">
+<meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%23F5F1E8'/><polygon points='600,150 850,260 790,500 410,500 350,260' fill='none' stroke='%232D5A3D' stroke-width='6'/><polygon points='600,260 750,330 720,460 480,460 450,330' fill='%23D97757' opacity='.7'/><text x='100' y='580' font-family='sans-serif' font-size='60' fill='%232D5A3D' font-weight='700'>六维品质测评</text></svg>">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fengsheng.tech/quality-test.html">
+<meta name="twitter:card" content="summary_large_image">
+<title>六维品质测评 · 风声 fengsheng.tech</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#F5F1E8;color:#2A2825;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:#2D5A3D;text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+.skip-nav{position:absolute;left:-9999px;top:0;background:#2D5A3D;color:#fff;padding:12px 20px;z-index:100;text-decoration:none;border-radius:0 0 12px 0}
+.skip-nav:focus{left:0}
+.header{background:#fff;border-bottom:1px solid #EFE8DB}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.brand{font-weight:700;font-size:20px;color:#2D5A3D;letter-spacing:1px}
+.brand span{color:#D97757}
+.nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:15px;color:#6B665E}
+.nav a{color:#2A2825;padding:6px 10px;border-radius:8px}
+.nav a:hover{background:#F5F1E8;text-decoration:none;color:#2D5A3D}
+.nav .sep{color:#B8B1A4}
+.hero{padding:56px 0 32px;text-align:center}
+.hero h1{font-size:clamp(30px,5vw,44px);line-height:1.3;margin:0 0 14px;color:#2A2825}
+.hero h1 em{font-style:normal;color:#D97757}
+.hero p.lead{font-size:clamp(16px,2.2vw,19px);color:#5E5952;max-width:620px;margin:0 auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:14px 28px;font-size:16px;font-weight:600;font-family:inherit;transition:transform .15s ease,box-shadow .15s ease,background-color .2s}
+.btn-primary{background:#2D5A3D;color:#fff;box-shadow:0 6px 16px rgba(45,90,61,.25)}
+.btn-primary:hover{background:#234a31;text-decoration:none;transform:translateY(-1px)}
+.btn-orange{background:#D97757;color:#fff;box-shadow:0 6px 16px rgba(217,119,87,.25)}
+.btn-orange:hover{background:#c06649;text-decoration:none}
+.btn-ghost{background:transparent;color:#2D5A3D;border:2px solid #2D5A3D}
+.btn-ghost:hover{background:#2D5A3D;color:#fff;text-decoration:none}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.section{padding:32px 0}
+.section h2{font-size:clamp(22px,3.5vw,28px);margin:0 0 8px;color:#2A2825}
+.section .sub{color:#5E5952;margin:0 0 24px}
+.card{background:#fff;border-radius:16px;padding:24px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04)}
+.privacy-card{background:#FBEDE5;border:1px solid #F3D9CA;color:#8A3A22;border-radius:16px;padding:18px 22px;font-size:15px}
+.privacy-card strong{color:#D97757}
+.dims{display:grid;gap:14px;margin-top:12px}
+.dim{background:#fff;border-radius:16px;padding:22px;border:1px solid #EFE8DB}
+.dim-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.dim-title{font-size:18px;font-weight:700;color:#2A2825;margin:0}
+.dim-en{font-size:13px;color:#8A857B;font-weight:500;letter-spacing:.5px}
+.dim-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dim-opt{background:#F5F1E8;border:2px solid transparent;color:#2A2825;padding:12px 14px;border-radius:12px;cursor:pointer;font-size:15px;text-align:center;font-family:inherit;font-weight:500;transition:all .15s}
+.dim-opt:hover{background:#EFE8DB}
+.dim-opt.active{background:#2D5A3D;color:#fff;border-color:#2D5A3D;font-weight:600}
+.form-card{margin-top:16px}
+.form-row{margin-bottom:14px}
+.form-row label{display:block;font-size:14px;font-weight:600;margin-bottom:6px;color:#2A2825}
+.form-row input{width:100%;padding:12px 16px;border:1px solid #EFE8DB;border-radius:12px;font-size:15px;font-family:inherit;background:#fff;color:#2A2825;transition:border-color .15s}
+.form-row input:focus{outline:none;border-color:#2D5A3D}
+.form-hint{font-size:13px;color:#8A857B;margin-top:6px}
+.report{margin-top:20px;display:none}
+.report.show{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.report-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.report-head h2{margin:0}
+.score-tag{display:inline-block;padding:6px 14px;background:#FBEDE5;color:#D97757;font-weight:700;border-radius:999px;font-size:14px}
+.radar-wrap{display:flex;justify-content:center;margin:12px 0 24px}
+.radar-wrap svg{max-width:100%;height:auto}
+.dim-legend{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 20px;font-size:14px;color:#5E5952}
+.dim-legend-item{display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#2D5A3D;flex:none}
+.comment{background:#E8EDE3;color:#2D5A3D;padding:18px 22px;border-radius:16px;font-size:15px;line-height:1.7;margin-top:20px}
+.toast{position:fixed;left:50%;top:32px;transform:translateX(-50%) translateY(-20px);background:#2D5A3D;color:#fff;padding:12px 22px;border-radius:999px;font-size:14px;opacity:0;transition:all .25s;z-index:200;pointer-events:none;box-shadow:0 8px 24px rgba(45,90,61,.3)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.footer{border-top:1px solid #EFE8DB;background:#fff;padding:30px 0 24px;margin-top:48px;font-size:14px;color:#6B665E}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer a{color:#6B665E}
+.footer .sep{color:#B8B1A4;margin:0 4px}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .hero{padding:40px 0 24px}
+  .section{padding:24px 0}
+  .dim-opts{grid-template-columns:1fr}
+  .dim-legend{grid-template-columns:1fr}
+  .nav{font-size:14px}
+  .brand{font-size:18px}
+}
+</style>
+</head>
+<body>
+<a class="skip-nav" href="#main" aria-label="跳到主要内容">跳到主要内容</a>
+<header class="header" role="banner">
+  <div class="wrap header-inner">
+    <a href="index.html" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
+    <nav class="nav" aria-label="面包屑">
+      <a href="index.html">首页</a><span class="sep">·</span>
+      <a href="quality-test.html">六维品质测评</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" role="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <h1 id="hero-title">给客户做一次<em>居住品质体检</em></h1>
+      <p class="lead">2分钟，6个维度，一份可分享的报告。</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="dims-title">
+    <div class="wrap">
+      <div class="privacy-card" role="note">
+        <strong>隐私提示：</strong>此测评会在最后一步收集您的姓名、手机号或微信号，用于联系与寄送报告。我们不会把您的信息用于其他用途。详细数据政策见 <a href="privacy.html" aria-label="查看隐私政策">privacy.html</a>。
+      </div>
+
+      <div id="dims-title" class="card" style="margin-top:18px">
+        <h2 style="margin:0 0 4px">六个维度，按真实感受选择</h2>
+        <p class="sub" style="margin:0">点击每一项中最贴近当前居住状态的选项。</p>
+        <div class="dims" id="dims"></div>
+      </div>
+
+      <div class="card form-card" id="contactForm">
+        <h2 style="margin:0 0 4px">客户联系信息</h2>
+        <p class="sub" style="margin:0 0 18px">填写后可生成并分享这份品质报告。</p>
+        <div class="form-row">
+          <label for="name">姓名</label>
+          <input id="name" type="text" placeholder="例如：张先生" aria-label="客户姓名">
+        </div>
+        <div class="form-row">
+          <label for="phone">手机号</label>
+          <input id="phone" type="tel" placeholder="11 位手机号" aria-label="客户手机号">
+        </div>
+        <div class="form-row">
+          <label for="wechat">微信号</label>
+          <input id="wechat" type="text" placeholder="可留空" aria-label="客户微信号">
+        </div>
+        <button type="button" class="btn btn-primary" id="genReport" aria-label="生成品质报告">生成品质报告</button>
+        <p class="form-hint" id="formHint" style="display:none;color:#D97757">请先完成 6 个维度的选择，并填写姓名和手机号。</p>
+      </div>
+
+      <div class="card report" id="report">
+        <div class="report-head">
+          <h2>居住品质报告</h2>
+          <span class="score-tag" id="reportScore">总得分：-</span>
+        </div>
+        <div class="radar-wrap">
+          <svg id="radar" width="480" height="480" viewBox="0 0 480 480" role="img" aria-label="六维品质雷达图"></svg>
+        </div>
+        <div class="dim-legend" id="dimLegend"></div>
+        <div class="comment" id="comment"></div>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" class="btn btn-orange" id="shareBtn" aria-label="分享这份报告，复制链接到剪贴板">分享这份报告</button>
+          <button type="button" class="btn btn-ghost" id="resetBtn" aria-label="重新测评">重新测评</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" role="contentinfo">
+  <div class="wrap footer-inner">
+    <div>© 2026 风声 · fengsheng.tech</div>
+    <div>
+      <a href="privacy.html" aria-label="查看隐私政策">隐私政策</a> ·
+      <a href="reply.html" aria-label="帮助与反馈">帮助</a>
+    </div>
+  </div>
+</footer>
+
+<script src="tracker.js" defer></script>
+<script>
+(function(){
+  var DIMS = [
+    {key:'light', title:'采光与通风', en:'Light & Ventilation', options:['充足','尚可','需改善']},
+    {key:'quiet', title:'安静程度', en:'Quietness', options:['非常安静','一般','有噪音困扰']},
+    {key:'thermal', title:'温度舒适', en:'Thermal Comfort', options:['常年舒适','夏天偏热','冬天偏冷']},
+    {key:'layout', title:'空间布局', en:'Layout', options:['合理好用','基本够用','需改造']},
+    {key:'neighbor', title:'邻里关系', en:'Neighborhood', options:['融洽','一般','需关注']},
+    {key:'amenities', title:'配套便利', en:'Amenities', options:['非常便利','基本满足','需改善']}
+  ];
+  var state = {};
+  DIMS.forEach(function(d){ state[d.key] = null; });
+
+  var container = document.getElementById('dims');
+  DIMS.forEach(function(dim){
+    var box = document.createElement('div');
+    box.className = 'dim';
+    var top = document.createElement('div');
+    top.className = 'dim-top';
+    top.innerHTML = '<h3 class="dim-title">' + dim.title + '</h3><span class="dim-en">' + dim.en + '</span>';
+    box.appendChild(top);
+    var opts = document.createElement('div');
+    opts.className = 'dim-opts';
+    opts.setAttribute('role','radiogroup');
+    opts.setAttribute('aria-label', dim.title + '选项');
+    dim.options.forEach(function(label, idx){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dim-opt';
+      btn.dataset.dim = dim.key;
+      btn.dataset.idx = idx;
+      btn.setAttribute('aria-pressed','false');
+      btn.setAttribute('aria-label', dim.title + '：' + label);
+      btn.textContent = label;
+      btn.addEventListener('click', function(){
+        state[dim.key] = idx;
+        opts.querySelectorAll('.dim-opt').forEach(function(b){
+          var active = b.dataset.idx == idx;
+          b.classList.toggle('active', active);
+          b.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        if (typeof window.fsTrack === 'function') window.fsTrack('quality_pick', {dim:dim.key, idx:idx});
+      });
+      opts.appendChild(btn);
+    });
+    box.appendChild(opts);
+    container.appendChild(box);
+  });
+
+  function scoreMap(idx){
+    return 3 - idx;
+  }
+
+  document.getElementById('genReport').addEventListener('click', function(){
+    var missing = DIMS.some(function(d){ return state[d.key] === null; });
+    var name = document.getElementById('name').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    if (missing || !name || !phone){
+      document.getElementById('formHint').style.display = 'block';
+      return;
+    }
+    document.getElementById('formHint').style.display = 'none';
+    renderReport(name);
+    if (typeof window.fsTrack === 'function') window.fsTrack('quality_report', {state:state});
+    document.getElementById('report').classList.add('show');
+    document.getElementById('report').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  function renderReport(name){
+    var total = 0;
+    var values = DIMS.map(function(d){
+      var s = scoreMap(state[d.key]);
+      total += s;
+      return s;
+    });
+    var max = DIMS.length * 3;
+    document.getElementById('reportScore').textContent = '总得分：' + total + ' / ' + max;
+    drawRadar(values);
+    var legend = document.getElementById('dimLegend');
+    legend.innerHTML = '';
+    DIMS.forEach(function(d, i){
+      var item = document.createElement('div');
+      item.className = 'dim-legend-item';
+      item.innerHTML = '<span class="dot" aria-hidden="true"></span><span>' + d.title + '：' + d.options[state[d.key]] + '（' + values[i] + '/3）</span>';
+      legend.appendChild(item);
+    });
+    var lowCount = values.filter(function(v){ return v <= 1; }).length;
+    var highCount = values.filter(function(v){ return v >= 2; }).length;
+    var comment;
+    if (lowCount === 0 && values.every(function(v){ return v === 3; })){
+      comment = name + ' 的居住品质整体非常优秀，六个维度都处于高水平。建议继续保持，并在细节舒适度（如温湿度、降噪）上做进一步优化，把"好房子"变成"会被羡慕的房子"。';
+    } else if (lowCount >= 3){
+      comment = name + ' 的居住体验存在若干明显痛点，建议优先处理低分维度：改善采光通风、降低噪音、优化温度体验。这些维度对日常生活品质影响最大，也是最容易被客户感知到的改善方向。';
+    } else if (lowCount >= 1){
+      comment = name + ' 的居住品质整体良好，但仍有 ' + lowCount + ' 个维度存在改善空间。建议针对具体低分项做一次改善评估，并结合家庭长期使用场景决定是否值得投入改造。';
+    } else {
+      comment = name + ' 的居住品质整体良好，六个维度都维持在中等以上水平。可以把重点放在"让好的更好"：如提升邻里互动、完善配套便利度，让居住体验更上一层楼。';
+    }
+    document.getElementById('comment').textContent = comment;
+  }
+
+  function drawRadar(values){
+    var svg = document.getElementById('radar');
+    var cx = 240, cy = 240;
+    var maxR = 170;
+    var n = 6;
+    var labels = DIMS.map(function(d){ return d.title; });
+    var angle = function(i){ return -Math.PI/2 + i * (2*Math.PI/n); };
+    var point = function(i, r){ return [cx + r*Math.cos(angle(i)), cy + r*Math.sin(angle(i))]; };
+    var html = '';
+    for (var r = 1; r <= 3; r++){
+      var pts = [];
+      for (var i = 0; i < n; i++){
+        var p = point(i, (maxR/3)*r);
+        pts.push(p[0].toFixed(1) + ',' + p[1].toFixed(1));
+      }
+      html += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="#EFE8DB" stroke-width="1.5"/>';
+    }
+    for (var i = 0; i < n; i++){
+      var p = point(i, maxR);
+      html += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '" stroke="#EFE8DB" stroke-width="1.5"/>';
+    }
+    var dataPts = [];
+    for (var i = 0; i < n; i++){
+      var v = values[i];
+      var p = point(i, (maxR/3)*v);
+      dataPts.push(p[0].toFixed(1) + ',' + p[1].toFixed(1));
+    }
+    html += '<polygon points="' + dataPts.join(' ') + '" fill="#D97757" fill-opacity=".35" stroke="#D97757" stroke-width="2.5"/>';
+    for (var i = 0; i < n; i++){
+      var v = values[i];
+      var p = point(i, (maxR/3)*v);
+      html += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="5" fill="#2D5A3D"/>';
+    }
+    for (var i = 0; i < n; i++){
+      var p = point(i, maxR + 24);
+      html += '<text x="' + p[0].toFixed(1) + '" y="' + p[1].toFixed(1) + '" text-anchor="middle" dominant-baseline="middle" font-family="inherit" font-size="14" fill="#2A2825" font-weight="600">' + labels[i] + '</text>';
+    }
+    svg.innerHTML = html;
+  }
+
+  document.getElementById('shareBtn').addEventListener('click', function(){
+    var url = location.href;
+    try {
+      navigator.clipboard.writeText(url).then(function(){ showToast('链接已复制，可粘贴分享'); }, function(){ fallbackCopy(url); });
+    } catch(e){
+      fallbackCopy(url);
+    }
+  });
+
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showToast('链接已复制，可粘贴分享'); } catch(e){ showToast('复制失败，请手动复制浏览器地址栏'); }
+    document.body.removeChild(ta);
+  }
+
+  function showToast(msg){
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 250); }, 1800);
+  }
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    DIMS.forEach(function(d){ state[d.key] = null; });
+    document.querySelectorAll('.dim-opt').forEach(function(b){
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed','false');
+    });
+    document.getElementById('name').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('wechat').value = '';
+    document.getElementById('report').classList.remove('show');
+    document.getElementById('formHint').style.display = 'none';
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+})();
+</script>
+</body>
+</html>
