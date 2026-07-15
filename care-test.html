@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta name="description" content="客户解码器：30秒读懂客户，个性化话术生成 — 风声 fengsheng.tech">
+<meta name="theme-color" content="#2D5A3D">
+<meta property="og:title" content="客户解码器 — 风声 fengsheng.tech">
+<meta property="og:description" content="30秒读懂客户，个性化话术生成。房产、租赁、整装、家政。">
+<meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%23F5F1E8'/><text x='100' y='280' font-family='sans-serif' font-size='72' fill='%232D5A3D' font-weight='700'>客户解码器</text><text x='100' y='360' font-family='sans-serif' font-size='36' fill='%23D97757'>30秒读懂客户</text></svg>">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<title>客户解码器 — 风声 fengsheng.tech</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#F5F1E8;color:#2A2825;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:#2D5A3D;text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+.skip-nav{position:absolute;left:-9999px;top:0;background:#2D5A3D;color:#fff;padding:10px 16px;border-radius:8px;z-index:999}
+.skip-nav:focus{left:1rem;top:1rem;text-decoration:none}
+.header{background:#fff;border-bottom:1px solid #EFE8DB}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.brand{font-weight:700;font-size:20px;color:#2D5A3D;letter-spacing:1px}
+.brand span{color:#D97757}
+.nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:15px;color:#6B665E}
+.nav a{color:#2A2825;padding:6px 10px;border-radius:8px}
+.nav a:hover{background:#F5F1E8;text-decoration:none;color:#2D5A3D}
+.nav .sep{color:#B8B1A4}
+.hero{padding:56px 0 20px;text-align:center}
+.hero h1{font-size:clamp(30px,5vw,44px);line-height:1.3;margin:0 0 14px;color:#2A2825}
+.hero h1 em{font-style:normal;color:#D97757}
+.hero p.lead{font-size:clamp(16px,2.2vw,19px);color:#5E5952;max-width:620px;margin:0 auto 22px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:14px 28px;font-size:16px;font-weight:600;font-family:inherit;transition:transform .15s ease,box-shadow .15s ease,background-color .2s}
+.btn-primary{background:#2D5A3D;color:#fff;box-shadow:0 6px 16px rgba(45,90,61,.25)}
+.btn-primary:hover{background:#234a31;text-decoration:none;transform:translateY(-1px)}
+.btn-orange{background:#D97757;color:#fff;box-shadow:0 6px 16px rgba(217,119,87,.25)}
+.btn-orange:hover{background:#c06649;text-decoration:none}
+.section{padding:32px 0}
+.domains{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.domain{background:#fff;border-radius:16px;padding:22px;border:2px solid transparent;cursor:pointer;box-shadow:0 2px 6px rgba(42,40,37,.04);font-family:inherit;text-align:left;transition:all .2s}
+.domain:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(42,40,37,.08)}
+.domain[aria-pressed="true"]{border-color:#2D5A3D;background:#E8EDE3}
+.domain h3{margin:0 0 6px;font-size:18px;color:#2A2825}
+.domain p{margin:0;color:#5E5952;font-size:14px}
+.toolbox{background:#fff;border-radius:16px;padding:26px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);margin-top:24px}
+.toolbox label{display:block;font-weight:600;margin-bottom:8px;color:#2A2825;font-size:15px}
+textarea{width:100%;min-height:120px;padding:14px 16px;border:2px solid #EFE8DB;border-radius:12px;font-family:inherit;font-size:15px;background:#F5F1E8;color:#2A2825;resize:vertical;transition:border-color .2s}
+textarea:focus{outline:none;border-color:#2D5A3D;background:#fff}
+.hint{font-size:13px;color:#6B665E;margin:6px 0 14px}
+.result{background:#E8EDE3;border-radius:16px;padding:20px 22px;margin-top:20px;display:none;color:#2A2825}
+.result.show{display:block}
+.result h4{margin:0 0 8px;color:#2D5A3D;font-size:17px}
+.result .kw{display:inline-block;background:#FBEDE5;color:#D97757;font-size:13px;padding:4px 10px;border-radius:999px;margin:2px 4px 2px 0;font-weight:600}
+.result p{margin:10px 0 0}
+.footer{border-top:1px solid #EFE8DB;background:#fff;padding:30px 0 24px;margin-top:48px;font-size:14px;color:#6B665E}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer a{color:#6B665E}
+.btn-back{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;background:#fff;color:#2D5A3D;border:1px solid #EFE8DB;font-size:14px;text-decoration:none}
+.btn-back:hover{background:#F5F1E8;text-decoration:none}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .hero{padding:40px 0 16px}
+  .section{padding:28px 0}
+  .domains{grid-template-columns:1fr}
+  .nav{font-size:14px}
+  .nav a{padding:5px 8px}
+  .brand{font-size:18px}
+}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav" aria-label="跳到主要内容">跳到主要内容</a>
+<header class="header" role="banner">
+  <div class="wrap header-inner">
+    <a href="index.html" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
+    <nav class="nav" aria-label="面包屑">
+      <a href="index.html">首页</a><span class="sep">·</span>
+      <a href="care-test.html">客户解码器</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" role="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <h1 id="hero-title">客户<em>解码器</em></h1>
+      <p class="lead">30 秒读懂客户，个性化话术生成。先理解客户，再选择怎么说。</p>
+      <a href="#tool" class="btn btn-orange" aria-label="开始试用">开始试用 →</a>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="d-title">
+    <div class="wrap">
+      <h2 id="d-title" style="margin:0 0 14px">选一个你熟悉的业务域</h2>
+      <div class="domains" role="radiogroup" aria-label="业务域">
+        <button class="domain" type="button" data-domain="realestate" aria-pressed="false"><h3>房产交易</h3><p>二手房、新房、改善型、学区房、首套等典型客户画像。</p></button>
+        <button class="domain" type="button" data-domain="rental" aria-pressed="false"><h3>房屋租赁</h3><p>长租、短租、置换、预算敏感型租客的决策线索。</p></button>
+        <button class="domain" type="button" data-domain="home" aria-pressed="false"><h3>整装家居</h3><p>装修风格、施工质量、预算、交房时间等客户关注点。</p></button>
+        <button class="domain" type="button" data-domain="service" aria-pressed="false"><h3>家政保洁</h3><p>首次咨询、长期服务、老人/儿童等特殊场景客户需求。</p></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="tool" class="section" aria-labelledby="t-title">
+    <div class="wrap">
+      <div class="toolbox">
+        <h2 id="t-title" style="margin:0 0 4px;font-size:22px">输入一段客户场景</h2>
+        <p class="hint" id="hint">用一两句话描述客户在电话、到店或现场说过的话，例如："客户说预算有限，但希望房子看起来不错"。</p>
+        <label for="scene">客户场景描述</label>
+        <textarea id="scene" name="scene" aria-label="客户场景描述" placeholder="例如：客户说预算有限，但希望房子看起来不错，对小区环境也很在意…"></textarea>
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-primary" type="button" id="analyze" aria-label="分析客户">分析 →</button>
+          <button class="btn" type="button" id="sample" style="background:#fff;border:1px solid #EFE8DB;color:#2D5A3D;padding:12px 20px" aria-label="给我一个示例">给我示例</button>
+          <span id="sel-domain" style="font-size:13px;color:#6B665E"></span>
+        </div>
+        <div class="result" id="result" role="status" aria-live="polite">
+          <h4>🔍 客户解读</h4>
+          <div id="keywords"></div>
+          <p id="read"></p>
+          <h4 style="margin-top:16px">💬 一段可以考虑的回应</h4>
+          <p id="reply"></p>
+          <h4 style="margin-top:16px">✅ 下一步建议</h4>
+          <p id="next"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" role="contentinfo">
+  <div class="wrap footer-inner">
+    <div>© 2026 风声 · fengsheng.tech</div>
+    <div>
+      <a href="privacy.html" aria-label="查看隐私政策">隐私政策</a> ·
+      <a href="reply.html" aria-label="帮助与反馈">帮助</a>
+    </div>
+  </div>
+</footer>
+
+<script src="tracker.js" defer></script>
+<script>
+(function(){
+  var domainLabels = {
+    realestate: '房产交易',
+    rental: '房屋租赁',
+    home: '整装家居',
+    service: '家政保洁'
+  };
+  var domainTexts = {
+    realestate: '客户 30 岁，已婚带小孩，第一次买房，预算紧，希望靠近学校，担心贷款压力。',
+    rental: '客户刚换工作，需要在公司附近租一套房子，预算 4000，希望安静、有网络，能随时入住。',
+    home: '客户家里有老人，想重新装修卫生间和厨房，担心施工影响生活，对建材安全特别在意。',
+    service: '客户家有刚上小学的孩子和老人，每周需要两次深度保洁，希望阿姨稳定、做事细心。'
+  };
+  var analyses = {
+    realestate: {
+      keywords: ['预算敏感','首套焦虑','教育优先级','贷款压力'],
+      read: '客户把"家"看作孩子成长的起点，但对长期还款能力有明显顾虑。他同时在权衡价格、位置和生活舒适度。',
+      reply: '"我先帮您把预算范围内、步行能到学校的小区挑出来，再一起看看贷款方案里哪种对您现在最轻松 — 我们不追求最大的房子，追求最合适的家。"',
+      next: '下一步建议：先做一次"预算 + 学区 + 通勤"的三线对比表，给客户 2~3 个真实可对比的选项，而不是泛泛地推荐。'
+    },
+    rental: {
+      keywords: ['通勤优先','预算有上限','入住确定性','生活基础设施'],
+      read: '客户的决策优先级是：先解决通勤，再解决预算。他其实在问"我每天的生活能不能稳定下来"。',
+      reply: '"我先挑离公司步行或一趟车的房子，按您的预算筛出 3 套能马上入住的，再一起看 — 每一套我都提前确认过房东近期的意图。"',
+      next: '下一步建议：带看前做一次"30 分钟通勤半径"地图，同时准备一套稍超出预算但能显著改善生活品质的对照房源。'
+    },
+    home: {
+      keywords: ['家人健康','工期焦虑','施工打扰','建材与工艺信任'],
+      read: '客户真正在问的不是价格，而是"你们能不能让我家的日常生活不被打乱"。对安全、稳定的优先级高于一切。',
+      reply: '"我先安排设计师和您一起，把老人的使用动线、卫浴安全细节和厨房操作区做一次实景沟通，同时给您一个分阶段的施工计划 — 每一步都让您提前知道家里会发生什么。"',
+      next: '下一步建议：准备一份"对家中老人友好的工艺清单"，并强调施工期间的分阶段保护和日常清洁恢复，建立确定性。'
+    },
+    service: {
+      keywords: ['稳定性','与老人/孩子相处','服务可预期','长期安排'],
+      read: '客户希望的不是"偶尔一次干净"，而是"家里有人能长期、稳定、靠谱地帮忙"。他在筛选可托付的人。',
+      reply: '"我先给您介绍一位在相似家庭场景中长期服务的阿姨，我们第一次上门做一次试服务 — 您当场感受节奏和细节，再决定是否长期。"',
+      next: '下一步建议：在第一次服务前和客户做一次 15 分钟的"家庭节奏问卷"，了解孩子作息、老人使用习惯，让阿姨提前做好准备。'
+    }
+  };
+
+  var state = {domain: null};
+
+  document.querySelectorAll('.domain').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.domain').forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+      btn.setAttribute('aria-pressed','true');
+      state.domain = btn.dataset.domain;
+      document.getElementById('sel-domain').textContent = '已选业务域：' + domainLabels[state.domain];
+      if (typeof window.fsTrack === 'function') {
+        window.fsTrack('decoder_select_domain', {domain: state.domain});
+      }
+    });
+  });
+
+  document.getElementById('sample').addEventListener('click', function(){
+    if (!state.domain) {
+      alert('请先选择一个业务域');
+      return;
+    }
+    document.getElementById('scene').value = domainTexts[state.domain];
+  });
+
+  document.getElementById('analyze').addEventListener('click', function(){
+    var scene = document.getElementById('scene').value.trim();
+    if (!scene) {
+      alert('请先输入一段客户场景，或点击"给我示例"');
+      return;
+    }
+    if (!state.domain) {
+      alert('请先选择一个业务域');
+      return;
+    }
+    var a = analyses[state.domain];
+    var kwBox = document.getElementById('keywords');
+    kwBox.innerHTML = '';
+    a.keywords.forEach(function(k){
+      var span = document.createElement('span');
+      span.className = 'kw';
+      span.textContent = '· ' + k;
+      kwBox.appendChild(span);
+    });
+    document.getElementById('read').textContent = a.read;
+    document.getElementById('reply').textContent = a.reply;
+    document.getElementById('next').textContent = a.next;
+    var box = document.getElementById('result');
+    box.classList.add('show');
+    box.scrollIntoView({behavior:'smooth', block:'center'});
+    if (typeof window.fsTrack === 'function') {
+      window.fsTrack('decoder_analyze', {domain: state.domain, length: scene.length});
+    }
+  });
+})();
+</script>
+</body>
+</html>
