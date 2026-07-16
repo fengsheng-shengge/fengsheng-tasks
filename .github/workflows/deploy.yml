@@ -12,6 +12,8 @@ on:
         options:
           - production
           - preview
+  repository_dispatch:
+    types: [deploy-from-credentials]
 
 jobs:
   deploy:
