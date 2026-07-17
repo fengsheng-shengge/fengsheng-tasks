@@ -24,15 +24,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1.2.0
+        uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: fengsheng
+          projectName: fengsheng-tech
           directory: ./
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
-          verbose: true
 
   verify:
     name: 部署后验证
