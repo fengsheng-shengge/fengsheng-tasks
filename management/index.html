@@ -1,15 +1,96 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>页面建设中 - 风声</title>
-<style>body{display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;font-family:system-ui;background:#0a0a0a;color:#888;text-align:center}
-.container h1{font-size:2rem;color:#fff;margin-bottom:.5rem}
-.container p{font-size:1rem;line-height:1.6}
-a{color:#f59e0b;text-decoration:none}</style>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>管理看板 - 风声</title>
+<style>
+:root{--bg:#0a0a0a;--card:#141414;--border:#222;--text:#e5e5e5;--muted:#888;--accent:#f59e0b;--safe:#10b981;--danger:#ef4444;--info:#3b82f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:2rem}
+h1{font-size:1.8rem;margin-bottom:1.5rem;color:var(--accent)}
+h2{font-size:1.2rem;margin:1.5rem 0 0.8rem;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:0.3rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1.2rem}
+.card .label{font-size:0.8rem;color:var(--muted);margin-bottom:0.3rem}
+.card .value{font-size:1.8rem;font-weight:700}
+.card .change{font-size:0.8rem;margin-top:0.3rem}
+.up{color:var(--safe)}.down{color:var(--danger)}.neutral{color:var(--muted)}
+.alerts{list-style:none}
+.alerts li{padding:0.5rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem}
+.alerts .badge{font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:4px;font-weight:600}
+.p0{background:var(--danger);color:#fff}.p1{background:var(--accent);color:#000}.ok{background:var(--safe);color:#fff}
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.8rem}
+.agent{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:0.8rem;text-align:center}
+.agent .name{font-weight:600;font-size:0.95rem;margin-bottom:0.3rem}
+.agent .status{font-size:0.75rem}
+.refresh{color:var(--muted);font-size:0.75rem;margin-bottom:1rem}
+a{color:var(--accent);text-decoration:none}
+footer{text-align:center;margin-top:2rem;padding:1rem 0;color:var(--muted);font-size:0.75rem;border-top:1px solid var(--border)}
+</style>
 </head>
-<body><div class="container">
-<h1>🏗️ 页面建设中</h1>
-<p>该页面正在筹备内容，敬请期待。</p>
-<p><a href="/">← 返回首页</a></p>
-</div><p style="text-align:center;margin-top:2rem;padding:1rem 0;color:#666;font-size:0.75rem;"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:#666;text-decoration:none;">京ICP备2026041809号</a></p>
-</body></html>
+<body>
+<div class="container">
+<h1>🌊 风声 · 管理看板</h1>
+<div class="refresh" id="refreshTime">加载中...</div>
+
+<h2>📈 核心指标</h2>
+<div class="grid">
+<div class="card"><div class="label">累计 UV</div><div class="value" id="totalUV">--</div><div class="change" id="uvChange"></div></div>
+<div class="card"><div class="label">累计 PV</div><div class="value" id="totalPV">--</div><div class="change" id="pvChange"></div></div>
+<div class="card"><div class="label">今日 UV</div><div class="value" id="dayUV">--</div></div>
+<div class="card"><div class="label">今日 PV</div><div class="value" id="dayPV">--</div></div>
+<div class="card"><div class="label">今日点击</div><div class="value" id="dayClick">--</div></div>
+<div class="card"><div class="label">反馈数</div><div class="value" id="feedback">--</div></div>
+</div>
+
+<h2>🤖 六Agent 作战状态</h2>
+<div class="agent-grid">
+<div class="agent"><div class="name">🐟 小鱼儿</div><div class="status ok">调度中</div></div>
+<div class="agent"><div class="name">💻 小豆子</div><div class="status ok">产品设计中</div></div>
+<div class="agent"><div class="name">🔍 小酒窝儿</div><div class="status ok">品控巡检</div></div>
+<div class="agent"><div class="name">🤓 小眼镜</div><div class="status ok">知识运营</div></div>
+<div class="agent"><div class="name">🐴 小马丫</div><div class="status neutral">待激活</div></div>
+<div class="agent"><div class="name">🤖 小扣子</div><div class="status down">超96h未响应</div></div>
+</div>
+
+<h2>🚨 当前预警</h2>
+<ul class="alerts" id="alertList">
+<li><span class="badge p0">P0</span> mentor UV=1 — 引流无起色</li>
+<li><span class="badge p0">P0</span> 小程序备案第5天 — 12381短信未到</li>
+<li><span class="badge p0">P0</span> #140小扣子超96h — 付费闭环技术方案未补</li>
+<li><span class="badge p1">P1</span> ICP备案号 — 21页已补齐待部署</li>
+<li><span class="badge p1">P1</span> 付费墙代码 — 已合并未上线</li>
+</ul>
+
+<h2>📊 进度概览</h2>
+<div class="grid">
+<div class="card"><div class="label">付费闭环</div><div class="value" style="font-size:1.2rem;color:var(--accent)">95%</div><div class="change">待部署付费墙+接微信支付</div></div>
+<div class="card"><div class="label">小程序</div><div class="value" style="font-size:1.2rem;color:var(--info)">65%</div><div class="change">设计✅ 备案待审核</div></div>
+<div class="card"><div class="label">CI/CD</div><div class="value" style="font-size:1.2rem;color:var(--safe)">✅</div><div class="change">7.18修通 push即部署</div></div>
+<div class="card"><div class="label">110人验证</div><div class="value" style="font-size:1.2rem">285/1100</div><div class="change">累计285UV</div></div>
+</div>
+
+<footer>
+<a href="/">← 返回首页</a> &nbsp;|&nbsp; <a href="/dashboard/">质量看板</a> &nbsp;|&nbsp; <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">京ICP备2026041809号</a>
+</footer>
+</div>
+
+<script>
+async function loadData(){
+  try{
+    const r=await fetch('/api/stats/daily');const d=await r.json();
+    document.getElementById('totalUV').textContent=d.total_uv||'--';
+    document.getElementById('totalPV').textContent=d.total_pv||'--';
+    document.getElementById('dayUV').textContent=d.today_uv||'--';
+    document.getElementById('dayPV').textContent=d.today_pv||'--';
+    document.getElementById('dayClick').textContent=d.today_click||'--';
+    document.getElementById('feedback').textContent=d.feedback_count||'--';
+  }catch(e){console.log('API unavailable')}
+  document.getElementById('refreshTime').textContent='更新时间: '+new Date().toLocaleString('zh-CN');
+}
+loadData();setInterval(loadData,300000);
+</script>
+</body>
+</html>
