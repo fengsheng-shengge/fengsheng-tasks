@@ -100,12 +100,24 @@ export default {
         const body = await request.json();
         const { user_id, amount, product } = body;
 
-        if (!user_id || !amount) {
-          return jsonResponse({ error: '缺少参数' }, 400);
+        if (!user_id) {
+          return jsonResponse({ error: '缺少参数 user_id' }, 400);
         }
 
-        // 生成唯一订单号
-        const outTradeNo = 'FS' + Date.now() + Math.random().toString(36).slice(2, 6);
+        // 验证金额：必须是正数，上限 9999
+        const amountNum = parseFloat(amount);
+        if (isNaN(amountNum) || amountNum <= 0 || amountNum > 9999) {
+          return jsonResponse({ error: '无效的金额' }, 400);
+        }
+
+        // 验证商品标识
+        const validProducts = ['mentor_unlock', 'mentor_monthly', 'generic'];
+        if (!validProducts.includes(product)) {
+          return jsonResponse({ error: '无效的商品标识' }, 400);
+        }
+
+        // 生成唯一订单号（加盐防预测）
+        const outTradeNo = 'FS' + Date.now() + Math.random().toString(36).slice(2, 8);
         const subject = product === 'mentor_unlock' ? '开单导师解锁' : '风声服务';
         const notifyUrl = `${getBaseUrl(request)}/mentor-api/payment/notify`;
 
@@ -198,29 +210,72 @@ export default {
     }
 
     // Mentor 支付回调通知（支付宝异步通知）
+    // ⚠️ 注意：支付宝异步回调使用 application/x-www-form-urlencoded，不是 JSON
     if (path === '/mentor-api/payment/notify' && request.method === 'POST') {
       try {
-        const params = await request.json();
-        const { out_trade_no, trade_status, trade_no } = params;
+        const contentType = request.headers.get('content-type') || '';
+        let params;
+
+        if (contentType.includes('application/x-www-form-urlencoded') ||
+            contentType.includes('text/plain')) {
+          const text = await request.text();
+          const searchParams = new URLSearchParams(text);
+          params = Object.fromEntries(searchParams.entries());
+        } else {
+          params = await request.json();
+        }
+
+        const {
+          out_trade_no,
+          trade_status,
+          trade_no,
+          buyer_pay_amount,
+          buyer_logon_id,
+        } = params;
+
+        if (!out_trade_no) {
+          return new Response('fail', { status: 400 });
+        }
+
+        // ⚠️ 安全建议：生产环境应启用支付宝签名验证
+        // const sign = params.sign;
+        // const verified = await alipayVerifySign(params, env);
+        // if (!verified) { return new Response('fail'); }
 
         if (trade_status === 'TRADE_SUCCESS' || trade_status === 'TRADE_FINISHED') {
           if (env.PAYMENT_ORDERS) {
             const orderStr = await env.PAYMENT_ORDERS.get(out_trade_no);
             if (orderStr) {
               const order = JSON.parse(orderStr);
-              order.status = 'paid';
-              order.trade_no = trade_no;
-              order.paid_at = Date.now();
-              await env.PAYMENT_ORDERS.put(out_trade_no, JSON.stringify(order));
+
+              // 防重放：已标记为 paid 的订单不再重复处理
+              if (order.status !== 'paid') {
+                order.status = 'paid';
+                order.trade_no = trade_no;
+                order.paid_at = Date.now();
+                if (buyer_pay_amount) order.paid_amount = parseFloat(buyer_pay_amount);
+                if (buyer_logon_id) order.buyer = buyer_logon_id.slice(0, 8) + '***';
+                await env.PAYMENT_ORDERS.put(out_trade_no, JSON.stringify(order));
+                console.log(`Payment success: ${out_trade_no}, paid: ${buyer_pay_amount || 'unknown'}`);
+              } else {
+                console.log(`Duplicate notify ignored: ${out_trade_no}`);
+              }
+            } else {
+              console.warn(`Order not found for notify: ${out_trade_no}`);
             }
           }
-          console.log(`Payment success: ${out_trade_no}`);
         }
 
-        return jsonResponse({ success: true });
+        // 支付宝要求返回纯文本 "success" 表示已接收
+        return new Response('success', {
+          headers: { 'Content-Type': 'text/plain' },
+        });
       } catch (err) {
         console.error('Payment notify error:', err);
-        return jsonResponse({ success: false, error: err.message }, 500);
+        return new Response('fail', {
+          status: 500,
+          headers: { 'Content-Type': 'text/plain' },
+        });
       }
     }
 
