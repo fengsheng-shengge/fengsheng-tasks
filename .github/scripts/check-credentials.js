@@ -1,97 +1,83 @@
-const fs = require('fs');
-const path = require('path');
+const https = require('https');
 const crypto = require('crypto');
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const REPO_OWNER = process.env.REPO_OWNER || 'fengsheng-shengge';
 const REPO_NAME = process.env.REPO_NAME || 'fengsheng-tasks';
-const ISSUE_NUMBER = 42;
+const ISSUE_NUMBER = parseInt(process.env.ISSUE_NUMBER || '42');
 
 const XIAOYUER_ACCOUNTS = ['xiaoyuer-bot', 'xiaoyuer', 'coze-bot', 'coze', 'fengsheng-shengge'];
 
-const STATE_FILE = path.join(__dirname, '.last-processed-comment');
+function apiRequest(method, path, body = null) {
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: 'api.github.com',
+      path: `/repos/${REPO_OWNER}/${REPO_NAME}${path}`,
+      method,
+      headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'Trae-Credential-Checker'
+      }
+    };
 
-function getLastProcessedCommentId() {
-  try {
-    return parseInt(fs.readFileSync(STATE_FILE, 'utf8').trim(), 10) || 0;
-  } catch {
-    return 0;
-  }
-}
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => data += chunk);
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          if (res.statusCode >= 400) {
+            reject(new Error(`API Error ${res.statusCode}: ${JSON.stringify(json)}`));
+          } else {
+            resolve(json);
+          }
+        } catch (e) {
+          reject(new Error(`Parse Error: ${data}`));
+        }
+      });
+    });
 
-function saveLastProcessedCommentId(id) {
-  fs.writeFileSync(STATE_FILE, id.toString());
-}
-
-async function fetchIssuesComments() {
-  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments`;
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': `token ${GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github.v3+json'
+    req.on('error', reject);
+    if (body) {
+      req.write(JSON.stringify(body));
     }
+    req.end();
   });
-  
-  if (!response.ok) {
-    console.error(`[ERROR] Failed to fetch comments: ${response.status} ${response.statusText}`);
-    return [];
-  }
-  
-  return response.json();
 }
 
 function extractCredentials(body) {
   const credentials = {};
   
-  const accountIdPatterns = [
-    /CLOUDFLARE_ACCOUNT_ID\s*[=:]\s*([a-f0-9]{32})/i,
-    /Account\s*ID\s*[=:]\s*([a-f0-9]{32})/i,
-    /account_id\s*[=:]\s*([a-f0-9]{32})/i,
-    /accountid\s*[=:]\s*([a-f0-9]{32})/i,
-    /([a-f0-9]{32})/g
-  ];
-  
-  const apiTokenPatterns = [
-    /CLOUDFLARE_API_TOKEN\s*[=:]\s*([A-Za-z0-9_-]{40,})/i,
-    /API\s*Token\s*[=:]\s*([A-Za-z0-9_-]{40,})/i,
-    /api_token\s*[=:]\s*([A-Za-z0-9_-]{40,})/i,
-    /apitoken\s*[=:]\s*([A-Za-z0-9_-]{40,})/i
-  ];
-  
-  for (const pattern of accountIdPatterns) {
-    const match = body.match(pattern);
-    if (match) {
-      credentials.CLOUDFLARE_ACCOUNT_ID = match[1];
-      break;
-    }
+  const accountIdMatch = body.match(/Account[\s_-]?ID[:=]\s*([a-f0-9]{32})/i);
+  if (accountIdMatch) {
+    credentials.CLOUDFLARE_ACCOUNT_ID = accountIdMatch[1];
   }
-  
-  for (const pattern of apiTokenPatterns) {
-    const match = body.match(pattern);
-    if (match) {
-      credentials.CLOUDFLARE_API_TOKEN = match[1];
-      break;
-    }
+
+  const apiTokenMatch = body.match(/API[\s_-]?Token[:=]\s*([A-Za-z0-9_-]{40,})/i);
+  if (apiTokenMatch) {
+    credentials.CLOUDFLARE_API_TOKEN = apiTokenMatch[1];
   }
-  
+
+  const envAccountId = body.match(/CLOUDFLARE_ACCOUNT_ID[\s=]*([a-f0-9]{32})/i);
+  if (envAccountId) {
+    credentials.CLOUDFLARE_ACCOUNT_ID = envAccountId[1];
+  }
+
+  const envApiToken = body.match(/CLOUDFLARE_API_TOKEN[\s=]*([A-Za-z0-9_-]{40,})/i);
+  if (envApiToken) {
+    credentials.CLOUDFLARE_API_TOKEN = envApiToken[1];
+  }
+
   return credentials;
 }
 
 async function getPublicKey() {
-  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/secrets/public-key`;
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': `token ${GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github.v3+json'
-    }
-  });
-  
-  if (!response.ok) {
-    console.error(`[ERROR] Failed to get public key: ${response.status} ${response.statusText}`);
-    return null;
-  }
-  
-  return response.json();
+  const result = await apiRequest('GET', '/actions/secrets/public-key');
+  return {
+    key_id: result.key_id,
+    key: result.key
+  };
 }
 
 function encryptSecret(secretValue, publicKey) {
@@ -100,165 +86,148 @@ function encryptSecret(secretValue, publicKey) {
   
   const encrypted = crypto.publicEncrypt({
     key: key,
-    padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-    oaepHash: 'sha256'
+    padding: crypto.constants.RSA_PKCS1_OAEP_PADDING
   }, buffer);
   
   return encrypted.toString('base64');
 }
 
 async function setSecret(secretName, secretValue) {
-  const publicKeyData = await getPublicKey();
-  if (!publicKeyData) return false;
+  const { key_id, key } = await getPublicKey();
+  const encryptedValue = encryptSecret(secretValue, key);
   
-  const encryptedValue = encryptSecret(secretValue, publicKeyData.key);
-  
-  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/secrets/${secretName}`;
-  const response = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `token ${GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      encrypted_value: encryptedValue,
-      key_id: publicKeyData.key_id
-    })
+  await apiRequest('PUT', `/actions/secrets/${secretName}`, {
+    encrypted_value: encryptedValue,
+    key_id: key_id
   });
-  
-  if (response.ok) {
-    console.log(`[SUCCESS] Set secret: ${secretName}`);
-    return true;
-  } else {
-    console.error(`[ERROR] Failed to set secret ${secretName}: ${response.status} ${response.statusText}`);
-    return false;
-  }
 }
 
 async function triggerDeploy() {
-  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Authorization': `token ${GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      event_type: 'deploy-from-credentials',
-      client_payload: {
-        source: 'check-credentials'
-      }
-    })
+  await apiRequest('POST', '/dispatches', {
+    event_type: 'deploy-from-credentials'
   });
-  
-  if (response.ok) {
-    console.log('[SUCCESS] Triggered deploy workflow');
-    return true;
-  } else {
-    console.error(`[ERROR] Failed to trigger deploy: ${response.status} ${response.statusText}`);
-    return false;
-  }
 }
 
-async function addIssueComment(comment) {
-  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Authorization': `token ${GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ body: comment })
+async function addIssueComment(message) {
+  await apiRequest('POST', `/issues/${ISSUE_NUMBER}/comments`, {
+    body: message
   });
-  
-  if (response.ok) {
-    console.log('[SUCCESS] Added issue comment');
-    return true;
-  } else {
-    console.error(`[ERROR] Failed to add comment: ${response.status} ${response.statusText}`);
-    return false;
+}
+
+async function checkStateFile() {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const statePath = path.join(__dirname, 'processed-comments.json');
+    
+    if (fs.existsSync(statePath)) {
+      const content = fs.readFileSync(statePath, 'utf8');
+      return JSON.parse(content);
+    }
+  } catch (e) {
+    console.log('No state file found, starting fresh');
   }
+  return { processedCommentIds: [] };
+}
+
+async function saveStateFile(state) {
+  const fs = require('fs');
+  const path = require('path');
+  const statePath = path.join(__dirname, 'processed-comments.json');
+  fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
 }
 
 async function main() {
-  console.log('[INFO] Starting credential check for Issue #42...');
+  console.log('=== 🔍 开始检查 Issue #42 凭证 ===');
   
-  if (!GITHUB_TOKEN) {
-    console.error('[ERROR] GITHUB_TOKEN is not set');
+  try {
+    const state = await checkStateFile();
+    
+    console.log(`📡 获取 Issue #${ISSUE_NUMBER} 评论...`);
+    let comments = [];
+    let page = 1;
+    
+    while (true) {
+      const pageComments = await apiRequest('GET', `/issues/${ISSUE_NUMBER}/comments?per_page=100&page=${page}`);
+      if (pageComments.length === 0) break;
+      comments = comments.concat(pageComments);
+      page++;
+    }
+    
+    console.log(`📥 共获取 ${comments.length} 条评论`);
+    
+    const newComments = comments.filter(c => !state.processedCommentIds.includes(c.id));
+    console.log(`✨ 新增 ${newComments.length} 条未处理评论`);
+    
+    let foundCredentials = null;
+    let foundComment = null;
+    
+    for (const comment of newComments) {
+      const userLogin = comment.user.login.toLowerCase();
+      
+      if (!XIAOYUER_ACCOUNTS.includes(userLogin)) {
+        continue;
+      }
+      
+      console.log(`🔍 检查评论 #${comment.id} (${comment.user.login})`);
+      
+      const credentials = extractCredentials(comment.body);
+      
+      if (credentials.CLOUDFLARE_ACCOUNT_ID && credentials.CLOUDFLARE_API_TOKEN) {
+        foundCredentials = credentials;
+        foundComment = comment;
+        console.log('✅ 找到完整凭证！');
+        break;
+      }
+    }
+    
+    if (!foundCredentials) {
+      console.log('🚫 未找到有效的 Cloudflare 凭证');
+      
+      if (newComments.length > 0) {
+        state.processedCommentIds = state.processedCommentIds.concat(newComments.map(c => c.id));
+        await saveStateFile(state);
+      }
+      
+      console.log('=== ✅ 检查完成，无新凭证 ===');
+      return;
+    }
+    
+    console.log('🔐 配置 GitHub Secrets...');
+    
+    await setSecret('CLOUDFLARE_ACCOUNT_ID', foundCredentials.CLOUDFLARE_ACCOUNT_ID);
+    console.log('   ✓ CLOUDFLARE_ACCOUNT_ID');
+    
+    await setSecret('CLOUDFLARE_API_TOKEN', foundCredentials.CLOUDFLARE_API_TOKEN);
+    console.log('   ✓ CLOUDFLARE_API_TOKEN');
+    
+    console.log('🚀 触发部署...');
+    await triggerDeploy();
+    console.log('   ✓ 部署已触发');
+    
+    console.log('💬 在 Issue 回复通知...');
+    const message = `✅ **凭证已配置完成！**\n\n检测到 @${foundComment.user.login} 提供的 Cloudflare 部署凭证，已自动配置到 GitHub Secrets 并触发部署。\n\n- **Account ID**: \`${foundCredentials.CLOUDFLARE_ACCOUNT_ID}\`\n- **API Token**: \`${foundCredentials.CLOUDFLARE_API_TOKEN.slice(0, 8)}...\`\n\n部署状态：👉 [查看 Actions](https://github.com/${REPO_OWNER}/${REPO_NAME}/actions/workflows/deploy.yml)`;
+    
+    await addIssueComment(message);
+    console.log('   ✓ 通知已发送');
+    
+    state.processedCommentIds = state.processedCommentIds.concat(newComments.map(c => c.id));
+    await saveStateFile(state);
+    
+    console.log('=== 🎉 凭证配置与部署触发完成 ===');
+    
+  } catch (error) {
+    console.error('❌ 执行失败:', error.message);
+    
+    try {
+      const errorMessage = `⚠️ **凭证检查脚本执行失败**\n\n错误信息：\`${error.message}\`\n\n请检查 GitHub Token 权限或网络连接。`;
+      await addIssueComment(errorMessage);
+    } catch (e) {
+      console.error('发送错误通知失败:', e.message);
+    }
+    
     process.exit(1);
-  }
-  
-  const lastProcessedId = getLastProcessedCommentId();
-  console.log(`[INFO] Last processed comment ID: ${lastProcessedId}`);
-  
-  const comments = await fetchIssuesComments();
-  console.log(`[INFO] Total comments fetched: ${comments.length}`);
-  
-  let foundCredentials = null;
-  let latestCommentId = lastProcessedId;
-  
-  for (const comment of comments) {
-    const commentId = comment.id;
-    const author = comment.user.login;
-    const body = comment.body;
-    
-    if (commentId > lastProcessedId) {
-      console.log(`[INFO] Checking comment #${commentId} from ${author}`);
-      
-      if (XIAOYUER_ACCOUNTS.includes(author.toLowerCase())) {
-        const credentials = extractCredentials(body);
-        
-        if (credentials.CLOUDFLARE_ACCOUNT_ID && credentials.CLOUDFLARE_API_TOKEN) {
-          console.log('[INFO] Found valid Cloudflare credentials!');
-          console.log(`[INFO] Account ID: ${credentials.CLOUDFLARE_ACCOUNT_ID}`);
-          console.log(`[INFO] API Token: ${credentials.CLOUDFLARE_API_TOKEN.substring(0, 10)}...`);
-          foundCredentials = credentials;
-          latestCommentId = commentId;
-          break;
-        }
-      }
-      
-      if (commentId > latestCommentId) {
-        latestCommentId = commentId;
-      }
-    }
-  }
-  
-  if (foundCredentials) {
-    console.log('[INFO] Setting GitHub Secrets...');
-    
-    const setAccountId = await setSecret('CLOUDFLARE_ACCOUNT_ID', foundCredentials.CLOUDFLARE_ACCOUNT_ID);
-    const setApiToken = await setSecret('CLOUDFLARE_API_TOKEN', foundCredentials.CLOUDFLARE_API_TOKEN);
-    
-    if (setAccountId && setApiToken) {
-      console.log('[INFO] Triggering deployment...');
-      const deployed = await triggerDeploy();
-      
-      if (deployed) {
-        saveLastProcessedCommentId(latestCommentId);
-        
-        const notification = `✅ **Cloudflare 凭证已配置并触发部署！**\n\n检测到您在评论中提供了 Cloudflare 部署凭证，已自动完成以下操作：\n\n- ✅ 配置 CLOUDFLARE_ACCOUNT_ID\n- ✅ 配置 CLOUDFLARE_API_TOKEN\n- ✅ 触发 Cloudflare Pages 部署工作流\n\n部署完成后可访问：https://fengsheng.tech`;
-        
-        await addIssueComment(notification);
-        
-        console.log('[SUCCESS] All tasks completed successfully!');
-        process.exit(0);
-      }
-    } else {
-      console.error('[ERROR] Failed to set secrets');
-      process.exit(1);
-    }
-  } else {
-    console.log('[INFO] No new Cloudflare credentials found in comments');
-    saveLastProcessedCommentId(latestCommentId);
-    process.exit(0);
   }
 }
 
-main().catch(err => {
-  console.error('[ERROR] Unexpected error:', err);
-  process.exit(1);
-});
+main();
