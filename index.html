@@ -1,208 +1,755 @@
+<!-- v20260604-2040 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta name="description" content="风声：帮服务者配得上被客户好好对待。Agent培养师、客户解码器、六维品质测评等工具">
-<meta name="theme-color" content="#2D5A3D">
-<meta property="og:title" content="风声 fengsheng.tech — 帮服务者配得上被客户好好对待">
-<meta property="og:description" content="Agent培养师、客户解码器、六维品质测评，为房产、家居、家政服务者打造的数字化成长工具">
-<meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='1200' height='630' fill='%23F5F1E8'/><text x='100' y='280' font-family='sans-serif' font-size='72' fill='%232D5A3D' font-weight='700'>风声 fengsheng</text><text x='100' y='360' font-family='sans-serif' font-size='36' fill='%23D97757'>帮服务者配得上被客户好好对待</text></svg>">
-<meta property="og:type" content="website">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>风声 · 通过独立价值赢得尊重</title>
+<meta name="description" content="风声 · 通过独立价值赢得尊重。六维标准定义品质，四维关怀守护服务者，三条路径实现商业闭环。">
+<meta name="keywords" content="风声,居住服务,品质居住,六维标准,四维关怀,服务者关怀,居住品质,数字工具,经纪人赋能,质量管理">
+<meta property="og:title" content="风声 · 通过独立价值赢得尊重">
+<meta property="og:description" content="六维标准定义品质，四维关怀守护服务者，三条路径实现商业闭环。">
+<meta property="og:image" content="https://fengsheng.tech/og-image.png">
 <meta property="og:url" content="https://fengsheng.tech/">
+<meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<title>风声 fengsheng.tech — 帮服务者配得上被客户好好对待</title>
+
 <style>
-*,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#F5F1E8;color:#2A2825;line-height:1.7;-webkit-font-smoothing:antialiased}
-a{color:#2D5A3D;text-decoration:none}
-a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:0 20px}
-.skip-nav{position:absolute;left:-9999px;top:0;background:#2D5A3D;color:#fff;padding:10px 16px;border-radius:8px;z-index:999}
-.skip-nav:focus{left:1rem;top:1rem;text-decoration:none}
-.header{background:#fff;border-bottom:1px solid #EFE8DB}
-.header-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
-.brand{font-weight:700;font-size:20px;color:#2D5A3D;letter-spacing:1px}
-.brand span{color:#D97757}
-.nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:15px;color:#6B665E}
-.nav a{color:#2A2825;padding:6px 10px;border-radius:8px}
-.nav a:hover{background:#F5F1E8;text-decoration:none;color:#2D5A3D}
-.nav .sep{color:#B8B1A4}
-.hero{padding:72px 0 56px;text-align:center;position:relative;overflow:hidden}
-.hero h1{font-size:clamp(32px,6vw,54px);line-height:1.25;margin:0 0 18px;color:#2A2825;font-weight:700}
-.hero h1 em{font-style:normal;color:#D97757}
-.hero p.lead{font-size:clamp(16px,2.2vw,20px);color:#5E5952;max-width:640px;margin:0 auto 28px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:14px 28px;font-size:16px;font-weight:600;font-family:inherit;transition:transform .15s ease,box-shadow .15s ease,background-color .2s}
-.btn-primary{background:#2D5A3D;color:#fff;box-shadow:0 6px 16px rgba(45,90,61,.25)}
-.btn-primary:hover{background:#234a31;text-decoration:none;transform:translateY(-1px)}
-.btn-ghost{background:transparent;color:#2D5A3D;border:2px solid #2D5A3D}
-.btn-ghost:hover{background:#2D5A3D;color:#fff;text-decoration:none}
-.btn-orange{background:#D97757;color:#fff;box-shadow:0 6px 16px rgba(217,119,87,.25)}
-.btn-orange:hover{background:#c06649;text-decoration:none}
-.hero-ill{margin:36px auto 0;max-width:560px;padding:0 20px}
-.section{padding:56px 0}
-.section h2{font-size:clamp(24px,4vw,34px);margin:0 0 8px;color:#2A2825}
-.section .sub{color:#5E5952;margin-bottom:36px}
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.card{background:#fff;border-radius:16px;padding:28px 24px;border:1px solid #EFE8DB;box-shadow:0 2px 6px rgba(42,40,37,.04);transition:transform .2s ease,box-shadow .2s ease;display:flex;flex-direction:column}
-.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(42,40,37,.08)}
-.card .tag{display:inline-block;font-size:12px;color:#D97757;background:#FBEDE5;padding:3px 10px;border-radius:999px;font-weight:600;margin-bottom:10px;align-self:flex-start}
-.card h3{margin:0 0 10px;font-size:20px;color:#2A2825}
-.card p{margin:0 0 18px;color:#5E5952;font-size:15px;flex:1}
-.card .btn{padding:10px 20px;font-size:14px;align-self:flex-start}
-.card-ill{height:64px;margin-bottom:14px;color:#2D5A3D}
-.footer{border-top:1px solid #EFE8DB;background:#fff;padding:36px 0 28px;margin-top:48px;font-size:14px;color:#6B665E}
-.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.footer a{color:#6B665E}
-.footer .tiny{font-size:12px;color:#B8B1A4}
-.footer .tiny a{color:#B8B1A4}
-.btn-back{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;background:#fff;color:#2D5A3D;border:1px solid #EFE8DB;font-size:14px;text-decoration:none}
-.btn-back:hover{background:#F5F1E8;text-decoration:none}
-@media (max-width:640px){
-  .wrap{padding:0 16px}
-  .hero{padding:48px 0 32px}
-  .section{padding:40px 0}
-  .cards{grid-template-columns:1fr;gap:16px}
-  .nav{font-size:14px}
-  .nav a{padding:5px 8px}
-  .brand{font-size:18px}
+:root{
+  --bg:#f7f4ef;--bg2:#e8e4d9;--card:#f7f4ef;--card-h:#f5f1ec;
+  --border:rgba(80,90,70,.09);--border-h:rgba(60,80,50,.2);
+  --p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--p-bg:rgba(61,90,62,.05);
+  --fire:#c46a3a;--fire-l:#d89060;--charcoal:#3a3a38;
+  --dk:#1a1a1a;--tx:#555555;--ts:#7a8478;--td:#a8b0a6;
+  --safe:#5e7e5c;--health:#6d8f55;--neat:#3d5a3e;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e;
+  --sc-body:#5e7e5c;--sc-mind:#6d8f55;--sc-dignity:#7e6a90;--sc-life:#4e7e8e;
+  --pathA:#c46a3a;--pathB:#4e7e8e;--pathC:#7e6a90;
+  --r:8px;
 }
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+.main{position:relative;z-index:1;max-width:1200px;margin:0 auto}
+
+/* HERO */
+.hero{padding:120px 8% 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:
+  linear-gradient(180deg,rgba(247,244,239,0) 0%,rgba(247,244,239,.5) 55%,rgba(247,244,239,1) 100%),
+  url('assets/images/hero-living-dimension.jpg') center/cover no-repeat;
+  z-index:0;opacity:.35}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(247,244,239,.3) 0%,rgba(247,244,239,0) 50%,rgba(247,244,239,.3) 100%);z-index:1}
+.hero > *{position:relative;z-index:2}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--p-d);background:var(--p-bg);border:1px solid rgba(61,90,62,.12);border-radius:16px;padding:4px 12px;margin-bottom:16px;letter-spacing:2px}
+.hero-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--p-l);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:48px;font-weight:700;color:var(--dk);letter-spacing:1px;line-height:1.2}
+.hero-sub{font-size:20px;color:var(--p-d);margin-top:8px;font-weight:600;letter-spacing:.5px}
+.hero-desc{font-size:16px;color:var(--ts);margin-top:8px;line-height:1.6;max-width:420px;margin-left:auto;margin-right:auto}
+.hero-cta{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.cta-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 32px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .25s;text-decoration:none}
+.cta-btn:active{transform:scale(.96)}
+.cta-primary{background:var(--p);color:#fff}
+.cta-secondary{background:var(--card);color:var(--p-d);border:1px solid var(--border)}
+.cta-fire{background:var(--fire);color:#fff}
+
+/* 110人验证线 */
+.v-line{max-width:520px;margin:36px auto 0;background:rgba(255,255,255,.75);backdrop-filter:blur(8px);border:1px solid rgba(61,90,62,.1);border-radius:12px;padding:16px 20px;position:relative;z-index:2}
+.v-line-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.v-line-label{font-size:13px;font-weight:700;color:var(--p);letter-spacing:.5px}
+.v-line-num{font-size:12px;color:var(--ts)}
+.v-line-bar{height:6px;background:rgba(61,90,62,.1);border-radius:999px;overflow:hidden;margin-bottom:8px}
+.v-line-fill{height:100%;width:0;background:linear-gradient(90deg,var(--p) 0%,var(--fire) 100%);border-radius:999px;animation:vprogress 2.5s ease-out forwards}
+@keyframes vprogress{from{width:0}to{width:var(--v-pct,67%)}}
+.v-line-foot{font-size:11px;color:var(--ts);text-align:center}
+
+/* SECTION通用 */
+.section{padding:60px 8% 20px}
+.section-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:0 4px}
+.section-dot{width:6px;height:6px;border-radius:50%}
+.section-title{font-size:24px;font-weight:800;color:var(--dk);letter-spacing:.5px}
+.section-desc{font-size:10px;color:var(--td);margin-left:8px;font-weight:500}
+.section-line{width:100%;height:1px;background:var(--border);margin:4px 0 14px}
+
+/* 大矛盾 */
+.contradiction{padding:60px 8% 20px;text-align:center}
+.contra-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:440px;margin:0 auto}
+.contra-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center}
+.contra-ico{font-size:28px;margin-bottom:6px}
+.contra-name{font-size:18px;font-weight:600;color:var(--dk);margin-bottom:4px}
+.contra-stat{font-size:36px;font-weight:900;background:linear-gradient(to right,#3d5a3e,#c46a3a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.contra-label{font-size:9px;color:var(--td);margin-top:2px}
+.contra-desc{font-size:10px;color:var(--ts);margin-top:6px;line-height:1.5}
+.contra-bridge{grid-column:1/-1;text-align:center;padding:8px;font-size:11px;color:var(--p-d);font-weight:600;line-height:1.6;background:var(--p-bg);border-radius:var(--r)}
+
+/* 双维模型 */
+.dual-section{padding:60px 8% 20px}
+.dual-title{text-align:center;font-size:14px;color:var(--td);letter-spacing:3px;font-weight:700;margin-bottom:14px}
+.dual-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.dual-col{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.dual-col.customer{border-top:3px solid var(--p)}
+.dual-col.server{border-top:3px solid var(--fire)}
+.dual-label{font-size:16px;font-weight:800;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.dual-label.c{color:var(--p)}
+.dual-label.s{color:var(--fire)}
+.dim-list{display:flex;flex-direction:column;gap:5px}
+.dim-row{display:flex;align-items:center;gap:8px;font-size:15px}
+.dim-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dim-name{font-weight:700;color:var(--dk);min-width:36px}
+.dim-one{color:var(--ts);font-size:13px}
+.dual-link{display:block;text-align:center;margin-top:10px;font-size:15px;font-weight:700;color:var(--p);text-decoration:none;padding:6px 0}
+.dual-link:active{opacity:.7}
+/* 双维模型 · 双按钮入口 */
+.dual-actions{display:flex;gap:8px;margin-top:12px}
+.dual-actions .dual-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:10px 0;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:all .2s;cursor:pointer}
+.dual-actions .dual-btn:active{transform:scale(.96)}
+.dual-btn-primary{background:var(--p);color:#fff}
+.dual-btn-primary:hover{background:var(--p-d)}
+.dual-btn-secondary{background:transparent;color:var(--ts);border:1px solid var(--border)}
+.dual-btn-secondary:hover{color:var(--p);border-color:var(--p)}
+.dual-btn-fire{background:var(--fire);color:#fff}
+.dual-btn-fire:hover{background:var(--fire-l)}
+.dual-btn-fire-secondary{background:transparent;color:var(--fire);border:1px solid rgba(196,106,58,.2)}
+.dual-btn-fire-secondary:hover{background:rgba(196,106,58,.06)}
+@media(max-width:767px){.dual-actions{flex-direction:column}}
+.dual-causal{grid-column:1/-1;text-align:center;padding:12px;font-size:15px;color:var(--fire);font-weight:700;line-height:1.6;background:rgba(196,106,58,.05);border-radius:var(--r)}
+
+/* 三路径 */
+.path-section{padding:60px 8% 20px}
+.path-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+.path-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px 16px;text-align:center;display:flex;flex-direction:column;cursor:default;transition:all .3s;-webkit-tap-highlight-color:transparent}
+.path-card:active{transform:scale(.97);border-color:var(--border-h)}
+.path-card.a{border-top:3px solid var(--pathA)}
+.path-card.b{border-top:3px solid var(--pathB)}
+.path-card.c{border-top:3px solid var(--pathC)}
+.path-ico{font-size:24px;margin-bottom:6px}
+.path-name{font-size:16px;font-weight:600;color:var(--dk);margin-bottom:2px}
+.path-sub{font-size:9px;color:var(--td);margin-bottom:6px}
+.path-earn{font-size:10px;font-weight:700;margin-bottom:4px}
+.path-earn.a{color:var(--pathA)}
+.path-earn.b{color:var(--pathB)}
+.path-earn.c{color:var(--pathC)}
+.path-who{font-size:9px;color:var(--ts);line-height:1.4;margin-bottom:8px}
+.path-btn{display:inline-block;padding:5px 12px;border-radius:12px;font-size:9px;font-weight:700;text-decoration:none;margin-top:auto}
+.path-btn.a{background:rgba(196,106,58,.08);color:var(--pathA)}
+.path-btn.b{background:rgba(78,126,142,.08);color:var(--pathB)}
+.path-btn.c{background:rgba(126,106,144,.08);color:var(--pathC)}
+
+/* 产品分类 */
+.product-category{display:flex;align-items:center;gap:8px;margin:24px 0 12px;padding:0 4px}
+.product-category:first-child{margin-top:0}
+.cat-dot{width:6px;height:6px;border-radius:50%}
+.cat-name{font-size:14px;font-weight:800;color:var(--dk);letter-spacing:.5px}
+.cat-badge{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700}
+.cat-badge.live{background:rgba(94,126,92,.1);color:var(--safe)}
+.cat-badge.soon{background:var(--bg2);color:var(--td)}
+.cat-desc{font-size:10px;color:var(--td);margin-left:auto}
+
+/* 产品矩阵 */
+.product-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.product-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;cursor:default;transition:all .3s;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;border-top:3px solid transparent}
+.product-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(60,50,40,.12);border-color:rgba(60,80,50,.15)}
+.product-card:active{transform:scale(.98);border-color:var(--border-h)}
+.product-top{display:flex;align-items:center;gap:8px}
+.product-ico{font-size:22px;flex-shrink:0}
+.product-info{flex:1}
+.product-name{font-size:12px;font-weight:800;color:var(--dk);line-height:1.3}
+.product-value{font-size:10px;color:var(--p);margin-top:2px;font-weight:600;line-height:1.4;font-style:italic}
+.product-stat{font-size:9px;color:var(--td);margin-top:2px}
+.product-action{margin-top:auto;padding-top:8px}
+.product-action a{display:inline-block;padding:4px 10px;border-radius:8px;font-size:9px;font-weight:700;text-decoration:none;background:rgba(61,90,62,.06);color:var(--p)}
+.product-action a.live{background:rgba(94,126,92,.1);color:var(--safe)}
+.product-action a.soon{background:var(--bg2);color:var(--td)}
+.soon-tag{display:inline-block;padding:4px 10px;border-radius:8px;font-size:9px;font-weight:700;background:rgba(180,150,100,.12);color:#8a7856;cursor:default;user-select:none}
+
+/* 知识底座入口 */
+.knowledge-entry{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--tx);transition:all .3s;-webkit-tap-highlight-color:transparent}
+.knowledge-entry:active{transform:scale(.98);border-color:var(--border-h)}
+.knowledge-ico{font-size:32px;flex-shrink:0}
+.knowledge-info{flex:1}
+.knowledge-name{font-size:14px;font-weight:800;color:var(--dk)}
+.knowledge-desc{font-size:10px;color:var(--ts);margin-top:2px;line-height:1.5}
+.knowledge-arrow{color:var(--p);font-size:18px;font-weight:700}
+
+/* 合作入口 */
+.partner-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.partner-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-decoration:none;color:var(--tx);transition:all .3s;-webkit-tap-highlight-color:transparent}
+.partner-card:active{transform:scale(.97);border-color:var(--border-h)}
+.partner-card.edu{border-top:3px solid var(--pathB)}
+.partner-card.gov{border-top:3px solid var(--p)}
+.partner-ico{font-size:28px;margin-bottom:6px}
+.partner-name{font-size:14px;font-weight:800;color:var(--dk);margin-bottom:4px}
+.partner-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.partner-tag{font-size:8px;padding:2px 6px;border-radius:3px;font-weight:700}
+.partner-tag.edu{background:rgba(78,126,142,.08);color:var(--pathB)}
+.partner-tag.gov{background:var(--p-bg);color:var(--p-d)}
+.partner-desc{font-size:10px;color:var(--ts);line-height:1.5}
+
+/* 简报入口 */
+.brief-entry{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--tx);transition:all .3s;-webkit-tap-highlight-color:transparent}
+.brief-entry:active{transform:scale(.98);border-color:var(--border-h)}
+.brief-ico{font-size:22px;flex-shrink:0}
+.brief-info{flex:1}
+.brief-name{font-size:14px;font-weight:800}
+.brief-desc{font-size:10px;color:var(--td);margin-top:1px}
+.brief-arrow{color:var(--p);font-size:16px;font-weight:700}
+
+/* 模式切换 */
+.mode-btn{padding:6px 14px;border-radius:17px;font-size:10px;font-weight:700;border:none;background:transparent;color:var(--td);cursor:pointer;transition:all .25s;letter-spacing:.5px}
+.mode-btn.active{background:var(--p);color:#fff}
+.footer-brand{font-size:13px;color:var(--p-d);font-weight:700;margin-bottom:4px}
+
+/* ====== 移动端适配 ====== */
+@media (max-width: 767px) {
+  :root { --r: 8px; }
+  .hero { padding: 80px 5% 24px !important; }
+  .hero h1 { font-size: 28px !important; line-height: 1.3 !important; }
+  .hero-sub { font-size: 16px !important; }
+  .hero-desc { font-size: 14px !important; }
+  .hero-cta { flex-direction: column; align-items: stretch; gap: 8px !important; }
+  .cta-btn { width: 100%; justify-content: center; }
+  
+  .section { padding: 40px 5% 16px !important; }
+  .contradiction { padding: 40px 5% 16px !important; }
+  .dual-section { padding: 40px 5% 16px !important; }
+  .path-section { padding: 40px 5% 16px !important; }
+  
+  .section-title { font-size: 20px !important; }
+  
+  .contra-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .dual-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .path-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .product-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .partner-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+  
+  .contra-stat { font-size: 28px !important; }
+  .mv { font-size: 36px !important; }
+  
+  .knowledge-entry { padding: 16px !important; }
+  
+  .mgmt-grid { grid-template-columns: 1fr !important; }
+}
+
+/* 平板 */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .hero h1 { font-size: 40px !important; }
+  .section { padding: 50px 6% 18px !important; }
+  .contradiction { padding: 50px 6% 18px !important; }
+  .dual-section { padding: 50px 6% 18px !important; }
+  .path-section { padding: 50px 6% 18px !important; }
+}
+/* 版权+反馈 */
+.page-footer{text-align:center;padding:24px 16px;margin-top:32px;
+  border-top:1px solid var(--border,rgba(80,90,70,.09));
+  font-size:11px;color:var(--ts,#7a8478);line-height:1.8}
+.page-footer .copyright{margin-bottom:8px}
+.feedback-bar{display:flex;align-items:center;justify-content:center;
+  gap:16px;margin-top:12px;padding:12px;background:var(--card,#fff);
+  border-radius:8px;border:1px solid var(--border,rgba(80,90,70,.09))}
+.feedback-bar span{font-size:13px;color:var(--tx,#555)}
+.feedback-btn{display:inline-flex;align-items:center;gap:4px;
+  padding:6px 14px;border-radius:6px;border:1px solid var(--border);
+  background:var(--bg,#f7f4ef);cursor:pointer;font-size:13px;
+  color:var(--tx,#555);transition:all .15s}
+.feedback-btn:hover{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
+.feedback-btn.active{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
+
 </style>
+<!-- 全站数据追踪器 v1.0 -->
+<script src="/tracker.js" async></script>
+<link rel="canonical" href="https://fengsheng.tech/">
 </head>
 <body>
-<a href="#main" class="skip-nav" aria-label="跳到主要内容">跳到主要内容</a>
-<header class="header" role="banner">
-  <div class="wrap header-inner">
-    <a href="index.html" class="brand" aria-label="风声首页">风声 <span>fengsheng</span></a>
-    <nav class="nav" aria-label="主导航">
-      <a href="index.html">首页</a><span class="sep">·</span>
-      <a href="#products">产品</a><span class="sep">·</span>
-      <a href="#about">关于</a><span class="sep">·</span>
-      <a href="reply.html">帮助</a>
-    </nav>
+
+<!-- 风声统一导航栏 -->
+<nav class="fs-nav">
+  <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
+  <div class="fs-nav-links">
+    <a href="/">首页</a>
+    <a href="/mentor/">开单导师</a>
+    <a href="/quality-test/">品质测评</a>
+    <a href="/care-test/">关怀测评</a>
+    <a href="/reply/">客户解码</a>
+    <a href="/ip-design/">IP设计</a>
+    <a href="/knowledge">知识底座</a>
+    <a href="/dashboard/">管理看板</a>
   </div>
-</header>
+  <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
+</nav>
+<style>
+.fs-nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:#fff;border-bottom:1px solid rgba(80,90,70,.09);position:sticky;top:0;z-index:100}
+.fs-nav-brand{font-size:16px;font-weight:700;color:#3d5a3e;text-decoration:none;display:flex;align-items:center;gap:4px}
+.fs-nav-links{display:flex;gap:6px}
+.fs-nav-links a{padding:5px 10px;font-size:12px;color:#555;text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
+.fs-nav-links a:hover{background:rgba(61,90,62,.06);color:#3d5a3e}
+.fs-nav-menu{display:none;background:none;border:none;font-size:20px;cursor:pointer;color:#3d5a3e;padding:8px}
+@media (max-width:767px){
+  .fs-nav-links{display:none;position:absolute;top:52px;left:0;right:0;background:#fff;flex-direction:column;padding:10px;border-bottom:1px solid rgba(80,90,70,.09);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+  .fs-nav.open .fs-nav-links{display:flex}
+  .fs-nav-menu{display:block}
+}
+</style>
 
-<main id="main" role="main">
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="wrap">
-      <h1 id="hero-title">帮<em>服务者</em>配得上被客户好好对待</h1>
-      <p class="lead">我们为房产、家居、家政服务者打造一套简单、可靠的成长工具 — 让专业看得见、让服务可感知、让口碑自然生长。</p>
-      <a href="#products" class="btn btn-primary" aria-label="滚动到产品区">用起来 →</a>
-    </div>
-    <div class="hero-ill" aria-hidden="true">
-      <svg viewBox="0 0 560 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="服务者与客户">
-        <defs>
-          <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#FBEDE5"/>
-            <stop offset="1" stop-color="#E8EDE3"/>
-          </linearGradient>
-          <circle id="leaf" cx="0" cy="0" r="4" fill="#2D5A3D" opacity=".35"/>
-        </defs>
-        <rect width="560" height="280" rx="24" fill="url(#bg)"/>
-        <g fill="none" stroke="#2A2825" stroke-width="3" stroke-linecap="round">
-          <circle cx="170" cy="110" r="28" fill="#FFFFFF"/>
-          <path d="M135 180 C135 145, 205 145, 205 180 L205 230 L135 230 Z" fill="#FFFFFF"/>
-          <circle cx="390" cy="110" r="28" fill="#FFFFFF"/>
-          <path d="M355 180 C355 145, 425 145, 425 180 L425 230 L355 230 Z" fill="#FFFFFF"/>
-        </g>
-        <path d="M220 160 Q280 110 340 160" stroke="#D97757" stroke-width="3" fill="none" stroke-dasharray="4 6" stroke-linecap="round"/>
-        <circle cx="280" cy="135" r="10" fill="#D97757"/>
-        <text x="280" y="139" text-anchor="middle" font-size="14" fill="#FFFFFF" font-family="sans-serif" font-weight="700">✨</text>
-        <rect x="215" y="200" width="130" height="22" rx="11" fill="#2D5A3D"/>
-        <text x="280" y="215" text-anchor="middle" font-size="12" fill="#FFFFFF" font-family="sans-serif" font-weight="600">用心 · 专业 · 被信任</text>
-        <circle cx="80" cy="60" r="4" fill="#2D5A3D" opacity=".5"/>
-        <circle cx="490" cy="50" r="3" fill="#D97757" opacity=".6"/>
-        <circle cx="520" cy="220" r="5" fill="#2D5A3D" opacity=".4"/>
-        <circle cx="60" cy="230" r="3" fill="#D97757" opacity=".5"/>
-      </svg>
-    </div>
-  </section>
+<div class="main">
 
-  <section id="products" class="section" aria-labelledby="products-title">
-    <div class="wrap">
-      <h2 id="products-title">产品</h2>
-      <p class="sub">从个人成长到服务现场，6 个小工具，够用就好。</p>
-      <div class="cards">
-        <article class="card" aria-label="Agent培养师">
-          <svg class="card-ill" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="22" r="10" fill="none" stroke="#2D5A3D" stroke-width="3"/><path d="M14 52 C14 38 50 38 50 52" fill="none" stroke="#2D5A3D" stroke-width="3" stroke-linecap="round"/><path d="M32 32 L32 42 M26 38 L38 38" stroke="#D97757" stroke-width="3" stroke-linecap="round"/></svg>
-          <span class="tag">热门 🔥</span>
-          <h3>Agent 培养师</h3>
-          <p>从新手到资深，陪你走完整条路。测评 → 学习 → 练习 → 考评，系统化地补齐短板。</p>
-          <a href="breeder.html" class="btn btn-primary" aria-label="进入 Agent 培养师">立即使用</a>
-        </article>
-        <article class="card" aria-label="客户解码器">
-          <svg class="card-ill" viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="12" width="44" height="40" rx="6" fill="none" stroke="#2D5A3D" stroke-width="3"/><circle cx="32" cy="32" r="6" fill="#D97757"/><path d="M20 20 H44 M20 48 H36" stroke="#2D5A3D" stroke-width="3" stroke-linecap="round"/></svg>
-          <span class="tag">30秒读懂</span>
-          <h3>客户解码器</h3>
-          <p>输入一段客户场景，快速拆解需求与顾虑，生成个性化沟通话术。</p>
-          <a href="care-test.html" class="btn btn-primary" aria-label="进入客户解码器">立即使用</a>
-        </article>
-        <article class="card" aria-label="六维品质测评">
-          <svg class="card-ill" viewBox="0 0 64 64" aria-hidden="true"><polygon points="32,6 56,20 50,48 14,48 8,20" fill="none" stroke="#2D5A3D" stroke-width="3"/><polygon points="32,18 46,27 42,42 22,42 18,27" fill="#D97757" opacity=".7"/></svg>
-          <span class="tag">能力基线</span>
-          <h3>六维品质测评</h3>
-          <p>专业度、主动性、同理心、诚信、学习力、团队协作 — 六个维度的服务品质基线。</p>
-          <a href="quality-test.html" class="btn btn-primary" aria-label="进入六维品质测评">立即使用</a>
-        </article>
-        <article class="card" aria-label="能力测评">
-          <svg class="card-ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 52 L8 16 L20 28 L32 12 L44 28 L56 16 L56 52 Z" fill="none" stroke="#2D5A3D" stroke-width="3" stroke-linejoin="round"/><circle cx="32" cy="40" r="6" fill="#D97757"/></svg>
-          <span class="tag">岗位</span>
-          <h3>能力测评</h3>
-          <p>岗位胜任力扫描，帮助你定位当前水平与下一个可达成的目标。</p>
-          <a href="assessment.html" class="btn btn-primary" aria-label="进入能力测评">立即使用</a>
-        </article>
-        <article class="card" aria-label="带看报告">
-          <svg class="card-ill" viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="10" width="40" height="44" rx="4" fill="none" stroke="#2D5A3D" stroke-width="3"/><path d="M20 24 H44 M20 34 H44 M20 44 H32" stroke="#D97757" stroke-width="3" stroke-linecap="round"/></svg>
-          <span class="tag">现场工具</span>
-          <h3>带看报告</h3>
-          <p>结构化记录每一次带看，沉淀对客户的理解，让下次见面更贴近客户。</p>
-          <a href="s1-report.html" class="btn btn-primary" aria-label="进入带看报告">立即使用</a>
-        </article>
-        <article class="card" aria-label="知识底座">
-          <svg class="card-ill" viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="14" width="18" height="36" rx="3" fill="none" stroke="#2D5A3D" stroke-width="3"/><rect x="34" y="14" width="18" height="36" rx="3" fill="none" stroke="#2D5A3D" stroke-width="3"/><path d="M40 22 H46 M40 32 H46" stroke="#D97757" stroke-width="3" stroke-linecap="round"/></svg>
-          <span class="tag">内部化</span>
-          <h3>知识底座</h3>
-          <p>企业知识库 + 作业标准，让每一个一线同事都能"就地问、就地答"。</p>
-          <a href="knowledge.html" class="btn btn-primary" aria-label="进入知识底座">立即使用</a>
-        </article>
-      </div>
-    </div>
-  </section>
+<!-- ====== 对外展示层 ====== -->
 
-  <section id="about" class="section" aria-labelledby="about-title">
-    <div class="wrap">
-      <h2 id="about-title">关于风声</h2>
-      <p class="sub">我们相信：服务被看见，专业才有意义。</p>
-      <div class="cards">
-        <article class="card" aria-label="我们的理念">
-          <h3>我们的理念</h3>
-          <p>好服务不只是"不出错"，而是让客户感觉到被认真对待。我们把那些难以量化的"用心"变成可练习、可反馈、可重复的能力。</p>
-        </article>
-        <article class="card" aria-label="谁在用">
-          <h3>谁在用</h3>
-          <p>房产经纪人、租赁顾问、整装家居顾问、家政管家。以及愿意把每一次服务做得更好的一线同事。</p>
-        </article>
-      </div>
-    </div>
-  </section>
-</main>
+<!-- HERO -->
+<div class="hero pub-section">
+  <div class="hero-badge">🌬️ 风声·新居住行业数字化引擎</div>
+  <h1>通过独立价值<br>获得尊重</h1>
+  <div class="hero-sub">帮你把效率活干了，让你腾出手做更重要的判断和担当</div>
+  <div class="hero-desc">工具替你干活，你替客户担责——用独立价值获得尊重</div>
+  <div class="hero-cta">
+    <a class="cta-btn cta-fire" href="/mentor/">🔥 开单导师·帮你开单</a>
+    <a class="cta-btn cta-primary" href="/quality-test/">🏠 六维品质测评</a>
+    <a class="cta-btn cta-secondary" href="/care-test/">💚 四维关怀测评</a>
+    <a class="cta-btn cta-secondary" href="/ip-design/">🎨 IP角色设计</a>
+  </div>
 
-<footer class="footer" role="contentinfo">
-  <div class="wrap footer-inner">
-    <div>© 2026 风声 · fengsheng.tech</div>
-    <div>
-      <a href="privacy.html" aria-label="查看隐私政策">隐私政策</a> ·
-      <a href="reply.html" aria-label="帮助与反馈">帮助</a> ·
-      <span class="tiny"><a href="dashboard.html" aria-label="管理入口">管理</a></span>
+  <!-- 110人验证线 -->
+  <div class="v-line">
+    <div class="v-line-top">
+      <span class="v-line-label">🎯 300人验证线</span>
+      <span class="v-line-num">需要你 · 2分钟即可贡献 1 份有效样本</span>
+    </div>
+    <div class="v-line-bar"><div class="v-line-fill"></div></div>
+    <div class="v-line-foot">
+      <span>💡 不知道从哪开始？先做关怀测评，2分钟看见自己 → 再定位能力段位</span>
     </div>
   </div>
-</footer>
+</div>
 
-<script src="tracker.js" defer></script>
+<!-- 大矛盾 -->
+<div class="contradiction pub-section">
+  <div class="section-header"><div class="section-dot" style="background:var(--fire)"></div><div class="section-title">一个大矛盾</div><div class="section-desc">为什么要做风声</div></div>
+  <div class="contra-grid">
+    <div class="contra-card">
+      <div class="contra-ico">🏠</div>
+      <div class="contra-name">客户住不好</div>
+      <div class="contra-stat">71.4<span style="font-size:12px">分</span></div>
+      <div class="contra-label">居住满意度（中指院2025）</div>
+      <div class="contra-desc">90%说不清哪里不好<br>缺乏衡量标准</div>
+    </div>
+    <div class="contra-card">
+      <div class="contra-ico">😔</div>
+      <div class="contra-name">服务者留不住</div>
+      <div class="contra-stat">47.8<span style="font-size:12px">%</span></div>
+      <div class="contra-label">经纪人年度离职率（智联2023）</div>
+      <div class="contra-desc">高压+低收入+无尊严<br>自己住不好怎么帮别人</div>
+    </div>
+    <div class="contra-bridge">市面工具只管房源成交，没人管居住品质，也没人管经纪人自己活得怎样</div>
+  </div>
+</div>
+
+<!-- 双维模型 -->
+<div class="dual-section pub-section">
+  <div class="dual-title">双维模型 · 风声的核心逻辑</div>
+  <div class="dual-grid">
+    <div class="dual-col customer">
+      <div class="dual-label c">🏠 客户六维·品质居住</div>
+      <div class="dim-list">
+        <div class="dim-row"><div class="dim-dot" style="background:var(--safe)"></div><div class="dim-name">安全</div><div class="dim-one">不出事</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--health)"></div><div class="dim-name">健康</div><div class="dim-one">不伤身·长期</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--neat)"></div><div class="dim-name">整洁</div><div class="dim-one">不乱·好找</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--warm)"></div><div class="dim-name">温暖</div><div class="dim-one">想回家</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--beauty)"></div><div class="dim-name">美观</div><div class="dim-one">统一·舒服</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--cozy)"></div><div class="dim-name">惬意</div><div class="dim-one">放松·不被打扰</div></div>
+      </div>
+      <div class="dual-actions">
+        <a class="dual-btn dual-btn-primary" href="/quality-test/">🏠 开始测评</a>
+        <a class="dual-btn dual-btn-secondary" href="/knowledge">了解六维标准</a>
+      </div>
+    </div>
+    <div class="dual-col server">
+      <div class="dual-label s">🤝 服务者四维·关怀</div>
+      <div class="dim-list">
+        <div class="dim-row"><div class="dim-dot" style="background:var(--sc-body)"></div><div class="dim-name">身体</div><div class="dim-one">你别先倒下</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--sc-mind)"></div><div class="dim-name">心理</div><div class="dim-one">你扛得住</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--sc-dignity)"></div><div class="dim-name">尊严</div><div class="dim-one">你觉得值</div></div>
+        <div class="dim-row"><div class="dim-dot" style="background:var(--sc-life)"></div><div class="dim-name">质感</div><div class="dim-one">你先住好</div></div>
+      </div>
+      <div class="dual-actions">
+        <a class="dual-btn dual-btn-fire" href="/care-test/">💚 开始测评</a>
+        <a class="dual-btn dual-btn-fire-secondary" href="/knowledge.html?tab=quality-server">了解四维关怀</a>
+      </div>
+    </div>
+    <div class="dual-causal">服务者四维不及格 → 客户六维一定做不好<br>自己先活好，才能帮别人活好</div>
+  </div>
+</div>
+
+<!-- 三条路径 -->
+<div class="path-section pub-section">
+  <div class="section-header"><div class="section-dot" style="background:var(--dk)"></div><div class="section-title">三条路径</div><div class="section-desc">风声怎么做</div></div>
+  <div class="path-grid">
+    <div class="path-card a">
+      <div class="path-ico">🔧</div>
+      <div class="path-name">存量赋能</div>
+      <div class="path-sub">路径A</div>
+      <div class="path-earn a">赚当下的钱</div>
+      <div class="path-who">在岗服务者<br>工具订阅<br>留存率≥40%</div>
+      <a class="path-btn a" href="#products">用起来</a>
+    </div>
+    <div class="path-card b">
+      <div class="path-ico">🏛️</div>
+      <div class="path-name">增量前置</div>
+      <div class="path-sub">路径B</div>
+      <div class="path-earn b">赚未来的势</div>
+      <div class="path-who">高校/政府<br>政策杠杆<br>产教融合</div>
+      <a class="path-btn b" href="#" style="background:rgba(78,126,142,.12);color:#4e7e8e;pointer-events:none" onclick="return false;">谈合作 · 敬请期待</a>
+    </div>
+    <div class="path-card c">
+      <div class="path-ico">⚖️</div>
+      <div class="path-name">标准认证</div>
+      <div class="path-sub">路径C</div>
+      <div class="path-earn c">赚定价权</div>
+      <div class="path-who">定义什么是好<br>行业评判权<br>米其林模式</div>
+      <a class="path-btn c" href="/knowledge">看标准</a>
+    </div>
+  </div>
+</div>
+
+<!-- 产品矩阵（方案A+ · 融合快回入口） -->
+<div class="section pub-section" id="products">
+  <div class="section-header"><div class="section-dot" style="background:var(--pathA)"></div><div class="section-title">产品工具</div><div class="section-desc">做减法 &middot; 做精做透 &middot; 一个工具聚焦一个核心痛点</div></div>
+
+  <!-- 场景一：面对客户 — 用专业工具触达客户·建立差异化信任 -->
+  <div class="product-category">
+    <div class="cat-dot" style="background:var(--p)"></div>
+    <div class="cat-name">面对客户</div>
+    <span class="cat-desc">获客引流 &middot; 专业交付 &middot; 信任建立</span>
+    <span class="cat-badge live">5个工具</span>
+  </div>
+  <div class="product-grid">
+    <!-- 🔥C位：开单导师 -->
+    <div class="product-card" style="border-left:4px solid var(--fire)">
+      <div class="product-top">
+        <div class="product-ico">🔥</div>
+        <div class="product-info">
+          <div class="product-name">&#9733; 开单导师</div>
+          <div class="product-value">帮你拆解客户真需求，23年行业老兵Knowhow你直接用</div>
+          <div class="product-stat">客户解码&middot;场景话术&middot;开单策略</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/mentor/" style="background:var(--fire);color:#fff;" data-track="product:mentor">开始对话</a></div>
+    </div>
+    <!-- 客户解码器（快回） -->
+    <div class="product-card" style="border-left:4px solid var(--fire)">
+      <div class="product-top">
+        <div class="product-ico">&#128295;</div>
+        <div class="product-info">
+          <div class="product-name">&#9733; 客户解码器（快回）</div>
+          <div class="product-value">"客户说不急"的背后是什么？30秒看到真实原因</div>
+          <div class="product-stat">四域26场景&middot;道法术三层&middot;个性化话术</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/reply/" style="background:var(--fire);color:#fff;" data-track="product:kuaihui">立即使用</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">&#127968;</div>
+        <div class="product-info">
+          <div class="product-name">&#9733; 六维品质测评</div>
+          <div class="product-value">帮客户看见自己真正在意什么，你就知道怎么帮他</div>
+          <div class="product-stat">2分钟出报告&middot;六维雷达图&middot;可分享海报</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/quality-test/" data-track="product:liuceping">免费使用</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">&#128203;</div>
+        <div class="product-info">
+          <div class="product-name">&#9733; 带看报告 S1</div>
+          <div class="product-value">一份报告 = 一次信任建立，告别"这房子不错"的空话</div>
+          <div class="product-stat">六维品质评估&middot;现场生成&middot;可分享PDF</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/s1-report/" data-track="product:s1-report">免费使用</a></div>
+    </div>
+    <div class="product-card" style="opacity:.75">
+      <div class="product-top">
+        <div class="product-ico">&#128202;</div>
+        <div class="product-info">
+          <div class="product-name">决策评估</div>
+          <div class="product-value">让客户自己看到差距，比你苦劝10句更有效</div>
+          <div class="product-stat">差距可视化&middot;加速决策&middot;建设中</div>
+        </div>
+      </div>
+      <div class="product-action"><span class="soon-tag">🚧 建设中 · 敬请期待</span></div>
+    </div>
+  </div>
+
+  <!-- 场景二：面对自己 — 关怀守护·能力定位·持续成长 -->
+  <div class="product-category">
+    <div class="cat-dot" style="background:var(--fire)"></div>
+    <div class="cat-name">面对自己</div>
+    <span class="cat-desc">关怀守护 &middot; 能力定位 &middot; 职业进阶</span>
+    <span class="cat-badge live">3个工具</span>
+  </div>
+  <div class="product-grid">
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">&#127973;</div>
+        <div class="product-info">
+          <div class="product-name">&#9733; 四维关怀测评</div>
+          <div class="product-value">自己先活好，才能帮别人活好——看看你在哪个维度最需要被关怀</div>
+          <div class="product-stat">身体&middot;心理&middot;尊严&middot;质感&middot;2分钟自测</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/care-test/" data-track="product:care-test">免费使用</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">&#127919;</div>
+        <div class="product-info">
+          <div class="product-name">&#9733; 能力测评</div>
+          <div class="product-value">不知道自己在哪一级？测完就知道下一步该练什么</div>
+          <div class="product-stat">五级成熟度&middot;精准定位&middot;成长路径</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/assessment" data-track="product:assessment">免费使用</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">&#129302;</div>
+        <div class="product-info">
+          <div class="product-name">&#9733; Agent 培养师</div>
+          <div class="product-value">让工具成为你的专属助手，越用越懂你的业务</div>
+          <div class="product-stat">养成&middot;测学练考评&middot;个性化成长</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/breeder" data-track="product:breeder">免费使用</a></div>
+    </div>
+  </div>
+
+  <!-- 品牌打造 -->
+  <div class="product-category">
+    <div class="cat-dot" style="background:var(--beauty)"></div>
+    <div class="cat-name">品牌打造</div>
+    <span class="cat-desc">IP形象 &middot; 差异化呈现</span>
+    <span class="cat-badge live">1个工具</span>
+  </div>
+  <div class="product-grid">
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">🎨</div>
+        <div class="product-info">
+          <div class="product-name">&#9733; IP角色设计</div>
+          <div class="product-value">输入描述，即时生成你的专属IP角色——6种风格可选，下载即用</div>
+          <div class="product-stat">半写实商务插画&middot;多风格&middot;支持照片参考</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/ip-design/" data-track="product:ip-design">免费使用</a></div>
+    </div>
+  </div>
+
+  <!-- 底座：知识库 -->
+  <div class="product-category" style="margin-top:8px">
+    <div class="cat-dot" style="background:var(--pathC)"></div>
+    <div class="cat-name">知识底座</div>
+    <span class="cat-desc">业务字典 &middot; 标准定义 &middot; 行业共识</span>
+    <span class="cat-badge live">已上线</span>
+  </div>
+  <div class="product-grid">
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">&#128218;</div>
+        <div class="product-info">
+          <div class="product-name">居住服务业务字典</div>
+          <div class="product-value">定义权 = 话语权，先统一语言再统一标准</div>
+          <div class="product-stat">9大域&middot;450+词条&middot;行业共识</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/knowledge" data-track="product:knowledge">体验查询</a></div>
+    </div>
+  </div>
+</div><!-- 路径B已冻结至9月，以下内容隐藏
+<!-- 合作入口（路径B入口） -->
+<div class="section pub-section" style="display:none">
+  <div class="section-header"><div class="section-dot" style="background:var(--pathB)"></div><div class="section-title">合作入口</div><div class="section-desc">路径B·政府/高校对接</div></div>
+  <div class="partner-grid">
+    <a class="partner-card edu" href="#" onclick="return false;" style="pointer-events:none;opacity:.85">
+      <div class="partner-ico">🎓</div>
+      <div class="partner-name">高校合作</div>
+      <div class="partner-tags"><span class="partner-tag edu">产教融合</span><span class="partner-tag edu">课程共建</span><span class="partner-tag edu">就业对接</span></div>
+      <div class="partner-desc">居住服务人才培养·数智化课程体系·实习就业一体化</div>
+    </a>
+    <a class="partner-card gov" href="#" onclick="return false;" style="pointer-events:none;opacity:.85">
+      <div class="partner-ico">🏛️</div>
+      <div class="partner-name">政府治理</div>
+      <div class="partner-tags"><span class="partner-tag gov">行业健康</span><span class="partner-tag gov">政策对接</span><span class="partner-tag gov">标准共建</span></div>
+      <div class="partner-desc">居住品质提升·行业规范治理·数字化转型赋能</div>
+    </a>
+  </div>
+</div>
+-->
+
+<!-- 每日简报入口（暂隐藏，内容就绪后上线）
+<div class="section pub-section">
+  <a class="brief-entry" href="#" onclick="return false;" style="pointer-events:none;opacity:.85">
+    <span class="brief-ico">📰</span>
+    <div class="brief-info">
+      <div class="brief-name">每日简报</div>
+      <div class="brief-desc">房产要闻 · 市场数据 · 数字工具 · 行业洞察</div>
+    </div>
+    <span class="brief-arrow">›</span>
+  </a>
+</div>
+-->
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-brand">🌬️ 风声 · 通过独立价值赢得尊重</div>
+  <div>fengsheng.tech © 2026 · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:inherit">京ICP备2026041809号</a></div>
+
+  <!-- 反馈组件 v3：1-5星评分 -->
+  <div class="fs-feedback-widget" id="fs-feedback">
+    <div class="fs-fb-title">📣 你的反馈，决定产品方向</div>
+    <div class="fs-fb-subtitle">评分 + 建议，帮我们把产品做对</div>
+    <div class="fs-fb-stars" id="fs-fb-stars">
+      <span class="fs-star" data-score="1">☆</span>
+      <span class="fs-star" data-score="2">☆</span>
+      <span class="fs-star" data-score="3">☆</span>
+      <span class="fs-star" data-score="4">☆</span>
+      <span class="fs-star" data-score="5">☆</span>
+    </div>
+    <div class="fs-fb-score-label" id="fs-fb-score-label">点击星星评分</div>
+    <textarea class="fs-fb-text" id="fs-fb-text" placeholder="有什么建议或想法？（选填，50字以上更容易被采纳）"></textarea>
+    <input class="fs-fb-contact" id="fs-fb-contact" type="text" placeholder="手机号/微信（选填，方便我们联系你）" />
+    <button class="fs-fb-submit" id="fs-fb-submit" disabled>提交反馈</button>
+    <div class="fs-fb-result" id="fs-fb-result"></div>
+  </div>
+</div>
+
+<!-- 反馈组件 v3 样式 + 逻辑 -->
+<style>
+.fs-feedback-widget{max-width:640px;margin:32px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(44,95,58,0.10);text-align:center;font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif}
+.fs-fb-title{font-size:17px;font-weight:700;color:#2C5F3A;margin-bottom:4px}
+.fs-fb-subtitle{font-size:13px;color:#888;margin-bottom:16px}
+.fs-fb-stars{font-size:36px;margin-bottom:8px;user-select:none;display:flex;justify-content:center;gap:6px}
+.fs-star{cursor:pointer;color:#ddd;transition:color 0.2s,transform 0.15s;display:inline-block}
+.fs-star:hover,.fs-star.active{color:#E8742C;transform:scale(1.18)}
+.fs-fb-score-label{font-size:13px;color:#888;margin-bottom:16px;min-height:20px}
+.fs-fb-text{width:100%;min-height:64px;padding:10px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f4ef;resize:vertical;outline:none;box-sizing:border-box;margin-bottom:10px;font-family:inherit}
+.fs-fb-text:focus{border-color:#2C5F3A}
+.fs-fb-contact{width:100%;padding:9px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f4ef;outline:none;box-sizing:border-box;margin-bottom:14px;font-family:inherit}
+.fs-fb-contact:focus{border-color:#2C5F3A}
+.fs-fb-submit{width:100%;padding:12px 0;background:#2C5F3A;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:background 0.2s;font-family:inherit}
+.fs-fb-submit:disabled{background:#b5a89a;cursor:not-allowed}
+.fs-fb-submit:not(:disabled):hover{background:#1e3d26}
+.fs-fb-result{margin-top:12px;font-size:14px;min-height:22px}
+.fs-fb-result.success{color:#2C5F3A}
+.fs-fb-result.error{color:#c0392b}
+@media(max-width:640px){.fs-feedback-widget{margin:20px 12px;padding:18px 14px}.fs-fb-stars{font-size:30px;gap:4px}}
+</style>
+<script>
+  (function() {
+    var s = document.querySelectorAll('#fs-fb-stars .fs-star');
+    var l = document.getElementById('fs-fb-score-label');
+    var b = document.getElementById('fs-fb-submit');
+    var t = document.getElementById('fs-fb-text');
+    var c = document.getElementById('fs-fb-contact');
+    var r = document.getElementById('fs-fb-result');
+    var n = 0;
+    var labels = ['',
+      '☆ 1分 · 不可用', '☆ 2分 · 需大幅改进',
+      '☆ 3分 · 一般', '☆ 4分 · 好用', '★ 5分 · 超预期'];
+
+    s.forEach(function(star) {
+      star.addEventListener('mouseenter', function() {
+        var i = parseInt(star.dataset.score);
+        h(i); l.textContent = labels[i];
+      });
+      star.addEventListener('mouseleave', function() {
+        h(n); l.textContent = n > 0 ? labels[n] : '点击星星评分';
+      });
+      star.addEventListener('click', function() {
+        n = parseInt(star.dataset.score);
+        h(n); l.textContent = labels[n]; b.disabled = false;
+      });
+    });
+
+    function h(i) {
+      s.forEach(function(star) {
+        var j = parseInt(star.dataset.score);
+        star.textContent = j <= i ? '★' : '☆';
+        star.classList.toggle('active', j <= i);
+      });
+    }
+
+    b.addEventListener('click', function() {
+      if (n === 0) { r.textContent = '请先点击星星评分';
+        r.className = 'fs-fb-result error'; return; }
+      b.disabled = true; b.textContent = '提交中...';
+      var path = window.location.pathname;
+      var moduleName = b.dataset.module
+        || (path.charAt(0) === '/' ? path.slice(1) : path).replace(/\//g, '-')
+        || 'home';
+      fetch('/api/feedback', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          module: moduleName, score: n,
+          content: t.value.trim() || null,
+          contact: c.value.trim() || null,
+          source: 'web'
+        })
+      }).then(function(x) { return x.json(); })
+      .then(function(d) {
+        if (d.ok) {
+          r.textContent = '✓ 反馈已收到，谢谢你的贡献！';
+          r.className = 'fs-fb-result success';
+          t.value = ''; c.value = ''; n = 0; h(0);
+          l.textContent = '点击星星评分';
+          b.disabled = true; b.textContent = '提交反馈';
+        } else throw new Error(d.error || '提交失败');
+      }).catch(function(e) {
+        r.textContent = '提交失败，请稍后重试：' + e.message;
+        r.className = 'fs-fb-result error';
+        b.disabled = false; b.textContent = '重新提交';
+      });
+    });
+
+    var p = window.location.pathname;
+    var m = 'home';
+    if (p.indexOf('/quality-test') >= 0) m = 'quality-test';
+    else if (p.indexOf('/care-test') >= 0) m = 'care-test';
+    else if (p.indexOf('/s1-report') >= 0) m = 's1-report';
+    else if (p.indexOf('/reply') >= 0) m = 'reply';
+    else if (p.indexOf('/knowledge') >= 0) m = 'knowledge';
+    else if (p.indexOf('/dashboard') >= 0) m = 'dashboard';
+    b.dataset.module = m;
+  })();
+
+  // 验证线动态更新（fetch UV → 更新进度条）
+  (function() {
+    var VERIFY_TARGET = 300; // 300人验证线目标
+    var vLabel = document.querySelector('.v-line-label');
+    var vFill = document.querySelector('.v-line-fill');
+    var vNum = document.querySelector('.v-line-num');
+    if (!vFill) return;
+
+    fetch('/api/stats?key=fs-admin-2026')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var users = data.total_users || 0;
+        var pct = Math.min(100, Math.round(users / VERIFY_TARGET * 100));
+        // 更新进度条
+        vFill.style.setProperty('--v-pct', pct + '%');
+        vFill.style.animation = 'none';
+        vFill.style.width = pct + '%';
+        // 更新标签文字（仅当超过阈值时变化）
+        if (users >= VERIFY_TARGET) {
+          vLabel.textContent = '🎯 ' + users + '人已达成目标！';
+        }
+      })
+      .catch(function() {
+        // 静默失败，保持静态显示
+      });
+  })();
+</script>
 </body>
 </html>
