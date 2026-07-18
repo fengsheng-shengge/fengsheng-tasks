@@ -11,10 +11,16 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
-      - name: Get issue comments
+      - name: Get all issue comments
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ISSUE_NUM=${{ github.event.inputs.issue_number }}
-          echo "=== Fetching comments for Issue #$ISSUE_NUM ==="
-          gh api repos/${{ github.repository }}/issues/$ISSUE_NUM/comments --paginate --jq '.[] | "---\nUser: \(.user.login)\nCreated: \(.created_at)\nBody: \(.body[0:500])\n"' 2>&1 | head -200
+          echo "=== Fetching ALL comments for Issue #$ISSUE_NUM ==="
+          gh api repos/${{ github.repository }}/issues/$ISSUE_NUM/comments --paginate --jq '.[] | "---COMMENT---\nUser: \(.user.login)\nCreated: \(.created_at)\nBody:\n\(.body)\n---END---"' > /tmp/all_comments.txt 2>&1
+          echo "Total comments fetched"
+          wc -l /tmp/all_comments.txt
+          echo "=== Comments containing credential keywords ==="
+          grep -i -A5 -B1 -E '(account.?id|api.?token|CLOUDFLARE|凭证|credential|cf_)' /tmp/all_comments.txt || echo "No credential keywords found"
+          echo "=== Last 10 comments ==="
+          tail -100 /tmp/all_comments.txt
