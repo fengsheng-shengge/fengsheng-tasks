@@ -1,0 +1,20 @@
+name: Fetch Issue Comments
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number'
+        required: true
+        default: '42'
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get issue comments
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUM=${{ github.event.inputs.issue_number }}
+          echo "=== Fetching comments for Issue #$ISSUE_NUM ==="
+          gh api repos/${{ github.repository }}/issues/$ISSUE_NUM/comments --paginate --jq '.[] | "---\nUser: \(.user.login)\nCreated: \(.created_at)\nBody: \(.body[0:500])\n"' 2>&1 | head -200
