@@ -4,11 +4,6 @@ on:
     paths:
       - '.github/workflows/fetch-issue-comments.yml'
   workflow_dispatch:
-    inputs:
-      issue_number:
-        description: 'Issue number'
-        required: true
-        default: '42'
 
 permissions:
   issues: write
@@ -23,12 +18,30 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ISSUE_NUM=42
-          echo "=== Fetching comments for Issue #$ISSUE_NUM ==="
+          echo "Fetching comments for Issue #$ISSUE_NUM..."
           # Get all comments and filter for credential-related content
-          gh api repos/${{ github.repository }}/issues/$ISSUE_NUM/comments --paginate --jq '.[] | select(.body | test("account.?id|api.?token|CLOUDFLARE|凭证|credential|cf_|[a-f0-9]{32,}", "i")) | "---COMMENT---\nUser: \(.user.login)\nCreated: \(.created_at)\nBody:\n\(.body)\n---END---"' > /tmp/cred_comments.txt 2>&1
-          echo "=== Credential-related comments ==="
-          cat /tmp/cred_comments.txt
-          echo ""
-          echo "=== Last 5 comments ==="
-          gh api repos/${{ github.repository }}/issues/$ISSUE_NUM/comments --jq '.[-5:] | .[] | "---COMMENT---\nUser: \(.user.login)\nCreated: \(.created_at)\nBody:\n\(.body[0:500])\n---END---"' >> /tmp/last_comments.txt 2>&1
-          cat /tmp/last_comments.txt
+          gh api repos/${{ github.repository }}/issues/$ISSUE_NUM/comments --paginate --jq '.[] | select(.body | test("account.?id|api.?token|CLOUDFLARE|凭证|credential|cf_|[a-f0-9]{32,}", "i")) | "User: " + .user.login + "\nCreated: " + .created_at + "\nBody:\n" + .body + "\n"' > /tmp/cred.txt 2>&1
+          
+          # Get last 5 comments
+          gh api repos/${{ github.repository }}/issues/$ISSUE_NUM/comments --jq '.[-5:] | .[] | "User: " + .user.login + "\nCreated: " + .created_at + "\nBody:\n" + (.body | .[0:800]) + "\n"' > /tmp/last5.txt 2>&1
+          
+          # Create body for the new issue
+          echo '## Credential-related comments from Issue #42
+' > /tmp/body.md
+          echo '### Comments matching credential keywords
+' >> /tmp/body.md
+          echo '```' >> /tmp/body.md
+          cat /tmp/cred.txt >> /tmp/body.md || echo "(no matches)" >> /tmp/body.md
+          echo '```' >> /tmp/body.md
+          echo '
+### Last 5 comments
+' >> /tmp/body.md
+          echo '```' >> /tmp/body.md
+          cat /tmp/last5.txt >> /tmp/body.md || echo "(none)" >> /tmp/body.md
+          echo '```' >> /tmp/body.md
+          
+          # Create a new issue with the results
+          gh issue create \
+            --title '🔍 Issue #42 Comments Analysis (auto-generated)' \
+            --body-file /tmp/body.md \
+            --label '部署' || echo "Failed to create issue"
