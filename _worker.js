@@ -274,6 +274,11 @@ export default {
       return handleStatsHealth(request, env);
     }
 
+    // Feedback API (POST)
+    if (path === '/api/feedback' && request.method === 'POST') {
+      return handleFeedback(request, env);
+    }
+
     // All other requests → pass through to static assets
     return env.ASSETS.fetch(request);
   },
@@ -490,6 +495,31 @@ async function handleChat(request, env, authenticatedOpenid) {
   }
 }
 
+
+async function handleFeedback(request, env) {
+  try {
+    const body = await request.json();
+    const { uid, type, content, product, rating } = body;
+    
+    if (!content || !content.trim()) {
+      return jsonResponse({ error: 'content is required' }, 400);
+    }
+
+    const eventType = type || 'feedback';
+    const eventUid = uid || 'anonymous';
+    const eventProduct = product || 'general';
+    
+    if (env.DB) {
+      await env.DB.prepare(
+        'INSERT INTO events (uid, event_type, product, metadata, created_at) VALUES (?, ?, ?, ?, unixepoch())'
+      ).bind(eventUid, eventType, eventProduct, JSON.stringify({ content: content.trim(), rating: rating || null })).run();
+    }
+
+    return jsonResponse({ ok: true, message: '反馈已收到，感谢！' });
+  } catch (err) {
+    return jsonResponse({ error: '反馈提交失败: ' + err.message }, 500);
+  }
+}
 async function handleEvent(request, env) {
   // Fire-and-forget: always acknowledge, never block page load
   try {
