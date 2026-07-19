@@ -45,6 +45,10 @@
   Access-Control-Allow-Origin: ""
   X-Robots-Tag: noindex, nofollow
 
+# ========== 静态图片资源 — 长缓存 ==========
+/assets/images/*
+  Cache-Control: public, max-age=2592000, immutable
+
 # ========== 静态JS资源 — 长缓存 + immutable ==========
 /tracker.js
   Cache-Control: public, max-age=86400, immutable
