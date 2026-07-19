@@ -67,6 +67,14 @@ export default {
       });
     }
 
+    // Orphaned pages — 301 redirect to homepage (no local files, SPA fallback would serve homepage)
+    const orphanedPaths = ['/guide/', '/mini-program/', '/knowledge-v3-fourpillars/'];
+    for (const orphanPath of orphanedPaths) {
+      if (path === orphanPath || path.startsWith(orphanPath)) {
+        return Response.redirect('https://fengsheng.tech/', 301);
+      }
+    }
+
     // WeChat domain verification files - serve directly as plain text
     if (path.startsWith('/MP_verify_') && path.endsWith('.txt')) {
       const assetResp = await env.ASSETS.fetch(request);
