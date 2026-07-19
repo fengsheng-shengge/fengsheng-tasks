@@ -511,8 +511,8 @@ async function handleFeedback(request, env) {
     
     if (env.DB) {
       await env.DB.prepare(
-        'INSERT INTO events (uid, event_type, product, metadata, created_at) VALUES (?, ?, ?, ?, unixepoch())'
-      ).bind(eventUid, eventType, eventProduct, JSON.stringify({ content: content.trim(), rating: rating || null })).run();
+        'INSERT INTO events (uid, event_type, product, data, ts, created_at) VALUES (?, ?, ?, ?, ?, unixepoch())'
+      ).bind(eventUid, eventType, eventProduct, JSON.stringify({ content: content.trim(), rating: rating || null }), Date.now()).run();
     }
 
     return jsonResponse({ ok: true, message: '反馈已收到，感谢！' });
