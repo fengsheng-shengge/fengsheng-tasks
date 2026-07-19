@@ -1,13 +1,60 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260713-1947 - forcing Worker rebuild via push to main
+// Version: v20260719-1200 - security hardening + rate limiting
 const COZE_API = 'https://api.coze.cn';
-const BOT_ID = '7657006281966452790';
+const BOT_ID_PLACEHOLDER = '***MASKED***'; // Bot ID from env var FS_BOT_ID，禁止硬编码
 const WX_API = 'https://api.weixin.qq.com/sns/jscode2session';
+
+// Rate limiting — simple in-memory sliding window (resets on Worker cold start)
+const RATE_LIMIT = new Map();
+const RATE_WINDOW_MS = 60_000; // 1 minute
+const RATE_MAX_REQUESTS = 30;   // 30 req/min per IP
+const MAX_PAYLOAD_SIZE = 64 * 1024; // 64KB max request body
+
+function getClientIP(request) {
+  return request.headers.get('CF-Connecting-IP') || request.headers.get('X-Real-IP') || '0.0.0.0';
+}
+
+function checkRateLimit(request) {
+  const ip = getClientIP(request);
+  const now = Date.now();
+  const entry = RATE_LIMIT.get(ip);
+  if (entry && now - entry.windowStart < RATE_WINDOW_MS) {
+    if (entry.count >= RATE_MAX_REQUESTS) {
+      return false; // rate limited
+    }
+    entry.count++;
+  } else {
+    RATE_LIMIT.set(ip, { windowStart: now, count: 1 });
+  }
+  return true;
+}
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
+
+    // Rate limiting for API routes
+    if (path.startsWith('/mentor-api/') || path.startsWith('/api/')) {
+      if (!checkRateLimit(request)) {
+        return new Response(JSON.stringify({ error: '请求过于频繁，请稍后再试' }), {
+          status: 429,
+          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        });
+      }
+    }
+
+    // Early body size check for POST/PUT endpoints
+    const contentLength = parseInt(request.headers.get('Content-Length') || '0');
+    if (contentLength > MAX_PAYLOAD_SIZE && (path.startsWith('/mentor-api/') || path.startsWith('/api/'))) {
+      return new Response(JSON.stringify({ error: '请求体过大' }), {
+        status: 413,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      });
+    }
+
+    // Resolve BOT_ID from env (with fallback)
+    const resolvedBotId = env.FS_BOT_ID || BOT_ID_PLACEHOLDER;
 
     // CORS preflight for API routes
     if (request.method === 'OPTIONS' && (path.startsWith('/mentor-api/') || path.startsWith('/api/'))) {
@@ -53,7 +100,7 @@ export default {
         const ua = request.headers.get('User-Agent') || '';
         openid = 'web_' + await simpleHash(clientIP + ua);
       }
-      return handleChat(request, env, openid);
+      return handleChat(request, env, openid, resolvedBotId);
     }
 
     // Mentor 支付初始化 — 生成支付宝当面付二维码
@@ -252,7 +299,7 @@ export default {
 
     // Legacy /api/chat route
     if (path === '/api/chat' && request.method === 'POST') {
-      return handleChat(request, env);
+      return handleChat(request, env, null, resolvedBotId);
     }
 
     // Event tracking API (public, fire-and-forget)
@@ -433,7 +480,7 @@ async function verifyToken(token, env) {
   } catch { return null; }
 }
 
-async function handleChat(request, env, authenticatedOpenid) {
+async function handleChat(request, env, authenticatedOpenid, resolvedBotId) {
   try {
     const body = await request.json();
     const { message, conversation_id } = body;
@@ -450,7 +497,7 @@ async function handleChat(request, env, authenticatedOpenid) {
     }
 
     const reqBody = {
-      bot_id: BOT_ID,
+      bot_id: resolvedBotId,
       user_id: authenticatedOpenid || 'web_user',
       stream: true,
       auto_save_history: true,
