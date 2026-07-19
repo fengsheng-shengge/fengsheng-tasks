@@ -15,6 +15,10 @@ on:
   repository_dispatch:
     types: [deploy-trigger]
 
+permissions:
+  contents: read
+  deployments: write
+
 jobs:
   deploy:
     name: Deploy to Cloudflare Pages
