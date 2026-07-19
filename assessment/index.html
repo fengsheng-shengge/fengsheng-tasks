@@ -1109,18 +1109,11 @@ function submitData(role, overall, empathy, decision, L1, L2, L3, eScores, dScor
     _subject: '能力测评数据回传'
   };
   
-  // FormSubmit
-  fetch('https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-    body: JSON.stringify(data)
-  }).catch(() => {});
-  
-  // Web3Forms 备用
-  fetch('https://api.web3forms.com/submit', {
+  // 通过 Worker 代理发送到外部服务（API Key 不暴露在前端）
+  fetch('/api/feedback-external', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({...data, event_type:"quiz_complete",duration_sec:Math.round((Date.now()-_startTime)/1000),access_key:"27c926eb-07d8-4a71-8bf8-f30ad73f8e39"})
+    body: JSON.stringify({...data, source:'assessment', event_type:"quiz_complete", duration_sec:Math.round((Date.now()-_startTime)/1000)})
   }).catch(() => {});
 }
 
@@ -1136,15 +1129,15 @@ function track(eventType, extra = {}) {
     _replyto: "feedback@fengsheng.tech",
     _subject: "能力测评数据回传"
   };
-  fetch("https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de", {
+  fetch("/api/feedback-external", {
     method: "POST",
-    headers: {"Content-Type": "application/json", "Accept": "application/json"},
+    headers: {"Content-Type": "application/json"},
     body: JSON.stringify(data)
   }).catch(() => {});
 }
 document.addEventListener("visibilitychange", function() {
   if (document.visibilityState === "hidden") {
-    navigator.sendBeacon("https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de",
+    navigator.sendBeacon("/api/feedback-external",
       JSON.stringify({event_type:"page_leave",page:"/assessment.html",timestamp:new Date().toISOString(),
         duration_sec:Math.round((Date.now()-_startTime)/1000),
         _replyto:"feedback@fengsheng.tech",_subject:"能力测评数据回传"}));
@@ -1161,7 +1154,7 @@ track("page_view", {referrer: document.referrer});
 window.addEventListener("beforeunload", function() {
   var prog = document.getElementById("progress-fill");
   if (prog && prog.style.width && parseInt(prog.style.width) > 0 && parseInt(prog.style.width) < 100) {
-    navigator.sendBeacon("https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de", JSON.stringify({event_type:"quiz_abandon",page:"/assessment.html",progress:prog.style.width,timestamp:new Date().toISOString(),_replyto:"feedback@fengsheng.tech",_subject:"能力测评数据回传"}));
+    navigator.sendBeacon("/api/feedback-external", JSON.stringify({event_type:"quiz_abandon",page:"/assessment.html",progress:prog.style.width,timestamp:new Date().toISOString(),_replyto:"feedback@fengsheng.tech",_subject:"能力测评数据回传"}));
   }
 });
 

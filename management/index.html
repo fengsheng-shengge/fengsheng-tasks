@@ -87,10 +87,11 @@ async function loadData(){
     document.getElementById('dayPV').textContent=d.today_pv||'--';
     document.getElementById('dayClick').textContent=d.today_click||'--';
     document.getElementById('feedback').textContent=d.feedback_count||'--';
-  }catch(e){console.log('API unavailable')}
+  }catch(e){console.warn('[管理看板] 数据加载失败:', e.message)}
   document.getElementById('refreshTime').textContent='更新时间: '+new Date().toLocaleString('zh-CN');
 }
 loadData();setInterval(loadData,300000);
 </script>
+<script src="/tracker.js" async></script>
 </body>
 </html>

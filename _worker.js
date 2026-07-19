@@ -329,9 +329,14 @@ export default {
       return handleStatsHealth(request, env);
     }
 
-    // Feedback API (POST)
+    // Feedback API (POST) — internal D1 storage
     if (path === '/api/feedback' && request.method === 'POST') {
       return handleFeedback(request, env);
+    }
+
+    // External feedback proxy — forwards to Web3Forms + FormSubmit, keys stay on server
+    if (path === '/api/feedback-external' && request.method === 'POST') {
+      return handleFeedbackExternal(request, env);
     }
 
     // All other requests → pass through to static assets
@@ -575,6 +580,45 @@ async function handleFeedback(request, env) {
     return jsonResponse({ error: '反馈提交失败: ' + err.message }, 500);
   }
 }
+
+// handleFeedbackExternal — proxies to Web3Forms + FormSubmit so API keys never reach browser
+async function handleFeedbackExternal(request, env) {
+  try {
+    const body = await request.json();
+
+    const web3Key = env.WEB3FORMS_KEY || '27c926eb-07d8-4a71-8bf8-f30ad73f8e39';
+    const formsubmitKey = env.FORMSUBMIT_KEY || 'd818fa3cece5258aea8205bd492316de';
+
+    const payload = {
+      access_key: web3Key,
+      ...body,
+    };
+
+    // Fire to Web3Forms (analytics, silent)
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).catch(() => {}); // fire-and-forget
+
+    // Fire to FormSubmit (email notification)
+    const fsPayload = {
+      ...body,
+      _replyto: body._replyto || 'feedback@fengsheng.tech',
+      _subject: body._subject || '风声用户反馈',
+    };
+    fetch(`https://formsubmit.co/ajax/${formsubmitKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(fsPayload),
+    }).catch(() => {}); // fire-and-forget
+
+    return jsonResponse({ ok: true });
+  } catch (err) {
+    return jsonResponse({ error: '反馈提交失败: ' + err.message }, 500);
+  }
+}
+
 async function handleEvent(request, env) {
   // Fire-and-forget: always acknowledge, never block page load
   try {

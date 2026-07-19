@@ -579,16 +579,16 @@ function track(eventType, extra = {}) {
     _replyto: "feedback@fengsheng.tech",
     _subject: "助手养成师数据回传"
   };
-  fetch("https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de", {
+  fetch("/api/feedback-external", {
     method: "POST",
-    headers: {"Content-Type": "application/json", "Accept": "application/json"},
+    headers: {"Content-Type": "application/json"},
     body: JSON.stringify(data)
   }).catch(() => {});
 }
 // 页面离开时补报真实停留时长
 document.addEventListener("visibilitychange", function() {
   if (document.visibilityState === "hidden") {
-    navigator.sendBeacon("https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de",
+    navigator.sendBeacon("/api/feedback-external",
       JSON.stringify({event_type:"page_leave",page:"/breeder.html",timestamp:new Date().toISOString(),
         duration_sec:Math.round((Date.now()-_startTime)/1000),
         _replyto:"feedback@fengsheng.tech",_subject:"助手养成师数据回传"}));
@@ -598,8 +598,8 @@ track("page_view",{referrer:document.referrer});
 
 function sendFeedback(type){
   track("feedback",{feedback:type});
-  fetch('https://formsubmit.co/ajax/d818fa3cece5258aea8205bd492316de',{
-    method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+  fetch('/api/feedback-external',{
+    method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({page:location.pathname,feedback:type,timestamp:new Date().toISOString(),
       _replyto:'feedback@fengsheng.tech',_subject:'用户反馈'})
   }).catch(()=>{});

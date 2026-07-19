@@ -903,10 +903,10 @@ function trackEvent(type, data){
   u.history.push({type,time:now.toISOString(),data});
   saveUsage(usage);
   // 上报到 Web3Forms API（静默提交，不发邮件）
-  fetch('https://api.web3forms.com/submit', {
-    method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
-    body: JSON.stringify({access_key:'27c926eb-07d8-4a71-8bf8-f30ad73f8e39',type,identity,data,_subject:'六维品质测评数据'})
-  }).catch(()=>{});
+  fetch('/api/feedback-external', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({type,identity,data,_subject:'六维品质测评数据'})
+    }).catch(()=>{});
   updateStatsDisplay(key);
 }
 

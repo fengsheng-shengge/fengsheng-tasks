@@ -573,25 +573,24 @@ function calcScores() {
 }
 
 // ============================================================
-//  数据追踪（Web3Forms API — 静默提交，不发邮件）
+//  数据追踪（通过 Worker 代理到 Web3Forms，API Key 不暴露在前端）
 // ============================================================
 function careTrack(eventType, data) {
   var payload = {
-    access_key: '27c926eb-07d8-4a71-8bf8-f30ad73f8e39',
     event_type: eventType,
     page: 'care-test',
     _subject: '四维关怀测评数据'
   };
   if (data) { for (var k in data) { payload[k] = data[k]; } }
-  // Web3Forms API（不触发邮件，数据可通过Pro版API拉取）
-  fetch('https://api.web3forms.com/submit', {
+  // 通过 Worker 代理发送
+  fetch('/api/feedback-external', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   }).catch(function(){});
-  // sendBeacon 备用通道（页面卸载时也能发送）
+  // sendBeacon 备用通道
   if (navigator.sendBeacon) {
-    navigator.sendBeacon('https://api.web3forms.com/submit',
+    navigator.sendBeacon('/api/feedback-external',
       new Blob([JSON.stringify(payload)], { type: 'application/json' }));
   }
 }

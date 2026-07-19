@@ -632,22 +632,17 @@ function shareThis(){
 // 追踪 - 双通道：Web3Forms(实时行为) + FormSubmit(邮箱存档)
 function track(action,label){
   const payload={action:action,label:label,page:'reply',ts:new Date().toISOString(),ua:navigator.userAgent.substring(0,80),ref:document.referrer||'direct'};
-  // 通道1: Web3Forms (行为追踪，不发邮件)
+  // 通道1: Web3Forms (行为追踪，不发邮件) — 通过 Worker 代理
   try{
-    const fd=new FormData();
-    fd.append('access_key','27c926eb-07d8-4a71-8bf8-f30ad73f8e39');
-    fd.append('subject','[风声追踪] 快回·客户解码器');
-    fd.append('message',JSON.stringify(payload));
-    if(navigator.sendBeacon){navigator.sendBeacon('https://api.web3forms.com/submit',fd);}
+    if(navigator.sendBeacon){
+      navigator.sendBeacon('/api/feedback-external', new Blob([JSON.stringify({...payload,source:'reply',_subject:'[风声追踪] 快回·客户解码器'})], {type:'application/json'}));
+    }
   }catch(e){}
-  // 通道2: FormSubmit (邮箱存档，可查可分析)
+  // 通道2: FormSubmit (邮箱存档) — 通过 Worker 代理
   try{
-    const fd2=new FormData();
-    fd2.append('access_key','d818fa3cece5258aea8205bd492316de');
-    fd2.append('subject','[快回追踪] '+action+': '+label);
-    fd2.append('message',JSON.stringify(payload));
-    fd2.append('_template','box');
-    if(navigator.sendBeacon){navigator.sendBeacon('https://formsubmit.co/ajax/feedback@fengsheng.tech',fd2);}
+    if(navigator.sendBeacon){
+      navigator.sendBeacon('/api/feedback-external', new Blob([JSON.stringify({...payload,source:'reply',_subject:'[快回追踪] '+action+': '+label,'_template':'box'})], {type:'application/json'}));
+    }
   }catch(e){}
   // 本地计数 (页面内即时统计)
   try{
