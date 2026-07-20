@@ -75,6 +75,11 @@ export default {
       }
     }
 
+    // Trailing-slash redirects — ensure directory-style paths always have /
+    if (path === '/knowledge') {
+      return Response.redirect('https://fengsheng.tech/knowledge/', 301);
+    }
+
     // WeChat domain verification files - serve directly as plain text
     if (path.startsWith('/MP_verify_') && path.endsWith('.txt')) {
       const assetResp = await env.ASSETS.fetch(request);
