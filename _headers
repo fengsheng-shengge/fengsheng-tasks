@@ -66,6 +66,19 @@
   Cache-Control: public, max-age=3600
   X-Content-Type-Options: nosniff
 
+# ========== 敏感路径 — 禁止搜索引擎索引 ==========
+/dashboard/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+
+/management/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+
+/okr/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+
+/survey/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+
 # ========== 敏感文件 — 禁止访问 ==========
 /.git/*
   X-Content-Type-Options: nosniff

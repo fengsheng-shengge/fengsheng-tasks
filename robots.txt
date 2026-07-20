@@ -1,17 +1,168 @@
-User-agent: *
+# ============================================================
+#  robots.txt — 风声 fengsheng.tech
+#  Last updated: 2026-07-20
+# ============================================================
+#  合法搜索引擎（Google/Bing）可抓取公开页面
+#  AI 爬虫 / 商业爬虫 / 恶意爬虫 — 全部禁止
+# ============================================================
+
+User-agent: Googlebot
 Allow: /
 Disallow: /dashboard/
 Disallow: /management/
 Disallow: /okr/
+Disallow: /api/
 
-# 禁止 AI 爬虫抓取
+User-agent: Bingbot
+Allow: /
+Disallow: /dashboard/
+Disallow: /management/
+Disallow: /okr/
+Disallow: /api/
+
+# ============================================================
+#  AI 爬虫 — 全部禁止
+# ============================================================
 User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
 Disallow: /
 
 User-agent: ClaudeBot
 Disallow: /
 
+User-agent: Anthropic-AI
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: OAI-SearchBot
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: Applebot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+# ============================================================
+#  商业 SEO / 数据采集爬虫 — 全部禁止
+# ============================================================
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MegaIndex
+Disallow: /
+
+User-agent: rogerbot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: SeekportBot
+Disallow: /
+
+User-agent: Screaming Frog
+Disallow: /
+
+User-agent: Sitebulb
+Disallow: /
+
+User-agent: DeepCrawl
+Disallow: /
+
+User-agent: OnCrawl
+Disallow: /
+
+User-agent: ZoominfoBot
+Disallow: /
+
+User-agent: Clickagy
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+# ============================================================
+#  国内爬虫 — 禁止
+# ============================================================
+User-agent: Baiduspider
+Disallow: /
+
+User-agent: Sogou
+Disallow: /
+
+User-agent: 360Spider
+Disallow: /
+
+User-agent: HaosouSpider
+Disallow: /
+
+User-agent: YoudaoBot
+Disallow: /
+
+User-agent: YisouSpider
+Disallow: /
+
+# ============================================================
+#  社交媒体爬虫 — 禁止
+# ============================================================
+User-agent: facebookexternalhit
+Disallow: /
+
+User-agent: Twitterbot
+Disallow: /
+
+# ============================================================
+#  默认策略 — 所有爬虫禁止抓取后台/API
+# ============================================================
+User-agent: *
+Disallow: /dashboard/
+Disallow: /management/
+Disallow: /okr/
+Disallow: /api/
+Disallow: /mentor-api/
+Disallow: /admin/
+Disallow: /hidden-link
+Disallow: /secret-path
+Disallow: /backend
+Disallow: /cms
+Disallow: /wp-admin
+
 Sitemap: https://fengsheng.tech/sitemap.xml
 
-# 风声 - 通过独立价值赢得尊重
+# 风声 · 通过独立价值赢得尊重
 # 居住服务行业数字化人才培养平台

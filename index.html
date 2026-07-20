@@ -264,6 +264,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 </head>
 <body>
 
+<!-- ============================================================
+  Honeypot traps — hidden links for bot detection
+  Real users never see these; bots following all links get banned
+  ============================================================ -->
+<div style="display:none;position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+  <a href="/admin/login">管理员登录</a>
+  <a href="/wp-admin">后台管理</a>
+  <a href="/backend">系统后台</a>
+  <a href="/hidden-link">内部链接</a>
+  <a href="/secret-path">私密路径</a>
+  <a href="/cms">内容管理</a>
+</div>
+
 <!-- 风声统一导航栏 -->
 <nav class="fs-nav">
   <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
