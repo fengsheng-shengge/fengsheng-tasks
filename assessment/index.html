@@ -157,7 +157,7 @@ border-radius:50%;animation:spin .8s linear infinite}
 .question-counter span{font-weight:800;color:var(--p,#3d5a3e)}
 
 </style>
-<meta property="og:title" content="六维品质测评 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/assessment.html"><meta name="twitter:card" content="summary_large_image"></head>
+<meta property="og:title" content="六维品质测评 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/assessment/"><meta name="twitter:card" content="summary_large_image"></head>
 <body>
 
 <!-- 首页 -->
@@ -1122,7 +1122,7 @@ const _startTime = Date.now();
 function track(eventType, extra = {}) {
   const data = {
     event_type: eventType,
-    page: "/assessment.html",
+    page: "/assessment/",
     timestamp: new Date().toISOString(),
     duration_sec: eventType === 'page_view' ? 0 : Math.round((Date.now() - _startTime) / 1000),
     ...extra,
@@ -1138,7 +1138,7 @@ function track(eventType, extra = {}) {
 document.addEventListener("visibilitychange", function() {
   if (document.visibilityState === "hidden") {
     navigator.sendBeacon("/api/feedback-external",
-      JSON.stringify({event_type:"page_leave",page:"/assessment.html",timestamp:new Date().toISOString(),
+      JSON.stringify({event_type:"page_leave",page:"/assessment/",timestamp:new Date().toISOString(),
         duration_sec:Math.round((Date.now()-_startTime)/1000),
         _replyto:"feedback@fengsheng.tech",_subject:"能力测评数据回传"}));
   }
@@ -1154,7 +1154,7 @@ track("page_view", {referrer: document.referrer});
 window.addEventListener("beforeunload", function() {
   var prog = document.getElementById("progress-fill");
   if (prog && prog.style.width && parseInt(prog.style.width) > 0 && parseInt(prog.style.width) < 100) {
-    navigator.sendBeacon("/api/feedback-external", JSON.stringify({event_type:"quiz_abandon",page:"/assessment.html",progress:prog.style.width,timestamp:new Date().toISOString(),_replyto:"feedback@fengsheng.tech",_subject:"能力测评数据回传"}));
+    navigator.sendBeacon("/api/feedback-external", JSON.stringify({event_type:"quiz_abandon",page:"/assessment/",progress:prog.style.width,timestamp:new Date().toISOString(),_replyto:"feedback@fengsheng.tech",_subject:"能力测评数据回传"}));
   }
 });
 

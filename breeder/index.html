@@ -123,7 +123,7 @@ body{padding-top:48px!important}
 .encourage-msg{text-align:center;font-size:13px;color:var(--p,#3d5a3e);font-weight:600;margin:8px 0;padding:8px;background:rgba(61,90,62,.05);border-radius:8px;min-height:36px;transition:all .3s}
 
 </style>
-<meta property="og:title" content="助手养成师 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/breeder.html"><meta name="twitter:card" content="summary_large_image"></head>
+<meta property="og:title" content="助手养成师 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/breeder/"><meta name="twitter:card" content="summary_large_image"></head>
 <body>
 
 <div class="top-nav">
@@ -572,7 +572,7 @@ const _startTime = Date.now();
 function track(eventType, extra = {}) {
   const data = {
     event_type: eventType,
-    page: "/breeder.html",
+    page: "/breeder/",
     timestamp: new Date().toISOString(),
     duration_sec: eventType === 'page_view' ? 0 : Math.round((Date.now() - _startTime) / 1000),
     ...extra,
@@ -589,7 +589,7 @@ function track(eventType, extra = {}) {
 document.addEventListener("visibilitychange", function() {
   if (document.visibilityState === "hidden") {
     navigator.sendBeacon("/api/feedback-external",
-      JSON.stringify({event_type:"page_leave",page:"/breeder.html",timestamp:new Date().toISOString(),
+      JSON.stringify({event_type:"page_leave",page:"/breeder/",timestamp:new Date().toISOString(),
         duration_sec:Math.round((Date.now()-_startTime)/1000),
         _replyto:"feedback@fengsheng.tech",_subject:"助手养成师数据回传"}));
   }
