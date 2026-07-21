@@ -848,6 +848,22 @@ async function loadEntriesData(){
     entries.forEach(e=>{
       const d=e.domain||'unknown';
       domainCounts[d]=(domainCounts[d]||0)+1;
+      // 同步写入entryDatabase，使域详情弹窗可查到词条
+      if(!entryDatabase[e.id]){
+        entryDatabase[e.id]={
+          icon:e.id.startsWith('DDJ')?'⚖️':e.id.startsWith('TRX')?'🏘':e.id.startsWith('RNT')?'🏠':e.id.startsWith('DEC')?'🪚':e.id.startsWith('HMK')?'🧹':e.id.startsWith('TAL')?'👥':e.id.startsWith('POL')?'📜':'📄',
+          title:e.name||e.id,
+          id:e.id,
+          domain:e.domain,
+          def:e.def||'',
+          source:e.source||'',
+          posSpeech:e.posSpeech||'',
+          negSpeech:e.negSpeech||'',
+          consumerQ:e.consumerQ||'',
+          consumer:e.simpleAnswer||e.consumerQ||'',
+          servicer:e.posSpeech||''
+        };
+      }
     });
     // 更新 businessDomains 的 count 和 more_count
     businessDomains.forEach(d=>{
