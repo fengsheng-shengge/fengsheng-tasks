@@ -9,6 +9,22 @@
       <view class="brand-sub-tagline">记忆库 · 知识库 · 工具包</view>
     </view>
 
+    <!-- 功能列表 -->
+    <view class="feature-list">
+      <view class="feature-item">
+        <text class="feature-icon">📖</text>
+        <text class="feature-text">专业记忆库，241条词条随时查</text>
+      </view>
+      <view class="feature-item">
+        <text class="feature-icon">🎯</text>
+        <text class="feature-text">真实案例还原，高频场景全覆盖</text>
+      </view>
+      <view class="feature-item">
+        <text class="feature-icon">⚖️</text>
+        <text class="feature-text">法条实时校验，用对依据少纠纷</text>
+      </view>
+    </view>
+
     <!-- 登录按钮 -->
     <view class="login-section">
       <button
@@ -192,7 +208,38 @@ function handleSkipLogin() {
   margin-top: 8rpx;
 }
 
-/* 登录区域 */
+/* 功能列表 */
+.feature-list {
+  margin: 0 60rpx 60rpx;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 28rpx 32rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 0;
+}
+
+.feature-item + .feature-item {
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.feature-icon {
+  font-size: 32rpx;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.feature-text {
+  font-size: 26rpx;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* 登录按钮 */
 .login-section {
   width: 100%;
   margin-top: 100rpx;

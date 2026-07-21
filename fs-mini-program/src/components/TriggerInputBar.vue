@@ -45,7 +45,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { trackTriggerInputUse, trackTriggerMatchSuccess, trackTriggerToDetail } from '../utils/tracker'
+import { track } from '../utils/tracker'
 
 const props = defineProps({
   placeholder: {
@@ -134,14 +134,14 @@ function onTrigger() {
   const input = inputText.value.trim()
   if (!input) return
 
-  trackTriggerInputUse()
+  track.triggerInputUse()
 
   const matched = triggerMatch(input)
   results.value = matched
   showResults.value = true
 
   if (matched.length > 0) {
-    trackTriggerMatchSuccess(input, matched.length, matched[0].id)
+    track.triggerMatchSuccess(input, matched[0].id, 'alias')
     emit('match', matched)
   } else {
     emit('nomatch')
@@ -150,19 +150,19 @@ function onTrigger() {
 
 // 输入框获得焦点
 function onFocus() {
-  trackTriggerInputUse()
+  track.triggerInputUse()
 }
 
 // 点击匹配结果
 function onResultClick(item) {
-  trackTriggerToDetail(inputText.value, item.id, 'entry')
+  track.triggerToDetail(inputText.value, item.id)
   uni.navigateTo({ url: `/pages/dict/entry-detail?entryId=${item.id}` })
   closeResults()
 }
 
 // 跳转导师
 function goToMentor() {
-  trackTriggerToDetail(inputText.value, '', 'mentor')
+  track.triggerToDetail(inputText.value, '')
   uni.switchTab({ url: '/pages/mentor/index' })
   closeResults()
 }

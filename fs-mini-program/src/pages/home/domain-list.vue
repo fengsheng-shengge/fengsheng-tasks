@@ -66,7 +66,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { trackContentClick } from '../../utils/tracker'
+import { track } from '../../utils/tracker'
 
 const domainId = ref('')
 const domainName = ref('')
@@ -112,6 +112,8 @@ onLoad((options) => {
   domainId.value = options.domainId || 'pre-contract'
   domainName.value = options.domainName || '签约前'
   icon.value = options.icon || '🔍'
+  uni.setStorageSync('__current_page', '/pages/home/domain-list')
+  track.pageview({ domainId: domainId.value, domainName: domainName.value })
 
   const stats = DOMAIN_STATS[domainId.value] || {}
   entryCount.value = stats.entryCount || 0
@@ -136,12 +138,12 @@ onLoad((options) => {
 
 function onSceneClick(card) {
   const cardId = card.cardId || card.id
-  trackContentClick(cardId, 'scene_card', 'domain_list')
+  track.contentClick(cardId, 'scene_card', 'domain_list')
   uni.navigateTo({ url: `/pages/home/scene-detail?cardId=${cardId}` })
 }
 
 function onEntryClick(entry) {
-  trackContentClick(entry.id, 'entry', 'domain_list')
+  track.contentClick(entry.id, 'entry', 'domain_list')
   uni.navigateTo({ url: `/pages/dict/entry-detail?entryId=${entry.id}` })
 }
 </script>

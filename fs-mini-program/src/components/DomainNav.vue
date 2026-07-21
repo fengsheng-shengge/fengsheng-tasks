@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { trackContentClick } from '../utils/tracker'
+import { track } from '../utils/tracker'
 
 // 6 大场景域数据
 const domains = [
@@ -30,7 +30,7 @@ const domains = [
 ]
 
 function onDomainClick(d) {
-  trackContentClick(d.id, 'domain', 'domain_nav')
+  track.contentClick(d.id, 'domain', 'domain_nav')
   uni.navigateTo({ url: `/pages/home/domain-list?domainId=${d.id}&domainName=${d.name}&icon=${d.icon}` })
 }
 </script>
