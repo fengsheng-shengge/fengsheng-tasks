@@ -59,6 +59,9 @@
     <!-- SceneGrid 2×2 场景卡片 -->
     <SceneGrid :cards="sceneCards" @scene-click="onSceneClick" />
 
+    <!-- P1-05: 6大场景域导航 -->
+    <DomainNav />
+
     <!-- DailyQuiz 每日一题 -->
     <DailyQuiz :quiz="dailyQuiz" @earned="onQuizEarned" />
 
@@ -94,6 +97,7 @@ import { track } from '../../utils/tracker'
 import HeroCard from '../../components/HeroCard.vue'
 import SceneGrid from '../../components/SceneGrid.vue'
 import DailyQuiz from '../../components/DailyQuiz.vue'
+import DomainNav from '../../components/DomainNav.vue'
 
 const store = useUserStore()
 const sceneCards = ref([])
