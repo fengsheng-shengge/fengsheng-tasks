@@ -182,6 +182,13 @@ export default {
     const path = url.pathname;
 
     // ============================================================
+    //  Layer 0: Whitelist — 微信域名校验文件（必须放最前面，绕过所有安全层）
+    // ============================================================
+    if (path.startsWith('/MP_verify_')) {
+      return env.ASSETS.fetch(request);
+    }
+
+    // ============================================================
     //  Layer 1: IP Ban Check (honeypot triggers, repeat offenders)
     // ============================================================
     const clientIP = getClientIP(request);
