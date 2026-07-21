@@ -185,3 +185,13 @@ export default {
   put,
   del
 }
+
+// 命名导出 — 供 import { get, post, ... } 使用
+export {
+  BASE_URL,
+  request,
+  get,
+  post,
+  put,
+  del
+}
