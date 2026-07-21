@@ -167,7 +167,7 @@ function goToSubscribe() {
 function goToAbout() {
   uni.showModal({
     title: '关于风声',
-    content: '风声——居住服务行业知识库。\n\n8域122词条，覆盖交易流程、服务规范、行业标准等核心知识领域。\n\n让服务者用独立价值赢得尊重。',
+    content: '风声——居住服务者的专业基础设施。\n\n记忆库·知识库·工具包，8域122词条，覆盖交易流程、服务规范、行业标准等核心知识领域。',
     showCancel: false,
     confirmText: '知道了',
   })
