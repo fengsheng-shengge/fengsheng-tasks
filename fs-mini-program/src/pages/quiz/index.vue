@@ -122,14 +122,23 @@ onShow(() => {
 // 加载每日一题
 function loadDailyQuiz() {
   try {
-    // 尝试从本地数据加载
+    // 从 dailyQuestionSchedule.weeklySchedule 中按今天日期匹配
     const data = require('../../data/brand_and_schedule.json')
-    if (data && data.dailyQuiz) {
-      dailyQuiz.value = {
-        date: data.dailyQuiz.date || new Date().toISOString().slice(0, 10),
-        title: data.dailyQuiz.title || '今日题目',
-        description: data.dailyQuiz.description || '来挑战今天的题目吧',
-        id: data.dailyQuiz.id || 'daily',
+    const weeklySchedule = data && data.dailyQuestionSchedule && data.dailyQuestionSchedule.weeklySchedule
+    if (weeklySchedule && weeklySchedule.length) {
+      const today = new Date()
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+      const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+      const todayDay = days[today.getDay()]
+      const todayQuiz = weeklySchedule.find(q => q.date === todayStr || q.day === todayDay) || weeklySchedule[0]
+      if (todayQuiz) {
+        dailyQuiz.value = {
+          date: todayQuiz.date || todayStr,
+          title: todayQuiz.entryQuestion || '今日题目',
+          description: todayQuiz.difficulty ? `${todayQuiz.difficulty}难度` : '来挑战今天的题目吧',
+          id: todayQuiz.scenarioId || 'daily',
+          scenarioId: todayQuiz.scenarioId,
+        }
       }
     }
   } catch (e) {
@@ -144,10 +153,10 @@ function loadGameData() {
     const judgeData = require('../../data/game_judge_quiz.json')
     if (judgeData) {
       judgeGame.value = {
-        title: judgeData.title || '法官来了',
-        description: judgeData.description || '法律知识问答挑战',
+        title: judgeData.gameName || '法官来了',
+        description: judgeData.gameDesc || '法律知识问答挑战',
         questionCount: judgeData.questions ? judgeData.questions.length : 0,
-        pointsPerQuestion: judgeData.pointsPerQuestion || 10,
+        pointsPerQuestion: 10,
       }
     }
   } catch (e) {
@@ -158,10 +167,10 @@ function loadGameData() {
     const simData = require('../../data/game_client_simulator.json')
     if (simData) {
       simulatorGame.value = {
-        title: simData.title || '客户模拟器',
-        description: simData.description || '场景应对模拟训练',
-        questionCount: simData.questions ? simData.questions.length : 0,
-        pointsPerQuestion: simData.pointsPerQuestion || 15,
+        title: simData.gameName || '客户模拟器',
+        description: simData.gameDesc || '场景应对模拟训练',
+        questionCount: simData.scenarios ? simData.scenarios.length : 0,
+        pointsPerQuestion: 15,
       }
     }
   } catch (e) {

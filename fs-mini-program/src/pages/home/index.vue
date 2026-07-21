@@ -63,41 +63,37 @@ const toolList = [
 const loadSceneCards = () => {
   try {
     const data = require('../../data/scene_cards.json')
-    sceneCards.value = data || []
+    sceneCards.value = data?.sceneCards || []
   } catch {
     // 硬编码兜底数据
     sceneCards.value = [
       {
-        id: 'buyer_inquiry',
-        title: '客户询价',
-        domain: '房产交易',
-        icon: '\uD83D\uDCB0',
+        cardId: 'SCENE-01',
+        scenarioTitle: '退租时房东扣押金',
+        tags: ['退租', '押金'],
         color: '#3d5a3e',
-        description: '客户询问房屋价格时，如何快速识别真实购买意向，避免被套价'
+        painPoint: '房东说我弄坏了墙面要扣押金'
       },
       {
-        id: 'rental_budget',
-        title: '租客预算',
-        domain: '租赁',
-        icon: '\uD83C\uDFE0',
+        cardId: 'SCENE-02',
+        scenarioTitle: '定金与订金分不清',
+        tags: ['定金', '购房'],
         color: '#c46a3a',
-        description: '面对预算有限的租客，如何挖掘隐藏需求，提升匹配效率'
+        painPoint: '我交的定金能退吗？'
       },
       {
-        id: 'mortgage_consult',
-        title: '贷款咨询',
-        domain: '金融',
-        icon: '\uD83D\uDCB3',
+        cardId: 'SCENE-03',
+        scenarioTitle: '买了学区房户口迁不出',
+        tags: ['学区房', '户口'],
         color: '#3d5a3e',
-        description: '客户咨询贷款额度和利率时，如何引导到金融产品推荐'
+        painPoint: '买了学区房户口迁不出'
       },
       {
-        id: 'decoration_need',
-        title: '装修需求',
-        domain: '装修',
-        icon: '\uD83D\uDD28',
+        cardId: 'SCENE-04',
+        scenarioTitle: '签了合同房东突然不租了',
+        tags: ['租赁', '违约'],
         color: '#c46a3a',
-        description: '客户看房时关注装修情况，如何预判改造需求并提供增值服务'
+        painPoint: '签了合同房东突然说不租了，租客问能怎么办？'
       }
     ]
   }
@@ -107,8 +103,14 @@ const loadSceneCards = () => {
 const loadDailyQuiz = () => {
   try {
     const data = require('../../data/brand_and_schedule.json')
-    slogan.value = data.brand?.slogan || '让服务者用独立价值赢得尊重'
-    dailyQuiz.value = data.dailyQuiz || null
+    slogan.value = data.brand?.heroSubtitle || '让服务者用独立价值赢得尊重'
+    // 每日一题从 dailyQuestionSchedule.weeklySchedule 中按今天日期匹配
+    const today = new Date()
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+    const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+    const todayDay = days[today.getDay()]
+    const todayQuiz = data.dailyQuestionSchedule?.weeklySchedule?.find(q => q.date === todayStr || q.day === todayDay) || data.dailyQuestionSchedule?.weeklySchedule?.[0]
+    dailyQuiz.value = todayQuiz || null
   } catch {
     // 硬编码兜底数据
     dailyQuiz.value = {

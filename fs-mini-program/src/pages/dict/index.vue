@@ -60,16 +60,16 @@
         @click="goDetail(entry.id)"
       >
         <view class="entry-card-left">
-          <view class="entry-term">{{ entry.term }}</view>
+          <view class="entry-term">{{ entry.name }}</view>
           <view class="entry-meta">
-            <text class="entry-domain">{{ entry.domain }}</text>
+            <text class="entry-domain">{{ domainLabel(entry.domain) }}</text>
             <text class="entry-divider">|</text>
-            <text class="entry-tool-type">{{ entry.toolType }}</text>
+            <text class="entry-tool-type">{{ entry.srcType }}</text>
           </view>
         </view>
         <view class="entry-card-right">
-          <view class="entry-strength" :class="strengthClass(entry.evidenceStrength)">
-            {{ entry.evidenceStrength }}
+          <view class="entry-strength" :class="strengthClass(entry.severity)">
+            {{ severityLabel(entry.severity) }}
           </view>
           <text class="entry-arrow">&gt;</text>
         </view>
@@ -94,25 +94,58 @@
 import { ref, computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 
-// 域筛选标签
+// 域中文映射
+const DOMAIN_LABEL_MAP = {
+  daodejing: '道德经',
+  trade: '交易',
+  rental: '租赁',
+  decor: '装修',
+  homekeep: '家政',
+  policy: '政策',
+  talent: '人才',
+  'quality-customer': '客户品质',
+  'quality-server': '服务品质',
+  stage: '阶段',
+  dimension: '维度'
+}
+
+const domainLabel = (d) => DOMAIN_LABEL_MAP[d] || d || ''
+
+// 严重程度中文标签（hard=硬性约束 / soft=软性建议）
+const severityLabel = (s) => {
+  const v = (s || '').toLowerCase()
+  if (v === 'hard') return '硬性'
+  if (v === 'soft') return '软性'
+  return s || ''
+}
+
+// 域筛选标签（value 为 entries.json 中实际的 domain 值）
 const domainTags = [
   { label: '全部', value: '' },
-  { label: '房产交易', value: '房产交易' },
-  { label: '租赁', value: '租赁' },
-  { label: '金融', value: '金融' },
-  { label: '装修', value: '装修' },
-  { label: '物业', value: '物业' },
-  { label: '社区', value: '社区' },
-  { label: '政策', value: '政策' },
-  { label: '其他', value: '其他' }
+  { label: '道德经', value: 'daodejing' },
+  { label: '交易', value: 'trade' },
+  { label: '租赁', value: 'rental' },
+  { label: '装修', value: 'decor' },
+  { label: '家政', value: 'homekeep' },
+  { label: '政策', value: 'policy' },
+  { label: '人才', value: 'talent' },
+  { label: '客户品质', value: 'quality-customer' },
+  { label: '服务品质', value: 'quality-server' },
+  { label: '阶段', value: 'stage' },
+  { label: '维度', value: 'dimension' }
 ]
 
-// 工具类型筛选标签
+// 来源类型筛选标签（value 为 entries.json 中实际的 srcType 值）
 const toolTypeTags = [
   { label: '全部类型', value: '' },
-  { label: '流程工具', value: '流程工具' },
-  { label: '金融工具', value: '金融工具' },
-  { label: '概念工具', value: '概念工具' }
+  { label: '经典智慧', value: '经典智慧' },
+  { label: '法律', value: '法律' },
+  { label: '行政法规', value: '行政法规' },
+  { label: '部门规章', value: '部门规章' },
+  { label: '国家标准', value: '国家标准' },
+  { label: '行业标准', value: '行业标准' },
+  { label: '政策文件', value: '政策文件' },
+  { label: '风声原创', value: '风声原创' }
 ]
 
 const searchKeyword = ref('')
@@ -124,98 +157,62 @@ const searchAliases = ref([])
 // 加载词条数据
 const loadEntries = () => {
   try {
+    // entries.json 是数组（不是对象），直接赋值即可
     const data = require('../../data/entries.json')
-    allEntries.value = data || []
+    allEntries.value = Array.isArray(data) ? data : []
   } catch {
-    // 硬编码兜底
+    // 硬编码兜底（结构与 entries.json 一致）
     allEntries.value = [
       {
-        id: 'entry_001',
-        term: '网签',
-        domain: '房产交易',
-        toolType: '流程工具',
-        evidenceStrength: '高',
-        understanding: '网签即网上签约，是指买卖双方在房地产管理部门的网上交易系统中签订房屋买卖合同的行为。',
-        legalBasis: '《城市房地产管理法》第三十五条',
-        fullCase: '某购房人在签约后，卖方以「家人不同意」为由拒绝配合网签。购房人持已签订的书面合同向法院起诉，法院认定书面合同具有法律效力。',
-        agentMemo: '1. 签约前务必核实房源产权状态；2. 网签时确保合同金额与实际一致。'
+        id: 'DDJ-001',
+        domain: 'daodejing',
+        name: '天道规律',
+        alias: '顺势而为、市场规律',
+        def: '市场的规律不以个人意志转移——供需决定价格，信息差决定效率，信任决定成交。服务者要顺势而非逆势。',
+        source: '《道德经》第十六章',
+        srcType: '经典智慧',
+        attrs: '规律认知+顺势思维',
+        scene: '市场波动判断、价格策略制定',
+        posSpeech: '【专业版】市场供需关系是价格的根本决定因素。【共情版】别跟市场对着干，顺势才能成。',
+        negSpeech: '【专业版】违反市场规律的操作必然失败。',
+        consumerQ: '为什么我的房子卖不出去？',
+        simpleAnswer: '市场有自己的节奏，顺势调整比硬扛更聪明。',
+        consumerBenefit: '不跟市场较劲，省下的是时间和心情',
+        severity: 'soft'
       },
       {
-        id: 'entry_002',
-        term: '资金监管',
-        domain: '房产交易',
-        toolType: '流程工具',
-        evidenceStrength: '高',
-        understanding: '资金监管是指买卖双方将交易资金存入银行或第三方监管账户。',
-        legalBasis: '《房地产经纪管理办法》第二十四条',
-        fullCase: '买方支付100万首付款后，卖方用该笔资金偿还了个人债务，导致房屋无法过户。',
-        agentMemo: '1. 无论是定金还是首付款，都建议走资金监管。'
+        id: 'TRD-001',
+        domain: 'trade',
+        name: '真房源',
+        alias: '真实房源、假房源',
+        def: '真房源是指房源信息真实存在、真实在售、真实价格、真实图片的房源。',
+        source: '《房地产经纪管理办法》',
+        srcType: '部门规章',
+        attrs: '真实性+合规',
+        scene: '房源发布、客户带看',
+        posSpeech: '【专业版】所有发布房源均经过核验。',
+        negSpeech: '【专业版】发布虚假房源属违规行为。',
+        consumerQ: '网上房源是真的吗？',
+        simpleAnswer: '正规平台会对房源进行核验，建议选择承诺真房源的平台。',
+        consumerBenefit: '不被假房源浪费时间',
+        severity: 'hard'
       },
       {
-        id: 'entry_003',
-        term: '公积金贷款',
-        domain: '金融',
-        toolType: '金融工具',
-        evidenceStrength: '高',
-        understanding: '公积金贷款是指缴存住房公积金的职工享受的贷款，利率低于商业贷款。',
-        legalBasis: '《住房公积金管理条例》第二十六条',
-        fullCase: '客户王先生公积金账户余额3万元，采用组合贷方式，30年节省利息约18万元。',
-        agentMemo: '1. 提前帮客户查询公积金可贷额度。'
-      },
-      {
-        id: 'entry_004',
-        term: '物业交割',
-        domain: '物业',
-        toolType: '流程工具',
-        evidenceStrength: '中',
-        understanding: '物业交割是指房屋过户后，买卖双方对房屋及其附属设施、费用等进行交接确认。',
-        legalBasis: '《民法典》第五百九十八条',
-        fullCase: '买方发现前业主欠缴物业费8000余元，物业公司拒绝办理过户手续。',
-        agentMemo: '1. 提前1周预约物业交割时间。'
-      },
-      {
-        id: 'entry_005',
-        term: '租赁合同备案',
-        domain: '租赁',
-        toolType: '流程工具',
-        evidenceStrength: '中',
-        understanding: '租赁合同备案是指将房屋租赁合同在住房租赁监管平台进行登记备案。',
-        legalBasis: '《商品房屋租赁管理办法》第十四条',
-        fullCase: '租客小陈因租赁合同未备案，无法提供有效居住证明，孩子无法就近入学。',
-        agentMemo: '1. 签约时主动提示租赁备案的好处和流程。'
-      },
-      {
-        id: 'entry_006',
-        term: '满五唯一',
-        domain: '房产交易',
-        toolType: '概念工具',
-        evidenceStrength: '高',
-        understanding: '「满五唯一」是指房屋持有满五年且为卖方家庭唯一住房，可免征个人所得税。',
-        legalBasis: '财税〔2016〕23号文',
-        fullCase: '买方看中一套房源，核实发现该房屋「满五唯一」，节省约10万元个税。',
-        agentMemo: '1. 核实房产证满五年日期。'
-      },
-      {
-        id: 'entry_007',
-        term: '容积率',
-        domain: '装修',
-        toolType: '概念工具',
-        evidenceStrength: '中',
-        understanding: '容积率是指一个小区的地上总建筑面积与用地面积的比率。',
-        legalBasis: '《城市居住区规划设计标准》（GB50180-2018）',
-        fullCase: '客户在两个小区间犹豫，通过对比容积率选择了居住体验更好的小区。',
-        agentMemo: '1. 容积率是衡量居住品质的重要指标。'
-      },
-      {
-        id: 'entry_008',
-        term: '共有产权房',
-        domain: '政策',
-        toolType: '概念工具',
-        evidenceStrength: '高',
-        understanding: '共有产权房是指政府与购房人按份共有产权的政策性商品住房。',
-        legalBasis: '《关于试点城市发展共有产权住房的指导意见》（建保〔2014〕174号）',
-        fullCase: '年轻夫妻预算80万，通过共有产权房以60万购得近郊两居室。',
-        agentMemo: '1. 关注当地共有产权房申请条件。'
+        id: 'RNT-001',
+        domain: 'rental',
+        name: '长租公寓',
+        alias: '品牌公寓、集中式公寓',
+        def: '长租公寓是由专业机构运营、集中管理的租赁住房产品。',
+        source: '《住房租赁条例》',
+        srcType: '行政法规',
+        attrs: '集中运营+标准化服务',
+        scene: '租房选择、租约签订',
+        posSpeech: '【专业版】长租公寓提供标准化服务与维修响应。',
+        negSpeech: '【专业版】警惕租金贷等违规收费。',
+        consumerQ: '长租公寓好不好？',
+        simpleAnswer: '长租公寓服务标准化，但要警惕租金贷和隐形收费。',
+        consumerBenefit: '省心但要防坑',
+        severity: 'hard'
       }
     ]
   }
@@ -225,7 +222,8 @@ const loadEntries = () => {
 const loadAliases = () => {
   try {
     const data = require('../../data/search_aliases.json')
-    searchAliases.value = data || []
+    // search_aliases.json 是对象 { version, generated, searchAliases: [...] }
+    searchAliases.value = (data && data.searchAliases) || []
   } catch {
     searchAliases.value = []
   }
@@ -235,8 +233,8 @@ const loadAliases = () => {
 const findByAlias = (keyword) => {
   const ids = []
   searchAliases.value.forEach(a => {
-    if (a.alias.includes(keyword)) {
-      ids.push(a.entryId)
+    if (a.aliases && a.aliases.some(al => al.includes(keyword))) {
+      ids.push(a.id)
     }
   })
   return ids
@@ -251,25 +249,29 @@ const filteredEntries = computed(() => {
     result = result.filter(e => e.domain === activeDomain.value)
   }
 
-  // 工具类型筛选
+  // 来源类型筛选（srcType 可能是组合值，用 includes 匹配）
   if (activeToolType.value) {
-    result = result.filter(e => e.toolType === activeToolType.value)
+    result = result.filter(e => e.srcType && e.srcType.includes(activeToolType.value))
   }
 
-  // 关键词搜索（支持词条名和别名匹配）
+  // 关键词搜索（支持词条名、别名、定义、来源类型匹配）
   if (searchKeyword.value.trim()) {
     const kw = searchKeyword.value.trim()
     const aliasEntryIds = findByAlias(kw)
 
     result = result.filter(e => {
       // 词条名匹配
-      if (e.term.includes(kw)) return true
-      // 别名匹配
+      if (e.name && e.name.includes(kw)) return true
+      // 别名匹配（entry.alias 为字符串）
+      if (e.alias && e.alias.includes(kw)) return true
+      // 定义匹配
+      if (e.def && e.def.includes(kw)) return true
+      // 搜索别名表匹配
       if (aliasEntryIds.includes(e.id)) return true
       // 域匹配
-      if (e.domain.includes(kw)) return true
-      // 工具类型匹配
-      if (e.toolType.includes(kw)) return true
+      if (e.domain && e.domain.includes(kw)) return true
+      // 来源类型匹配
+      if (e.srcType && e.srcType.includes(kw)) return true
       return false
     })
   }
@@ -277,10 +279,11 @@ const filteredEntries = computed(() => {
   return result
 })
 
-// 证据强度样式
+// 严重程度样式（hard=硬性 / soft=软性）
 const strengthClass = (strength) => {
-  if (strength === '高') return 'strength-high'
-  if (strength === '中') return 'strength-mid'
+  const v = (strength || '').toLowerCase()
+  if (v === 'hard') return 'strength-high'
+  if (v === 'soft') return 'strength-mid'
   return 'strength-low'
 }
 

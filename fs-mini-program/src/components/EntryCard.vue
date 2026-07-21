@@ -7,17 +7,17 @@
     <view class="entry-card-header">
       <view class="entry-card-tags">
         <view
-          v-if="entry.toolType"
+          v-if="entry.srcType"
           class="entry-card-tag entry-card-tag--tool"
         >
-          <text class="entry-card-tag-text">{{ entry.toolType }}</text>
+          <text class="entry-card-tag-text">{{ entry.srcType }}</text>
         </view>
         <view
-          v-if="entry.evidenceStrength"
+          v-if="entry.severity"
           class="entry-card-tag entry-card-tag--evidence"
           :style="{ backgroundColor: evidenceColor.bg, color: evidenceColor.text }"
         >
-          <text class="entry-card-tag-text">{{ entry.evidenceStrength }}</text>
+          <text class="entry-card-tag-text">{{ severityLabel }}</text>
         </view>
       </view>
       <view
@@ -34,8 +34,8 @@
 
     <view class="entry-card-body">
       <text class="entry-card-name">{{ entry.name }}</text>
-      <text v-if="entry.domain" class="entry-card-domain">{{ entry.domain }}</text>
-      <text v-if="entry.insight" class="entry-card-insight">{{ entry.insight }}</text>
+      <text v-if="entry.domain" class="entry-card-domain">{{ domainLabel }}</text>
+      <text v-if="entry.def" class="entry-card-insight">{{ entrySummary }}</text>
     </view>
   </view>
 </template>
@@ -52,12 +52,46 @@ const props = defineProps({
 
 const emit = defineEmits(['click', 'favorite'])
 
+// 域中文映射
+const DOMAIN_LABEL_MAP = {
+  daodejing: '道德经',
+  trade: '交易',
+  rental: '租赁',
+  decor: '装修',
+  homekeep: '家政',
+  policy: '政策',
+  talent: '人才',
+  'quality-customer': '客户品质',
+  'quality-server': '服务品质',
+  stage: '阶段',
+  dimension: '维度'
+}
+
+// 严重程度中文标签（hard=硬性约束 / soft=软性建议）
+const severityLabel = computed(() => {
+  const s = (props.entry.severity || '').toLowerCase()
+  if (s === 'hard') return '硬性'
+  if (s === 'soft') return '软性'
+  return props.entry.severity || ''
+})
+
+// 域中文标签
+const domainLabel = computed(() => {
+  return DOMAIN_LABEL_MAP[props.entry.domain] || props.entry.domain || ''
+})
+
+// 定义摘要（取前 50 字）
+const entrySummary = computed(() => {
+  const def = props.entry.def || ''
+  return def.length > 50 ? def.slice(0, 50) + '...' : def
+})
+
 const evidenceColor = computed(() => {
-  const strength = (props.entry.evidenceStrength || '').toLowerCase()
-  if (strength.includes('强') || strength.includes('高')) {
+  const severity = (props.entry.severity || '').toLowerCase()
+  if (severity === 'hard') {
     return { bg: 'rgba(61, 90, 62, 0.1)', text: '#3d5a3e' }
   }
-  if (strength.includes('中')) {
+  if (severity === 'soft') {
     return { bg: 'rgba(196, 106, 58, 0.1)', text: '#c46a3a' }
   }
   return { bg: 'rgba(153, 153, 153, 0.1)', text: '#999999' }

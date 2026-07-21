@@ -2,10 +2,10 @@
   <view class="page">
     <!-- 场景头部信息 -->
     <view class="scene-header" v-if="card">
-      <view class="scene-icon">{{ card.icon || '📋' }}</view>
-      <view class="scene-title">{{ card.title }}</view>
-      <view class="scene-domain">{{ card.domain }}</view>
-      <view class="scene-desc">{{ card.description }}</view>
+      <view class="scene-icon">📋</view>
+      <view class="scene-title">{{ card.scenarioTitle }}</view>
+      <view class="scene-domain">{{ card.tags?.join(' / ') || '' }}</view>
+      <view class="scene-desc">{{ card.painPoint }}</view>
     </view>
 
     <!-- 加载中 -->
@@ -14,24 +14,35 @@
     </view>
 
     <template v-if="card">
-      <!-- 客户原话示例列表 -->
-      <view class="section">
-        <view class="section-title">客户原话示例</view>
-        <view class="quote-list">
-          <view
-            v-for="(scene, idx) in card.scenes"
-            :key="idx"
-            class="quote-card"
-          >
-            <view class="quote-bubble">
-              <text class="quote-label">客户</text>
-              <text class="quote-text">「{{ scene.customerQuote }}」</text>
-            </view>
-            <view class="decode-section">
-              <text class="decode-label">AI 解码</text>
-              <text class="decode-text">{{ scene.decode }}</text>
-            </view>
-          </view>
+      <!-- 专业视角 -->
+      <view class="section" v-if="card.professionalTake">
+        <view class="section-title">专业视角</view>
+        <view class="info-card">
+          <text class="info-text">{{ card.professionalTake }}</text>
+        </view>
+      </view>
+
+      <!-- 法律依据 -->
+      <view class="section" v-if="card.legalBasis">
+        <view class="section-title">法律依据</view>
+        <view class="info-card legal-card">
+          <text class="info-text">{{ card.legalBasis }}</text>
+        </view>
+      </view>
+
+      <!-- 相关案例 -->
+      <view class="section" v-if="card.relatedCases && card.relatedCases.length">
+        <view class="section-title">相关案例</view>
+        <view class="tag-list">
+          <view class="tag-item" v-for="c in card.relatedCases" :key="c">{{ c }}</view>
+        </view>
+      </view>
+
+      <!-- 相关工具 -->
+      <view class="section" v-if="card.relatedTools && card.relatedTools.length">
+        <view class="section-title">相关工具</view>
+        <view class="tag-list">
+          <view class="tag-item" v-for="t in card.relatedTools" :key="t">{{ t }}</view>
         </view>
       </view>
 
@@ -67,25 +78,6 @@
           </view>
         </view>
       </view>
-
-      <!-- 解锁完整案例 -->
-      <view class="section">
-        <view class="unlock-card">
-          <view class="unlock-header">
-            <text class="unlock-title">完整案例</text>
-            <text class="unlock-cost">5 积分解锁</text>
-          </view>
-          <view class="unlock-desc">解锁后查看完整案例复盘，学习一线经纪人的实战技巧</view>
-          <view v-if="caseUnlocked" class="unlock-content">
-            <text class="case-text">{{ card.fullCase }}</text>
-          </view>
-          <view v-else class="unlock-btn-wrap">
-            <view class="unlock-btn" @click="unlockCase">
-              解锁完整案例（消耗 5 积分）
-            </view>
-          </view>
-        </view>
-      </view>
     </template>
 
     <!-- 底部 ICP -->
@@ -106,35 +98,30 @@ const cardId = ref('')
 const userInput = ref('')
 const decoding = ref(false)
 const decodeResult = ref('')
-const caseUnlocked = ref(false)
 
 // 加载场景卡片数据
 const loadCard = (id) => {
   try {
     const data = require('../../data/scene_cards.json')
-    const found = data.find(c => c.id === id)
+    const found = data.sceneCards?.find(c => c.cardId === id)
     if (found) {
       card.value = found
-      // 检查是否已解锁完整案例
-      caseUnlocked.value = store.checkUnlocked(id, 'fullCase')
     }
   } catch {
     // 硬编码兜底
     const fallback = {
-      'buyer_inquiry': {
-        id: 'buyer_inquiry',
-        title: '客户询价',
-        domain: '房产交易',
-        icon: '\uD83D\uDCB0',
-        description: '客户询问房屋价格时，如何快速识别真实购买意向，避免被套价',
-        scenes: [
-          { customerQuote: '这套房子多少钱？还能便宜吗？', decode: '客户在比价阶段，核心诉求是确认预算匹配度。需要先了解客户已看房源数量和对标楼盘，判断是否真实买家。' },
-          { customerQuote: '这个价格包含税费吗？能帮我算一下首付吗？', decode: '进入交易意向阶段，客户正在计算实际购房成本。这是切入金融方案和贷款服务的最佳时机。' }
-        ],
-        fullCase: '客户王女士在贝壳平台看到一套房源后，直接来电询问底价。经纪人小李没有直接报价，而是邀请王女士线下看房。在看房过程中，小李通过观察王女士对户型细节的关注点，判断出她更看重学区属性而非价格。最终以高于挂牌价3%成交。'
+      'SCENE-01': {
+        cardId: 'SCENE-01',
+        scenarioTitle: '退租时房东扣押金',
+        painPoint: '房东说我弄坏了墙面要扣押金',
+        professionalTake: '正常居住损耗租客不担责，合同“小修自理”不含结构性问题。房东扣押金需举证实际损失，不能以“折旧”为由扣。',
+        legalBasis: '《民法典》第710条（正常使用损耗不担责）、第712条（出租人维修义务）、第585条（违约金不得过分高于实际损失）',
+        relatedCases: ['CASE-RNT-001', 'CASE-RNT-002'],
+        relatedTools: ['RNT-008', 'RNT-020'],
+        tags: ['退租', '押金', '自然损耗']
       }
     }
-    card.value = fallback[id] || fallback['buyer_inquiry']
+    card.value = fallback[id] || fallback['SCENE-01']
   }
 }
 
@@ -159,23 +146,6 @@ const doDecode = () => {
     decodeResult.value = result
     decoding.value = false
   }, 1000)
-}
-
-// 解锁完整案例
-const unlockCase = () => {
-  const result = store.unlockContent(card.value.id, 'fullCase', 5)
-  if (result.success) {
-    caseUnlocked.value = true
-    uni.showToast({
-      title: result.alreadyUnlocked ? '已解锁' : '解锁成功',
-      icon: 'success'
-    })
-  } else {
-    uni.showToast({
-      title: result.message || '积分不足',
-      icon: 'none'
-    })
-  }
 }
 
 onLoad((options) => {
@@ -255,67 +225,39 @@ onLoad((options) => {
   padding: 0 8rpx;
 }
 
-/* 客户原话卡片 */
-.quote-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16rpx;
-}
-
-.quote-card {
+/* 信息卡片（专业视角 / 法律依据） */
+.info-card {
   background: #ffffff;
   border-radius: 16rpx;
   padding: 24rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.03);
+  border-left: 6rpx solid #3d5a3e;
 }
 
-.quote-bubble {
-  background: #e8f5e9;
-  border-radius: 12rpx;
-  padding: 18rpx 20rpx;
-  margin-bottom: 16rpx;
-  position: relative;
+.info-card.legal-card {
+  border-left-color: #c46a3a;
+  background: #fffaf6;
 }
 
-.quote-bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -12rpx;
-  left: 30rpx;
-  border-width: 12rpx 10rpx 0;
-  border-style: solid;
-  border-color: #e8f5e9 transparent transparent;
+.info-text {
+  font-size: 26rpx;
+  color: #444;
+  line-height: 1.8;
 }
 
-.quote-label {
-  font-size: 22rpx;
+/* 标签列表（相关案例 / 相关工具） */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.tag-item {
+  font-size: 24rpx;
   color: #3d5a3e;
-  font-weight: 700;
-  margin-right: 10rpx;
-}
-
-.quote-text {
-  font-size: 26rpx;
-  color: #2c5a2e;
-  line-height: 1.6;
-}
-
-.decode-section {
-  padding: 0 4rpx;
-}
-
-.decode-label {
-  font-size: 22rpx;
-  color: #c46a3a;
-  font-weight: 700;
-  display: block;
-  margin-bottom: 8rpx;
-}
-
-.decode-text {
-  font-size: 26rpx;
-  color: #555;
-  line-height: 1.7;
+  background: #e8f5e9;
+  padding: 10rpx 22rpx;
+  border-radius: 24rpx;
 }
 
 /* 输入区域 */
@@ -388,68 +330,6 @@ onLoad((options) => {
   font-size: 26rpx;
   color: #444;
   line-height: 1.8;
-}
-
-/* 解锁区域 */
-.unlock-card {
-  background: #ffffff;
-  border-radius: 16rpx;
-  padding: 28rpx 24rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.03);
-}
-
-.unlock-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10rpx;
-}
-
-.unlock-title {
-  font-size: 30rpx;
-  font-weight: 700;
-  color: #2c2c2c;
-}
-
-.unlock-cost {
-  font-size: 24rpx;
-  color: #c46a3a;
-  font-weight: 700;
-  background: #fff3ed;
-  padding: 6rpx 16rpx;
-  border-radius: 10rpx;
-}
-
-.unlock-desc {
-  font-size: 24rpx;
-  color: #999;
-  margin-bottom: 20rpx;
-}
-
-.unlock-content {
-  background: #f7f4ef;
-  border-radius: 12rpx;
-  padding: 20rpx;
-}
-
-.case-text {
-  font-size: 26rpx;
-  color: #444;
-  line-height: 1.8;
-}
-
-.unlock-btn-wrap {
-  display: flex;
-  justify-content: center;
-}
-
-.unlock-btn {
-  background: linear-gradient(135deg, #c46a3a, #d4845a);
-  color: #ffffff;
-  font-size: 28rpx;
-  font-weight: 700;
-  padding: 18rpx 48rpx;
-  border-radius: 40rpx;
 }
 
 /* 底部 */

@@ -7,15 +7,15 @@
     <view class="grid-body">
       <view
         v-for="card in cards"
-        :key="card.id"
+        :key="card.cardId"
         class="scene-card"
         :style="{ borderLeftColor: card.color || '#3d5a3e' }"
-        @click="goDetail(card.id)"
+        @click="goDetail(card.cardId)"
       >
-        <view class="scene-card-icon">{{ card.icon || '📋' }}</view>
-        <view class="scene-card-title">{{ card.title }}</view>
-        <view class="scene-card-domain">{{ card.domain }}</view>
-        <view class="scene-card-desc">{{ card.description }}</view>
+        <view class="scene-card-icon">📋</view>
+        <view class="scene-card-title">{{ card.scenarioTitle }}</view>
+        <view class="scene-card-domain">{{ card.tags?.[0] || '' }}</view>
+        <view class="scene-card-desc">{{ card.painPoint }}</view>
         <view class="scene-card-arrow">&gt;</view>
       </view>
     </view>

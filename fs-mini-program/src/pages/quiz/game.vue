@@ -26,11 +26,28 @@
       <view class="question-card">
         <view class="question-index">
           <text class="question-index-text">第 {{ currentIndex + 1 }} 题</text>
+          <text v-if="currentQuestion.difficulty" class="question-difficulty">{{ currentQuestion.difficulty }}</text>
         </view>
+
+        <!-- 场景描述（法官来了 / 客户模拟器） -->
+        <view v-if="currentQuestion.scenario" class="question-scenario">
+          <text class="question-scenario-label">场景</text>
+          <text class="question-scenario-text">{{ currentQuestion.scenario }}</text>
+        </view>
+
+        <!-- 客户模拟器：客户头像与原话 -->
+        <view v-if="currentQuestion.clientSays" class="question-client-says">
+          <view v-if="currentQuestion.clientAvatar" class="question-client-info">
+            <text class="question-client-avatar">{{ currentQuestion.clientAvatar }}</text>
+            <text v-if="currentQuestion.clientMood" class="question-client-mood">· {{ currentQuestion.clientMood }}</text>
+          </view>
+          <text class="question-client-says-text">"{{ currentQuestion.clientSays }}"</text>
+        </view>
+
         <view class="question-title">{{ currentQuestion.question }}</view>
 
         <!-- 选项 -->
-        <view class="options-list">
+        <view class="options-list" v-if="currentQuestion.options && currentQuestion.options.length">
           <view
             v-for="(opt, idx) in currentQuestion.options"
             :key="idx"
@@ -49,10 +66,17 @@
               <text class="option-label-text">{{ optionLabels[idx] }}</text>
             </view>
             <text class="option-text">{{ typeof opt === 'string' ? opt : opt.text }}</text>
+            <text v-if="answered && opt.level" class="option-level-tag" :class="'level-' + opt.level">{{ getLevelLabel(opt.level) }}</text>
+            <text v-if="answered && typeof opt.score === 'number'" class="option-score-tag">{{ opt.score }}分</text>
             <view v-if="answered && idx === currentQuestion.correctIndex" class="option-check">
               <text class="option-check-text">V</text>
             </view>
           </view>
+        </view>
+
+        <!-- 无选项时（每日一题兜底）显示提示 -->
+        <view v-else class="no-options-hint">
+          <text class="no-options-text">本题暂无选项，请直接查看解析</text>
         </view>
 
         <!-- 答题反馈 -->
@@ -63,14 +87,53 @@
               <text class="feedback-title">{{ isCorrect ? '回答正确！' : '回答错误' }}</text>
               <text v-if="isCorrect" class="feedback-points">+{{ pointsPerQuestion }}积分</text>
             </view>
+            <!-- 解析：支持对象（法官/模拟器）与字符串两种结构 -->
             <view class="feedback-explanation" v-if="currentQuestion.explanation">
               <text class="feedback-explanation-label">解析：</text>
-              <text class="feedback-explanation-text">{{ currentQuestion.explanation }}</text>
+              <view v-if="typeof currentQuestion.explanation === 'object'" class="feedback-explanation-body">
+                <view v-if="currentQuestion.explanation.judgment" class="exp-line">
+                  <text class="exp-line-label">判决：</text>
+                  <text class="exp-line-text">{{ currentQuestion.explanation.judgment }}</text>
+                </view>
+                <view v-if="currentQuestion.explanation.legalBasis" class="exp-line">
+                  <text class="exp-line-label">法律依据：</text>
+                  <text class="exp-line-text">{{ currentQuestion.explanation.legalBasis }}</text>
+                </view>
+                <view v-if="currentQuestion.explanation.professionalInsight" class="exp-line">
+                  <text class="exp-line-label">专业洞察：</text>
+                  <text class="exp-line-text">{{ currentQuestion.explanation.professionalInsight }}</text>
+                </view>
+                <view v-if="currentQuestion.explanation.keyPoints && currentQuestion.explanation.keyPoints.length" class="exp-line">
+                  <text class="exp-line-label">要点：</text>
+                  <view class="exp-keypoints">
+                    <text v-for="(kp, i) in currentQuestion.explanation.keyPoints" :key="i" class="exp-keypoint">· {{ kp }}</text>
+                  </view>
+                </view>
+                <view v-if="currentQuestion.explanation.realCase" class="exp-line">
+                  <text class="exp-line-label">真实案例：</text>
+                  <text class="exp-line-text">{{ currentQuestion.explanation.realCase }}</text>
+                </view>
+                <view v-if="currentQuestion.explanation.whyA || currentQuestion.explanation.whyB || currentQuestion.explanation.whyC || currentQuestion.explanation.whyD" class="exp-line">
+                  <text class="exp-line-label">选项分析：</text>
+                  <view class="exp-why-list">
+                    <view v-if="currentQuestion.explanation.whyA" class="exp-why-item"><text class="exp-why-label">A：</text><text class="exp-line-text">{{ currentQuestion.explanation.whyA }}</text></view>
+                    <view v-if="currentQuestion.explanation.whyB" class="exp-why-item"><text class="exp-why-label">B：</text><text class="exp-line-text">{{ currentQuestion.explanation.whyB }}</text></view>
+                    <view v-if="currentQuestion.explanation.whyC" class="exp-why-item"><text class="exp-why-label">C：</text><text class="exp-line-text">{{ currentQuestion.explanation.whyC }}</text></view>
+                    <view v-if="currentQuestion.explanation.whyD" class="exp-why-item"><text class="exp-why-label">D：</text><text class="exp-line-text">{{ currentQuestion.explanation.whyD }}</text></view>
+                  </view>
+                </view>
+              </view>
+              <text v-else class="feedback-explanation-text">{{ currentQuestion.explanation }}</text>
             </view>
           </view>
           <view class="next-btn" @click="nextQuestion">
             <text class="next-btn-text">{{ currentIndex < questions.length - 1 ? '下一题' : '查看结果' }}</text>
           </view>
+        </view>
+
+        <!-- 无选项时的查看解析按钮 -->
+        <view v-if="!currentQuestion.options || !currentQuestion.options.length" class="next-btn no-options-btn" @click="showTextOnlyFeedback">
+          <text class="next-btn-text">查看解析</text>
         </view>
       </view>
 
@@ -83,7 +146,7 @@
     <!-- 游戏结束 -->
     <view v-else class="result-body">
       <view class="result-header">
-        <view class="result-icon">{{ gameTitle === '法官来了' ? '法' : '客' }}</view>
+        <view class="result-icon">{{ gameTitle === '法官来了' ? '法' : (gameTitle === '每日一题' ? '日' : '客') }}</view>
         <view class="result-title">挑战完成！</view>
         <view class="result-sub">{{ gameTitle }}</view>
       </view>
@@ -160,6 +223,7 @@ const optionLabels = ['A', 'B', 'C', 'D']
 // 游戏参数
 const gameId = ref('')
 const gameTitle = ref('')
+const quizId = ref('')
 
 // 题目
 const questions = ref([])
@@ -191,6 +255,7 @@ const accuracyPercent = computed(() => {
 
 onLoad((options) => {
   gameId.value = options.gameId || ''
+  quizId.value = options.quizId || ''
   store.initFromStorage()
   loadQuestions()
 })
@@ -199,57 +264,154 @@ onMounted(() => {
   uni.setStorageSync('__current_page', '/pages/quiz/game')
 })
 
-function loadQuestions() {
-  let data = null
+// 获取今日日期字符串与中文星期
+function getTodayInfo() {
+  const today = new Date()
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+  const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+  return { todayStr, todayDay: days[today.getDay()] }
+}
 
+// 从周计划中匹配今日条目
+function getTodayEntry(weeklySchedule) {
+  if (!weeklySchedule || !weeklySchedule.length) return null
+  const { todayStr, todayDay } = getTodayInfo()
+  return weeklySchedule.find(q => q.date === todayStr || q.day === todayDay) || weeklySchedule[0]
+}
+
+// 选项等级中文标签（客户模拟器）
+function getLevelLabel(level) {
+  const map = { methodology: '方法论', halfMethod: '半方法论', script: '话术', wrong: '错误' }
+  return map[level] || level || ''
+}
+
+function loadQuestions() {
   if (gameId.value === 'judge') {
+    // 法官来了
     gameTitle.value = '法官来了'
     pointsPerQuestion.value = 10
+    let data = null
     try {
       data = require('../../data/game_judge_quiz.json')
     } catch (e) {
-      data = getDefaultJudgeQuestions()
+      data = null
+    }
+    if (data && data.questions && data.questions.length) {
+      gameTitle.value = data.gameName || '法官来了'
+      questions.value = data.questions.map((q, i) => {
+        // correctOption 是字符串 "A"/"B" 等，需转换为索引
+        const correctIndex = q.options.findIndex(o => o.id === q.correctOption)
+        return {
+          id: q.id,
+          difficulty: q.difficulty,
+          scenario: q.scenario,
+          question: q.question,
+          options: q.options,
+          correctIndex: correctIndex >= 0 ? correctIndex : 0,
+          explanation: q.explanation,
+          tags: q.tags,
+          index: i,
+        }
+      })
+      userAnswers.value = new Array(questions.value.length).fill(-1)
+      return
     }
   } else if (gameId.value === 'simulator') {
+    // 客户模拟器
     gameTitle.value = '客户模拟器'
     pointsPerQuestion.value = 15
+    let data = null
     try {
       data = require('../../data/game_client_simulator.json')
     } catch (e) {
-      data = getDefaultSimulatorQuestions()
+      data = null
     }
-  } else {
-    // 每日一题或其他
+    if (data && data.scenarios && data.scenarios.length) {
+      gameTitle.value = data.gameName || '客户模拟器'
+      questions.value = data.scenarios.map((s, i) => {
+        // 没有 correctOption，正确答案取 score 最高的选项
+        const correctIndex = s.options.reduce((best, opt, idx) => (opt.score || 0) > (s.options[best].score || 0) ? idx : best, 0)
+        return {
+          id: s.id,
+          difficulty: s.domain,
+          scenario: s.scenario,
+          clientAvatar: s.clientAvatar,
+          clientMood: s.clientMood,
+          clientSays: s.clientSays,
+          question: '你会怎么回应？',
+          options: s.options,
+          correctIndex,
+          explanation: s.analysis,
+          index: i,
+        }
+      })
+      userAnswers.value = new Array(questions.value.length).fill(-1)
+      return
+    }
+  } else if (gameId.value === 'daily') {
+    // 每日一题：从 dailyQuestionSchedule.weeklySchedule 匹配今日条目，
+    // 再通过 scenarioId 关联到客户模拟器的对应场景
     gameTitle.value = '每日一题'
     pointsPerQuestion.value = 20
+    let scheduleData = null
+    let simData = null
     try {
-      data = require('../../data/brand_and_schedule.json')
-      if (data && data.dailyQuiz && data.dailyQuiz.questions) {
-        data = { questions: data.dailyQuiz.questions }
-      }
-    } catch (e) {
-      data = getDefaultDailyQuestions()
+      scheduleData = require('../../data/brand_and_schedule.json')
+    } catch (e) {}
+    try {
+      simData = require('../../data/game_client_simulator.json')
+    } catch (e) {}
+
+    const weeklySchedule = scheduleData && scheduleData.dailyQuestionSchedule && scheduleData.dailyQuestionSchedule.weeklySchedule
+    const todayEntry = getTodayEntry(weeklySchedule)
+    const targetScenarioId = quizId.value || (todayEntry && todayEntry.scenarioId)
+    const scenario = simData && simData.scenarios ? simData.scenarios.find(s => s.id === targetScenarioId) : null
+
+    if (scenario) {
+      // 找到关联场景，作为单题加载
+      const correctIndex = scenario.options.reduce((best, opt, idx) => (opt.score || 0) > (scenario.options[best].score || 0) ? idx : best, 0)
+      questions.value = [{
+        id: scenario.id,
+        difficulty: todayEntry ? todayEntry.difficulty : scenario.domain,
+        scenario: scenario.scenario,
+        clientAvatar: scenario.clientAvatar,
+        clientMood: scenario.clientMood,
+        clientSays: scenario.clientSays,
+        question: '你会怎么回应？',
+        options: scenario.options,
+        correctIndex,
+        explanation: scenario.analysis,
+        index: 0,
+      }]
+      userAnswers.value = [-1]
+      return
+    }
+    if (todayEntry) {
+      // 找到今日条目但未匹配到场景，显示题目文本
+      questions.value = [{
+        id: todayEntry.scenarioId || 'daily',
+        scenario: todayEntry.entryQuestion,
+        question: todayEntry.entryQuestion,
+        options: [],
+        correctIndex: 0,
+        explanation: '今日题目关联的场景数据暂未找到，请稍后重试。',
+        index: 0,
+      }]
+      userAnswers.value = [-1]
+      return
     }
   }
 
-  if (data && data.questions) {
-    questions.value = data.questions.map((q, i) => ({
-      ...q,
-      index: i,
-      correctIndex: q.correctIndex !== undefined ? q.correctIndex : q.correct,
-    }))
-    userAnswers.value = new Array(questions.value.length).fill(-1)
-  } else {
-    questions.value = [
-      {
-        question: '题目加载失败，请返回重试',
-        options: ['返回'],
-        correctIndex: 0,
-        explanation: '',
-      },
-    ]
-    userAnswers.value = [-1]
-  }
+  // 兜底：加载失败
+  questions.value = [
+    {
+      question: '题目加载失败，请返回重试',
+      options: [{ id: 'A', text: '返回' }],
+      correctIndex: 0,
+      explanation: '',
+    },
+  ]
+  userAnswers.value = [-1]
 }
 
 function selectOption(idx) {
@@ -277,6 +439,16 @@ function selectOption(idx) {
   }
 }
 
+// 无选项时的反馈（每日一题兜底）
+function showTextOnlyFeedback() {
+  if (answered.value) return
+  answered.value = true
+  showFeedback.value = true
+  isCorrect.value = true
+  correctCount.value += 1
+  userAnswers.value[currentIndex.value] = 0
+}
+
 function nextQuestion() {
   if (currentIndex.value < questions.value.length - 1) {
     currentIndex.value += 1
@@ -290,8 +462,9 @@ function nextQuestion() {
 }
 
 function getOptionText(question, idx) {
-  if (!question || !question.options) return ''
+  if (!question || !question.options || !question.options.length) return ''
   const opt = question.options[idx]
+  if (!opt) return ''
   return typeof opt === 'string' ? opt : (opt.text || '')
 }
 
@@ -319,123 +492,6 @@ function shareResult() {
 
 function goBack() {
   uni.navigateBack()
-}
-
-// 默认题目数据 - 法官来了
-function getDefaultJudgeQuestions() {
-  return {
-    title: '法官来了',
-    questions: [
-      {
-        question: '根据《民法典》，租赁合同的期限最长不得超过多少年？',
-        options: ['10年', '15年', '20年', '30年'],
-        correctIndex: 2,
-        explanation: '《民法典》第705条规定，租赁期限不得超过二十年。超过二十年的，超过部分无效。',
-      },
-      {
-        question: '出租人出卖租赁房屋的，应当在出卖之前的合理期限内通知承租人，承租人享有什么权利？',
-        options: ['优先购买权', '优先承租权', '优先使用权', '优先抵押权'],
-        correctIndex: 0,
-        explanation: '《民法典》第726条规定，出租人出卖租赁房屋的，承租人享有以同等条件优先购买的权利。',
-      },
-      {
-        question: '承租人在租赁期限内死亡的，与其生前共同居住的人可以按照什么继续租赁？',
-        options: ['需要重新签订合同', '原租赁合同', '按市场价格续租', '需要房东同意'],
-        correctIndex: 1,
-        explanation: '《民法典》第732条规定，承租人在房屋租赁期限内死亡的，与其生前共同居住的人或者共同经营人可以按照原租赁合同租赁该房屋。',
-      },
-      {
-        question: '租赁合同未约定转租事项，承租人能否转租？',
-        options: ['可以自由转租', '经出租人同意可以转租', '绝对不可以转租', '只需通知出租人即可'],
-        correctIndex: 1,
-        explanation: '《民法典》第716条规定，承租人经出租人同意，可以将租赁物转租给第三人。未经出租人同意转租的，出租人可以解除合同。',
-      },
-      {
-        question: '租赁合同到期后，承租人继续使用租赁物，出租人没有提出异议的，原租赁合同效力如何？',
-        options: ['自动终止', '变为不定期租赁', '自动续期一年', '需要重新签订'],
-        correctIndex: 1,
-        explanation: '《民法典》第734条规定，租赁期限届满，承租人继续使用租赁物，出租人没有提出异议的，原租赁合同继续有效，但租赁期限为不定期。',
-      },
-    ],
-  }
-}
-
-// 默认题目数据 - 客户模拟器
-function getDefaultSimulatorQuestions() {
-  return {
-    title: '客户模拟器',
-    questions: [
-      {
-        question: '客户说"这套房子太贵了，我的预算不够"，你该如何回应？',
-        options: [
-          '直接推荐更便宜的房子',
-          '先共情，了解具体预算差距，再分析性价比',
-          '强调这套房子的优点',
-          '告诉客户可以适当提高预算',
-        ],
-        correctIndex: 1,
-        explanation: '先共情接纳客户的情绪，了解具体的预算差距，然后分析这套房子的性价比，让客户理解价值所在。',
-      },
-      {
-        question: '客户看了多套房子后说"我再考虑考虑"，最佳跟进方式是？',
-        options: [
-          '每天打电话催促',
-          '给客户足够的空间，一周后再联系',
-          '约定一个具体的时间再联系，同时提供有帮助的信息',
-          '直接放弃这个客户',
-        ],
-        correctIndex: 2,
-        explanation: '约定具体时间再联系，给客户尊重感，同时在此期间提供房源信息或市场分析等有价值的内容。',
-      },
-      {
-        question: '客户担心房价会跌，你该如何回应？',
-        options: [
-          '保证房价绝对不会跌',
-          '用数据说话，分析区域市场趋势，帮助客户理性决策',
-          '告诉客户担心是多余的',
-          '建议客户等房价跌了再买',
-        ],
-        correctIndex: 1,
-        explanation: '用客观数据分析市场趋势，帮助客户理性判断，而不是盲目保证或否定客户的担忧。',
-      },
-      {
-        question: '客户要求看一套已经租出去的房子，你该怎么做？',
-        options: [
-          '直接拒绝',
-          '先联系现有租客预约时间，告知客户实际情况',
-          '带客户直接去看',
-          '建议客户换一套',
-        ],
-        correctIndex: 1,
-        explanation: '尊重现有租客的权益，提前预约，同时告知客户实际情况，体现专业和诚信。',
-      },
-      {
-        question: '客户对房子满意但觉得押金太高，最佳处理方式是？',
-        options: [
-          '直接免除押金',
-          '解释押金的必要性和退还机制，必要时协商分期支付',
-          '坚持原价不变',
-          '让客户自己想办法',
-        ],
-        correctIndex: 1,
-        explanation: '耐心解释押金的用途和退还机制，展现灵活性但保持底线，必要时可协商分期支付方案。',
-      },
-    ],
-  }
-}
-
-// 默认每日一题
-function getDefaultDailyQuestions() {
-  return {
-    questions: [
-      {
-        question: '在租赁业务中，经纪人最重要的品质是什么？',
-        options: ['口才好', '诚信和专业', '人脉广', '长得好看'],
-        correctIndex: 1,
-        explanation: '诚信和专业是经纪人的立身之本。只有真正为客户着想，才能建立长期信任关系。',
-      },
-    ],
-  }
 }
 </script>
 
@@ -522,6 +578,8 @@ function getDefaultDailyQuestions() {
 }
 .question-index {
   margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
 }
 .question-index-text {
   font-size: 24rpx;
@@ -531,6 +589,64 @@ function getDefaultDailyQuestions() {
   padding: 4rpx 20rpx;
   border-radius: 16rpx;
 }
+.question-difficulty {
+  font-size: 22rpx;
+  color: #c46a3a;
+  background: #fff3e0;
+  padding: 4rpx 16rpx;
+  border-radius: 12rpx;
+  margin-left: 12rpx;
+}
+
+/* 场景描述 */
+.question-scenario {
+  background: #f7f4ef;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+.question-scenario-label {
+  font-size: 22rpx;
+  color: #888;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 8rpx;
+}
+.question-scenario-text {
+  font-size: 26rpx;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* 客户模拟器：客户原话 */
+.question-client-says {
+  background: #e8f5e9;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+.question-client-info {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  margin-bottom: 8rpx;
+}
+.question-client-avatar {
+  font-size: 24rpx;
+  color: #3d5a3e;
+  font-weight: 700;
+}
+.question-client-mood {
+  font-size: 22rpx;
+  color: #888;
+}
+.question-client-says-text {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+  font-style: italic;
+}
+
 .question-title {
   font-size: 34rpx;
   font-weight: 700;
@@ -603,6 +719,35 @@ function getDefaultDailyQuestions() {
   flex: 1;
   line-height: 1.5;
 }
+.option-level-tag {
+  font-size: 20rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 10rpx;
+  margin-left: 12rpx;
+  flex-shrink: 0;
+}
+.option-level-tag.level-methodology {
+  background: #e8f5e9;
+  color: #3d5a3e;
+}
+.option-level-tag.level-halfMethod {
+  background: #fff3e0;
+  color: #c46a3a;
+}
+.option-level-tag.level-script {
+  background: #fff8e1;
+  color: #f9a825;
+}
+.option-level-tag.level-wrong {
+  background: #ffebee;
+  color: #c62828;
+}
+.option-score-tag {
+  font-size: 20rpx;
+  color: #999;
+  margin-left: 8rpx;
+  flex-shrink: 0;
+}
 .option-check {
   width: 40rpx;
   height: 40rpx;
@@ -612,11 +757,25 @@ function getDefaultDailyQuestions() {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-left: 8rpx;
 }
 .option-check-text {
   font-size: 22rpx;
   color: #fff;
   font-weight: 700;
+}
+
+/* 无选项提示 */
+.no-options-hint {
+  text-align: center;
+  padding: 30rpx 0;
+}
+.no-options-text {
+  font-size: 26rpx;
+  color: #999;
+}
+.no-options-btn {
+  margin-top: 20rpx;
 }
 
 /* 答题反馈 */
@@ -688,6 +847,57 @@ function getDefaultDailyQuestions() {
   font-size: 24rpx;
   color: #555;
   line-height: 1.6;
+}
+.feedback-explanation-body {
+  margin-top: 8rpx;
+}
+.exp-line {
+  margin-bottom: 12rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+.exp-line:last-child {
+  margin-bottom: 0;
+}
+.exp-line-label {
+  font-size: 24rpx;
+  color: #3d5a3e;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.exp-line-text {
+  font-size: 24rpx;
+  color: #555;
+  line-height: 1.6;
+}
+.exp-keypoints {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  margin-top: 4rpx;
+}
+.exp-keypoint {
+  font-size: 24rpx;
+  color: #555;
+  line-height: 1.5;
+}
+.exp-why-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-top: 4rpx;
+}
+.exp-why-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6rpx;
+}
+.exp-why-label {
+  font-size: 24rpx;
+  color: #c46a3a;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 .next-btn {

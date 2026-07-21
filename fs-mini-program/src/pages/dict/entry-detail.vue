@@ -8,12 +8,12 @@
     <template v-if="entry">
       <!-- 词条头部 -->
       <view class="entry-header">
-        <view class="entry-term">{{ entry.term }}</view>
+        <view class="entry-term">{{ entry.name }}</view>
         <view class="entry-meta-row">
-          <text class="entry-domain-tag">{{ entry.domain }}</text>
-          <text class="entry-tool-tag">{{ entry.toolType }}</text>
-          <text :class="['entry-strength-tag', strengthClass(entry.evidenceStrength)]">
-            证据强度 {{ entry.evidenceStrength }}
+          <text class="entry-domain-tag">{{ domainLabel(entry.domain) }}</text>
+          <text class="entry-tool-tag">{{ entry.srcType }}</text>
+          <text :class="['entry-strength-tag', strengthClass(entry.severity)]">
+            {{ severityLabel(entry.severity) }}
           </text>
         </view>
       </view>
@@ -25,18 +25,18 @@
           <text class="section-badge free">免费</text>
         </view>
         <view class="section-content">
-          <text class="content-text">{{ entry.understanding }}</text>
+          <text class="content-text">{{ entry.def }}</text>
         </view>
       </view>
 
-      <!-- 免费区域：法律依据 -->
+      <!-- 免费区域：出处来源 -->
       <view class="section">
         <view class="section-header">
-          <text class="section-title">法律依据</text>
+          <text class="section-title">出处来源</text>
           <text class="section-badge free">免费</text>
         </view>
         <view class="section-content legal-content">
-          <text class="content-text">{{ entry.legalBasis }}</text>
+          <text class="content-text">{{ entry.source }}</text>
         </view>
       </view>
 
@@ -49,13 +49,20 @@
         </view>
 
         <view v-if="fullCaseUnlocked" class="section-content">
-          <text class="content-text case-text">{{ entry.fullCase }}</text>
+          <view v-if="entry.scene" class="case-block">
+            <text class="case-label">场景应用</text>
+            <text class="content-text case-text">{{ entry.scene }}</text>
+          </view>
+          <view v-if="entry.posSpeech" class="case-block">
+            <text class="case-label">正面话术</text>
+            <text class="content-text case-text">{{ entry.posSpeech }}</text>
+          </view>
         </view>
         <view v-else class="locked-content" @click="unlockContent('fullCase', 5)">
           <view class="locked-overlay">
             <text class="locked-icon">🔒</text>
             <text class="locked-text">点击解锁（消耗 5 积分）</text>
-            <text class="locked-hint">查看完整案例复盘，学习实战经验</text>
+            <text class="locked-hint">查看场景应用与正面话术，学习实战经验</text>
           </view>
         </view>
       </view>
@@ -69,13 +76,20 @@
         </view>
 
         <view v-if="agentMemoUnlocked" class="section-content memo-content">
-          <text class="content-text memo-text">{{ entry.agentMemo }}</text>
+          <view v-if="entry.attrs" class="case-block">
+            <text class="case-label">属性标签</text>
+            <text class="content-text memo-text">{{ entry.attrs }}</text>
+          </view>
+          <view v-if="entry.simpleAnswer" class="case-block">
+            <text class="case-label">简明回答</text>
+            <text class="content-text memo-text">{{ entry.simpleAnswer }}</text>
+          </view>
         </view>
         <view v-else class="locked-content" @click="unlockContent('agentMemo', 3)">
           <view class="locked-overlay">
             <text class="locked-icon">🔒</text>
             <text class="locked-text">点击解锁（消耗 3 积分）</text>
-            <text class="locked-hint">查看经纪人实战备忘，避坑要点</text>
+            <text class="locked-hint">查看属性标签与简明回答，掌握要点</text>
           </view>
         </view>
       </view>
@@ -120,38 +134,72 @@ const entryId = ref('')
 const fullCaseUnlocked = ref(false)
 const agentMemoUnlocked = ref(false)
 
+// 域中文映射
+const DOMAIN_LABEL_MAP = {
+  daodejing: '道德经',
+  trade: '交易',
+  rental: '租赁',
+  decor: '装修',
+  homekeep: '家政',
+  policy: '政策',
+  talent: '人才',
+  'quality-customer': '客户品质',
+  'quality-server': '服务品质',
+  stage: '阶段',
+  dimension: '维度'
+}
+
+const domainLabel = (d) => DOMAIN_LABEL_MAP[d] || d || ''
+
+// 严重程度中文标签（hard=硬性约束 / soft=软性建议）
+const severityLabel = (s) => {
+  const v = (s || '').toLowerCase()
+  if (v === 'hard') return '硬性'
+  if (v === 'soft') return '软性'
+  return s || ''
+}
+
 // 加载词条详情
 const loadEntry = (id) => {
   try {
+    // entries.json 是数组
     const data = require('../../data/entries.json')
-    const found = data.find(e => e.id === id)
+    const list = Array.isArray(data) ? data : []
+    const found = list.find(e => e.id === id)
     if (found) {
       entry.value = found
       fullCaseUnlocked.value = store.checkUnlocked(id, 'fullCase')
       agentMemoUnlocked.value = store.checkUnlocked(id, 'agentMemo')
     }
   } catch {
-    // 硬编码兜底
+    // 硬编码兜底（结构与 entries.json 一致）
     entry.value = {
-      id: 'entry_001',
-      term: '网签',
-      domain: '房产交易',
-      toolType: '流程工具',
-      evidenceStrength: '高',
-      understanding: '网签即网上签约，是指买卖双方在房地产管理部门的网上交易系统中签订房屋买卖合同的行为。网签合同具有法律效力，是后续办理贷款、缴税、过户的必要前提。',
-      legalBasis: '《城市房地产管理法》第三十五条：房地产转让、抵押，当事人应当依照本法第五章的规定办理权属登记。《不动产登记暂行条例》第十四条：因买卖、设定抵押权等申请不动产登记的，应当由当事人双方共同申请。',
-      fullCase: '某购房人在签约后，卖方以「家人不同意」为由拒绝配合网签。购房人持已签订的书面合同向法院起诉，法院认定书面合同具有法律效力，判决卖方继续履行合同。但若当时直接网签，则可避免此纠纷。网签的核心价值在于：1) 锁定房源，防止一房二卖；2) 作为后续贷款、过户的法定前置条件；3) 网签合同条款受政府监管，保护买卖双方权益。',
-      agentMemo: '1. 签约前务必核实房源产权状态（查封、抵押）；2. 网签时确保合同金额、付款方式与实际一致；3. 网签后立即下载合同备案回执；4. 提醒客户网签不等于过户，仍需关注后续流程节点。'
+      id: 'DDJ-001',
+      domain: 'daodejing',
+      name: '天道规律',
+      alias: '顺势而为、市场规律',
+      def: '市场的规律不以个人意志转移——供需决定价格，信息差决定效率，信任决定成交。服务者要顺势而非逆势。',
+      source: '《道德经》第十六章「致虚极，守静笃，万物并作，吾以观复」',
+      srcType: '经典智慧',
+      attrs: '规律认知+顺势思维+市场洞察+信息差利用',
+      scene: '市场波动判断、价格策略制定、服务节奏把握、客户预期管理',
+      posSpeech: '【专业版】市场供需关系是价格的根本决定因素，我们顺应当前市场态势制定策略，比逆势操作成功率更高。【共情版】别跟市场对着干，该降的时候别硬扛，该涨的时候别犹豫，顺势才能成。',
+      negSpeech: '【专业版】违反市场规律的操作必然失败，任何试图对抗供需关系的策略都是无效的。',
+      consumerQ: '为什么我的房子卖不出去/租不出去？是不是市场不好？',
+      simpleAnswer: '市场有自己的节奏，供大于求就降价，供不应求就涨价。你卖不出去不是你不努力，是时机和定价没对上，顺势调整比硬扛更聪明。',
+      consumerBenefit: '不跟市场较劲，省下的是时间和心情',
+      severity: 'soft'
     }
     fullCaseUnlocked.value = store.checkUnlocked(id, 'fullCase')
     agentMemoUnlocked.value = store.checkUnlocked(id, 'agentMemo')
   }
 }
 
-// 证据强度样式
+// 严重程度样式（hard=硬性 / soft=软性）
 const strengthClass = (strength) => {
-  if (strength === '高') return 'strength-high'
-  if (strength === '中') return 'strength-mid'
+  const v = (strength || '').toLowerCase()
+  if (v === 'hard') return 'strength-high'
+  if (v === 'soft') return 'strength-mid'
   return 'strength-low'
 }
 
@@ -337,6 +385,22 @@ onLoad((options) => {
 .case-text {
   font-size: 26rpx;
   line-height: 1.9;
+}
+
+.case-block {
+  margin-bottom: 20rpx;
+}
+
+.case-block:last-child {
+  margin-bottom: 0;
+}
+
+.case-label {
+  display: block;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #c46a3a;
+  margin-bottom: 8rpx;
 }
 
 .memo-content {
