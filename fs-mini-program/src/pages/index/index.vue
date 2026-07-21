@@ -22,7 +22,7 @@
 
     <!-- ICP备案 -->
     <view class="footer">
-      <text class="footer-icp">京ICP备2026041809号</text>
+      <text class="footer-icp">京ICP备2026044043号</text>
     </view>
   </view>
 </template>

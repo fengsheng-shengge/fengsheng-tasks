@@ -72,7 +72,7 @@
         · 如有疑问请联系客服：feedback@fengsheng.tech
       </view>
     </view>
-    <view class="page-footer"><text class="footer-icp">京ICP备2026041809号</text></view>
+    <view class="page-footer"><text class="footer-icp">京ICP备2026044043号</text></view>
   </view>
 </template>
 

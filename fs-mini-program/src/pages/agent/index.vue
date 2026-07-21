@@ -55,7 +55,7 @@
     <view class="cta-banner" @click="goDecode">
       <text class="cta-text">实战练习 → 用解码器拆解客户需求</text>
     </view>
-    <view class="page-footer"><text class="footer-icp">京ICP备2026041809号</text></view>
+    <view class="page-footer"><text class="footer-icp">京ICP备2026044043号</text></view>
   </view>
 </template>
 

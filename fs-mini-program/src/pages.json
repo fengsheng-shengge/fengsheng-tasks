@@ -1,48 +1,97 @@
 {
   "pages": [
     {
-      "path": "pages/index/index",
-      "style": {
-        "navigationBarTitleText": "风声知识库"
-      }
+      "path": "pages/home/index",
+      "style": { "navigationBarTitleText": "风声助手" }
     },
     {
-      "path": "pages/profile/index",
-      "style": {
-        "navigationBarTitleText": "我的"
-      }
+      "path": "pages/home/scene-detail",
+      "style": { "navigationBarTitleText": "场景详情" }
     },
     {
-      "path": "pages/webview/index",
-      "style": {
-        "navigationBarTitleText": "知识底座"
-      }
+      "path": "pages/dict/index",
+      "style": { "navigationBarTitleText": "词典" }
+    },
+    {
+      "path": "pages/dict/entry-detail",
+      "style": { "navigationBarTitleText": "词条详情" }
+    },
+    {
+      "path": "pages/mentor/index",
+      "style": { "navigationBarTitleText": "导师" }
+    },
+    {
+      "path": "pages/quiz/index",
+      "style": { "navigationBarTitleText": "测评" }
+    },
+    {
+      "path": "pages/quiz/game",
+      "style": { "navigationBarTitleText": "游戏" }
+    },
+    {
+      "path": "pages/me/index",
+      "style": { "navigationBarTitleText": "我的" }
+    },
+    {
+      "path": "pages/me/points",
+      "style": { "navigationBarTitleText": "积分中心" }
+    },
+    {
+      "path": "pages/me/contributions",
+      "style": { "navigationBarTitleText": "我的贡献" }
+    },
+    {
+      "path": "pages/login/index",
+      "style": { "navigationBarTitleText": "登录" }
+    },
+    {
+      "path": "pages/pay/index",
+      "style": { "navigationBarTitleText": "订阅" }
     }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "风声知识库",
+    "navigationBarTitleText": "风声助手",
     "navigationBarBackgroundColor": "#ffffff",
-    "backgroundColor": "#f5f5f5"
+    "backgroundColor": "#f7f4ef"
   },
   "tabBar": {
-    "color": "#999999",
+    "color": "#7A8478",
     "selectedColor": "#3d5a3e",
-    "backgroundColor": "#ffffff",
-    "borderStyle": "black",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
     "list": [
       {
-        "pagePath": "pages/index/index",
+        "pagePath": "pages/home/index",
         "text": "首页",
         "iconPath": "static/tab-home.png",
         "selectedIconPath": "static/tab-home-active.png"
       },
       {
-        "pagePath": "pages/profile/index",
+        "pagePath": "pages/dict/index",
+        "text": "词典",
+        "iconPath": "static/tab-dict.png",
+        "selectedIconPath": "static/tab-dict-active.png"
+      },
+      {
+        "pagePath": "pages/mentor/index",
+        "text": "导师",
+        "iconPath": "static/tab-mentor.png",
+        "selectedIconPath": "static/tab-mentor-active.png"
+      },
+      {
+        "pagePath": "pages/quiz/index",
+        "text": "测评",
+        "iconPath": "static/tab-quiz.png",
+        "selectedIconPath": "static/tab-quiz-active.png"
+      },
+      {
+        "pagePath": "pages/me/index",
         "text": "我的",
-        "iconPath": "static/tab-profile.png",
-        "selectedIconPath": "static/tab-profile-active.png"
+        "iconPath": "static/tab-me.png",
+        "selectedIconPath": "static/tab-me-active.png"
       }
     ]
-  }
+  },
+  "lazyCodeLoading": "requiredComponents"
 }

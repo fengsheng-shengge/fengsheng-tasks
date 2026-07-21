@@ -42,8 +42,8 @@
         <text class="footer-link" @click="openAgreement">用户协议</text>
       </view>
       <view class="footer-text">风声 · fengsheng.tech</view>
-      <view class="footer-icp">京ICP备2026041809号</view>
-      <view class="footer-ver">v1.0.5</view>
+      <view class="footer-icp">京ICP备2026044043号</view>
+      <view class="footer-ver">v1.0.0</view>
     </view>
   </view>
 </template>

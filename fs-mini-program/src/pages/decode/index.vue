@@ -76,7 +76,7 @@
       <text class="free-text" v-if="!isIOS">每日免费1次 · 付费¥49/月不限次</text>
       <text class="free-text" v-else>每日免费1次 · 更多次数联系客服开通</text>
     </view>
-    <view class="page-footer"><text class="footer-icp">京ICP备2026041809号</text></view>
+    <view class="page-footer"><text class="footer-icp">京ICP备2026044043号</text></view>
   </view>
 </template>
 

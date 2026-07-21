@@ -94,7 +94,7 @@
 
       <view class="retry-btn" @click="resetAssess">重新测评</view>
     </view>
-    <view class="page-footer"><text class="footer-icp">京ICP备2026041809号</text></view>
+    <view class="page-footer"><text class="footer-icp">京ICP备2026044043号</text></view>
   </view>
 </template>
 
