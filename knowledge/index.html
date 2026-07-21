@@ -837,6 +837,12 @@ const entryDatabase = {
 
 /* ===== 全局词条总数 ===== */
 let totalEntries = 0;  // 由 loadEntriesData() 动态更新
+let allEntries = [];      // entries.json全量数据(#181 fix)
+let allEntriesMap = {};   // id→entry 快速查找map
+
+// 域→图标映射(从businessDomains提取,entries.json无icon字段)
+const domainIconMap = {};
+businessDomains.forEach(d => { domainIconMap[d.code] = d.icon; });
 
 /* ===== 动态词条计数 ===== */
 async function loadEntriesData(){
@@ -844,26 +850,14 @@ async function loadEntriesData(){
     const resp=await fetch('/data/entries.json');
     if(!resp.ok) return;
     const entries=await resp.json();
+    // #181 fix: 存入全局变量供showDomainModal/openEntry使用
+    allEntries = entries;
+    allEntriesMap = {};
+    entries.forEach(e => { allEntriesMap[e.id] = e; });
     const domainCounts={};
     entries.forEach(e=>{
       const d=e.domain||'unknown';
       domainCounts[d]=(domainCounts[d]||0)+1;
-      // 同步写入entryDatabase，使域详情弹窗可查到词条
-      if(!entryDatabase[e.id]){
-        entryDatabase[e.id]={
-          icon:e.id.startsWith('DDJ')?'⚖️':e.id.startsWith('TRX')?'🏘':e.id.startsWith('RNT')?'🏠':e.id.startsWith('DEC')?'🪚':e.id.startsWith('HMK')?'🧹':e.id.startsWith('TAL')?'👥':e.id.startsWith('POL')?'📜':'📄',
-          title:e.name||e.id,
-          id:e.id,
-          domain:e.domain,
-          def:e.def||'',
-          source:e.source||'',
-          posSpeech:e.posSpeech||'',
-          negSpeech:e.negSpeech||'',
-          consumerQ:e.consumerQ||'',
-          consumer:e.simpleAnswer||e.consumerQ||'',
-          servicer:e.posSpeech||''
-        };
-      }
     });
     // 更新 businessDomains 的 count 和 more_count
     businessDomains.forEach(d=>{
@@ -960,9 +954,16 @@ function doSearch(query){
   // Simple search: find matching entries and open first match
   const q=query.toLowerCase();
   let found=null;
-  for(const[id,d]of Object.entries(entryDatabase)){
-    const text=[d.title,d.def||'',d.consumer||'',d.servicer||'',d.posSpeech||'',d.negSpeech||''].join(' ').toLowerCase();
+  // #181 fix: 搜索allEntriesMap优先,再搜entryDatabase
+  for(const[id,d]of Object.entries(allEntriesMap)){
+    const text=[d.name||d.title||'',d.def||'',d.consumer||'',d.servicer||'',d.posSpeech||'',d.negSpeech||'',d.simpleAnswer||'',d.alias||''].join(' ').toLowerCase();
     if(text.includes(q)){found=id;break;}
+  }
+  if(!found){
+    for(const[id,d]of Object.entries(entryDatabase)){
+      const text=[d.title,d.def||'',d.consumer||'',d.servicer||'',d.posSpeech||'',d.negSpeech||''].join(' ').toLowerCase();
+      if(text.includes(q)){found=id;break;}
+    }
   }
   if(found) openEntry(found);
   else{
@@ -992,18 +993,30 @@ function openEntry(entryId){
     const role=talentRoles.find(r=>r.code===roleCode);
     if(role){showRoleModal(role);return;}
   }
-  const data=entryDatabase[entryId];
+  // #181 fix: 优先从allEntriesMap查,再兜底entryDatabase
+  let data = allEntriesMap[entryId] || entryDatabase[entryId];
   if(!data){
     showEntry({icon:'📄',title:'词条详情',id:entryId,def:'词条详情待补全·数据源:风声业务字典',consumer:'消费者就"'+entryId+'"这个话题,通常会问:这是什么?为什么重要?',servicer:'服务者的标准回答路径:①一句话说清"这是什么"②一个例子让客户秒懂③给一个明确建议'});
     return;
   }
-  showEntry(data);
+  // entries.json字段映射: name→title, 无icon→用domainIconMap
+  const entryIcon = data.icon || domainIconMap[data.domain] || '📄';
+  const entryTitle = data.title || data.name || data.id;
+  const entryDef = data.def || '';
+  const entryConsumer = data.consumer || data.consumerQ || '';
+  const entryServicer = data.servicer || data.posSpeech || '';
+  showEntry({icon:entryIcon, title:entryTitle, id:data.id||entryId, def:entryDef, consumer:entryConsumer, servicer:entryServicer});
 }
 
 function showDomainModal(domain){
-  const entries=Object.values(entryDatabase).filter(e=>e.domain===domain.code);
+  // #181 fix: 优先从allEntries(entries.json)取,兜底entryDatabase
+  let entries = allEntries.filter(e=>e.domain===domain.code);
   const listHtml=entries.length>0
-    ? entries.map(e=>'<div class="domain-entry-item" data-entry="'+e.id+'" style="padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:10px" onclick="event.stopPropagation();closeEntry();setTimeout(()=>openEntry(\''+e.id+'\'),100)"><span style="font-size:24px">'+e.icon+'</span><div><div style="font-weight:700;font-size:14px">'+e.title+'</div><div style="font-size:12px;color:var(--ts)">'+e.id+'</div></div><span style="margin-left:auto;color:var(--ts)">→</span></div>').join('')
+    ? entries.map(e=>{
+        const icon = e.icon || domainIconMap[e.domain] || '📄';
+        const title = e.title || e.name || e.id;
+        return '<div class="domain-entry-item" data-entry="'+e.id+'" style="padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:10px" onclick="event.stopPropagation();closeEntry();setTimeout(()=>openEntry(\''+e.id+'\'),100)"><span style="font-size:24px">'+icon+'</span><div><div style="font-weight:700;font-size:14px">'+title+'</div><div style="font-size:12px;color:var(--ts)">'+e.id+'</div></div><span style="margin-left:auto;color:var(--ts)">→</span></div>';
+      }).join('')
     : '<div style="text-align:center;padding:20px;color:var(--ts)">此域词条待补全（'+domain.count+'条计划中）</div>';
   showEntry({
     icon:domain.icon,title:domain.title,id:'DOMAIN-'+domain.code,
