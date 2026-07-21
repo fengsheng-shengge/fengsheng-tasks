@@ -189,6 +189,11 @@ export default {
     }
 
     // ============================================================
+    //  Layer 0.5: API paths bypass UA/bot detection (小程序/服务端调用不自带浏览器UA)
+    // ============================================================
+    const isAPIPath = path.startsWith('/api/') || path.startsWith('/mentor-api/');
+
+    // ============================================================
     //  Layer 1: IP Ban Check (honeypot triggers, repeat offenders)
     // ============================================================
     const clientIP = getClientIP(request);
@@ -212,7 +217,7 @@ export default {
     //  Layer 3: Malicious User-Agent Blocking
     // ============================================================
     const ua = request.headers.get('User-Agent') || '';
-    if (isMaliciousUA(ua)) {
+    if (!isAPIPath && isMaliciousUA(ua)) {
       return new Response('Forbidden', { status: 403,
         headers: { 'Content-Type': 'text/plain', 'X-Blocked': 'ua' },
       });
@@ -221,7 +226,7 @@ export default {
     // ============================================================
     //  Layer 4: AI Scraper Blocking (ignore robots.txt violators)
     // ============================================================
-    if (isAIScraper(ua)) {
+    if (!isAPIPath && isAIScraper(ua)) {
       return new Response('Forbidden', { status: 403,
         headers: { 'Content-Type': 'text/plain', 'X-Blocked': 'ai-scraper' },
       });
@@ -230,7 +235,7 @@ export default {
     // ============================================================
     //  Layer 5: Exploit Path / Probe Detection
     // ============================================================
-    if (isExploitPath(path)) {
+    if (!isAPIPath && isExploitPath(path)) {
       banIP(clientIP); // auto-ban anyone probing exploit paths
       return new Response('Forbidden', { status: 403,
         headers: { 'Content-Type': 'text/plain', 'X-Blocked': 'exploit-path' },
@@ -240,7 +245,7 @@ export default {
     // ============================================================
     //  Layer 6: Honeypot Trap — ban IPs that follow hidden links
     // ============================================================
-    if (isHoneypotPath(path)) {
+    if (!isAPIPath && isHoneypotPath(path)) {
       banIP(clientIP);
       return new Response('Forbidden', { status: 403,
         headers: { 'Content-Type': 'text/plain', 'X-Blocked': 'honeypot' },
