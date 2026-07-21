@@ -71,7 +71,7 @@
           <view class="entry-strength" :class="strengthClass(entry.severity)">
             {{ severityLabel(entry.severity) }}
           </view>
-          <text class="entry-arrow">&gt;</text>
+          <text class="entry-arrow">{{ '>' }}</text>
         </view>
       </view>
 

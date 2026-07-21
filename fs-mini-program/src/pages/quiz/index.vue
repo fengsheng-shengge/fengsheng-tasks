@@ -17,7 +17,7 @@
       </view>
       <view class="daily-action">
         <text class="daily-action-text">开始答题</text>
-        <text class="daily-action-arrow">></text>
+        <text class="daily-action-arrow">{{ '>' }}</text>
       </view>
     </view>
 
@@ -68,7 +68,7 @@
               <text class="game-meta-item">每题{{ judgeGame.pointsPerQuestion || 10 }}积分</text>
             </view>
           </view>
-          <view class="game-arrow">></view>
+          <view class="game-arrow">{{ '>' }}</view>
         </view>
 
         <view class="game-card" @click="goGame('simulator')">
@@ -84,7 +84,7 @@
               <text class="game-meta-item">每题{{ simulatorGame.pointsPerQuestion || 15 }}积分</text>
             </view>
           </view>
-          <view class="game-arrow">></view>
+          <view class="game-arrow">{{ '>' }}</view>
         </view>
       </view>
     </view>

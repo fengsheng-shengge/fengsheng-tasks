@@ -16,7 +16,7 @@
         <view class="scene-card-title">{{ card.scenarioTitle }}</view>
         <view class="scene-card-domain">{{ card.tags?.[0] || '' }}</view>
         <view class="scene-card-desc">{{ card.painPoint }}</view>
-        <view class="scene-card-arrow">&gt;</view>
+        <view class="scene-card-arrow">{{ '>' }}</view>
       </view>
     </view>
   </view>

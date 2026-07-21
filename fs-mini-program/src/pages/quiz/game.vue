@@ -5,7 +5,7 @@
       <!-- 顶栏 -->
       <view class="game-header">
         <view class="back-btn" @click="goBack">
-          <text class="back-icon"><</text>
+          <text class="back-icon">{{ '<' }}</text>
         </view>
         <view class="game-title">{{ gameTitle }}</view>
         <view class="header-placeholder"></view>
