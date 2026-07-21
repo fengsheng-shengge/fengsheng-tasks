@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小豆子 V2.0 重设原型 · 场景驱动</title>
+<style>
+  :root{
+    --green:#3d5a3e; --green-l:#4a7a4b; --orange:#c46a3a;
+    --cream:#f7f4ef; --white:#fff; --ink:#1A1A1A; --sub:#7A8478;
+    --border:#F0EDE7; --green-08:rgba(61,90,62,.08); --orange-08:rgba(196,106,58,.08);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;}
+  body{background:#eceae4;display:flex;justify-content:center;gap:40px;padding:40px;flex-wrap:wrap;}
+  h1{width:100%;text-align:center;color:var(--green);font-size:20px;margin-bottom:8px;}
+  .hint{width:100%;text-align:center;color:var(--sub);font-size:13px;margin-bottom:24px;}
+  .phone{width:375px;height:760px;background:var(--cream);border-radius:36px;
+    box-shadow:0 20px 60px rgba(61,90,62,.18);border:8px solid #2c3a2d;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+  .statusbar{height:36px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:13px;color:var(--ink);}
+  .screen{flex:1;overflow-y:auto;padding:0 16px 16px;}
+  .screen::-webkit-scrollbar{display:none;}
+  .navbar{background:var(--green);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:16px;}
+  .navbar .setting{opacity:.8;font-size:13px;}
+  .hero{background:linear-gradient(135deg,var(--green),var(--green-l));border-radius:var(--radius);padding:14px 16px;color:#fff;margin-bottom:16px;}
+  .hero .lv{font-size:12px;opacity:.85;}
+  .hero .slogan{font-size:20px;font-weight:700;margin:4px 0;}
+  .hero .pos{font-size:12px;opacity:.85;}
+  .sec-title{font-size:13px;color:var(--sub);margin:14px 4px 8px;font-weight:600;}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{padding:8px 14px;border-radius:999px;background:var(--white);border:1px solid var(--border);font-size:13px;color:var(--ink);}
+  .chip.active{background:var(--green);color:#fff;border-color:var(--green);}
+  .chip.lock{color:var(--sub);background:#eee;}
+  .chip.lock::after{content:" 即将开放";font-size:10px;opacity:.7;}
+  .stage-row{display:flex;gap:8px;margin-top:10px;}
+  .stage{flex:1;text-align:center;padding:10px 0;border-radius:12px;background:var(--white);border:1px solid var(--border);font-size:13px;}
+  .stage.active{background:var(--orange-08);border-color:var(--orange);color:var(--orange);font-weight:600;}
+  .scard{background:var(--white);border-radius:var(--radius);padding:14px;margin-top:10px;box-shadow:0 2px 8px rgba(61,90,62,.04);border:1px solid var(--border);cursor:pointer;transition:.15s;}
+  .scard:active{transform:scale(.97);}
+  .scard .top{display:flex;align-items:center;gap:10px;}
+  .scard .ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--green-08);}
+  .scard .tag{margin-left:auto;font-size:10px;padding:3px 8px;border-radius:6px;background:var(--orange);color:#fff;}
+  .scard .title{font-size:15px;font-weight:600;color:var(--ink);}
+  .scard .desc{font-size:12px;color:var(--sub);margin-top:2px;}
+  .scard .quote{font-size:12px;color:var(--green);margin-top:8px;background:var(--green-08);padding:6px 8px;border-radius:8px;}
+  .layer{border-radius:var(--radius);background:var(--white);margin-top:12px;border:1px solid var(--border);overflow:hidden;}
+  .layer .head{padding:12px 14px;font-weight:600;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+  .layer .badge{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;}
+  .b-dao{background:#5a4a7a;} .b-fa{background:var(--green);} .b-shu{background:var(--orange);} .b-qi{background:#3a6a7a;}
+  .layer .body{padding:12px 14px;font-size:13px;color:var(--ink);line-height:1.7;}
+  .layer .body li{margin-left:16px;margin-bottom:4px;}
+  .layer .body .quote{color:var(--green);font-style:italic;}
+  .quick{display:inline-block;margin-top:8px;font-size:12px;color:var(--orange);background:var(--orange-08);padding:4px 10px;border-radius:999px;cursor:pointer;}
+  .back{display:inline-flex;align-items:center;gap:6px;color:var(--green);font-size:13px;cursor:pointer;padding:10px 0;}
+  .overlay{position:absolute;left:0;right:0;bottom:0;top:120px;background:rgba(26,26,26,.45);display:none;flex-direction:column;justify-content:flex-end;z-index:20;}
+  .overlay.show{display:flex;}
+  .sheet{background:var(--white);border-radius:20px 20px 0 0;padding:18px 16px;max-height:70%;overflow-y:auto;}
+  .sheet h4{color:var(--green);font-size:14px;margin-bottom:10px;}
+  .entry{display:flex;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .entry .e-ico{width:30px;height:30px;border-radius:8px;background:var(--green-08);display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .entry .e-name{font-weight:600;color:var(--ink);}
+  .entry .e-meta{font-size:11px;color:var(--sub);}
+  .entry .e-line{font-size:12px;color:var(--green);margin-top:2px;}
+  .tabbar{display:flex;background:var(--white);border-top:1px solid var(--border);}
+  .tab{flex:1;text-align:center;padding:8px 0;font-size:10px;color:var(--sub);}
+  .tab.active{color:var(--green);font-weight:600;}
+  .tab .ti{font-size:18px;display:block;margin-bottom:2px;}
+  .hidden{display:none!important;}
+</style>
+</head>
+<body>
+<h1>小豆子 V2.0 重设原型 · 场景驱动</h1>
+<div class="hint">首页=场景入口（选服务谁→选到哪步）→ 工具页=道法术器。点场景卡进入工具页，点「查依据」看知识速查浮层。</div>
+
+<div class="phone">
+  <div class="statusbar"><span>9:41</span><span>风声</span></div>
+
+  <div class="screen" id="home">
+    <div class="navbar"><span>风声</span><span class="setting">⚙ 设置</span></div>
+    <div class="hero">
+      <div class="lv">Lv2 专业经纪 · 680 积分</div>
+      <div class="slogan">获得尊重</div>
+      <div class="pos">居住服务者的专业基础设施 · 记忆库·知识库·工具包</div>
+    </div>
+    <div class="sec-title">① 你在服务谁</div>
+    <div class="chips">
+      <div class="chip active">买房客户</div>
+      <div class="chip lock">出售业主</div>
+      <div class="chip lock">租房客户</div>
+      <div class="chip lock">出租业主</div>
+    </div>
+    <div class="sec-title">② 到哪一步</div>
+    <div class="stage-row">
+      <div class="stage active">售前</div>
+      <div class="stage">售中</div>
+      <div class="stage">售后</div>
+    </div>
+    <div class="sec-title">③ 进工具（道法术器）</div>
+
+    <div class="scard" onclick="go('tool-decoder')">
+      <div class="top"><div class="ico">🧠</div><div><div class="title">客户解码</div><div class="desc">买房客户 · 售前</div></div><div class="tag">P0</div></div>
+      <div class="quote">客户说「再看看」→ 他在顾虑什么？</div>
+    </div>
+    <div class="scard" onclick="go('tool-see')">
+      <div class="top"><div class="ico">🏠</div><div><div class="title">带看服务</div><div class="desc">买房客户 · 售中</div></div><div class="tag">P0</div></div>
+      <div class="quote">首看重定调，复看重定心</div>
+    </div>
+    <div class="scard" onclick="go('tool-nego')">
+      <div class="top"><div class="ico">🤝</div><div><div class="title">谈判斡旋</div><div class="desc">买房客户 · 售中</div></div><div class="tag">P0</div></div>
+      <div class="quote">不是压价，是让双方都觉得赢</div>
+    </div>
+  </div>
+
+  <div class="screen hidden" id="tool-decoder">
+    <div class="navbar"><span onclick="go('home')" style="cursor:pointer">← 客户解码</span></div>
+    <div style="padding:0 16px">
+      <div class="back" onclick="go('home')">← 返回场景入口</div>
+      <div class="layer"><div class="head"><span class="badge b-dao">道</span>底层规律 · 人性洞察</div>
+        <div class="body"><ul><li>客户说「再看看」通常不是真看，是三大顾虑：怕买贵 / 怕踩坑 / 怕后悔</li><li>决策是<span class="quote">情绪曲线</span>，不是理性打分；先处理情绪再处理事情</li></ul><span class="quick" onclick="openSheet('decoder')">🔍 查依据</span></div></div>
+      <div class="layer"><div class="head"><span class="badge b-fa">法</span>正确工作方法</div>
+        <div class="body"><ul><li>听原话 —— 记录客户原话，不替他概括</li><li>拆顾虑 —— 归类 价格 / 风险 / 决策</li><li>对画像 —— 预算·家庭·时间窗 校准需求</li><li>给标准 —— 用可验证标准替代主观说服</li></ul><span class="quick" onclick="openSheet('decoder')">🔍 查依据</span></div></div>
+      <div class="layer"><div class="head"><span class="badge b-shu">术</span>场景化话术</div>
+        <div class="body"><ul><li>说「再看看」→「理解，这房六维测评关键项都不错，您先看数据」</li><li>说「有点贵」→ 先确认超预算还是觉得不值，再拆持有成本</li><li>说「要商量」→ 给可带走的「家庭版对比卡」</li></ul><span class="quick" onclick="openSheet('decoder')">🔍 查依据</span></div></div>
+      <div class="layer"><div class="head"><span class="badge b-qi">器</span>可交付工具</div>
+        <div class="body"><ul><li>需求挖掘七问模板（可分享/自用）</li><li>客户画像卡（预算/家庭/时间窗/决策人）</li><li>预算判断表（月供/持有成本/安全垫）</li></ul><span class="quick" onclick="openSheet('decoder')">🔍 查依据</span></div></div>
+    </div>
+  </div>
+
+  <div class="screen hidden" id="tool-see">
+    <div class="navbar"><span style="cursor:pointer" onclick="go('home')">← 带看服务</span></div>
+    <div style="padding:0 16px">
+      <div class="back" onclick="go('home')">← 返回场景入口</div>
+      <div class="layer"><div class="head"><span class="badge b-dao">道</span>底层规律</div>
+        <div class="body"><ul><li>带看不是展示房子，是管理客户决策体验</li><li>首看重定调，复看重定心；客户记不住参数，只记得「被懂」</li></ul><span class="quick" onclick="openSheet('see')">🔍 查依据</span></div></div>
+      <div class="layer"><div class="head"><span class="badge b-fa">法</span>带看三段</div>
+        <div class="body"><ul><li>前：房源匹配+动线设计+痛点预设</li><li>中：动线引导/价值点植入/竞品对比</li><li>后：24h 内跟进+决策窗口管理</li></ul><span class="quick" onclick="openSheet('see')">🔍 查依据</span></div></div>
+      <div class="layer"><div class="head"><span class="badge b-shu">术</span>场景化话术</div>
+        <div class="body"><ul><li>动线：「先看采光动线，这是最值的地方」</li><li>植入：把客户顾虑对应到房间具体点</li><li>对比：客观维度对比，不贬低竞品</li></ul><span class="quick" onclick="openSheet('see')">🔍 查依据</span></div></div>
+      <div class="layer"><div class="head"><span class="badge b-qi">器</span>可交付工具</div>
+        <div class="body"><ul><li>带看 Checklist（前/中/后）</li><li>房源对比表（客户可带走）</li><li>动线脚本（首看/复看各版）</li></ul><span class="quick" onclick="openSheet('see')">🔍 查依据</span></div></div>
+    </div>
+  </div>
+
+  <div class="screen hidden" id="tool-nego">
+    <div class="navbar"><span style="cursor:pointer" onclick="go('home')">← 谈判斡旋</span></div>
+    <div style="padding:0 16px">
+      <div class="back" onclick="go('home')">← 返回场景入口</div>
+      <div class="layer"><div class="head"><span class="badge b-dao">道</span>底层规律</div>
+        <div class="body"><ul><li>谈判不是压价，是让双方都觉得赢</li><li>价格背后是<span class="quote">心理账户</span>；僵局多因信息不对等</li></ul><span class="quick" onclick="openSheet('nego')">🔍 查依据</span></div></div>
+      <div class="layer"><div class="head"><span class="badge b-fa">法</span>谈判四式</div>
+        <div class="body"><ul><li>锚定：先给合理参照系（成交数据/评估）</li><li>条件交换：价格换周期/家具/维修</li><li>情绪管理：暂停/换话题/给台阶</li><li>僵局破局：引入第三方标准</li></ul><span class="quick" onclick="openSheet('nego')">🔍 查依据</span></div></div>
+      <div class="layer"><div class="head"><span class="badge b-shu">术</span>场景化话术</div>
+        <div class="body"><ul><li>客户压价→「拿 90 天成交数据说话，家具/周期可谈」</li><li>业主不让步→帮算「空置成本 vs 让价」</li><li>双方拉锯→把分歧拆成可交换条件清单</li></ul><span class="quick" onclick="openSheet('nego')">🔍 查依据</span></div></div>
+      <div class="layer"><div class="head"><span class="badge b-qi">器</span>可交付工具</div>
+        <div class="body"><ul><li>谈判筹码表（可交换条件库）</li><li>条件交换清单（客户/业主各版）</li><li>价格锚定卡（90 天成交参照）</li></ul><span class="quick" onclick="openSheet('nego')">🔍 查依据</span></div></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="this.classList.remove('show')">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <h4 id="sheet-title">知识速查 · 当前场景词条</h4>
+      <div id="sheet-body"></div>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <div class="tab active"><span class="ti">🏠</span>首页</div>
+    <div class="tab"><span class="ti">📚</span>词典</div>
+    <div class="tab"><span class="ti">🤖</span>导师</div>
+    <div class="tab"><span class="ti">🎯</span>测评</div>
+    <div class="tab"><span class="ti">👤</span>我的</div>
+  </div>
+</div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+const ENTRIES = {
+  decoder:[
+    {ico:'📋',name:'需求挖掘话术',meta:'术 · 买房·售前',line:'七问模板，拆出真实顾虑'},
+    {ico:'📊',name:'客户画像维度',meta:'法 · 买房·售前',line:'预算/家庭/时间窗三轴'},
+    {ico:'💰',name:'预算判断方法',meta:'法 · 买房·售前',line:'月供与持有成本安全垫'},
+    {ico:'🧠',name:'决策情绪规律',meta:'道 · 买房·售前',line:'先处理情绪再处理事情'},
+  ],
+  see:[
+    {ico:'🎯',name:'动线设计方法',meta:'法 · 买房·售中',line:'首看定调动线脚本'},
+    {ico:'💬',name:'价值点植入话术',meta:'术 · 买房·售中',line:'把顾虑对应到房间点'},
+    {ico:'⚖️',name:'竞品对比话术',meta:'术 · 买房·售中',line:'客观维度，不贬低竞品'},
+    {ico:'✅',name:'带看 Checklist',meta:'器 · 买房·售中',line:'前/中/后三段清单'},
+  ],
+  nego:[
+    {ico:'⚓',name:'锚定方法',meta:'法 · 买房·售中',line:'先给合理参照系'},
+    {ico:'🗣️',name:'压价应对话术',meta:'术 · 买房·售中',line:'数据说话+条件可谈'},
+    {ico:'🔁',name:'条件交换清单',meta:'器 · 买房·售中',line:'价格换周期/家具/维修'},
+    {ico:'🧩',name:'心理账户规律',meta:'道 · 买房·售中',line:'价格背后是心理账户'},
+  ]
+};
+function openSheet(key){
+  const map={decoder:'客户解码器',see:'带看服务',nego:'谈判斡旋'};
+  document.getElementById('sheet-title').textContent='知识速查 · '+map[key]+' 调用词条';
+  document.getElementById('sheet-body').innerHTML = ENTRIES[key].map(e=>
+    '<div class="entry"><div class="e-ico">'+e.ico+'</div><div><div class="e-name">'+e.name+'</div><div class="e-meta">'+e.meta+'</div><div class="e-line">'+e.line+'</div></div></div>').join('');
+  document.getElementById('overlay').classList.add('show');
+}
+</script>
+</body>
+</html>
