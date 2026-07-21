@@ -148,6 +148,7 @@
 <script setup>
 import { ref, computed, onMounted, nextTick, getCurrentInstance } from 'vue'
 import { useUserStore } from '../../store/user'
+import { track } from '../../utils/tracker'
 import { onShow } from '@dcloudio/uni-app'
 
 const store = useUserStore()
@@ -252,12 +253,14 @@ async function handleSend() {
   const quotaResult = store.checkQuotaBeforeSendMessage()
   if (!quotaResult.canSend) {
     showPaywall.value = true
+    track.paywallShown('quota_exhausted')
     return
   }
 
   inputText.value = ''
   messages.value.push({ role: 'user', content: text })
   store.consumeQuota()
+  track.mentorMessageSent('free_input')
   saveChatHistory()
   scrollToBottom()
 
@@ -269,10 +272,12 @@ function sendQuickScene(scene) {
   const quotaResult = store.checkQuotaBeforeSendMessage()
   if (!quotaResult.canSend) {
     showPaywall.value = true
+    track.paywallShown('quota_exhausted')
     return
   }
   messages.value.push({ role: 'user', content: scene.prompt })
   store.consumeQuota()
+  track.mentorMessageSent('quick_scenario', scene.id || '')
   saveChatHistory()
   scrollToBottom()
   sendToAI(scene.prompt)

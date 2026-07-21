@@ -9,7 +9,10 @@
         <text class="hero-points-label">积分</text>
         <text class="hero-points-value">{{ points }}</text>
       </view>
-      <view class="hero-slogan-wrap">
+      <view v-if="subtitle" class="hero-subtitle-wrap">
+        <text class="hero-subtitle">{{ subtitle }}</text>
+      </view>
+      <view v-if="slogan" class="hero-slogan-wrap">
         <text class="hero-slogan">{{ slogan }}</text>
       </view>
     </view>
@@ -29,6 +32,10 @@ defineProps({
   points: {
     type: Number,
     default: 0
+  },
+  subtitle: {
+    type: String,
+    default: ''
   },
   slogan: {
     type: String,
@@ -95,11 +102,24 @@ defineProps({
 .hero-slogan-wrap {
   width: 100%;
   text-align: center;
+  margin-top: 8rpx;
 }
 
 .hero-slogan {
   font-size: 26rpx;
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.5;
+}
+
+.hero-subtitle-wrap {
+  width: 100%;
+  text-align: center;
+}
+
+.hero-subtitle {
+  font-size: 30rpx;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+  line-height: 1.4;
 }
 </style>

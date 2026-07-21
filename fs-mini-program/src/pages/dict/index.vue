@@ -93,6 +93,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
+import { track } from '../../utils/tracker'
 
 // 域中文映射
 const DOMAIN_LABEL_MAP = {
@@ -317,8 +318,9 @@ const resetFilters = () => {
   searchKeyword.value = ''
 }
 
-// 跳转词条详情
+// 跳转词条详情（带埋点 P0-02）
 const goDetail = (entryId) => {
+  track.contentClick(entryId, 'entry', 'dictionary')
   uni.navigateTo({
     url: `/pages/dict/entry-detail?entryId=${entryId}`
   })

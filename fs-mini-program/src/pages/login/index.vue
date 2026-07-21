@@ -5,7 +5,8 @@
       <view class="brand-logo">
         <view class="logo-text">风声</view>
       </view>
-      <view class="brand-tagline">让服务者用独立价值赢得尊重</view>
+      <view class="brand-tagline">居住服务者的专业基础设施</view>
+      <view class="brand-sub-tagline">记忆库 · 知识库 · 工具包</view>
     </view>
 
     <!-- 登录按钮 -->
@@ -178,10 +179,17 @@ function handleSkipLogin() {
   letter-spacing: 0.3em;
 }
 .brand-tagline {
-  font-size: 28rpx;
-  color: #888;
-  font-weight: 400;
+  font-size: 30rpx;
+  color: #3d5a3e;
+  font-weight: 600;
   letter-spacing: 0.05em;
+}
+.brand-sub-tagline {
+  font-size: 24rpx;
+  color: #999;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  margin-top: 8rpx;
 }
 
 /* 登录区域 */

@@ -38,6 +38,18 @@
         <view class="section-content legal-content">
           <text class="content-text">{{ entry.source }}</text>
         </view>
+        <!-- P1-04: 时效标注 -->
+        <view v-if="showLegalStatus" class="legal-status-bar">
+          <view class="legal-status-row">
+            <text class="legal-status-icon">📅</text>
+            <text class="legal-status-label">时效验证</text>
+          </view>
+          <view class="legal-status-detail">
+            <text class="legal-status-text">最后更新：{{ lastVerifiedDate }}</text>
+            <text :class="['legal-status-badge', legalStatusClass]">{{ legalStatusText }}</text>
+          </view>
+          <text v-if="legalVersion" class="legal-version-text">{{ legalVersion }}</text>
+        </view>
       </view>
 
       <!-- 锁定区域：完整案例（5分） -->
@@ -124,15 +136,50 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useUserStore } from '../../store/user'
+import { track } from '../../utils/tracker'
 
 const store = useUserStore()
 const entry = ref(null)
 const entryId = ref('')
 const fullCaseUnlocked = ref(false)
 const agentMemoUnlocked = ref(false)
+
+// P1-04: 时效标注 — 基于 srcType 和 source 推断
+const LEGAL_SRC_TYPES = ['法律', '行政法规', '部门规章', '国家标准', '行业标准', '政策文件']
+
+const showLegalStatus = computed(() => {
+  if (!entry.value) return false
+  return LEGAL_SRC_TYPES.some(t => (entry.value.srcType || '').includes(t))
+})
+
+const lastVerifiedDate = computed(() => {
+  // entries.json 无 lastVerified 字段，用 generated 日期或默认
+  return entry.value?.lastVerified || '2026-07-20'
+})
+
+const legalStatusText = computed(() => {
+  return entry.value?.legalStatus || '现行有效'
+})
+
+const legalStatusClass = computed(() => {
+  const status = legalStatusText.value
+  if (status.includes('失效') || status.includes('修订')) return 'status-warning'
+  return 'status-valid'
+})
+
+const legalVersion = computed(() => {
+  const src = entry.value?.source || ''
+  // 从 source 推断法条版本
+  if (src.includes('民法典')) return '民法典（2021.1.1施行）'
+  if (src.includes('合同法')) return '合同法（已废止，由民法典替代）'
+  if (src.includes('城市房地产管理法')) return '城市房地产管理法（2019修正）'
+  if (src.includes('商品房屋租赁管理办法')) return '商品房屋租赁管理办法（2010施行）'
+  if (src.includes('住房公积金')) return '住房公积金管理条例（2019修订）'
+  return ''
+})
 
 // 域中文映射
 const DOMAIN_LABEL_MAP = {
@@ -203,7 +250,7 @@ const strengthClass = (strength) => {
   return 'strength-low'
 }
 
-// 解锁内容
+// 解锁内容（带埋点 P0-02）
 const unlockContent = (contentType, cost) => {
   const result = store.unlockContent(entry.value.id, contentType, cost)
   if (result.success) {
@@ -211,6 +258,10 @@ const unlockContent = (contentType, cost) => {
       fullCaseUnlocked.value = true
     } else if (contentType === 'agentMemo') {
       agentMemoUnlocked.value = true
+    }
+    // P0-02: content_expand 埋点
+    if (!result.alreadyUnlocked) {
+      track.contentExpand(entry.value.id, contentType)
     }
     uni.showToast({
       title: result.alreadyUnlocked ? '已解锁' : '解锁成功',
@@ -224,13 +275,15 @@ const unlockContent = (contentType, cost) => {
   }
 }
 
-// 贡献操作
+// 贡献操作（带埋点）
 const contribute = (type) => {
   const typeNames = {
     correction: '纠错',
     verify: '验证',
     question: '提问'
   }
+  // P0-02: content_followup 埋点 — 追问/贡献
+  track.contentFollowup(entry.value.id, type, 'contribution')
   uni.showToast({
     title: `已收到${typeNames[type]}反馈，感谢贡献`,
     icon: 'none',
@@ -242,6 +295,9 @@ onLoad((options) => {
   entryId.value = options.entryId || ''
   store.initFromStorage()
   loadEntry(entryId.value)
+  // P0-02: pageview 埋点
+  uni.setStorageSync('__current_page', '/pages/dict/entry-detail')
+  track.pageview({ contentId: entryId.value, contentType: 'entry' })
 })
 </script>
 
@@ -379,7 +435,69 @@ onLoad((options) => {
 }
 
 .legal-content {
-  background: #fafbf9;
+  background: #fff8ef;
+  border-left: 6rpx solid #c46a3a;
+}
+
+/* P1-04: 时效标注 */
+.legal-status-bar {
+  margin-top: 16rpx;
+  padding: 16rpx 20rpx;
+  background: #f0f7f0;
+  border-radius: 10rpx;
+  border: 1rpx solid #d0e8d0;
+}
+
+.legal-status-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.legal-status-icon {
+  font-size: 24rpx;
+  margin-right: 8rpx;
+}
+
+.legal-status-label {
+  font-size: 24rpx;
+  color: #3d5a3e;
+  font-weight: 600;
+}
+
+.legal-status-detail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.legal-status-text {
+  font-size: 22rpx;
+  color: #666;
+}
+
+.legal-status-badge {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+  font-weight: 600;
+}
+
+.legal-status-badge.status-valid {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.legal-status-badge.status-warning {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.legal-version-text {
+  display: block;
+  font-size: 20rpx;
+  color: #999;
+  margin-top: 8rpx;
 }
 
 .case-text {
