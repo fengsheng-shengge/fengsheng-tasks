@@ -2,66 +2,421 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>IP角色设计 · 风声</title>
-<meta name="description" content="输入角色信息，为你生成专属IP角色形象。">
-<meta property="og:title" content="IP角色设计 · 风声">
-<meta property="og:description" content="输入角色信息，为你生成专属IP角色形象">
-<meta property="og:image" content="https://fengsheng.tech/og-image.png">
-<meta property="og:url" content="https://fengsheng.tech/ip-design/">
+<meta name="description" content="用独立价值获得尊重——风声 IP 角色设计 7 步闭环、6 大工具、4 大场景,免费生成你的专属 IP 头像。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
 <style>
-:root{--bg:#f7f4ef;--border:rgba(80,90,70,.09);--p:#3d5a3e;--p-d:#2c4430;--fire:#c46a3a;--dk:#1a1a1a;--ts:#7a8478;--r:8px}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:#555;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
-.fs-nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
-.fs-nav-brand{font-size:16px;font-weight:700;color:var(--p);text-decoration:none;display:flex;align-items:center;gap:4px}
-.fs-nav-links{display:flex;gap:6px}
-.fs-nav-links a{padding:5px 10px;font-size:12px;color:#555;text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
-.fs-nav-links a:hover{background:rgba(61,90,62,.05);color:var(--p)}
-.fs-nav-menu{display:none;background:none;border:none;font-size:20px;cursor:pointer;color:var(--p);padding:8px}
-@media(max-width:767px){
-.fs-nav-links{display:none;position:absolute;top:52px;left:0;right:0;background:#fff;flex-direction:column;padding:10px;border-bottom:1px solid var(--border);box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.fs-nav.open .fs-nav-links{display:flex}
-.fs-nav-menu{display:block}
+:root{
+  --primary:#3d5a3e;
+  --primary-dark:#2d4530;
+  --primary-light:#5a7a5b;
+  --accent:#c46a3a;
+  --accent-light:#d88557;
+  --bg:#f7f4ef;
+  --surface:#ffffff;
+  --ink:#1a1f1c;
+  --ink-2:#4a5550;
+  --ink-3:#7a857f;
+  --line:#e6e0d6;
+  --wood:#C8956D;
+  --shadow:0 2px 12px rgba(61,90,62,.08);
+  --shadow-lg:0 6px 24px rgba(61,90,62,.14);
+  --r:14px;
+  --r-sm:8px;
+  --maxw:480px;
 }
-.main{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
-.card{text-align:center;max-width:400px}
-.icon{font-size:48px;margin-bottom:16px}
-.card h1{font-size:24px;font-weight:800;color:var(--dk);margin-bottom:8px}
-.card p{font-size:14px;color:var(--ts);line-height:1.7;margin-bottom:24px}
-.card .tag{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--p-d);background:rgba(61,90,62,.05);border:1px solid rgba(61,90,62,.12);border-radius:16px;padding:4px 12px;letter-spacing:2px}
-.page-footer{text-align:center;padding:20px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--ts);line-height:1.8}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--primary);text-decoration:none}
+img{max-width:100%;display:block}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+/* ===== 导航 ===== */
+.nav{position:sticky;top:0;z-index:50;background:rgba(247,244,239,.92);border-bottom:1px solid var(--line);backdrop-filter:saturate(180%) blur(8px)}
+.nav-inner{max-width:var(--maxw);margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-weight:700;color:var(--primary);font-size:16px;display:flex;align-items:center;gap:6px}
+.nav-links{display:flex;gap:18px;font-size:13px;color:var(--ink-2)}
+.nav-links a{color:var(--ink-2)}
+.nav-links a.active{color:var(--primary);font-weight:600}
+@media(max-width:520px){.nav-links{display:none}}
+
+/* ===== Hero ===== */
+.hero{max-width:var(--maxw);margin:0 auto;padding:40px 20px 24px;text-align:center}
+.eyebrow{display:inline-block;padding:5px 12px;background:rgba(196,106,58,.1);color:var(--accent);border-radius:99px;font-size:12px;font-weight:600;letter-spacing:.5px;margin-bottom:18px}
+h1{font-size:34px;line-height:1.2;font-weight:800;letter-spacing:-.5px;color:var(--ink);margin-bottom:14px}
+h1 .hl{color:var(--primary)}
+.sub{font-size:15px;color:var(--ink-2);line-height:1.75;margin-bottom:8px}
+.position{font-size:13px;color:var(--accent);font-weight:600;letter-spacing:1px;margin-top:16px;padding:10px 18px;background:rgba(196,106,58,.08);border-radius:99px;display:inline-block}
+
+/* ===== 输入区 ===== */
+.input-card{max-width:var(--maxw);margin:0 auto 20px;padding:0 20px}
+.input-card-inner{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.input-card label{display:block;font-size:12px;color:var(--ink-3);font-weight:600;margin-bottom:8px;letter-spacing:.3px}
+.input-row{display:flex;gap:10px}
+textarea#ipText{flex:1;min-height:64px;max-height:160px;padding:12px 14px;background:var(--bg);border:1.5px solid var(--line);border-radius:var(--r-sm);font:inherit;color:var(--ink);resize:vertical;outline:none}
+textarea#ipText:focus{border-color:var(--primary)}
+.btn-gen{flex:0 0 auto;padding:0 18px;min-height:48px;background:var(--accent);color:#fff;border-radius:var(--r-sm);font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px}
+.btn-gen:hover{background:var(--accent-light)}
+.btn-gen:disabled{background:var(--ink-3);cursor:not-allowed}
+
+/* ===== 区段通用 ===== */
+.section{max-width:var(--maxw);margin:0 auto;padding:20px 20px 0}
+.sec-head{margin-bottom:16px}
+.sec-eyebrow{font-size:11px;color:var(--accent);font-weight:700;letter-spacing:2px;margin-bottom:6px}
+.sec-title{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.3px;margin-bottom:6px}
+.sec-sub{font-size:13px;color:var(--ink-2);line-height:1.7}
+
+/* ===== 7 步闭环 ===== */
+.steps{position:relative;padding-left:36px}
+.steps::before{content:"";position:absolute;left:14px;top:14px;bottom:14px;width:2px;background:linear-gradient(to bottom,var(--primary),var(--accent))}
+.step{position:relative;padding:0 0 20px 0}
+.step:last-child{padding-bottom:0}
+.step-num{position:absolute;left:-36px;top:0;width:30px;height:30px;background:var(--surface);border:2px solid var(--primary);color:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;z-index:1}
+.step-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow)}
+.step-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.step-desc{font-size:13px;color:var(--ink-2);line-height:1.7}
+
+/* ===== 6 大工具卡 ===== */
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);transition:all .15s;cursor:pointer}
+.tool:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.tool-ico{font-size:26px;margin-bottom:8px}
+.tool-name{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.tool-desc{font-size:11px;color:var(--ink-3);line-height:1.5}
+
+/* ===== 4 大场景卡 ===== */
+.scenes{display:grid;gap:12px}
+.scene{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start}
+.scene-ico{width:44px;height:44px;background:rgba(61,90,62,.08);color:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.scene-body{flex:1;min-width:0}
+.scene-name{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.scene-tag{display:inline-block;padding:2px 7px;background:rgba(196,106,58,.1);color:var(--accent);font-size:10px;border-radius:4px;font-weight:600;margin-bottom:6px}
+.scene-desc{font-size:12px;color:var(--ink-2);line-height:1.6}
+
+/* ===== 6 种风格卡(原有) ===== */
+.styles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.style{aspect-ratio:1;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:8px;color:#fff;font-size:11px;font-weight:600;position:relative;overflow:hidden;cursor:pointer;transition:transform .15s}
+.style:hover{transform:scale(1.03)}
+.style-1{background:linear-gradient(135deg,#e8d4b8 0%,#c8956d 100%)}
+.style-2{background:linear-gradient(135deg,#3d5a3e 0%,#5a7a5b 100%)}
+.style-3{background:linear-gradient(135deg,#c46a3a 0%,#e08a3c 100%)}
+.style-4{background:linear-gradient(135deg,#f7f4ef 0%,#e6e0d6 100%);color:var(--ink)}
+.style-5{background:linear-gradient(135deg,#6a8eaf 0%,#3d5a7e 100%)}
+.style-6{background:linear-gradient(135deg,#d4a574 0%,#8a6d3b 100%)}
+
+/* ===== 底部 ===== */
+.footer{max-width:var(--maxw);margin:0 auto;padding:32px 20px 40px;border-top:1px solid var(--line);text-align:center;color:var(--ink-3);font-size:12px;line-height:1.8}
+.footer .brand-line{font-size:13px;color:var(--ink-2);margin-bottom:6px;font-weight:600}
+.footer a{color:var(--ink-2);margin:0 8px}
+
+/* ===== 浮层 ===== */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.overlay.show{display:flex}
+.sheet{background:var(--bg);width:100%;max-width:var(--maxw);max-height:80vh;border-radius:18px 18px 0 0;padding:20px;overflow-y:auto;animation:slideUp .25s ease}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sheet-title{font-size:16px;font-weight:700}
+.sheet-close{width:30px;height:30px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-size:18px;cursor:pointer}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.avatar-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.avatar{aspect-ratio:1;border-radius:var(--r);overflow:hidden;background:#f0ebe1;position:relative;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--ink-2)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar.loading::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:shimmer 1.2s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.recommend{position:absolute;top:6px;left:6px;background:var(--accent);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700}
+
+/* ===== 响应式 ===== */
+@media(min-width:680px){
+  h1{font-size:42px}
+  .hero{padding:60px 20px 32px}
+  .tools{grid-template-columns:repeat(3,1fr)}
+}
 </style>
 </head>
 <body>
-<nav class="fs-nav">
-  <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
-  <div class="fs-nav-links">
-    <a href="/">首页</a>
-    <a href="/quality-test/">品质测评</a>
-    <a href="/care-test/">关怀测评</a>
-    <a href="/reply/">客户解码</a>
-    <a href="/mentor/">开单导师</a>
-    <a href="/ip-design/" style="color:var(--p);font-weight:700">IP设计</a>
-    <a href="/knowledge/">知识底座</a>
-  </div>
-  <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
-</nav>
-<div class="main">
-  <div class="card">
-    <div class="icon">🎨</div>
-    <h1>IP角色设计即将上线</h1>
-    <p>输入角色信息，为你生成专属IP角色形象。<br>6种风格可选，对话即得。</p>
-    <span class="tag">🔥 敬请期待</span>
-  </div>
-</div>
-<div class="page-footer">
-  <div>🌬️ 风声 · 通过独立价值获得尊重</div>
-  <div>fengsheng.tech © 2026 · 美好居住六维标准</div>
-</div>
-  <!-- 全站数据追踪器 -->
-  <script src="/tracker.js" async></script>
 
-  <p style="text-align:center;margin-top:2rem;padding:1rem 0;color:#666;font-size:0.75rem;"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:#666;text-decoration:none;">京ICP备2026044043号</a></p>
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand"><span>🌬️</span> 风声</div>
+    <div class="nav-links">
+      <a href="/">首页</a>
+      <a href="/knowledge/">知识底座</a>
+      <a href="/mentor/">开单导师</a>
+      <a class="active" href="/ip-design/">IP设计</a>
+      <a href="/reply/">快回</a>
+      <a href="/decoder/">解码</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<header class="hero">
+  <span class="eyebrow">🎨 IP 角色设计</span>
+  <h1>用<span class="hl">独立价值</span><br>获得尊重</h1>
+  <p class="sub">7 步闭环方法论 · 6 大工具 · 4 大场景<br>输入一句话描述,免费生成你的专属 IP 形象</p>
+  <div class="position">— 获得尊重的路径 —</div>
+</header>
+
+<!-- ===== AI 生成头像(顶部入口) ===== -->
+<section class="input-card">
+  <div class="input-card-inner">
+    <label>💬 描述你的角色(性别·年龄感·发型·穿搭·气质·配饰)</label>
+    <div class="input-row">
+      <textarea id="ipText" placeholder="例:温暖专业的女性房产经纪人,32岁,干练短发,米色西装,气质亲和"></textarea>
+      <button class="btn-gen" id="btnGen" onclick="doGen()">
+        <span>✨ 生成</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 6 种风格参考 ===== -->
+<section class="section">
+  <div class="sec-head">
+    <div class="sec-eyebrow">6 种风格</div>
+    <div class="sec-title">你想要的形象气质</div>
+    <div class="sec-sub">每种风格都对应不同客户群与触达场景</div>
+  </div>
+  <div class="styles" id="styleGrid">
+    <div class="style style-1" data-name="温暖亲民">亲民风<br><small style="opacity:.85">柔和·亲切</small></div>
+    <div class="style style-2" data-name="商务干练">商务风<br><small style="opacity:.85">干练·专业</small></div>
+    <div class="style style-3" data-name="活力满满">活力风<br><small style="opacity:.85">明亮·年轻</small></div>
+    <div class="style style-4" data-name="简约文艺">简约文艺<br><small style="opacity:.85">留白·格调</small></div>
+    <div class="style style-5" data-name="科技感">科技感<br><small style="opacity:.85">渐变·未来</small></div>
+    <div class="style style-6" data-name="可爱卡通">可爱卡通<br><small style="opacity:.85">圆润·趣味</small></div>
+  </div>
+</section>
+
+<!-- ===== 7 步闭环方法论 ===== -->
+<section class="section">
+  <div class="sec-head">
+    <div class="sec-eyebrow">7 步闭环</div>
+    <div class="sec-title">从定位到持续运营</div>
+    <div class="sec-sub">不是拍脑袋画个头像就完事——7 步走完才是一个真正会生长的 IP</div>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-card">
+        <div class="step-title">🎯 自我定位</div>
+        <div class="step-desc">明确"我是谁、为谁、解决什么问题"——IP 定位语一句话讲清</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-card">
+        <div class="step-title">💎 价值提炼</div>
+        <div class="step-desc">从专业能力中提炼 3 个对客户有感的"独立价值"——不是技能罗列</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-card">
+        <div class="step-title">🎨 形象设计</div>
+        <div class="step-desc">头像 + 配色 + 字体 + 排版——一个记忆点强、可复用的视觉系统</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-card">
+        <div class="step-title">📚 内容矩阵</div>
+        <div class="step-desc">3 平台 × 3 内容类型 = 9 个内容钩子,周更节奏不让 IP 冷掉</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-card">
+        <div class="step-title">📡 触达渠道</div>
+        <div class="step-desc">私域(微信群/朋友圈)+ 公域(抖音/小红书)+ 阵地(知识底座/工具页)</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-card">
+        <div class="step-title">🔁 反馈迭代</div>
+        <div class="step-desc">每月看数据看板——加粉率/咨询率/成交率,差的环节迭代</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-card">
+        <div class="step-title">🌱 持续运营</div>
+        <div class="step-desc">IP 不是一锤子买卖,90 天起步——口碑靠积累,尊重靠时间</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 6 大工具卡 ===== -->
+<section class="section">
+  <div class="sec-head">
+    <div class="sec-eyebrow">6 大工具</div>
+    <div class="sec-title">立刻能用的 IP 工具</div>
+    <div class="sec-sub">从头像到话术到数据看板,一个都不缺</div>
+  </div>
+  <div class="tools">
+    <div class="tool" onclick="openTool('avatar')">
+      <div class="tool-ico">🎨</div>
+      <div class="tool-name">头像设计</div>
+      <div class="tool-desc">6 种风格·免费 AI 生成</div>
+    </div>
+    <div class="tool" onclick="openTool('position')">
+      <div class="tool-ico">📌</div>
+      <div class="tool-name">定位语卡</div>
+      <div class="tool-desc">一句话讲清你是谁</div>
+    </div>
+    <div class="tool" onclick="openTool('script')">
+      <div class="tool-ico">💬</div>
+      <div class="tool-name">话术库</div>
+      <div class="tool-desc">自我介绍·朋友圈·评论</div>
+    </div>
+    <div class="tool" onclick="openTool('case')">
+      <div class="tool-ico">📖</div>
+      <div class="tool-name">案例库</div>
+      <div class="tool-desc">3 类故事·4 步改写</div>
+    </div>
+    <div class="tool" onclick="openTool('calendar')">
+      <div class="tool-ico">📅</div>
+      <div class="tool-name">矩阵日历</div>
+      <div class="tool-desc">3 平台·周更节奏</div>
+    </div>
+    <div class="tool" onclick="openTool('dashboard')">
+      <div class="tool-ico">📊</div>
+      <div class="tool-name">数据看板</div>
+      <div class="tool-desc">粉丝·咨询·成交</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 4 大场景卡 ===== -->
+<section class="section">
+  <div class="sec-head">
+    <div class="sec-eyebrow">4 大场景</div>
+    <div class="sec-title">不同岗位的 IP 路线图</div>
+    <div class="sec-sub">经纪人/家装顾问/整装设计师/租赁管家——各自有专属打法</div>
+  </div>
+  <div class="scenes">
+    <div class="scene">
+      <div class="scene-ico">🏠</div>
+      <div class="scene-body">
+        <div class="scene-name">房产经纪人 IP</div>
+        <div class="scene-tag">域 1 房产交易</div>
+        <div class="scene-desc">客户最关心"这经纪人靠不靠谱"——IP 重点在专业可信+长期陪伴,而不是房源多</div>
+      </div>
+    </div>
+    <div class="scene">
+      <div class="scene-ico">🎨</div>
+      <div class="scene-body">
+        <div class="scene-name">整装设计师 IP</div>
+        <div class="scene-tag">域 3 整装家居</div>
+        <div class="scene-desc">客户最关心"这个设计我会不会喜欢"——IP 重点在审美一致+案例可视化</div>
+      </div>
+    </div>
+    <div class="scene">
+      <div class="scene-ico">🛋️</div>
+      <div class="scene-body">
+        <div class="scene-name">家装顾问 IP</div>
+        <div class="scene-tag">域 3 整装家居</div>
+        <div class="scene-desc">客户最关心"会不会被坑"——IP 重点在施工透明+标准公开+过程可参与</div>
+      </div>
+    </div>
+    <div class="scene">
+      <div class="scene-ico">🔑</div>
+      <div class="scene-body">
+        <div class="scene-name">租赁管家 IP</div>
+        <div class="scene-tag">域 2 房屋租赁</div>
+        <div class="scene-desc">客户最关心"租得省心"——IP 重点在响应速度+维修及时+长期可托付</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 底部 ===== -->
+<footer class="footer">
+  <div class="brand-line">🌬️ 风声 · 帮助服务者贴近消费者的认知</div>
+  <div>品牌定位:<b>帮助服务者用独立价值获得尊重</b></div>
+  <div style="margin-top:10px">
+    <a href="/">首页</a>·<a href="/reply/">快回</a>·<a href="/decoder/">解码</a>·<a href="/mentor/">开单导师</a>·<a href="/knowledge/">知识底座</a>
+  </div>
+  <div style="margin-top:8px;color:var(--ink-3);font-size:11px">© 2026 风声 fengsheng.tech</div>
+</footer>
+
+<!-- ===== 浮层:生成结果 ===== -->
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="sheet-title" id="sheetTitle">生成专属头像</div>
+      <div class="sheet-close" onclick="closeOverlay()">×</div>
+    </div>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<script>
+const STYLES = ['温暖亲民','商务干练','活力满满','简约文艺','科技感','可爱卡通'];
+
+// AI 生成:前端先基于风格随机 mock,等 mentor-api 接通后切换为真实 API
+async function doGen(){
+  const text = ($('ipText').value||'').trim();
+  if(!text){ $('ipText').focus(); $('ipText').style.borderColor='var(--accent)'; setTimeout(()=>$('ipText').style.borderColor='',1000); return; }
+  const btn = $('btnGen');
+  btn.disabled=true; btn.innerHTML='<span>生成中…</span>';
+
+  $('sheetTitle').textContent = '生成专属头像';
+  $('sheetBody').innerHTML = `
+    <div style="font-size:12px;color:var(--ink-3);margin-bottom:10px">基于「${text.slice(0,30)}」生成 6 种风格</div>
+    <div class="avatar-grid" id="avatarGrid">
+      ${STYLES.map((s,i)=>`<div class="avatar loading" data-idx="${i}">${s}</div>`).join('')}
+    </div>
+    <div style="padding:12px;background:var(--surface);border-radius:8px;font-size:12px;color:var(--ink-3);line-height:1.7">
+      💡 当前为<strong>前端预览</strong>(基于风格色系)。<br>真实 AI 生成需接通大模型 API——<a href="/knowledge/?tab=talent">后续由小扣子部署</a>。
+    </div>`;
+  $('overlay').classList.add('show');
+
+  // 模拟渐进生成
+  for(let i=0;i<STYLES.length;i++){
+    await new Promise(r=>setTimeout(r,420));
+    const el = document.querySelector(`.avatar[data-idx="${i}"]`);
+    if(el){
+      el.classList.remove('loading');
+      el.innerHTML = `<div class="${i===1?'recommend':''}">${i===1?'推荐':''}</div>${STYLES[i]}<br><small style="opacity:.7">风格 ${i+1}</small>`;
+      el.style.background = getStyleBg(i);
+      el.style.color = i===3 ? 'var(--ink)' : '#fff';
+    }
+  }
+  btn.disabled=false; btn.innerHTML='<span>✨ 生成</span>';
+  try{ if(navigator.sendBeacon) navigator.sendBeacon('/api/event', JSON.stringify({t:'ipdesign_gen',text:text.slice(0,50),ts:Date.now()})); }catch(e){}
+}
+
+function getStyleBg(i){
+  return ['linear-gradient(135deg,#e8d4b8,#c8956d)','linear-gradient(135deg,#3d5a3e,#5a7a5b)','linear-gradient(135deg,#c46a3a,#e08a3c)','linear-gradient(135deg,#f7f4ef,#e6e0d6)','linear-gradient(135deg,#6a8eaf,#3d5a7e)','linear-gradient(135deg,#d4a574,#8a6d3b)'][i];
+}
+
+function openTool(name){
+  $('overlay').classList.add('show');
+  const data = {
+    avatar:{t:'头像设计',b:'点上面输入框,描述你的角色(性别/年龄/发型/穿搭/气质),AI 生成 6 种风格头像。当前为前端预览版,真实生成需等后端 API 接通。'},
+    position:{t:'定位语卡',b:`<div style="padding:14px;background:var(--surface);border-radius:8px"><div style="font-size:12px;color:var(--ink-3);margin-bottom:6px">示例</div><b>我是<span style="color:var(--accent)">[名字]</span>,专注<span style="color:var(--primary)">[区域/客群]</span>,帮<span style="color:var(--primary)">[客户类型]</span>用<span style="color:var(--accent)">[独特方法]</span>解决<span style="color:var(--primary)">[核心痛点]</span>。</b><div style="margin-top:8px;font-size:12px;color:var(--ink-3)">字数 ≤ 30,一气呵成读完</div></div>`},
+    script:{t:'话术库',b:`<b>3 段开场白</b><div style="padding:8px 12px;background:var(--surface);border-radius:6px;margin:6px 0">· 朋友圈:"我是 X,过去 3 年帮 200+ 家庭选对房。今天开始记录我的方法论,关注不迷路。"</div><div style="padding:8px 12px;background:var(--surface);border-radius:6px;margin:6px 0">· 客户群:"群里的朋友好,我是 X,以后会在群里分享……"</div><div style="padding:8px 12px;background:var(--surface);border-radius:6px;margin:6px 0">· 自我介绍:"您好,我是 X,做 X 区域 X 年,擅长……"</div>`},
+    case:{t:'案例库',b:`<b>3 类故事 × 4 步改写</b><br><br>① 痛点场景 → ② 你的介入 → ③ 客户的变化 → ④ 给观众的启发<br><br><div style="padding:10px;background:var(--surface);border-radius:6px;font-size:13px"><b>示例</b>:"上个月张姐急着在女儿上学前落户,预算紧,看房 2 个月没下手。我帮她拆出 3 个硬指标+3 个软指标,3 天定房,现在每天接送孙女 15 分钟。"</div>`},
+    calendar:{t:'矩阵日历',b:`<b>3 平台 · 周更</b><table style="width:100%;margin-top:8px;font-size:12px;border-collapse:collapse"><tr style="background:var(--surface)"><th style="padding:6px;text-align:left">平台</th><th>频率</th><th>类型</th></tr><tr><td style="padding:6px">微信朋友圈</td><td>5/周</td><td>案例+思考</td></tr><tr style="background:var(--surface)"><td style="padding:6px">小红书</td><td>3/周</td><td>图文教程</td></tr><tr><td style="padding:6px">抖音/视频号</td><td>2/周</td><td>口播+实拍</td></tr></table>`},
+    dashboard:{t:'数据看板',b:`<b>3 个核心指标</b><br><br>· <b>加粉率</b>:每周新加微信人数 ÷ 触达人数<br>· <b>咨询率</b>:咨询人数 ÷ 加粉人数<br>· <b>成交率</b>:成交客户 ÷ 咨询人数<br><br><div style="padding:10px;background:var(--surface);border-radius:6px;font-size:12px;color:var(--ink-3)">💡 IP 看板需登录管理端查看(<a href="/dashboard/">/dashboard/</a>)</div>`}
+  };
+  const d = data[name]||{t:'工具',b:'内容建设中'};
+  $('sheetTitle').textContent = d.t;
+  $('sheetBody').innerHTML = `<div style="font-size:14px;color:var(--ink-2);line-height:1.8">${d.b}</div>`;
+}
+
+function closeOverlay(){ $('overlay').classList.remove('show') }
+function $(id){return document.getElementById(id) }
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.style').forEach(s=>s.addEventListener('click',()=>{ $('ipText').value = s.dataset.name + '风格'; $('ipText').focus(); }));
+  $('overlay').addEventListener('click',e=>{ if(e.target.id==='overlay') closeOverlay(); });
+  $('ipText').addEventListener('keydown',e=>{ if(e.key==='Enter' && (e.metaKey||e.ctrlKey)) doGen(); });
+});
+
+try{ if(navigator.sendBeacon) navigator.sendBeacon('/api/event', JSON.stringify({t:'ipdesign_view',ts:Date.now()})); }catch(e){}
+</script>
 </body>
 </html>
