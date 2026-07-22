@@ -1021,13 +1021,13 @@ function openSheet(key){
     if(!items.length) return;
     html+=`<div class="ly-head">${lyt}</div>`;
     html+=items.map(e=>`
-      <div class="entry sev-${e.sev}">
+      <div class="entry sev-${e.sev}" style="cursor:pointer" onclick="openEntry('${e.name}')">
         <div class="e-ico">${e.ico}</div><div class="e-main">
           <div class="e-name">${e.name}</div>
           <div class="e-line">${e.ola}</div>
           <div class="e-q">${e.cq}</div>
         </div>
-        <div class="e-star ${fav.has(e.name)?'on':''}" onclick="toggleFav('${e.name}',this)">${fav.has(e.name)?'★':'☆'}</div>
+        <div class="e-star ${fav.has(e.name)?'on':''}" onclick="event.stopPropagation();toggleFav('${e.name}',this)">${fav.has(e.name)?'★':'☆'}</div>
       </div>`).join('');
   });
   document.getElementById('sheet-body').innerHTML=html;
