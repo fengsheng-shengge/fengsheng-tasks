@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>客户解码器 · 风声</title>
+<meta name="description" content="输入客户原话,30秒看到真实顾虑——四域26场景·道法术器四层解码·风声的客户解码器">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌬️</text></svg>">
+<style>
+:root{
+  --primary:#3d5a3e;        /* 墨绿 主 */
+  --primary-dark:#2d4530;
+  --primary-light:#5a7a5b;
+  --accent:#c46a3a;          /* 暖橙 强调 */
+  --accent-light:#d88557;
+  --bg:#f7f4ef;              /* 米白 背景 */
+  --surface:#ffffff;
+  --ink:#1a1f1c;
+  --ink-2:#4a5550;
+  --ink-3:#7a857f;
+  --line:#e6e0d6;
+  --b-dao:#3d5a3e;
+  --b-fa:#6a8eaf;
+  --b-shu:#c46a3a;
+  --b-qi:#8a6d3b;
+  --shadow:0 2px 12px rgba(61,90,62,.08);
+  --shadow-lg:0 6px 24px rgba(61,90,62,.12);
+  --r:14px;
+  --r-sm:8px;
+  --maxw:480px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--primary);text-decoration:none}
+img{max-width:100%;display:block}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+/* ===== 顶部导航 ===== */
+.nav{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--line);backdrop-filter:saturate(180%) blur(8px)}
+.nav-inner{max-width:var(--maxw);margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-weight:700;color:var(--primary);font-size:16px;display:flex;align-items:center;gap:6px}
+.brand-mark{font-size:18px}
+.nav-links{display:flex;gap:18px;font-size:13px;color:var(--ink-2)}
+.nav-links a{color:var(--ink-2);padding:4px 0}
+.nav-links a:hover,.nav-links a.active{color:var(--primary)}
+@media(max-width:520px){.nav-links{display:none}}
+
+/* ===== Hero ===== */
+.hero{max-width:var(--maxw);margin:0 auto;padding:32px 20px 16px}
+.eyebrow{display:inline-block;padding:4px 10px;background:rgba(61,90,62,.08);color:var(--primary);border-radius:99px;font-size:12px;font-weight:600;letter-spacing:.5px;margin-bottom:14px}
+h1{font-size:30px;line-height:1.25;font-weight:800;letter-spacing:-.5px;color:var(--ink);margin-bottom:10px}
+h1 .hl{color:var(--primary)}
+.sub{font-size:15px;color:var(--ink-2);line-height:1.7;margin-bottom:20px}
+.sub b{color:var(--ink);font-weight:600}
+
+/* ===== 输入区 ===== */
+.input-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.input-card label{display:block;font-size:12px;color:var(--ink-3);font-weight:600;margin-bottom:8px;letter-spacing:.3px}
+.input-row{display:flex;gap:10px;align-items:flex-end}
+textarea#clientText{flex:1;min-height:80px;max-height:200px;padding:12px 14px;background:var(--bg);border:1.5px solid var(--line);border-radius:var(--r-sm);font:inherit;color:var(--ink);resize:vertical;outline:none;transition:border-color .15s}
+textarea#clientText:focus{border-color:var(--primary)}
+textarea#clientText::placeholder{color:var(--ink-3)}
+.btn-decode{flex:0 0 auto;padding:0 22px;height:48px;background:var(--primary);color:#fff;border-radius:var(--r-sm);font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px;transition:background .15s,transform .1s}
+.btn-decode:hover{background:var(--primary-dark)}
+.btn-decode:active{transform:scale(.98)}
+.btn-decode:disabled{background:var(--ink-3);cursor:not-allowed}
+.btn-decode.loading{pointer-events:none;background:var(--primary-light)}
+
+/* ===== 快捷原话 ===== */
+.quick{margin-top:14px}
+.quick-title{font-size:12px;color:var(--ink-3);font-weight:600;margin-bottom:8px;letter-spacing:.3px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:7px 13px;background:var(--surface);border:1px solid var(--line);border-radius:99px;font-size:13px;color:var(--ink-2);cursor:pointer;transition:all .15s}
+.chip:hover{border-color:var(--primary);color:var(--primary);background:rgba(61,90,62,.04)}
+.chip:active{transform:scale(.97)}
+
+/* ===== 结果区 ===== */
+.result{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;display:none}
+.result.show{display:block}
+.layer{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.layer::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--b-dao)}
+.layer.l-fa::before{background:var(--b-fa)}
+.layer.l-shu::before{background:var(--b-shu)}
+.layer.l-qi::before{background:var(--b-qi)}
+.layer-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.badge{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0}
+.b-dao{background:var(--b-dao)}
+.b-fa{background:var(--b-fa)}
+.b-shu{background:var(--b-shu)}
+.b-qi{background:var(--b-qi)}
+.layer-h-main{font-size:16px;font-weight:700;color:var(--ink);line-height:1.3}
+.layer-h-sub{font-size:12px;color:var(--ink-3);margin-top:2px}
+.layer-body{color:var(--ink-2);font-size:14px;line-height:1.75}
+.layer-body ul{list-style:none;padding:0}
+.layer-body li{padding:5px 0 5px 18px;position:relative}
+.layer-body li::before{content:"";position:absolute;left:4px;top:13px;width:5px;height:5px;background:var(--ink-3);border-radius:50%}
+.layer-body .hl{background:rgba(196,106,58,.12);color:var(--accent);font-weight:600;padding:1px 4px;border-radius:3px}
+.deliver{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:var(--r-sm);margin-bottom:8px}
+.d-ico{font-size:22px;flex-shrink:0}
+.d-info{flex:1;min-width:0}
+.d-name{font-size:14px;font-weight:600;color:var(--ink)}
+.d-desc{font-size:12px;color:var(--ink-3);margin-top:2px}
+.d-btn{padding:6px 12px;background:var(--primary);color:#fff;border-radius:6px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer}
+.d-btn:hover{background:var(--primary-dark)}
+.d-btn.preview{background:transparent;color:var(--primary);border:1px solid var(--primary)}
+
+/* ===== 风险筛查 ===== */
+.risk{background:linear-gradient(135deg,#fff7f0 0%,#fff 100%);border:1px solid #f5dcc8;border-radius:var(--r);padding:18px;margin-bottom:14px}
+.risk-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.risk-list{list-style:none}
+.risk-item{display:flex;gap:10px;padding:8px 0;border-top:1px dashed #f0d8b8}
+.risk-item:first-child{border-top:none}
+.risk-mark{width:18px;height:18px;border:1.5px solid var(--ink-3);border-radius:50%;flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px}
+.risk-item.on .risk-mark{background:var(--accent);border-color:var(--accent)}
+.risk-text{font-size:13px;color:var(--ink-2);line-height:1.5;flex:1}
+
+/* ===== 元信息 ===== */
+.meta-bar{max-width:var(--maxw);margin:0 auto;padding:0 20px 12px;font-size:12px;color:var(--ink-3);display:flex;justify-content:space-between;align-items:center}
+.meta-bar .src{color:var(--primary)}
+
+/* ===== 底部 ===== */
+.footer{max-width:var(--maxw);margin:0 auto;padding:24px 20px 40px;border-top:1px solid var(--line);text-align:center;color:var(--ink-3);font-size:12px;line-height:1.8}
+.footer a{color:var(--ink-2);margin:0 8px}
+.brand-line{font-size:13px;color:var(--ink-2);margin-bottom:6px;font-weight:600}
+
+/* ===== 场景切换 ===== */
+.scene-tabs{display:flex;gap:6px;padding:4px;background:var(--bg);border-radius:var(--r-sm);margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.scene-tab{flex:0 0 auto;padding:7px 14px;font-size:13px;color:var(--ink-2);border-radius:6px;cursor:pointer;white-space:nowrap;transition:all .15s}
+.scene-tab.active{background:var(--surface);color:var(--primary);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+
+/* ===== 浮层 ===== */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.overlay.show{display:flex}
+.sheet{background:var(--bg);width:100%;max-width:var(--maxw);max-height:80vh;border-radius:18px 18px 0 0;padding:20px;overflow-y:auto;animation:slideUp .25s ease}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sheet-title{font-size:16px;font-weight:700}
+.sheet-close{width:30px;height:30px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-size:18px;cursor:pointer}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+/* ===== 响应式 ===== */
+@media(min-width:680px){
+  h1{font-size:36px}
+  .hero{padding:48px 20px 24px}
+  .input-card{padding:22px}
+  textarea#clientText{min-height:100px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand"><span class="brand-mark">🌬️</span> 风声</div>
+    <div class="nav-links">
+      <a href="/">首页</a>
+      <a href="/knowledge/">知识底座</a>
+      <a href="/mentor/">开单导师</a>
+      <a href="/ip-design/">IP设计</a>
+      <a href="/reply/">快回</a>
+      <a class="active" href="/decoder/">解码</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <span class="eyebrow">🧠 客户解码器</span>
+  <h1>客户说"再看看",<br>背后是<span class="hl">3 个真顾虑</span></h1>
+  <p class="sub">输入客户原话,30 秒解码真实顾虑,给出<b>道法术器</b>四层应对——决策是情绪曲线,先处理情绪再处理事情。</p>
+</header>
+
+<main>
+  <!-- 输入区 -->
+  <section class="hero" style="padding-top:0">
+    <div class="input-card">
+      <label>📝 客户刚才说了什么(原话记录,别替他概括)</label>
+      <div class="input-row">
+        <textarea id="clientText" placeholder="例:我先回去和家人商量一下、这房子有点贵、别家的位置更好……"></textarea>
+        <button class="btn-decode" id="btnDecode" onclick="doDecode()">
+          <span>解码</span>
+        </button>
+      </div>
+      <div class="quick">
+        <div class="quick-title">⚡ 6 大典型原话,一键带入</div>
+        <div class="chips" id="quickChips">
+          <span class="chip" data-text="我先回去和家人商量一下">·再看看</span>
+          <span class="chip" data-text="这房子有点贵,超预算了">·有点贵</span>
+          <span class="chip" data-text="别家的位置好像比这里好">·别家好</span>
+          <span class="chip" data-text="现在市场不好,还能跌吧">·还会跌</span>
+          <span class="chip" data-text="我再考虑考虑">·再考虑</span>
+          <span class="chip" data-text="这个户型有点怪,采光差">·采光差</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 场景切换 -->
+  <div class="hero" style="padding-top:0;padding-bottom:8px">
+    <div class="scene-tabs" id="sceneTabs">
+      <span class="scene-tab active" data-scene="pre">售前(看房期)</span>
+      <span class="scene-tab" data-scene="mid">售中(谈判期)</span>
+      <span class="scene-tab" data-scene="after">售后(入住期)</span>
+    </div>
+  </div>
+
+  <!-- 解码结果 -->
+  <section class="result" id="result">
+    <div class="meta-bar">
+      <span>📊 解码用时 <b id="metaTime">—</b> · 来源:业务字典域1·房产交易</span>
+      <a href="/knowledge/?tab=trade" class="src">查依据 →</a>
+    </div>
+
+    <div class="layer" id="layerDao">
+      <div class="layer-head">
+        <span class="badge b-dao">道</span>
+        <div><div class="layer-h-main" id="daoTitle">先懂,不慌</div><div class="layer-h-sub">他到底什么意思</div></div>
+      </div>
+      <div class="layer-body" id="daoBody"></div>
+    </div>
+
+    <div class="layer l-fa" id="layerFa">
+      <div class="layer-head">
+        <span class="badge b-fa">法</span>
+        <div><div class="layer-h-main">当场怎么走</div><div class="layer-h-sub">照着做</div></div>
+      </div>
+      <div class="layer-body" id="faBody"></div>
+    </div>
+
+    <div class="layer l-shu" id="layerShu">
+      <div class="layer-head">
+        <span class="badge b-shu">术</span>
+        <div><div class="layer-h-main">嘴上怎么说</div><div class="layer-h-sub">直接说</div></div>
+      </div>
+      <div class="layer-body" id="shuBody"></div>
+    </div>
+
+    <div class="layer l-qi" id="layerQi">
+      <div class="layer-head">
+        <span class="badge b-qi">器</span>
+        <div><div class="layer-h-main">递给客户什么</div><div class="layer-h-sub">可带走 / 可分享</div></div>
+      </div>
+      <div class="layer-body" id="qiBody"></div>
+    </div>
+
+    <!-- 风险筛查 -->
+    <div class="risk" id="risk">
+      <div class="risk-title">⚠️ 风险筛查清单</div>
+      <ul class="risk-list" id="riskList"></ul>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="brand-line">🌬️ 风声 · 帮助服务者贴近消费者的认知</div>
+  <div>品牌定位:<b>帮助服务者用独立价值获得尊重</b></div>
+  <div style="margin-top:10px">
+    <a href="/">首页</a>·<a href="/reply/">快回</a>·<a href="/mentor/">开单导师</a>·<a href="/knowledge/">知识底座</a>·<a href="/ip-design/">IP设计</a>
+  </div>
+  <div style="margin-top:8px;color:var(--ink-3);font-size:11px">© 2026 风声 fengsheng.tech · 备案号 京ICP备XXXX号</div>
+</footer>
+
+<!-- ===== 浮层:发客户 ===== -->
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="sheet-title" id="sheetTitle">发客户</div>
+      <div class="sheet-close" onclick="closeOverlay()">×</div>
+    </div>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<script>
+/* ===== 业务字典:decoder 域 1 房产交易 · 售前 ===== */
+const SCENES = {
+  pre: {
+    name:'售前',
+    cases:[
+      { kw:['再看看','再考虑','回去商量','和家人','考虑一下'],
+        dao:{t:'3 个真顾虑,不是真看',b:'客户说"再看看"通常不是真看,是三大顾虑:<span class="hl">怕买贵 / 怕踩坑 / 怕后悔</span>。决策是情绪曲线,不是理性打分。'},
+        fa:['<b>听原话</b> —— 记录客户原话,不替他概括','<b>拆顾虑</b> —— 归类 价格 / 风险 / 决策','<b>对画像</b> —— 预算·家庭·时间窗 校准需求','<b>给标准</b> —— 用可验证标准替代主观说服'],
+        shu:['"再看看" → "理解,这房我帮您做了六维测评,关键项不错,您先看数据"','"有点贵" → 先确认是超预算还是觉得不值,再拆持有成本','"要商量" → 把决策变成可带走的「家庭版对比卡」'],
+        risk:['是否在 24h 内会跟进?','是否留了可验证的资料(测评卡/对比卡)?','是否约了下次沟通时间?'] },
+      { kw:['贵','超预算','价格高','买不起','太贵了'],
+        dao:{t:'价格不是数字,是<b>相对值</b>',b:'客户说"贵"通常不是说绝对价格,而是<span class="hl">觉得不值</span>或<span class="hl">对标错位</span>。先确认对标的是谁(邻居新房?同区二手?全款变首付?)。'},
+        fa:['<b>拆解</b>"贵"的成分:单价 / 总价 / 持有成本 / 机会成本','<b>对标</b>用同一时段、同一商圈的可比案例','<b>拆持有</b>把一次性大额变月供+税费明细'],
+        shu:['"有点贵" → "您说的贵是指总价,还是和同区比?我帮您拆一下持有成本"','"超预算" → "预算多少合适?我帮您找同价位的另一套"','"这价能再谈吗" → 谈价用「证据+替代」,不用情绪'],
+        risk:['是否踩了客户的真实预算红线?','是否在比价竞品(避免贬低)?','是否准备好"持有成本对比表"?'] },
+      { kw:['别家','其他','位置','比这里','那家'],
+        dao:{t:'不是别人好,是<b>对客户没建立独特性</b>',b:'客户提"别家"通常不是真在比,是想确认<span class="hl">你的房源有什么不可替代</span>。先回到客户的真实需求原点。'},
+        fa:['<b>拉需求</b>回原点:购房 3 个最重要的指标','<b>用对比</b>不贬低竞品,客观展示维度差异','<b>讲唯一</b>这个房/小区/户型的不可替代点'],
+        shu:['"别家位置好" → "位置是您的第一指标吗?这套的物业+户型+价格能不能补回?"','"那家便宜" → "比的是同户型同楼层同朝向吗?"','"别家更近地铁" → 用 6 维测评卡客观打分'],
+        risk:['是否在贬低竞品?(避免)','是否拉回客户核心需求?','是否提供客观对比表?'] }
+    ]
+  },
+  mid: {
+    name:'售中',
+    cases:[
+      { kw:['跌','降价','市场不好','等等','再观望'],
+        dao:{t:'客户要的不是预测,是<b>确定感</b>',b:'客户说"会跌"通常背后是<span class="hl">怕买错</span>的恐惧。先处理恐惧,再谈数据。'},
+        fa:['<b>承认</b>短期波动客观存在','<b>分清</b>刚需 vs 投资,逻辑不同','<b>给锚</b>长期价值锚(地铁/学区/产业)','<b>用数据</b>5 年同小区成交曲线'],
+        shu:['"还会跌" → "短期我不敢打包票,但您这房是自住,长期看 3 个锚点稳"','"再观望" → "您观望的成本是什么?我帮您算 1 年租金+房价差额"','"市场不好" → "您是担心跌还是担心买错?"'],
+        risk:['是否在承诺涨/跌?(避免)','是否提供了可验证的长期数据?','是否区分了客户是自住还是投资?'] },
+      { kw:['采光','户型','朝','楼层','结构'],
+        dao:{t:'客户挑具体问题,说明<b>已过心理关</b>',b:'客户开始扣细节 = 已经心里倾向买了,在找最后一个"理性理由"做决定或说服家人。'},
+        fa:['<b>承认</b>每套房都有不完美','<b>对比</b>用 6 维测评看综合分,不要单点','<b>说用途</b>这个不完美点对客户的实际影响'],
+        shu:['"采光差" → "朝北次卧对吗?主卧朝南,实际居住主卧使用率高"','"户型怪" → "是动线不舒展吗?这套做了玄关+衣帽间改造"','"楼层低" → "老人小孩住低层是优势,等电梯时间 0"'],
+        risk:['是否在回避客户提到的具体问题?','是否提供同小区其他楼层的对照?','是否在催定?(避免)'] }
+    ]
+  },
+  after: {
+    name:'售后',
+    cases:[
+      { kw:['住进去','入住','搬家','维修','物业'],
+        dao:{t:'售后不是结束,是<b>口碑的起点</b>',b:'客户入住后的前 30 天决定了他会不会转介绍。这一阶段从"成交思维"切到"陪伴思维"。'},
+        fa:['<b>3 天回访</b>搬入顺不顺,有啥不适','<b>7 天答疑</b>设备使用/物业对接','<b>30 天交付</b>做一次"居住质量回访","住得好"维度','<b>90 天推荐</b>采集 1 个可转介绍客户'],
+        shu:['"搬家麻烦" → "我帮您对接搬家公司,有合作价"','"物业不行" → "您说哪个点?我帮您跟物业反馈"','"住着哪不对" → "我帮您做一次六维复测,看哪能改善"'],
+        risk:['是否在 30 天内没联系客户?','是否采集了转介绍线索?','是否做了口碑事件?'] }
+    ]
+  }
+};
+
+let curScene = 'pre';
+let curCase = null;
+
+function $(id){return document.getElementById(id)}
+
+function setScene(s){
+  curScene = s;
+  document.querySelectorAll('.scene-tab').forEach(t=>t.classList.toggle('active',t.dataset.scene===s));
+  $('result').classList.remove('show');
+  $('clientText').value='';
+}
+
+function doDecode(){
+  const text = ($('clientText').value||'').trim();
+  if(!text){
+    $('clientText').focus();
+    $('clientText').style.borderColor='var(--accent)';
+    setTimeout(()=>$('clientText').style.borderColor='',1000);
+    return;
+  }
+  const btn = $('btnDecode');
+  btn.classList.add('loading');
+  btn.innerHTML='<span>解码中…</span>';
+
+  setTimeout(()=>{
+    const scene = SCENES[curScene];
+    let hit = null, hitScore = 0;
+    for(const c of scene.cases){
+      const s = c.kw.filter(k=>text.includes(k)).length;
+      if(s>hitScore){ hitScore=s; hit=c; }
+    }
+    if(!hit){
+      hit = scene.cases[0];
+      hit._generic = true;
+    }
+    curCase = hit;
+    renderResult(text, hit);
+    btn.classList.remove('loading');
+    btn.innerHTML='<span>解码</span>';
+  }, 380);
+}
+
+function renderResult(text, hit){
+  const start = Date.now();
+  $('daoTitle').innerHTML = hit.dao.t;
+  $('daoBody').innerHTML = `<ul><li>${hit.dao.b}</li></ul>`;
+  $('faBody').innerHTML = `<ul>${hit.fa.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  $('shuBody').innerHTML = `<ul>${hit.shu.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  $('qiBody').innerHTML = `
+    <div class="deliver"><div class="d-ico">📋</div><div class="d-info"><div class="d-name">需求挖掘七问</div><div class="d-desc">分享客户填 / 经纪人自用</div></div><div class="d-btn" onclick="openSheet('需求挖掘七问')">发客户</div></div>
+    <div class="deliver"><div class="d-ico">🗂️</div><div class="d-info"><div class="d-name">客户画像卡</div><div class="d-desc">预算/家庭/时间窗·当场生成</div></div><div class="d-btn" onclick="openSheet('客户画像卡')">发客户</div></div>
+    <div class="deliver"><div class="d-ico">📊</div><div class="d-info"><div class="d-name">六维测评卡</div><div class="d-desc">把"再看看"变成可看的数据</div></div><div class="d-btn preview" onclick="openSheet('六维测评卡')">看预览</div></div>`;
+  $('riskList').innerHTML = hit.risk.map(r=>`<li class="risk-item" onclick="this.classList.toggle('on')"><div class="risk-mark"></div><div class="risk-text">${r}</div></li>`).join('');
+  $('metaTime').textContent = ((Date.now()-start)+380)+'ms';
+  $('result').classList.add('show');
+  setTimeout(()=>$('result').scrollIntoView({behavior:'smooth',block:'start'}),60);
+}
+
+function openSheet(name){
+  $('sheetTitle').textContent = name;
+  let html='';
+  if(name==='需求挖掘七问'){
+    html = `<ol style="padding-left:20px;color:var(--ink-2);line-height:2">
+      <li>您买这套房最重要的 3 个指标是?</li>
+      <li>预算是总价 X 万,月供不超 Y?</li>
+      <li>常住几口人?有老人/小孩吗?</li>
+      <li>未来 5 年家庭结构会变吗?</li>
+      <li>通勤地点/交通工具?</li>
+      <li>对学区/地铁/医疗的硬要求?</li>
+      <li>不能接受的硬伤是什么?</li>
+    </ol>
+    <div style="margin-top:14px;padding:12px;background:var(--bg);border-radius:8px;font-size:12px;color:var(--ink-3)">📱 客户可点链接填写,经纪人后台可见答案(需登录开通)</div>`;
+  } else if(name==='客户画像卡'){
+    html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:11px;color:var(--ink-3)">预算</div><div style="font-weight:600">350-420 万</div></div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:11px;color:var(--ink-3)">家庭</div><div style="font-weight:600">3 口+1 老</div></div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:11px;color:var(--ink-3)">通勤</div><div style="font-weight:600">国贸 1 号线</div></div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:11px;color:var(--ink-3)">时间窗</div><div style="font-weight:600">3 个月内</div></div>
+    </div>
+    <div style="margin-top:14px;padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:11px;color:var(--ink-3);margin-bottom:4px">硬需求</div><div style="font-size:13px">双卫·朝南次卧·地铁 800m·总价不超 420</div></div>`;
+  } else if(name==='六维测评卡'){
+    html = `<div style="text-align:center;color:var(--ink-2)">
+      <div style="font-size:42px;font-weight:800;color:var(--primary);line-height:1">82<span style="font-size:18px">/100</span></div>
+      <div style="font-size:12px;color:var(--ink-3);margin:4px 0 14px">六维综合·住得好</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:12px">
+        <div style="padding:8px;background:rgba(61,90,62,.1);border-radius:6px"><b>安全</b><br>92</div>
+        <div style="padding:8px;background:rgba(61,90,62,.1);border-radius:6px"><b>健康</b><br>88</div>
+        <div style="padding:8px;background:rgba(196,106,58,.15);border-radius:6px"><b>便利</b><br>75</div>
+        <div style="padding:8px;background:rgba(61,90,62,.1);border-radius:6px"><b>经济</b><br>80</div>
+        <div style="padding:8px;background:rgba(61,90,62,.1);border-radius:6px"><b>舒适</b><br>85</div>
+        <div style="padding:8px;background:rgba(61,90,62,.1);border-radius:6px"><b>美观</b><br>78</div>
+      </div>
+    </div>`;
+  }
+  $('sheetBody').innerHTML = html;
+  $('overlay').classList.add('show');
+}
+
+function closeOverlay(){ $('overlay').classList.remove('show') }
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{ $('clientText').value=c.dataset.text; $('clientText').focus(); }));
+  document.querySelectorAll('.scene-tab').forEach(t=>t.addEventListener('click',()=>setScene(t.dataset.scene)));
+  $('overlay').addEventListener('click',e=>{ if(e.target.id==='overlay') closeOverlay(); });
+  $('clientText').addEventListener('keydown',e=>{ if(e.key==='Enter' && (e.metaKey||e.ctrlKey)) doDecode(); });
+});
+
+// 真实数据回流(匿名·可选)
+try{ if(navigator.sendBeacon) navigator.sendBeacon('/api/event', JSON.stringify({t:'decoder_use',ts:Date.now()})); }catch(e){}
+</script>
+
+</body>
+</html>
