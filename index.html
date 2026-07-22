@@ -412,7 +412,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
       <div class="path-sub">路径B</div>
       <div class="path-earn b">赚未来的势</div>
       <div class="path-who">高校/政府<br>政策杠杆<br>产教融合</div>
-      <a class="path-btn b" href="#" style="background:rgba(78,126,142,.12);color:#4e7e8e;pointer-events:none" onclick="return false;">谈合作 · 敬请期待</a>
+      <a class="path-btn b" href="#partner-section">了解合作 →</a>
     </div>
     <div class="path-card c">
       <div class="path-ico">⚖️</div>
@@ -580,18 +580,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
       <div class="product-action"><a class="live" href="/knowledge/" data-track="product:knowledge">体验查询</a></div>
     </div>
   </div>
-</div><!-- 路径B已冻结至9月，以下内容隐藏
-<!-- 合作入口（路径B入口） -->
-<div class="section pub-section" style="display:none">
+<!-- 合作入口（路径B 入口） -->
+<div class="section pub-section" id="partner-section">
   <div class="section-header"><div class="section-dot" style="background:var(--pathB)"></div><div class="section-title">合作入口</div><div class="section-desc">路径B·政府/高校对接</div></div>
   <div class="partner-grid">
-    <a class="partner-card edu" href="#" onclick="return false;" style="pointer-events:none;opacity:.85">
+    <a class="partner-card edu" href="#" data-partner="edu">
       <div class="partner-ico">🎓</div>
       <div class="partner-name">高校合作</div>
       <div class="partner-tags"><span class="partner-tag edu">产教融合</span><span class="partner-tag edu">课程共建</span><span class="partner-tag edu">就业对接</span></div>
       <div class="partner-desc">居住服务人才培养·数智化课程体系·实习就业一体化</div>
     </a>
-    <a class="partner-card gov" href="#" onclick="return false;" style="pointer-events:none;opacity:.85">
+    <a class="partner-card gov" href="#" data-partner="gov">
       <div class="partner-ico">🏛️</div>
       <div class="partner-name">政府治理</div>
       <div class="partner-tags"><span class="partner-tag gov">行业健康</span><span class="partner-tag gov">政策对接</span><span class="partner-tag gov">标准共建</span></div>
@@ -599,7 +598,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     </a>
   </div>
 </div>
--->
 
 <!-- 每日简报入口（暂隐藏，内容就绪后上线）
 <div class="section pub-section">
@@ -657,7 +655,84 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .fs-fb-result.success{color:#2C5F3A}
 .fs-fb-result.error{color:#c0392b}
 @media(max-width:640px){.fs-feedback-widget{margin:20px 12px;padding:18px 14px}.fs-fb-stars{font-size:30px;gap:4px}}
+
+/* ===== 合作意向浮层(路径B 完整版) ===== */
+.partner-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.partner-overlay.show{display:flex}
+.partner-sheet{background:var(--bg);width:100%;max-width:480px;max-height:85vh;border-radius:18px 18px 0 0;padding:24px 20px 28px;overflow-y:auto;animation:slideUp .25s ease}
+.partner-sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.partner-sheet-title{font-size:18px;font-weight:700;color:var(--ink)}
+.partner-sheet-close{width:30px;height:30px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-size:20px;cursor:pointer;line-height:1}
+.partner-sheet-sub{font-size:12px;color:var(--ink-3);margin-bottom:16px}
+.partner-form-group{margin-bottom:12px}
+.partner-form-label{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:5px}
+.partner-form-input,.partner-form-textarea{width:100%;padding:10px 12px;background:var(--surface);border:1.5px solid var(--line);border-radius:8px;font:inherit;color:var(--ink);outline:none}
+.partner-form-input:focus,.partner-form-textarea:focus{border-color:var(--primary)}
+.partner-form-textarea{resize:vertical;min-height:60px}
+.partner-form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.partner-form-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.partner-form-chip{padding:6px 12px;background:var(--surface);border:1px solid var(--line);border-radius:99px;font-size:12px;color:var(--ink-2);cursor:pointer;transition:all .15s}
+.partner-form-chip.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.partner-form-submit{width:100%;padding:14px;background:var(--primary);color:#fff;border-radius:10px;font-weight:600;font-size:15px;margin-top:8px;cursor:pointer;transition:background .15s}
+.partner-form-submit:hover{background:var(--primary-dark)}
+.partner-form-submit:disabled{background:var(--ink-3);cursor:not-allowed}
+.partner-form-tip{font-size:11px;color:var(--ink-3);margin-top:10px;text-align:center}
+.partner-form-success{padding:30px 20px;text-align:center}
+.partner-form-success .ico{font-size:48px;margin-bottom:12px}
+.partner-form-success .t{font-size:18px;font-weight:700;color:var(--primary);margin-bottom:6px}
+.partner-form-success .s{font-size:13px;color:var(--ink-2);line-height:1.7}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 </style>
+<!-- 合作意向浮层(路径B) -->
+<div class="partner-overlay" id="partnerOverlay">
+  <div class="partner-sheet">
+    <div class="partner-sheet-head">
+      <div class="partner-sheet-title" id="partnerSheetTitle">合作意向</div>
+      <div class="partner-sheet-close" id="partnerSheetClose">×</div>
+    </div>
+    <div class="partner-sheet-sub" id="partnerSheetSub">填写后,小豆子会在 24 小时内联系您</div>
+    <div id="partnerSheetBody">
+      <div class="partner-form-group">
+        <label class="partner-form-label">姓名 *</label>
+        <input class="partner-form-input" id="pfName" placeholder="您的称呼">
+      </div>
+      <div class="partner-form-row">
+        <div class="partner-form-group">
+          <label class="partner-form-label">机构/学校 *</label>
+          <input class="partner-form-input" id="pfOrg" placeholder="例:北京建筑大学">
+        </div>
+        <div class="partner-form-group">
+          <label class="partner-form-label">职务/角色</label>
+          <input class="partner-form-input" id="pfRole" placeholder="例:房地产系主任">
+        </div>
+      </div>
+      <div class="partner-form-group">
+        <label class="partner-form-label">联系方式(手机/微信/邮箱) *</label>
+        <input class="partner-form-input" id="pfContact" placeholder="便于我们联系您">
+      </div>
+      <div class="partner-form-group">
+        <label class="partner-form-label">合作方向(可多选)</label>
+        <div class="partner-form-chips" id="pfChips">
+          <span class="partner-form-chip" data-v="产教融合">产教融合</span>
+          <span class="partner-form-chip" data-v="课程共建">课程共建</span>
+          <span class="partner-form-chip" data-v="实习基地">实习基地</span>
+          <span class="partner-form-chip" data-v="就业对接">就业对接</span>
+          <span class="partner-form-chip" data-v="行业标准">行业标准</span>
+          <span class="partner-form-chip" data-v="政策研究">政策研究</span>
+          <span class="partner-form-chip" data-v="数字化治理">数字化治理</span>
+          <span class="partner-form-chip" data-v="其他">其他</span>
+        </div>
+      </div>
+      <div class="partner-form-group">
+        <label class="partner-form-label">具体诉求(选填)</label>
+        <textarea class="partner-form-textarea" id="pfNote" placeholder="例:我们学校 2027 春季想开 1 门居住服务选修课,希望对接课程内容+实习机会。"></textarea>
+      </div>
+      <button class="partner-form-submit" id="pfSubmit">提交合作意向</button>
+      <div class="partner-form-tip">提交即同意风声团队基于本次合作意向联系您。信息仅用于合作沟通。</div>
+    </div>
+  </div>
+</div>
+
 <script>
   (function() {
     var s = document.querySelectorAll('#fs-fb-stars .fs-star');
@@ -763,6 +838,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
         // 静默失败，保持静态显示
       });
   })();
+
+  // ===== 合作意向(路径B 完整版) 移至外部 partner.js,避开 CSP 'self' 限制 =====
 </script>
+<script src="/partner.js" async></script>
 </body>
 </html>
