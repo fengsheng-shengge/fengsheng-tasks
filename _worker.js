@@ -303,7 +303,7 @@ export default {
     }
 
     // Trailing-slash redirects — ensure directory-style paths always have /
-    const trailingSlashRedirects = ['/knowledge', '/mentor', '/ip-design', '/reply', '/assessment', '/breeder'];
+    const trailingSlashRedirects = ['/knowledge', '/mentor', '/ip-design', '/reply', '/assessment', '/breeder', '/s1-report', '/partner', '/care-test', '/quality-test'];
     if (trailingSlashRedirects.includes(path)) {
       return Response.redirect(`https://fengsheng.tech${path}/`, 301);
     }
