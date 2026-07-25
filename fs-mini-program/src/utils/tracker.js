@@ -1,6 +1,6 @@
 // 小程序事件追踪 V2 — 行为埋点
 // P0-02: 4核心指标 + 3触发指标
-// MVP阶段：事件存本地storage，后续改为远程上报 /api/event
+// 当前阶段：事件存本地storage，后续改为远程上报 /api/event
 
 const PRODUCT = 'mini-program'
 const STORAGE_KEY = 'fs_events'
@@ -35,7 +35,7 @@ function isoNow() {
 }
 
 /**
- * 发送事件 — MVP阶段存本地，后续改为 uni.request 上报
+ * 发送事件 — 当前阶段存本地，后续改为 uni.request 上报
  */
 function send(event, payload = {}) {
   const data = {

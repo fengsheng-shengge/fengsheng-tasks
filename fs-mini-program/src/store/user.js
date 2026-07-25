@@ -104,9 +104,9 @@ export const useUserStore = defineStore('user', {
         this.openid = res.openid
         this.userId = res.userId
         this.isLoggedIn = true
-        // 新用户送 50 积分
+        // 新用户体验礼包（对齐免费养成期规范：新户 +200）
         if (res.isNewUser) {
-          this.earnPoints(50, '注册赠送')
+          this.earnPoints(200, '新用户礼包')
         }
         return res
       } catch (err) {

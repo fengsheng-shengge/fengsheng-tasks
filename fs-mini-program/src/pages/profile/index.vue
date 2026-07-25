@@ -88,7 +88,7 @@ export default {
           })
           break
         case 'feedback':
-          uni.showModal({ title: '意见反馈', content: '请发送邮件至 feedback@fengsheng.tech', showCancel: false })
+          uni.showModal({ title: '意见反馈', content: '感谢您的反馈！您可通过「风声」公众号留言，或关注风声获取最新动态。', showCancel: false })
           break
         case 'about':
           uni.showModal({ title: '关于风声', content: '风声 · 居住服务行业知识库\nfengsheng.tech\n让服务者先被看见', showCancel: false })

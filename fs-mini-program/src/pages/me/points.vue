@@ -87,58 +87,37 @@ import { useUserStore } from '../../store/user'
 const userStore = useUserStore()
 
 const points = computed(() => userStore.points || 0)
-const level = computed(() => userStore.level || 1)
 
-const levelConfig = [
-  { level: 1, name: '见习经纪', min: 0, max: 99 },
-  { level: 2, name: '专业经纪', min: 100, max: 499 },
-  { level: 3, name: '资深经纪', min: 500, max: 1499 },
-  { level: 4, name: '王牌经纪', min: 1500, max: 4999 },
-  { level: 5, name: '传奇经纪', min: 5000, max: 99999 },
-]
-
-const currentLevelConfig = computed(() => {
-  const lv = level.value
-  return levelConfig.find(c => c.level === lv) || levelConfig[0]
-})
-
+// 等级与进度统一取自用户状态（单一数据源，避免多套等级体系互相冲突）
+const levelInfo = computed(() => userStore.levelInfo)
+const level = computed(() => levelInfo.value.level)
 const nextLevel = computed(() => {
-  const lv = level.value
-  const next = levelConfig.find(c => c.level === lv + 1)
-  return next ? next.level : lv
+  const cfg = levelInfo.value
+  return cfg.maxPoints === Infinity ? cfg.level : cfg.level + 1
 })
-
 const nextLevelPoints = computed(() => {
-  const lv = level.value
-  const next = levelConfig.find(c => c.level === lv + 1)
-  return next ? next.min : 99999
+  const cfg = levelInfo.value
+  return cfg.maxPoints === Infinity ? '∞' : cfg.maxPoints + 1
 })
-
 const progressPercent = computed(() => {
-  const cfg = currentLevelConfig.value
-  if (cfg.max === 99999) return 100
-  const range = cfg.max - cfg.min
-  const current = points.value - cfg.min
+  const cfg = levelInfo.value
+  if (cfg.maxPoints === Infinity) return 100
+  const range = cfg.maxPoints - cfg.minPoints
+  if (range <= 0) return 100
+  const current = points.value - cfg.minPoints
   return Math.min(100, Math.max(0, Math.floor((current / range) * 100)))
 })
 
-// 赚积分规则
+// 赚积分规则（仅展示已真实接入的渠道，避免"假任务"误导）
 const earnRules = [
   { name: '每日一题答对', points: 5, limit: '每日1次' },
-  { name: '客户模拟器通关', points: 15, limit: '每日1次' },
-  { name: '法官来了答对', points: 10, limit: '每日3次' },
-  { name: '纠错采纳', points: 20, limit: '无限制' },
-  { name: '验证有效', points: 10, limit: '无限制' },
-  { name: '提问入库', points: 10, limit: '无限制' },
-  { name: '分享词条', points: 5, limit: '每条1次' },
+  { name: '答题测评答对', points: 10, limit: '每日3次' },
 ]
 
-// 积分消耗规则
+// 积分消耗规则（仅展示已真实接入的解锁项）
 const spendRules = [
   { name: '解锁完整案例', points: 5 },
   { name: '解锁经纪人备忘', points: 3 },
-  { name: '解锁政策原文', points: 5 },
-  { name: '免费月卡兑换', points: 2000 },
 ]
 
 // 积分历史

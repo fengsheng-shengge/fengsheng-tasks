@@ -57,7 +57,7 @@
       </view>
       <view class="menu-item" @click="goToSubscribe">
         <view class="menu-icon sub-icon">&#9830;</view>
-        <view class="menu-text">订阅管理</view>
+        <view class="menu-text">会员中心</view>
         <view class="menu-tag" v-if="subscriptionType">{{ subscriptionTypeText }}</view>
         <view class="menu-arrow">&#8250;</view>
       </view>

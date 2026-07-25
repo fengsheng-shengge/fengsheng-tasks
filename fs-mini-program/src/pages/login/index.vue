@@ -129,9 +129,9 @@ async function handleWxLogin() {
     userStore.userId = res.userId
     userStore.isLoggedIn = true
 
-    // 新用户赠送 50 积分
+    // 新用户体验礼包（对齐免费养成期规范：新户 +200）
     if (res.isNewUser) {
-      userStore.points = 50
+      userStore.earnPoints(200, '新用户礼包')
     }
 
     uni.showToast({ title: '登录成功', icon: 'success' })
