@@ -2,6 +2,9 @@
 # Cloudflare Pretty URL auto-redirects .html → no-extension
 # Using directory-based routing instead: /assessment/ serves assessment/index.html
 
+# 微信域名校验文件 — 直接返回，不走 SPA fallback
+/MP_verify_*  /MP_verify_*  200
+
 # Old standalone .html → new directory-based routing (301)
 /assessment.html  /assessment/  301
 /breeder.html  /breeder/  301

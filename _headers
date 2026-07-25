@@ -9,6 +9,15 @@
   4. 敏感路径访问控制
 */
 
+# ========== 微信域名校验文件 — 最宽松头 ==========
+/MP_verify_*
+  Content-Type: text/plain
+  Cache-Control: public, max-age=3600
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+
 # ========== 全局安全响应头 ==========
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;
