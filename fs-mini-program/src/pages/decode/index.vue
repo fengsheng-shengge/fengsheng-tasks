@@ -136,7 +136,7 @@ export default {
     },
     goAssess() {
       track.click('decode_to_assess')
-      uni.switchTab({ url: '/pages/assess/index' })
+      uni.navigateTo({ url: '/pages/assess/index' })
     },
   },
 }

@@ -394,7 +394,7 @@ export default {
     },
     goDecode() {
       track.click('assess_to_decode')
-      uni.switchTab({ url: '/pages/decode/index' })
+      uni.navigateTo({ url: '/pages/decode/index' })
     },
   },
 }
