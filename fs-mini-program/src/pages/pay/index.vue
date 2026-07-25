@@ -14,7 +14,7 @@
       <view class="vip-card locked">
         <view class="vc-tag">升级后开通</view>
         <view class="vc-name">月度会员</view>
-        <view class="vc-price">¥39<text class="sm">/月</text></view>
+        <view class="vc-price">价格待定</view>
         <view class="vc-pts">600 分/月自动到账</view>
         <view class="vc-perk">信任徽章 · 数据导出 · 案例全文</view>
         <view class="vc-lock">后续版本开放</view>
@@ -22,7 +22,7 @@
       <view class="vip-card locked">
         <view class="vc-tag">升级后开通</view>
         <view class="vc-name">年度会员</view>
-        <view class="vc-price">¥390<text class="sm">/年</text></view>
+        <view class="vc-price">价格待定</view>
         <view class="vc-pts">8400 分(含赠1200)</view>
         <view class="vc-perk">优先新案例 · 专属客服</view>
         <view class="vc-lock">后续版本开放</view>
@@ -33,19 +33,19 @@
     <view class="vip-grid">
       <view class="vip-card locked">
         <view class="vc-name">小包</view>
-        <view class="vc-price">¥19</view>
+        <view class="vc-price">价格待定</view>
         <view class="vc-pts">100 分</view>
         <view class="vc-lock">升级后开通</view>
       </view>
       <view class="vip-card locked">
         <view class="vc-name">中包</view>
-        <view class="vc-price">¥49</view>
+        <view class="vc-price">价格待定</view>
         <view class="vc-pts">300 分</view>
         <view class="vc-lock">升级后开通</view>
       </view>
       <view class="vip-card locked">
         <view class="vc-name">大包</view>
-        <view class="vc-price">¥99</view>
+        <view class="vc-price">价格待定</view>
         <view class="vc-pts">650 分</view>
         <view class="vc-lock">升级后开通</view>
       </view>
@@ -96,6 +96,7 @@ onShow(() => {
 .vip-card .vc-perk { font-size: 11px; color: #5a554c; margin-top: 6px; line-height: 1.5; }
 .vip-card.locked { opacity: .55; filter: grayscale(.4); }
 .vip-card.locked .vc-tag { background: #b9b1a4; }
+.vip-card.locked .vc-price { font-size: 14px; font-weight: 700; color: #b9b1a4; }
 .vip-card .vc-lock { font-size: 10px; color: #9a5026; margin-top: 6px; font-weight: 700; }
 
 .invite-box { background: linear-gradient(135deg, #3d5a3e, #4d7050); color: #fff; border-radius: 14px; padding: 16px; margin: 16px 0; }
