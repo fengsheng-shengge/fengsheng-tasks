@@ -182,9 +182,10 @@ const userStore = useUserStore()
 
 // 贡献数据
 const contributions = ref([])
-const totalContributions = computed(() => contributions.value.length)
-const acceptedCount = computed(() => contributions.value.filter(c => c.status === '已采纳').length)
-const pendingCount = computed(() => contributions.value.filter(c => c.status === '审核中').length)
+const safeList = computed(() => (Array.isArray(contributions.value) ? contributions.value : []))
+const totalContributions = computed(() => safeList.value.length)
+const acceptedCount = computed(() => safeList.value.filter(c => c.status === '已采纳').length)
+const pendingCount = computed(() => safeList.value.filter(c => c.status === '审核中').length)
 
 // 新建贡献
 const showForm = ref(false)
@@ -211,7 +212,13 @@ onMounted(() => {
 })
 
 function loadContributions() {
-  const stored = uni.getStorageSync('fs_contributions') || []
+  let stored = []
+  try {
+    const raw = uni.getStorageSync ? uni.getStorageSync('fs_contributions') : null
+    if (Array.isArray(raw)) stored = raw
+  } catch (e) {
+    stored = []
+  }
   contributions.value = stored
 }
 
