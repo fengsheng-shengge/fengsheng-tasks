@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <!-- 顶部导师介绍 -->
+    <!-- 顶部话术库介绍 -->
     <view class="chat-header">
       <view class="header-top">
         <view class="header-left">
@@ -8,18 +8,10 @@
             <text class="avatar-icon">M</text>
           </view>
           <view class="header-info">
-            <view class="header-title">开单导师</view>
-            <view class="header-sub">租赁业务AI陪练</view>
+            <view class="header-title">开单话术库</view>
+            <view class="header-sub">常见异议应对话术</view>
           </view>
         </view>
-        <view class="quota-badge" :class="{ 'quota-low': remainingQuota <= 1, 'quota-zero': remainingQuota === 0 }">
-          <text class="quota-label">今日剩余</text>
-          <text class="quota-num">{{ remainingQuota }}/{{ dailyLimit }}</text>
-          <text class="quota-label">次</text>
-        </view>
-      </view>
-      <view v-if="store.subscription && store.subscription.status === 'active'" class="vip-banner">
-        <text class="vip-text">VIP 会员 · 无限畅聊</text>
       </view>
     </view>
 
@@ -44,12 +36,7 @@
       scroll-y
       :scroll-top="scrollTop"
       :scroll-with-animation="true"
-      @scrolltoupper="loadMoreHistory"
-      :upper-threshold="50"
     >
-      <view v-if="hasMoreHistory" class="load-more">
-        <text class="load-more-text" @click="loadMoreHistory">加载更多</text>
-      </view>
       <view v-for="(msg, i) in messages" :key="i" class="msg-row" :class="msg.role === 'user' ? 'msg-right' : 'msg-left'">
         <view v-if="msg.role === 'bot'" class="msg-avatar">
           <text class="bot-avatar-icon">M</text>
@@ -61,22 +48,6 @@
           <text class="user-avatar-icon">我</text>
         </view>
       </view>
-      <view v-if="streaming" class="msg-row msg-left">
-        <view class="msg-avatar">
-          <text class="bot-avatar-icon">M</text>
-        </view>
-        <view class="msg-bubble bubble-bot">
-          <text class="msg-text">{{ streamBuffer }}<text class="cursor">|</text></text>
-        </view>
-      </view>
-      <view v-if="loading && !streaming" class="msg-row msg-left">
-        <view class="msg-avatar">
-          <text class="bot-avatar-icon">M</text>
-        </view>
-        <view class="msg-bubble bubble-bot">
-          <text class="msg-text typing">思考中...</text>
-        </view>
-      </view>
       <view class="chat-bottom-spacer"></view>
     </scroll-view>
 
@@ -85,56 +56,12 @@
       <input
         class="chat-input"
         v-model="inputText"
-        placeholder="问我任何开单问题..."
+        placeholder="输入客户异议关键词..."
         confirm-type="send"
         @confirm="handleSend"
-        :disabled="loading"
-        :adjust-position="true"
-        cursor-spacing="20"
       />
-      <view class="send-btn" :class="{ active: inputText.trim() && !loading }" @click="handleSend">
+      <view class="send-btn" :class="{ active: inputText.trim() }" @click="handleSend">
         <text class="send-btn-text">发送</text>
-      </view>
-    </view>
-
-    <!-- 付费墙弹窗 -->
-    <view v-if="showPaywall" class="paywall-overlay" @click="closePaywall">
-      <view class="paywall-card" @click.stop>
-        <view class="paywall-close" @click="closePaywall">
-          <text class="paywall-close-icon">X</text>
-        </view>
-        <view class="paywall-icon">M</view>
-        <view class="paywall-title">今日免费额度已用完</view>
-        <view class="paywall-sub">升级后即可无限畅聊</view>
-
-        <view class="paywall-plans">
-          <view class="plan-item" :class="{ 'plan-recommended': plan.recommended }" v-for="(plan, idx) in pricingPlans" :key="idx" @click="selectPlan(plan)">
-            <view v-if="plan.recommended" class="plan-badge">推荐</view>
-            <view class="plan-name">{{ plan.name }}</view>
-            <view class="plan-price">
-              <text class="plan-price-symbol">¥</text>
-              <text class="plan-price-num">{{ plan.price }}</text>
-              <text class="plan-price-unit">{{ plan.unit }}</text>
-            </view>
-            <view class="plan-desc">{{ plan.desc }}</view>
-          </view>
-        </view>
-
-        <view class="paywall-points" @click="usePointsPay">
-          <view class="points-left">
-            <text class="points-icon">P</text>
-            <text class="points-text">积分抵扣（{{ store.points }}积分可用）</text>
-          </view>
-          <view class="points-rate">100积分=¥1</view>
-        </view>
-
-        <view class="paywall-disclaimer">
-          <text class="disclaimer-text">AI 建议仅供参考</text>
-        </view>
-
-        <view class="paywall-btn" @click="goPay">
-          <text class="paywall-btn-text">立即开通</text>
-        </view>
       </view>
     </view>
 
@@ -146,59 +73,55 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, getCurrentInstance } from 'vue'
-import { useUserStore } from '../../store/user'
+import { ref, nextTick, onMounted } from 'vue'
 import { track } from '../../utils/tracker'
 import { onShow } from '@dcloudio/uni-app'
-
-const store = useUserStore()
-const instance = getCurrentInstance()
-
-const dailyLimit = 5
-const remainingQuota = computed(() => store.remainingQuota)
 
 // 对话状态
 const messages = ref([])
 const inputText = ref('')
-const loading = ref(false)
-const streaming = ref(false)
-const streamBuffer = ref('')
-const conversationId = ref('')
 const scrollTop = ref(0)
-const hasMoreHistory = ref(false)
-const historyOffset = ref(0)
 
-// 付费墙
-const showPaywall = ref(false)
-const selectedPlan = ref(null)
-
-const pricingPlans = [
-  { name: '单次', price: '0.99', unit: '/次', desc: '单次对话', type: 'once', recommended: false },
-  { name: '月度', price: '9.9', unit: '/月', desc: '无限畅聊', type: 'monthly', recommended: true },
+// 静态话术库
+const scriptLibrary = [
+  {
+    keywords: ['贵', '太贵', '价格', '多少钱', '便宜'],
+    content: '客户说"太贵了"应对话术：\n\n1. 确认是预算不足还是觉得不值\n"理解您的顾虑，您是觉得总价超预算了，还是觉得这个价格不太值？"\n\n2. 拆持有成本\n"月供其实和您现在房租差不多，但这笔钱是存进自己房子里，不是给了房东。"\n\n3. 用数据锚定\n"这个小区同户型近90天成交均价在这个区间，这套定价是合理的。"',
+  },
+  {
+    keywords: ['再看看', '考虑', '犹豫', '等等'],
+    content: '客户说"再看看"应对话术：\n\n1. 理解不催\n"完全理解，买房是大事，多看看是对的。"\n\n2. 给留印象\n"这套房的核心优势是采光和动线，您看其他房时可以拿这个做参照。"\n\n3. 留跟进口子\n"我帮您把这套的六维测评发您，您对比着看，有疑问随时找我。"',
+  },
+  {
+    keywords: ['家人', '商量', '老婆', '父母', '商量商量'],
+    content: '客户说"要和家人商量"应对话术：\n\n1. 表示理解\n"应该的，买房是全家人的事。"\n\n2. 给可带走的对比卡\n"我帮您做了一份家庭版对比卡，把这套房的核心数据和您现在住的情况列在一起，方便家人一起看。"\n\n3. 预约全家看房\n"如果家人方便，可以一起来再看一次，我针对家人关心的点重点介绍。"',
+  },
+  {
+    keywords: ['比较', '别家', '其他', '对比'],
+    content: '客户说"去别家比较"应对话术：\n\n1. 不贬低竞品\n"多比较是好事，看得多心里才有底。"\n\n2. 给客观对比\n"我帮您做了一份房源对比表，把这套和同小区在售的另外两套放在一张表里，优劣势一目了然。"\n\n3. 留联系方式\n"您看完别的如果有疑问，随时问我，我帮您客观分析。"',
+  },
 ]
 
 const quickScenes = [
-  { icon: '1', label: '客户说太贵了', prompt: '客户说这套房子太贵了，我该怎么回应？' },
-  { icon: '2', label: '客户犹豫不决', prompt: '客户看了好几套房子一直犹豫，怎么帮他下决心？' },
-  { icon: '3', label: '客户说再考虑', prompt: '客户说"我再考虑考虑"，怎么跟进？' },
-  { icon: '4', label: '客户要比较', prompt: '客户说要去别家比较一下，我该怎么留住他？' },
+  { icon: '1', label: '客户说太贵了', prompt: '客户说这套房子太贵了' },
+  { icon: '2', label: '客户犹豫不决', prompt: '客户一直犹豫不决' },
+  { icon: '3', label: '客户说再考虑', prompt: '客户说再考虑考虑' },
+  { icon: '4', label: '客户要比较', prompt: '客户说要去别家比较' },
 ]
 
 // 初始化
 onMounted(() => {
-  store.initFromStorage()
   loadChatHistory()
   if (messages.value.length === 0) {
     messages.value.push({
       role: 'bot',
-      content: '你好！我是风声开单导师，专注租赁业务陪练。告诉我你遇到的开单难题，我来帮你分析。',
+      content: '你好！我是风声开单话术库。选择下方场景或输入客户异议关键词，我来帮你匹配应对话术。',
     })
   }
 })
 
 onShow(() => {
   uni.setStorageSync('__current_page', '/pages/mentor/index')
-  store._resetDailyQuota()
 })
 
 // 聊天历史持久化
@@ -207,12 +130,6 @@ function loadChatHistory() {
     const saved = uni.getStorageSync('fs_mentor_chat')
     if (saved && saved.length > 0) {
       messages.value = saved.slice(-50)
-      historyOffset.value = saved.length - messages.value.length
-      hasMoreHistory.value = historyOffset.value > 0
-    }
-    const savedConvId = uni.getStorageSync('fs_mentor_conv_id')
-    if (savedConvId) {
-      conversationId.value = savedConvId
     }
   } catch (e) {
     // 忽略
@@ -222,192 +139,72 @@ function loadChatHistory() {
 function saveChatHistory() {
   try {
     uni.setStorageSync('fs_mentor_chat', messages.value)
-    if (conversationId.value) {
-      uni.setStorageSync('fs_mentor_conv_id', conversationId.value)
-    }
   } catch (e) {
     // 忽略
   }
 }
 
-function loadMoreHistory() {
-  if (!hasMoreHistory.value) return
-  try {
-    const saved = uni.getStorageSync('fs_mentor_chat')
-    const start = Math.max(0, historyOffset.value - 20)
-    const older = saved.slice(start, historyOffset.value)
-    messages.value = [...older, ...messages.value]
-    historyOffset.value = start
-    hasMoreHistory.value = historyOffset.value > 0
-  } catch (e) {
-    // 忽略
+// 匹配话术
+function matchScript(text) {
+  const lowerText = text.toLowerCase()
+  for (const script of scriptLibrary) {
+    for (const keyword of script.keywords) {
+      if (lowerText.includes(keyword)) {
+        return script.content
+      }
+    }
   }
+  return null
 }
 
 // 发送消息
-async function handleSend() {
+function handleSend() {
   const text = inputText.value.trim()
-  if (!text || loading.value) return
-
-  // 检查配额
-  const quotaResult = store.checkQuotaBeforeSendMessage()
-  if (!quotaResult.canSend) {
-    showPaywall.value = true
-    track.paywallShown('quota_exhausted')
-    return
-  }
+  if (!text) return
 
   inputText.value = ''
   messages.value.push({ role: 'user', content: text })
-  store.consumeQuota()
   track.mentorMessageSent('free_input')
   saveChatHistory()
   scrollToBottom()
 
-  await sendToAI(text)
+  // 静态话术匹配
+  const matched = matchScript(text)
+  if (matched) {
+    messages.value.push({ role: 'bot', content: matched })
+  } else {
+    messages.value.push({
+      role: 'bot',
+      content: '暂时没有匹配到相关话术。你可以试试选择下方的常见场景，或者换个关键词搜索。',
+    })
+  }
+  saveChatHistory()
+  scrollToBottom()
 }
 
 function sendQuickScene(scene) {
-  if (loading.value) return
-  const quotaResult = store.checkQuotaBeforeSendMessage()
-  if (!quotaResult.canSend) {
-    showPaywall.value = true
-    track.paywallShown('quota_exhausted')
-    return
-  }
   messages.value.push({ role: 'user', content: scene.prompt })
-  store.consumeQuota()
   track.mentorMessageSent('quick_scenario', scene.id || '')
   saveChatHistory()
   scrollToBottom()
-  sendToAI(scene.prompt)
-}
 
-async function sendToAI(message) {
-  loading.value = true
-  streamBuffer.value = ''
-
-  try {
-    const task = uni.request({
-      url: 'https://fengsheng.tech/mentor-api/chat',
-      method: 'POST',
-      header: {
-        'Content-Type': 'application/json',
-        'Authorization': store.token ? `Bearer ${store.token}` : '',
-      },
-      data: {
-        message,
-        conversation_id: conversationId.value || undefined,
-        user_id: store.userId || uni.getStorageSync('fs_user_id') || 'mini_user',
-      },
-      responseType: 'text',
-      enableChunked: true,
-      success: (res) => {
-        parseSSE(res.data)
-      },
-      fail: (err) => {
-        if (streamBuffer.value) {
-          messages.value.push({ role: 'bot', content: streamBuffer.value })
-          saveChatHistory()
-        } else {
-          messages.value.push({ role: 'bot', content: '网络异常，请检查网络后重试。' })
-          saveChatHistory()
-        }
-        streaming.value = false
-        loading.value = false
-        streamBuffer.value = ''
-        scrollToBottom()
-      },
+  const matched = matchScript(scene.prompt)
+  if (matched) {
+    messages.value.push({ role: 'bot', content: matched })
+  } else {
+    messages.value.push({
+      role: 'bot',
+      content: '暂时没有匹配到相关话术，请换个场景试试。',
     })
-  } catch (e) {
-    messages.value.push({ role: 'bot', content: '网络异常，请检查网络后重试。' })
-    saveChatHistory()
-    loading.value = false
-    scrollToBottom()
   }
-}
-
-function parseSSE(rawData) {
-  const data = typeof rawData === 'string' ? rawData : JSON.stringify(rawData)
-  const lines = data.split('\n')
-  let fullText = ''
-
-  for (const line of lines) {
-    if (line.startsWith('data:')) {
-      const dataStr = line.slice(5).trim()
-      if (dataStr === '[DONE]') {
-        continue
-      }
-      try {
-        const json = JSON.parse(dataStr)
-        if (json.conversation_id && !conversationId.value) {
-          conversationId.value = json.conversation_id
-          uni.setStorageSync('fs_mentor_conv_id', conversationId.value)
-        }
-        if (json.type === 'answer' && json.content) {
-          // 逐字渲染
-          streaming.value = true
-          loading.value = false
-          streamBuffer.value = json.content
-          fullText = json.content
-          scrollToBottom()
-        }
-        if (json.role === 'assistant' && json.type === 'answer' && json.content) {
-          streamBuffer.value = json.content
-          fullText = json.content
-          streaming.value = true
-          loading.value = false
-        }
-      } catch {
-        // 非JSON行跳过
-      }
-    }
-  }
-
-  // 延迟收尾确保流式效果
-  setTimeout(() => {
-    if (streamBuffer.value) {
-      messages.value.push({ role: 'bot', content: streamBuffer.value })
-      saveChatHistory()
-    }
-    streaming.value = false
-    loading.value = false
-    streamBuffer.value = ''
-    scrollToBottom()
-  }, 300)
+  saveChatHistory()
+  scrollToBottom()
 }
 
 function scrollToBottom() {
   nextTick(() => {
     scrollTop.value += 9999
   })
-}
-
-// 付费墙
-function closePaywall() {
-  showPaywall.value = false
-  selectedPlan.value = null
-}
-
-function selectPlan(plan) {
-  selectedPlan.value = plan
-}
-
-function usePointsPay() {
-  if (store.points >= 100) {
-    store.spendPoints(100)
-    uni.showToast({ title: '已使用100积分抵扣', icon: 'success' })
-    showPaywall.value = false
-  } else {
-    uni.showToast({ title: '积分不足', icon: 'none' })
-  }
-}
-
-function goPay() {
-  const plan = selectedPlan.value
-  const query = plan ? `?type=${plan.type}&price=${plan.price}` : ''
-  showPaywall.value = false
-  uni.navigateTo({ url: '/pages/pay/index' + query })
 }
 </script>
 
@@ -463,43 +260,6 @@ function goPay() {
   margin-top: 4rpx;
 }
 
-.quota-badge {
-  background: rgba(255,255,255,0.15);
-  border-radius: 24rpx;
-  padding: 10rpx 24rpx;
-  display: flex;
-  align-items: center;
-  gap: 6rpx;
-}
-.quota-badge.quota-low {
-  background: rgba(255,200,100,0.25);
-}
-.quota-badge.quota-zero {
-  background: rgba(255,100,80,0.3);
-}
-.quota-label {
-  font-size: 22rpx;
-  color: rgba(255,255,255,0.8);
-}
-.quota-num {
-  font-size: 28rpx;
-  font-weight: 900;
-  color: #fff;
-}
-
-.vip-banner {
-  margin-top: 16rpx;
-  background: linear-gradient(135deg, #c46a3a, #e08850);
-  border-radius: 12rpx;
-  padding: 10rpx 20rpx;
-  text-align: center;
-}
-.vip-text {
-  font-size: 24rpx;
-  color: #fff;
-  font-weight: 700;
-}
-
 /* 快捷场景 */
 .scene-bar {
   background: #fff;
@@ -536,14 +296,6 @@ function goPay() {
   flex: 1;
   padding: 20rpx 24rpx;
   overflow-y: auto;
-}
-.load-more {
-  text-align: center;
-  padding: 10rpx 0;
-}
-.load-more-text {
-  font-size: 24rpx;
-  color: #3d5a3e;
 }
 .msg-row {
   display: flex;
@@ -612,17 +364,6 @@ function goPay() {
   line-height: 1.7;
   white-space: pre-wrap;
 }
-.typing {
-  color: #999;
-}
-.cursor {
-  color: #3d5a3e;
-  animation: blink 1s infinite;
-}
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
 .chat-bottom-spacer {
   height: 20rpx;
 }
@@ -662,190 +403,6 @@ function goPay() {
   font-size: 28rpx;
   font-weight: 700;
   color: #fff;
-}
-
-/* 付费墙弹窗 */
-.paywall-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40rpx;
-}
-.paywall-card {
-  background: #fff;
-  border-radius: 24rpx;
-  padding: 40rpx 32rpx 32rpx;
-  width: 100%;
-  max-width: 600rpx;
-  position: relative;
-}
-.paywall-close {
-  position: absolute;
-  top: 20rpx;
-  right: 20rpx;
-  width: 48rpx;
-  height: 48rpx;
-  border-radius: 50%;
-  background: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.paywall-close-icon {
-  font-size: 24rpx;
-  color: #999;
-  font-weight: 700;
-}
-.paywall-icon {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
-  background: #3d5a3e;
-  color: #fff;
-  font-size: 40rpx;
-  font-weight: 900;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 20rpx;
-}
-.paywall-title {
-  text-align: center;
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #222;
-  margin-bottom: 8rpx;
-}
-.paywall-sub {
-  text-align: center;
-  font-size: 24rpx;
-  color: #888;
-  margin-bottom: 28rpx;
-}
-
-.paywall-plans {
-  display: flex;
-  gap: 16rpx;
-  margin-bottom: 24rpx;
-}
-.plan-item {
-  flex: 1;
-  background: #f7f4ef;
-  border-radius: 16rpx;
-  padding: 24rpx 16rpx;
-  text-align: center;
-  position: relative;
-  border: 2rpx solid transparent;
-}
-.plan-item.plan-recommended {
-  border-color: #c46a3a;
-  background: #fff8f3;
-}
-.plan-badge {
-  position: absolute;
-  top: -14rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #c46a3a;
-  color: #fff;
-  font-size: 20rpx;
-  font-weight: 700;
-  padding: 4rpx 16rpx;
-  border-radius: 16rpx;
-}
-.plan-name {
-  font-size: 26rpx;
-  font-weight: 700;
-  color: #333;
-  margin-bottom: 8rpx;
-}
-.plan-price {
-  margin-bottom: 6rpx;
-}
-.plan-price-symbol {
-  font-size: 24rpx;
-  color: #c46a3a;
-  font-weight: 700;
-}
-.plan-price-num {
-  font-size: 44rpx;
-  font-weight: 900;
-  color: #c46a3a;
-}
-.plan-price-unit {
-  font-size: 22rpx;
-  color: #888;
-}
-.plan-desc {
-  font-size: 22rpx;
-  color: #888;
-}
-
-.paywall-points {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #f7f4ef;
-  border-radius: 12rpx;
-  padding: 20rpx 24rpx;
-  margin-bottom: 20rpx;
-}
-.points-left {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-}
-.points-icon {
-  width: 40rpx;
-  height: 40rpx;
-  border-radius: 50%;
-  background: #c46a3a;
-  color: #fff;
-  font-size: 20rpx;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.points-text {
-  font-size: 24rpx;
-  color: #555;
-}
-.points-rate {
-  font-size: 22rpx;
-  color: #c46a3a;
-  font-weight: 700;
-}
-
-.paywall-disclaimer {
-  text-align: center;
-  margin-bottom: 20rpx;
-}
-.disclaimer-text {
-  font-size: 22rpx;
-  color: #bbb;
-}
-
-.paywall-btn {
-  background: #c46a3a;
-  color: #fff;
-  font-size: 30rpx;
-  font-weight: 700;
-  padding: 22rpx;
-  border-radius: 40rpx;
-  text-align: center;
-}
-.paywall-btn-text {
-  color: #fff;
-  font-size: 30rpx;
-  font-weight: 700;
 }
 
 .footer {

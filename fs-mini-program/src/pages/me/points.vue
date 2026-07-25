@@ -122,23 +122,16 @@ const progressPercent = computed(() => {
   return Math.min(100, Math.max(0, Math.floor((current / range) * 100)))
 })
 
-// 赚积分规则
+// 赚积分规则（仅展示已实装渠道）
 const earnRules = [
   { name: '每日一题答对', points: 5, limit: '每日1次' },
-  { name: '客户模拟器通关', points: 15, limit: '每日1次' },
-  { name: '法官来了答对', points: 10, limit: '每日3次' },
-  { name: '纠错采纳', points: 20, limit: '无限制' },
-  { name: '验证有效', points: 10, limit: '无限制' },
-  { name: '提问入库', points: 10, limit: '无限制' },
-  { name: '分享词条', points: 5, limit: '每条1次' },
+  { name: '答题测评', points: 10, limit: '每日1次' },
 ]
 
-// 积分消耗规则
+// 积分消耗规则（仅展示已实装渠道）
 const spendRules = [
   { name: '解锁完整案例', points: 5 },
   { name: '解锁经纪人备忘', points: 3 },
-  { name: '解锁政策原文', points: 5 },
-  { name: '免费月卡兑换', points: 2000 },
 ]
 
 // 积分历史
