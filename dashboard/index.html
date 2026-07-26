@@ -87,19 +87,6 @@ a{color:#60a5fa;text-decoration:none}
 .tag-hot{background:#450a0a;color:#fca5a5}
 .tag-growing{background:#14532d;color:#86efac}
 .tag-cold{background:#1e293b;color:#64748b;border:1px solid #334155}
-/* agents grid */
-.agents{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.agent-card{background:#1e293b;border-radius:14px;padding:16px 18px;border:1px solid #334155}
-.agent-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.agent-name{font-size:14px;font-weight:700}
-.agent-role{font-size:10px;color:#64748b;margin-top:2px}
-.agent-status{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
-.agent-status.on{background:#14532d;color:#86efac}
-.agent-status.warn{background:#713f12;color:#fbbf24}
-.agent-status.off{background:#450a0a;color:#fca5a5}
-.agent-tasks{font-size:11px;color:#94a3b8;line-height:1.5;margin:0;padding-left:14px}
-.agent-tasks li{margin-bottom:2px}
-.agent-tasks li::marker{color:#64748b}
 /* chart area */
 .chart-area{background:#1e293b;border-radius:14px;padding:20px 24px;border:1px solid #334155;margin-bottom:24px}
 .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
@@ -131,12 +118,11 @@ a{color:#60a5fa;text-decoration:none}
   .kpi-row{grid-template-columns:repeat(3,1fr)}
   .milestones{grid-template-columns:repeat(2,1fr)}
   .products{grid-template-columns:repeat(2,1fr)}
-  .agents{grid-template-columns:repeat(2,1fr)}
   .health-row{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:640px){
   .kpi-row{grid-template-columns:repeat(2,1fr)}
-  .milestones,.products,.agents,.health-row{grid-template-columns:1fr}
+  .milestones,.products,.health-row{grid-template-columns:1fr}
   .container{padding:12px}
 }
 </style>
@@ -254,10 +240,6 @@ a{color:#60a5fa;text-decoration:none}
   <div class="section-title"><h2>📦 产品质量矩阵</h2><span class="tag tag-m4">交互深度·粘性·反馈</span></div>
   <div class="products" id="products-grid"></div>
 
-  <!-- Agents -->
-  <div class="section-title" style="margin-top:24px"><h2>🤖 六Agent 作战状态</h2><span class="tag tag-m2">6.29任务</span></div>
-  <div class="agents" id="agents-grid"></div>
-
   <!-- Health -->
   <div class="section-title" style="margin-top:24px"><h2>🔧 基础设施</h2></div>
   <div class="health-row" id="health-row"></div>
@@ -291,31 +273,15 @@ a{color:#60a5fa;text-decoration:none}
 
   // Product metadata — v3.0更新
   const PRODUCT_META = {
-    breeder:       {name:'助手养成师', owner:'小眼镜', color:'#3b82f6', emoji:'🧑‍🎓', desc:'数字能力6步方法论+实景练习'},
-    knowledge:     {name:'业务字典', owner:'小豆子', color:'#22c55e', emoji:'📚', desc:'9域176词条·行业唯一'},
-    'care-test':   {name:'六维品质测评', owner:'小酒窝儿', color:'#f59e0b', emoji:'⚡', desc:'品质标准+自检方法'},
-    assessment:    {name:'能力测评', owner:'小豆子', color:'#ef4444', emoji:'📈', desc:'能力维度+成长规划'},
-    reply:         {name:'客户解码器', owner:'小豆子', color:'#14b8a6', emoji:'💬', desc:'4域26场景·话术解码'},
-    'quality-test':{name:'品质检测', owner:'小酒窝儿', color:'#a855f7', emoji:'🔍', desc:'居住品质检测工具'},
-    mentor:        {name:'开单导师', owner:'小豆子', color:'#f97316', emoji:'🎯', desc:'7步闭环+6大工具·5轮免费·⚠️404'},
-    'ip-design':   {name:'IP角色设计', owner:'小鱼儿', color:'#ec4899', emoji:'🎨', desc:'免费IP设计→引流·⚠️404'}
+    breeder:       {name:'助手养成师', color:'#3b82f6', emoji:'🧑‍🎓', desc:'数字能力6步方法论+实景练习'},
+    knowledge:     {name:'业务字典', color:'#22c55e', emoji:'📚', desc:'9域176词条·行业唯一'},
+    'care-test':   {name:'六维品质测评', color:'#f59e0b', emoji:'⚡', desc:'品质标准+自检方法'},
+    assessment:    {name:'能力测评', color:'#ef4444', emoji:'📈', desc:'能力维度+成长规划'},
+    reply:         {name:'客户解码器', color:'#14b8a6', emoji:'💬', desc:'4域26场景·话术解码'},
+    'quality-test':{name:'品质检测', color:'#a855f7', emoji:'🔍', desc:'居住品质检测工具'},
+    mentor:        {name:'开单导师', color:'#f97316', emoji:'🎯', desc:'7步闭环+6大工具·5轮免费·⚠️404'},
+    'ip-design':   {name:'IP角色设计', color:'#ec4899', emoji:'🎨', desc:'免费IP设计→引流·⚠️404'}
   };
-
-  // Agent data — 六Agent v3.3 · 7.5晚间更新
-  const AGENTS = [
-    {name:'小鱼儿', role:'运营指挥·结果兜底', status:'on', emoji:'🐟',
-     tasks:['✅#129付费配置包启动+三大件定义','✅微信小店开通·虚拟商品通路','✅7.5里程碑验收·0/3达标','🔴#129初稿7.6交付']},
-    {name:'小扣子', role:'CTO·全栈开发', status:'warn', emoji:'🤖',
-     tasks:['✅#136 CLOSED','🔴JWT硬编码逾期14天','🔴CF Token过期阻塞部署','小程序审核第5天']},
-    {name:'小豆子', role:'产品经理·闭环设计', status:'warn', emoji:'💻',
-     tasks:['✅#111硬指令落地','🔴#137 Logo撤回未执行(审核违规)','🔴mentor CTA空链接','🔴mentor+ip-design 404退步']},
-    {name:'小眼镜', role:'教研开发·课程', status:'off', emoji:'👓',
-     tasks:['🔴#11教案5-8课(逾期16天+)','🔴#131首批35条(7.7截止)','连续无产出','需评估分工']},
-    {name:'小酒窝儿', role:'品质飞轮·检核', status:'on', emoji:'🔍',
-     tasks:['品质手册v4已通读+标注','#137审核流程违规需追责','品控响应机制保持','千问7.15断线备份已完成']},
-    {name:'小马丫', role:'本地桥梁·视频+获客', status:'on', emoji:'🐴',
-     tasks:['#130 数字提及率播种启动','#130推广视频+行业调研','EP01短视频','坚果云通道']}
-  ];
 
   // ---- API helpers ----
   async function fetchJSON(url) {
@@ -450,7 +416,7 @@ a{color:#60a5fa;text-decoration:none}
 
     const order = ['reply','quality-test','mentor','ip-design','breeder','knowledge','care-test','assessment'];
     for (const key of order) {
-      const meta = PRODUCT_META[key] || {name:key, owner:'—', color:'#64748b', emoji:'📦', desc:''};
+      const meta = PRODUCT_META[key] || {name:key, color:'#64748b', emoji:'📦', desc:''};
       const d = map[key] || {users:0, pageviews:0, feedback:0, clicks:0};
       const goals = GOALS.products[key] || {users:10, depth:3, pages:3};
       const pct = goals.users > 0 ? Math.round((d.users / goals.users) * 100) : 0;
@@ -470,7 +436,7 @@ a{color:#60a5fa;text-decoration:none}
       else tag = '<span class="product-tag tag-cold">待启动</span>';
 
       html += '<div class="product-card">' +
-        '<div class="product-top"><div><div class="product-name">'+meta.emoji+' '+meta.name+tag+'</div><div class="product-owner">'+meta.owner+' · '+meta.desc+'</div></div></div>' +
+        '<div class="product-top"><div><div class="product-name">'+meta.emoji+' '+meta.name+tag+'</div><div class="product-owner">'+meta.desc+'</div></div></div>' +
         '<div class="product-metrics">' +
           '<div class="pm-item">验证 <span class="pm-val" style="color:'+barColor+'">'+d.users+'</span><span class="pm-unit">/'+goals.users+'</span></div>' +
           '<div class="pm-item">深度 <span class="pm-val" style="color:'+depthColor+'">'+depth+'</span><span class="pm-unit">次/人</span></div>' +
@@ -478,21 +444,6 @@ a{color:#60a5fa;text-decoration:none}
           '<div class="pm-item">反馈 <span class="pm-val">'+d.feedback+'</span><span class="pm-unit">条</span></div>' +
         '</div>' +
         '<div class="product-bar"><div class="product-bar-fill" style="width:'+pct+'%;background:'+barColor+'"></div></div>' +
-        '</div>';
-    }
-    grid.innerHTML = html;
-  }
-
-  function renderAgents() {
-    const grid = document.getElementById('agents-grid');
-    let html = '';
-    for (const a of AGENTS) {
-      const statusClass = a.status === 'on' ? 'on' : (a.status === 'warn' ? 'warn' : 'off');
-      const statusText = a.status === 'on' ? '在岗' : (a.status === 'warn' ? '关键期' : '待到位');
-      const tasks = a.tasks.map(t => '<li>'+t+'</li>').join('');
-      html += '<div class="agent-card">' +
-        '<div class="agent-top"><div><div class="agent-name">'+a.emoji+' '+a.name+'</div><div class="agent-role">'+a.role+'</div></div><span class="agent-status '+statusClass+'">'+statusText+'</span></div>' +
-        '<ul class="agent-tasks">'+tasks+'</ul>' +
         '</div>';
     }
     grid.innerHTML = html;
@@ -534,7 +485,6 @@ a{color:#60a5fa;text-decoration:none}
 
     renderChart(daily || {daily:[]});
     renderHealth(health || {status:'degraded', events_count:-1, feedback_count:-1, db_connected:false});
-    renderAgents();
     document.getElementById('last-update').textContent = '更新：' + ts;
   }
 
