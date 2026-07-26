@@ -1,5 +1,11 @@
 // FengSheng Pages Worker - handles all API routes
 // Version: v20260720-1600 - anti-bot + anti-crawling defense
+//   + issue #191: 合作意向留资 (partner_intent) & IP 设计 AI 头像生成 (/ip-design)
+
+// 模块化业务处理 (api/ 目录, 由 Workerd 模块加载器解析相对 ESM 导入)
+import { storePartnerIntents } from './api/partner-intent.js';
+import { handleIpDesign } from './api/ip-design.js';
+
 const COZE_API = 'https://api.coze.cn';
 const BOT_ID_PLACEHOLDER = '***MASKED***'; // Bot ID from env var FS_BOT_ID，禁止硬编码
 const WX_API = 'https://api.weixin.qq.com/sns/jscode2session';
@@ -183,15 +189,47 @@ export default {
 
     // ============================================================
     //  Layer 0: Whitelist — 微信域名校验文件（必须放最前面，绕过所有安全层）
+    //  硬编码验证内容兜底：即使 ASSETS 未传播到中国区 PoP 也能正确返回
     // ============================================================
-    if (path.startsWith('/MP_verify_')) {
-      return env.ASSETS.fetch(request);
+    if (path.startsWith('/MP_verify_') && path.endsWith('.txt')) {
+      const VERIFY_CONTENT = {
+        '/MP_verify_810e0353e61ef284cb3a1e8f74a20476.txt': '810e0353e61ef284cb3a1e8f74a20476',
+      };
+      const content = VERIFY_CONTENT[path];
+      if (content) {
+        return new Response(content, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/plain',
+            'Cache-Control': 'public, max-age=3600',
+            'Access-Control-Allow-Origin': '*',
+          },
+        });
+      }
+      // 未知验证文件，尝试从 ASSETS 读取
+      try {
+        const assetResp = await env.ASSETS.fetch(request);
+        if (assetResp.status === 200) {
+          const text = await assetResp.text();
+          return new Response(text, {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/plain',
+              'Cache-Control': 'public, max-age=3600',
+              'Access-Control-Allow-Origin': '*',
+            },
+          });
+        }
+      } catch (e) { /* fall through */ }
     }
 
     // ============================================================
     //  Layer 0.5: API paths bypass UA/bot detection (小程序/服务端调用不自带浏览器UA)
     // ============================================================
     const isAPIPath = path.startsWith('/api/') || path.startsWith('/mentor-api/');
+    // /ip-design 既是静态页 (GET /ip-design/) 又是 API (POST /ip-design).
+    // 仅对 POST/OPTIONS 走 API 通道 (限流/CORS/preflight), 不影响页面访问的 UA 防护.
+    const isIpDesignApi = path === '/ip-design' && (request.method === 'POST' || request.method === 'OPTIONS');
 
     // ============================================================
     //  Layer 1: IP Ban Check (honeypot triggers, repeat offenders)
@@ -262,7 +300,7 @@ export default {
     }
 
     // API rate limiting (stricter than global)
-    if (path.startsWith('/mentor-api/') || path.startsWith('/api/')) {
+    if (path.startsWith('/mentor-api/') || path.startsWith('/api/') || isIpDesignApi) {
       if (!checkRateLimit(request)) {
         return new Response(JSON.stringify({ error: '请求过于频繁，请稍后再试' }), {
           status: 429,
@@ -273,7 +311,7 @@ export default {
 
     // Early body size check for POST/PUT endpoints
     const contentLength = parseInt(request.headers.get('Content-Length') || '0');
-    if (contentLength > MAX_PAYLOAD_SIZE && (path.startsWith('/mentor-api/') || path.startsWith('/api/'))) {
+    if (contentLength > MAX_PAYLOAD_SIZE && (path.startsWith('/mentor-api/') || path.startsWith('/api/') || isIpDesignApi)) {
       return new Response(JSON.stringify({ error: '请求体过大' }), {
         status: 413,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
@@ -284,7 +322,7 @@ export default {
     const resolvedBotId = env.FS_BOT_ID || BOT_ID_PLACEHOLDER;
 
     // CORS preflight for API routes
-    if (request.method === 'OPTIONS' && (path.startsWith('/mentor-api/') || path.startsWith('/api/'))) {
+    if (request.method === 'OPTIONS' && (path.startsWith('/mentor-api/') || path.startsWith('/api/') || isIpDesignApi)) {
       return new Response(null, {
         headers: {
           'Access-Control-Allow-Origin': '*',
@@ -300,6 +338,13 @@ export default {
       if (path === orphanPath || path.startsWith(orphanPath)) {
         return Response.redirect('https://fengsheng.tech/', 301);
       }
+    }
+
+    // IP Design AI 头像生成 API (issue #191 任务2)
+    // 必须放在 trailing-slash redirect 之前, 否则 POST /ip-design 会被 301 到 /ip-design/ 并丢失方法.
+    // GET /ip-design 仍会正常 301 到 /ip-design/ (静态页), 两者通过 method 区分, 互不影响.
+    if (path === '/ip-design' && request.method === 'POST') {
+      return handleIpDesign(request, env);
     }
 
     // Trailing-slash redirects — ensure directory-style paths always have /
@@ -855,15 +900,36 @@ async function handleFeedbackExternal(request, env) {
 async function handleEvent(request, env) {
   // Fire-and-forget: always acknowledge, never block page load
   try {
-    const body = await request.json();
-    const events = Array.isArray(body) ? body : [body];
+    // 前端 partner.js 用 navigator.sendBeacon 以 text/plain 发送 JSON,
+    // 先读 text 再 JSON.parse 可兼容任意 Content-Type.
+    const text = await request.text();
+    const body = text ? JSON.parse(text) : null;
+    const events = Array.isArray(body) ? body : body ? [body] : [];
 
-    if (env.DB) {
+    // 分流: 合作意向留资 (t === 'partner_intent') 单独存储, 其余走常规埋点
+    const partnerEvents = [];
+    const trackingEvents = [];
+    for (const e of events) {
+      if (e && e.t === 'partner_intent') partnerEvents.push(e);
+      else trackingEvents.push(e);
+    }
+
+    // 1) 合作意向 → partner_intents 表 (D1) / KV 兜底 (见 api/partner-intent.js)
+    if (partnerEvents.length) {
+      try {
+        await storePartnerIntents(partnerEvents, env, request);
+      } catch (e) {
+        console.error('partner_intents: store failed', e.message);
+      }
+    }
+
+    // 2) 常规埋点 → events 表
+    if (trackingEvents.length && env.DB) {
       // D1 available → bulk insert events
       const stmt = env.DB.prepare(
         'INSERT OR IGNORE INTO events (uid, event_type, url, page, product, title, referrer, utm_source, utm_medium, utm_campaign, ref, source, ua, screen, vp, locale, data, ts, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
       );
-      const batch = events.map((e) => {
+      const batch = trackingEvents.map((e) => {
         const ts = e.ts || Date.now();
         return stmt.bind(
           (e.uid || 'anon').slice(0, 64),
@@ -888,9 +954,9 @@ async function handleEvent(request, env) {
         );
       });
       await env.DB.batch(batch);
-      console.log(`events: wrote ${events.length} event(s)`);
-    } else {
-      console.log(`events: received ${events.length} event(s) (no DB, not persisted)`);
+      console.log(`events: wrote ${trackingEvents.length} event(s)`);
+    } else if (trackingEvents.length) {
+      console.log(`events: received ${trackingEvents.length} event(s) (no DB, not persisted)`);
     }
   } catch (e) {
     console.error('events: write failed', e.message);
