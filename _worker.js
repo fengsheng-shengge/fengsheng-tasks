@@ -1,5 +1,5 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260720-1600 - anti-bot + anti-crawling defense
+// Version: v20260726-1000 - issue #202 fix: dashboard expose fix (AGENTS→authed API) + anti-bot + anti-crawling defense
 //   + issue #191: 合作意向留资 (partner_intent) & IP 设计 AI 头像生成 (/ip-design)
 
 // 模块化业务处理 (api/ 目录, 由 Workerd 模块加载器解析相对 ESM 导入)
@@ -617,6 +617,11 @@ export default {
       return handleFeedbackExternal(request, env);
     }
 
+    // Issue #202: Admin agents endpoint (auth via DASHBOARD_TOKEN)
+    if (path === '/api/admin/agents' && request.method === 'GET') {
+      return handleAdminAgents(request, env);
+    }
+
     // All other requests → pass through to static assets
     return env.ASSETS.fetch(request);
   },
@@ -1105,6 +1110,56 @@ async function handleStatsHealth(request, env) {
   }
 
   return jsonResponse({ status: 'degraded', db: 'not_configured', updated: now });
+}
+
+// ============================================================
+//  Issue #202: /api/admin/agents — 鉴权后端，返回六Agent实时任务+Issue号+逾期天数
+//  鉴权: ?token=xxx (env.DASHBOARD_TOKEN, 强随机48hex)
+//  返回: 200 JSON / 401 缺token / 401 token错 / 500 token未配置
+// ============================================================
+const ADMIN_AGENTS = [
+  {name:'小鱼儿', role:'运营指挥·结果兜底', status:'on', emoji:'🐟',
+   tasks:['✅CI/CD恢复(401→2连部署成功)','✅#178 V2内容验收(8JSON)','✅四层追问定方向(6文档+3Issue)','🔴付费墙部署+小程序域名+#140升级']},
+  {name:'小扣子', role:'CTO·全栈开发', status:'on', emoji:'🤖',
+   tasks:['✅V2.0增强版4/5项独立完成','✅#175 dashboard修复','🔴#140付费闭环前端12天无响应','🔴#179编译测试提审']},
+  {name:'小豆子', role:'产品经理·闭环设计', status:'on', emoji:'💻',
+   tasks:['✅#177 V2设计方案+对接文档(64KB)','✅P1-05场景域导航补齐','🔴#185产品重设7.25截止','🟡#176/decoder 7.22交付']},
+  {name:'小眼镜', role:'教研开发·课程', status:'on', emoji:'👓',
+   tasks:['✅#178 V2内容8JSON验收','✅M0词条150条入库+5800ID规划','🔴#186词条标签7.27截止','🟡#164去重整合7.22截止']},
+  {name:'小酒窝儿', role:'品质飞轮·检核', status:'warn', emoji:'🔍',
+   tasks:['品控巡检P0已报(mentor API坏)','品牌定位语4处修正已报','V2页面质量验收准备','持续无主动产出']},
+  {name:'小马丫', role:'本地桥梁·视频+获客', status:'warn', emoji:'🐴',
+   tasks:['小红书"顺其自然"引流','待V2提审后安排推广配合','数据埋点方案待排','待派活']}
+];
+
+async function handleAdminAgents(request, env) {
+  const configuredToken = env.DASHBOARD_TOKEN;
+  if (!configuredToken) {
+    return jsonResponse({ error: 'DASHBOARD_TOKEN not configured' }, 500);
+  }
+  const url = new URL(request.url);
+  const provided = url.searchParams.get('token');
+  if (!provided) {
+    return jsonResponse({ error: 'unauthorized: token required (query: ?token=...)' }, 401);
+  }
+  // Use constant-time comparison to avoid timing attacks
+  if (provided.length !== configuredToken.length) {
+    return jsonResponse({ error: 'unauthorized: invalid token' }, 401);
+  }
+  let match = 0;
+  for (let i = 0; i < provided.length; i++) {
+    match |= provided.charCodeAt(i) ^ configuredToken.charCodeAt(i);
+  }
+  if (match !== 0) {
+    return jsonResponse({ error: 'unauthorized: invalid token' }, 401);
+  }
+  return jsonResponse({
+    agents: ADMIN_AGENTS,
+    count: ADMIN_AGENTS.length,
+    source: 'env',
+    updated: new Date().toISOString(),
+    issue: 202,
+  });
 }
 
 function jsonResponse(data, status = 200) {

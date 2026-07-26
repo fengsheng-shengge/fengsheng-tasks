@@ -254,16 +254,12 @@ a{color:#60a5fa;text-decoration:none}
   <div class="section-title"><h2>📦 产品质量矩阵</h2><span class="tag tag-m4">交互深度·粘性·反馈</span></div>
   <div class="products" id="products-grid"></div>
 
-  <!-- Agents -->
-  <div class="section-title" style="margin-top:24px"><h2>🤖 六Agent 作战状态</h2><span class="tag tag-m2">6.29任务</span></div>
-  <div class="agents" id="agents-grid"></div>
-
   <!-- Health -->
   <div class="section-title" style="margin-top:24px"><h2>🔧 基础设施</h2></div>
   <div class="health-row" id="health-row"></div>
 
   <div class="footer">
-    风声 · fengsheng.tech | 质量看板 v3.6 | 交互深度 / 粘性 / 反馈密度 / 验证线 | 数据来源：D1 /api/stats | 更新：2026-07-21 22:30
+    风声 · fengsheng.tech | 质量看板 v3.7 | 交互深度 / 粘性 / 反馈密度 / 验证线 | 数据来源：D1 /api/stats | 更新：2026-07-21 22:30
   </div>
 </div>
 
@@ -289,33 +285,17 @@ a{color:#60a5fa;text-decoration:none}
     }
   };
 
-  // Product metadata — v3.0更新
+  // Product metadata — v3.7 (issue #202: owner字段已移除)
   const PRODUCT_META = {
-    breeder:       {name:'助手养成师', owner:'小眼镜', color:'#3b82f6', emoji:'🧑‍🎓', desc:'数字能力6步方法论+实景练习'},
-    knowledge:     {name:'业务字典', owner:'小豆子', color:'#22c55e', emoji:'📚', desc:'9域176词条·行业唯一'},
-    'care-test':   {name:'六维品质测评', owner:'小酒窝儿', color:'#f59e0b', emoji:'⚡', desc:'品质标准+自检方法'},
-    assessment:    {name:'能力测评', owner:'小豆子', color:'#ef4444', emoji:'📈', desc:'能力维度+成长规划'},
-    reply:         {name:'客户解码器', owner:'小豆子', color:'#14b8a6', emoji:'💬', desc:'4域26场景·话术解码'},
-    'quality-test':{name:'品质检测', owner:'小酒窝儿', color:'#a855f7', emoji:'🔍', desc:'居住品质检测工具'},
-    mentor:        {name:'开单导师', owner:'小豆子', color:'#f97316', emoji:'🎯', desc:'7步闭环+6大工具·5轮免费·⚠️404'},
-    'ip-design':   {name:'IP角色设计', owner:'小鱼儿', color:'#ec4899', emoji:'🎨', desc:'免费IP设计→引流·⚠️404'}
+    breeder:       {name:'助手养成师', color:'#3b82f6', emoji:'🧑‍🎓', desc:'数字能力6步方法论+实景练习'},
+    knowledge:     {name:'业务字典', color:'#22c55e', emoji:'📚', desc:'9域176词条·行业唯一'},
+    'care-test':   {name:'六维品质测评', color:'#f59e0b', emoji:'⚡', desc:'品质标准+自检方法'},
+    assessment:    {name:'能力测评', color:'#ef4444', emoji:'📈', desc:'能力维度+成长规划'},
+    reply:         {name:'客户解码器', color:'#14b8a6', emoji:'💬', desc:'4域26场景·话术解码'},
+    'quality-test':{name:'品质检测', color:'#a855f7', emoji:'🔍', desc:'居住品质检测工具'},
+    mentor:        {name:'开单导师', color:'#f97316', emoji:'🎯', desc:'7步闭环+6大工具·5轮免费·⚠️404'},
+    'ip-design':   {name:'IP角色设计', color:'#ec4899', emoji:'🎨', desc:'免费IP设计→引流·⚠️404'}
   };
-
-  // Agent data — 六Agent v3.3 · 7.5晚间更新
-  const AGENTS = [
-    {name:'小鱼儿', role:'运营指挥·结果兜底', status:'on', emoji:'🐟',
-     tasks:['✅CI/CD恢复(401→2连部署成功)','✅#178 V2内容验收(8JSON)','✅四层追问定方向(6文档+3Issue)','🔴付费墙部署+小程序域名+#140升级']},
-    {name:'小扣子', role:'CTO·全栈开发', status:'on', emoji:'🤖',
-     tasks:['✅V2.0增强版4/5项独立完成','✅#175 dashboard修复','🔴#140付费闭环前端12天无响应','🔴#179编译测试提审']},
-    {name:'小豆子', role:'产品经理·闭环设计', status:'on', emoji:'💻',
-     tasks:['✅#177 V2设计方案+对接文档(64KB)','✅P1-05场景域导航补齐','🔴#185产品重设7.25截止','🟡#176/decoder 7.22交付']},
-    {name:'小眼镜', role:'教研开发·课程', status:'on', emoji:'👓',
-     tasks:['✅#178 V2内容8JSON验收','✅M0词条150条入库+5800ID规划','🔴#186词条标签7.27截止','🟡#164去重整合7.22截止']},
-    {name:'小酒窝儿', role:'品质飞轮·检核', status:'warn', emoji:'🔍',
-     tasks:['品控巡检P0已报(mentor API坏)','品牌定位语4处修正已报','V2页面质量验收准备','持续无主动产出']},
-    {name:'小马丫', role:'本地桥梁·视频+获客', status:'warn', emoji:'🐴',
-     tasks:['小红书"顺其自然"引流','待V2提审后安排推广配合','数据埋点方案待排','待派活']}
-  ];
 
   // ---- API helpers ----
   async function fetchJSON(url) {
@@ -450,7 +430,7 @@ a{color:#60a5fa;text-decoration:none}
 
     const order = ['reply','quality-test','mentor','ip-design','breeder','knowledge','care-test','assessment'];
     for (const key of order) {
-      const meta = PRODUCT_META[key] || {name:key, owner:'—', color:'#64748b', emoji:'📦', desc:''};
+      const meta = PRODUCT_META[key] || {name:key, color:'#64748b', emoji:'📦', desc:''};
       const d = map[key] || {users:0, pageviews:0, feedback:0, clicks:0};
       const goals = GOALS.products[key] || {users:10, depth:3, pages:3};
       const pct = goals.users > 0 ? Math.round((d.users / goals.users) * 100) : 0;
@@ -470,7 +450,7 @@ a{color:#60a5fa;text-decoration:none}
       else tag = '<span class="product-tag tag-cold">待启动</span>';
 
       html += '<div class="product-card">' +
-        '<div class="product-top"><div><div class="product-name">'+meta.emoji+' '+meta.name+tag+'</div><div class="product-owner">'+meta.owner+' · '+meta.desc+'</div></div></div>' +
+        '<div class="product-top"><div><div class="product-name">'+meta.emoji+' '+meta.name+tag+'</div><div class="product-owner">'+meta.desc+'</div></div></div>' +
         '<div class="product-metrics">' +
           '<div class="pm-item">验证 <span class="pm-val" style="color:'+barColor+'">'+d.users+'</span><span class="pm-unit">/'+goals.users+'</span></div>' +
           '<div class="pm-item">深度 <span class="pm-val" style="color:'+depthColor+'">'+depth+'</span><span class="pm-unit">次/人</span></div>' +
@@ -478,21 +458,6 @@ a{color:#60a5fa;text-decoration:none}
           '<div class="pm-item">反馈 <span class="pm-val">'+d.feedback+'</span><span class="pm-unit">条</span></div>' +
         '</div>' +
         '<div class="product-bar"><div class="product-bar-fill" style="width:'+pct+'%;background:'+barColor+'"></div></div>' +
-        '</div>';
-    }
-    grid.innerHTML = html;
-  }
-
-  function renderAgents() {
-    const grid = document.getElementById('agents-grid');
-    let html = '';
-    for (const a of AGENTS) {
-      const statusClass = a.status === 'on' ? 'on' : (a.status === 'warn' ? 'warn' : 'off');
-      const statusText = a.status === 'on' ? '在岗' : (a.status === 'warn' ? '关键期' : '待到位');
-      const tasks = a.tasks.map(t => '<li>'+t+'</li>').join('');
-      html += '<div class="agent-card">' +
-        '<div class="agent-top"><div><div class="agent-name">'+a.emoji+' '+a.name+'</div><div class="agent-role">'+a.role+'</div></div><span class="agent-status '+statusClass+'">'+statusText+'</span></div>' +
-        '<ul class="agent-tasks">'+tasks+'</ul>' +
         '</div>';
     }
     grid.innerHTML = html;
@@ -534,7 +499,6 @@ a{color:#60a5fa;text-decoration:none}
 
     renderChart(daily || {daily:[]});
     renderHealth(health || {status:'degraded', events_count:-1, feedback_count:-1, db_connected:false});
-    renderAgents();
     document.getElementById('last-update').textContent = '更新：' + ts;
   }
 
