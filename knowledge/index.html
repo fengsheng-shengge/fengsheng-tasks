@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>风声 · 知识底座</title>
-<meta name="description" content="风声知识底座 · 文化/使命/愿景/价值观 · 美好居住三层 · 8业务域词条 · 9岗位45能力点 · 单文件零依赖">
+<meta name="description" content="风声知识底座 · 文化/使命/愿景/价值观 · 美好居住三层 · 3130词条 · 13业务域 · 9岗位45能力点 · 单文件零依赖">
 <style>
 :root {
   --p: #3d5a3e;
@@ -320,7 +320,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
   <div class="stats">
     <a class="stat" href="#pillars"><div class="stat-num">4</div><div class="stat-label">核心支柱</div></a>
     <a class="stat" href="#dictIndex"><div class="stat-num" id="dictStatNum">35</div><div class="stat-label">词条·已就绪</div></a>
-    <a class="stat" href="#dictIndex"><div class="stat-num">8</div><div class="stat-label">业务域</div></a>
+    <a class="stat" href="#dictIndex"><div class="stat-num" id="dictDomainStatNum">8</div><div class="stat-label">业务域</div></a>
     <a class="stat" href="#dictIndex"><div class="stat-num">9</div><div class="stat-label">服务岗位</div></a>
     <a class="stat" href="#dictIndex"><div class="stat-num">45</div><div class="stat-label">岗位能力点</div></a>
     <a class="stat" href="#search"><div class="stat-num">3</div><div class="stat-label">应用产品</div></a>
@@ -413,7 +413,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
           <div class="product-card">
             <div class="pc-icon">📚</div>
             <div class="pc-name">知识底座（核心资产）</div>
-            <div class="pc-desc">9岗位 × 8域 × 双线 × 三层 —— 底层资产，不是产品。所有产品从这里长出来。</div>
+            <div class="pc-desc">9岗位 × 13域 × 双线 × 三层 —— 底层资产，不是产品。所有产品从这里长出来。</div>
             <div class="pc-status">基石</div>
           </div>
         </div>
@@ -681,7 +681,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
     <div>
       <div class="section-tag" id="dictSectionTag">📖 业务字典 · 8域词条</div>
       <h2 class="section-title">全量词条索引</h2>
-      <p class="section-sub" id="dictSectionSub">8大业务域 · 词条逐步补全中 · 每条词条含定义+正反话术+消费者问题+服务者回答</p>
+      <p class="section-sub" id="dictSectionSub">13大业务域 · 3130 词条逐步补全中 · 每条词条含定义+正反话术+消费者问题+服务者回答</p>
     </div>
     <div id="dictVerifyBadge" style="font-size:11px;padding:4px 10px;border-radius:4px;background:var(--fire);color:white;font-weight:600"></div>
   </div>
@@ -714,7 +714,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
       <div class="guide-card" style="border-top:3px solid var(--wood)">
         <div class="guide-icon">📚</div>
         <div class="guide-name">知识底座</div>
-        <div class="guide-desc">核心资产 · 9岗位×8域×双线×三层 · 不是产品，是地基。所有产品从这里长出来。</div>
+        <div class="guide-desc">核心资产 · 9岗位×13域×双线×三层 · 不是产品，是地基。所有产品从这里长出来。</div>
       </div>
     </div>
   </div>
@@ -774,16 +774,25 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
 'use strict';
 
 /* ===== 数据层 ===== */
-const businessDomains = [
-  { entry_id:'TRADE', code:'trade', title:'域 1 · 房产交易', icon:'🏘', count:20, status:'active', isPlaceholder:false, sample_words:['真房源','带看','资金监管','签约'], more_count:16, sample_ids:['TRX-001','TRX-002','TRX-005','TRX-019'] },
-  { entry_id:'RENTAL', code:'rental', title:'域 2 · 房屋租赁', icon:'🏠', count:26, status:'active', isPlaceholder:false, sample_words:['长租公寓','押金退还','续租','租赁备案'], more_count:22, sample_ids:['RNT-001','RNT-004','RNT-011','RNT-010'] },
-  { entry_id:'DECOR', code:'decor', title:'域 3 · 整装家居', icon:'🪚', count:15, status:'active', isPlaceholder:false, sample_words:['包工包料','设计方案','施工验收'], more_count:12, sample_ids:['DEC-001','DEC-002','DEC-003'] },
-  { entry_id:'HMK', code:'homekeep', title:'域 4 · 家政保洁', icon:'🧹', count:15, status:'active', isPlaceholder:false, sample_words:['日常保洁','深度清洁','家电清洗'], more_count:12, sample_ids:['HMK-001','HMK-002','HMK-003'] },
-  { entry_id:'QLT-C', code:'quality-customer', title:'域 5 · 品质居住(消费者)', icon:'🌟', count:6, status:'active', isPlaceholder:false, sample_words:['安全','健康','整洁','温暖','美观','惬意'], more_count:0, sample_ids:['QLT-001','QLT-002','QLT-003','QLT-004','QLT-005','QLT-006'] },
-  { entry_id:'QLT-S', code:'quality-server', title:'域 6 · 品质居住(服务者)', icon:'💪', count:4, status:'active', isPlaceholder:false, sample_words:['身体健康','心理韧性','职业尊严','生活质感'], more_count:0, sample_ids:['QLT-007','QLT-008','QLT-009','QLT-010'] },
-  { entry_id:'TAL', code:'talent', title:'域 7 · 人才字典', icon:'👥', count:18, status:'active', isPlaceholder:false, sample_words:['房产经纪人','租赁管家','整装设计师','家政服务员'], more_count:14, sample_ids:['TAL-A1','TAL-B1','TAL-B2','TAL-C1'] },
-  { entry_id:'POL', code:'policy', title:'域 8 · 十五五政策', icon:'📜', count:18, status:'active', isPlaceholder:false, sample_words:['好房子','新模式','城市更新','改善性住房'], more_count:14, sample_ids:['POL-001','POL-002','POL-003','POL-004'] }
-];
+// 域配置：从 entries.json 动态生成，此处仅定义图标和展示名
+const DOMAIN_CONFIG = {
+  '签约前':  { icon:'🔍', title:'签约前',      desc:'需求确认、客户解码、带看准备' },
+  '签约中':  { icon:'📝', title:'签约中',      desc:'谈判斡旋、合同条款、交易流程' },
+  '签约后':  { icon:'✅', title:'签约后',      desc:'交房验收、售后跟进、关系维护' },
+  '居住中':  { icon:'🏠', title:'居住中',      desc:'居住品质、日常服务、社区生活' },
+  '退租出售': { icon:'🚪', title:'退租出售',    desc:'退租交接、房源出售、资产处置' },
+  '业主':    { icon:'👤', title:'业主服务',    desc:'业主委托、资产管理、收益优化' },
+  '资产持有与运营': { icon:'📊', title:'资产持有与运营', desc:'资产配置、运营管理、价值提升' },
+  '职业成长': { icon:'📈', title:'职业成长',    desc:'能力提升、职业规划、行业认知' },
+  '跨域通用': { icon:'🔗', title:'跨域通用',    desc:'跨场景通用知识、基础能力' },
+  'SNG':     { icon:'🎵', title:'SNG · 场景词条', desc:'特定场景专项词条' },
+  'OWN':     { icon:'🏢', title:'OWN · 业主专域', desc:'业主侧专项词条' },
+  'trade':   { icon:'💼', title:'交易 · 专项',  desc:'交易场景专项词条' },
+  'CAR':     { icon:'🚗', title:'CAR · 资产',   desc:'资产相关专项词条' },
+};
+
+// businessDomains 将从 entries.json 动态构建
+let businessDomains = [];
 
 const talentRoles = [
   { code:'A1', name:'房产经纪人', icon:'🏘', domain:'trade', gb:'✅ 国标 4-06-02-01' },
@@ -839,10 +848,21 @@ const entryDatabase = {
 let totalEntries = 0;  // 由 loadEntriesData() 动态更新
 let allEntries = [];      // entries.json全量数据(#181 fix)
 let allEntriesMap = {};   // id→entry 快速查找map
+let totalDomains = 0;    // 实际域数量
 
-// 域→图标映射(从businessDomains提取,entries.json无icon字段)
-const domainIconMap = {};
-businessDomains.forEach(d => { domainIconMap[d.code] = d.icon; });
+// 域→图标映射(entries.json无icon字段,从DOMAIN_CONFIG查)
+function getDomainIcon(domain){
+  const cfg = DOMAIN_CONFIG[domain];
+  return cfg ? cfg.icon : '📄';
+}
+function getDomainTitle(domain){
+  const cfg = DOMAIN_CONFIG[domain];
+  return cfg ? cfg.title : domain;
+}
+function getDomainDesc(domain){
+  const cfg = DOMAIN_CONFIG[domain];
+  return cfg ? cfg.desc : '';
+}
 
 /* ===== 动态词条计数 ===== */
 async function loadEntriesData(){
@@ -854,58 +874,77 @@ async function loadEntriesData(){
     allEntries = entries;
     allEntriesMap = {};
     entries.forEach(e => { allEntriesMap[e.id] = e; });
+
+    // 动态构建 businessDomains（从 entries.json 实际 domain 字段）
     const domainCounts={};
+    const domainSamples={}; // 每个域存5个样本词条
     entries.forEach(e=>{
       const d=e.domain||'unknown';
       domainCounts[d]=(domainCounts[d]||0)+1;
+      if(!domainSamples[d]) domainSamples[d]=[];
+      if(domainSamples[d].length<5) domainSamples[d].push(e);
     });
-    // 更新 businessDomains 的 count 和 more_count
-    businessDomains.forEach(d=>{
-      const actual=domainCounts[d.code]||0;
-      if(actual>0){
-        d.count=actual;
-        d.more_count=Math.max(0,actual-d.sample_words.length);
-      }
-    });
-    // 更新 badge（从 entries.json 动态计算总数）
-    totalEntries = entries.length;
-    const badge = document.getElementById('dictVerifyBadge');
-    if (badge) {
-      badge.textContent = `⏳ ${totalEntries} 词条 · 8 业务域 · 9 岗位`;
-    }
-    const statNum = document.getElementById('dictStatNum');
-    if (statNum) statNum.textContent = totalEntries;
-    const sectionTag = document.getElementById('dictSectionTag');
-    if (sectionTag) sectionTag.textContent = `📖 业务字典 · 8域${totalEntries}词条`;
-    const sectionSub = document.getElementById('dictSectionSub');
-    if (sectionSub) sectionSub.textContent = `8大业务域 · ${totalEntries} 词条逐步补全中 · 每条词条含定义+正反话术+消费者问题+服务者回答`;
 
+    // 按词条数降序排列域
+    const sortedDomains = Object.entries(domainCounts)
+      .sort((a,b)=>b[1]-a[1])
+      .filter(([d])=>d!=='unknown');
+
+    businessDomains = sortedDomains.map(([domain,count])=>{
+      const cfg = DOMAIN_CONFIG[domain] || { icon:'📄', title:domain, desc:'' };
+      const samples = domainSamples[domain] || [];
+      return {
+        code: domain,
+        title: cfg.title,
+        icon: cfg.icon,
+        desc: cfg.desc,
+        count: count,
+        sample_words: samples.map(e=>e.name||e.title||e.id),
+        sample_ids: samples.map(e=>e.id),
+        more_count: Math.max(0, count - samples.length),
+      };
+    });
+
+    totalEntries = entries.length;
+    totalDomains = businessDomains.length;
+
+    // 更新 badge/stats
+    updateDomainStats();
     // 重新渲染
     renderDomains();
-    console.log('✅ 词条计数已动态更新:', domainCounts, 'total:', totalEntries);
+    console.log('✅ 词条动态加载完成:', totalEntries, '条,', totalDomains, '个域');
   }catch(e){
-    console.warn('⚠️ 动态加载 entries.json 失败，使用默认计数',e);
+    console.warn('⚠️ 动态加载 entries.json 失败',e);
   }
+}
+
+function updateDomainStats(){
+  const badge = document.getElementById('dictVerifyBadge');
+  if (badge) {
+    badge.textContent = `⏳ ${totalEntries} 词条 · ${totalDomains} 业务域 · 9 岗位`;
+  }
+  const statNum = document.getElementById('dictStatNum');
+  if (statNum) statNum.textContent = totalEntries;
+  const domainStatNum = document.getElementById('dictDomainStatNum');
+  if (domainStatNum) domainStatNum.textContent = totalDomains;
+  const sectionTag = document.getElementById('dictSectionTag');
+  if (sectionTag) sectionTag.textContent = `📖 业务字典 · ${totalDomains}域${totalEntries}词条`;
+  const sectionSub = document.getElementById('dictSectionSub');
+  if (sectionSub) sectionSub.textContent = `${totalDomains}大业务域 · ${totalEntries} 词条逐步补全中 · 每条词条含定义+正反话术+消费者问题+服务者回答`;
 }
 
 /* ===== 渲染 ===== */
 function renderDomains(){
   const el=document.getElementById('domainsList');
+  if(!el) return;
   el.innerHTML=businessDomains.map(d=>{
     const chips=[
       ...d.sample_words.map((w,i)=>'<span class="di-word" data-entry="'+d.sample_ids[i]+'">'+w+'</span>'),
-      '<span class="di-word" data-entry="DOMAIN-'+d.code+'">+ '+d.more_count+' 条</span>'
+      (d.more_count>0 ? '<span class="di-word" data-entry="DOMAIN-'+d.code+'">+ '+d.more_count+' 条</span>' : '')
     ].join('');
-    return '<div class="di-domain"><div class="di-domain-head"><span class="di-domain-icon">'+d.icon+'</span><span class="di-domain-name">'+d.title+'</span><span class="di-domain-count">'+d.count+' 条</span></div><div class="di-words">'+chips+'</div></div>';
+    return '<div class="di-domain"><div class="di-domain-head"><span class="di-domain-icon">'+d.icon+'</span><span class="di-domain-name">'+d.title+'</span><span class="di-domain-count">'+d.count+' 条</span></div><div class="di-domain-desc" style="font-size:12px;color:var(--ink-soft);margin-bottom:10px">'+d.desc+'</div><div class="di-words">'+chips+'</div></div>';
   }).join('');
-  const badge=document.getElementById('dictVerifyBadge');
-  if(badge) badge.textContent='⏳ '+totalEntries+' 词条 · 8 业务域 · 9 岗位';
-  const statNum=document.getElementById('dictStatNum');
-  if(statNum) statNum.textContent=totalEntries;
-  const sectionTag=document.getElementById('dictSectionTag');
-  if(sectionTag) sectionTag.textContent='📖 业务字典 · 8域'+totalEntries+'词条';
-  const sectionSub=document.getElementById('dictSectionSub');
-  if(sectionSub) sectionSub.textContent='8大业务域 · '+totalEntries+' 词条逐步补全中 · 每条词条含定义+正反话术+消费者问题+服务者回答';
+  updateDomainStats();
 }
 
 function renderRoles(){
@@ -999,8 +1038,8 @@ function openEntry(entryId){
     showEntry({icon:'📄',title:'词条详情',id:entryId,def:'词条详情待补全·数据源:风声业务字典',consumer:'消费者就"'+entryId+'"这个话题,通常会问:这是什么?为什么重要?',servicer:'服务者的标准回答路径:①一句话说清"这是什么"②一个例子让客户秒懂③给一个明确建议'});
     return;
   }
-  // entries.json字段映射: name→title, 无icon→用domainIconMap
-  const entryIcon = data.icon || domainIconMap[data.domain] || '📄';
+  // entries.json字段映射: name→title, 无icon→用getDomainIcon
+  const entryIcon = data.icon || getDomainIcon(data.domain) || '📄';
   const entryTitle = data.title || data.name || data.id;
   const entryDef = data.def || '';
   const entryConsumer = data.consumer || data.consumerQ || '';
@@ -1009,24 +1048,25 @@ function openEntry(entryId){
 }
 
 function showDomainModal(domain){
-  // #181 fix: 优先从allEntries(entries.json)取,兜底entryDatabase
+  // 从allEntries按domain过滤
   let entries = allEntries.filter(e=>e.domain===domain.code);
-  const listHtml=entries.length>0
-    ? entries.map(e=>{
-        const icon = e.icon || domainIconMap[e.domain] || '📄';
+  const totalInDomain = entries.length;
+  const showEntries = entries.slice(0, 50); // 最多显示50条，避免性能问题
+  const hasMore = totalInDomain > 50;
+  const listHtml=showEntries.length>0
+    ? showEntries.map(e=>{
+        const icon = e.icon || getDomainIcon(e.domain) || '📄';
         const title = e.title || e.name || e.id;
-        return '<div class="domain-entry-item" data-entry="'+e.id+'" style="padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:10px" onclick="event.stopPropagation();closeEntry();setTimeout(()=>openEntry(\''+e.id+'\'),100)"><span style="font-size:24px">'+icon+'</span><div><div style="font-weight:700;font-size:14px">'+title+'</div><div style="font-size:12px;color:var(--ts)">'+e.id+'</div></div><span style="margin-left:auto;color:var(--ts)">→</span></div>';
+        return '<div class="domain-entry-item" data-entry="'+e.id+'" style="padding:12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:10px;background:white" onclick="event.stopPropagation();closeEntry();setTimeout(()=>openEntry(\''+e.id+'\'),100)"><span style="font-size:24px">'+icon+'</span><div><div style="font-weight:700;font-size:14px">'+title+'</div><div style="font-size:11px;color:var(--ink-soft)">'+e.id+'</div></div><span style="margin-left:auto;color:var(--ink-soft);font-size:12px">→</span></div>';
       }).join('')
-    : '<div style="text-align:center;padding:20px;color:var(--ts)">此域词条待补全（'+domain.count+'条计划中）</div>';
+    : '<div style="text-align:center;padding:20px;color:var(--ink-soft)">此域词条待补全（'+domain.count+'条计划中）</div>';
+  const moreHint = hasMore ? '<div style="text-align:center;padding:12px;color:var(--ink-soft);font-size:12px">（仅显示前50条，共'+totalInDomain+'条）</div>' : '';
   showEntry({
     icon:domain.icon,title:domain.title,id:'DOMAIN-'+domain.code,
-    def:'共 '+domain.count+' 条词条（已就绪 '+entries.length+' 条，待补 '+(domain.count-entries.length)+' 条）',
-    consumer:listHtml,
+    def:'共 '+domain.count+' 条词条（'+domain.desc+'）',
+    consumer:listHtml+moreHint,
     servicer:'点击词条查看详情'
   });
-  // 展开消费端/服务端区域
-  document.getElementById('modalConsumerQuote').innerHTML=listHtml;
-  document.getElementById('modalServicerQuote').textContent='';
 }
 
 function showRoleModal(role){
