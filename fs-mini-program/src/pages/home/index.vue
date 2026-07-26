@@ -1,437 +1,116 @@
 <template>
   <view class="page">
-    <!-- HeroCard 用户等级+积分+slogan -->
-    <HeroCard
-      :level="store.level"
-      :level-name="store.levelName"
-      :points="store.points"
-      subtitle="居住服务者的专业基础设施"
-      slogan="记忆库 · 知识库 · 工具包"
-    />
+    <!-- Hero 轮播 -->
+    <swiper class="hero-carousel" :autoplay="true" :interval="3800" :circular="true" :current="heroIdx" @change="onHero">
+      <swiper-item v-for="(s, i) in slides" :key="i">
+        <view class="slide"><image :src="s.img" class="slide-img" mode="aspectFill"></image>
+          <view class="hero-cap"><view class="ht">{{ s.ht }}</view><view class="hs">{{ s.hs }}</view></view>
+        </view>
+      </swiper-item>
+    </swiper>
+    <view class="hero-dots">
+      <view class="dot" :class="{ on: heroIdx === i }" v-for="(d, i) in slides" :key="i" @tap="goSlide(i)"></view>
+    </view>
+    <view class="hero-badge">风声 · 智能工具包</view>
 
-    <!-- P0-01: "客户说了什么"触发入口 -->
-    <view class="trigger-input-card">
-      <view class="trigger-input-row" @click="onTriggerInputClick">
-        <text class="trigger-icon">💬</text>
-        <input
-          v-model="triggerInput"
-          class="trigger-input"
-          placeholder="客户说了什么？粘贴原话试试"
-          placeholder-class="trigger-placeholder"
-          confirm-type="search"
-          @confirm="onTriggerSearch"
-        />
-        <view class="trigger-btn" @click.stop="onTriggerSearch">
-          <text class="trigger-btn-text">→</text>
-        </view>
-      </view>
-
-      <!-- 匹配结果 -->
-      <view v-if="triggerResult" class="trigger-result">
-        <view v-if="triggerResult.matched" class="trigger-matched">
-          <view class="trigger-result-title">
-            <text class="trigger-result-icon">✅</text>
-            <text class="trigger-result-text">匹配到：{{ triggerResult.name }}</text>
-          </view>
-          <view class="trigger-result-actions">
-            <view class="trigger-result-btn" @click="goMatchedEntry(triggerResult.id)">
-              <text class="trigger-result-btn-text">查看词条</text>
-            </view>
-            <view class="trigger-result-btn secondary" @click="goMentorWithInput">
-              <text class="trigger-result-btn-text">问导师</text>
-            </view>
-          </view>
-        </view>
-        <view v-else class="trigger-no-match">
-          <text class="trigger-no-match-text">未匹配到相关内容，试试词典搜索或问导师</text>
-          <view class="trigger-result-actions">
-            <view class="trigger-result-btn" @click="goDictSearch">
-              <text class="trigger-result-btn-text">搜词典</text>
-            </view>
-            <view class="trigger-result-btn secondary" @click="goMentorWithInput">
-              <text class="trigger-result-btn-text">问导师</text>
-            </view>
-          </view>
-        </view>
+    <!-- 信任积分 -->
+    <view class="trust-banner">
+      <view class="tb-ico">⭐</view>
+      <view class="tb-l">
+        <view class="tb-lab">信任积分</view>
+        <view class="tb-num">{{ points }}<text class="unit">分</text></view>
+        <view class="tb-goal">本月目标 30 次服务动作 · 已得 {{ serviceCount }} 次</view>
+        <view class="tb-bar"><view class="tb-fill" :style="{ width: fillPct + '%' }"></view></view>
       </view>
     </view>
 
-    <!-- SceneGrid 2×2 场景卡片 -->
-    <SceneGrid :cards="sceneCards" @scene-click="onSceneClick" />
+    <!-- 搜索 -->
+    <view class="search-bar" @tap="toast('搜索功能（模拟）')">
+      <text class="icon">🔍</text><text class="text">搜索知识 / 工具 / 客户</text><text class="btn">搜索</text>
+    </view>
 
-    <!-- P1-05: 6大场景域导航 -->
-    <DomainNav />
-
-    <!-- DailyQuiz 每日一题 -->
-    <DailyQuiz :quiz="dailyQuiz" @earned="onQuizEarned" />
-
-    <!-- 工具栏快捷入口 ToolGrid -->
-    <view class="tool-grid">
-      <view class="tool-grid-title">快捷工具</view>
-      <view class="tool-grid-body">
-        <view
-          v-for="tool in toolList"
-          :key="tool.id"
-          class="tool-item"
-          @click="navigateTo(tool.url, tool.tab, tool.id)"
-        >
-          <view class="tool-icon" :style="{ background: tool.bgColor }">{{ tool.icon }}</view>
-          <view class="tool-name">{{ tool.name }}</view>
-          <view class="tool-desc">{{ tool.desc }}</view>
-        </view>
+    <!-- 核心功能 -->
+    <view class="section-header"><text class="section-title">核心功能</text><text class="section-more">全部 ›</text></view>
+    <view class="product-grid">
+      <view class="product-card featured" @tap="go('curate')">
+        <view class="product-icon orange">💡</view>
+        <view class="product-name">见面策展</view>
+        <view class="product-desc">见前策展 + 见后钩子，把零散认知变专业方案</view>
+        <text class="product-tag hot">核心</text>
+      </view>
+      <view class="product-card" @tap="go('clients')">
+        <view class="product-icon green">👥</view>
+        <view class="product-name">客户档案</view>
+        <view class="product-desc">一次委托终生服务，每个客户都是资产</view>
+        <text class="product-tag free">私域</text>
+      </view>
+      <view class="product-card" @tap="go('knowledge')">
+        <view class="product-icon brown">📖</view>
+        <view class="product-name">知识字典</view>
+        <view class="product-desc">8 域 122 条行业词条，随时查阅</view>
+        <text class="product-tag free">免费</text>
+      </view>
+      <view class="product-card" @tap="go('assess')">
+        <view class="product-icon blue">📊</view>
+        <view class="product-name">品质测评</view>
+        <view class="product-desc">住得好 7 维 + 服务者 5 维评分</view>
+        <text class="product-tag free">免费</text>
       </view>
     </view>
 
-    <!-- 底部 ICP 备案号 -->
-    <view class="footer">
-      <text class="footer-icp">京ICP备2026044043号</text>
+    <!-- 案例 promo -->
+    <view class="case-promo" @tap="go('cases')">
+      <view class="cp-l"><view class="cp-t">🌟 优秀经纪人最佳案例灵感库</view><view class="cp-s">按客户类型 / 业务场景筛选 · 积分查阅顶尖实战</view></view>
+      <view class="cp-r">进入 ›</view>
     </view>
+
+    <!-- 6 方法论 -->
+    <view class="section-header"><text class="section-title">6 大方法论</text><text class="section-more">查看详情 ›</text></view>
+    <scroll-view class="steps-row" scroll-x="true" enable-flex>
+      <view class="step-card" v-for="(m, i) in methods" :key="i">
+        <text class="step-num">方法 {{ i + 1 }}</text>
+        <view class="step-title">{{ m.name }}</view>
+        <view class="step-desc">{{ m.desc }}</view>
+      </view>
+    </scroll-view>
+    <view style="font-size:11px;color:var(--text-muted);margin:-4px 2px 14px;line-height:1.5">6 方法论的底层是 <text style="color:var(--green)">LTRUST 信任五维</text>（听 · 险 · 相关 · 低承 · 档案）——把每一次见面校准成信任，详见策展包内「LTRUST 校准」。</view>
+
+    <view class="icp">风声 · 帮助服务者用独立价值获得尊重<view>客户数据仅你可见，平台不收取、不用于撮合</view></view>
   </view>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import { onLoad, onShow } from '@dcloudio/uni-app'
-import { useUserStore } from '../../store/user'
-import { track } from '../../utils/tracker'
-import HeroCard from '../../components/HeroCard.vue'
-import SceneGrid from '../../components/SceneGrid.vue'
-import DailyQuiz from '../../components/DailyQuiz.vue'
-import DomainNav from '../../components/DomainNav.vue'
-
-const store = useUserStore()
-const sceneCards = ref([])
-const dailyQuiz = ref(null)
-
-// P0-01: "客户说了什么"触发入口
-const triggerInput = ref('')
-const triggerResult = ref(null)
-const searchAliases = ref([])
-
-// 工具入口列表
-const toolList = [
-  { id: 'decode', name: '客户解码', icon: '🔍', desc: 'AI拆解真实需求', bgColor: '#e8f5e9', url: '/pages/mentor/index', tab: true },
-  { id: 'mentor', name: '开单导师', icon: '🎓', desc: '租赁开单陪练', bgColor: '#fff3ed', url: '/pages/mentor/index', tab: true },
-  { id: 'quiz', name: '测评中心', icon: '📝', desc: '法官 · 模拟', bgColor: '#e3f2fd', url: '/pages/quiz/index', tab: true },
-  { id: 'dict', name: '知识词典', icon: '📖', desc: '专业记忆库', bgColor: '#f3e5f5', url: '/pages/dict/index', tab: true },
-]
-
-// 加载场景卡片数据
-const loadSceneCards = () => {
-  try {
-    const data = require('../../data/scene_cards.json')
-    sceneCards.value = data?.sceneCards || []
-  } catch {
-    sceneCards.value = [
-      { cardId: 'SCENE-01', scenarioTitle: '退租时房东扣押金', tags: ['退租', '押金'], painPoint: '房东说我弄坏了墙面要扣押金' },
-      { cardId: 'SCENE-02', scenarioTitle: '定金与订金分不清', tags: ['定金', '购房'], painPoint: '我交的定金能退吗？' },
-      { cardId: 'SCENE-03', scenarioTitle: '买了学区房户口迁不出', tags: ['学区房', '户口'], painPoint: '买了学区房户口迁不出' },
-      { cardId: 'SCENE-04', scenarioTitle: '签了合同房东突然不租了', tags: ['租赁', '违约'], painPoint: '签了合同房东突然说不租了，租客问能怎么办？' }
-    ]
-  }
-}
-
-// 加载每日一题数据
-const loadDailyQuiz = () => {
-  try {
-    const data = require('../../data/brand_and_schedule.json')
-    const today = new Date()
-    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-    const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-    const todayDay = days[today.getDay()]
-    const todayQuiz = data.dailyQuestionSchedule?.weeklySchedule?.find(q => q.date === todayStr || q.day === todayDay) || data.dailyQuestionSchedule?.weeklySchedule?.[0]
-    dailyQuiz.value = todayQuiz || null
-  } catch {
-    dailyQuiz.value = {
-      date: '2026-07-21',
-      question: '客户说「这套房子太贵了，能不能便宜点」，经纪人正确的做法是？',
-      options: ['直接降价，留住客户', '先了解客户预算和看房经历，再分析价格合理性', '推荐更便宜的其他房源', '告诉客户一分钱一分货'],
-      answer: 1,
-      explanation: '客户说贵不一定真的是预算不够，可能是谈判策略。正确做法是先了解客户实际预算和看房经历，用数据帮客户分析价格合理性。',
-      earnedPoints: 5
+<script>
+import { methods } from '../../utils/v4data.js'
+import hero1 from '@/static/hero1.png'
+import hero2 from '@/static/hero2.png'
+import hero3 from '@/static/hero3.png'
+import hero4 from '@/static/hero4.png'
+export default {
+  data() {
+    return {
+      methods,
+      heroIdx: 0,
+      points: 150,
+      serviceCount: 8,
+      slides: [
+        { img: hero1, ht: '把专业装进口袋', hs: '顶尖经纪人的「方法论 + 工具箱」，一次见面全用上' },
+        { img: hero2, ht: '住得更好的样子', hs: '从「说得多没依据」到「讲得准、有依据、做得多」' },
+        { img: hero3, ht: '深耕你的商圈', hs: '把一个社区吃到骨头里——信任来自重复、专业、在场' },
+        { img: hero4, ht: '一次委托 · 终生服务', hs: '售后飞轮转起来——被记住，才有转介绍与下一单' }
+      ]
     }
+  },
+  computed: {
+    fillPct() { return Math.min(100, (this.serviceCount / 30) * 100) }
+  },
+  methods: {
+    onHero(e) { this.heroIdx = e.detail.current },
+    goSlide(i) { this.heroIdx = i },
+    go(tab) {
+      if (tab === 'clients' || tab === 'assess') uni.navigateTo({ url: '/pages/' + tab + '/index' })
+      else uni.switchTab({ url: '/pages/' + tab + '/index' })
+    },
+    toast(m) { uni.showToast({ title: m, icon: 'none' }) }
   }
 }
-
-// 加载搜索别名（P0-01 触发匹配用）
-const loadSearchAliases = () => {
-  try {
-    const data = require('../../data/search_aliases.json')
-    searchAliases.value = data?.searchAliases || []
-  } catch {
-    searchAliases.value = []
-  }
-}
-
-// P0-01: 触发输入条点击
-const onTriggerInputClick = () => {
-  track.triggerInputUse()
-}
-
-// P0-01: 触发搜索 — 用 search_aliases 做简易关键词匹配
-const onTriggerSearch = () => {
-  const input = (triggerInput.value || '').trim()
-  if (!input) return
-
-  // 匹配逻辑：遍历 searchAliases，检查 input 是否包含任一 alias
-  let matched = null
-  for (const item of searchAliases.value) {
-    if (item.aliases && item.aliases.some(alias => input.includes(alias) || alias.includes(input))) {
-      matched = item
-      break
-    }
-  }
-
-  if (matched) {
-    triggerResult.value = { matched: true, id: matched.id, name: matched.name }
-    track.triggerMatchSuccess(input, matched.id, 'alias')
-  } else {
-    triggerResult.value = { matched: false }
-    track.triggerMatchSuccess(input, '', 'none')
-  }
-}
-
-// P0-01: 跳转匹配到的词条
-const goMatchedEntry = (entryId) => {
-  track.triggerToDetail(triggerInput.value, entryId)
-  track.contentClick(entryId, 'entry', 'trigger_input')
-  uni.navigateTo({ url: `/pages/dict/entry-detail?entryId=${entryId}` })
-}
-
-// P0-01: 去词典搜索
-const goDictSearch = () => {
-  uni.switchTab({ url: '/pages/dict/index' })
-}
-
-// P0-01: 带输入去问导师
-const goMentorWithInput = () => {
-  if (triggerInput.value) {
-    uni.setStorageSync('fs_mentor_preinput', triggerInput.value)
-  }
-  uni.switchTab({ url: '/pages/mentor/index' })
-}
-
-// 场景卡片点击（带埋点）
-const onSceneClick = (cardId) => {
-  track.contentClick(cardId, 'scene_card', 'scene_grid')
-  uni.navigateTo({ url: `/pages/home/scene-detail?cardId=${cardId}` })
-}
-
-// 答题获得积分
-const onQuizEarned = (points) => {
-  store.earnPoints(points)
-  track.pointsChange('earn', points, 'daily_quiz')
-  uni.showToast({ title: `+${points} 积分`, icon: 'success', duration: 1500 })
-}
-
-// 导航（带埋点）
-const navigateTo = (url, isTab, toolId) => {
-  track.click('tool_' + toolId, { url })
-  if (isTab) {
-    uni.switchTab({ url })
-  } else {
-    uni.navigateTo({ url })
-  }
-}
-
-onLoad(() => {
-  store.initFromStorage()
-  loadSceneCards()
-  loadDailyQuiz()
-  loadSearchAliases()
-})
-
-onShow(() => {
-  uni.setStorageSync('__current_page', '/pages/home/index')
-  track.pageview()
-})
 </script>
-
-<style scoped>
-.page {
-  min-height: 100vh;
-  background: #f7f4ef;
-  padding-bottom: 40rpx;
-}
-
-/* P0-01: "客户说了什么"触发入口 */
-.trigger-input-card {
-  margin: 0 24rpx 24rpx;
-  background: #ffffff;
-  border-radius: 16rpx;
-  padding: 20rpx 24rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-}
-
-.trigger-input-row {
-  display: flex;
-  align-items: center;
-  background: #f7f4ef;
-  border-radius: 12rpx;
-  padding: 8rpx 8rpx 8rpx 20rpx;
-}
-
-.trigger-icon {
-  font-size: 32rpx;
-  margin-right: 12rpx;
-}
-
-.trigger-input {
-  flex: 1;
-  height: 72rpx;
-  font-size: 26rpx;
-  color: #333;
-}
-
-.trigger-placeholder {
-  color: #b0b0b0;
-  font-size: 26rpx;
-}
-
-.trigger-btn {
-  width: 64rpx;
-  height: 64rpx;
-  background: #3d5a3e;
-  border-radius: 12rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.trigger-btn:active {
-  opacity: 0.8;
-}
-
-.trigger-btn-text {
-  color: #ffffff;
-  font-size: 36rpx;
-  font-weight: 700;
-}
-
-/* 匹配结果 */
-.trigger-result {
-  margin-top: 16rpx;
-  padding-top: 16rpx;
-  border-top: 1rpx solid #f0f0f0;
-}
-
-.trigger-matched {
-  display: flex;
-  flex-direction: column;
-}
-
-.trigger-result-title {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12rpx;
-}
-
-.trigger-result-icon {
-  font-size: 28rpx;
-  margin-right: 8rpx;
-}
-
-.trigger-result-text {
-  font-size: 28rpx;
-  color: #3d5a3e;
-  font-weight: 600;
-}
-
-.trigger-no-match-text {
-  font-size: 26rpx;
-  color: #999;
-  display: block;
-  margin-bottom: 12rpx;
-}
-
-.trigger-result-actions {
-  display: flex;
-  gap: 16rpx;
-}
-
-.trigger-result-btn {
-  flex: 1;
-  background: #3d5a3e;
-  border-radius: 10rpx;
-  padding: 16rpx 0;
-  text-align: center;
-}
-
-.trigger-result-btn.secondary {
-  background: #c46a3a;
-}
-
-.trigger-result-btn-text {
-  color: #ffffff;
-  font-size: 26rpx;
-  font-weight: 600;
-}
-
-/* 工具栏 */
-.tool-grid {
-  margin: 24rpx 24rpx;
-}
-
-.tool-grid-title {
-  font-size: 34rpx;
-  font-weight: 700;
-  color: #2c2c2c;
-  margin-bottom: 20rpx;
-  padding: 0 8rpx;
-}
-
-.tool-grid-body {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-.tool-item {
-  width: calc(50% - 10rpx);
-  background: #ffffff;
-  border-radius: 16rpx;
-  padding: 28rpx 24rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s;
-}
-
-.tool-item:active {
-  transform: scale(0.97);
-}
-
-.tool-icon {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 20rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36rpx;
-  margin-bottom: 14rpx;
-}
-
-.tool-name {
-  font-size: 28rpx;
-  font-weight: 700;
-  color: #2c2c2c;
-  margin-bottom: 6rpx;
-}
-
-.tool-desc {
-  font-size: 22rpx;
-  color: #999;
-}
-
-/* 底部 */
-.footer {
-  text-align: center;
-  padding: 30rpx 20rpx 40rpx;
-}
-
-.footer-icp {
-  font-size: 20rpx;
-  color: #bbb;
-}
-</style>

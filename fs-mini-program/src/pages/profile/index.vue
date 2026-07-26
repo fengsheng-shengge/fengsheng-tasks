@@ -1,144 +1,89 @@
 <template>
   <view class="page">
-    <view class="header">
-      <view class="title">我的</view>
+    <view class="profile-header">
+      <view class="profile-avatar">{{ brokerInitial }}</view>
+      <view><view class="profile-name">{{ brokerName }}</view><view class="profile-tag">独立账号 · 数据主权在你</view></view>
     </view>
 
-    <!-- 用户信息（无登录，纯展示） -->
-    <view class="user-card">
-      <view class="avatar">
-        <view class="avatar-default">📚</view>
+    <view class="trust-card">
+      <view class="tc-top">
+        <view><view class="tc-num">{{ points }}<text class="unit">分</text></view><view class="tc-goal">信任积分 · 本月已服务 {{ serviceCount }} 次 / 目标 30 次</view></view>
+        <view style="font-size:30px">⭐</view>
       </view>
-      <view class="user-info">
-        <view class="user-name">风声用户</view>
-        <view class="user-sub">居住服务从业者</view>
-      </view>
+      <view class="tc-bar"><view class="tc-fill" :style="{ width: fillPct + '%' }"></view></view>
+      <view class="tc-rule">做真实服务才得分：见面策展 / 客户档案 / 品质测评 / 分享 / 登录 · 攒分可解锁案例库</view>
     </view>
 
-    <!-- 功能列表 -->
-    <view class="menu-section">
-      <view class="menu-item" v-for="item in menuItems" :key="item.key" @click="onMenuClick(item.key)">
-        <view class="menu-icon">{{ item.icon }}</view>
-        <view class="menu-text">{{ item.text }}</view>
-        <view class="menu-arrow">→</view>
-      </view>
+    <view class="phase-banner">🟢 <text style="font-weight:700">免费养成期</text>：现仅用「积分」，<text style="font-weight:700">不收费</text>。会员/积分直购将在后续版本开放。</view>
+
+    <view class="section-title-sm">会员方案 · 积分是硬通货</view>
+    <view class="vip-grid">
+      <view class="vip-card hot"><view class="vc-tag">当前</view><view class="vc-name">免费版</view><view class="vc-price">¥0</view><view class="vc-pts">日活+任务+裂变赚分</view><view class="vc-perk">基础功能 · 案例看摘要</view></view>
+      <view class="vip-card locked"><view class="vc-tag">后续版本</view><view class="vc-name">月度会员</view><view class="vc-price">价格待定<text class="unit"></text></view><view class="vc-pts">每月积分自动到账</view><view class="vc-perk">信任徽章 · 数据导出 · 案例全文</view><view class="vc-lock">后续版本开放</view></view>
+      <view class="vip-card locked"><view class="vc-tag">后续版本</view><view class="vc-name">年度会员</view><view class="vc-price">价格待定<text class="unit"></text></view><view class="vc-pts">年度积分(含赠送)</view><view class="vc-perk">优先新案例 · 专属客服</view><view class="vc-lock">后续版本开放</view></view>
     </view>
 
-    <!-- 使用统计 -->
-    <view class="stats-section">
-      <view class="stats-title">我的数据</view>
-      <view class="stats-grid">
-        <view class="stat-item">
-          <view class="stat-n">{{ stats.days || 0 }}</view>
-          <view class="stat-l">使用天数</view>
-        </view>
-      </view>
+    <view class="section-title-sm">积分直购 · 不想订阅也能买</view>
+    <view class="vip-grid">
+      <view class="vip-card locked"><view class="vc-name">小包</view><view class="vc-price">价格待定</view><view class="vc-pts">100 分</view><view class="vc-lock">后续版本开放</view></view>
+      <view class="vip-card locked"><view class="vc-name">中包</view><view class="vc-price">价格待定</view><view class="vc-pts">300 分</view><view class="vc-lock">后续版本开放</view></view>
+      <view class="vip-card locked"><view class="vc-name">大包</view><view class="vc-price">价格待定</view><view class="vc-pts">650 分</view><view class="vc-lock">后续版本开放</view></view>
+    </view>
+    <view style="font-size:11px;color:var(--muted);text-align:center;margin:-4px 0 10px">现所有核心交付物（策展包 / 案例 / 报告书）均用「做任务得的免费积分」兑换，养成期每月还赠体验金。</view>
+
+    <view class="invite-box">
+      <view class="ib-title">🌟 邀请同行 · 邀请有礼功能后续开放</view>
+      <view class="ib-code"><text>我的邀请码</text><text style="letter-spacing:2px;font-size:16px;font-weight:700">FS-WJX-8829</text></view>
+      <view class="ib-reward">邀请有礼功能后续开放 · 当前仅展示邀请码</view>
+      <button class="btn-light" @tap="copyInvite">复制邀请码</button>
     </view>
 
-    <view class="footer">
-      <view class="footer-links">
-        <text class="footer-link" @click="openPrivacy">隐私政策</text>
-        <text class="footer-link-divider">|</text>
-        <text class="footer-link" @click="openAgreement">用户协议</text>
-      </view>
-      <view class="footer-text">风声 · fengsheng.tech</view>
-      <view class="footer-icp">京ICP备2026044043号</view>
-      <view class="footer-ver">v1.0.0</view>
+    <view class="menu-group">
+      <view class="menu-item" @tap="go('clients')"><view class="menu-icon">👥</view><view class="menu-text">客户档案</view><view class="menu-arrow">›</view></view>
+      <view class="menu-item" @tap="go('cases')"><view class="menu-icon">🌟</view><view class="menu-text">案例灵感库 · 信任积分</view><view class="menu-badge">{{ points }}</view></view>
+      <view class="menu-item" @tap="go('curate')"><view class="menu-icon">💡</view><view class="menu-text">我的策展库</view><view class="menu-arrow">›</view></view>
+      <view class="menu-item" @tap="toast('职业档案（模拟）')"><view class="menu-icon">🎖️</view><view class="menu-text">职业档案</view><view class="menu-arrow">›</view></view>
     </view>
+    <view class="menu-group">
+      <view class="menu-item" @tap="toast('数据导出/迁移（模拟）')"><view class="menu-icon">📦</view><view class="menu-text">数据导出 / 迁移</view><view class="menu-arrow">›</view></view>
+      <view class="menu-item" @tap="toast('会员/订阅（企业升级后开通）')"><view class="menu-icon">⭐</view><view class="menu-text">会员与订阅</view><view class="menu-badge">待</view></view>
+      <view class="menu-item" @tap="toast('关于风声（模拟）')"><view class="menu-icon">ℹ️</view><view class="menu-text">关于风声</view><view class="menu-arrow">›</view></view>
+    </view>
+    <view class="icp">⚠️ 客户数据仅你可见，平台不收取、不用于撮合<view>帮助服务者用独立价值获得尊重</view></view>
   </view>
 </template>
 
 <script>
-import track from '../../utils/tracker'
-
+import { useUserStore } from '../../store/user'
 export default {
-  data() {
-    return {
-      stats: {},
-      menuItems: [
-        { key: 'knowledge', icon: '📚', text: '知识底座' },
-        { key: 'feedback', icon: '💬', text: '意见反馈' },
-        { key: 'about', icon: 'ℹ️', text: '关于风声' },
-        { key: 'share', icon: '📤', text: '分享给同事' },
-      ],
-    }
-  },
-  onShow() {
-    uni.setStorageSync('__current_page', '/pages/profile/index')
-    track.pageview({ page: '/pages/profile/index' })
-    this.loadStats()
+  computed: {
+    userStore() { return useUserStore() },
+    brokerName() { return this.userStore.nickname || '风声用户' },
+    brokerInitial() { return (this.userStore.nickname || '风')[0] || '风' },
+    points() { return this.userStore.points || 0 },
+    // 真实服务动作数：由用户真实产品路径累计，不送假数据（seed 示例客户不计入，登录不计入服务次数）
+    serviceCount() {
+      const u = this.userStore
+      const realClients = (u.clients || []).filter(c => !c.seed).length
+      return (u.curatings ? u.curatings.length : 0)
+           + realClients
+           + (u.assessments ? u.assessments.length : 0)
+           + (u.shares || 0)
+    },
+    fillPct() { return Math.min(100, Math.round((this.serviceCount / 30) * 100)) }
   },
   methods: {
-    loadStats() {
-      const firstUse = uni.getStorageSync('fs_first_use')
-      if (!firstUse) {
-        uni.setStorageSync('fs_first_use', Date.now())
-        this.stats = { days: 1 }
-      } else {
-        const days = Math.ceil((Date.now() - firstUse) / 86400000)
-        this.stats = { days }
-      }
+    go(tab) {
+      if (tab === 'clients') uni.navigateTo({ url: '/pages/clients/index' })
+      else uni.switchTab({ url: '/pages/' + tab + '/index' })
     },
-    onMenuClick(key) {
-      track.click(`profile_menu_${key}`)
-      switch (key) {
-        case 'knowledge':
-          uni.navigateTo({
-            url: '/pages/webview/index?url=' + encodeURIComponent('https://fengsheng.tech/knowledge')
-          })
-          break
-        case 'feedback':
-          uni.showModal({ title: '意见反馈', content: '感谢您的反馈！您可通过「风声」公众号留言，或关注风声获取最新动态。', showCancel: false })
-          break
-        case 'about':
-          uni.showModal({ title: '关于风声', content: '风声 · 居住服务行业知识库\nfengsheng.tech\n让服务者先被看见', showCancel: false })
-          break
-        case 'share':
-          uni.setClipboardData({ data: '风声知识库小程序，居住服务行业知识查询工具' })
-          break
-      }
-    },
-    openPrivacy() {
-      uni.navigateTo({ url: '/pages/webview/index?url=' + encodeURIComponent('https://fengsheng.tech/privacy.html') })
-    },
-    openAgreement() {
-      uni.navigateTo({ url: '/pages/webview/index?url=' + encodeURIComponent('https://fengsheng.tech/agreement.html') })
-    },
-  },
+    toast(m) { uni.showToast({ title: m, icon: 'none' }) },
+    copyInvite() {
+      uni.setClipboardData({
+        data: 'FS-WJX-8829',
+        success: () => uni.showToast({ title: '邀请码已复制 · 邀请有礼功能后续开放', icon: 'none' })
+      })
+    }
+  }
 }
 </script>
-
-<style>
-.page { min-height: 100vh; background: #f5f5f5; padding: 20rpx; }
-.header { padding: 30rpx 10rpx 20rpx; }
-.title { font-size: 40rpx; font-weight: 900; color: #3d5a3e; }
-
-.user-card { background: #fff; border-radius: 20rpx; padding: 30rpx; margin: 10rpx; display: flex; align-items: center; }
-.avatar { width: 100rpx; height: 100rpx; border-radius: 50%; overflow: hidden; margin-right: 24rpx; flex-shrink: 0; }
-.avatar-default { width: 100%; height: 100%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; font-size: 40rpx; color: #3d5a3e; }
-.user-info { flex: 1; }
-.user-name { font-size: 34rpx; font-weight: 700; color: #222; }
-.user-sub { font-size: 24rpx; color: #888; margin-top: 6rpx; }
-
-.menu-section { background: #fff; border-radius: 16rpx; margin: 12rpx 10rpx; overflow: hidden; }
-.menu-item { display: flex; align-items: center; padding: 28rpx 24rpx; border-bottom: 1rpx solid #f5f5f5; }
-.menu-item:last-child { border-bottom: none; }
-.menu-icon { font-size: 40rpx; margin-right: 20rpx; }
-.menu-text { flex: 1; font-size: 30rpx; color: #333; }
-.menu-arrow { font-size: 28rpx; color: #ccc; }
-
-.stats-section { background: #fff; border-radius: 16rpx; padding: 24rpx; margin: 12rpx 10rpx; }
-.stats-title { font-size: 28rpx; font-weight: 700; color: #222; margin-bottom: 16rpx; }
-.stats-grid { display: flex; justify-content: space-around; }
-.stat-item { text-align: center; }
-.stat-n { font-size: 40rpx; font-weight: 900; color: #3d5a3e; }
-.stat-l { font-size: 22rpx; color: #888; margin-top: 4rpx; }
-
-.footer { text-align: center; padding: 30rpx; }
-.footer-links { margin-bottom: 12rpx; }
-.footer-link { font-size: 24rpx; color: #3d5a3e; }
-.footer-link-divider { font-size: 24rpx; color: #ddd; margin: 0 16rpx; }
-.footer-text { font-size: 24rpx; color: #aaa; }
-.footer-icp { font-size: 22rpx; color: #bbb; margin-top: 6rpx; }
-.footer-ver { font-size: 22rpx; color: #ccc; margin-top: 4rpx; }
-</style>

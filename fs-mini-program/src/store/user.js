@@ -47,6 +47,12 @@ export const useUserStore = defineStore('user', {
     unlockedContent: {}, // { 'entry_001': ['fullCase', 'agentMemo'], ... }
     favorites: [], // [entryId, ...]
     contributions: [], // [{type, entryId, status, timestamp}]
+    // ===== V2.1.1a 新增：客户档案 / 策展库 / 测评 / 任务完成态 =====
+    clients: [], // [{id, surname, name, rel, stage, pkey, persona, status, asset, level, addr, note, seed}]
+    curatings: [], // [{id, clientId, t, s, ts}]
+    assessments: [], // [{id, ts}]
+    doneFlags: {}, // { taskId: true } 任务真实完成态（防自嗨闭环）
+    shares: 0, // 分享次数（案例分享任务）
     // 导师对话配额
     freeChatCount: 5,
     lastChatResetDate: null,
@@ -84,6 +90,10 @@ export const useUserStore = defineStore('user', {
       if (state.quizStats.total === 0) return 0
       return Math.round((state.quizStats.correct / state.quizStats.total) * 100)
     },
+    // 任务是否真实完成（积分领取校验）
+    isDone(state) {
+      return (key) => !!state.doneFlags[key]
+    },
   },
 
   actions: {
@@ -95,6 +105,12 @@ export const useUserStore = defineStore('user', {
       uni.setStorageSync('fs_contributions', JSON.stringify(this.contributions))
       uni.setStorageSync('fs_chat_quota', JSON.stringify({ freeChatCount: this.freeChatCount, lastChatResetDate: this.lastChatResetDate }))
       uni.setStorageSync('fs_quiz_stats', JSON.stringify(this.quizStats))
+      // V2.1.1a
+      uni.setStorageSync('fs_clients', JSON.stringify(this.clients))
+      uni.setStorageSync('fs_curatings', JSON.stringify(this.curatings))
+      uni.setStorageSync('fs_assessments', JSON.stringify(this.assessments))
+      uni.setStorageSync('fs_done_flags', JSON.stringify(this.doneFlags))
+      uni.setStorageSync('fs_shares', this.shares)
     },
 
     async login() {
@@ -151,8 +167,28 @@ export const useUserStore = defineStore('user', {
           lastAnswerDate: qs.lastAnswerDate ?? null,
         }
       } catch { this.quizStats = { total: 0, correct: 0, streak: 0, lastAnswerDate: null } }
+      // V2.1.1a：客户 / 策展 / 测评 / 任务态
+      try { this.clients = JSON.parse(uni.getStorageSync('fs_clients') || '[]') } catch { this.clients = [] }
+      try { this.curatings = JSON.parse(uni.getStorageSync('fs_curatings') || '[]') } catch { this.curatings = [] }
+      try { this.assessments = JSON.parse(uni.getStorageSync('fs_assessments') || '[]') } catch { this.assessments = [] }
+      try { this.doneFlags = JSON.parse(uni.getStorageSync('fs_done_flags') || '{}') } catch { this.doneFlags = {} }
+      this.shares = uni.getStorageSync('fs_shares') || 0
+      // 首次启动（无缓存）seed 4 个示例客户，让经纪人看到"可录入"的样子
+      if (this.clients.length === 0) this.seedClients()
       // 跨日重置对话配额
       this._resetDailyQuotaIfNeeded()
+    },
+
+    /** 首次启动写入 4 个示例客户（标记 seed，可删可改） */
+    seedClients() {
+      const seed = [
+        { surname: '林', name: '林先生 & 未婚妻', rel: '买房客户', stage: '购房线 / ①首套', pkey: 'red', persona: '🔴 结果导向', status: '跟进中', asset: '关系建立中，资产初值', level: 'A', addr: '', note: '90后婚房，预算300万，看重学区与通勤', seed: true },
+        { surname: '张', name: '张先生（业主）', rel: '业主', stage: '购房线 / ④升级', pkey: 'blue', persona: '🔵 关系导向', status: '已成交', asset: '已购本房，适老改造钩子已埋', level: 'A', addr: '', note: '已购，适老改造咨询', seed: true },
+        { surname: '王', name: '王女士（房东）', rel: '房东', stage: '租住线 / 业主侧', pkey: 'blue', persona: '🔵 关系导向', status: '跟进中', asset: '委托出租，定价钩子待跟进', level: 'B', addr: '', note: '空置45天委托出租', seed: true },
+        { surname: '陈', name: '陈同学（租客）', rel: '租客', stage: '租住线 / ②改善', pkey: 'green', persona: '🟢 理智型', status: '跟进中', asset: '工作调动，租住改善中', level: 'C', addr: '', note: '工作调动近地铁', seed: true }
+      ]
+      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c }))
+      this._persist()
     },
 
     getUserId() {
@@ -249,6 +285,62 @@ export const useUserStore = defineStore('user', {
         timestamp: Date.now(),
       })
       this._persist()
+    },
+
+    // ============ V2.1.1a：客户档案 ============
+
+    /** 新建客户 */
+    addClient(c) {
+      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, ...c }
+      this.clients.unshift(client)
+      this._persist()
+      return client
+    },
+
+    /** 更新客户字段 */
+    updateClient(id, patch) {
+      const i = this.clients.findIndex(c => c.id === id)
+      if (i >= 0) { this.clients[i] = { ...this.clients[i], ...patch }; this._persist() }
+    },
+
+    /** 删除客户 */
+    removeClient(id) {
+      this.clients = this.clients.filter(c => c.id !== id)
+      this._persist()
+    },
+
+    getClient(id) {
+      return this.clients.find(c => c.id === id) || null
+    },
+
+    /** 新增一次策展记录（关联客户） */
+    addCurating(rec) {
+      const item = { id: 'cur_' + Date.now(), ts: Date.now(), ...rec }
+      this.curatings.unshift(item)
+      this._persist()
+      return item
+    },
+
+    /** 新增一次测评记录 */
+    addAssessment() {
+      const item = { id: 'as_' + Date.now(), ts: Date.now() }
+      this.assessments.unshift(item)
+      this._persist()
+      return item
+    },
+
+    /** 分享次数 +1（案例分享任务） */
+    incShare() {
+      this.shares += 1
+      this._persist()
+    },
+
+    /** 标记任务真实完成（幂等，返回是否首次完成） */
+    markDone(key) {
+      if (this.doneFlags[key]) return false
+      this.doneFlags[key] = true
+      this._persist()
+      return true
     },
 
     // ============ 导师对话配额 ============
