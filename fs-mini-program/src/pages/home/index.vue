@@ -102,8 +102,6 @@ export default {
       methods,
       heroIdx: 0,
       methodIdx: 0,
-      points: 150,
-      serviceCount: 8,
       slides: [
         { img: hero1, ht: '把专业装进口袋', hs: '顶尖经纪人的「方法论 + 工具箱」，一次见面全用上' },
         { img: hero2, ht: '住得更好的样子', hs: '从「说得多没依据」到「讲得准、有依据、做得多」' },
@@ -113,8 +111,19 @@ export default {
     }
   },
   computed: {
-    fillPct() { return Math.min(100, (this.serviceCount / 30) * 100) },
     userStore() { return useUserStore() },
+    // 真实积分：读 userStore，避免与「我的」页对不上（数据诚实铁律）
+    points() { return this.userStore.points || 0 },
+    // 真实服务动作数：与「我的」页同口径，不送假数据（seed 示例客户 / 登录不计入）
+    serviceCount() {
+      const u = this.userStore
+      const realClients = (u.clients || []).filter(c => !c.seed).length
+      return (u.curatings ? u.curatings.length : 0)
+           + realClients
+           + (u.assessments ? u.assessments.length : 0)
+           + (u.shares || 0)
+    },
+    fillPct() { return Math.min(100, Math.round((this.serviceCount / 30) * 100)) },
     // V2.5 M3：聚合所有客户未完成的见后跟进，搬到首页"今日跟进"
     todayFollowups() {
       const out = []

@@ -1,8 +1,12 @@
 <template>
   <view class="page">
-    <view class="profile-header">
+    <view class="profile-header" @tap="editNickname">
       <view class="profile-avatar">{{ brokerInitial }}</view>
-      <view><view class="profile-name">{{ brokerName }}</view><view class="profile-tag">本地登录态 · 数据存你手机</view></view>
+      <view class="ph-text">
+        <view class="profile-name">{{ brokerName }}</view>
+        <view class="profile-tag">本地昵称 · 数据存你手机</view>
+        <view class="ph-edit">点击设置昵称 ›</view>
+      </view>
     </view>
 
     <view class="trust-card">
@@ -59,6 +63,19 @@
       <view class="menu-item" @tap="toast('关于风声（模拟）')"><view class="menu-icon">ℹ️</view><view class="menu-text">关于风声</view><view class="menu-arrow">›</view></view>
     </view>
     <view class="icp">⚠️ 客户数据仅你可见，平台不收取、不用于撮合<view>帮助服务者用独立价值获得尊重</view></view>
+
+    <!-- 轻量设置本地昵称（仅本地，不上云、不开账号体系） -->
+    <view class="nick-mask" v-if="showNick" @tap="cancelNick">
+      <view class="nick-sheet" @tap.stop>
+        <view class="nick-title">设置你的昵称</view>
+        <input class="nick-input" v-model="nickInput" placeholder="如：@小李 · 信义店" maxlength="20" :focus="showNick" />
+        <view class="nick-tip">仅存你手机，不上云、不收数据</view>
+        <view class="nick-btns">
+          <button class="nick-btn cancel" @tap="cancelNick">取消</button>
+          <button class="nick-btn ok" @tap="saveNick">保存</button>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -66,6 +83,9 @@
 import { useUserStore } from '../../store/user'
 import { copyLink, APP_SHARE_TITLE } from '../../utils/share.js'
 export default {
+  data() {
+    return { showNick: false, nickInput: '' }
+  },
   computed: {
     userStore() { return useUserStore() },
     brokerName() { return this.userStore.nickname || '风声用户' },
@@ -87,6 +107,19 @@ export default {
       if (tab === 'clients') uni.navigateTo({ url: '/pages/clients/index' })
       else uni.switchTab({ url: '/pages/' + tab + '/index' })
     },
+    editNickname() {
+      this.nickInput = this.brokerName === '风声用户' ? '' : this.brokerName
+      this.showNick = true
+    },
+    saveNick() {
+      if (this.userStore.setNickname(this.nickInput)) {
+        this.showNick = false
+        uni.showToast({ title: '已保存', icon: 'success' })
+      } else {
+        uni.showToast({ title: '昵称不能为空', icon: 'none' })
+      }
+    },
+    cancelNick() { this.showNick = false },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) },
     copyInvite() {
       uni.setClipboardData({
@@ -113,4 +146,15 @@ export default {
 .sab-desc { font-size: 12px; color: #888; margin: 6px 0 10px; line-height: 1.5; }
 .sab-btns { display: flex; gap: 10px; }
 .sab-btns .btn-light { flex: 1; background: #f7f4ef; color: #3d5a3e; border: 1px solid #e7e0d4; border-radius: 10px; padding: 10px; font-size: 13px; }
+.ph-text { flex: 1; }
+.ph-edit { font-size: 12px; color: #c46a3a; margin-top: 4px; font-weight: 600; }
+.nick-mask { position: fixed; left: 0; right: 0; bottom: 0; top: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-end; z-index: 99; }
+.nick-sheet { width: 100%; background: #fff; border-radius: 16px 16px 0 0; padding: 20px 18px calc(20px + env(safe-area-inset-bottom)); box-sizing: border-box; }
+.nick-title { font-size: 16px; font-weight: 700; color: #2b2b2b; margin-bottom: 12px; }
+.nick-input { background: #f7f4ef; border: 1px solid #e7e0d4; border-radius: 10px; padding: 12px; font-size: 15px; color: #2b2b2b; width: 100%; box-sizing: border-box; }
+.nick-tip { font-size: 11px; color: #999; margin: 8px 0 14px; }
+.nick-btns { display: flex; gap: 12px; }
+.nick-btn { flex: 1; border-radius: 10px; font-size: 15px; padding: 12px 0; line-height: 1.2; margin: 0; }
+.nick-btn.cancel { background: #f1ede6; color: #666; }
+.nick-btn.ok { background: #3d5a3e; color: #fff; }
 </style>

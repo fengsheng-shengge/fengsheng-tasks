@@ -5,7 +5,7 @@
       <view style="display:flex;flex-direction:column;gap:6px">
         <button class="earn" @tap="scrollEarn">如何赚积分 ›</button>
         <button class="earn" open-type="share">分享案例给客户 ›</button>
-        <button class="earn" @tap="copyLink('/pages/cases/index')">复制链接 ›</button>
+        <button class="earn" @tap="copyLink('/pages/cases/index', '案例库链接已复制 · 微信外也能打开')">复制链接 ›</button>
       </view>
     </view>
 
@@ -96,7 +96,6 @@ export default {
         case 'curate': return u.curatings.length > 0
         case 'profile': return u.clients.length > 0
         case 'assess': return u.assessments.length > 0
-        case 'share': return u.shares > 0 || !!u.doneFlags.share
         case 'login': return !!u.doneFlags.login
         default: return false
       }

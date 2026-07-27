@@ -111,6 +111,8 @@ export const useUserStore = defineStore('user', {
       uni.setStorageSync('fs_assessments', JSON.stringify(this.assessments))
       uni.setStorageSync('fs_done_flags', JSON.stringify(this.doneFlags))
       uni.setStorageSync('fs_shares', this.shares)
+      // 本地昵称（轻量个人化，不上云、不开账号体系）
+      uni.setStorageSync('fs_nickname', this.nickname)
     },
 
     async login() {
@@ -173,6 +175,7 @@ export const useUserStore = defineStore('user', {
       try { this.assessments = JSON.parse(uni.getStorageSync('fs_assessments') || '[]') } catch { this.assessments = [] }
       try { this.doneFlags = JSON.parse(uni.getStorageSync('fs_done_flags') || '{}') } catch { this.doneFlags = {} }
       this.shares = uni.getStorageSync('fs_shares') || 0
+      this.nickname = uni.getStorageSync('fs_nickname') || null
       // 首次启动（无缓存）seed 4 个示例客户，让经纪人看到"可录入"的样子
       if (this.clients.length === 0) this.seedClients()
       // 跨日重置对话配额
@@ -193,6 +196,15 @@ export const useUserStore = defineStore('user', {
 
     getUserId() {
       return this.userId || apiGetUserId()
+    },
+
+    /** 轻量设置本地昵称（仅本地存储，不收数据、不开账号体系） */
+    setNickname(val) {
+      const v = (val || '').trim()
+      if (!v) return false
+      this.nickname = v
+      this._persist()
+      return true
     },
 
     /** 赚取积分 */
