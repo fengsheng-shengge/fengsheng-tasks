@@ -2,7 +2,7 @@
   <view class="page">
     <view class="profile-header">
       <view class="profile-avatar">{{ brokerInitial }}</view>
-      <view><view class="profile-name">{{ brokerName }}</view><view class="profile-tag">独立账号 · 数据主权在你</view></view>
+      <view><view class="profile-name">{{ brokerName }}</view><view class="profile-tag">本地登录态 · 数据存你手机</view></view>
     </view>
 
     <view class="trust-card">
@@ -46,7 +46,7 @@
     </view>
     <view class="menu-group">
       <view class="menu-item" @tap="toast('数据导出/迁移（模拟）')"><view class="menu-icon">📦</view><view class="menu-text">数据导出 / 迁移</view><view class="menu-arrow">›</view></view>
-      <view class="menu-item" @tap="toast('会员/订阅（企业升级后开通）')"><view class="menu-icon">⭐</view><view class="menu-text">会员与订阅</view><view class="menu-badge">待</view></view>
+      <view class="menu-item" @tap="toast('会员/订阅将在后续版本开放')"><view class="menu-icon">⭐</view><view class="menu-text">会员与订阅</view><view class="menu-badge">待</view></view>
       <view class="menu-item" @tap="toast('关于风声（模拟）')"><view class="menu-icon">ℹ️</view><view class="menu-text">关于风声</view><view class="menu-arrow">›</view></view>
     </view>
     <view class="icp">⚠️ 客户数据仅你可见，平台不收取、不用于撮合<view>帮助服务者用独立价值获得尊重</view></view>

@@ -24,6 +24,17 @@
         <view><view style="font-size:17px;font-weight:700">{{ detail.name }}</view><view class="sub">{{ detail.stage }} · {{ detail.status }}</view></view>
       </view>
       <scroll-view class="ovcontent" scroll-y="true">
+        <view class="sec dualaxis">
+          <view class="h"><text class="em">🧭</text>双纵轴定位（我在服务 TA 的哪一段）</view>
+          <view class="axis-row"><text class="axis-name">购5</text><view class="axis-chips">
+            <text v-for="s in buyAxis" :key="s" class="achip" :class="{ on: detail.isBuy && detail.curSeg === s }">{{ s }}</text>
+          </view></view>
+          <view class="axis-row"><text class="axis-name">租4</text><view class="axis-chips">
+            <text v-for="s in rentAxis" :key="s" class="achip" :class="{ on: !detail.isBuy && detail.curSeg === s }">{{ s }}</text>
+            <text class="achip" :class="{ on: !detail.isBuy && detail.curSeg === '业主侧' }">业主侧</text>
+          </view></view>
+          <view class="rel-tag">关系类型：{{ detail.relationLabel }}</view>
+        </view>
         <view class="sec"><view class="h"><text class="em">🎨</text>客户描摹（红蓝绿）</view><view>{{ detail.persona }}——{{ detail.personaTip }}</view></view>
         <view class="sec"><view class="h"><text class="em">🏷️</text>分层运营（A/B/C）</view><view>{{ detail.levelText }}</view></view>
         <view class="sec"><view class="h"><text class="em">🔄</text>服务进度回报（透明回报法）</view><text class="svc-progress">委托第 1 天：启动拍照/VR/上架/配对清单。
@@ -32,6 +43,28 @@
         <view class="sec"><view class="h"><text class="em">💎</text>客户资产</view><view>{{ detail.asset }}</view></view>
         <view class="sec" v-if="detail.note"><view class="h"><text class="em">📝</text>备注</view><view>{{ detail.note }}</view></view>
         <view class="sec" v-if="detail.addr"><view class="h"><text class="em">📍</text>小区 / 地址</view><view>{{ detail.addr }}</view></view>
+        <view class="sec" v-if="(detailSrc.timeline || []).length">
+          <view class="h"><text class="em">🕒</text>接触时间线</view>
+          <view class="tl" v-for="(t, i) in detailSrc.timeline" :key="i">
+            <text class="tl-type" :class="'tt-' + t.type">{{ t.type }}</text>
+            <view class="tl-body"><view class="tl-sum">{{ t.summary }}</view><view class="tl-at">{{ fmtDate(t.at) }}</view></view>
+          </view>
+        </view>
+        <view class="sec" v-if="(detailSrc.followups || []).filter(f => !f.done).length">
+          <view class="h"><text class="em">💌</text>跟进待办（带新价值 · 非催）</view>
+          <view class="fl" v-for="(f, i) in detailSrc.followups.filter(x => !x.done)" :key="i">
+            <view class="fl-theme">{{ f.theme }}</view>
+            <view class="fl-text">{{ f.text }}</view>
+            <view class="fl-lt">LTRUST · {{ f.ltrust }}</view>
+          </view>
+        </view>
+        <view class="sec" v-if="(detailSrc.memoryPoints || []).length">
+          <view class="h"><text class="em">⭐</text>记忆点（客户记住你的瞬间）</view>
+          <view class="mp" v-for="(m, i) in detailSrc.memoryPoints" :key="i">
+            <view class="mp-point">{{ m.point }}</view>
+            <view class="mp-at">{{ fmtDate(m.at) }}</view>
+          </view>
+        </view>
         <button class="btn-green" @tap="openForm(detailSrc)">✎ 编辑客户</button>
         <button class="btn-red" @tap="delClient(detailSrc)">🗑 删除客户</button>
         <button class="btn-line" @tap="openCurate(detailSrc)">为本次接触生成策展包 →</button>
@@ -86,13 +119,29 @@ export default {
       relOpts: ['买房客户', '租客', '业主', '房东'],
       stageOpts: ['购房线 / ①首套','购房线 / ②改善','购房线 / ③教育','购房线 / ④升级','购房线 / ⑤适老','租住线 / ①起步','租住线 / ②改善','租住线 / ③家庭','租住线 / ④品质','业主侧'],
       levelOpts: ['A', 'B', 'C'],
-      statusOpts: ['跟进中', '已成交', '已流失']
+      statusOpts: ['跟进中', '已成交', '已流失'],
+      buyAxis: ['①首套', '②改善', '③教育', '④升级', '⑤适老'],
+      rentAxis: ['①起步', '②改善', '③家庭', '④品质']
     }
   },
   computed: {
     userStore() { return useUserStore() },
     list() { return this.userStore.clients }
   },
+  onLoad(query) {
+    uni.$on('openClientDetail', (id) => {
+      const c = this.userStore.getClient(id)
+      if (c) this.openDetail(c)
+    })
+    // 首页「今日跟进」经 URL 参数直达指定客户详情（V2.5 M3）
+    if (query && query.focus) {
+      setTimeout(() => {
+        const c = this.userStore.getClient(query.focus)
+        if (c) this.openDetail(c)
+      }, 300)
+    }
+  },
+  onUnload() { uni.$off('openClientDetail') },
   methods: {
     blankForm() {
       return { surname: '', name: '', rel: '买房客户', stage: '', pkey: 'red', level: 'A', status: '跟进中', addr: '', note: '' }
@@ -103,10 +152,14 @@ export default {
       this.detailSrc = c
       const pm = personaMap[c.pkey] || personaMap.red
       const lm = levelMap[c.level] || levelMap.C
+      const isBuy = (c.stage || '').startsWith('购房线')
+      const curSeg = (c.stage || '').split(' / ')[1] || ''
+      const relLabel = ({ '买房客户': '买方', '租客': '租客', '业主': '业主', '房东': '房东' })[c.rel] || c.rel
       this.detail = {
         name: c.name, stage: c.stage, status: c.status, asset: c.asset, note: c.note, addr: c.addr,
         persona: pm.tag, personaTip: pm.tip,
-        levelText: lm.tag + ' ｜ 维护动作：' + lm.act + ' ｜ 频率：' + lm.freq
+        levelText: lm.tag + ' ｜ 维护动作：' + lm.act + ' ｜ 频率：' + lm.freq,
+        isBuy, curSeg, relationLabel: relLabel
       }
       this.showDetail = true
     },
@@ -148,6 +201,12 @@ export default {
       this.showDetail = false
       uni.$emit('openCurateForm', c.id)
       uni.switchTab({ url: '/pages/curate/index' })
+    },
+    fmtDate(ts) {
+      if (!ts) return ''
+      const d = new Date(ts)
+      const p = n => String(n).padStart(2, '0')
+      return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes())
     }
   }
 }
@@ -183,6 +242,30 @@ export default {
 .sec .h { font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
 .em { margin-right: 4px; }
 .svc-progress { white-space: pre-line; font-size: 12.5px; color: #555; }
+.dualaxis .axis-row { display: flex; align-items: center; margin: 7px 0; }
+.axis-name { font-size: 12px; font-weight: 800; color: #3d5a3e; width: 30px; flex-shrink: 0; }
+.axis-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.achip { font-size: 11px; padding: 3px 8px; border-radius: 8px; background: #f0ece2; color: #aaa; border: 1px solid #e7e0d4; }
+.achip.on { background: #3d5a3e; color: #fff; border-color: #3d5a3e; font-weight: 700; }
+.rel-tag { font-size: 12px; color: #C8956D; margin-top: 6px; font-weight: 700; }
+.tl { display: flex; gap: 8px; padding: 8px 0; border-bottom: 1px dashed #e7e0d4; }
+.tl:last-child { border-bottom: none; }
+.tl-type { font-size: 11px; padding: 2px 7px; border-radius: 6px; height: fit-content; flex-shrink: 0; }
+.tt-策展 { background: #e6f0fa; color: #2f6fb0; }
+.tt-见面 { background: #eef6ef; color: #3a8f5b; }
+.tt-跟进 { background: #fff4ec; color: #c46a3a; }
+.tl-body { flex: 1; min-width: 0; }
+.tl-sum { font-size: 13px; color: #3d5a3e; line-height: 1.5; }
+.tl-at { font-size: 11px; color: #999; margin-top: 2px; }
+.fl { padding: 8px 0; border-bottom: 1px dashed #e7e0d4; }
+.fl:last-child { border-bottom: none; }
+.fl-theme { font-size: 13px; font-weight: 700; color: #2b2b2b; }
+.fl-text { font-size: 12.5px; color: #555; margin-top: 2px; line-height: 1.5; }
+.fl-lt { font-size: 11px; color: #C8956D; margin-top: 2px; }
+.mp { padding: 8px 0; border-bottom: 1px dashed #e7e0d4; }
+.mp:last-child { border-bottom: none; }
+.mp-point { font-size: 13px; color: #3d5a3e; line-height: 1.5; }
+.mp-at { font-size: 11px; color: #999; margin-top: 2px; }
 .btn-green { background: #3d5a3e; color: #fff; border-radius: 10px; padding: 12px; font-size: 15px; margin-top: 6px; }
 .btn-red { background: #fff; color: #c0392b; border: 1px solid #f0c4bd; border-radius: 10px; padding: 12px; font-size: 14px; margin-top: 8px; }
 .btn-line { background: #fff; color: #c46a3a; border: 1px solid #e7d3c2; border-radius: 10px; padding: 12px; font-size: 14px; margin-top: 8px; }
