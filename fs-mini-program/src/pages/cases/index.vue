@@ -11,14 +11,14 @@
 
     <view class="filter-block">
       <view class="filter-label">按客户类型</view>
-      <scroll-view class="chips" scroll-x="true" enable-flex>
+      <scroll-view class="chips" scroll-x="true" enable-flex style="height: auto;">
         <text class="chip" :class="{ on: role === 'all' }" @tap="setRole('all')">全部</text>
         <text class="chip" :class="{ on: role === r }" v-for="r in roleOpts" :key="r" @tap="setRole(r)">{{ r }}</text>
       </scroll-view>
     </view>
     <view class="filter-block">
       <view class="filter-label">按业务场景</view>
-      <scroll-view class="chips" scroll-x="true" enable-flex>
+      <scroll-view class="chips" scroll-x="true" enable-flex style="height: auto;">
         <text class="chip" :class="{ on: scene === 'all' }" @tap="setScene('all')">全部</text>
         <text class="chip" :class="{ on: scene === s }" v-for="s in sceneOpts" :key="s" @tap="setScene(s)">{{ s }}</text>
       </scroll-view>
@@ -122,3 +122,11 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/* chip 标签兜底：防止被父 flex 容器 stretch 拉成纵向高条带 */
+.chips { align-items: center !important; }
+.chip { align-self: center !important; height: auto !important; min-height: 30px; line-height: 1; }
+/* 案例卡片宽度显式声明，避免在某些 flex 布局里被压缩 */
+.case-card { width: 100%; box-sizing: border-box; }
+</style>
