@@ -12,7 +12,7 @@
         <view class="dict-count">{{ d.count }}</view>
       </view>
     </view>
-    <view class="icp">词条口径经小鱼儿全量核对（#111）<view>数据校对 5 步链路 · 禁止凭印象</view></view>
+    <view class="icp">词条口径经全量核对（#111）<view>数据校对 5 步链路 · 禁止凭印象</view></view>
   </view>
 </template>
 
