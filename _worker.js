@@ -3,9 +3,6 @@
 //   + issue #191: 合作意向留资 (partner_intent) & IP 设计 AI 头像生成 (/ip-design)
 
 // 模块化业务处理 (api/ 目录, 由 Workerd 模块加载器解析相对 ESM 导入)
-import { storePartnerIntents } from './api/partner-intent.js';
-import { handleIpDesign } from './api/ip-design.js';
-
 const COZE_API = 'https://api.coze.cn';
 const BOT_ID_PLACEHOLDER = '***MASKED***'; // Bot ID from env var FS_BOT_ID，禁止硬编码
 const WX_API = 'https://api.weixin.qq.com/sns/jscode2session';
@@ -1122,3 +1119,401 @@ function getBaseUrl(request) {
   const host = request.headers.get('Host') || 'fengsheng.tech';
   return `${proto}://${host}`;
 }
+
+
+// ============================================================
+//  Inlined modules (api/partner-intent.js + api/ip-design.js)
+//  Bundled for Cloudflare Pages direct upload
+// ============================================================
+
+// --- api/partner-intent.js ---
+// api/partner-intent.js
+// ============================================================
+//  合作意向留资 (路径B · 增量前置)
+//  对应 GitHub issue #191 任务1
+//  --------------------------------------------------------
+//  路由: POST /api/event   (body.t === 'partner_intent')
+//  前端契约 (来自 PR#190 partner.js, 通过 navigator.sendBeacon 发送):
+//    {
+//      "t": "partner_intent",
+//      "type": "edu" | "gov",
+//      "name": "",
+//      "org": "",
+//      "role": "",
+//      "contact": "",
+//      "chips": [],
+//      "note": "",
+//      "ts": 0
+//    }
+//
+//  存储: D1 (env.DB, 表 partner_intents) 为主,
+//        KV  (env.PARTNER_LEADS)         为兜底,
+//        都不可用时降级为 console.log (fire-and-forget, 不阻塞前端).
+//  依赖: 见 migrations/002_create_partner_intents.sql
+// ============================================================
+
+// 合法合作类型
+const VALID_TYPES = new Set(['edu', 'gov']);
+
+// 字段最大长度 (防滥用 / 超长截断)
+const FIELD_MAX = {
+  name: 64,
+  org: 128,
+  role: 64,
+  contact: 128,
+  note: 1024,
+  chipsItem: 32,   // 单个标签最大长度
+  chipsMax: 32,    // 最多 32 个标签
+  ip: 64,
+  ua: 512,
+};
+
+/**
+ * 批量存储合作意向事件.
+ * @param {Array} events  已过滤为 t==='partner_intent' 的事件数组
+ * @param {Object} env    Worker env (DB / PARTNER_LEADS)
+ * @param {Request} [request]  用于读取 client IP / UA
+ * @returns {Promise<number>}  成功落库条数
+ */
+async function storePartnerIntents(events, env, request) {
+  if (!Array.isArray(events) || events.length === 0) return 0;
+
+  const clientIp = request
+    ? (request.headers.get('CF-Connecting-IP') || request.headers.get('X-Real-IP') || '')
+    : '';
+  const ua = request ? (request.headers.get('User-Agent') || '') : '';
+
+  let stored = 0;
+  for (const e of events) {
+    const record = normalize(e, clientIp, ua);
+    if (!record) continue;
+
+    let ok = false;
+
+    // ----- 1) D1 主存储 -----
+    if (env.DB) {
+      try {
+        await env.DB.prepare(
+          'INSERT INTO partner_intents (intent_type, name, org, role, contact, chips, note, client_ip, ua, ts, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        ).bind(
+          record.intent_type,
+          record.name,
+          record.org,
+          record.role,
+          record.contact,
+          record.chips,
+          record.note,
+          record.client_ip,
+          record.ua,
+          record.ts,
+          Math.floor(Date.now() / 1000)
+        ).run();
+        ok = true;
+      } catch (err) {
+        // 表可能尚未建 (migration 未执行) → 降级 KV
+        console.error('partner_intents: D1 insert failed, fallback to KV:', err.message);
+      }
+    }
+
+    // ----- 2) KV 兜底 (D1 不可用或建表未执行) -----
+    if (!ok && env.PARTNER_LEADS) {
+      try {
+        const key = `pi:${record.ts}:${Math.random().toString(36).slice(2, 8)}`;
+        await env.PARTNER_LEADS.put(key, JSON.stringify(record), {
+          expirationTtl: 60 * 60 * 24 * 365, // 1 年
+        });
+        ok = true;
+      } catch (err) {
+        console.error('partner_intents: KV put failed:', err.message);
+      }
+    }
+
+    if (!ok) {
+      // 最后兜底: 仅打日志, 仍向前端返回 ok (fire-and-forget)
+      console.log('partner_intent (not persisted):', JSON.stringify(record));
+    } else {
+      stored++;
+    }
+  }
+  return stored;
+}
+
+/**
+ * 将前端原始事件归一化为可存储记录.
+ * @returns {Object|null}  非法事件返回 null
+ */
+function normalize(e, clientIp, ua) {
+  if (!e || typeof e !== 'object') return null;
+  if (e.t !== 'partner_intent') return null;
+
+  const intentType = VALID_TYPES.has(e.type) ? e.type : 'edu';
+
+  return {
+    intent_type: intentType,
+    name: clip(e.name, FIELD_MAX.name),
+    org: clip(e.org, FIELD_MAX.org),
+    role: clip(e.role, FIELD_MAX.role),
+    contact: clip(e.contact, FIELD_MAX.contact),
+    chips: stringifyChips(e.chips),
+    note: clip(e.note, FIELD_MAX.note),
+    client_ip: clip(clientIp, FIELD_MAX.ip),
+    ua: clip(ua, FIELD_MAX.ua),
+    ts: Number.isFinite(e.ts) ? e.ts : Date.now(),
+  };
+}
+
+function clip(v, max) {
+  const s = (v == null ? '' : String(v)).trim();
+  return s.slice(0, max);
+}
+
+function stringifyChips(arr) {
+  if (!Array.isArray(arr)) return '[]';
+  const cleaned = arr
+    .filter((x) => x != null && x !== '')
+    .map((x) => String(x).trim().slice(0, FIELD_MAX.chipsItem))
+    .slice(0, FIELD_MAX.chipsMax);
+  return JSON.stringify(cleaned);
+}
+
+/**
+ * 独立路由处理器 (可选).
+ * 当前实现中, /api/event 入口在 _worker.js 的 handleEvent 里
+ * 已对 t==='partner_intent' 做了分流并调用 storePartnerIntents.
+ * 若后续想把留资拆成独立路由 (如 POST /api/partner-intent),
+ * 可直接挂载本函数.
+ */
+async function handlePartnerIntentRoute(request, env) {
+  try {
+    const body = await parseBodyJson(request);
+    const events = Array.isArray(body) ? body : body ? [body] : [];
+    const partnerEvents = events.filter((e) => e && e.t === 'partner_intent');
+    const stored = await storePartnerIntents(partnerEvents, env, request);
+    // fire-and-forget: 即使 0 条也返回 ok, 不暴露内部状态
+    return jsonResponse({ ok: true, stored });
+  } catch (err) {
+    console.error('handlePartnerIntentRoute error:', err);
+    return jsonResponse({ ok: true });
+  }
+}
+
+async function parseBodyJson(request) {
+  const text = await request.text();
+  if (!text) return null;
+  return JSON.parse(text);
+}
+
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
+}
+
+
+// --- api/ip-design.js ---
+// api/ip-design.js
+// ============================================================
+//  IP 角色设计 · AI 头像生成
+//  对应 GitHub issue #191 任务2
+//  --------------------------------------------------------
+//  路由: POST /ip-design
+//  请求体:
+//    {
+//      "desc": "角色描述",
+//      "styles": ["商务风","亲民风","活力风","简约文艺","科技感","可爱卡通"]
+//    }
+//  返回体:
+//    [
+//      { "style": "商务风", "url": "https://..." },
+//      { "style": "亲民风", "url": "https://..." },
+//      ...
+//    ]
+//
+//  当前状态: MOCK (返回占位图 URL).
+//  真实文生图 API 接入位置见 generateAvatarReal() 与文件底部说明.
+// ============================================================
+
+// 前端约定的 6 种风格
+const SUPPORTED_STYLES = ['商务风', '亲民风', '活力风', '简约文艺', '科技感', '可爱卡通'];
+
+const MAX_DESC = 500;       // 描述最大长度
+const MAX_STYLES = 6;       // 单次最多生成 6 种风格
+
+// ============================================================
+//  Mock 开关
+//  - true : 走 mockAvatarUrl() 占位图
+//  - false: 走 generateAvatarReal() 真实文生图
+//  注意: 即便置为 false, 若 env 未配置 IP_DESIGN_API / IP_DESIGN_API_KEY,
+//        仍会自动降级回 mock, 保证服务可用.
+// ============================================================
+const USE_MOCK = true;
+
+/**
+ * 路由处理器: POST /ip-design
+ */
+async function handleIpDesign(request, env) {
+  // 1. 解析 & 校验入参
+  let body;
+  try {
+    body = await parseBodyJson(request);
+  } catch {
+    return jsonResponse({ error: '请求体不是合法 JSON' }, 400);
+  }
+
+  const desc = clip(body && body.desc, MAX_DESC);
+  const styles = pickStyles(body && body.styles);
+
+  if (!desc) {
+    return jsonResponse({ error: 'desc 不能为空' }, 400);
+  }
+  if (styles.length === 0) {
+    return jsonResponse({ error: 'styles 不能为空' }, 400);
+  }
+
+  // 2. 逐风格生成头像 (mock 或真实)
+  const results = [];
+  for (const style of styles) {
+    const prompt = buildPrompt(desc, style);
+    let url;
+    if (USE_MOCK || !env.IP_DESIGN_API || !env.IP_DESIGN_API_KEY) {
+      url = await mockAvatarUrl(desc, style);
+    } else {
+      try {
+        url = await generateAvatarReal(prompt, env);
+      } catch (err) {
+        // 真实 API 失败时降级 mock, 保证前端可用
+        console.error('ip-design: real API failed, fallback to mock:', err.message);
+        url = await mockAvatarUrl(desc, style);
+      }
+    }
+    results.push({ style, url });
+  }
+
+  // 3. 返回数组 (与前端契约一致)
+  return jsonResponse(results);
+}
+
+// ------------------------------------------------------------
+//  Prompt 构造
+// ------------------------------------------------------------
+function buildPrompt(desc, style) {
+  return [
+    '为一个 IP 角色设计头像, 正方形构图, 头像比例, 简洁背景, 高质量.',
+    `风格: ${style}.`,
+    `角色描述: ${desc}.`,
+  ].join(' ');
+}
+
+// ============================================================
+//  MOCK 实现: 返回占位图 URL
+//  使用 DiceBear 开源头像 API (无需 Key, 确定性可复现).
+//  真实文生图接入后, 此函数保留作为降级方案.
+// ============================================================
+async function mockAvatarUrl(desc, style) {
+  const seed = encodeURIComponent(`${style}-${desc}`.slice(0, 64));
+  // 把中文风格映射到 DiceBear 的画风, 让每种风格视觉上有差异
+  const styleMap = {
+    '商务风': 'bottts-neutral',
+    '亲民风': 'avataaars',
+    '活力风': 'adventurer',
+    '简约文艺': 'thumbs',
+    '科技感': 'bottts',
+    '可爱卡通': 'lorelei',
+  };
+  const dicebearStyle = styleMap[style] || 'bottts-neutral';
+  return `https://api.dicebear.com/7.x/${dicebearStyle}/svg?seed=${seed}&backgroundColor=f7f4ef`;
+}
+
+// ============================================================
+//  真实文生图 API 接入位置 (占位实现)
+//  --------------------------------------------------------
+//  接入步骤:
+//   1. 在 Cloudflare Pages → 项目 → Settings → Environment variables 配置:
+//        IP_DESIGN_API      文生图服务地址
+//        IP_DESIGN_API_KEY  对应 API Key
+//        IP_DESIGN_MODEL    (可选) 模型名, 默认 seedream-4.0
+//   2. 把本文件顶部 USE_MOCK 改为 false
+//   3. 按所选服务商文档调整下方 fetch 的请求体与返回解析
+//
+//  下方以火山方舟 Seedream (Volcano Engine) 文生图为例,
+//  兼容 OpenAI Images API 风格的返回结构 (data[0].url / b64_json).
+//  如改用 Coze / 通义万相 / Stability 等, 仅需改写本函数.
+// ============================================================
+async function generateAvatarReal(prompt, env) {
+  const apiUrl = env.IP_DESIGN_API;          // 例: https://ark.cn-beijing.volces.com/api/v3/images/generations
+  const apiKey = env.IP_DESIGN_API_KEY;
+
+  const resp = await fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: env.IP_DESIGN_MODEL || 'seedream-4.0',
+      prompt,
+      size: '1024x1024',
+      n: 1,
+    }),
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text();
+    throw new Error(`text-to-image API ${resp.status}: ${errText.slice(0, 200)}`);
+  }
+
+  const data = await resp.json();
+
+  // 适配不同服务商返回结构:
+  //  - OpenAI / Volcano Seedream / 通义: data.data[0].url 或 data.data[0].b64_json
+  //  - Coze: data.data[0].url
+  const item = data && data.data && data.data[0];
+  if (!item) throw new Error('text-to-image API: 返回 data 为空');
+  if (item.url) return item.url;
+  if (item.b64_json) return `data:image/png;base64,${item.b64_json}`;
+  throw new Error('text-to-image API: 返回中未找到 url');
+}
+
+// ------------------------------------------------------------
+//  工具函数
+// ------------------------------------------------------------
+function pickStyles(raw) {
+  if (!Array.isArray(raw)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const s of raw) {
+    if (typeof s !== 'string') continue;
+    const v = s.trim();
+    if (!v || seen.has(v)) continue;
+    seen.add(v);
+    out.push(v);
+    if (out.length >= MAX_STYLES) break;
+  }
+  return out;
+}
+
+function clip(v, max) {
+  const s = (v == null ? '' : String(v)).trim();
+  return s.slice(0, max);
+}
+
+async function parseBodyJson(request) {
+  const text = await request.text();
+  if (!text) return null;
+  return JSON.parse(text);
+}
+
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
+}
+
