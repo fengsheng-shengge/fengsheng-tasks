@@ -241,6 +241,30 @@ a{color:inherit;text-decoration:none}
 .modal-cta-btn:hover{background:var(--p-light)}
 .modal-cta-btn.secondary{background:white;color:var(--p);border:1px solid var(--line)}
 
+/* ===== Domain Browser (弹窗内) ===== */
+.domain-browser{margin-top:12px}
+.subscene-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.subscene-chip{font-size:12px;padding:4px 12px;border-radius:100px;background:var(--cream);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:all .15s;white-space:nowrap}
+.subscene-chip:hover{background:var(--p);color:white;border-color:var(--p)}
+.subscene-chip.active{background:var(--p);color:white;border-color:var(--p);font-weight:600}
+.domain-entry-list{max-height:400px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;background:var(--cream)}
+.domain-entry-item{padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s}
+.domain-entry-item:last-child{border-bottom:none}
+.domain-entry-item:hover{background:rgba(61,90,62,0.06)}
+.domain-entry-item .de-icon{font-size:20px;flex-shrink:0}
+.domain-entry-item .de-info{flex:1;min-width:0}
+.domain-entry-item .de-title{font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.domain-entry-item .de-meta{font-size:11px;color:var(--ink-soft);margin-top:2px}
+.domain-entry-item .de-arrow{color:var(--ink-soft);font-size:14px;flex-shrink:0}
+.domain-pagination{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.domain-page-info{font-size:13px;color:var(--ink-soft)}
+.domain-page-btns{display:flex;gap:8px}
+.domain-page-btn{padding:6px 16px;border-radius:8px;background:var(--cream);border:1px solid var(--line);color:var(--ink);font-size:13px;cursor:pointer;transition:all .15s}
+.domain-page-btn:hover:not(:disabled){background:var(--p);color:white;border-color:var(--p)}
+.domain-page-btn:disabled{opacity:0.4;cursor:not-allowed}
+.search-results{margin-top:12px}
+.search-results .domain-entry-list{max-height:500px}
+
 /* ===== Footer ===== */
 footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft);font-size:13px}
 .footer-inner{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
@@ -942,7 +966,7 @@ function renderDomains(){
       ...d.sample_words.map((w,i)=>'<span class="di-word" data-entry="'+d.sample_ids[i]+'">'+w+'</span>'),
       (d.more_count>0 ? '<span class="di-word" data-entry="DOMAIN-'+d.code+'">+ '+d.more_count+' 条</span>' : '')
     ].join('');
-    return '<div class="di-domain"><div class="di-domain-head"><span class="di-domain-icon">'+d.icon+'</span><span class="di-domain-name">'+d.title+'</span><span class="di-domain-count">'+d.count+' 条</span></div><div class="di-domain-desc" style="font-size:12px;color:var(--ink-soft);margin-bottom:10px">'+d.desc+'</div><div class="di-words">'+chips+'</div></div>';
+    return '<div class="di-domain" data-entry="DOMAIN-'+d.code+'" style="cursor:pointer"><div class="di-domain-head"><span class="di-domain-icon">'+d.icon+'</span><span class="di-domain-name">'+d.title+'</span><span class="di-domain-count">'+d.count+' 条</span></div><div class="di-domain-desc" style="font-size:12px;color:var(--ink-soft);margin-bottom:10px">'+d.desc+'</div><div class="di-words">'+chips+'</div></div>';
   }).join('');
   updateDomainStats();
 }
@@ -986,33 +1010,7 @@ function switchPillar(pillar){
   document.querySelectorAll('.pillar-icon-card').forEach(c=>c.style.boxShadow=c.dataset.pillar===pillar?'var(--shadow-md)':'none');
 }
 
-/* ===== 搜索 ===== */
-function doSearch(query){
-  const input=document.getElementById('searchInput');
-  input.value=query;
-  // Simple search: find matching entries and open first match
-  const q=query.toLowerCase();
-  let found=null;
-  // #181 fix: 搜索allEntriesMap优先,再搜entryDatabase
-  for(const[id,d]of Object.entries(allEntriesMap)){
-    const text=[d.name||d.title||'',d.def||'',d.consumer||'',d.servicer||'',d.posSpeech||'',d.negSpeech||'',d.simpleAnswer||'',d.alias||''].join(' ').toLowerCase();
-    if(text.includes(q)){found=id;break;}
-  }
-  if(!found){
-    for(const[id,d]of Object.entries(entryDatabase)){
-      const text=[d.title,d.def||'',d.consumer||'',d.servicer||'',d.posSpeech||'',d.negSpeech||''].join(' ').toLowerCase();
-      if(text.includes(q)){found=id;break;}
-    }
-  }
-  if(found) openEntry(found);
-  else{
-    // Switch to appropriate pillar based on query
-    if(q.includes('物质')||q.includes('安全')||q.includes('健康')||q.includes('美好居住')||q.includes('三层')) switchPillar('mission');
-    else if(q.includes('人生')||q.includes('阶段')||q.includes('学区')||q.includes('适老')) switchPillar('vision');
-    else if(q.includes('服务者')||q.includes('岗位')||q.includes('能力')) switchPillar('value');
-    else switchPillar('culture');
-  }
-}
+/* ===== 搜索（新版在下方，支持结果列表） ===== */
 
 document.getElementById('searchInput').addEventListener('keydown',e=>{
   if(e.key==='Enter') doSearch(e.target.value);
@@ -1047,44 +1045,227 @@ function openEntry(entryId){
   showEntry({icon:entryIcon, title:entryTitle, id:data.id||entryId, def:entryDef, consumer:entryConsumer, servicer:entryServicer});
 }
 
+/* ===== 域浏览器状态 ===== */
+let domainBrowseState = { domain: null, page: 0, perPage: 20, subScene: null, filtered: [] };
+
 function showDomainModal(domain){
-  // 从allEntries按domain过滤
-  let entries = allEntries.filter(e=>e.domain===domain.code);
-  const totalInDomain = entries.length;
-  const showEntries = entries.slice(0, 50); // 最多显示50条，避免性能问题
-  const hasMore = totalInDomain > 50;
-  const listHtml=showEntries.length>0
-    ? showEntries.map(e=>{
+  domainBrowseState = { domain: domain, page: 0, perPage: 20, subScene: null, filtered: [] };
+  renderDomainBrowser();
+}
+
+function getSubScenes(domainCode){
+  const scenes = {};
+  allEntries.forEach(e=>{
+    if(e.domain===domainCode && e.subScene){
+      scenes[e.subScene] = (scenes[e.subScene]||0)+1;
+    }
+  });
+  return Object.entries(scenes).sort((a,b)=>b[1]-a[1]);
+}
+
+function filterDomainEntries(){
+  const d = domainBrowseState.domain;
+  if(!d) return;
+  let entries = allEntries.filter(e=>e.domain===d.code);
+  if(domainBrowseState.subScene){
+    entries = entries.filter(e=>e.subScene===domainBrowseState.subScene);
+  }
+  domainBrowseState.filtered = entries;
+}
+
+function renderDomainBrowser(){
+  const d = domainBrowseState.domain;
+  if(!d) return;
+  filterDomainEntries();
+
+  const allEntries_count = allEntries.filter(e=>e.domain===d.code).length;
+  const filtered = domainBrowseState.filtered;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / domainBrowseState.perPage));
+  if(domainBrowseState.page >= totalPages) domainBrowseState.page = totalPages - 1;
+  if(domainBrowseState.page < 0) domainBrowseState.page = 0;
+
+  const start = domainBrowseState.page * domainBrowseState.perPage;
+  const pageEntries = filtered.slice(start, start + domainBrowseState.perPage);
+
+  // 子场景筛选 chips
+  const subScenes = getSubScenes(d.code);
+  const filterHtml = subScenes.length > 0
+    ? '<div class="subscene-filters">' +
+      '<span class="subscene-chip' + (!domainBrowseState.subScene?' active':'') + '" onclick="filterSubScene(null)">全部 '+allEntries_count+'</span>' +
+      subScenes.map(([name,count])=>
+        '<span class="subscene-chip' + (domainBrowseState.subScene===name?' active':'') + '" onclick="filterSubScene(\''+name.replace(/'/g,"\\'")+'\')">'+name+' ('+count+')</span>'
+      ).join('') +
+      '</div>'
+    : '';
+
+  // 词条列表
+  const listHtml = pageEntries.length > 0
+    ? '<div class="domain-entry-list">' + pageEntries.map(e=>{
         const icon = e.icon || getDomainIcon(e.domain) || '📄';
         const title = e.title || e.name || e.id;
-        return '<div class="domain-entry-item" data-entry="'+e.id+'" style="padding:12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:10px;background:white" onclick="event.stopPropagation();closeEntry();setTimeout(()=>openEntry(\''+e.id+'\'),100)"><span style="font-size:24px">'+icon+'</span><div><div style="font-weight:700;font-size:14px">'+title+'</div><div style="font-size:11px;color:var(--ink-soft)">'+e.id+'</div></div><span style="margin-left:auto;color:var(--ink-soft);font-size:12px">→</span></div>';
-      }).join('')
-    : '<div style="text-align:center;padding:20px;color:var(--ink-soft)">此域词条待补全（'+domain.count+'条计划中）</div>';
-  const moreHint = hasMore ? '<div style="text-align:center;padding:12px;color:var(--ink-soft);font-size:12px">（仅显示前50条，共'+totalInDomain+'条）</div>' : '';
-  showEntry({
-    icon:domain.icon,title:domain.title,id:'DOMAIN-'+domain.code,
-    def:'共 '+domain.count+' 条词条（'+domain.desc+'）',
-    consumer:listHtml+moreHint,
-    servicer:'点击词条查看详情'
-  });
+        const meta = [e.subScene, e.severity, e.source].filter(Boolean).join(' · ');
+        return '<div class="domain-entry-item" onclick="closeEntry();setTimeout(()=>openEntry(\''+e.id+'\'),150)">' +
+               '<span class="de-icon">'+icon+'</span>' +
+               '<div class="de-info"><div class="de-title">'+escapeHtml(title)+'</div>' +
+               '<div class="de-meta">'+escapeHtml(meta||e.id)+'</div></div>' +
+               '<span class="de-arrow">→</span></div>';
+      }).join('') + '</div>'
+    : '<div style="text-align:center;padding:40px;color:var(--ink-soft)">没有符合条件的词条</div>';
+
+  // 分页
+  const paginationHtml = filtered.length > domainBrowseState.perPage
+    ? '<div class="domain-pagination">' +
+      '<span class="domain-page-info">第 '+(domainBrowseState.page+1)+' / '+totalPages+' 页 · 共 '+filtered.length+' 条' + (domainBrowseState.subScene?'（筛选后）':'') + '</span>' +
+      '<div class="domain-page-btns">' +
+      '<button class="domain-page-btn" onclick="changePage(-1)" '+(domainBrowseState.page===0?'disabled':'')+'>← 上一页</button>' +
+      '<button class="domain-page-btn" onclick="changePage(1)" '+(domainBrowseState.page>=totalPages-1?'disabled':'')+'>下一页 →</button>' +
+      '</div></div>'
+    : '<div class="domain-pagination"><span class="domain-page-info">共 '+filtered.length+' 条</span></div>';
+
+  // 设置弹窗
+  document.getElementById('modalIcon').textContent = d.icon;
+  document.getElementById('modalTitle').textContent = d.title;
+  document.getElementById('modalId').textContent = '共 ' + allEntries_count + ' 条 · ' + d.desc;
+  document.getElementById('modalDef').innerHTML = filterHtml + listHtml + paginationHtml;
+  document.getElementById('modalDef').style.display = 'block';
+  // 隐藏正反话术区域
+  const prosconsSection = document.querySelector('#entryModal .proscons').closest('.modal-section');
+  if(prosconsSection) prosconsSection.style.display = 'none';
+  // 隐藏 CTA
+  const ctaSection = document.querySelector('#entryModal .modal-cta');
+  if(ctaSection) ctaSection.style.display = 'none';
+  document.getElementById('entryModal').classList.add('active');
+}
+
+function filterSubScene(scene){
+  domainBrowseState.subScene = scene;
+  domainBrowseState.page = 0;
+  renderDomainBrowser();
+}
+
+function changePage(delta){
+  domainBrowseState.page += delta;
+  renderDomainBrowser();
+}
+
+function escapeHtml(text){
+  if(!text) return '';
+  return String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function showRoleModal(role){
-  showEntry({
-    icon:role.icon,title:role.code+'·'+role.name,id:'ROLE-'+role.code,
-    def:'业务域: '+role.domain+' | '+role.gb,
-    consumer:'5能力维度·专业知识+服务规范+沟通能力+工具应用+职业素养',
-    servicer:'点击词条查看完整能力模型'
-  });
+  document.getElementById('modalIcon').textContent = role.icon;
+  document.getElementById('modalTitle').textContent = role.code+'·'+role.name;
+  document.getElementById('modalId').textContent = role.domain+' | '+role.gb;
+  document.getElementById('modalDef').textContent = '5能力维度 · 专业知识 + 服务规范 + 沟通能力 + 工具应用 + 职业素养';
+  document.getElementById('modalDef').style.display = 'block';
+  const prosconsSection = document.querySelector('#entryModal .proscons').closest('.modal-section');
+  if(prosconsSection) prosconsSection.style.display = 'none';
+  const ctaSection = document.querySelector('#entryModal .modal-cta');
+  if(ctaSection) ctaSection.style.display = 'none';
+  document.getElementById('entryModal').classList.add('active');
 }
 
+function showEntryDetail(data){
+  document.getElementById('modalIcon').textContent = data.icon;
+  document.getElementById('modalTitle').textContent = data.title;
+  document.getElementById('modalId').textContent = 'ID: ' + data.id;
+  document.getElementById('modalDef').textContent = data.def;
+  document.getElementById('modalDef').style.display = 'block';
+  // 显示正反话术
+  const prosconsSection = document.querySelector('#entryModal .proscons').closest('.modal-section');
+  if(prosconsSection){
+    prosconsSection.style.display = 'block';
+    document.querySelector('.modal-section-title', prosconsSection).textContent = '🎭 正反话术 · 消费者 vs 服务者';
+  }
+  document.getElementById('modalConsumerQuote').textContent = data.consumer || '';
+  document.getElementById('modalServicerQuote').textContent = data.servicer || '';
+  // 显示 CTA
+  const ctaSection = document.querySelector('#entryModal .modal-cta');
+  if(ctaSection) ctaSection.style.display = 'flex';
+  document.getElementById('entryModal').classList.add('active');
+}
+
+// 路由：统一入口
 function showEntry(data){
-  document.getElementById('modalIcon').textContent=data.icon;
-  document.getElementById('modalTitle').textContent=data.title;
-  document.getElementById('modalId').textContent='ID: '+data.id;
-  document.getElementById('modalDef').textContent=data.def;
-  document.getElementById('modalConsumerQuote').textContent=data.consumer||'';
-  document.getElementById('modalServicerQuote').textContent=data.servicer||'';
+  // 如果有 consumer 且看起来是 HTML（域浏览器/搜索结果），用 showEntryDetail
+  showEntryDetail(data);
+}
+
+/* ===== 搜索结果列表 ===== */
+function doSearch(query){
+  const input=document.getElementById('searchInput');
+  input.value=query;
+  const q=query.toLowerCase().trim();
+  if(!q) return;
+
+  // 搜索 allEntriesMap
+  const results = [];
+  for(const e of allEntries){
+    const text=[
+      e.name||e.title||'',
+      e.def||'',
+      e.consumerQ||'',
+      e.simpleAnswer||'',
+      e.posSpeech||'',
+      e.negSpeech||'',
+      e.alias ? (Array.isArray(e.alias) ? e.alias.join(' ') : e.alias) : '',
+      e.subScene||'',
+      e.domain||''
+    ].join(' ').toLowerCase();
+    if(text.includes(q)){
+      results.push(e);
+      if(results.length >= 100) break; // 最多100条结果
+    }
+  }
+
+  // 也搜 entryDatabase 兜底
+  if(results.length === 0){
+    for(const[id,d] of Object.entries(entryDatabase)){
+      const text=[d.title,d.def||'',d.consumer||'',d.servicer||''].join(' ').toLowerCase();
+      if(text.includes(q)){ results.push({id, ...d}); break; }
+    }
+  }
+
+  if(results.length === 0){
+    // 没有匹配，切换到相关柱
+    if(q.includes('物质')||q.includes('安全')||q.includes('健康')||q.includes('美好居住')||q.includes('三层')) switchPillar('mission');
+    else if(q.includes('人生')||q.includes('阶段')||q.includes('学区')||q.includes('适老')) switchPillar('vision');
+    else if(q.includes('服务者')||q.includes('岗位')||q.includes('能力')) switchPillar('value');
+    else switchPillar('culture');
+    return;
+  }
+
+  if(results.length === 1){
+    openEntry(results[0].id);
+    return;
+  }
+
+  // 多条结果：显示搜索结果列表
+  showSearchResults(query, results);
+}
+
+function showSearchResults(query, results){
+  const listHtml = '<div class="domain-entry-list">' + results.map(e=>{
+    const icon = e.icon || getDomainIcon(e.domain) || '📄';
+    const title = e.title || e.name || e.id;
+    const meta = [e.domain, e.subScene].filter(Boolean).join(' · ');
+    return '<div class="domain-entry-item" onclick="closeEntry();setTimeout(()=>openEntry(\''+e.id+'\'),150)">' +
+           '<span class="de-icon">'+icon+'</span>' +
+           '<div class="de-info"><div class="de-title">'+escapeHtml(title)+'</div>' +
+           '<div class="de-meta">'+escapeHtml(meta||e.id)+'</div></div>' +
+           '<span class="de-arrow">→</span></div>';
+  }).join('') + '</div>';
+
+  document.getElementById('modalIcon').textContent = '🔍';
+  document.getElementById('modalTitle').textContent = '搜索结果';
+  document.getElementById('modalId').textContent = '关键词: "' + query + '" · ' + results.length + ' 条匹配';
+  document.getElementById('modalDef').innerHTML = listHtml;
+  document.getElementById('modalDef').style.display = 'block';
+  const prosconsSection = document.querySelector('#entryModal .proscons').closest('.modal-section');
+  if(prosconsSection) prosconsSection.style.display = 'none';
+  const ctaSection = document.querySelector('#entryModal .modal-cta');
+  if(ctaSection) ctaSection.style.display = 'none';
   document.getElementById('entryModal').classList.add('active');
 }
 
