@@ -1303,14 +1303,6 @@ async function parseBodyJson(request) {
   return JSON.parse(text);
 }
 
-function jsonResponse(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
-  });
 }
 
 
@@ -1496,24 +1488,10 @@ function pickStyles(raw) {
   return out;
 }
 
-function clip(v, max) {
-  const s = (v == null ? '' : String(v)).trim();
-  return s.slice(0, max);
-}
-
-async function parseBodyJson(request) {
   const text = await request.text();
   if (!text) return null;
   return JSON.parse(text);
 }
 
-function jsonResponse(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
-  });
 }
 
