@@ -38,9 +38,11 @@ export const knowledgeDomains = [
   { icon: '🧹', name: '家政保洁', count: '15 条' },
   { icon: '✨', name: '品质居住(消费)', count: '6 条' },
   { icon: '💼', name: '品质居住(服务)', count: '4 条' },
-  { icon: '👥', name: '人才字典', count: '18 条' },
   { icon: '📜', name: '十五五政策', count: '18 条' }
 ]
+
+// b·P1-2：人才字典是雇主/平台评人工具，不放经纪人端词典页；数据保留（后续雇主端/管理端使用）
+export const talentDomain = { icon: '👥', name: '人才字典', count: '18 条' }
 
 export const methods = [
   { n: '①', icon: '🗺️', name: '商圈深耕法', desc: '把一个商圈吃到骨头里：社区生态地图、隐形房源、社区活动刷存在感。工具→社区画像卡 / 135 渗透法。' },
@@ -93,8 +95,8 @@ export const toolbox = [
 
 export const clients = [
   { surname: '林', name: '林先生 & 未婚妻', meta: '90后 · 婚房首套 · 预算300万', persona: '🔴结果', pkey: 'red', stage: '购房线 / ①首套', status: '跟进中', asset: '关系建立中，资产初值', level: 'A' },
-  { surname: '张', name: '张先生（业主）', meta: '已购 · 适老改造咨询', persona: '🔵关系', pkey: 'blue', stage: '购房线 / ④升级', status: '已成交', asset: '已购本房，适老钩子已埋', level: 'A' },
-  { surname: '王', name: '王女士（房东）', meta: '委托出租 · 空置45天', persona: '🔵关系', pkey: 'blue', stage: '租住线 / 业主侧', status: '跟进中', asset: '委托出租，定价钩子待跟进', level: 'B' },
+  { surname: '张', name: '张先生（业主）', meta: '已购 · 适老改造咨询', persona: '🔵关系', pkey: 'blue', stage: '购房线 / ④升级', status: '已成交', asset: '已购本房，适老跟进已规划', level: 'A' },
+  { surname: '王', name: '王女士（房东）', meta: '委托出租 · 空置45天', persona: '🔵关系', pkey: 'blue', stage: '租住线 / 业主侧', status: '跟进中', asset: '委托出租，定价跟进待办', level: 'B' },
   { surname: '陈', name: '陈同学（租客）', meta: '工作调动 · 近地铁', persona: '🟢理智', pkey: 'green', stage: '租住线 / ②改善', status: '跟进中', asset: '工作调动，租住改善中', level: 'C' }
 ]
 
@@ -149,7 +151,7 @@ export const casesData = [
       key: '关系导向先建信任、多关心；记忆点来自“被记住”。',
       tool: '客户描摹表（关系型）+ 客户分层运营表（A类维护）。' } },
   { id: 'c8', role: '业主', scene: '适老', mtd: '售后飞轮法', cost: 40, unlocked: false,
-    title: '成交后适老改造钩子，成年度服务客户',
+    title: '成交后适老改造跟进，成年度服务客户',
     preview: '改善业主父母同住——成交后主动给《适老化改造清单》+半年回访，引出加装扶手/防滑，变长期资产。',
     full: { bg: '业主购房用于父母同住，有适老潜在需求但未提。',
       do: '成交后1月回访时递《适老化改造清单》（扶手/防滑/夜灯）；半年再访引出实际改造，持续服务。',
@@ -168,6 +170,93 @@ export const earnTasks = [
   { id: 'curate', t: '完成 1 次见面策展', p: 10, done: false },
   { id: 'profile', t: '完善 1 个客户档案', p: 5, done: false },
   { id: 'assess', t: '完成 1 次品质/服务者测评', p: 8, done: false },
-  { id: 'share', t: '分享 1 个案例给同事', p: 3, done: false },
   { id: 'login', t: '每日登录', p: 2, done: false }
 ]
+
+// ===== V2.5 M1：见后跟进模板库（Followup Library）=====
+// 数据诚实：每条跟进均为「带新价值、非催促、不挂购买通路」的关怀触点，
+// 并标注 LTRUST 校准依据（Laws/Truth/Role/User/Source/Trust），绝不编造政策数字。
+// 键 = 客户 stage 全值（与 store 中 clients[].stage 一致），避免购/租两线"②改善"撞键。
+export const followupLibrary = {
+  '购房线 / ①首套': [
+    { theme: '购房资质与贷款政策变动提醒', ltrust: 'Truth 政策真源 / Source 官方发布',
+      text: '公积金或商贷额度、利率若有调整，第一时间把测算表发给客户——用真实政策帮他算月供，不带任何催促。' },
+    { theme: '学区划片年度更新提醒', ltrust: 'Truth 时间真值 / Trust 可靠',
+      text: '各地学区划片通常每年 4 月前后公示，在客户孩子入学前一年主动提醒核验，避免错过关键节点。' },
+    { theme: '首套税费与优惠清单', ltrust: 'Source 税务/房管官方 / User 客户省钱目标',
+      text: '整理首套契税减免、满五唯一等适用项做成一页清单，作为书面依据发给客户，让他自己判断。' }
+  ],
+  '购房线 / ②改善': [
+    { theme: '置换节奏建议', ltrust: 'Role 顾问角色 / User 客户目标',
+      text: '同板块"先买后卖 / 先卖后买"的资金衔接，给两种路径优劣势对比，由客户按风险偏好选。' },
+    { theme: '同板块户型成交趋势', ltrust: 'Truth 真实成交 / Source 实价登录',
+      text: '把客户关注户型的近 3 月同小区成交区间做成一页图，帮他判断报价是否合理，不催下定。' },
+    { theme: '买卖衔接风险提示', ltrust: 'T 风险前置 / Role 顾问',
+      text: '提示赎楼 / 解押 / 放款的时间差风险，提前拉代书给出可回溯时间线，难题顶上不甩锅。' }
+  ],
+  '购房线 / ③教育': [
+    { theme: '学籍 / 户籍时间节点提醒', ltrust: 'Truth 时间真值 / Trust 可靠',
+      text: '入学落户通常有截止时点，提前 12 个月提醒客户核验房产对应学籍，避免临期慌乱。' },
+    { theme: '多校划片政策解读', ltrust: 'Source 教育局官方 / Truth',
+      text: '若所在区实行多校划片，整理官方说明发给客户，帮他理解派位规则，降低不确定焦虑。' }
+  ],
+  '购房线 / ④升级': [
+    { theme: '适老改造清单', ltrust: 'User 生活目标 / Source 适老规范',
+      text: '客户父母同住时，主动递《适老化改造清单》（扶手 / 防滑 / 夜灯），把一次成交变长期服务起点。' },
+    { theme: '房型升级与品质生活提案', ltrust: 'Role 顾问 / User 改善目标',
+      text: '基于已购户型，提供软装 / 收纳 / 社区配套升级建议，持续创造被记住的专业瞬间。' }
+  ],
+  '购房线 / ⑤适老': [
+    { theme: '适老政策与社区服务对接', ltrust: 'Source 民政/社区 / User 养老目标',
+      text: '整理所在社区适老服务（助餐 / 巡访 / 适老化补贴）清单发给客户，纯价值不推销。' },
+    { theme: '半年回访触发改造需求', ltrust: 'Trust 可靠 / 售后飞轮',
+      text: '成交半年主动回访，引出扶手 / 防滑等实际改造，把客户变年度服务资产。' }
+  ],
+  '租住线 / ①起步': [
+    { theme: '合同到期前 30 天合规提醒', ltrust: 'Laws 住房租赁条例 / User 租客权益',
+      text: '租赁合同到期前 30 天，提醒客户续租 / 退租权益与押金退还规则（国令第 812 号《住房租赁条例》），不带推销。' },
+    { theme: '续租与退租权益说明', ltrust: 'Laws 租赁条例 / Truth',
+      text: '把续租涨价上限、提前退租违约责任以书面清单发给客户，让他知情、安心。' }
+  ],
+  '租住线 / ②改善': [
+    { theme: '租住改善对比表', ltrust: 'Role 顾问 / User 生活目标',
+      text: '客户因工作 / 家庭调动换租，做通勤 / 租金 / 配套三维对比表，把决策权交还客户。' },
+    { theme: '邻里与配套新动态', ltrust: 'Source 真实动态 / User 生活',
+      text: '新租约附近的商圈 / 地铁 / 学校变动，主动同步给客户，帮他更快安顿。' }
+  ],
+  '租住线 / ③家庭': [
+    { theme: '家庭租户关怀（学区 / 托管）', ltrust: 'User 家庭目标 / Trust',
+      text: '有娃家庭租户，主动同步附近托育 / 小学动态与社区亲子活动，纯关怀不营销。' },
+    { theme: '居家安全提醒', ltrust: 'Role 顾问 / User 安全',
+      text: '换季主动提醒燃气 / 电路自查清单，体现被在乎的专业。' }
+  ],
+  '租住线 / ④品质': [
+    { theme: '品质租户管家服务动态', ltrust: 'Source 真实动态 / User 生活品质',
+      text: '高端租户，同步专属管家 / 会所 / 保洁等增值服务新动态，制造记忆点。' }
+  ],
+  '租住线 / 业主侧': [
+    { theme: '委托出租定价区间建议', ltrust: 'Truth 真实成交 / Source 租赁条例',
+      text: '出具同小区近 3 月成交区间 + 空置资金成本测算，帮房东理性定价，不甩锅给市场。' },
+    { theme: '出租合规与税务提醒', ltrust: 'Laws 租赁条例 / Source 税务',
+      text: '把出租备案、个税减免等合规要点做成一页清单发给房东，纯依据不催促。' }
+  ],
+  // 兜底：未匹配到具体阶段时，给跨线通用的价值型跟进
+  '__default__': [
+    { theme: '政策与节点善意提醒', ltrust: 'Truth / User 客户目标',
+      text: '把客户当前最关心的购房 / 租房政策节点做成一页提醒，纯价值、不催促。' },
+    { theme: '市场动态轻同步', ltrust: 'Source 真实动态 / Trust',
+      text: '同板块近期成交或租赁动态，挑与客户相关的 1 条主动同步，体现专业在场。' }
+  ]
+}
+
+/** 按客户 stage（优先）或 role（兜底）取见后跟进模板，最多 5 条 */
+export function getFollowups(stage, role) {
+  if (stage && followupLibrary[stage]) return followupLibrary[stage].slice(0, 5)
+  const byRole = {
+    '买房客户': followupLibrary['购房线 / ①首套'],
+    '租客': followupLibrary['租住线 / ①起步'],
+    '业主': followupLibrary['购房线 / ④升级'],
+    '房东': followupLibrary['租住线 / 业主侧']
+  }
+  return (byRole[role] || followupLibrary['__default__']).slice(0, 5)
+}

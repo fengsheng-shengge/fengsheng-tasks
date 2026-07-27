@@ -2,7 +2,7 @@
   <view class="page">
     <view class="featured-cta">
       <view style="font-size:16px;font-weight:700">＋ 新建一次策展</view>
-      <view style="font-size:12px;opacity:.85;line-height:1.5;margin:4px 0 12px">输入接触背景与性格，生成「说 / 带 / 问 + 见后钩子」。</view>
+      <view style="font-size:12px;opacity:.85;line-height:1.5;margin:4px 0 12px">输入接触背景与性格，生成「说 / 带 / 问 + 见后跟进」。</view>
       <button class="btn-cta" @tap="showForm = true">开始策展 →</button>
     </view>
 
@@ -105,15 +105,21 @@
         <view class="sec"><view class="h"><text class="em">🛡</text>⑤ 异议预案 + 难题顶上<text class="mtd">方法⑤</text></view>
           <view class="sec-list"><view class="sec-li">「单价偏高」→ 用<text class="hl">总价＝单价×得房率</text>拆解，对比同小区近 3 月成交</view><view class="sec-li"><text style="font-weight:700">难题顶上</text>：遇产权/贷款卡关，识别→拉法务/代书，明确说「我找专家一起帮你确认」</view></view>
         </view>
-        <view class="sec"><view class="h"><text class="em">💌</text>⑥ 见后钩子（售后飞轮法）<text class="mtd">方法⑥</text></view>
-          <view class="sec-list"><view class="sec-li">3 天后发「学区政策更新」微信，自然回访</view><view class="sec-li"><text style="font-weight:700">成交后服务清单</text>：1 周入住礼包 / 1 月回访 / 6 月行情报告 / 1 年节气问候 + 年检</view></view>
+        <view class="sec"><view class="h"><text class="em">💌</text>⑥ 见后跟进（售后飞轮法 · 按客户阶段生成）<text class="mtd">方法⑥</text></view>
+          <view class="sec-list">
+            <view class="sec-li" v-for="(f, i) in resultFollowups" :key="i">
+              <text style="font-weight:700">{{ f.theme }}</text>：{{ f.text }}
+              <view class="lt-ref">LTRUST · {{ f.ltrust }}</view>
+            </view>
+          </view>
+          <view class="sec-list"><view class="sec-li"><text style="font-weight:700">成交后服务清单</text>：1 周入住礼包 / 1 月回访 / 6 月行情报告 / 1 年节气问候 + 年检</view></view>
         </view>
         <view class="sec"><view class="h"><text class="em">🛡️</text>LTRUST 信任校准（方法论底层支撑）<text class="mtd">LTRUST</text></view>
           <view class="ltrust-list">
             <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">L 听</text> · 开场 3 问 / 需求三板斧已嵌入<view class="ltrust-map">对应 ③</view></view></view>
             <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">T 险</text> · 主动说 1 个风险已嵌入<view class="ltrust-map">对应 ⑤</view></view></view>
             <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">R 相关</text> · 客制化频道已匹配<view class="ltrust-map">对应 ① / ④</view></view></view>
-            <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">U 低承</text> · 埋 1 个低承诺钩子<view class="ltrust-map">对应 ⑥</view></view></view>
+            <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">U 低承</text> · 留 1 个低承诺跟进<view class="ltrust-map">对应 ⑥</view></view></view>
             <view class="ltrust-row"><view class="ltrust-ck" :class="{ off: !saved }">{{ saved ? '✓' : '○' }}</view><view class="ltrust-tx"><text style="font-weight:700">S 档案</text> · 点保存即写入客户档案<view class="ltrust-map">见下方按钮</view></view></view>
           </view>
           <view class="ltrust-prog"><text>{{ ltCount }}</text><view class="bar"><view class="bar-fill" :style="{ width: ltFill }"></view></view></view>
@@ -123,6 +129,8 @@
           <view class="trust-rate-cap">信任度 {{ trustScore }}/5 · 存档案将记录本次信任度</view>
         </view>
         <button class="btn-green" @tap="saveCuration">✓ 保存到我的客户档案</button>
+        <button class="btn-line" open-type="share" @tap="setShareCurate">分享给客户</button>
+        <button class="btn-line" @tap="copyCurateLink">复制链接给客户</button>
       </scroll-view>
     </view>
 
@@ -138,13 +146,16 @@
           <view class="sec-list"><view class="sec-li" v-for="(s, i) in tool.sample" :key="i">{{ s }}</view></view>
         </view>
         <button class="btn-orange" @tap="useInCurate(tool)">在策展中使用 →</button>
+        <button class="btn-line" open-type="share" @tap="sharePayload = { title: '风声工具箱 · ' + tool.name, path: '/pages/curate/index' }">分享给同事/客户</button>
+        <button class="btn-line" @tap="copyLink('/pages/curate/index')">复制小程序链接</button>
       </scroll-view>
     </view>
   </view>
 </template>
 
 <script>
-import { methods, personaMap, personaQ, toolbox } from '../../utils/v4data.js'
+import { methods, personaMap, personaQ, toolbox, getFollowups } from '../../utils/v4data.js'
+import { buildShareLink, copyLink, APP_SHARE_TITLE } from '../../utils/share.js'
 import { useUserStore } from '../../store/user'
 export default {
   data() {
@@ -156,12 +167,14 @@ export default {
       showPicker: false,
       showToolOverlay: false,
       tool: {},
+      sharePayload: null,
       selPersona: 'red',
       form: { role: '买房客户', type: '带看', goal: '留好印象', bg: '' },
       roles: ['买房客户', '租客', '业主', '房东'],
       types: ['带看', '面谈', '电话', '线上'],
       goals: ['留好印象', '持续选他', '最终成交'],
       selectedClientId: null,
+      resultFollowups: [],
       channelText: '',
       resultQ: [],
       resultSub: '',
@@ -189,6 +202,12 @@ export default {
     })
   },
   onUnload() { uni.$off('openCurateForm') },
+  onShareAppMessage() {
+    return this.sharePayload || { title: APP_SHARE_TITLE, path: '/pages/curate/index' }
+  },
+  onShareTimeline() {
+    return { title: '风声 · 见面策展工具', query: 'clientId=' + (this.selectedClientId || '') }
+  },
   methods: {
     personaOf(c) { return (personaMap[c.pkey] || personaMap.red).tag },
     preselectClient(id) {
@@ -207,7 +226,8 @@ export default {
     },
     goClients() {
       this.showPicker = false
-      uni.switchTab({ url: '/pages/clients/index' })
+      // 客户档案页非 tabBar 页，switchTab 会静默失败，须用 navigateTo
+      uni.navigateTo({ url: '/pages/clients/index' })
     },
     openResult() { this.showResult = true },
     genCuration() {
@@ -216,6 +236,9 @@ export default {
       this.resultQ = personaQ[this.selPersona]
       const who = this.selectedClientId ? this.pickedClientName : '本次接触'
       this.resultSub = who + ' · ' + this.form.role + ' · ' + p.tag
+      // V2.5 M1：按所选客户双纵轴阶段（或角色兜底）动态生成 ≤5 条见后跟进
+      const stage = this.selectedClientId ? (this.userStore.getClient(this.selectedClientId) || {}).stage : null
+      this.resultFollowups = getFollowups(stage, this.form.role)
       this.resetLtrust()
       this.showForm = false
       this.showResult = true
@@ -238,12 +261,19 @@ export default {
       u.addCurating({
         clientId: this.selectedClientId || null,
         t: this.form.role + ' · ' + (this.selPersona === 'red' ? '🔴结果' : this.selPersona === 'blue' ? '🔵关系' : '🟢理智'),
-        s: '含6段+钩子 · 信任' + this.trustScore + '/5',
+        s: '含6段+跟进 · 信任' + this.trustScore + '/5',
         trust: this.trustScore
       })
       // 2) 更新所选客户双纵轴（阶段/资产/状态）
       if (this.selectedClientId) {
         u.updateClient(this.selectedClientId, { status: '跟进中', asset: '已策展 · ' + (this.form.bg || '见前策展包已生成') })
+        // 2.5) 把本次生成的见后跟进写入客户档案 followups[]
+        if (this.resultFollowups.length) {
+          u.addFollowups(this.selectedClientId, this.resultFollowups)
+        }
+        // 2.6) 写接触时间线（策展）+ 自动记忆点（客户记住专业准备）
+        u.addTimelineEvent(this.selectedClientId, { type: '策展', summary: '生成见前策展包（说/带/问 + ' + this.resultFollowups.length + ' 条见后跟进）' })
+        u.addMemoryPoint(this.selectedClientId, '专业准备：提前策展 + 书面依据 + 见后仍有跟进触点')
       }
       // 3) 点亮「完成策展」任务并真实发放 +10 信任积分（信任度星级仅记录，不重复计分）
       u.markDone('curate')
@@ -262,6 +292,19 @@ export default {
       this.showToolOverlay = false
       this.showForm = true
       this.form.bg = (this.form.bg ? this.form.bg + '\n' : '') + '【参考工具：' + t.name + '】' + t.one
+    },
+    shareTitle() {
+      const who = this.selectedClientId ? this.pickedClientName : '您'
+      return '我为' + who + '准备了这次见面的专业方案，请查收'
+    },
+    setShareCurate() {
+      this.sharePayload = {
+        title: this.shareTitle(),
+        path: '/pages/curate/index?clientId=' + (this.selectedClientId || '')
+      }
+    },
+    copyCurateLink() {
+      copyLink('/pages/curate/index?clientId=' + (this.selectedClientId || ''), '链接已复制 · 客户在微信外也能打开')
     }
   }
 }
@@ -289,4 +332,5 @@ export default {
 .pi-meta { font-size: 12px; color: #888; margin-top: 2px; }
 .btn-line { background: #fff; color: #c46a3a; border: 1px solid #e7d3c2; border-radius: 10px; padding: 12px; font-size: 14px; margin-top: 8px; }
 .btn-orange { background: #c46a3a; color: #fff; border-radius: 10px; padding: 12px; font-size: 15px; margin-top: 6px; }
+.lt-ref { font-size: 11px; color: #C8956D; margin-top: 3px; line-height: 1.4; }
 </style>

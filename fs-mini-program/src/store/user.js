@@ -48,7 +48,7 @@ export const useUserStore = defineStore('user', {
     favorites: [], // [entryId, ...]
     contributions: [], // [{type, entryId, status, timestamp}]
     // ===== V2.1.1a 新增：客户档案 / 策展库 / 测评 / 任务完成态 =====
-    clients: [], // [{id, surname, name, rel, stage, pkey, persona, status, asset, level, addr, note, seed}]
+    clients: [], // [{id, surname, name, rel, stage, pkey, persona, status, asset, level, addr, note, seed, followups[], timeline[], memoryPoints[]}]
     curatings: [], // [{id, clientId, t, s, ts}]
     assessments: [], // [{id, ts}]
     doneFlags: {}, // { taskId: true } 任务真实完成态（防自嗨闭环）
@@ -183,11 +183,11 @@ export const useUserStore = defineStore('user', {
     seedClients() {
       const seed = [
         { surname: '林', name: '林先生 & 未婚妻', rel: '买房客户', stage: '购房线 / ①首套', pkey: 'red', persona: '🔴 结果导向', status: '跟进中', asset: '关系建立中，资产初值', level: 'A', addr: '', note: '90后婚房，预算300万，看重学区与通勤', seed: true },
-        { surname: '张', name: '张先生（业主）', rel: '业主', stage: '购房线 / ④升级', pkey: 'blue', persona: '🔵 关系导向', status: '已成交', asset: '已购本房，适老改造钩子已埋', level: 'A', addr: '', note: '已购，适老改造咨询', seed: true },
-        { surname: '王', name: '王女士（房东）', rel: '房东', stage: '租住线 / 业主侧', pkey: 'blue', persona: '🔵 关系导向', status: '跟进中', asset: '委托出租，定价钩子待跟进', level: 'B', addr: '', note: '空置45天委托出租', seed: true },
+        { surname: '张', name: '张先生（业主）', rel: '业主', stage: '购房线 / ④升级', pkey: 'blue', persona: '🔵 关系导向', status: '已成交', asset: '已购本房，适老改造跟进已规划', level: 'A', addr: '', note: '已购，适老改造咨询', seed: true },
+        { surname: '王', name: '王女士（房东）', rel: '房东', stage: '租住线 / 业主侧', pkey: 'blue', persona: '🔵 关系导向', status: '跟进中', asset: '委托出租，定价跟进待办', level: 'B', addr: '', note: '空置45天委托出租', seed: true },
         { surname: '陈', name: '陈同学（租客）', rel: '租客', stage: '租住线 / ②改善', pkey: 'green', persona: '🟢 理智型', status: '跟进中', asset: '工作调动，租住改善中', level: 'C', addr: '', note: '工作调动近地铁', seed: true }
       ]
-      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c }))
+      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c, followups: c.followups || [], timeline: c.timeline || [], memoryPoints: c.memoryPoints || [] }))
       this._persist()
     },
 
@@ -291,7 +291,7 @@ export const useUserStore = defineStore('user', {
 
     /** 新建客户 */
     addClient(c) {
-      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, ...c }
+      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, followups: [], timeline: [], memoryPoints: [], ...c }
       this.clients.unshift(client)
       this._persist()
       return client
@@ -311,6 +311,44 @@ export const useUserStore = defineStore('user', {
 
     getClient(id) {
       return this.clients.find(c => c.id === id) || null
+    },
+
+    /** V2.5 M1：把生成的见后跟进写入客户档案 followups[] */
+    addFollowups(clientId, list) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !Array.isArray(list) || list.length === 0) return
+      if (!Array.isArray(c.followups)) c.followups = []
+      const now = Date.now()
+      list.forEach(f => c.followups.push({
+        type: '见后跟进',
+        theme: f.theme,
+        text: f.text,
+        ltrust: f.ltrust,
+        dueAt: null,
+        done: false,
+        createdAt: now
+      }))
+      // 同时写一条"跟进"时间线，让双纵轴视图能看到接触主线
+      this.addTimelineEvent(clientId, { type: '跟进', summary: '生成 ' + list.length + ' 条见后跟进：' + list.map(f => f.theme).join('、') })
+      this._persist()
+    },
+
+    /** V2.5 M2：写入接触时间线（策展/见面/跟进） */
+    addTimelineEvent(clientId, ev) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c) return
+      if (!Array.isArray(c.timeline)) c.timeline = []
+      c.timeline.unshift({ at: Date.now(), type: ev.type, summary: ev.summary })
+      this._persist()
+    },
+
+    /** V2.5 M2：写入记忆点（客户记住你的瞬间） */
+    addMemoryPoint(clientId, point) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !point) return
+      if (!Array.isArray(c.memoryPoints)) c.memoryPoints = []
+      c.memoryPoints.unshift({ at: Date.now(), point })
+      this._persist()
     },
 
     /** 新增一次策展记录（关联客户） */
