@@ -13,7 +13,7 @@ const WX_API = 'https://api.weixin.qq.com/sns/jscode2session';
 const RATE_LIMIT = new Map();
 const RATE_WINDOW_MS = 60_000; // 1 minute
 const RATE_MAX_REQUESTS = 30;   // 30 req/min per IP (API routes)
-const RATE_MAX_GLOBAL = 120;     // 120 req/min per IP (all routes)
+const RATE_MAX_GLOBAL = 240;     // 240 req/min per IP (all routes) — 2026.07.28 放宽避免连访即429
 const MAX_PAYLOAD_SIZE = 64 * 1024; // 64KB max request body
 
 // Banned IPs (honeypot triggers, known abusers) — in-memory, cold start resets
