@@ -46,7 +46,7 @@
         <view class="sec" v-if="(detailSrc.timeline || []).length">
           <view class="h"><text class="em">🕒</text>接触时间线</view>
           <view class="tl" v-for="(t, i) in detailSrc.timeline" :key="i">
-            <text class="tl-type" :class="'tt-' + t.type">{{ t.type }}</text>
+            <text class="tl-type" :class="ttCls(t.type)">{{ t.type }}</text>
             <view class="tl-body"><view class="tl-sum">{{ t.summary }}</view><view class="tl-at">{{ fmtDate(t.at) }}</view></view>
           </view>
         </view>
@@ -163,6 +163,9 @@ export default {
       }
       this.showDetail = true
     },
+    ttCls(type) {
+      return { '策展': 'tt-curate', '见面': 'tt-meeting', '跟进': 'tt-followup' }[type] || ''
+    },
     openForm(c) {
       this.showDetail = false
       if (c) {
@@ -251,9 +254,9 @@ export default {
 .tl { display: flex; gap: 8px; padding: 8px 0; border-bottom: 1px dashed #e7e0d4; }
 .tl:last-child { border-bottom: none; }
 .tl-type { font-size: 11px; padding: 2px 7px; border-radius: 6px; height: fit-content; flex-shrink: 0; }
-.tt-策展 { background: #e6f0fa; color: #2f6fb0; }
-.tt-见面 { background: #eef6ef; color: #3a8f5b; }
-.tt-跟进 { background: #fff4ec; color: #c46a3a; }
+.tt-curate { background: #e6f0fa; color: #2f6fb0; }
+.tt-meeting { background: #eef6ef; color: #3a8f5b; }
+.tt-followup { background: #fff4ec; color: #c46a3a; }
 .tl-body { flex: 1; min-width: 0; }
 .tl-sum { font-size: 13px; color: #3d5a3e; line-height: 1.5; }
 .tl-at { font-size: 11px; color: #999; margin-top: 2px; }
