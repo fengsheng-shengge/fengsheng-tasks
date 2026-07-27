@@ -73,8 +73,11 @@
     </view>
     <view class="follow-empty" v-if="!todayFollowups.length">暂无待跟进 · 去「见面策展」生成带新价值的跟进触点 ›</view>
 
-    <!-- 6 方法论（b·P1-3：滑动引导，降低首屏认知负荷） -->
-    <view class="section-header"><text class="section-title">6 大方法论</text><text class="section-more">← 左右滑动看全部 6 个</text></view>
+    <!-- 6 方法论（b·P1-3：滑动引导，降低首屏认知负荷；动态计数 N/6 + 进度圆点双重指示） -->
+    <view class="section-header">
+      <text class="section-title">6 大方法论</text>
+      <text class="section-more">← 左右滑动 · 当前 {{ methodIdx + 1 }} / {{ methods.length }} 个</text>
+    </view>
     <scroll-view class="steps-row" scroll-x="true" enable-flex @scroll="onMethodScroll">
       <view class="step-card" v-for="(m, i) in methods" :key="i">
         <text class="step-num">方法 {{ i + 1 }}</text>
@@ -83,7 +86,7 @@
       </view>
     </scroll-view>
     <view class="step-dots"><view class="sd" v-for="(m, i) in methods" :key="'d' + i" :class="{ on: i === methodIdx }"></view></view>
-    <view style="font-size:11px;color:var(--text-muted);margin:-4px 2px 14px;line-height:1.5">6 方法论的底层是 <text style="color:var(--green)">LTRUST 信任五维</text>（听 · 险 · 相关 · 低承 · 档案）——把每一次见面校准成信任，详见策展包内「LTRUST 校准」。</view>
+    <view style="font-size:11px;color:var(--text-muted);margin:2px 2px 14px;line-height:1.5">6 方法论的底层是 <text style="color:var(--green)">LTRUST 信任五维</text>（听 · 险 · 相关 · 低承 · 档案）——把每一次见面校准成信任，详见策展包内「LTRUST 校准」。</view>
 
     <view class="icp">风声 · 帮助服务者用独立价值获得尊重<view>客户数据仅你可见，平台不收取、不用于撮合</view></view>
   </view>
@@ -138,9 +141,10 @@ export default {
   methods: {
     onHero(e) { this.heroIdx = e.detail.current },
     onMethodScroll(e) {
-      // 卡宽 124 + 间距 10 = 134，按滚动位置联动进度圆点
-      const i = Math.round((e.detail.scrollLeft || 0) / 134)
-      this.methodIdx = Math.max(0, Math.min(5, i))
+      // 卡宽：calc(78vw) 在 ≤215px 屏（iPhone SE）取 168px；与 .steps-row gap:10px 联动
+      // 视口宽度 ≈ window.innerWidth，但 e.detail.scrollWidth 在小程序端不可靠；用固定 168+10=178 作为基准
+      const i = Math.round((e.detail.scrollLeft || 0) / 178)
+      this.methodIdx = Math.max(0, Math.min(this.methods.length - 1, i))
     },
     goSlide(i) { this.heroIdx = i },
     go(tab) {
@@ -165,8 +169,8 @@ export default {
 .fc-text { font-size: 12.5px; color: #555; margin-top: 4px; line-height: 1.5; }
 .fc-lt { font-size: 11px; color: #C8956D; margin-top: 3px; }
 .follow-empty { font-size: 12.5px; color: #999; background: #fff; border: 1px dashed #e7e0d4; border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 10px; }
-/* b·P1-3：6 方法论滑动进度圆点 */
-.step-dots { display: flex; justify-content: center; gap: 5px; margin: -2px 0 12px; }
-.sd { width: 5px; height: 5px; border-radius: 50%; background: #d8d2c6; transition: all .2s; }
-.sd.on { width: 14px; border-radius: 3px; background: #3d5a3e; }
+/* b·P1-3：6 方法论滑动进度圆点（强化可见性 + 用户视角「当前 N / 6」双重指示） */
+.step-dots { display: flex; justify-content: center; gap: 7px; margin: 10px 0 14px; padding: 6px 0; background: var(--bg); border-radius: 999px; width: max-content; margin-left: auto; margin-right: auto; box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); }
+.sd { width: 8px; height: 8px; border-radius: 50%; background: #d8d2c6; transition: all .25s cubic-bezier(.22,.61,.36,1); }
+.sd.on { width: 22px; border-radius: 4px; background: var(--orange); box-shadow: 0 1px 4px rgba(196,106,58,.35); }
 </style>

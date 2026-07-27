@@ -96,12 +96,12 @@ view, text, button, input, textarea { box-sizing: border-box; }
 .product-tag.hot { background: var(--orange-light); color: var(--orange); }
 .product-tag.free { background: var(--green-light); color: var(--green); }
 
-.steps-row { display: flex; gap: 10px; overflow-x: auto; padding: 4px 0 8px; margin: 0 -16px 16px; padding-left: 16px; }
+.steps-row { display: flex; gap: 10px; overflow-x: auto; padding: 6px 16px 10px; margin: 0 -16px 8px; }
 .steps-row::-webkit-scrollbar { display: none; }
-.step-card { flex-shrink: 0; width: 124px; background: var(--card); border-radius: var(--radius-md); padding: 14px 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); }
+.step-card { flex-shrink: 0; width: calc(78vw); max-width: 168px; min-width: 140px; background: var(--card); border-radius: var(--radius-md); padding: 14px 13px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); box-sizing: border-box; }
 .step-num { display: inline-block; font-size: 10px; font-weight: 700; color: var(--green); background: var(--green-light); padding: 2px 8px; border-radius: 10px; margin-bottom: 8px; }
-.step-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.step-desc { font-size: 10px; color: var(--text-secondary); line-height: 1.5; }
+.step-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 5px; line-height: 1.35; }
+.step-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.55; }
 
 .icp { text-align: center; font-size: 10px; color: var(--text-muted); padding: 12px 0; line-height: 1.6; }
 
