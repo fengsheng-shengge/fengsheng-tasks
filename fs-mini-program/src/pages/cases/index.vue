@@ -4,7 +4,8 @@
       <view><view class="lab">我的信任积分</view><view class="num">{{ points }}<text class="unit">分</text></view></view>
       <view style="display:flex;flex-direction:column;gap:6px">
         <button class="earn" @tap="scrollEarn">如何赚积分 ›</button>
-        <button class="earn" open-type="share">分享案例赚分 ›</button>
+        <button class="earn" open-type="share">分享案例给客户 ›</button>
+        <button class="earn" @tap="copyLink('/pages/cases/index')">复制链接 ›</button>
       </view>
     </view>
 
@@ -51,13 +52,14 @@
         <text class="eb" :class="{ done: userStore.isDone(t.id) }" @tap="doEarn(t)">{{ userStore.isDone(t.id) ? '已得' : '领取' }}</text>
       </view>
     </view>
-    <view class="icp">积分由真实服务动作获得：完成见面策展 / 建客户档案 / 做测评 / 分享 / 登录后才可领取<view>案例来自顶尖经纪人实战 · 经风声整理</view></view>
+    <view class="icp">积分由真实服务动作获得：完成见面策展 / 建客户档案 / 做测评 / 登录后才可领取<view>案例来自顶尖经纪人实战 · 经风声整理</view></view>
     <view id="earnCard" style="height:1px"></view>
   </view>
 </template>
 
 <script>
 import { casesData, earnTasks } from '../../utils/v4data.js'
+import { copyLink } from '../../utils/share.js'
 import { useUserStore } from '../../store/user'
 export default {
   data() {
@@ -111,9 +113,13 @@ export default {
     }
   },
   onShareAppMessage() {
-    this.userStore.incShare()
-    this.userStore.markDone('share')
-    return { title: '风声 · 顶尖经纪人实战案例库', path: '/pages/cases/index' }
+    return {
+      title: '风声 · 顶尖经纪人实战案例库，值得一看',
+      path: '/pages/cases/index'
+    }
+  },
+  onShareTimeline() {
+    return { title: '风声 · 顶尖经纪人实战案例库' }
   }
 }
 </script>

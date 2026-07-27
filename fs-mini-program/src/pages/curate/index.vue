@@ -129,6 +129,8 @@
           <view class="trust-rate-cap">信任度 {{ trustScore }}/5 · 存档案将记录本次信任度</view>
         </view>
         <button class="btn-green" @tap="saveCuration">✓ 保存到我的客户档案</button>
+        <button class="btn-line" open-type="share" @tap="setShareCurate">分享给客户</button>
+        <button class="btn-line" @tap="copyCurateLink">复制链接给客户</button>
       </scroll-view>
     </view>
 
@@ -144,6 +146,8 @@
           <view class="sec-list"><view class="sec-li" v-for="(s, i) in tool.sample" :key="i">{{ s }}</view></view>
         </view>
         <button class="btn-orange" @tap="useInCurate(tool)">在策展中使用 →</button>
+        <button class="btn-line" open-type="share" @tap="sharePayload = { title: '风声工具箱 · ' + tool.name, path: '/pages/curate/index' }">分享给同事/客户</button>
+        <button class="btn-line" @tap="copyLink('/pages/curate/index')">复制小程序链接</button>
       </scroll-view>
     </view>
   </view>
@@ -151,6 +155,7 @@
 
 <script>
 import { methods, personaMap, personaQ, toolbox, getFollowups } from '../../utils/v4data.js'
+import { buildShareLink, copyLink, APP_SHARE_TITLE } from '../../utils/share.js'
 import { useUserStore } from '../../store/user'
 export default {
   data() {
@@ -162,6 +167,7 @@ export default {
       showPicker: false,
       showToolOverlay: false,
       tool: {},
+      sharePayload: null,
       selPersona: 'red',
       form: { role: '买房客户', type: '带看', goal: '留好印象', bg: '' },
       roles: ['买房客户', '租客', '业主', '房东'],
@@ -196,6 +202,12 @@ export default {
     })
   },
   onUnload() { uni.$off('openCurateForm') },
+  onShareAppMessage() {
+    return this.sharePayload || { title: APP_SHARE_TITLE, path: '/pages/curate/index' }
+  },
+  onShareTimeline() {
+    return { title: '风声 · 见面策展工具', query: 'clientId=' + (this.selectedClientId || '') }
+  },
   methods: {
     personaOf(c) { return (personaMap[c.pkey] || personaMap.red).tag },
     preselectClient(id) {
@@ -280,6 +292,19 @@ export default {
       this.showToolOverlay = false
       this.showForm = true
       this.form.bg = (this.form.bg ? this.form.bg + '\n' : '') + '【参考工具：' + t.name + '】' + t.one
+    },
+    shareTitle() {
+      const who = this.selectedClientId ? this.pickedClientName : '您'
+      return '我为' + who + '准备了这次见面的专业方案，请查收'
+    },
+    setShareCurate() {
+      this.sharePayload = {
+        title: this.shareTitle(),
+        path: '/pages/curate/index?clientId=' + (this.selectedClientId || '')
+      }
+    },
+    copyCurateLink() {
+      copyLink('/pages/curate/index?clientId=' + (this.selectedClientId || ''), '链接已复制 · 客户在微信外也能打开')
     }
   }
 }

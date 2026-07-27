@@ -170,7 +170,6 @@ export const earnTasks = [
   { id: 'curate', t: '完成 1 次见面策展', p: 10, done: false },
   { id: 'profile', t: '完善 1 个客户档案', p: 5, done: false },
   { id: 'assess', t: '完成 1 次品质/服务者测评', p: 8, done: false },
-  { id: 'share', t: '分享 1 个案例给同事', p: 3, done: false },
   { id: 'login', t: '每日登录', p: 2, done: false }
 ]
 
