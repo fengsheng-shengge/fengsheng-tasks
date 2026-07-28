@@ -54,3 +54,127 @@ const AI_SCRAPER_UA_PATTERNS = [
 
 // Invalid / missing UA — likely bots
 const MISSING_UA_PATTERNS = [/^$/, /^-$/, /^unknown$/, /^null$/i, /^undefined$/i];
+
+// ============================================================
+//  Suspicious path patterns — exploit probes
+// ============================================================
+const EXPLOIT_PATH_PATTERNS = [
+  /\.env/i, /\.git/i, /\.svn/i, /\.hg/i, /\.DS_Store/i,
+  /wp-admin/i, /wp-login/i, /wp-content/i, /wp-includes/i,
+  /phpmyadmin/i, /phpunit/i, /vendor\/phpunit/i,
+  /\.php$/i, /\.asp$/i, /\.aspx$/i, /\.jsp$/i,
+  /config\.json/i, /config\.yml/i, /config\.yaml/i,
+  /credentials/i, /password/i, /secret/i, /token/i,
+  /docker-compose/i, /dockerfile/i, /jenkins/i,
+  /\.well-known\/acme-challenge/i,
+  /actuator/i, /swagger/i, /api-docs/i, /graphql/i,
+  /console/i, /admin/i, /administrator/i,
+  /cgi-bin/i, /_ignition/i, /_profiler/i,
+  /solr/i, /elasticsearch/i, /jolokia/i,
+  /HNAP1/i, /setup\.cgi/i, /cgi-bin/i, /tmUnblock/i,
+  /muieblackcat/i, /left\.php/i, /xmlrpc\.php/i,
+];
+
+// Honeypot paths — if a bot follows these hidden links, ban the IP
+const HONEYPOT_PATHS = [
+  '/admin/login', '/wp-admin', '/administrator', '/backend',
+  '/hidden-link', '/secret-path', '/api/admin', '/cms',
+];
+
+// ============================================================
+//  Helper functions
+// ============================================================
+
+function getClientIP(request) {
+  return request.headers.get('CF-Connecting-IP') || request.headers.get('X-Real-IP') || '0.0.0.0';
+}
+
+function isBanned(ip) {
+  const entry = BANNED_IPS.get(ip);
+  if (entry && Date.now() - entry < BAN_DURATION_MS) {
+    return true;
+  }
+  if (entry) BANNED_IPS.delete(ip); // expired
+  return false;
+}
+
+function banIP(ip) {
+  BANNED_IPS.set(ip, Date.now());
+}
+
+function checkRateLimit(request) {
+  const ip = getClientIP(request);
+  const now = Date.now();
+  const entry = RATE_LIMIT.get(ip);
+  if (entry && now - entry.windowStart < RATE_WINDOW_MS) {
+    if (entry.count >= RATE_MAX_REQUESTS) {
+      return false;
+    }
+    entry.count++;
+  } else {
+    RATE_LIMIT.set(ip, { windowStart: now, count: 1 });
+  }
+  return true;
+}
+
+function checkGlobalRateLimit(request) {
+  const ip = getClientIP(request);
+  const now = Date.now();
+  const key = `global_${ip}`;
+  const entry = RATE_LIMIT.get(key);
+  if (entry && now - entry.windowStart < RATE_WINDOW_MS) {
+    if (entry.count >= RATE_MAX_GLOBAL) {
+      return false;
+    }
+    entry.count++;
+  } else {
+    RATE_LIMIT.set(key, { windowStart: now, count: 1 });
+  }
+  return true;
+}
+
+function isMaliciousUA(ua) {
+  if (!ua) return true;
+  for (const pattern of MISSING_UA_PATTERNS) {
+    if (pattern.test(ua)) return true;
+  }
+  for (const pattern of MALICIOUS_UA_PATTERNS) {
+    if (pattern.test(ua)) return true;
+  }
+  return false;
+}
+
+function isAIScraper(ua) {
+  if (!ua) return false;
+  for (const pattern of AI_SCRAPER_UA_PATTERNS) {
+    if (pattern.test(ua)) return true;
+  }
+  return false;
+}
+
+function isExploitPath(path) {
+  for (const pattern of EXPLOIT_PATH_PATTERNS) {
+    if (pattern.test(path)) return true;
+  }
+  return false;
+}
+
+function isHoneypotPath(path) {
+  return HONEYPOT_PATHS.includes(path);
+}
+
+function isSuspiciousQueryString(queryString) {
+  if (!queryString) return false;
+  const suspicious = [
+    /<script/i, /onerror/i, /onload/i, /javascript:/i,
+    /union\s+select/i, /or\s+1=1/i, /'--/i, /sleep\(/i, /benchmark\(/i,
+    /\.\.\/\.\.\//i, /%2e%2e%2f/i,
+    /\/etc\/passwd/i, /\/bin\/bash/i,
+    /eval\(/i, /system\(/i, /exec\(/i, /cmd\.exe/i,
+    /file_get_contents/i, /base64_decode/i,
+  ];
+  for (const pattern of suspicious) {
+    if (pattern.test(queryString)) return true;
+  }
+  return false;
+}
