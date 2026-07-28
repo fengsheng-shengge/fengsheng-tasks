@@ -6,12 +6,3 @@
 const COZE_API = 'https://api.coze.cn';
 const BOT_ID_PLACEHOLDER = '***MASKED***'; // Bot ID from env var FS_BOT_ID，禁止硬编码
 const WX_API = 'https://api.weixin.qq.com/sns/jscode2session';
-
-// ============================================================
-//  Rate limiting — simple in-memory sliding window (resets on Worker cold start)
-// ============================================================
-const RATE_LIMIT = new Map();
-const RATE_WINDOW_MS = 60_000; // 1 minute
-const RATE_MAX_REQUESTS = 30;   // 30 req/min per IP (API routes)
-const RATE_MAX_GLOBAL = 120;     // 120 req/min per IP (all routes)
-const MAX_PAYLOAD_SIZE = 64 * 1024; // 64KB max request body
