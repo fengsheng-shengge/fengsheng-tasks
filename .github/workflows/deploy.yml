@@ -13,10 +13,6 @@ on:
           - production
           - preview
 
-permissions:
-  contents: read
-  deployments: write
-
 jobs:
   deploy:
     name: Deploy to Cloudflare Pages
@@ -28,9 +24,9 @@ jobs:
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: fengsheng
+          apiToken: cfut_yXKzr53BVlRa4e5DsXC4s7h5qmo0qjfU6acSqkive5858f06
+          accountId: 820ba2e41397586d11f7c6bbf47cda0f
+          projectName: fengsheng-tech
           directory: ./
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
