@@ -97,3 +97,12 @@
 /_redirects
   Cache-Control: no-store
   Access-Control-Allow-Origin: ""
+
+# ========== 微信小程序业务域名校验文件 — 宽松放行(#188·绕过全局安全层) ==========
+# 微信后台配置业务域名需跨域读取此文件；覆盖全局 same-origin 限制
+/MP_verify_*.txt
+  Content-Type: text/plain
+  Cross-Origin-Resource-Policy: cross-origin
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+  X-Frame-Options: ALLOWALL
