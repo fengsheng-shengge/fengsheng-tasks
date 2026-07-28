@@ -14,22 +14,20 @@
       <view class="tc-rule">做真实服务才得分：见面策展 / 客户档案 / 品质测评 / 登录 · 攒分可解锁案例库</view>
     </view>
 
-    <view class="phase-banner">🟢 <text style="font-weight:700">免费养成期</text>：现仅用「积分」，<text style="font-weight:700">不收费</text>。会员/积分直购将在后续版本开放。</view>
+    <view class="phase-banner">🟢 <text style="font-weight:700">免费养成期</text>：核心功能全部免费，<text style="font-weight:700">不收费</text>。更多增值能力打磨中，敬请期待。</view>
 
-    <view class="section-title-sm">会员方案 · 积分是硬通货</view>
-    <view class="vip-grid">
-      <view class="vip-card hot"><view class="vc-tag">当前</view><view class="vc-name">免费版</view><view class="vc-price">¥0</view><view class="vc-pts">日活+任务得积分</view><view class="vc-perk">基础功能 · 案例看摘要</view></view>
-      <view class="vip-card locked"><view class="vc-tag">后续版本</view><view class="vc-name">月度会员</view><view class="vc-price">价格待定<text class="unit"></text></view><view class="vc-pts">每月积分自动到账</view><view class="vc-perk">信任徽章 · 数据导出 · 案例全文</view><view class="vc-lock">后续版本开放</view></view>
-      <view class="vip-card locked"><view class="vc-tag">后续版本</view><view class="vc-name">年度会员</view><view class="vc-price">价格待定<text class="unit"></text></view><view class="vc-pts">年度积分(含赠送)</view><view class="vc-perk">优先新案例 · 专属客服</view><view class="vc-lock">后续版本开放</view></view>
+    <view class="coming-soon-card">
+      <view class="cs-icon">⏳</view>
+      <view class="cs-title">会员功能即将上线 · 敬请期待</view>
+      <view class="cs-desc">为保障每位经纪人都能用上"专业工具夹"，我们正在打磨更多增值能力，<text style="font-weight:700">首批上线前不会收取任何费用</text>。</view>
+      <view class="cs-tags">
+        <view class="cs-tag">信任徽章</view>
+        <view class="cs-tag">数据导出</view>
+        <view class="cs-tag">案例全文</view>
+        <view class="cs-tag">专属客服</view>
+      </view>
+      <view class="cs-foot">当前阶段：所有功能「做任务得积分」即可兑换，养成期每月还赠体验金。</view>
     </view>
-
-    <view class="section-title-sm">积分直购 · 不想订阅也能买</view>
-    <view class="vip-grid">
-      <view class="vip-card locked"><view class="vc-name">小包</view><view class="vc-price">价格待定</view><view class="vc-pts">100 分</view><view class="vc-lock">后续版本开放</view></view>
-      <view class="vip-card locked"><view class="vc-name">中包</view><view class="vc-price">价格待定</view><view class="vc-pts">300 分</view><view class="vc-lock">后续版本开放</view></view>
-      <view class="vip-card locked"><view class="vc-name">大包</view><view class="vc-price">价格待定</view><view class="vc-pts">650 分</view><view class="vc-lock">后续版本开放</view></view>
-    </view>
-    <view style="font-size:11px;color:var(--muted);text-align:center;margin:-4px 0 10px">现所有核心交付物（策展包 / 案例 / 报告书）均用「做任务得的免费积分」兑换，养成期每月还赠体验金。</view>
 
     <view class="invite-box">
       <view class="ib-title">🌟 邀请同行 · 邀请有礼功能后续开放</view>
@@ -55,7 +53,6 @@
     </view>
     <view class="menu-group">
       <view class="menu-item" @tap="toast('数据导出/迁移（模拟）')"><view class="menu-icon">📦</view><view class="menu-text">数据导出 / 迁移</view><view class="menu-arrow">›</view></view>
-      <view class="menu-item" @tap="toast('会员/订阅将在后续版本开放')"><view class="menu-icon">⭐</view><view class="menu-text">会员与订阅</view><view class="menu-badge">待</view></view>
       <view class="menu-item" @tap="toast('关于风声（模拟）')"><view class="menu-icon">ℹ️</view><view class="menu-text">关于风声</view><view class="menu-arrow">›</view></view>
     </view>
     <view class="icp">⚠️ 客户数据仅你可见，平台不收取、不用于撮合<view>帮助服务者用独立价值获得尊重</view></view>
@@ -113,4 +110,20 @@ export default {
 .sab-desc { font-size: 12px; color: #888; margin: 6px 0 10px; line-height: 1.5; }
 .sab-btns { display: flex; gap: 10px; }
 .sab-btns .btn-light { flex: 1; background: #f7f4ef; color: #3d5a3e; border: 1px solid #e7e0d4; border-radius: 10px; padding: 10px; font-size: 13px; }
+
+/* 功能预告占位卡（替代原会员方案+积分直购） */
+.coming-soon-card {
+  background: linear-gradient(180deg, #f7f4ef 0%, #f0ebe0 100%);
+  border: 1px dashed #c8b89a;
+  border-radius: 12px;
+  padding: 18px 14px 14px;
+  margin: 10px 0 14px;
+  text-align: center;
+}
+.cs-icon { font-size: 28px; line-height: 1; margin-bottom: 6px; }
+.cs-title { font-size: 15px; font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
+.cs-desc { font-size: 12px; color: #5a554c; line-height: 1.6; padding: 0 4px; }
+.cs-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 10px 0 8px; }
+.cs-tag { font-size: 11px; color: #3d5a3e; background: #fff; border: 1px solid #c8b89a; border-radius: 999px; padding: 3px 10px; }
+.cs-foot { font-size: 11px; color: #888; line-height: 1.5; margin-top: 4px; }
 </style>
