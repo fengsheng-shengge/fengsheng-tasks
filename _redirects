@@ -1,31 +1,5 @@
-# Do NOT add /assessment → /assessment.html rules
-# Cloudflare Pretty URL auto-redirects .html → no-extension
-# Using directory-based routing instead: /assessment/ serves assessment/index.html
-
-# Old standalone .html → new directory-based routing (301)
-/assessment.html  /assessment/  301
-/breeder.html  /breeder/  301
-/care-test.html  /care-test/  301
-/quality-test.html  /quality-test/  301
-/mentor.html  /mentor/  301
-/ip-design.html  /ip-design/  301
-
-# Trailing-slash redirects — ensure directory paths always resolve to /version
-/knowledge  /knowledge/  301
-/mentor  /mentor/  301
-/ip-design  /ip-design/  301
-/reply  /reply/  301
-/assessment  /assessment/  301
-/breeder  /breeder/  301
-
-# Privacy policy & User agreement - direct file serve, no SPA fallback
-/privacy.html  /privacy.html  200
-/agreement.html  /agreement.html  200
-
-# Orphaned pages — 301 to homepage (no local files, SPA fallback returns homepage)
-/guide/  /  301
-/guide/*  /  301
-/mini-program/  /  301
-/mini-program/*  /  301
-/knowledge-v3-fourpillars/  /  301
-/knowledge-v3-fourpillars/*  /  301
+/showing-report/* /s1-report.html 200
+/dict/* /knowledge.html 200
+/guide/* /guide.html 200
+/decode/* /care-test.html 200
+/assessment /quality-test/ 301
