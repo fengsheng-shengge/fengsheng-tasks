@@ -14,22 +14,51 @@
       <view class="tc-rule">做真实服务才得分：见面策展 / 客户档案 / 品质测评 / 登录 · 攒分可解锁案例库</view>
     </view>
 
-    <view class="phase-banner">🟢 <text style="font-weight:700">免费养成期</text>：现仅用「积分」，<text style="font-weight:700">不收费</text>。会员/积分直购将在后续版本开放。</view>
+    <view class="phase-banner">🟢 <text style="font-weight:700">免费养成期</text>：核心功能全部免费，<text style="font-weight:700">不收费</text>。更多增值能力打磨中，敬请期待。</view>
 
-    <view class="section-title-sm">会员方案 · 积分是硬通货</view>
-    <view class="vip-grid">
-      <view class="vip-card hot"><view class="vc-tag">当前</view><view class="vc-name">免费版</view><view class="vc-price">¥0</view><view class="vc-pts">日活+任务得积分</view><view class="vc-perk">基础功能 · 案例看摘要</view></view>
-      <view class="vip-card locked"><view class="vc-tag">后续版本</view><view class="vc-name">月度会员</view><view class="vc-price">价格待定<text class="unit"></text></view><view class="vc-pts">每月积分自动到账</view><view class="vc-perk">信任徽章 · 数据导出 · 案例全文</view><view class="vc-lock">后续版本开放</view></view>
-      <view class="vip-card locked"><view class="vc-tag">后续版本</view><view class="vc-name">年度会员</view><view class="vc-price">价格待定<text class="unit"></text></view><view class="vc-pts">年度积分(含赠送)</view><view class="vc-perk">优先新案例 · 专属客服</view><view class="vc-lock">后续版本开放</view></view>
+    <!-- 顶部 banner：墨绿渐变，告知升级中 -->
+    <view class="upgrade-banner">
+      <view class="ub-text">🎉 会员体系全新升级中，开放时间第一时间通知你</view>
     </view>
 
-    <view class="section-title-sm">积分直购 · 不想订阅也能买</view>
-    <view class="vip-grid">
-      <view class="vip-card locked"><view class="vc-name">小包</view><view class="vc-price">价格待定</view><view class="vc-pts">100 分</view><view class="vc-lock">后续版本开放</view></view>
-      <view class="vip-card locked"><view class="vc-name">中包</view><view class="vc-price">价格待定</view><view class="vc-pts">300 分</view><view class="vc-lock">后续版本开放</view></view>
-      <view class="vip-card locked"><view class="vc-name">大包</view><view class="vc-price">价格待定</view><view class="vc-pts">650 分</view><view class="vc-lock">后续版本开放</view></view>
+    <!-- 章节标题 -->
+    <view class="sec-title">⏳ 功能预告</view>
+
+    <!-- 预告卡 1：经纪人认证徽章（绿色图标底） -->
+    <view class="preview-card">
+      <view class="preview-icon green">🏆</view>
+      <view class="preview-content">
+        <view class="preview-title">经纪人认证徽章</view>
+        <view class="preview-desc">完成认证即可在个人页展示专业徽章，提升客户信任</view>
+        <view class="preview-tag">即将上线</view>
+      </view>
     </view>
-    <view style="font-size:11px;color:var(--muted);text-align:center;margin:-4px 0 10px">现所有核心交付物（策展包 / 案例 / 报告书）均用「做任务得的免费积分」兑换，养成期每月还赠体验金。</view>
+
+    <!-- 预告卡 2：进阶课程包（棕色图标底） -->
+    <view class="preview-card">
+      <view class="preview-icon brown">📚</view>
+      <view class="preview-content">
+        <view class="preview-title">进阶课程包</view>
+        <view class="preview-desc">80+ 套谈判/带看/签约场景话术模板</view>
+        <view class="preview-tag">即将上线</view>
+      </view>
+    </view>
+
+    <!-- 预告卡 3：专属任务模板（橙色图标底） -->
+    <view class="preview-card">
+      <view class="preview-icon orange">🎁</view>
+      <view class="preview-content">
+        <view class="preview-title">专属任务模板</view>
+        <view class="preview-desc">7 大场景任务包，新人 7 天上手</view>
+        <view class="preview-tag">即将上线</view>
+      </view>
+    </view>
+
+    <!-- CTA 按钮：墨绿圆角 999 -->
+    <view class="cta-area">
+      <button class="btn-green" @tap="notifyOpen">🔔 通知我开放</button>
+      <view class="cta-tip">开放后通过站内信通知你</view>
+    </view>
 
     <view class="invite-box">
       <view class="ib-title">🌟 邀请同行 · 邀请有礼功能后续开放</view>
@@ -55,7 +84,6 @@
     </view>
     <view class="menu-group">
       <view class="menu-item" @tap="toast('数据导出/迁移（模拟）')"><view class="menu-icon">📦</view><view class="menu-text">数据导出 / 迁移</view><view class="menu-arrow">›</view></view>
-      <view class="menu-item" @tap="toast('会员/订阅将在后续版本开放')"><view class="menu-icon">⭐</view><view class="menu-text">会员与订阅</view><view class="menu-badge">待</view></view>
       <view class="menu-item" @tap="toast('关于风声（模拟）')"><view class="menu-icon">ℹ️</view><view class="menu-text">关于风声</view><view class="menu-arrow">›</view></view>
     </view>
     <view class="icp">⚠️ 客户数据仅你可见，平台不收取、不用于撮合<view>帮助服务者用独立价值获得尊重</view></view>
@@ -96,6 +124,9 @@ export default {
     },
     copyMiniLink() {
       copyLink('/pages/home/index', '小程序链接已复制 · 微信外也能打开')
+    },
+    notifyOpen() {
+      uni.showToast({ title: '已订阅通知 · 开放后第一时间告诉你', icon: 'success' })
     }
   },
   onShareAppMessage() {
@@ -113,4 +144,69 @@ export default {
 .sab-desc { font-size: 12px; color: #888; margin: 6px 0 10px; line-height: 1.5; }
 .sab-btns { display: flex; gap: 10px; }
 .sab-btns .btn-light { flex: 1; background: #f7f4ef; color: #3d5a3e; border: 1px solid #e7e0d4; border-radius: 10px; padding: 10px; font-size: 13px; }
+
+/* ========== 升级中 banner + 功能预告卡（VI 一致版 7.30） ========== */
+.upgrade-banner {
+  background: linear-gradient(135deg, #3d5a3e 0%, #2f4730 100%);
+  color: #fff;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin: 12px 0 14px;
+  box-shadow: 0 4px 16px rgba(61, 90, 62, 0.10);
+}
+.ub-text { font-size: 14px; line-height: 1.4; font-weight: 500; }
+
+.sec-title { font-size: 17px; font-weight: 700; color: #2b2b28; display: flex; align-items: center; gap: 6px; margin: 4px 0 12px; padding: 0 2px; }
+.sec-title::before { content: ''; width: 4px; height: 16px; background: #3d5a3e; border-radius: 2px; }
+
+.preview-card {
+  background: #fff;
+  border: 1px solid #f7f4ef;
+  border-radius: 16px;
+  padding: 16px 14px;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: flex-start;
+  box-shadow: 0 2px 8px rgba(61, 90, 62, 0.05);
+}
+.preview-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+.preview-icon.green { background: #eef3ec; }
+.preview-icon.brown { background: #F5E8DC; }
+.preview-icon.orange { background: #fbeee6; }
+.preview-content { flex: 1; min-width: 0; }
+.preview-title { font-size: 15px; font-weight: 600; color: #2b2b28; margin-bottom: 4px; }
+.preview-desc { font-size: 12px; color: #8a837a; line-height: 1.55; }
+.preview-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+  background: #eef3ec;
+  color: #3d5a3e;
+}
+
+.cta-area { padding: 8px 0 4px; }
+.cta-area .btn-green {
+  width: 100%;
+  background: #3d5a3e;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.cta-tip { text-align: center; font-size: 12px; color: #8a837a; margin-top: 10px; }
 </style>
