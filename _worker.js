@@ -333,6 +333,7 @@ export default {
     if (pathname === '/api/stats/summary') return handleStatsSummary(request);
     if (pathname === '/api/stats/daily') return handleStatsDaily(request);
     if (pathname === '/api/stats/health') return handleStatsHealth(request);
+    return env.ASSETS.fetch(request);
     return jsonResponse({ ok: false, error: 'not found', path: pathname }, 404);
   },
 };
