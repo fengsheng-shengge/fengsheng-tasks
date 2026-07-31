@@ -60,7 +60,7 @@
 
     <!-- 案例 promo -->
     <view class="case-promo" @tap="go('cases')">
-      <view class="cp-l"><view class="cp-t">🌟 优秀经纪人最佳案例灵感库</view><view class="cp-s">按客户类型 / 业务场景筛选 · 积分查阅顶尖实战</view></view>
+      <view class="cp-l"><view class="cp-t">🌟 优秀经纪人最佳案例灵感库</view><view class="cp-s">按客户类型 / 业务场景筛选 · 免费翻阅顶尖实战</view></view>
       <view class="cp-r">进入 ›</view>
     </view>
 
@@ -102,8 +102,6 @@ export default {
       methods,
       heroIdx: 0,
       methodIdx: 0,
-      points: 150,
-      serviceCount: 8,
       slides: [
         { img: hero1, ht: '把专业装进口袋', hs: '顶尖经纪人的「方法论 + 工具箱」，一次见面全用上' },
         { img: hero2, ht: '住得更好的样子', hs: '从「说得多没依据」到「讲得准、有依据、做得多」' },
@@ -113,6 +111,17 @@ export default {
     }
   },
   computed: {
+    // 信任积分来自真实服务动作累计（登录礼包/策展/建档/测评/分享等），不送假数据
+    points() { return this.userStore.points || 0 },
+    // 真实服务动作数：由用户真实产品路径累计（seed 示例客户不计入，登录不计入服务次数）
+    serviceCount() {
+      const u = this.userStore
+      const realClients = (u.clients || []).filter(c => !c.seed).length
+      return (u.curatings ? u.curatings.length : 0)
+           + realClients
+           + (u.assessments ? u.assessments.length : 0)
+           + (u.shares || 0)
+    },
     fillPct() { return Math.min(100, (this.serviceCount / 30) * 100) },
     userStore() { return useUserStore() },
     // V2.5 M3：聚合所有客户未完成的见后跟进，搬到首页"今日跟进"

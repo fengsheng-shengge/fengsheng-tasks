@@ -27,7 +27,7 @@
 
     <view class="menu-group">
       <view class="menu-item" @tap="go('clients')"><view class="menu-icon">👥</view><view class="menu-text">客户档案</view><view class="menu-arrow">›</view></view>
-      <view class="menu-item" @tap="go('cases')"><view class="menu-icon">🌟</view><view class="menu-text">案例灵感库</view><view class="menu-badge">{{ points }}</view></view>
+      <view class="menu-item" @tap="go('cases')"><view class="menu-icon">🌟</view><view class="menu-text">案例灵感库</view><view class="menu-arrow">›</view></view>
       <view class="menu-item" @tap="go('curate')"><view class="menu-icon">💡</view><view class="menu-text">我的策展库</view><view class="menu-arrow">›</view></view>
       <view class="menu-item" @tap="toast('职业档案（模拟）')"><view class="menu-icon">🎖️</view><view class="menu-text">职业档案</view><view class="menu-arrow">›</view></view>
     </view>
