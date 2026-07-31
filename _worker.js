@@ -1,12 +1,20 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260727-1920 - inline modules, deduped functions
-//   + issue #191: 合作意向留资 (partner_intent) & IP 设计 AI 头像生成 (/ip-design)
-//   + issue #201: 修复重复函数声明 (jsonResponse/parseBodyJson/clip)
+// Version: v20260731-2300 - full restoration, deduped, security-tuned
+//   + D1 database integration (stats, events, feedback)
+//   + Coze AI chat streaming
+//   + WeChat login with JWT
+//   + Alipay payment (mentor unlock)
+//   + issue #191: partner_intent + ip-design
+//   + issue #201: fix duplicate function declarations
+//   + issue #208: MP_verify + /api/health routing
 
 const COZE_API = 'https://api.coze.cn';
 const BOT_ID_PLACEHOLDER = '***MASKED***';
 const WX_API = 'https://api.weixin.qq.com/sns/jscode2session';
 
+// ============================================================
+//  Rate limiting
+// ============================================================
 const RATE_LIMIT = new Map();
 const RATE_WINDOW_MS = 60_000;
 const RATE_MAX_REQUESTS = 30;
@@ -15,6 +23,7 @@ const MAX_PAYLOAD_SIZE = 64 * 1024;
 const BANNED_IPS = new Map();
 const BAN_DURATION_MS = 3600_000;
 
+// Malicious tool / scanner UAs — block outright
 const MALICIOUS_UA_PATTERNS = [
   /nmap/i, /sqlmap/i, /masscan/i, /nikto/i, /burpsuite/i, /wpscan/i,
   /hydra/i, /nessus/i, /acunetix/i, /netsparker/i, /openvas/i,
@@ -24,6 +33,7 @@ const MALICIOUS_UA_PATTERNS = [
   /webdav/i, /frontpage/i, /microsoft url control/i,
 ];
 
+// AI scrapers — block at network level (curl/wget removed for testing)
 const AI_SCRAPER_UA_PATTERNS = [
   /GPTBot/i, /ClaudeBot/i, /CCBot/i, /Bytespider/i, /Amazonbot/i,
   /Applebot/i, /Bingbot/i, /facebookexternalhit/i, /Twitterbot/i,
@@ -33,8 +43,8 @@ const AI_SCRAPER_UA_PATTERNS = [
   /PetalBot/i, /BLEXBot/i, /DataForSeoBot/i, /SeekportBot/i,
   /screaming frog/i, /Sitebulb/i, /DeepCrawl/i, /OnCrawl/i,
   /ZoomBot/i, /ZoominfoBot/i, /WPEngine/i, /Go-http-client/i,
-  /python-requests/i, /python-urllib/i, /scrapy/i, /curl/i,
-  /wget/i, /lwp-trivial/i, /libwww-perl/i, /Java/i, /Apache-HttpClient/i,
+  /python-requests/i, /python-urllib/i, /scrapy/i,
+  /lwp-trivial/i, /libwww-perl/i, /Java/i, /Apache-HttpClient/i,
   /okhttp/i, /axios/i, /node-fetch/i, /got/i, /superagent/i,
   /PostmanRuntime/i, /insomnia/i, /paw/i,
   /ChatGPT-User/i, /cohere-ai/i, /PerplexityBot/i, /Anthropic/i,
@@ -56,7 +66,7 @@ const EXPLOIT_PATH_PATTERNS = [
   /console/i, /admin/i, /administrator/i,
   /cgi-bin/i, /_ignition/i, /_profiler/i,
   /solr/i, /elasticsearch/i, /jolokia/i,
-  /HNAP1/i, /setup\.cgi/i, /cgi-bin/i, /tmUnblock/i,
+  /HNAP1/i, /setup\.cgi/i, /tmUnblock/i,
   /muieblackcat/i, /left\.php/i, /xmlrpc\.php/i,
 ];
 
@@ -64,6 +74,10 @@ const HONEYPOT_PATHS = [
   '/admin/login', '/wp-admin', '/administrator', '/backend',
   '/hidden-link', '/secret-path', '/api/admin', '/cms',
 ];
+
+// ============================================================
+//  Utility functions (defined ONCE — no duplicates)
+// ============================================================
 
 function getClientIP(request) {
   return request.headers.get('CF-Connecting-IP') || request.headers.get('X-Real-IP') || '0.0.0.0';
@@ -153,14 +167,14 @@ function isSuspiciousQueryString(queryString) {
   return false;
 }
 
-function jsonResponse(body, status = 200, headers = {}) {
+function jsonResponse(data, status = 200, headers = {}) {
   const responseHeaders = {
     'Content-Type': 'application/json;charset=UTF-8',
     'Access-Control-Allow-Origin': '*',
     'Cache-Control': 'no-store',
     ...headers,
   };
-  return new Response(JSON.stringify(body), { status, headers: responseHeaders });
+  return new Response(JSON.stringify(data), { status, headers: responseHeaders });
 }
 
 async function parseBodyJson(request) {
@@ -178,40 +192,497 @@ function clip(str, max = 500) {
   return String(str).slice(0, max);
 }
 
-function securityCheck(request, pathname, searchParams) {
-  const ua = request.headers.get('User-Agent') || '';
-  const ip = getClientIP(request);
-  if (isBanned(ip)) return jsonResponse({ error: 'banned', message: 'Access denied' }, 403);
-  if (isHoneypotPath(pathname)) { banIP(ip); return jsonResponse({ error: 'banned', message: 'Honeypot triggered' }, 403); }
-  if (isMaliciousUA(ua)) { banIP(ip); return jsonResponse({ error: 'blocked', message: 'Blocked user agent' }, 403); }
-  if (isExploitPath(pathname)) return jsonResponse({ error: 'blocked', message: 'Suspicious path' }, 403);
-  if (isSuspiciousQueryString(searchParams)) return jsonResponse({ error: 'blocked', message: 'Suspicious query' }, 403);
-  const isApiPath = pathname.startsWith('/api/');
-  if (isApiPath && !checkRateLimit(request)) return jsonResponse({ error: 'rate_limit', message: 'Too many requests' }, 429);
-  if (!checkGlobalRateLimit(request)) return jsonResponse({ error: 'rate_limit', message: 'Too many requests' }, 429);
-  return null;
+function getBaseUrl(request) {
+  const proto = request.headers.get('X-Forwarded-Proto') || 'https';
+  const host = request.headers.get('Host') || 'fengsheng.tech';
+  return `${proto}://${host}`;
 }
 
-async function handleEvent(request) {
-  const data = await parseBodyJson(request);
-  if (!data) return jsonResponse({ ok: false, error: 'invalid body' }, 400);
-  const events = Array.isArray(data) ? data : [data];
-  const saved = [];
-  for (const e of events) {
-    saved.push({ type: clip(e.type, 50), uid: clip(e.uid, 32), url: clip(e.url, 500), ts: e.ts || Date.now() });
+// ============================================================
+//  JWT helpers
+// ============================================================
+
+async function simpleHash(str) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function base64urlEncode(str) {
+  const base64 = btoa(str);
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+function base64urlDecode(b64u) {
+  const base64 = b64u.replace(/-/g, '+').replace(/_/g, '/');
+  const pad = base64.length % 4;
+  const padded = pad ? base64 + '='.repeat(4 - pad) : base64;
+  return atob(padded);
+}
+
+function arrayBufferToBase64url(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
   }
-  return jsonResponse({ ok: true, received: saved.length });
+  return base64urlEncode(binary);
 }
 
-async function handleFeedback(request) {
-  const data = await parseBodyJson(request);
-  if (!data) return jsonResponse({ ok: false, error: 'invalid body' }, 400);
-  const feedback = clip(data.feedback || data.message || '', 2000);
-  const rating = Number(data.rating) || 0;
-  const source = clip(data.source || 'web', 32);
-  return jsonResponse({ ok: true, stored: { feedback_len: feedback.length, rating, source } });
+function base64urlToArrayBuffer(b64u) {
+  const binary = base64urlDecode(b64u);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
 }
 
+async function generateToken(openid, env) {
+  const secret = env.JWT_SECRET;
+  if (!secret) throw new Error('JWT_SECRET not configured');
+  const header = base64urlEncode(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const now = Math.floor(Date.now() / 1000);
+  const payload = base64urlEncode(JSON.stringify({
+    openid,
+    iat: now,
+    exp: now + 86400 * 7,
+    jti: crypto.randomUUID ? crypto.randomUUID() : openid + '_' + now,
+  }));
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw', encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(`${header}.${payload}`));
+  const sig = arrayBufferToBase64url(signature);
+  return `${header}.${payload}.${sig}`;
+}
+
+async function verifyToken(token, env) {
+  const secret = env.JWT_SECRET;
+  if (!secret) return null;
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const [h, p, s] = parts;
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw', encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']
+    );
+    const sigBytes = base64urlToArrayBuffer(s);
+    const valid = await crypto.subtle.verify(
+      { name: 'HMAC', hash: 'SHA-256' }, key, sigBytes, encoder.encode(`${h}.${p}`)
+    );
+    if (!valid) return null;
+    const payload = JSON.parse(base64urlDecode(p));
+    const now = Math.floor(Date.now() / 1000);
+    if (payload.exp && payload.exp < now) return null;
+    return payload;
+  } catch { return null; }
+}
+
+// ============================================================
+//  Partner intent storage (inlined from api/partner-intent.js)
+// ============================================================
+
+const VALID_TYPES = new Set(['edu', 'gov']);
+const FIELD_MAX = {
+  name: 64, org: 128, role: 64, contact: 128, note: 1024,
+  chipsItem: 32, chipsMax: 32, ip: 64, ua: 512,
+};
+
+async function storePartnerIntents(events, env, request) {
+  if (!Array.isArray(events) || events.length === 0) return 0;
+  const clientIp = request
+    ? (request.headers.get('CF-Connecting-IP') || request.headers.get('X-Real-IP') || '')
+    : '';
+  const ua = request ? (request.headers.get('User-Agent') || '') : '';
+  let stored = 0;
+  for (const e of events) {
+    const record = normalizePartnerEvent(e, clientIp, ua);
+    if (!record) continue;
+    let ok = false;
+    if (env.DB) {
+      try {
+        await env.DB.prepare(
+          'INSERT INTO partner_intents (intent_type, name, org, role, contact, chips, note, client_ip, ua, ts, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        ).bind(
+          record.intent_type, record.name, record.org, record.role,
+          record.contact, record.chips, record.note, record.client_ip,
+          record.ua, record.ts, Math.floor(Date.now() / 1000)
+        ).run();
+        ok = true;
+      } catch (err) {
+        console.error('partner_intents: D1 insert failed, fallback to KV:', err.message);
+      }
+    }
+    if (!ok && env.PARTNER_LEADS) {
+      try {
+        const key = `pi:${record.ts}:${Math.random().toString(36).slice(2, 8)}`;
+        await env.PARTNER_LEADS.put(key, JSON.stringify(record), { expirationTtl: 60 * 60 * 24 * 365 });
+        ok = true;
+      } catch (err) {
+        console.error('partner_intents: KV put failed:', err.message);
+      }
+    }
+    if (!ok) {
+      console.log('partner_intent (not persisted):', JSON.stringify(record));
+    } else {
+      stored++;
+    }
+  }
+  return stored;
+}
+
+function normalizePartnerEvent(e, clientIp, ua) {
+  if (!e || typeof e !== 'object') return null;
+  if (e.t !== 'partner_intent') return null;
+  const intentType = VALID_TYPES.has(e.type) ? e.type : 'edu';
+  return {
+    intent_type: intentType,
+    name: clip(e.name, FIELD_MAX.name),
+    org: clip(e.org, FIELD_MAX.org),
+    role: clip(e.role, FIELD_MAX.role),
+    contact: clip(e.contact, FIELD_MAX.contact),
+    chips: stringifyChips(e.chips),
+    note: clip(e.note, FIELD_MAX.note),
+    client_ip: clip(clientIp, FIELD_MAX.ip),
+    ua: clip(ua, FIELD_MAX.ua),
+    ts: Number.isFinite(e.ts) ? e.ts : Date.now(),
+  };
+}
+
+function stringifyChips(arr) {
+  if (!Array.isArray(arr)) return '[]';
+  const cleaned = arr
+    .filter((x) => x != null && x !== '')
+    .map((x) => String(x).trim().slice(0, FIELD_MAX.chipsItem))
+    .slice(0, FIELD_MAX.chipsMax);
+  return JSON.stringify(cleaned);
+}
+
+// ============================================================
+//  IP Design (inlined from api/ip-design.js)
+// ============================================================
+
+const SUPPORTED_STYLES = ['商务风', '亲民风', '活力风', '简约文艺', '科技感', '可爱卡通'];
+const MAX_DESC = 500;
+const MAX_STYLES = 6;
+const USE_MOCK_IPDESIGN = true;
+
+// ============================================================
+//  API Handlers
+// ============================================================
+
+async function handleWxLogin(request, env) {
+  try {
+    const body = await request.json();
+    const { code } = body;
+    if (!code) return jsonResponse({ error: 'code is required' }, 400);
+    const WX_APPID = env.WX_APPID || 'wxb87aa256991cc9c6';
+    const WX_SECRET = env.WX_SECRET;
+    if (!WX_SECRET) {
+      console.error('WX_SECRET not configured');
+      return jsonResponse({ error: 'server config error' }, 500);
+    }
+    const wxUrl = `${WX_API}?appid=${WX_APPID}&secret=${WX_SECRET}&js_code=${code}&grant_type=authorization_code`;
+    const wxResp = await fetch(wxUrl);
+    const wxData = await wxResp.json();
+    if (wxData.errcode) {
+      console.error('WeChat API error:', wxData.errcode, wxData.errmsg);
+      return jsonResponse({ error: '微信登录失败', code: wxData.errcode }, 400);
+    }
+    const { openid, session_key } = wxData;
+    const token = await generateToken(openid, env);
+    const userId = 'u_' + openid.slice(-8);
+    return jsonResponse({ token, openid, userId });
+  } catch (e) {
+    console.error('WxLogin error:', e);
+    return jsonResponse({ error: e.message }, 500);
+  }
+}
+
+async function handleChat(request, env, authenticatedOpenid, resolvedBotId) {
+  try {
+    const body = await request.json();
+    const { message, conversation_id } = body;
+    if (!message || !message.trim()) {
+      return jsonResponse({ error: 'message is required' }, 400);
+    }
+    const PAT_TOKEN = env.COZE_PAT_TOKEN;
+    if (!PAT_TOKEN) {
+      console.error('COZE_PAT_TOKEN not configured');
+      return jsonResponse({ error: 'server config error' }, 500);
+    }
+    const reqBody = {
+      bot_id: resolvedBotId,
+      user_id: authenticatedOpenid || 'web_user',
+      stream: true,
+      auto_save_history: true,
+      additional_messages: [{
+        role: 'user',
+        content: message.trim(),
+        content_type: 'text',
+      }],
+    };
+    if (conversation_id) reqBody.conversation_id = conversation_id;
+    const cozeResp = await fetch(`${COZE_API}/v3/chat`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${PAT_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reqBody),
+    });
+    if (!cozeResp.ok) {
+      const errText = await cozeResp.text();
+      console.error('Coze API error:', cozeResp.status, errText);
+      return jsonResponse({ error: 'Coze API error', status: cozeResp.status }, 502);
+    }
+    return new Response(cozeResp.body, {
+      headers: {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
+  } catch (e) {
+    console.error('Proxy error:', e);
+    return jsonResponse({ error: e.message }, 500);
+  }
+}
+
+async function handleFeedback(request, env) {
+  try {
+    const body = await request.json();
+    const { uid, type, content, product, rating } = body;
+    if (!content || !content.trim()) {
+      return jsonResponse({ error: 'content is required' }, 400);
+    }
+    const eventType = type || 'feedback';
+    const eventUid = uid || 'anonymous';
+    const eventProduct = product || 'general';
+    if (env.DB) {
+      await env.DB.prepare(
+        'INSERT INTO events (uid, event_type, product, data, ts, created_at) VALUES (?, ?, ?, ?, ?, unixepoch())'
+      ).bind(eventUid, eventType, eventProduct, JSON.stringify({ content: content.trim(), rating: rating || null }), Date.now()).run();
+    }
+    return jsonResponse({ ok: true, message: '反馈已收到，感谢！' });
+  } catch (err) {
+    return jsonResponse({ error: '反馈提交失败: ' + err.message }, 500);
+  }
+}
+
+async function handleFeedbackExternal(request, env) {
+  try {
+    const body = await request.json();
+    const web3Key = env.WEB3FORMS_KEY || '27c926eb-07d8-4a71-8bf8-f30ad73f8e39';
+    const formsubmitKey = env.FORMSUBMIT_KEY || 'd818fa3cece5258aea8205bd492316de';
+    const payload = { access_key: web3Key, ...body };
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).catch(() => {});
+    const fsPayload = {
+      ...body,
+      _replyto: body._replyto || 'feedback@fengsheng.tech',
+      _subject: body._subject || '风声用户反馈',
+    };
+    fetch(`https://formsubmit.co/ajax/${formsubmitKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(fsPayload),
+    }).catch(() => {});
+    return jsonResponse({ ok: true });
+  } catch (err) {
+    return jsonResponse({ error: '反馈提交失败: ' + err.message }, 500);
+  }
+}
+
+async function handleEvent(request, env) {
+  try {
+    const text = await request.text();
+    const body = text ? JSON.parse(text) : null;
+    const events = Array.isArray(body) ? body : body ? [body] : [];
+    const partnerEvents = [];
+    const trackingEvents = [];
+    for (const e of events) {
+      if (e && e.t === 'partner_intent') partnerEvents.push(e);
+      else trackingEvents.push(e);
+    }
+    if (partnerEvents.length) {
+      try {
+        await storePartnerIntents(partnerEvents, env, request);
+      } catch (e) {
+        console.error('partner_intents: store failed', e.message);
+      }
+    }
+    if (trackingEvents.length && env.DB) {
+      const stmt = env.DB.prepare(
+        'INSERT OR IGNORE INTO events (uid, event_type, url, page, product, title, referrer, utm_source, utm_medium, utm_campaign, ref, source, ua, screen, vp, locale, data, ts, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      );
+      const batch = trackingEvents.map((e) => {
+        const ts = e.ts || Date.now();
+        return stmt.bind(
+          (e.uid || 'anon').slice(0, 64),
+          (e.type || e.event_type || 'event').slice(0, 32),
+          (e.url || '').slice(0, 512),
+          (e.page || '').slice(0, 256),
+          (e.product || '').slice(0, 64),
+          (e.title || '').slice(0, 256),
+          (e.referrer || '').slice(0, 512),
+          (e.utm_source || '').slice(0, 128),
+          (e.utm_medium || '').slice(0, 128),
+          (e.utm_campaign || '').slice(0, 128),
+          (e.ref || '').slice(0, 256),
+          JSON.stringify(e.source || {}).slice(0, 1024),
+          (e.ua || '').slice(0, 512),
+          (e.screen || '').slice(0, 32),
+          (e.vp || '').slice(0, 32),
+          (e.locale || '').slice(0, 16),
+          JSON.stringify(e.data || {}).slice(0, 2048),
+          ts,
+          Math.floor(ts / 1000)
+        );
+      });
+      await env.DB.batch(batch);
+      console.log(`events: wrote ${trackingEvents.length} event(s)`);
+    } else if (trackingEvents.length) {
+      console.log(`events: received ${trackingEvents.length} event(s) (no DB, not persisted)`);
+    }
+  } catch (e) {
+    console.error('events: write failed', e.message);
+  }
+  return jsonResponse({ ok: true });
+}
+
+async function handleStats(request, env) {
+  const now = new Date().toISOString().split('T')[0];
+  if (env.DB) {
+    try {
+      const uvResult = await env.DB.prepare(
+        "SELECT COUNT(DISTINCT uid) as uv FROM events WHERE event_type = 'pageview'"
+      ).first();
+      const pvResult = await env.DB.prepare(
+        "SELECT COUNT(*) as pv FROM events WHERE event_type = 'pageview'"
+      ).first();
+      const chatResult = await env.DB.prepare(
+        "SELECT COUNT(*) as chats FROM events WHERE event_type IN ('chat', 'mentor_chat')"
+      ).first();
+      const lastEvent = await env.DB.prepare(
+        "SELECT ts FROM events ORDER BY ts DESC LIMIT 1"
+      ).first();
+      return jsonResponse({
+        uv: uvResult?.uv || 0,
+        total_users: uvResult?.uv || 0,
+        pv: pvResult?.pv || 0,
+        chats: chatResult?.chats || 0,
+        last_event_ts: lastEvent?.ts || null,
+        updated: now,
+        source: 'db',
+      });
+    } catch (e) {
+      console.error('stats: DB query failed', e.message);
+    }
+  }
+  return jsonResponse({
+    uv: null, total_users: null, pv: null, chats: null,
+    last_event_ts: null, updated: now,
+    note: 'no database configured — events are not persisted',
+  });
+}
+
+async function handleStatsSummary(request, env) {
+  const now = new Date().toISOString().split('T')[0];
+  if (env.DB) {
+    try {
+      const totalUsers = await env.DB.prepare(
+        "SELECT COUNT(DISTINCT uid) as total_users FROM events"
+      ).first();
+      const totalPageviews = await env.DB.prepare(
+        "SELECT COUNT(*) as total_pageviews FROM events WHERE event_type = 'pageview'"
+      ).first();
+      const totalFeedback = await env.DB.prepare(
+        "SELECT COUNT(*) as total_feedback FROM events WHERE event_type = 'reply_submit'"
+      ).first();
+      const perProduct = await env.DB.prepare(
+        "SELECT product, COUNT(DISTINCT uid) as users, COUNT(CASE WHEN event_type='pageview' THEN 1 END) as pageviews, COUNT(CASE WHEN event_type='reply_submit' THEN 1 END) as feedback, COUNT(CASE WHEN event_type='click' THEN 1 END) as clicks, 0 as actions FROM events WHERE product != '' GROUP BY product"
+      ).all();
+      const users = totalUsers?.total_users || 0;
+      const fb = totalFeedback?.total_feedback || 0;
+      const fbRate = users > 0 ? Math.round(fb / users * 10000) / 100 : 0;
+      return jsonResponse({
+        total_users: users,
+        total_pageviews: totalPageviews?.total_pageviews || 0,
+        total_feedback: fb,
+        feedback_rate_pct: fbRate,
+        per_product: perProduct?.results || [],
+        updated: now,
+        source: 'db',
+      });
+    } catch (e) {
+      console.error('stats/summary: DB query failed', e.message);
+    }
+  }
+  return jsonResponse({
+    total_users: 0, total_pageviews: 0, total_feedback: 0, feedback_rate_pct: 0,
+    per_product: [], updated: now, note: 'no database configured',
+  });
+}
+
+async function handleStatsDaily(request, env) {
+  const url = new URL(request.url);
+  const days = parseInt(url.searchParams.get('days') || '7');
+  const now = new Date().toISOString().split('T')[0];
+  if (env.DB) {
+    try {
+      const daily = await env.DB.prepare(
+        `SELECT date(created_at, 'unixepoch') as date, COUNT(DISTINCT uid) as unique_uids, COUNT(CASE WHEN event_type='pageview' THEN 1 END) as pageviews, COUNT(CASE WHEN event_type='click' THEN 1 END) as clicks, COUNT(CASE WHEN event_type='reply_submit' THEN 1 END) as feedbacks FROM events WHERE created_at >= unixepoch('now', '-${days} days') AND date(created_at, 'unixepoch') IS NOT NULL GROUP BY date(created_at, 'unixepoch') ORDER BY date`
+      ).all();
+      return jsonResponse({
+        daily: daily?.results || [],
+        updated: now,
+        source: 'db',
+      });
+    } catch (e) {
+      console.error('stats/daily: DB query failed', e.message);
+    }
+  }
+  return jsonResponse({ daily: [], updated: now, note: 'no database configured' });
+}
+
+async function handleStatsHealth(request, env) {
+  const now = new Date().toISOString();
+  if (env.DB) {
+    try {
+      const lastEvent = await env.DB.prepare(
+        "SELECT ts, event_type, product FROM events ORDER BY ts DESC LIMIT 1"
+      ).first();
+      const count24h = await env.DB.prepare(
+        "SELECT COUNT(*) as cnt FROM events WHERE created_at >= unixepoch('now', '-1 days')"
+      ).first();
+      return jsonResponse({
+        status: 'ok',
+        db: 'connected',
+        last_event: lastEvent || null,
+        events_24h: count24h?.cnt || 0,
+        updated: now,
+        version: 'v20260731-2300',
+      });
+    } catch (e) {
+      return jsonResponse({ status: 'degraded', db: 'error', error: e.message, updated: now });
+    }
+  }
+  return jsonResponse({ status: 'degraded', db: 'not_configured', updated: now });
+}
+
+// Simple handlers for additional routes
 async function handleDecode(request, version) {
   version = version || 1;
   if (request.method === 'GET') return jsonResponse({ ok: true, version, hint: 'POST with input' });
@@ -222,14 +693,30 @@ async function handleDecode(request, version) {
   const keyword = clip(data.keyword || data.word || '', 200);
   const query = zodiac || constellation || keyword;
   if (!query) return jsonResponse({ ok: false, error: '需要生肖/星座/关键词' }, 400);
-  return jsonResponse({ ok: true, version, input: { zodiac, constellation, keyword }, sixSteps: [{ step: 1, name: '懂你的优势' }, { step: 2, name: '懂你的情绪' }, { step: 3, name: '懂你的模式' }, { step: 4, name: '懂你的关系' }, { step: 5, name: '懂你的成长' }, { step: 6, name: '懂你的使命' } ], generatedAt: new Date().toISOString() });
+  return jsonResponse({
+    ok: true, version,
+    input: { zodiac, constellation, keyword },
+    sixSteps: [
+      { step: 1, name: '懂你的优势' }, { step: 2, name: '懂你的情绪' },
+      { step: 3, name: '懂你的模式' }, { step: 4, name: '懂你的关系' },
+      { step: 5, name: '懂你的成长' }, { step: 6, name: '懂你的使命' },
+    ],
+    generatedAt: new Date().toISOString(),
+  });
 }
 
 async function handleAssess(request) {
   if (request.method === 'GET') return jsonResponse({ ok: true, hint: 'POST with profile data' });
   const data = await parseBodyJson(request);
   if (!data) return jsonResponse({ ok: false, error: 'invalid body' }, 400);
-  return jsonResponse({ ok: true, report: { overall: 75, dimensions: { 优势: 80, 情绪: 70, 模式: 72, 关系: 78, 成长: 68, 使命: 73 }, generatedAt: new Date().toISOString() } });
+  return jsonResponse({
+    ok: true,
+    report: {
+      overall: 75,
+      dimensions: { 优势: 80, 情绪: 70, 模式: 72, 关系: 78, 成长: 68, 使命: 73 },
+      generatedAt: new Date().toISOString(),
+    },
+  });
 }
 
 async function handleCallback(request) {
@@ -247,25 +734,20 @@ async function handleVerify(request) {
   return jsonResponse({ ok: true, verified: true, ts: Date.now() });
 }
 
-async function handleChat(request) {
-  if (request.method === 'GET') return jsonResponse({ ok: true, bot_id: 'pending', hint: 'POST with message' });
-  const data = await parseBodyJson(request);
-  const message = clip((data && data.message) || '', 2000);
-  if (!message) return jsonResponse({ ok: false, error: '缺少 message 参数' }, 400);
-  return jsonResponse({ ok: true, reply: '消息已收到', bot_id: 'pending' });
-}
-
 async function handleAdminAgents(request) {
   if (request.method !== 'GET') return jsonResponse({ ok: false, error: 'method not allowed' }, 405);
-  return jsonResponse({ ok: true, agents: [{ id: 'xiaoyu', name: '小鱼儿', role: '产品运营', status: 'active' }, { id: 'xiaodou', name: '小豆子', role: '技术开发', status: 'active' }, { id: 'xiaojiu', name: '小酒窝儿', role: '设计评审', status: 'active' }, { id: 'xiaoke', name: '小扣子', role: '底层执行', status: 'active' }] });
+  return jsonResponse({
+    ok: true,
+    agents: [
+      { id: 'xiaoyu', name: '小鱼儿', role: '产品运营', status: 'active' },
+      { id: 'xiaodou', name: '小豆子', role: '技术开发', status: 'active' },
+      { id: 'xiaojiu', name: '小酒窝儿', role: '设计评审', status: 'active' },
+      { id: 'xiaoke', name: '小扣子', role: '底层执行', status: 'active' },
+    ],
+  });
 }
 
-async function handleFeedbackExternal(request) {
-  const data = await parseBodyJson(request);
-  return jsonResponse({ ok: true, stored: !!data });
-}
-
-async function handlePartnerIntent(request) {
+async function handlePartnerIntent(request, env) {
   if (request.method === 'GET') return jsonResponse({ ok: true, title: '风声·合作意向', fields: ['name', 'phone', 'company', 'intent', 'message'] });
   if (request.method !== 'POST') return jsonResponse({ ok: false, error: 'method not allowed' }, 405);
   const data = await parseBodyJson(request);
@@ -276,67 +758,389 @@ async function handlePartnerIntent(request) {
   const intent = clip(data.intent || data.type || '', 50);
   const message = clip(data.message || data.note || '', 1000);
   if (!name || !phone) return jsonResponse({ ok: false, error: '姓名和电话为必填项' }, 400);
-  return jsonResponse({ ok: true, submitted: true, id: `pi_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, message: '感谢您的合作意向，我们将尽快与您联系！' });
+  // Try D1 + KV storage
+  if (env.DB || env.PARTNER_LEADS) {
+    try {
+      await storePartnerIntents([{ t: 'partner_intent', type: intent, name, org: company, contact: phone, note: message, ts: Date.now() }], env, request);
+    } catch (e) {
+      console.error('partner_intent store error:', e.message);
+    }
+  }
+  return jsonResponse({
+    ok: true, submitted: true,
+    id: `pi_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    message: '感谢您的合作意向，我们将尽快与您联系！',
+  });
 }
 
-async function handleIpDesign(request) {
-  if (request.method === 'GET') return jsonResponse({ ok: true, title: '风声·IP 角色设计', supported_styles: ['cartoon', 'realistic', 'anime', 'minimalist', 'cyberpunk'] });
+async function handleIpDesign(request, env) {
+  if (request.method === 'GET') return jsonResponse({ ok: true, title: '风声·IP 角色设计', supported_styles: SUPPORTED_STYLES });
   if (request.method !== 'POST') return jsonResponse({ ok: false, error: 'method not allowed' }, 405);
   const data = await parseBodyJson(request);
   if (!data) return jsonResponse({ ok: false, error: 'invalid body' }, 400);
-  const name = clip(data.name || data.ipName || '', 50);
-  const persona = clip(data.persona || data.description || '', 500);
-  const style = clip(data.style || 'cartoon', 30);
-  const colors = Array.isArray(data.colors) ? data.colors.slice(0, 5) : [];
-  const traits = Array.isArray(data.traits) ? data.traits.slice(0, 10) : [];
-  if (!name) return jsonResponse({ ok: false, error: 'IP 名称为必填项' }, 400);
-  return jsonResponse({ ok: true, design: { id: `ip_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, name, persona, style, colors, traits, status: 'design_ready', generatedAt: new Date().toISOString() } });
+
+  const desc = clip(data.desc || data.description || '', MAX_DESC);
+  let styles = [];
+  if (Array.isArray(data.styles)) {
+    const seen = new Set();
+    for (const s of data.styles) {
+      if (typeof s !== 'string') continue;
+      const v = s.trim();
+      if (!v || seen.has(v)) continue;
+      seen.add(v);
+      styles.push(v);
+      if (styles.length >= MAX_STYLES) break;
+    }
+  }
+  if (!desc) return jsonResponse({ ok: false, error: 'desc 不能为空' }, 400);
+  if (styles.length === 0) return jsonResponse({ ok: false, error: 'styles 不能为空' }, 400);
+
+  const results = [];
+  for (const style of styles) {
+    let url;
+    if (USE_MOCK_IPDESIGN || !env.IP_DESIGN_API || !env.IP_DESIGN_API_KEY) {
+      // Mock: DiceBear avatar
+      const seed = encodeURIComponent(`${style}-${desc}`.slice(0, 64));
+      const styleMap = {
+        '商务风': 'bottts-neutral', '亲民风': 'avataaars', '活力风': 'adventurer',
+        '简约文艺': 'thumbs', '科技感': 'bottts', '可爱卡通': 'lorelei',
+      };
+      const dicebearStyle = styleMap[style] || 'bottts-neutral';
+      url = `https://api.dicebear.com/7.x/${dicebearStyle}/svg?seed=${seed}&backgroundColor=f7f4ef`;
+    } else {
+      try {
+        const prompt = `为一个 IP 角色设计头像, 正方形构图, 头像比例, 简洁背景, 高质量. 风格: ${style}. 角色描述: ${desc}.`;
+        const resp = await fetch(env.IP_DESIGN_API, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${env.IP_DESIGN_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: env.IP_DESIGN_MODEL || 'seedream-4.0', prompt, size: '1024x1024', n: 1 }),
+        });
+        if (!resp.ok) throw new Error(`API ${resp.status}`);
+        const respData = await resp.json();
+        const item = respData?.data?.[0];
+        if (item?.url) url = item.url;
+        else if (item?.b64_json) url = `data:image/png;base64,${item.b64_json}`;
+        else throw new Error('no url in response');
+      } catch (err) {
+        console.error('ip-design: real API failed, fallback to mock:', err.message);
+        const seed = encodeURIComponent(`${style}-${desc}`.slice(0, 64));
+        url = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${seed}&backgroundColor=f7f4ef`;
+      }
+    }
+    results.push({ style, url });
+  }
+  return jsonResponse(results);
 }
 
-async function handleStats(request) {
-  return jsonResponse({ ok: true, data: { total_users: 422, today_visits: 18, page_views: 2030, top_pages: [{ path: '/', views: 820 }, { path: '/care-test.html', views: 412 }, { path: '/knowledge.html', views: 356 }, { path: '/breeder.html', views: 280 }, { path: '/quality-test.html', views: 162 }] }, generatedAt: new Date().toISOString() });
-}
-
-async function handleStatsSummary(request) {
-  return jsonResponse({ ok: true, summary: { total_users: 422, total_sessions: 567, completion_rate: 0.38, avg_duration_sec: 127 }, generatedAt: new Date().toISOString() });
-}
-
-async function handleStatsDaily(request) {
-  return jsonResponse({ ok: true, daily: [{ date: '2026-07-20', visits: 42, users: 18 }, { date: '2026-07-21', visits: 56, users: 22 }, { date: '2026-07-22', visits: 38, users: 15 }, { date: '2026-07-23', visits: 71, users: 30 }, { date: '2026-07-24', visits: 63, users: 26 }, { date: '2026-07-25', visits: 89, users: 35 }, { date: '2026-07-26', visits: 95, users: 38 }], generatedAt: new Date().toISOString() });
-}
-
-async function handleStatsHealth(request) {
-  return jsonResponse({ ok: true, status: 'healthy', db: 'connected', uptime_sec: Math.floor(Date.now() / 1000), version: 'v20260727-1920' });
-}
+// ============================================================
+//  Main entry point
+// ============================================================
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const pathname = url.pathname;
-    const searchParams = url.search;
-    const secCheck = securityCheck(request, pathname, searchParams);
-    if (secCheck) return secCheck;
-    if (pathname === '/api/event') { if (request.method !== 'POST') return jsonResponse({ ok: false, error: 'method not allowed' }, 405); return handleEvent(request); }
-    if (pathname === '/api/feedback') { if (request.method !== 'POST') return jsonResponse({ ok: true, hint: 'POST to submit feedback' }); return handleFeedback(request); }
-    if (pathname === '/api/feedback-external') return handleFeedbackExternal(request);
-    if (pathname === '/api/decode') return handleDecode(request, 1);
-    if (pathname === '/api/decode/v2') return handleDecode(request, 2);
-    if (pathname === '/api/assess') return handleAssess(request);
-    if (pathname === '/api/callback') return handleCallback(request);
-    if (pathname === '/api/daily') return handleDaily(request);
-    if (pathname === '/api/verify') return handleVerify(request);
-    if (pathname === '/api/chat') return handleChat(request);
-    if (pathname === '/api/admin/agents') return handleAdminAgents(request);
-    if (pathname === '/api/partner-intent') return handlePartnerIntent(request);
-    if (pathname === '/api/ip-design') return handleIpDesign(request);
-    if (pathname === '/api/stats') return handleStats(request);
-    if (pathname === '/api/stats/summary') return handleStatsSummary(request);
-    if (pathname === '/api/stats/daily') return handleStatsDaily(request);
-    if (pathname === '/api/stats/health') return handleStatsHealth(request);
-    if (pathname === '/api/health') return handleStatsHealth(request);
-    // 微信域名校验文件 — 优先 ASSETS（保底静态文件直接返回）
-    if (pathname.startsWith('/MP_verify_')) return env.ASSETS.fetch(request);
+    const path = url.pathname;
+
+    // Layer 0: WeChat domain verification files
+    if (path.startsWith('/MP_verify_') && path.endsWith('.txt')) {
+      const VERIFY_CONTENT = {
+        '/MP_verify_810e0353e61ef284cb3a1e8f74a20476.txt': '810e0353e61ef284cb3a1e8f74a20476',
+      };
+      const content = VERIFY_CONTENT[path];
+      if (content) {
+        return new Response(content, {
+          status: 200,
+          headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'public, max-age=3600', 'Access-Control-Allow-Origin': '*' },
+        });
+      }
+      try {
+        const assetResp = await env.ASSETS.fetch(request);
+        if (assetResp.status === 200) {
+          const text = await assetResp.text();
+          return new Response(text, {
+            status: 200,
+            headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'public, max-age=3600', 'Access-Control-Allow-Origin': '*' },
+          });
+        }
+      } catch (e) { /* fall through */ }
+    }
+
+    // Layer 0.5: API paths bypass UA/bot detection
+    const isAPIPath = path.startsWith('/api/') || path.startsWith('/mentor-api/');
+    const isIpDesignApi = path === '/ip-design' && (request.method === 'POST' || request.method === 'OPTIONS');
+
+    // Layer 1: IP Ban Check
+    const clientIP = getClientIP(request);
+    if (isBanned(clientIP)) {
+      return new Response('Forbidden', { status: 403, headers: { 'Content-Type': 'text/plain', 'X-Banned': 'true' } });
+    }
+
+    // Layer 2: Global Rate Limiting
+    if (!checkGlobalRateLimit(request)) {
+      return jsonResponse({ error: '请求过于频繁，请稍后再试' }, 429);
+    }
+
+    // Layer 3: Malicious UA Blocking (skip for API paths)
+    const ua = request.headers.get('User-Agent') || '';
+    if (!isAPIPath && !isIpDesignApi && isMaliciousUA(ua)) {
+      return new Response('Forbidden', { status: 403, headers: { 'Content-Type': 'text/plain', 'X-Blocked': 'ua' } });
+    }
+
+    // Layer 4: AI Scraper Blocking (skip for API paths)
+    if (!isAPIPath && !isIpDesignApi && isAIScraper(ua)) {
+      return new Response('Forbidden', { status: 403, headers: { 'Content-Type': 'text/plain', 'X-Blocked': 'ai-scraper' } });
+    }
+
+    // Layer 5: Exploit Path Detection (skip for API paths)
+    if (!isAPIPath && isExploitPath(path)) {
+      banIP(clientIP);
+      return new Response('Forbidden', { status: 403, headers: { 'Content-Type': 'text/plain', 'X-Blocked': 'exploit-path' } });
+    }
+
+    // Layer 6: Honeypot Trap
+    if (!isAPIPath && isHoneypotPath(path)) {
+      banIP(clientIP);
+      return new Response('Forbidden', { status: 403, headers: { 'Content-Type': 'text/plain', 'X-Blocked': 'honeypot' } });
+    }
+
+    // Layer 7: Suspicious Query String
+    if (isSuspiciousQueryString(url.search)) {
+      return new Response('Forbidden', { status: 403, headers: { 'Content-Type': 'text/plain', 'X-Blocked': 'suspicious-query' } });
+    }
+
+    // API rate limiting
+    if (isAPIPath || isIpDesignApi) {
+      if (!checkRateLimit(request)) {
+        return jsonResponse({ error: '请求过于频繁，请稍后再试' }, 429);
+      }
+    }
+
+    // Body size check
+    const contentLength = parseInt(request.headers.get('Content-Length') || '0');
+    if (contentLength > MAX_PAYLOAD_SIZE && (isAPIPath || isIpDesignApi)) {
+      return jsonResponse({ error: '请求体过大' }, 413);
+    }
+
+    // Resolve BOT_ID from env
+    const resolvedBotId = env.FS_BOT_ID || BOT_ID_PLACEHOLDER;
+
+    // CORS preflight for API routes
+    if (request.method === 'OPTIONS' && (isAPIPath || isIpDesignApi)) {
+      return new Response(null, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+      });
+    }
+
+    // Orphaned pages redirect
+    const orphanedPaths = ['/guide/', '/mini-program/', '/knowledge-v3-fourpillars/'];
+    for (const orphanPath of orphanedPaths) {
+      if (path === orphanPath || path.startsWith(orphanPath)) {
+        return Response.redirect('https://fengsheng.tech/', 301);
+      }
+    }
+
+    // IP Design POST (before trailing-slash redirect)
+    if (path === '/ip-design' && request.method === 'POST') {
+      return handleIpDesign(request, env);
+    }
+
+    // Trailing-slash redirects
+    const trailingSlashRedirects = ['/knowledge', '/mentor', '/ip-design', '/reply', '/assessment', '/breeder', '/s1-report', '/partner', '/care-test', '/quality-test'];
+    if (trailingSlashRedirects.includes(path)) {
+      return Response.redirect(`https://fengsheng.tech${path}/`, 301);
+    }
+
+    // ===== API Routes =====
+
+    // Health check
+    if (path === '/api/health' || path === '/mentor-api/health') {
+      return handleStatsHealth(request, env);
+    }
+
+    // WeChat login
+    if (path === '/api/auth/wx-login' && request.method === 'POST') {
+      return handleWxLogin(request, env);
+    }
+
+    // Mentor chat (authenticated + anonymous)
+    if (path === '/mentor-api/chat' && request.method === 'POST') {
+      const authHeader = request.headers.get('Authorization');
+      const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+      let openid = null;
+      if (token) {
+        const payload = await verifyToken(token, env);
+        if (payload) openid = payload.openid;
+      }
+      if (!openid) {
+        const ip = request.headers.get('CF-Connecting-IP') || 'anonymous';
+        const uaStr = request.headers.get('User-Agent') || '';
+        openid = 'web_' + await simpleHash(ip + uaStr);
+      }
+      return handleChat(request, env, openid, resolvedBotId);
+    }
+
+    // Legacy /api/chat
+    if (path === '/api/chat') {
+      if (request.method === 'GET') return jsonResponse({ ok: true, bot_id: 'pending', hint: 'POST with message' });
+      if (request.method === 'POST') return handleChat(request, env, null, resolvedBotId);
+    }
+
+    // Event tracking
+    if (path === '/api/event') {
+      if (request.method !== 'POST') return jsonResponse({ ok: false, error: 'method not allowed' }, 405);
+      return handleEvent(request, env);
+    }
+
+    // Stats
+    if (path === '/api/stats') return handleStats(request, env);
+    if (path === '/api/stats/summary') return handleStatsSummary(request, env);
+    if (path === '/api/stats/daily') return handleStatsDaily(request, env);
+    if (path === '/api/stats/health') return handleStatsHealth(request, env);
+
+    // Feedback
+    if (path === '/api/feedback') {
+      if (request.method !== 'POST') return jsonResponse({ ok: true, hint: 'POST to submit feedback' });
+      return handleFeedback(request, env);
+    }
+    if (path === '/api/feedback-external') return handleFeedbackExternal(request, env);
+
+    // Decode (六步解码)
+    if (path === '/api/decode') return handleDecode(request, 1);
+    if (path === '/api/decode/v2') return handleDecode(request, 2);
+
+    // Assess (评估)
+    if (path === '/api/assess') return handleAssess(request);
+
+    // Callback
+    if (path === '/api/callback') return handleCallback(request);
+
+    // Daily check-in
+    if (path === '/api/daily') return handleDaily(request);
+
+    // Verify
+    if (path === '/api/verify') return handleVerify(request);
+
+    // Admin agents
+    if (path === '/api/admin/agents') return handleAdminAgents(request);
+
+    // Partner intent
+    if (path === '/api/partner-intent') return handlePartnerIntent(request, env);
+
+    // IP design (GET endpoint)
+    if (path === '/api/ip-design') return handleIpDesign(request, env);
+
+    // ===== Mentor Payment Routes =====
+
+    if (path === '/mentor-api/payment/init' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { user_id, amount, product } = body;
+        if (!user_id) return jsonResponse({ error: '缺少参数 user_id' }, 400);
+        const amountNum = parseFloat(amount);
+        if (isNaN(amountNum) || amountNum <= 0 || amountNum > 9999) return jsonResponse({ error: '无效的金额' }, 400);
+        const validProducts = ['mentor_unlock', 'mentor_monthly', 'generic'];
+        if (!validProducts.includes(product)) return jsonResponse({ error: '无效的商品标识' }, 400);
+        const outTradeNo = 'FS' + Date.now() + Math.random().toString(36).slice(2, 8);
+        const subject = product === 'mentor_unlock' ? '开单导师解锁' : '风声服务';
+        const notifyUrl = `${getBaseUrl(request)}/mentor-api/payment/notify`;
+        const alipayResp = await fetch('https://api.alipay.com/gateway.do', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            service: 'alipay.trade.precreate',
+            partner: env.ALIPAY_PARTNER || '',
+            seller_id: env.ALIPAY_SELLER_ID || '',
+            out_trade_no: outTradeNo,
+            total_amount: amount,
+            subject: subject,
+            notify_url: notifyUrl,
+            app_key: env.ALIPAY_APP_ID || '',
+          }).toString()
+        });
+        const alipayData = await alipayResp.json();
+        const qrCode = alipayData?.alipay_trade_precreate_response?.qr_code;
+        if (!qrCode) {
+          console.error('Alipay precreate failed:', JSON.stringify(alipayData));
+          return jsonResponse({ error: '支付码生成失败', detail: alipayData?.error_response?.sub_msg || '未知错误' }, 500);
+        }
+        const orderData = { out_trade_no: outTradeNo, user_id, amount, product, status: 'pending', created_at: Date.now() };
+        if (env.PAYMENT_ORDERS) await env.PAYMENT_ORDERS.put(outTradeNo, JSON.stringify(orderData));
+        return jsonResponse({
+          out_trade_no: outTradeNo, qr_code: qrCode,
+          qr_code_url: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrCode)}`,
+          expires_in: 300,
+        });
+      } catch (err) {
+        console.error('Payment init error:', err);
+        return jsonResponse({ error: '支付初始化失败: ' + err.message }, 500);
+      }
+    }
+
+    if (path.startsWith('/mentor-api/payment/check') && request.method === 'GET') {
+      try {
+        const outTradeNo = url.searchParams.get('out_trade_no');
+        if (!outTradeNo) return jsonResponse({ error: '缺少订单号' }, 400);
+        const alipayResp = await fetch('https://api.alipay.com/gateway.do', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            service: 'alipay.trade.query',
+            partner: env.ALIPAY_PARTNER || '',
+            out_trade_no: outTradeNo,
+            app_key: env.ALIPAY_APP_ID || '',
+          }).toString()
+        });
+        const data = await alipayResp.json();
+        const tradeStatus = data?.alipay_trade_query_response?.trade_status;
+        const paid = tradeStatus === 'TRADE_SUCCESS' || tradeStatus === 'TRADE_FINISHED';
+        return jsonResponse({ out_trade_no: outTradeNo, paid, trade_status: tradeStatus || 'UNKNOWN' });
+      } catch (err) {
+        console.error('Payment check error:', err);
+        return jsonResponse({ error: '查询失败: ' + err.message }, 500);
+      }
+    }
+
+    if (path === '/mentor-api/payment/notify' && request.method === 'POST') {
+      try {
+        const contentType = request.headers.get('content-type') || '';
+        let params;
+        if (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('text/plain')) {
+          const text = await request.text();
+          params = Object.fromEntries(new URLSearchParams(text).entries());
+        } else {
+          params = await request.json();
+        }
+        const { out_trade_no, trade_status, trade_no, buyer_logon_id, buyer_pay_amount } = params;
+        if (!out_trade_no) return new Response('fail', { status: 400 });
+        if (trade_status === 'TRADE_SUCCESS' || trade_status === 'TRADE_FINISHED') {
+          if (env.PAYMENT_ORDERS) {
+            const orderStr = await env.PAYMENT_ORDERS.get(out_trade_no);
+            if (orderStr) {
+              const order = JSON.parse(orderStr);
+              if (order.status !== 'paid') {
+                order.status = 'paid';
+                order.trade_no = trade_no;
+                order.paid_at = Date.now();
+                if (buyer_pay_amount) order.paid_amount = parseFloat(buyer_pay_amount);
+                if (buyer_logon_id) order.buyer = buyer_logon_id.slice(0, 8) + '***';
+                await env.PAYMENT_ORDERS.put(out_trade_no, JSON.stringify(order));
+                console.log(`Payment success: ${out_trade_no}, paid: ${buyer_pay_amount || 'unknown'}`);
+              }
+            }
+          }
+        }
+        return new Response('success', { headers: { 'Content-Type': 'text/plain' } });
+      } catch (err) {
+        console.error('Payment notify error:', err);
+        return new Response('fail', { status: 500, headers: { 'Content-Type': 'text/plain' } });
+      }
+    }
+
+    // All other requests → static assets
     return env.ASSETS.fetch(request);
-    return jsonResponse({ ok: false, error: 'not found', path: pathname }, 404);
   },
 };
