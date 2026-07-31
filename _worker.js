@@ -710,7 +710,7 @@ async function handleStatsHealth(request, env) {
         last_event: lastEvent || null,
         events_24h: count24h?.cnt || 0,
         updated: now,
-        version: 'v20260731-2300',
+        version: 'v20260731-0330',
       });
     } catch (e) {
       return jsonResponse({ status: 'degraded', db: 'error', error: e.message, updated: now });
