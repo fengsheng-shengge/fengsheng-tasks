@@ -682,8 +682,23 @@ async function handleStatsDaily(request, env) {
       const daily = await env.DB.prepare(
         `SELECT date(created_at, 'unixepoch') as date, COUNT(DISTINCT uid) as unique_uids, COUNT(CASE WHEN event_type='pageview' THEN 1 END) as pageviews, COUNT(CASE WHEN event_type='click' THEN 1 END) as clicks, COUNT(CASE WHEN event_type='reply_submit' THEN 1 END) as feedbacks FROM events WHERE created_at >= unixepoch('now', '-${days} days') AND date(created_at, 'unixepoch') IS NOT NULL GROUP BY date(created_at, 'unixepoch') ORDER BY date`
       ).all();
+      // Fill missing days with zeros for continuous chart
+      const dbResults = daily?.results || [];
+      const dateMap = {};
+      for (const r of dbResults) dateMap[r.date] = r;
+      const filled = [];
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        if (dateMap[dateStr]) {
+          filled.push(dateMap[dateStr]);
+        } else {
+          filled.push({ date: dateStr, unique_uids: 0, pageviews: 0, clicks: 0, feedbacks: 0 });
+        }
+      }
       return jsonResponse({
-        daily: daily?.results || [],
+        daily: filled,
         updated: now,
         source: 'db',
       });
@@ -704,19 +719,25 @@ async function handleStatsHealth(request, env) {
       const count24h = await env.DB.prepare(
         "SELECT COUNT(*) as cnt FROM events WHERE created_at >= unixepoch('now', '-1 days')"
       ).first();
+      const feedbackCount = await env.DB.prepare(
+        "SELECT COUNT(*) as cnt FROM events WHERE event_type = 'reply_submit'"
+      ).first();
       return jsonResponse({
         status: 'ok',
         db: 'connected',
+        db_connected: true,
         last_event: lastEvent || null,
         events_24h: count24h?.cnt || 0,
+        events_count: count24h?.cnt || 0,
+        feedback_count: feedbackCount?.cnt || 0,
         updated: now,
         version: 'v20260731-0330',
       });
     } catch (e) {
-      return jsonResponse({ status: 'degraded', db: 'error', error: e.message, updated: now });
+      return jsonResponse({ status: 'degraded', db: 'error', db_connected: false, error: e.message, updated: now });
     }
   }
-  return jsonResponse({ status: 'degraded', db: 'not_configured', updated: now });
+  return jsonResponse({ status: 'degraded', db: 'not_configured', db_connected: false, updated: now });
 }
 
 // Simple handlers for additional routes
