@@ -333,6 +333,9 @@ export default {
     if (pathname === '/api/stats/summary') return handleStatsSummary(request);
     if (pathname === '/api/stats/daily') return handleStatsDaily(request);
     if (pathname === '/api/stats/health') return handleStatsHealth(request);
+    if (pathname === '/api/health') return handleStatsHealth(request);
+    // 微信域名校验文件 — 优先 ASSETS（保底静态文件直接返回）
+    if (pathname.startsWith('/MP_verify_')) return env.ASSETS.fetch(request);
     return env.ASSETS.fetch(request);
     return jsonResponse({ ok: false, error: 'not found', path: pathname }, 404);
   },
