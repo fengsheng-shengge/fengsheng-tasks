@@ -68,7 +68,40 @@ const EXPLOIT_PATH_PATTERNS = [
   /solr/i, /elasticsearch/i, /jolokia/i,
   /HNAP1/i, /setup\.cgi/i, /tmUnblock/i,
   /muieblackcat/i, /left\.php/i, /xmlrpc\.php/i,
+  /node_modules/i, /package-lock\.json/i, /yarn\.lock/i,
+  /pnpm-lock\.yaml/i, /\.npmrc/i, /tsconfig\.json/i,
 ];
+
+// ============================================================
+//  Security headers (applied to ALL responses)
+//  _headers file not applied in advanced mode; inject here
+// ============================================================
+const SECURITY_HEADERS = {
+  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
+  'X-Content-Type-Options': 'nosniff',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-Frame-Options': 'DENY',
+  'Permissions-Policy': 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=()',
+  'X-Permitted-Cross-Domain-Policies': 'none',
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+};
+
+const CSP_HEADER_STATIC = "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests";
+
+function applySecurityHeaders(resp, isHtml = false) {
+  const newResp = new Response(resp.body, resp);
+  for (const [k, v] of Object.entries(SECURITY_HEADERS)) {
+    if (!newResp.headers.has(k)) {
+      newResp.headers.set(k, v);
+    }
+  }
+  if (isHtml && !newResp.headers.has('Content-Security-Policy')) {
+    newResp.headers.set('Content-Security-Policy', CSP_HEADER_STATIC);
+  }
+  return newResp;
+}
 
 const HONEYPOT_PATHS = [
   '/admin/login', '/wp-admin', '/administrator', '/backend',
@@ -172,6 +205,10 @@ function jsonResponse(data, status = 200, headers = {}) {
     'Content-Type': 'application/json;charset=UTF-8',
     'Access-Control-Allow-Origin': '*',
     'Cache-Control': 'no-store',
+    'X-Content-Type-Options': 'nosniff',
+    'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
     ...headers,
   };
   return new Response(JSON.stringify(data), { status, headers: responseHeaders });
@@ -1140,7 +1177,15 @@ export default {
       }
     }
 
-    // All other requests → static assets
-    return env.ASSETS.fetch(request);
+    // Catch-all: unmatched /api/* paths → JSON 404 (not SPA HTML)
+    if (isAPIPath) {
+      return jsonResponse({ error: 'Not found', path }, 404);
+    }
+
+    // All other requests → static assets (with security headers)
+    const assetResp = await env.ASSETS.fetch(request);
+    const contentType = assetResp.headers.get('Content-Type') || '';
+    const isHtml = contentType.includes('text/html');
+    return applySecurityHeaders(assetResp, isHtml);
   },
 };
