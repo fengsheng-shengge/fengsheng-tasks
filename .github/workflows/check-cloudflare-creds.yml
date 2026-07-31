@@ -1,0 +1,203 @@
+name: 🔑 每小时检查小鱼儿的 Cloudflare 凭证回复
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # 每小时整点执行
+  workflow_dispatch:       # 支持手动触发
+
+permissions:
+  issues: read
+  contents: read
+
+env:
+  ISSUE_NUMBER: 42
+  CRED_MARKER: 'cloudflare-creds-processed'
+
+jobs:
+  check-credentials:
+    name: 检查 Issue #42 凭证回复
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 检测小鱼儿回复的凭证
+        id: detect-creds
+        run: |
+          echo "🔍 检测小鱼儿回复中的 Cloudflare 凭证..."
+
+          # 用 jq 直接在 JSON 中搜索含凭证的评论（避免子 shell 问题）
+          COMMENTS_JSON=$(gh api \
+            "repos/${{ github.repository }}/issues/${{ env.ISSUE_NUMBER }}/comments?per_page=100" \
+            --jq '. | reverse')
+
+          # 用临时文件传递结果（解决管道子 shell 无法写入 GITHUB_ENV 的问题）
+          RESULT_FILE=$(mktemp)
+
+          # 逐条检查（使用 last pipe / process substitution 避免子 shell）
+          COUNT=$(echo "$COMMENTS_JSON" | jq 'length')
+          echo "  共 $COUNT 条评论待检查"
+
+          for i in $(seq 0 $((COUNT - 1))); do
+            BODY=$(echo "$COMMENTS_JSON" | jq -r ".[$i].body")
+            USERNAME=$(echo "$COMMENTS_JSON" | jq -r ".[$i].user.login")
+            COMMENT_ID=$(echo "$COMMENTS_JSON" | jq -r ".[$i].id")
+
+            echo "  检查评论 #$COMMENT_ID (by @${USERNAME})..."
+
+            # 检测 Account ID：32 位十六进制字符串
+            FOUND_ACCOUNT=$(echo "$BODY" | grep -oiE '(account[_ ]?id[:\s=]+)[0-9a-f]{32}' | grep -oE '[0-9a-f]{32}' || true)
+            if [ -z "$FOUND_ACCOUNT" ]; then
+              FOUND_ACCOUNT=$(echo "$BODY" | grep -oiE '[0-9a-f]{32}' | head -1 || true)
+            fi
+
+            # 检测 API Token：Cloudflare API Token 格式
+            FOUND_TOKEN=$(echo "$BODY" | grep -oiE '(api[_ ]?token[:\s=]+)[A-Za-z0-9_-]{30,}' | sed 's/.*api[_ ]?token[:\s=]*//' || true)
+            if [ -z "$FOUND_TOKEN" ]; then
+              FOUND_TOKEN=$(echo "$BODY" | grep -oiE 'v4\.[A-Za-z0-9_-]{30,}' | head -1 || true)
+            fi
+
+            if [ -n "$FOUND_ACCOUNT" ] && [ -n "$FOUND_TOKEN" ]; then
+              echo "  ✅ 在 @${USERNAME} 的评论中找到凭证！"
+              printf '%s\n' "account_id=$FOUND_ACCOUNT" "api_token=$FOUND_TOKEN" \
+                "cred_found=true" "cred_comment_id=$COMMENT_ID" "cred_user=$USERNAME" \
+                > "$RESULT_FILE"
+              break
+            fi
+          done
+
+          if [ -s "$RESULT_FILE" ]; then
+            cat "$RESULT_FILE" >> "$GITHUB_ENV"
+            rm -f "$RESULT_FILE"
+          else
+            echo "⏳ 暂未发现包含凭证的评论，下次继续检查。"
+            echo "cred_found=false" >> "$GITHUB_ENV"
+            rm -f "$RESULT_FILE"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 验证凭证格式
+        if: env.cred_found == 'true'
+        id: validate
+        run: |
+          echo "🔐 验证凭证格式..."
+          VALID=true
+
+          # Account ID 应为 32 位十六进制
+          if [ ${#account_id} -ne 32 ]; then
+            echo "  ✗ Account ID 长度异常: ${#account_id} (期望 32)"
+            VALID=false
+          else
+            echo "  ✓ Account ID 格式正确 (32 位 hex)"
+          fi
+
+          # API Token 应足够长
+          if [ ${#api_token} -lt 30 ]; then
+            echo "  ✗ API Token 长度异常: ${#api_token} (期望 ≥ 30)"
+            VALID=false
+          else
+            echo "  ✓ API Token 格式正确 (长度 ${#api_token})"
+          fi
+
+          # 用 Cloudflare API 验证凭证是否有效
+          echo "  验证凭证有效性（调用 Cloudflare API）..."
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer $api_token" \
+            "https://api.cloudflare.com/client/v4/accounts/$account_id" \
+            --max-time 10)
+
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "  ✓ 凭证有效！Cloudflare API 返回 200"
+          else
+            echo "  ✗ 凭证无效！Cloudflare API 返回 $HTTP_CODE"
+            VALID=false
+          fi
+
+          if [ "$VALID" = "true" ]; then
+            echo "valid=true" >> "$GITHUB_ENV"
+          else
+            echo "valid=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: 配置 GitHub Secrets
+        if: env.cred_found == 'true' && env.valid == 'true'
+        run: |
+          echo "⚙️ 将凭证写入 GitHub Secrets..."
+
+          # 使用 PAT 设置 Secrets（GITHUB_TOKEN 无权设置 Secrets）
+          echo "$account_id" | gh secret set CLOUDFLARE_ACCOUNT_ID --repo ${{ github.repository }}
+          echo "$api_token"  | gh secret set CLOUDFLARE_API_TOKEN  --repo ${{ github.repository }}
+
+          echo "  ✓ CLOUDFLARE_ACCOUNT_ID 已设置"
+          echo "  ✓ CLOUDFLARE_API_TOKEN 已设置"
+        env:
+          GH_TOKEN: ${{ secrets.PAT_FOR_SECRETS }}
+
+      - name: 触发部署
+        if: env.cred_found == 'true' && env.valid == 'true'
+        id: trigger-deploy
+        run: |
+          echo "🚀 触发 Cloudflare Pages 部署..."
+          gh workflow run deploy.yml \
+            --repo ${{ github.repository }} \
+            -f environment=production
+
+          echo "  ✓ 部署工作流已触发"
+        env:
+          GH_TOKEN: ${{ secrets.PAT_FOR_SECRETS }}
+
+      - name: 通知 Issue 凭证已接收并部署
+        if: env.cred_found == 'true' && env.valid == 'true'
+        run: |
+          cat <<COMMENT_EOF | gh issue comment ${{ env.ISSUE_NUMBER }} --repo ${{ github.repository }} --body-file -
+          ## ✅ Cloudflare 凭证已接收并配置
+
+          由 @${cred_user} 提供的凭证已自动提取并配置到 GitHub Secrets。
+
+          | 项目 | 状态 |
+          |------|------|
+          | CLOUDFLARE_ACCOUNT_ID | ✅ 已设置 |
+          | CLOUDFLARE_API_TOKEN | ✅ 已设置 |
+          | Cloudflare API 验证 | ✅ 通过 |
+          | 部署工作流 | 🚀 已触发 |
+
+          网站即将自动部署到 https://fengsheng.tech
+
+          ---
+          *此消息由小扣子（Trae）每小时自动检查工作流生成*
+          COMMENT_EOF
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 禁用后续定时检查（凭证已获取）
+        if: env.cred_found == 'true' && env.valid == 'true'
+        run: |
+          echo "📌 凭证已获取，禁用此工作流的定时触发..."
+          # 将 cron 触发器禁用，保留手动触发
+          gh workflow disable check-cloudflare-creds.yml \
+            --repo ${{ github.repository }} || true
+          echo "  ✓ 定时检查已禁用（仍可手动触发）"
+        env:
+          GH_TOKEN: ${{ secrets.PAT_FOR_SECRETS }}
+
+      - name: 生成检查报告
+        if: always()
+        run: |
+          echo "## 🔑 凭证检查报告"
+          echo ""
+          echo "| 检查项 | 结果 |"
+          echo "|--------|------|"
+          if [ "${cred_found:-false}" = "true" ]; then
+            echo "| 凭证发现 | ✅ 在 @${cred_user:-unknown} 的评论中找到 |"
+            echo "| 凭证验证 | $([ "${valid:-false}" = "true" ] && echo '✅ 通过' || echo '❌ 无效') |"
+            echo "| Secrets 配置 | $([ "${valid:-false}" = "true" ] && echo '✅ 已设置' || echo '⏳ 跳过') |"
+            echo "| 部署触发 | $([ "${valid:-false}" = "true" ] && echo '🚀 已触发' || echo '⏳ 跳过') |"
+          else
+            echo "| 凭证发现 | ⏳ 暂未发现 |"
+            echo "| 凭证验证 | - |"
+            echo "| Secrets 配置 | - |"
+            echo "| 部署触发 | - |"
+          fi
+          echo ""
+          echo "下次检查时间：1 小时后（或手动触发）"
