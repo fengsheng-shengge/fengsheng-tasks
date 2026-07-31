@@ -792,8 +792,15 @@ async function handleVerify(request) {
   return jsonResponse({ ok: true, verified: true, ts: Date.now() });
 }
 
-async function handleAdminAgents(request) {
+async function handleAdminAgents(request, env) {
   if (request.method !== 'GET') return jsonResponse({ ok: false, error: 'method not allowed' }, 405);
+  // Layer A: 鉴权（防止 4 数字员工列表泄漏·7.31 23:30 小鱼儿代修·P0 雷修复 #1/2）
+  const authHeader = request.headers.get('Authorization') || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+  const expectedToken = (env && env.DASHBOARD_TOKEN) || '07dc894ef8c6828c861803dd4326118d795f6912ebc1ec0e';
+  if (!token || token !== expectedToken) {
+    return jsonResponse({ ok: false, error: 'unauthorized' }, 401);
+  }
   return jsonResponse({
     ok: true,
     agents: [
@@ -964,10 +971,11 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Layer 0: WeChat domain verification files
+    // Layer 0: WeChat domain verification files（7.31 23:30 小鱼儿代修 + fengsheng 项 + 严格 text/plain 兜底 + 404 兜底·P0 雷修复 #2/2）
     if (path.startsWith('/MP_verify_') && path.endsWith('.txt')) {
       const VERIFY_CONTENT = {
         '/MP_verify_810e0353e61ef284cb3a1e8f74a20476.txt': '810e0353e61ef284cb3a1e8f74a20476',
+        '/MP_verify_fengsheng.txt': 'fengsheng',
       };
       const content = VERIFY_CONTENT[path];
       if (content) {
@@ -978,7 +986,9 @@ export default {
       }
       try {
         const assetResp = await env.ASSETS.fetch(request);
-        if (assetResp.status === 200) {
+        const contentType = assetResp.headers.get('Content-Type') || '';
+        // 严格兜底：只接受 text/plain，不要 SPA fallback HTML（修复 48144B 矛盾）
+        if (assetResp.status === 200 && contentType.startsWith('text/plain')) {
           const text = await assetResp.text();
           return new Response(text, {
             status: 200,
@@ -986,6 +996,11 @@ export default {
           });
         }
       } catch (e) { /* fall through */ }
+      // 兜底失败 → 返回 404（不要 fall through 到 SPA fallback）
+      return new Response('Verify file not found', {
+        status: 404,
+        headers: { 'Content-Type': 'text/plain' },
+      });
     }
 
     // Layer 0.5: API paths bypass UA/bot detection
