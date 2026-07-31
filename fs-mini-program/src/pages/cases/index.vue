@@ -24,24 +24,22 @@
       </scroll-view>
     </view>
 
-    <view class="section-header"><text class="section-title">最佳案例库</text><text class="section-more">{{ filtered.length }} 个案例</text></view>
+    <view class="section-header"><text class="section-title">最佳案例库</text><text class="section-more">{{ filtered.length }} 个案例 · 全部免费</text></view>
     <view v-if="filtered.length === 0" class="icp">该筛选下暂无案例</view>
-    <view class="case-card" :class="{ open: c._open }" v-for="c in filtered" :key="c.id" @tap="c.unlocked ? toggleCase(c) : unlockCase(c)">
+    <view class="case-card" :class="{ open: c._open }" v-for="c in filtered" :key="c.id" @tap="toggleCase(c)">
       <view class="case-tags">
         <text class="ctag role">{{ c.role }}</text><text class="ctag scene">{{ c.scene }}</text><text class="ctag mtd">{{ c.mtd }}</text>
       </view>
       <view class="case-title">{{ c.title }}</view>
       <view class="case-preview">{{ c.preview }}</view>
-      <view class="case-full" v-if="c.unlocked">
+      <view class="case-full" v-if="c._open">
         <view class="blk"><view class="blk-h">背景</view><view class="blk-b">{{ c.full.bg }}</view></view>
         <view class="blk"><view class="blk-h">做法</view><view class="blk-b">{{ c.full.do }}</view></view>
         <view class="blk"><view class="blk-h">关键点</view><view class="blk-b">{{ c.full.key }}</view></view>
         <view class="blk"><view class="blk-h">可复用工具 / 话术</view><view class="blk-b">{{ c.full.tool }}</view></view>
       </view>
       <view class="case-foot">
-        <text class="case-cost" :class="{ free: c.unlocked }">{{ c.unlocked ? '已解锁 · 免费看' : c.cost + ' 积分查阅' }}</text>
-        <text class="case-lockbtn" v-if="!c.unlocked">🔒 解锁</text>
-        <text class="case-openbtn" v-else @tap.stop="toggleCase(c)">{{ c._open ? '收起 ▲' : '展开 ▼' }}</text>
+        <text class="case-openbtn" @tap.stop="toggleCase(c)">{{ c._open ? '收起 ▲' : '展开全文 ▼' }}</text>
       </view>
     </view>
 
@@ -82,13 +80,6 @@ export default {
     setRole(r) { this.role = r },
     setScene(s) { this.scene = s },
     toggleCase(c) { c._open = !c._open },
-    unlockCase(c) {
-      if (this.points < c.cost) { uni.showToast({ title: '积分不足，去完成下方任务赚积分', icon: 'none' }); return }
-      const r = this.userStore.spendPoints(c.cost, '解锁「' + c.title + '」')
-      if (!r.success) { uni.showToast({ title: r.message, icon: 'none' }); return }
-      c.unlocked = true; c._open = true
-      uni.showToast({ title: '已解锁「' + c.title + '」 · -' + c.cost + ' 积分', icon: 'none' })
-    },
     // 真实完成态：每个任务对应产品路径的真实动作
     realDone(id) {
       const u = this.userStore

@@ -1,5 +1,5 @@
 // 风声 v4 共享数据（唯一真源：小程序设计样本_v4_贝壳风格.html）
-// 数据诚实原则：案例/方法论真实，member 价格与 v4 一致（免费养成期·付费延后）
+// 数据诚实原则：案例/方法论真实，当前所有功能免费可用
 
 export const personaMap = {
   red: { tag: '🔴 结果导向', tip: '直接给结论与数据，少寒暄' },
@@ -174,7 +174,7 @@ export const earnTasks = [
 ]
 
 // ===== V2.5 M1：见后跟进模板库（Followup Library）=====
-// 数据诚实：每条跟进均为「带新价值、非催促、不挂购买通路」的关怀触点，
+// 数据诚实：每条跟进均为「带新价值、非催促、不挂任何营销/售卖通路」的关怀触点，
 // 并标注 LTRUST 校准依据（Laws/Truth/Role/User/Source/Trust），绝不编造政策数字。
 // 键 = 客户 stage 全值（与 store 中 clients[].stage 一致），避免购/租两线"②改善"撞键。
 export const followupLibrary = {

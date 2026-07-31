@@ -202,7 +202,7 @@ textarea { width: 100%; border: 1px solid var(--border); border-radius: 11px; pa
 .cases-wallet .earn { background: #fff; color: var(--green); border: none; padding: 9px 13px; border-radius: 999px; font-size: 12.5px; font-weight: 700; flex-shrink: 0; }
 .filter-block { margin-bottom: 12px; }
 .filter-label { font-size: 12px; color: var(--text-secondary); margin: 0 2px 7px; font-weight: 600; }
-.chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 4px; }
+.chips { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding: 2px 0 4px; }
 .chips::-webkit-scrollbar { display: none; }
 .chip { flex-shrink: 0; background: var(--card); border: 1px solid var(--border); padding: 7px 13px; border-radius: 999px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; }
 .chip.on { background: var(--green); color: #fff; border-color: var(--green); }
@@ -272,24 +272,7 @@ textarea { width: 100%; border: 1px solid var(--border); border-radius: 11px; pa
 .trust-card .tc-fill { height: 100%; background: var(--orange-light); border-radius: 4px; }
 .trust-card .tc-rule { font-size: 10.5px; opacity: .85; margin-top: 8px; line-height: 1.5; }
 
-/* ========== 会员方案 + 邀请裂变 ========== */
-.section-title-sm { font-size: 15px; font-weight: 700; color: var(--green); margin: 20px 0 6px; }
-.vip-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; margin: 10px 0 4px; }
-.vip-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 13px 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.03); position: relative; }
-.vip-card.hot { border: 1.5px solid var(--orange); }
-.vip-card .vc-tag { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: var(--orange); color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
-.vip-card .vc-name { font-size: 13px; font-weight: 700; color: var(--green); }
-.vip-card .vc-price { font-size: 20px; font-weight: 800; color: var(--orange); margin: 5px 0 2px; }
-.vip-card .vc-price .unit { font-size: 11px; font-weight: 600; }
-.vip-card .vc-pts { font-size: 12px; color: var(--muted); }
-.vip-card .vc-perk { font-size: 11px; color: #5a554c; margin-top: 6px; line-height: 1.5; }
-.vip-card.locked { opacity: .55; filter: grayscale(.4); }
-.vip-card.locked .vc-tag { background: #b9b1a4; }
-.vip-card .vc-lock { font-size: 10px; color: #9a5026; margin-top: 6px; font-weight: 700; }
+/* ========== 信任成长 / 通用 ========== */
 .phase-banner { background: rgba(196,106,58,.10); border: 1px solid rgba(196,106,58,.28); border-radius: 10px; padding: 9px 12px; margin: 4px 0 12px; font-size: 12px; color: #9a5026; line-height: 1.6; }
-.invite-box { background: linear-gradient(135deg,var(--green),#4d7050); color: #fff; border-radius: 14px; padding: 16px; margin: 12px 0; }
-.invite-box .ib-title { font-size: 14px; font-weight: 700; }
-.invite-box .ib-code { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.16); border-radius: 10px; padding: 10px 12px; margin: 10px 0; font-size: 13px; }
-.invite-box .ib-reward { font-size: 12px; opacity: .92; line-height: 1.6; }
 .btn-light { background: #fff; color: var(--green); border: none; border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 700; margin-top: 4px; }
 </style>

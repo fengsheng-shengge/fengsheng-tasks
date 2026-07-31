@@ -40,11 +40,9 @@ export const useUserStore = defineStore('user', {
     userId: null,
     nickname: null,
     avatar: null,
-    subscription: null, // { type: 'monthly'|'yearly', status, expireAt }
     isLoggedIn: false,
     points: 0,
-    pointsHistory: [], // [{type:'earn'|'spend', amount, reason, timestamp}]
-    unlockedContent: {}, // { 'entry_001': ['fullCase', 'agentMemo'], ... }
+    pointsHistory: [], // [{type:'earn', amount, reason, timestamp}]
     favorites: [], // [entryId, ...]
     contributions: [], // [{type, entryId, status, timestamp}]
     // ===== V2.1.1a 新增：客户档案 / 策展库 / 测评 / 任务完成态 =====
@@ -53,9 +51,6 @@ export const useUserStore = defineStore('user', {
     assessments: [], // [{id, ts}]
     doneFlags: {}, // { taskId: true } 任务真实完成态（防自嗨闭环）
     shares: 0, // 分享次数（案例分享任务）
-    // 导师对话配额
-    freeChatCount: 5,
-    lastChatResetDate: null,
     // 答题统计
     quizStats: { total: 0, correct: 0, streak: 0, lastAnswerDate: null },
   }),
@@ -69,22 +64,6 @@ export const useUserStore = defineStore('user', {
     },
     levelName(state) {
       return getLevelInfo(state.points).levelName
-    },
-    isContentUnlocked() {
-      return (entryId, contentType) => {
-        const unlocked = this.unlockedContent[entryId]
-        return unlocked && unlocked.includes(contentType)
-      }
-    },
-    remainingQuota(state) {
-      // 订阅有效期内无限
-      if (state.subscription && state.subscription.expireAt > Date.now()) {
-        return Infinity
-      }
-      return state.freeChatCount
-    },
-    isQuotaExhausted() {
-      return this.remainingQuota === 0
     },
     accuracy(state) {
       if (state.quizStats.total === 0) return 0
@@ -100,10 +79,8 @@ export const useUserStore = defineStore('user', {
     _persist() {
       uni.setStorageSync('fs_points', this.points)
       uni.setStorageSync('fs_points_history', JSON.stringify(this.pointsHistory))
-      uni.setStorageSync('fs_unlocked_content', JSON.stringify(this.unlockedContent))
       uni.setStorageSync('fs_favorites', JSON.stringify(this.favorites))
       uni.setStorageSync('fs_contributions', JSON.stringify(this.contributions))
-      uni.setStorageSync('fs_chat_quota', JSON.stringify({ freeChatCount: this.freeChatCount, lastChatResetDate: this.lastChatResetDate }))
       uni.setStorageSync('fs_quiz_stats', JSON.stringify(this.quizStats))
       // V2.1.1a
       uni.setStorageSync('fs_clients', JSON.stringify(this.clients))
@@ -142,9 +119,6 @@ export const useUserStore = defineStore('user', {
       this.isLoggedIn = !!this.token
       this.points = uni.getStorageSync('fs_points') || 0
       try {
-        this.unlockedContent = JSON.parse(uni.getStorageSync('fs_unlocked_content') || '{}')
-      } catch { this.unlockedContent = {} }
-      try {
         this.pointsHistory = JSON.parse(uni.getStorageSync('fs_points_history') || '[]')
       } catch { this.pointsHistory = [] }
       try {
@@ -153,11 +127,6 @@ export const useUserStore = defineStore('user', {
       try {
         this.contributions = JSON.parse(uni.getStorageSync('fs_contributions') || '[]')
       } catch { this.contributions = [] }
-      try {
-        const q = JSON.parse(uni.getStorageSync('fs_chat_quota') || '{}')
-        this.freeChatCount = q.freeChatCount ?? 5
-        this.lastChatResetDate = q.lastChatResetDate || null
-      } catch { this.freeChatCount = 5; this.lastChatResetDate = null }
       try {
         const qs = JSON.parse(uni.getStorageSync('fs_quiz_stats') || '{}')
         this.quizStats = {
@@ -175,8 +144,6 @@ export const useUserStore = defineStore('user', {
       this.shares = uni.getStorageSync('fs_shares') || 0
       // 首次启动（无缓存）seed 4 个示例客户，让经纪人看到"可录入"的样子
       if (this.clients.length === 0) this.seedClients()
-      // 跨日重置对话配额
-      this._resetDailyQuotaIfNeeded()
     },
 
     /** 首次启动写入 4 个示例客户（标记 seed，可删可改） */
@@ -210,57 +177,6 @@ export const useUserStore = defineStore('user', {
       }
       this._persist()
       return this.points
-    },
-
-    /** 消费积分（通用，不涉及解锁） */
-    spendPoints(amount, reason = '') {
-      if ((this.points || 0) < amount) {
-        return { success: false, message: `积分不足，需要 ${amount} 积分` }
-      }
-      this.points -= amount
-      this.pointsHistory.unshift({
-        type: 'spend',
-        amount,
-        reason: reason || '积分消耗',
-        timestamp: Date.now(),
-      })
-      if (this.pointsHistory.length > 200) {
-        this.pointsHistory = this.pointsHistory.slice(0, 200)
-      }
-      this._persist()
-      return { success: true, remainingPoints: this.points }
-    },
-
-    /** 消费积分解锁内容 */
-    unlockContent(entryId, contentType, cost) {
-      if (!this.unlockedContent[entryId]) {
-        this.unlockedContent[entryId] = []
-      }
-      if (this.unlockedContent[entryId].includes(contentType)) {
-        return { success: true, alreadyUnlocked: true }
-      }
-      if ((this.points || 0) < cost) {
-        return { success: false, message: `积分不足，需要 ${cost} 积分` }
-      }
-      this.points -= cost
-      this.unlockedContent[entryId].push(contentType)
-      this.pointsHistory.unshift({
-        type: 'spend',
-        amount: cost,
-        reason: `解锁 ${contentType}`,
-        timestamp: Date.now(),
-      })
-      if (this.pointsHistory.length > 200) {
-        this.pointsHistory = this.pointsHistory.slice(0, 200)
-      }
-      this._persist()
-      return { success: true, remainingPoints: this.points }
-    },
-
-    /** 检查指定内容是否已解锁 */
-    checkUnlocked(entryId, contentType) {
-      const unlocked = this.unlockedContent[entryId]
-      return unlocked && unlocked.includes(contentType)
     },
 
     /** 收藏词条 */
@@ -379,44 +295,6 @@ export const useUserStore = defineStore('user', {
       this.doneFlags[key] = true
       this._persist()
       return true
-    },
-
-    // ============ 导师对话配额 ============
-
-    _resetDailyQuotaIfNeeded() {
-      const today = todayStr()
-      if (this.lastChatResetDate !== today) {
-        this.freeChatCount = 5
-        this.lastChatResetDate = today
-        this._persist()
-      }
-    },
-
-    /** 发送消息前检查配额 */
-    checkQuotaBeforeSendMessage() {
-      this._resetDailyQuotaIfNeeded()
-      // 订阅有效期内无限
-      if (this.subscription && this.subscription.expireAt > Date.now()) {
-        return { canSend: true, remaining: Infinity }
-      }
-      if (this.freeChatCount > 0) {
-        return { canSend: true, remaining: this.freeChatCount }
-      }
-      return { canSend: false, reason: 'free_quota_exhausted', remaining: 0 }
-    },
-
-    /** 消耗一次对话配额 */
-    consumeQuota() {
-      this._resetDailyQuotaIfNeeded()
-      if (this.subscription && this.subscription.expireAt > Date.now()) {
-        return { success: true, remaining: Infinity }
-      }
-      if (this.freeChatCount > 0) {
-        this.freeChatCount--
-        this._persist()
-        return { success: true, remaining: this.freeChatCount }
-      }
-      return { success: false, message: '免费额度已用完' }
     },
 
     // ============ 答题统计 ============
