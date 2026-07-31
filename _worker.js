@@ -1,5 +1,5 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260731-2300 - full restoration, deduped, security-tuned
+// Version: v20260731-0330 - add /api/entries, /api/knowledge-stats, /api/wx-login alias
 //   + D1 database integration (stats, events, feedback)
 //   + Coze AI chat streaming
 //   + WeChat login with JWT
@@ -870,6 +870,71 @@ async function handleIpDesign(request, env) {
 }
 
 // ============================================================
+//  Knowledge base entries (issue #210: /api/entries endpoint)
+// ============================================================
+
+async function loadEntriesFromAssets(env) {
+  try {
+    const assetReq = new Request('https://fakehost/data/entries.json');
+    const resp = await env.ASSETS.fetch(assetReq);
+    if (!resp.ok) return [];
+    const text = await resp.text();
+    return JSON.parse(text);
+  } catch (e) {
+    console.error('loadEntriesFromAssets failed:', e.message);
+    return [];
+  }
+}
+
+async function handleEntries(request, env) {
+  const url = new URL(request.url);
+  const domain = url.searchParams.get('domain');
+  const limit = Math.min(parseInt(url.searchParams.get('limit') || '0') || 0, 200);
+  const offset = Math.max(parseInt(url.searchParams.get('offset') || '0') || 0, 0);
+  const entries = await loadEntriesFromAssets(env);
+  let result = entries;
+  if (domain) {
+    result = entries.filter(e => e.domain === domain);
+  }
+  const total = result.length;
+  if (limit > 0) {
+    result = result.slice(offset, offset + limit);
+  } else if (offset > 0) {
+    result = result.slice(offset);
+  }
+  return jsonResponse({
+    total,
+    returned: result.length,
+    offset,
+    limit: limit || null,
+    domain: domain || null,
+    entries: result,
+  });
+}
+
+async function handleKnowledgeStats(request, env) {
+  const entries = await loadEntriesFromAssets(env);
+  const domains = {};
+  for (const e of entries) {
+    const d = e.domain || 'unknown';
+    if (!domains[d]) domains[d] = { count: 0, samples: [] };
+    domains[d].count++;
+    if (domains[d].samples.length < 3) {
+      domains[d].samples.push(e.name || e.title || e.id);
+    }
+  }
+  const domainList = Object.entries(domains)
+    .map(([domain, info]) => ({ domain, count: info.count, samples: info.samples }))
+    .sort((a, b) => b.count - a.count);
+  return jsonResponse({
+    total_entries: entries.length,
+    total_domains: domainList.length,
+    domains: domainList,
+    updated: new Date().toISOString(),
+  });
+}
+
+// ============================================================
 //  Main entry point
 // ============================================================
 
@@ -1069,6 +1134,15 @@ export default {
 
     // IP design (GET endpoint)
     if (path === '/api/ip-design') return handleIpDesign(request, env);
+
+    // Knowledge base entries (issue #210)
+    if (path === '/api/entries') return handleEntries(request, env);
+    if (path === '/api/knowledge-stats') return handleKnowledgeStats(request, env);
+
+    // wx-login alias (issue #210: /api/wx-login → /api/auth/wx-login)
+    if (path === '/api/wx-login' && request.method === 'POST') {
+      return handleWxLogin(request, env);
+    }
 
     // ===== Mentor Payment Routes =====
 
