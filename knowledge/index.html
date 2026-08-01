@@ -1026,19 +1026,22 @@ function openEntry(entryId){
 }
 
 /* ===== 域浏览器状态 ===== */
-let domainBrowseState = { domain: null, page: 0, perPage: 20, subScene: null, filtered: [] };
+let domainBrowseState = { domain: null, page: 0, perPage: 20, subScene: null, filtered: [], entries: [], subSceneMeta: [], total: 0 };
 
 async function showDomainModal(domain){
-  domainBrowseState = { domain: domain, page: 0, perPage: 20, subScene: null, filtered: [], entries: [], loading: true };
+  domainBrowseState = { domain: domain, page: 0, perPage: 20, subScene: null, filtered: [], entries: [], subSceneMeta: [], total: 0, loading: true };
   renderDomainBrowser(); // Show loading state
   try{
-    const resp=await fetch('/api/entries?domain='+encodeURIComponent(domain.code)+'&limit=0');
+    // Load only 20 entries + sub-scene metadata (not all entries!)
+    const params = new URLSearchParams({domain: domain.code, limit: '20', offset: '0'});
+    const resp=await fetch('/api/entries?'+params.toString());
     const data=await resp.json();
     domainBrowseState.entries = data.entries||[];
+    domainBrowseState.total = data.total||0;
+    domainBrowseState.subSceneMeta = data.subscenes||[];
     // Accumulate into global map for openEntry lookup
     (data.entries||[]).forEach(e=>{ allEntriesMap[e.id]=e; });
     domainBrowseState.loading = false;
-    filterDomainEntries();
     renderDomainBrowser();
   }catch(e){
     domainBrowseState.loading = false;
@@ -1047,15 +1050,31 @@ async function showDomainModal(domain){
   }
 }
 
+// Load a specific page of entries
+async function loadDomainPage(page){
+  const d = domainBrowseState.domain;
+  if(!d) return;
+  const offset = page * domainBrowseState.perPage;
+  try{
+    const params = new URLSearchParams({domain: d.code, limit: String(domainBrowseState.perPage), offset: String(offset)});
+    if(domainBrowseState.subScene) params.set('subScene', domainBrowseState.subScene);
+    const resp=await fetch('/api/entries?'+params.toString());
+    const data=await resp.json();
+    domainBrowseState.entries = data.entries||[];
+    (data.entries||[]).forEach(e=>{ allEntriesMap[e.id]=e; });
+    domainBrowseState.page = page;
+    domainBrowseState.total = data.total||0;
+    domainBrowseState.subSceneMeta = data.subscenes||[];
+    renderDomainBrowser();
+  }catch(e){
+    console.warn('加载页面失败',e);
+  }
+}
+
 function getSubScenes(domainCode){
-  const scenes = {};
-  const entries = domainBrowseState.entries||[];
-  entries.forEach(e=>{
-    if(e.subScene){
-      scenes[e.subScene] = (scenes[e.subScene]||0)+1;
-    }
-  });
-  return Object.entries(scenes).sort((a,b)=>b[1]-a[1]);
+  // Use sub-scene metadata from API (fast, no computation needed)
+  const meta = domainBrowseState.subSceneMeta || [];
+  return meta.map(({name, count}) => [name, count]);
 }
 
 function filterDomainEntries(){
@@ -1087,18 +1106,13 @@ function renderDomainBrowser(){
     return;
   }
 
-  filterDomainEntries();
-
-  const allEntries_count = domainBrowseState.entries.length;
-  const filtered = domainBrowseState.filtered;
-  const totalPages = Math.max(1, Math.ceil(filtered.length / domainBrowseState.perPage));
+  const allEntries_count = domainBrowseState.total || 0;
+  const filtered = domainBrowseState.entries || [];
+  const totalPages = Math.max(1, Math.ceil(allEntries_count / domainBrowseState.perPage));
   if(domainBrowseState.page >= totalPages) domainBrowseState.page = totalPages - 1;
   if(domainBrowseState.page < 0) domainBrowseState.page = 0;
 
-  const start = domainBrowseState.page * domainBrowseState.perPage;
-  const pageEntries = filtered.slice(start, start + domainBrowseState.perPage);
-
-  // 子场景筛选 chips
+  // 子场景筛选 chips (from metadata)
   const subScenes = getSubScenes(d.code);
   const filterHtml = subScenes.length > 0
     ? '<div class="subscene-filters">' +
@@ -1110,8 +1124,8 @@ function renderDomainBrowser(){
     : '';
 
   // 词条列表
-  const listHtml = pageEntries.length > 0
-    ? '<div class="domain-entry-list">' + pageEntries.map(e=>{
+  const listHtml = filtered.length > 0
+    ? '<div class="domain-entry-list">' + filtered.map(e=>{
         const icon = e.icon || getDomainIcon(e.domain) || '📄';
         const title = e.title || e.name || e.id;
         const meta = [e.subScene, e.severity, e.source].filter(Boolean).join(' · ');
@@ -1124,14 +1138,14 @@ function renderDomainBrowser(){
     : '<div style="text-align:center;padding:40px;color:var(--ink-soft)">没有符合条件的词条</div>';
 
   // 分页
-  const paginationHtml = filtered.length > domainBrowseState.perPage
+  const paginationHtml = allEntries_count > domainBrowseState.perPage
     ? '<div class="domain-pagination">' +
-      '<span class="domain-page-info">第 '+(domainBrowseState.page+1)+' / '+totalPages+' 页 · 共 '+filtered.length+' 条' + (domainBrowseState.subScene?'（筛选后）':'') + '</span>' +
+      '<span class="domain-page-info">第 '+(domainBrowseState.page+1)+' / '+totalPages+' 页 · 共 '+allEntries_count+' 条' + (domainBrowseState.subScene?'（筛选后）':'') + '</span>' +
       '<div class="domain-page-btns">' +
       '<button class="domain-page-btn" onclick="changePage(-1)" '+(domainBrowseState.page===0?'disabled':'')+'>← 上一页</button>' +
       '<button class="domain-page-btn" onclick="changePage(1)" '+(domainBrowseState.page>=totalPages-1?'disabled':'')+'>下一页 →</button>' +
       '</div></div>'
-    : '<div class="domain-pagination"><span class="domain-page-info">共 '+filtered.length+' 条</span></div>';
+    : '<div class="domain-pagination"><span class="domain-page-info">共 '+allEntries_count+' 条</span></div>';
 
   // 设置弹窗
   document.getElementById('modalIcon').textContent = d.icon;
@@ -1148,15 +1162,35 @@ function renderDomainBrowser(){
   document.getElementById('entryModal').classList.add('active');
 }
 
-function filterSubScene(scene){
+async function filterSubScene(scene){
   domainBrowseState.subScene = scene;
   domainBrowseState.page = 0;
+  const d = domainBrowseState.domain;
+  if(!d) return;
+  domainBrowseState.loading = true;
   renderDomainBrowser();
+  try{
+    const params = new URLSearchParams({domain: d.code, limit: String(domainBrowseState.perPage), offset: '0'});
+    if(scene) params.set('subScene', scene);
+    const resp = await fetch('/api/entries?'+params.toString());
+    const data = await resp.json();
+    domainBrowseState.entries = data.entries||[];
+    domainBrowseState.total = data.total||0;
+    domainBrowseState.subSceneMeta = data.subscenes||[];
+    (data.entries||[]).forEach(e=>{ allEntriesMap[e.id]=e; });
+    domainBrowseState.loading = false;
+    renderDomainBrowser();
+  }catch(e){
+    domainBrowseState.loading = false;
+    renderDomainBrowser();
+  }
 }
 
-function changePage(delta){
-  domainBrowseState.page += delta;
-  renderDomainBrowser();
+async function changePage(delta){
+  const newPage = domainBrowseState.page + delta;
+  const totalPages = Math.max(1, Math.ceil((domainBrowseState.total||0) / domainBrowseState.perPage));
+  if(newPage < 0 || newPage >= totalPages) return;
+  await loadDomainPage(newPage);
 }
 
 function escapeHtml(text){

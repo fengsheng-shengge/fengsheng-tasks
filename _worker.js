@@ -1,5 +1,5 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260801-1930 - perf: fix knowledge-stats samples, top3 domains, cache v4
+// Version: v20260801-1945 - perf: subScene filter, pagination, sub-scene metadata in manifest
 //   + D1 database integration (stats, events, feedback)
 //   + Coze AI chat streaming
 //   + WeChat login with JWT
@@ -985,9 +985,11 @@ async function handleEntries(request, env, ctx) {
   const parsedLimit = limitParam !== null ? parseInt(limitParam, 10) : 50;
   const limit = isNaN(parsedLimit) ? 50 : (parsedLimit === 0 ? 0 : Math.min(parsedLimit, 200));
   const offset = Math.max(parseInt(url.searchParams.get('offset') || '0') || 0, 0);
+  const subSceneParam = url.searchParams.get('subScene') || null;
 
   // Cache API
-  const cacheKey = new Request('https://cache.local/v4/api/entries' + url.search);
+  const cacheKeyStr = `https://cache.local/v4/api/entries?domain=${domainParam || ''}&limit=${limit}&offset=${offset}&subScene=${subSceneParam || ''}`;
+  const cacheKey = new Request(cacheKeyStr);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -997,27 +999,46 @@ async function handleEntries(request, env, ctx) {
   if (domainParam) {
     entries = await loadDomainEntries(env, domainParam);
   } else {
-    // No domain specified: return metadata only (total from manifest)
-    // Consumers should use /api/entries?domain=xxx for actual data
     entries = [];
   }
 
-  let result = entries;
-  const total = domainParam ? entries.length : (await loadManifest(env))?.total || 0;
+  // Sub-scene metadata from manifest (fast, no extra loading)
+  const manifest = await loadManifest(env);
+  let subscenes = [];
+  if (domainParam && manifest && manifest.subscenes) {
+    subscenes = manifest.subscenes[domainParam] || [];
+  }
+
+  // Apply sub-scene filter if specified
+  let filteredEntries = entries;
+  if (subSceneParam) {
+    filteredEntries = entries.filter(e => e.subScene === subSceneParam);
+  }
+
+  const total = filteredEntries.length;
+  let result = filteredEntries;
   if (limit > 0) {
     result = result.slice(offset, offset + limit);
   } else if (offset > 0) {
     result = result.slice(offset);
   }
-  const resp = jsonResponse({
+
+  const respData = {
     total,
     returned: result.length,
     offset,
     limit: limit || null,
     domain: domainParam || null,
+    subScene: subSceneParam,
     entries: result,
+    subscenes,
     hint: domainParam ? null : 'Specify ?domain=xxx to load entries for a specific domain',
-  });
+  };
+  // Remove null fields
+  if (!domainParam) delete respData.subscenes;
+  if (!subSceneParam) delete respData.subScene;
+
+  const resp = jsonResponse(respData);
   const cachedResp = new Response(resp.body, resp);
   cachedResp.headers.set('Cache-Control', 'public, max-age=300, s-maxage=600');
   addETag(cachedResp, await computeEntriesETag(env));
