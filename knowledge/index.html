@@ -891,56 +891,34 @@ function getDomainDesc(domain){
 /* ===== 动态词条计数 ===== */
 async function loadEntriesData(){
   try{
-    // Use cached API endpoint instead of direct file access (#210 perf fix)
-    const resp=await fetch('/api/entries?limit=0');
+    // Load manifest only (fast, no need for full entries)
+    const resp=await fetch('/api/knowledge-stats');
     if(!resp.ok) return;
     const data=await resp.json();
-    const entries=data.entries||[];
-    // #181 fix: 存入全局变量供showDomainModal/openEntry使用
-    allEntries = entries;
-    allEntriesMap = {};
-    entries.forEach(e => { allEntriesMap[e.id] = e; });
 
-    // 动态构建 businessDomains（从 entries.json 实际 domain 字段）
-    const domainCounts={};
-    const domainSamples={}; // 每个域存5个样本词条
-    entries.forEach(e=>{
-      const d=e.domain||'unknown';
-      domainCounts[d]=(domainCounts[d]||0)+1;
-      if(!domainSamples[d]) domainSamples[d]=[];
-      if(domainSamples[d].length<5) domainSamples[d].push(e);
-    });
-
-    // 按词条数降序排列域
-    const sortedDomains = Object.entries(domainCounts)
-      .sort((a,b)=>b[1]-a[1])
-      .filter(([d])=>d!=='unknown');
-
-    businessDomains = sortedDomains.map(([domain,count])=>{
-      const cfg = DOMAIN_CONFIG[domain] || { icon:'📄', title:domain, desc:'' };
-      const samples = domainSamples[domain] || [];
+    // Build businessDomains from manifest
+    businessDomains = data.domains.map(d=>{
+      const cfg = DOMAIN_CONFIG[d.domain] || { icon:'📄', title:d.domain, desc:'' };
       return {
-        code: domain,
+        code: d.domain,
         title: cfg.title,
         icon: cfg.icon,
         desc: cfg.desc,
-        count: count,
-        sample_words: samples.map(e=>e.name||e.title||e.id),
-        sample_ids: samples.map(e=>e.id),
-        more_count: Math.max(0, count - samples.length),
+        count: d.count,
+        sample_words: d.samples || [],
+        sample_ids: (d.samples || []).map(e=>e.id||e),
+        more_count: Math.max(0, d.count - (d.samples||[]).length),
       };
     });
 
-    totalEntries = entries.length;
-    totalDomains = businessDomains.length;
+    totalEntries = data.total_entries;
+    totalDomains = data.total_domains;
 
-    // 更新 badge/stats
     updateDomainStats();
-    // 重新渲染
     renderDomains();
-    console.log('✅ 词条动态加载完成:', totalEntries, '条,', totalDomains, '个域');
+    console.log('✅ 词条清单加载完成:', totalEntries, '条,', totalDomains, '个域 (按需加载模式)');
   }catch(e){
-    console.warn('⚠️ 动态加载 /api/entries 失败',e);
+    console.warn('⚠️ 加载 knowledge-stats 失败',e);
   }
 }
 
@@ -1050,15 +1028,30 @@ function openEntry(entryId){
 /* ===== 域浏览器状态 ===== */
 let domainBrowseState = { domain: null, page: 0, perPage: 20, subScene: null, filtered: [] };
 
-function showDomainModal(domain){
-  domainBrowseState = { domain: domain, page: 0, perPage: 20, subScene: null, filtered: [] };
-  renderDomainBrowser();
+async function showDomainModal(domain){
+  domainBrowseState = { domain: domain, page: 0, perPage: 20, subScene: null, filtered: [], entries: [], loading: true };
+  renderDomainBrowser(); // Show loading state
+  try{
+    const resp=await fetch('/api/entries?domain='+encodeURIComponent(domain.code)+'&limit=0');
+    const data=await resp.json();
+    domainBrowseState.entries = data.entries||[];
+    // Accumulate into global map for openEntry lookup
+    (data.entries||[]).forEach(e=>{ allEntriesMap[e.id]=e; });
+    domainBrowseState.loading = false;
+    filterDomainEntries();
+    renderDomainBrowser();
+  }catch(e){
+    domainBrowseState.loading = false;
+    renderDomainBrowser();
+    console.warn('加载域词条失败',e);
+  }
 }
 
 function getSubScenes(domainCode){
   const scenes = {};
-  allEntries.forEach(e=>{
-    if(e.domain===domainCode && e.subScene){
+  const entries = domainBrowseState.entries||[];
+  entries.forEach(e=>{
+    if(e.subScene){
       scenes[e.subScene] = (scenes[e.subScene]||0)+1;
     }
   });
@@ -1068,7 +1061,7 @@ function getSubScenes(domainCode){
 function filterDomainEntries(){
   const d = domainBrowseState.domain;
   if(!d) return;
-  let entries = allEntries.filter(e=>e.domain===d.code);
+  let entries = domainBrowseState.entries||[];
   if(domainBrowseState.subScene){
     entries = entries.filter(e=>e.subScene===domainBrowseState.subScene);
   }
@@ -1078,9 +1071,25 @@ function filterDomainEntries(){
 function renderDomainBrowser(){
   const d = domainBrowseState.domain;
   if(!d) return;
+
+  // Loading state
+  if(domainBrowseState.loading){
+    document.getElementById('modalIcon').textContent = d.icon;
+    document.getElementById('modalTitle').textContent = d.title;
+    document.getElementById('modalId').textContent = '加载中...';
+    document.getElementById('modalDef').innerHTML = '<div style="text-align:center;padding:40px;color:var(--ink-soft)">⏳ 加载词条中...</div>';
+    document.getElementById('modalDef').style.display = 'block';
+    const prosconsSection = document.querySelector('#entryModal .proscons').closest('.modal-section');
+    if(prosconsSection) prosconsSection.style.display = 'none';
+    const ctaSection = document.querySelector('#entryModal .modal-cta');
+    if(ctaSection) ctaSection.style.display = 'none';
+    document.getElementById('entryModal').classList.add('active');
+    return;
+  }
+
   filterDomainEntries();
 
-  const allEntries_count = allEntries.filter(e=>e.domain===d.code).length;
+  const allEntries_count = domainBrowseState.entries.length;
   const filtered = domainBrowseState.filtered;
   const totalPages = Math.max(1, Math.ceil(filtered.length / domainBrowseState.perPage));
   if(domainBrowseState.page >= totalPages) domainBrowseState.page = totalPages - 1;
@@ -1195,56 +1204,42 @@ function showEntry(data){
 }
 
 /* ===== 搜索结果列表 ===== */
-function doSearch(query){
+async function doSearch(query){
   const input=document.getElementById('searchInput');
   input.value=query;
   const q=query.toLowerCase().trim();
   if(!q) return;
 
-  // 搜索 allEntriesMap
-  const results = [];
-  for(const e of allEntries){
-    const text=[
-      e.name||e.title||'',
-      e.def||'',
-      e.consumerQ||'',
-      e.simpleAnswer||'',
-      e.posSpeech||'',
-      e.negSpeech||'',
-      e.alias ? (Array.isArray(e.alias) ? e.alias.join(' ') : e.alias) : '',
-      e.subScene||'',
-      e.domain||''
-    ].join(' ').toLowerCase();
-    if(text.includes(q)){
-      results.push(e);
-      if(results.length >= 100) break; // 最多100条结果
+  // Server-side search (fast, no need to load all entries)
+  try{
+    const resp=await fetch('/api/search?q='+encodeURIComponent(q));
+    const data=await resp.json();
+    const results=data.results||[];
+
+    // Accumulate into global map for openEntry lookup
+    results.forEach(e=>{ allEntriesMap[e.id]=e; });
+
+    if(results.length===0){
+      showSearchResults(query, []);
+      return;
     }
-  }
-
-  // 也搜 entryDatabase 兜底
-  if(results.length === 0){
-    for(const[id,d] of Object.entries(entryDatabase)){
-      const text=[d.title,d.def||'',d.consumer||'',d.servicer||''].join(' ').toLowerCase();
-      if(text.includes(q)){ results.push({id, ...d}); break; }
+    if(results.length===1){
+      const e=results[0];
+      const entryIcon = e.icon || getDomainIcon(e.domain) || '📄';
+      showEntryDetail({
+        icon: entryIcon,
+        title: e.title || e.name || e.id,
+        id: e.id,
+        def: e.def||'',
+        consumer: e.consumer||e.consumerQ||'',
+        servicer: e.servicer||e.simpleAnswer||'',
+      });
+      return;
     }
+    showSearchResults(query, results);
+  }catch(e){
+    console.warn('服务器搜索失败', e);
   }
-
-  if(results.length === 0){
-    // 没有匹配，切换到相关柱
-    if(q.includes('物质')||q.includes('安全')||q.includes('健康')||q.includes('美好居住')||q.includes('三层')) switchPillar('mission');
-    else if(q.includes('人生')||q.includes('阶段')||q.includes('学区')||q.includes('适老')) switchPillar('vision');
-    else if(q.includes('服务者')||q.includes('岗位')||q.includes('能力')) switchPillar('value');
-    else switchPillar('culture');
-    return;
-  }
-
-  if(results.length === 1){
-    openEntry(results[0].id);
-    return;
-  }
-
-  // 多条结果：显示搜索结果列表
-  showSearchResults(query, results);
 }
 
 function showSearchResults(query, results){
@@ -1282,7 +1277,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeEntry()});
 
 /* ===== Init ===== */
 renderDomains();
-loadEntriesData();  // 动态从 /api/entries 加载实际词条数
+loadEntriesData();  // 动态从 /api/knowledge-stats 加载 (按需加载模式)
 renderRoles();
 renderQualityCards();
 </script>

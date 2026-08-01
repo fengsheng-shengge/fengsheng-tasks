@@ -1,5 +1,5 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260801-1830 - perf: entries pagination+cache, 404 fix, data file block
+// Version: v20260801-1900 - perf: per-domain split, server-side search, ETag
 //   + D1 database integration (stats, events, feedback)
 //   + Coze AI chat streaming
 //   + WeChat login with JWT
@@ -731,7 +731,7 @@ async function handleStatsHealth(request, env) {
         events_count: count24h?.cnt || 0,
         feedback_count: feedbackCount?.cnt || 0,
         updated: now,
-        version: 'v20260801-1830',
+        version: 'v20260801-1900',
       });
     } catch (e) {
       return jsonResponse({ status: 'degraded', db: 'error', db_connected: false, error: e.message, updated: now });
@@ -898,51 +898,112 @@ async function handleIpDesign(request, env) {
 }
 
 // ============================================================
-//  Knowledge base entries (issue #210: /api/entries endpoint)
+//  Knowledge base entries (per-domain loading + search + ETag)
 // ============================================================
 
-// Isolate-level cache: avoid re-parsing 10MB JSON on every request
-let _entriesCache = null;
-let _entriesCacheTime = 0;
-const ENTRIES_CACHE_TTL = 300_000; // 5 minutes
+// Per-domain file cache (isolate-level, 10 min TTL)
+const _domainCache = new Map();     // domain → entries[]
+let _manifestCache = null;
+let _manifestCacheTime = 0;
+const DOMAIN_CACHE_TTL = 600_000;   // 10 minutes
 
-async function loadEntriesFromAssets(env) {
-  if (_entriesCache && Date.now() - _entriesCacheTime < ENTRIES_CACHE_TTL) {
-    return _entriesCache;
+async function loadManifest(env) {
+  if (_manifestCache && Date.now() - _manifestCacheTime < DOMAIN_CACHE_TTL) {
+    return _manifestCache;
   }
   try {
-    const assetReq = new Request('https://fakehost/data/entries.json');
-    const resp = await env.ASSETS.fetch(assetReq);
-    if (!resp.ok) return [];
-    const text = await resp.text();
-    _entriesCache = JSON.parse(text);
-    _entriesCacheTime = Date.now();
-    return _entriesCache;
+    const resp = await env.ASSETS.fetch(new Request('https://fakehost/data/domains/_manifest.json'));
+    if (!resp.ok) return null;
+    _manifestCache = await resp.json();
+    _manifestCacheTime = Date.now();
+    return _manifestCache;
   } catch (e) {
-    console.error('loadEntriesFromAssets failed:', e.message);
+    console.error('loadManifest failed:', e.message);
+    return null;
+  }
+}
+
+async function loadDomainEntries(env, domain) {
+  const cached = _domainCache.get(domain);
+  if (cached && Date.now() - cached.time < DOMAIN_CACHE_TTL) {
+    return cached.entries;
+  }
+  try {
+    const manifest = await loadManifest(env);
+    if (!manifest || !manifest.files[domain]) return [];
+    const filename = manifest.files[domain];
+    const resp = await env.ASSETS.fetch(new Request(`https://fakehost/data/domains/${filename}`));
+    if (!resp.ok) return [];
+    const entries = await resp.json();
+    _domainCache.set(domain, { entries, time: Date.now() });
+    return entries;
+  } catch (e) {
+    console.error(`loadDomainEntries(${domain}) failed:`, e.message);
     return [];
   }
 }
 
+// Legacy: load all entries (fallback, used by search)
+async function loadAllEntries(env) {
+  try {
+    const manifest = await loadManifest(env);
+    if (!manifest) return [];
+    const all = [];
+    const domains = manifest.domains || [];
+    // Load in parallel, 4 at a time
+    for (let i = 0; i < domains.length; i += 4) {
+      const batch = domains.slice(i, i + 4).map(d => loadDomainEntries(env, d));
+      const results = await Promise.all(batch);
+      results.forEach(r => r.forEach(e => all.push(e)));
+    }
+    return all;
+  } catch (e) {
+    console.error('loadAllEntries failed:', e.message);
+    return [];
+  }
+}
+
+// ETag: simple hash from entries count + domain list
+async function computeEntriesETag(env) {
+  const manifest = await loadManifest(env);
+  if (!manifest) return null;
+  return `"${manifest.total}-${Object.keys(manifest.counts).length}"`;
+}
+
+function addETag(resp, etag) {
+  if (etag) {
+    resp.headers.set('ETag', etag);
+    resp.headers.set('Vary', 'Accept-Encoding');
+  }
+  return resp;
+}
+
 async function handleEntries(request, env, ctx) {
   const url = new URL(request.url);
-  const domain = url.searchParams.get('domain');
-  // Default to 50 entries; limit=0 explicitly requests all (for knowledge page)
-  // Note: 0 is falsy in JS, so we can't use || — must check explicitly
+  const domainParam = url.searchParams.get('domain');
   const limitParam = url.searchParams.get('limit');
   const parsedLimit = limitParam !== null ? parseInt(limitParam, 10) : 50;
   const limit = isNaN(parsedLimit) ? 50 : (parsedLimit === 0 ? 0 : Math.min(parsedLimit, 200));
   const offset = Math.max(parseInt(url.searchParams.get('offset') || '0') || 0, 0);
 
-  // Cache API: avoid re-fetching + re-parsing on repeated calls
-  const cacheKey = new Request('https://cache.local/v2/api/entries' + url.search);
+  // Cache API
+  const cacheKey = new Request('https://cache.local/v3/api/entries' + url.search);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
-  const entries = await loadEntriesFromAssets(env);
-  let result = domain ? entries.filter(e => e.domain === domain) : entries;
-  const total = result.length;
+  // Per-domain loading: only load the requested domain
+  let entries;
+  if (domainParam) {
+    entries = await loadDomainEntries(env, domainParam);
+  } else {
+    // Load manifest for stats, but only load entries if needed
+    const manifest = await loadManifest(env);
+    entries = []; // Don't load all entries by default — only return metadata
+  }
+
+  let result = entries;
+  const total = domainParam ? entries.length : (await loadManifest(env))?.total || 0;
   if (limit > 0) {
     result = result.slice(offset, offset + limit);
   } else if (offset > 0) {
@@ -953,44 +1014,101 @@ async function handleEntries(request, env, ctx) {
     returned: result.length,
     offset,
     limit: limit || null,
-    domain: domain || null,
+    domain: domainParam || null,
     entries: result,
   });
-  // Cache for 5 min at edge, 10 min in browser
   const cachedResp = new Response(resp.body, resp);
   cachedResp.headers.set('Cache-Control', 'public, max-age=300, s-maxage=600');
+  addETag(cachedResp, await computeEntriesETag(env));
   if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
   return cachedResp;
 }
 
 async function handleKnowledgeStats(request, env, ctx) {
-  // Cache API: stats change rarely, cache 10 min
   const cache = caches.default;
-  const cacheKey = new Request('https://cache.local/v2/api/knowledge-stats');
+  const cacheKey = new Request('https://cache.local/v3/api/knowledge-stats');
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
-  const entries = await loadEntriesFromAssets(env);
-  const domains = {};
-  for (const e of entries) {
-    const d = e.domain || 'unknown';
-    if (!domains[d]) domains[d] = { count: 0, samples: [] };
-    domains[d].count++;
-    if (domains[d].samples.length < 3) {
-      domains[d].samples.push(e.name || e.title || e.id);
-    }
+  // Use manifest only — no need to load any entries
+  const manifest = await loadManifest(env);
+  if (!manifest) {
+    return jsonResponse({ total_entries: 0, total_domains: 0, domains: [], updated: new Date().toISOString() });
   }
-  const domainList = Object.entries(domains)
-    .map(([domain, info]) => ({ domain, count: info.count, samples: info.samples }))
-    .sort((a, b) => b.count - a.count);
+  // Load just the first domain to get samples (lightweight)
+  const firstDomain = manifest.domains[0];
+  const sampleEntries = firstDomain ? await loadDomainEntries(env, firstDomain) : [];
+  const domains = manifest.domains.map(d => ({
+    domain: d,
+    count: manifest.counts[d] || 0,
+    samples: (sampleEntries.length > 0 && d === firstDomain)
+      ? sampleEntries.slice(0, 3).map(e => e.name || e.title || e.id)
+      : [],
+  })).sort((a, b) => b.count - a.count);
+
   const resp = jsonResponse({
-    total_entries: entries.length,
-    total_domains: domainList.length,
-    domains: domainList,
+    total_entries: manifest.total,
+    total_domains: manifest.domains.length,
+    domains,
     updated: new Date().toISOString(),
   });
   const cachedResp = new Response(resp.body, resp);
   cachedResp.headers.set('Cache-Control', 'public, max-age=600, s-maxage=1800');
+  addETag(cachedResp, await computeEntriesETag(env));
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
+}
+
+// Server-side search (issue #215): search across all domains
+async function handleSearch(request, env, ctx) {
+  const url = new URL(request.url);
+  const q = (url.searchParams.get('q') || '').toLowerCase().trim();
+  if (!q || q.length < 1) {
+    return jsonResponse({ query: '', results: [], total: 0, hint: 'Provide ?q=keyword' });
+  }
+
+  const cacheKey = new Request('https://cache.local/v3/api/search?q=' + encodeURIComponent(q.slice(0, 20)));
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  const manifest = await loadManifest(env);
+  if (!manifest) return jsonResponse({ query: q, results: [], total: 0 });
+
+  const results = [];
+  const maxResults = 100;
+  const domains = manifest.domains || [];
+
+  for (const domain of domains) {
+    if (results.length >= maxResults) break;
+    const entries = await loadDomainEntries(env, domain);
+    for (const e of entries) {
+      if (results.length >= maxResults) break;
+      const text = [
+        e.name || e.title || '',
+        e.def || '',
+        e.consumerQ || '',
+        e.simpleAnswer || '',
+        e.posSpeech || '',
+        e.negSpeech || '',
+        e.alias ? (Array.isArray(e.alias) ? e.alias.join(' ') : e.alias) : '',
+        e.subScene || '',
+        e.domain || '',
+      ].join(' ').toLowerCase();
+      if (text.includes(q)) {
+        results.push(e);
+      }
+    }
+  }
+
+  const resp = jsonResponse({
+    query: q,
+    results,
+    total: results.length,
+    updated: new Date().toISOString(),
+  });
+  const cachedResp = new Response(resp.body, resp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=120, s-maxage=300');
   if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
   return cachedResp;
 }
@@ -1207,6 +1325,7 @@ export default {
     // Knowledge base entries (issue #210)
     if (path === '/api/entries') return handleEntries(request, env, ctx);
     if (path === '/api/knowledge-stats') return handleKnowledgeStats(request, env, ctx);
+    if (path === '/api/search') return handleSearch(request, env, ctx);
 
     // wx-login alias (issue #210: /api/wx-login → /api/auth/wx-login)
     if (path === '/api/wx-login' && request.method === 'POST') {
@@ -1325,11 +1444,12 @@ export default {
       return jsonResponse({ error: 'Not found', path }, 404);
     }
 
-    // Block direct access to large data files — use API endpoints instead
-    if (path === '/data/entries.json') {
+    // Block direct access to data files — use API endpoints instead
+    if (path === '/data/entries.json' || path.startsWith('/data/domains/')) {
       return jsonResponse({
         error: 'Direct file access forbidden',
-        hint: 'Use /api/entries?limit=50&offset=0 for paginated results',
+        hint: 'Use /api/entries?domain=xxx&limit=50 for paginated results',
+        search: 'Use /api/search?q=keyword for server-side search',
         docs: 'Use /api/knowledge-stats for domain statistics',
       }, 403);
     }
