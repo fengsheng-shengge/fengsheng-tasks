@@ -891,9 +891,11 @@ function getDomainDesc(domain){
 /* ===== 动态词条计数 ===== */
 async function loadEntriesData(){
   try{
-    const resp=await fetch('/data/entries.json');
+    // Use cached API endpoint instead of direct file access (#210 perf fix)
+    const resp=await fetch('/api/entries?limit=0');
     if(!resp.ok) return;
-    const entries=await resp.json();
+    const data=await resp.json();
+    const entries=data.entries||[];
     // #181 fix: 存入全局变量供showDomainModal/openEntry使用
     allEntries = entries;
     allEntriesMap = {};
@@ -938,7 +940,7 @@ async function loadEntriesData(){
     renderDomains();
     console.log('✅ 词条动态加载完成:', totalEntries, '条,', totalDomains, '个域');
   }catch(e){
-    console.warn('⚠️ 动态加载 entries.json 失败',e);
+    console.warn('⚠️ 动态加载 /api/entries 失败',e);
   }
 }
 
@@ -1280,7 +1282,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeEntry()});
 
 /* ===== Init ===== */
 renderDomains();
-loadEntriesData();  // 动态从 data/entries.json 加载实际词条数
+loadEntriesData();  // 动态从 /api/entries 加载实际词条数
 renderRoles();
 renderQualityCards();
 </script>

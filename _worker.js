@@ -1,5 +1,5 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260731-0330 - add /api/entries, /api/knowledge-stats, /api/wx-login alias
+// Version: v20260801-1830 - perf: entries pagination+cache, 404 fix, data file block
 //   + D1 database integration (stats, events, feedback)
 //   + Coze AI chat streaming
 //   + WeChat login with JWT
@@ -901,36 +901,53 @@ async function handleIpDesign(request, env) {
 //  Knowledge base entries (issue #210: /api/entries endpoint)
 // ============================================================
 
+// Isolate-level cache: avoid re-parsing 10MB JSON on every request
+let _entriesCache = null;
+let _entriesCacheTime = 0;
+const ENTRIES_CACHE_TTL = 300_000; // 5 minutes
+
 async function loadEntriesFromAssets(env) {
+  if (_entriesCache && Date.now() - _entriesCacheTime < ENTRIES_CACHE_TTL) {
+    return _entriesCache;
+  }
   try {
     const assetReq = new Request('https://fakehost/data/entries.json');
     const resp = await env.ASSETS.fetch(assetReq);
     if (!resp.ok) return [];
     const text = await resp.text();
-    return JSON.parse(text);
+    _entriesCache = JSON.parse(text);
+    _entriesCacheTime = Date.now();
+    return _entriesCache;
   } catch (e) {
     console.error('loadEntriesFromAssets failed:', e.message);
     return [];
   }
 }
 
-async function handleEntries(request, env) {
+async function handleEntries(request, env, ctx) {
   const url = new URL(request.url);
   const domain = url.searchParams.get('domain');
-  const limit = Math.min(parseInt(url.searchParams.get('limit') || '0') || 0, 200);
+  // Default to 50 entries; limit=0 explicitly requests all (for knowledge page)
+  const hasExplicitLimit = url.searchParams.has('limit');
+  const rawLimit = parseInt(url.searchParams.get('limit') || '50') || 50;
+  const limit = rawLimit === 0 ? 0 : Math.min(rawLimit, 200);
   const offset = Math.max(parseInt(url.searchParams.get('offset') || '0') || 0, 0);
+
+  // Cache API: avoid re-fetching + re-parsing on repeated calls
+  const cacheKey = new Request('https://cache.local/api/entries' + url.search);
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
   const entries = await loadEntriesFromAssets(env);
-  let result = entries;
-  if (domain) {
-    result = entries.filter(e => e.domain === domain);
-  }
+  let result = domain ? entries.filter(e => e.domain === domain) : entries;
   const total = result.length;
   if (limit > 0) {
     result = result.slice(offset, offset + limit);
   } else if (offset > 0) {
     result = result.slice(offset);
   }
-  return jsonResponse({
+  const resp = jsonResponse({
     total,
     returned: result.length,
     offset,
@@ -938,9 +955,20 @@ async function handleEntries(request, env) {
     domain: domain || null,
     entries: result,
   });
+  // Cache for 5 min at edge, 10 min in browser
+  const cachedResp = new Response(resp.body, resp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=300, s-maxage=600');
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
 }
 
-async function handleKnowledgeStats(request, env) {
+async function handleKnowledgeStats(request, env, ctx) {
+  // Cache API: stats change rarely, cache 10 min
+  const cache = caches.default;
+  const cacheKey = new Request('https://cache.local/api/knowledge-stats');
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
   const entries = await loadEntriesFromAssets(env);
   const domains = {};
   for (const e of entries) {
@@ -954,12 +982,16 @@ async function handleKnowledgeStats(request, env) {
   const domainList = Object.entries(domains)
     .map(([domain, info]) => ({ domain, count: info.count, samples: info.samples }))
     .sort((a, b) => b.count - a.count);
-  return jsonResponse({
+  const resp = jsonResponse({
     total_entries: entries.length,
     total_domains: domainList.length,
     domains: domainList,
     updated: new Date().toISOString(),
   });
+  const cachedResp = new Response(resp.body, resp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=600, s-maxage=1800');
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
 }
 
 // ============================================================
@@ -1172,8 +1204,8 @@ export default {
     if (path === '/api/ip-design') return handleIpDesign(request, env);
 
     // Knowledge base entries (issue #210)
-    if (path === '/api/entries') return handleEntries(request, env);
-    if (path === '/api/knowledge-stats') return handleKnowledgeStats(request, env);
+    if (path === '/api/entries') return handleEntries(request, env, ctx);
+    if (path === '/api/knowledge-stats') return handleKnowledgeStats(request, env, ctx);
 
     // wx-login alias (issue #210: /api/wx-login → /api/auth/wx-login)
     if (path === '/api/wx-login' && request.method === 'POST') {
@@ -1292,8 +1324,25 @@ export default {
       return jsonResponse({ error: 'Not found', path }, 404);
     }
 
+    // Block direct access to large data files — use API endpoints instead
+    if (path === '/data/entries.json') {
+      return jsonResponse({
+        error: 'Direct file access forbidden',
+        hint: 'Use /api/entries?limit=50&offset=0 for paginated results',
+        docs: 'Use /api/knowledge-stats for domain statistics',
+      }, 403);
+    }
+
     // All other requests → static assets (with security headers)
     const assetResp = await env.ASSETS.fetch(request);
+    // Fix: return proper 404 for non-existent paths (not SPA 200 fallback)
+    if (assetResp.status === 404) {
+      const notFoundHtml = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>404 · 页面不存在</title><style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#0f172a;color:#e2e8f0}h1{font-size:48px;margin:0}p{color:#94a3b8}a{color:#60a5fa}</style></head><body><div style="text-align:center"><h1>404</h1><p>页面不存在</p><a href="/">← 返回首页</a></div></body></html>';
+      return applySecurityHeaders(new Response(notFoundHtml, {
+        status: 404,
+        headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' },
+      }), true);
+    }
     const contentType = assetResp.headers.get('Content-Type') || '';
     const isHtml = contentType.includes('text/html');
     return applySecurityHeaders(assetResp, isHtml);
