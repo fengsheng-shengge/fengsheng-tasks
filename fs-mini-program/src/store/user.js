@@ -47,6 +47,7 @@ export const useUserStore = defineStore('user', {
     contributions: [], // [{type, entryId, status, timestamp}]
     // ===== V2.1.1a 新增：客户档案 / 策展库 / 测评 / 任务完成态 =====
     clients: [], // [{id, surname, name, rel, stage, pkey, persona, status, asset, level, addr, note, seed, followups[], timeline[], memoryPoints[]}]
+    seeded: false, // 首次启动是否已写入示例客户（避免用户删光后又被重新塞回示例）
     focusClientId: null, // V2.7：首页「今日跟进」直达客户详情（tabBar 页无法 URL 带参，改走 store）
     curatings: [], // [{id, clientId, t, s, ts}]
     assessments: [], // [{id, ts}]
@@ -89,6 +90,7 @@ export const useUserStore = defineStore('user', {
       uni.setStorageSync('fs_assessments', JSON.stringify(this.assessments))
       uni.setStorageSync('fs_done_flags', JSON.stringify(this.doneFlags))
       uni.setStorageSync('fs_shares', this.shares)
+      uni.setStorageSync('fs_seeded', this.seeded)
     },
 
     async login() {
@@ -143,8 +145,9 @@ export const useUserStore = defineStore('user', {
       try { this.assessments = JSON.parse(uni.getStorageSync('fs_assessments') || '[]') } catch { this.assessments = [] }
       try { this.doneFlags = JSON.parse(uni.getStorageSync('fs_done_flags') || '{}') } catch { this.doneFlags = {} }
       this.shares = uni.getStorageSync('fs_shares') || 0
-      // 首次启动（无缓存）seed 4 个示例客户，让经纪人看到"可录入"的样子
-      if (this.clients.length === 0) this.seedClients()
+      this.seeded = uni.getStorageSync('fs_seeded') || false
+      // 首次启动（无缓存、且此前未 seed 过）写入 4 个示例客户，让经纪人看到"可录入"的样子
+      if (!this.seeded && this.clients.length === 0) this.seedClients()
     },
 
     /** 首次启动写入 4 个示例客户（标记 seed，可删可改） */
@@ -156,6 +159,7 @@ export const useUserStore = defineStore('user', {
         { surname: '陈', name: '陈同学（租客）', rel: '租客', stage: '租住线 / ②改善', pkey: 'green', persona: '🟢 理智型', status: '跟进中', asset: '工作调动，租住改善中', level: 'C', addr: '', note: '工作调动近地铁', seed: true }
       ]
       this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c, followups: c.followups || [], timeline: c.timeline || [], memoryPoints: c.memoryPoints || [], cognition: c.cognition || { log: [] } }))
+      this.seeded = true
       this._persist()
     },
 

@@ -164,7 +164,8 @@ export default {
   onShow() {
     // 兜底 seed：极端情况（mp-weixin 真机冷启动 onLaunch 时序、storage 异常清空）导致
     // clients 仍为空时，进入 tab 时再补一次 seed，避免「完全空白、连 empty 文案也看不到」。
-    if (this.userStore.clients.length === 0) this.userStore.seedClients()
+    // 已 seed 过（含用户主动删光）则不再塞回，让空态真实可达。
+    if (!this.userStore.seeded && this.userStore.clients.length === 0) this.userStore.seedClients()
     const fid = this.userStore.focusClientId
     if (fid) {
       this.userStore.focusClientId = null
@@ -275,7 +276,7 @@ export default {
 .st-ing { background: #fff4ec; color: #c46a3a; }
 .st-done { background: #eef6ef; color: #3a8f5b; }
 .st-lost { background: #f0f0f0; color: #999; }
-.overlay { position: fixed; inset: 0; background: #fff; transform: translateX(100%); transition: transform .25s ease; z-index: 50; display: flex; flex-direction: column; }
+.overlay { position: fixed; inset: 0; background: #fff; transform: translateX(100%); transition: transform .25s ease; z-index: 1000; display: flex; flex-direction: column; }
 .overlay.active { transform: translateX(0); }
 .ov-nav { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid #efe9dd; }
 .back { margin: 0; width: 34px; height: 34px; border-radius: 50%; background: #f0ece2; color: #3d5a3e; font-size: 20px; line-height: 1; padding: 0; }
