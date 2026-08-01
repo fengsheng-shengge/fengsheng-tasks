@@ -492,7 +492,7 @@ async function handleWxQrCode(request, env) {
       return new Response(imageBuffer, {
         status: 200,
         headers: {
-          'Content-Type': 'image/png',
+          'Content-Type': contentType,
           'Cache-Control': 'public, max-age=86400',
           'Access-Control-Allow-Origin': '*',
         },
