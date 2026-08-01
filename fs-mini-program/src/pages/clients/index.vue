@@ -6,7 +6,12 @@
       <button class="add-btn" @tap="openForm()">＋ 新建</button>
     </view>
 
-    <view v-if="list.length === 0" class="empty">还没有客户，点右上角「＋ 新建」建立第一个。</view>
+    <view v-if="list.length === 0" class="empty">
+      <view class="empty-ico">👥</view>
+      <view class="empty-t">还没有客户档案</view>
+      <view class="empty-s">从第一个开始，让每一次见面都有据可依</view>
+      <button class="empty-btn" @tap="openForm()">＋ 立即建立第一个客户</button>
+    </view>
 
     <view class="client-card" v-for="c in list" :key="c.id" @tap="openDetail(c)">
       <view class="avatar">{{ c.surname }}</view>
@@ -157,6 +162,9 @@ export default {
   // V2.7：客户档案已提升为 tabBar 页，tabBar 页无法 URL 带参。
   // 首页「今日跟进」改将目标客户写入 store.focusClientId，此处 onShow 读取并打开详情后清空。
   onShow() {
+    // 兜底 seed：极端情况（mp-weixin 真机冷启动 onLaunch 时序、storage 异常清空）导致
+    // clients 仍为空时，进入 tab 时再补一次 seed，避免「完全空白、连 empty 文案也看不到」。
+    if (this.userStore.clients.length === 0) this.userStore.seedClients()
     const fid = this.userStore.focusClientId
     if (fid) {
       this.userStore.focusClientId = null
@@ -248,7 +256,12 @@ export default {
 .section-title { font-size: 18px; font-weight: 800; color: #3d5a3e; }
 .section-more { font-size: 12px; color: #C8956D; flex: 1; }
 .add-btn { margin: 0; padding: 6px 14px; background: #3d5a3e; color: #fff; font-size: 13px; border-radius: 20px; line-height: 1.6; }
-.empty { background: #fff; border: 1px dashed #e7e0d4; border-radius: 12px; padding: 24px; text-align: center; color: #999; font-size: 13px; }
+.empty { background: #fff; border: 1px dashed #e7e0d4; border-radius: 12px; padding: 32px 20px; text-align: center; color: #999; font-size: 13px; }
+.empty-ico { font-size: 44px; line-height: 1; margin-bottom: 10px; }
+.empty-t { font-size: 15px; font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
+.empty-s { font-size: 12px; color: #8a837a; line-height: 1.55; margin-bottom: 18px; }
+.empty-btn { display: inline-block; margin: 0; background: #3d5a3e; color: #fff; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 22px; line-height: 1.4; }
+.empty-btn:active { background: #2f4730; }
 .client-card { display: flex; align-items: center; background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
 .avatar { width: 42px; height: 42px; border-radius: 50%; background: #f0ece2; color: #3d5a3e; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: center; margin-right: 12px; }
 .info { flex: 1; min-width: 0; }
