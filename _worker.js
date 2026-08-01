@@ -997,9 +997,9 @@ async function handleEntries(request, env, ctx) {
   if (domainParam) {
     entries = await loadDomainEntries(env, domainParam);
   } else {
-    // Load manifest for stats, but only load entries if needed
-    const manifest = await loadManifest(env);
-    entries = []; // Don't load all entries by default — only return metadata
+    // No domain specified: return metadata only (total from manifest)
+    // Consumers should use /api/entries?domain=xxx for actual data
+    entries = [];
   }
 
   let result = entries;
@@ -1016,6 +1016,7 @@ async function handleEntries(request, env, ctx) {
     limit: limit || null,
     domain: domainParam || null,
     entries: result,
+    hint: domainParam ? null : 'Specify ?domain=xxx to load entries for a specific domain',
   });
   const cachedResp = new Response(resp.body, resp);
   cachedResp.headers.set('Cache-Control', 'public, max-age=300, s-maxage=600');
