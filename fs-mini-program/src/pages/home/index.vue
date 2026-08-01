@@ -144,12 +144,15 @@ export default {
     },
     goSlide(i) { this.heroIdx = i },
     go(tab) {
-      if (tab === 'clients' || tab === 'assess') uni.navigateTo({ url: '/pages/' + tab + '/index' })
-      else uni.switchTab({ url: '/pages/' + tab + '/index' })
+      // V2.7：tabBar 页（首页/知识/策展/客户档案/我的）用 switchTab；非 tab 页（测评/案例）用 navigateTo
+      const tabs = ['home', 'knowledge', 'curate', 'clients', 'profile']
+      if (tabs.indexOf(tab) >= 0) uni.switchTab({ url: '/pages/' + tab + '/index' })
+      else uni.navigateTo({ url: '/pages/' + tab + '/index' })
     },
     goFollowup(clientId) {
-      // 客户档案页非 tabBar 页，须用 navigateTo；用 URL 参数带目标客户（$emit 在目标页 onLoad 前会丢失）
-      uni.navigateTo({ url: '/pages/clients/index?focus=' + clientId })
+      // 客户档案已提升为 tabBar 页，无法 URL 带参；改写入 store.focusClientId 由 clients.onShow 读取
+      this.userStore.focusClientId = clientId
+      uni.switchTab({ url: '/pages/clients/index' })
     },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) }
   }

@@ -47,6 +47,7 @@ export const useUserStore = defineStore('user', {
     contributions: [], // [{type, entryId, status, timestamp}]
     // ===== V2.1.1a 新增：客户档案 / 策展库 / 测评 / 任务完成态 =====
     clients: [], // [{id, surname, name, rel, stage, pkey, persona, status, asset, level, addr, note, seed, followups[], timeline[], memoryPoints[]}]
+    focusClientId: null, // V2.7：首页「今日跟进」直达客户详情（tabBar 页无法 URL 带参，改走 store）
     curatings: [], // [{id, clientId, t, s, ts}]
     assessments: [], // [{id, ts}]
     doneFlags: {}, // { taskId: true } 任务真实完成态（防自嗨闭环）
@@ -97,7 +98,7 @@ export const useUserStore = defineStore('user', {
         this.openid = res.openid
         this.userId = res.userId
         this.isLoggedIn = true
-        // 新用户体验礼包（对齐免费养成期规范：新户 +200）
+        // 新用户体验礼包（新户 +200 信任积分，靠真实注册动作发放）
         if (res.isNewUser) {
           this.earnPoints(200, '新用户礼包')
         }

@@ -61,7 +61,8 @@ export default {
   },
   methods: {
     go(tab) {
-      if (tab === 'clients') uni.navigateTo({ url: '/pages/clients/index' })
+      // V2.7：clients/curate 是 tabBar 页 → switchTab；cases 已降级为非 tab 页 → navigateTo
+      if (tab === 'cases') uni.navigateTo({ url: '/pages/cases/index' })
       else uni.switchTab({ url: '/pages/' + tab + '/index' })
     },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) },
