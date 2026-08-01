@@ -1,9 +1,22 @@
 // 分享能力工具
 // - 微信内转发卡片：由页面 onShareAppMessage / onShareTimeline 提供
-// - 微信外链接：生成 h5 链接（客户/同事在浏览器或微信里打开即可看）
+// - 小程序链接：明文 URL Scheme（微信内外都能打开小程序）
+// - h5 链接：降级方案，浏览器打开网页版
 // - 小程序码：通过服务端 /api/wxacode 接口生成真·小程序码
 
 export const APP_SHARE_TITLE = '风声 · 帮服务者用独立价值获得尊重'
+const MP_APPID = 'wxd4ccbb319a00bb89'
+
+// 生成微信小程序明文 URL Scheme（微信内外都能直接拉起小程序）
+// 格式：weixin://dl/business/?appid=xxx&path=xxx&query=xxx&env_version=release
+export function buildMiniProgramLink(path, query) {
+  const p = (path || '').replace(/^\//, '')
+  let url = `weixin://dl/business/?appid=${MP_APPID}&path=${encodeURIComponent(p)}&env_version=release`
+  if (query) {
+    url += `&query=${encodeURIComponent(query)}`
+  }
+  return url
+}
 
 // 生成可分享的 h5 链接（条件编译：H5 用当前域名，小程序用线上域名）
 export function buildShareLink(path) {
@@ -74,11 +87,20 @@ export async function saveWxQrCodeToAlbum(options = {}) {
   })
 }
 
-// 复制链接到剪贴板（双端通用）
-export function copyLink(path, tip) {
+// 复制小程序链接到剪贴板（使用明文 URL Scheme，微信内外都能打开小程序）
+export function copyLink(path, tip, query) {
+  uni.setClipboardData({
+    data: buildMiniProgramLink(path, query),
+    success: () => uni.showToast({ title: tip || '小程序链接已复制 · 打开微信即可跳转', icon: 'none' }),
+    fail: () => uni.showToast({ title: '复制失败，请重试', icon: 'none' })
+  })
+}
+
+// 复制 h5 网页链接到剪贴板（降级方案，浏览器打开）
+export function copyH5Link(path, tip) {
   uni.setClipboardData({
     data: buildShareLink(path),
-    success: () => uni.showToast({ title: tip || '链接已复制 · 微信外也能打开', icon: 'none' }),
+    success: () => uni.showToast({ title: tip || '网页链接已复制 · 微信外也能打开', icon: 'none' }),
     fail: () => uni.showToast({ title: '复制失败，请重试', icon: 'none' })
   })
 }

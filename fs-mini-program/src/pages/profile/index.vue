@@ -18,7 +18,7 @@
 
     <view class="share-app-box">
       <view class="sab-title">📤 把风声分享给同行 / 客户</view>
-      <view class="sab-desc">微信内转发小程序卡片；或复制链接发到微信外（短信 / 邮件都能打开）。</view>
+      <view class="sab-desc">微信内转发小程序卡片；或复制链接，在微信聊天框粘贴即可打开小程序。</view>
       <view class="sab-btns">
         <button class="btn-light" open-type="share">转发小程序卡片</button>
         <button class="btn-light" @tap="copyMiniLink">复制小程序链接</button>
@@ -67,7 +67,7 @@ export default {
     },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) },
     copyMiniLink() {
-      copyLink('/pages/home/index', '小程序链接已复制 · 微信外也能打开')
+      copyLink('/pages/home/index', '小程序链接已复制 · 打开微信即可跳转')
     }
   },
   onShareAppMessage() {

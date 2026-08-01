@@ -130,7 +130,7 @@
         </view>
         <button class="btn-green" @tap="saveCuration">✓ 保存到我的客户档案</button>
         <button class="btn-line" open-type="share" @tap="setShareCurate">分享给客户</button>
-        <button class="btn-line" @tap="copyCurateLink">复制链接给客户</button>
+        <button class="btn-line" @tap="copyCurateLink">复制小程序链接给客户</button>
       </scroll-view>
     </view>
 
@@ -147,7 +147,7 @@
         </view>
         <button class="btn-orange" @tap="useInCurate(tool)">在策展中使用 →</button>
         <button class="btn-line" open-type="share" @tap="sharePayload = { title: '风声工具箱 · ' + tool.name, path: '/pages/curate/index' }">分享给同事/客户</button>
-        <button class="btn-line" @tap="copyLink('/pages/curate/index')">复制小程序链接</button>
+        <button class="btn-line" @tap="copyLink('/pages/curate/index', '小程序链接已复制 · 打开微信即可跳转')">复制小程序链接</button>
       </scroll-view>
     </view>
   </view>
@@ -155,7 +155,7 @@
 
 <script>
 import { methods, personaMap, personaQ, toolbox, getFollowups } from '../../utils/v4data.js'
-import { buildShareLink, copyLink, APP_SHARE_TITLE } from '../../utils/share.js'
+import { copyLink, APP_SHARE_TITLE } from '../../utils/share.js'
 import { useUserStore } from '../../store/user'
 export default {
   data() {
@@ -304,7 +304,7 @@ export default {
       }
     },
     copyCurateLink() {
-      copyLink('/pages/curate/index?clientId=' + (this.selectedClientId || ''), '链接已复制 · 客户在微信外也能打开')
+      copyLink('/pages/curate/index?clientId=' + (this.selectedClientId || ''), '小程序链接已复制 · 打开微信即可跳转', 'clientId=' + (this.selectedClientId || ''))
     }
   }
 }
