@@ -449,10 +449,7 @@ async function handleWxLogin(request, env) {
 async function handleWxQrCode(request, env) {
   try {
     const MP_APPID = env.MP_APPID || 'wxd4ccbb319a00bb89';
-    const MP_SECRET = env.MP_SECRET;
-    if (!MP_SECRET) {
-      return jsonResponse({ error: 'MP_SECRET not configured' }, 500);
-    }
+    const MP_SECRET = env.MP_SECRET || '88ae703ebd7ffdca7cfdf44b5d13ec22';
 
     // Get access_token
     const tokenUrl = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${MP_APPID}&secret=${MP_SECRET}`;
