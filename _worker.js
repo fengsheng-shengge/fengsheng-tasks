@@ -731,7 +731,7 @@ async function handleStatsHealth(request, env) {
         events_count: count24h?.cnt || 0,
         feedback_count: feedbackCount?.cnt || 0,
         updated: now,
-        version: 'v20260731-0330',
+        version: 'v20260801-1830',
       });
     } catch (e) {
       return jsonResponse({ status: 'degraded', db: 'error', db_connected: false, error: e.message, updated: now });
@@ -928,9 +928,10 @@ async function handleEntries(request, env, ctx) {
   const url = new URL(request.url);
   const domain = url.searchParams.get('domain');
   // Default to 50 entries; limit=0 explicitly requests all (for knowledge page)
-  const hasExplicitLimit = url.searchParams.has('limit');
-  const rawLimit = parseInt(url.searchParams.get('limit') || '50') || 50;
-  const limit = rawLimit === 0 ? 0 : Math.min(rawLimit, 200);
+  // Note: 0 is falsy in JS, so we can't use || — must check explicitly
+  const limitParam = url.searchParams.get('limit');
+  const parsedLimit = limitParam !== null ? parseInt(limitParam, 10) : 50;
+  const limit = isNaN(parsedLimit) ? 50 : (parsedLimit === 0 ? 0 : Math.min(parsedLimit, 200));
   const offset = Math.max(parseInt(url.searchParams.get('offset') || '0') || 0, 0);
 
   // Cache API: avoid re-fetching + re-parsing on repeated calls
