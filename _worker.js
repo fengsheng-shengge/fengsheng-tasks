@@ -1,5 +1,5 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260801-1945 - perf: subScene filter, pagination, sub-scene metadata in manifest
+// Version: v20260801-1945 - perf: subScene filter, wxacode API, pagination, cache v4
 //   + D1 database integration (stats, events, feedback)
 //   + Coze AI chat streaming
 //   + WeChat login with JWT
@@ -439,6 +439,75 @@ async function handleWxLogin(request, env) {
     return jsonResponse({ token, openid, userId });
   } catch (e) {
     console.error('WxLogin error:', e);
+    return jsonResponse({ error: e.message }, 500);
+  }
+}
+
+// ============================================================
+//  WeChat Mini Program QR Code (getwxacodeunlimit)
+// ============================================================
+async function handleWxQrCode(request, env) {
+  try {
+    const MP_APPID = env.MP_APPID || 'wxd4ccbb319a00bb89';
+    const MP_SECRET = env.MP_SECRET;
+    if (!MP_SECRET) {
+      return jsonResponse({ error: 'MP_SECRET not configured' }, 500);
+    }
+
+    // Get access_token
+    const tokenUrl = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${MP_APPID}&secret=${MP_SECRET}`;
+    const tokenResp = await fetch(tokenUrl);
+    const tokenData = await tokenResp.json();
+    if (tokenData.errcode) {
+      console.error('WX access_token error:', tokenData.errcode, tokenData.errmsg);
+      return jsonResponse({ error: '获取access_token失败', code: tokenData.errcode }, 400);
+    }
+    const accessToken = tokenData.access_token;
+
+    // Parse query params for scene & page
+    const url = new URL(request.url);
+    const scene = url.searchParams.get('scene') || 'index';
+    const page = url.searchParams.get('page') || '';
+    const width = parseInt(url.searchParams.get('width') || '430');
+    const isHyaline = url.searchParams.get('hyaline') === 'true';
+
+    // Call getwxacodeunlimit
+    const qrUrl = `https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${accessToken}`;
+    const qrBody = {
+      scene,
+      width: Math.min(Math.max(width, 280), 1280),
+      auto_color: false,
+      line_color: { r: 61, g: 90, b: 62 }, // 风声墨绿 #3d5a3e
+      is_hyaline: isHyaline,
+    };
+    if (page) qrBody.page = page;
+
+    const qrResp = await fetch(qrUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(qrBody),
+    });
+
+    const contentType = qrResp.headers.get('content-type') || '';
+    if (contentType.includes('image')) {
+      // Success - return image directly
+      const imageBuffer = await qrResp.arrayBuffer();
+      return new Response(imageBuffer, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=86400',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    } else {
+      // Error response from WeChat
+      const errData = await qrResp.json();
+      console.error('WX qrcode error:', errData);
+      return jsonResponse({ error: '生成小程序码失败', detail: errData }, 400);
+    }
+  } catch (e) {
+    console.error('WxQrCode error:', e);
     return jsonResponse({ error: e.message }, 500);
   }
 }
@@ -1364,6 +1433,11 @@ export default {
     // wx-login alias (issue #210: /api/wx-login → /api/auth/wx-login)
     if (path === '/api/wx-login' && request.method === 'POST') {
       return handleWxLogin(request, env);
+    }
+
+    // WeChat Mini Program QR Code
+    if (path === '/api/wxacode' && request.method === 'GET') {
+      return handleWxQrCode(request, env);
     }
 
     // ===== Mentor Payment Routes =====
