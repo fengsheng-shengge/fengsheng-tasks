@@ -935,7 +935,7 @@ async function handleEntries(request, env, ctx) {
   const offset = Math.max(parseInt(url.searchParams.get('offset') || '0') || 0, 0);
 
   // Cache API: avoid re-fetching + re-parsing on repeated calls
-  const cacheKey = new Request('https://cache.local/api/entries' + url.search);
+  const cacheKey = new Request('https://cache.local/v2/api/entries' + url.search);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -966,7 +966,7 @@ async function handleEntries(request, env, ctx) {
 async function handleKnowledgeStats(request, env, ctx) {
   // Cache API: stats change rarely, cache 10 min
   const cache = caches.default;
-  const cacheKey = new Request('https://cache.local/api/knowledge-stats');
+  const cacheKey = new Request('https://cache.local/v2/api/knowledge-stats');
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
