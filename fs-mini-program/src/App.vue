@@ -1,18 +1,31 @@
 <script>
 import { useUserStore } from './store/user'
 
+// 安全初始化：包 try/catch，任意 storage 调用失败都不能挂掉启动
+function safeInit() {
+  try {
+    const userStore = useUserStore()
+    userStore.initFromStorage()
+    userStore.markDone('login')   // 本地登录态即视为登录任务完成（幂等，首启即点亮 1/5）
+  } catch (e) {
+    console.warn('[fs] safeInit skipped:', (e && e.message) || e)
+  }
+}
+
 export default {
   onLaunch() {
     console.log('风声助手 onLaunch')
-    try {
-      const userStore = useUserStore()
-      userStore.initFromStorage()
-      userStore.markDone('login')   // 本地登录态即视为登录任务完成（幂等，首启即点亮 1/5）
-    } catch (e) {
-      console.warn('[fs] initFromStorage skipped:', (e && e.message) || e)
-    }
+    // 关键修复(8.1)：onLaunch 阶段 webview 尚未就绪，
+    // 同步调 uni.getStorageSync 在基础库 2.32.3(macOS 开发工具)
+    // 会触发 jsbridge `getGlobalStorage: too eayly` 报错风暴。
+    // 推迟到 onShow(此时 webview 已就绪、jsbridge 可用)再做完整 init。
+    // 同时保留 200ms 兜底延迟，给冷启动 webview 多一点就绪时间。
   },
-  onShow() { console.log('风声助手 onShow') },
+  onShow() {
+    console.log('风声助手 onShow')
+    // 首屏 onShow 做完整 init(此阶段 jsbridge 已可用)
+    setTimeout(safeInit, 200)
+  },
   onHide() { console.log('风声助手 onHide') },
   onError(err) {
     // 兜底：onError 兜底任何 runtime 错误，避免阻塞 UI

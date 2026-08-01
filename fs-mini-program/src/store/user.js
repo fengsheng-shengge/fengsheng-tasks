@@ -78,19 +78,42 @@ export const useUserStore = defineStore('user', {
   },
 
   actions: {
+    /** 安全读 storage：单点失败不影响整体；未就绪(jsbridge too eayly)时返回 defVal */
+    _get(key, defVal) {
+      try {
+        const v = uni.getStorageSync(key)
+        return v === '' || v === null || v === undefined ? defVal : v
+      } catch (e) {
+        // webview 未就绪(jsbridge too eayly) 或存储异常——静默降级到默认值
+        return defVal
+      }
+    },
+    _getJSON(key, defVal) {
+      try {
+        const raw = uni.getStorageSync(key)
+        if (!raw) return defVal
+        return JSON.parse(raw)
+      } catch (e) {
+        return defVal
+      }
+    },
+    _set(key, val) {
+      try { uni.setStorageSync(key, val) } catch (e) { /* 单点失败不污染 */ }
+    },
+
     _persist() {
-      uni.setStorageSync('fs_points', this.points)
-      uni.setStorageSync('fs_points_history', JSON.stringify(this.pointsHistory))
-      uni.setStorageSync('fs_favorites', JSON.stringify(this.favorites))
-      uni.setStorageSync('fs_contributions', JSON.stringify(this.contributions))
-      uni.setStorageSync('fs_quiz_stats', JSON.stringify(this.quizStats))
+      this._set('fs_points', this.points)
+      this._set('fs_points_history', JSON.stringify(this.pointsHistory))
+      this._set('fs_favorites', JSON.stringify(this.favorites))
+      this._set('fs_contributions', JSON.stringify(this.contributions))
+      this._set('fs_quiz_stats', JSON.stringify(this.quizStats))
       // V2.1.1a
-      uni.setStorageSync('fs_clients', JSON.stringify(this.clients))
-      uni.setStorageSync('fs_curatings', JSON.stringify(this.curatings))
-      uni.setStorageSync('fs_assessments', JSON.stringify(this.assessments))
-      uni.setStorageSync('fs_done_flags', JSON.stringify(this.doneFlags))
-      uni.setStorageSync('fs_shares', this.shares)
-      uni.setStorageSync('fs_seeded', this.seeded)
+      this._set('fs_clients', JSON.stringify(this.clients))
+      this._set('fs_curatings', JSON.stringify(this.curatings))
+      this._set('fs_assessments', JSON.stringify(this.assessments))
+      this._set('fs_done_flags', JSON.stringify(this.doneFlags))
+      this._set('fs_shares', this.shares)
+      this._set('fs_seeded', this.seeded)
     },
 
     async login() {
@@ -116,22 +139,16 @@ export const useUserStore = defineStore('user', {
     },
 
     initFromStorage() {
-      this.token = uni.getStorageSync('fs_token') || null
-      this.openid = uni.getStorageSync('fs_openid') || null
-      this.userId = uni.getStorageSync('fs_user_id') || null
+      this.token = this._get('fs_token', null)
+      this.openid = this._get('fs_openid', null)
+      this.userId = this._get('fs_user_id', null)
       this.isLoggedIn = !!this.token
-      this.points = uni.getStorageSync('fs_points') || 0
+      this.points = this._get('fs_points', 0) || 0
+      this.pointsHistory = this._getJSON('fs_points_history', [])
+      this.favorites = this._getJSON('fs_favorites', [])
+      this.contributions = this._getJSON('fs_contributions', [])
       try {
-        this.pointsHistory = JSON.parse(uni.getStorageSync('fs_points_history') || '[]')
-      } catch { this.pointsHistory = [] }
-      try {
-        this.favorites = JSON.parse(uni.getStorageSync('fs_favorites') || '[]')
-      } catch { this.favorites = [] }
-      try {
-        this.contributions = JSON.parse(uni.getStorageSync('fs_contributions') || '[]')
-      } catch { this.contributions = [] }
-      try {
-        const qs = JSON.parse(uni.getStorageSync('fs_quiz_stats') || '{}')
+        const qs = this._getJSON('fs_quiz_stats', {})
         this.quizStats = {
           total: qs.total ?? 0,
           correct: qs.correct ?? 0,
@@ -140,12 +157,12 @@ export const useUserStore = defineStore('user', {
         }
       } catch { this.quizStats = { total: 0, correct: 0, streak: 0, lastAnswerDate: null } }
       // V2.1.1a：客户 / 策展 / 测评 / 任务态
-      try { this.clients = JSON.parse(uni.getStorageSync('fs_clients') || '[]') } catch { this.clients = [] }
-      try { this.curatings = JSON.parse(uni.getStorageSync('fs_curatings') || '[]') } catch { this.curatings = [] }
-      try { this.assessments = JSON.parse(uni.getStorageSync('fs_assessments') || '[]') } catch { this.assessments = [] }
-      try { this.doneFlags = JSON.parse(uni.getStorageSync('fs_done_flags') || '{}') } catch { this.doneFlags = {} }
-      this.shares = uni.getStorageSync('fs_shares') || 0
-      this.seeded = uni.getStorageSync('fs_seeded') || false
+      this.clients = this._getJSON('fs_clients', [])
+      this.curatings = this._getJSON('fs_curatings', [])
+      this.assessments = this._getJSON('fs_assessments', [])
+      this.doneFlags = this._getJSON('fs_done_flags', {})
+      this.shares = this._get('fs_shares', 0) || 0
+      this.seeded = this._get('fs_seeded', false) || false
       // 首次启动（无缓存、且此前未 seed 过）写入 4 个示例客户，让经纪人看到"可录入"的样子
       if (!this.seeded && this.clients.length === 0) this.seedClients()
     },
