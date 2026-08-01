@@ -24,7 +24,7 @@
       </scroll-view>
     </view>
 
-    <view class="section-header"><text class="section-title">最佳案例库</text><text class="section-more">{{ filtered.length }} 个案例 · 全部免费</text></view>
+    <view class="section-header"><text class="section-title">精选案例库</text><text class="section-more">{{ filtered.length }} 个案例 · 全部免费</text></view>
     <view v-if="filtered.length === 0" class="icp">该筛选下暂无案例</view>
     <view class="case-card" :class="{ open: c._open }" v-for="c in filtered" :key="c.id" @tap="toggleCase(c)">
       <view class="case-tags">
