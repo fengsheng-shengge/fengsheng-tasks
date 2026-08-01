@@ -202,7 +202,7 @@ textarea { width: 100%; border: 1px solid var(--border); border-radius: 11px; pa
 .cases-wallet .earn { background: #fff; color: var(--green); border: none; padding: 9px 13px; border-radius: 999px; font-size: 12.5px; font-weight: 700; flex-shrink: 0; }
 .filter-block { margin-bottom: 12px; }
 .filter-label { font-size: 12px; color: var(--text-secondary); margin: 0 2px 7px; font-weight: 600; }
-.chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 4px; }
+.chips { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding: 2px 0 4px; }
 .chips::-webkit-scrollbar { display: none; }
 .chip { flex-shrink: 0; background: var(--card); border: 1px solid var(--border); padding: 7px 13px; border-radius: 999px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; }
 .chip.on { background: var(--green); color: #fff; border-color: var(--green); }
@@ -274,9 +274,5 @@ textarea { width: 100%; border: 1px solid var(--border); border-radius: 11px; pa
 
 /* ========== 邀请裂变 ========== */
 .phase-banner { background: rgba(196,106,58,.10); border: 1px solid rgba(196,106,58,.28); border-radius: 10px; padding: 9px 12px; margin: 4px 0 12px; font-size: 12px; color: #9a5026; line-height: 1.6; }
-.invite-box { background: linear-gradient(135deg,var(--green),#4d7050); color: #fff; border-radius: 14px; padding: 16px; margin: 12px 0; }
-.invite-box .ib-title { font-size: 14px; font-weight: 700; }
-.invite-box .ib-code { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.16); border-radius: 10px; padding: 10px 12px; margin: 10px 0; font-size: 13px; }
-.invite-box .ib-reward { font-size: 12px; opacity: .92; line-height: 1.6; }
 .btn-light { background: #fff; color: var(--green); border: none; border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 700; margin-top: 4px; }
 </style>

@@ -142,6 +142,16 @@ export default {
     }
   },
   onUnload() { uni.$off('openClientDetail') },
+  // V2.7：客户档案已提升为 tabBar 页，tabBar 页无法 URL 带参。
+  // 首页「今日跟进」改将目标客户写入 store.focusClientId，此处 onShow 读取并打开详情后清空。
+  onShow() {
+    const fid = this.userStore.focusClientId
+    if (fid) {
+      this.userStore.focusClientId = null
+      const c = this.userStore.getClient(fid)
+      if (c) this.openDetail(c)
+    }
+  },
   methods: {
     blankForm() {
       return { surname: '', name: '', rel: '买房客户', stage: '', pkey: 'red', level: 'A', status: '跟进中', addr: '', note: '' }

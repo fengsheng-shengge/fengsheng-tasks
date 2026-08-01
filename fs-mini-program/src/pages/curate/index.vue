@@ -226,8 +226,8 @@ export default {
     },
     goClients() {
       this.showPicker = false
-      // 客户档案页非 tabBar 页，switchTab 会静默失败，须用 navigateTo
-      uni.navigateTo({ url: '/pages/clients/index' })
+      // V2.7：客户档案已提升为 tabBar 页，用 switchTab
+      uni.switchTab({ url: '/pages/clients/index' })
     },
     openResult() { this.showResult = true },
     genCuration() {
