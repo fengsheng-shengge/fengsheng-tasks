@@ -85,4 +85,5 @@ export default {
 .sab-desc { font-size: 12px; color: #888; margin: 6px 0 10px; line-height: 1.5; }
 .sab-btns { display: flex; gap: 10px; }
 .sab-btns .btn-light { flex: 1; background: #f7f4ef; color: #3d5a3e; border: 1px solid #e7e0d4; border-radius: 10px; padding: 10px; font-size: 13px; }
+
 </style>

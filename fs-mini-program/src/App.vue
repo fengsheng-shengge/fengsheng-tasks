@@ -272,7 +272,7 @@ textarea { width: 100%; border: 1px solid var(--border); border-radius: 11px; pa
 .trust-card .tc-fill { height: 100%; background: var(--orange-light); border-radius: 4px; }
 .trust-card .tc-rule { font-size: 10.5px; opacity: .85; margin-top: 8px; line-height: 1.5; }
 
-/* ========== 信任成长 / 通用 ========== */
+/* ========== 邀请裂变 ========== */
 .phase-banner { background: rgba(196,106,58,.10); border: 1px solid rgba(196,106,58,.28); border-radius: 10px; padding: 9px 12px; margin: 4px 0 12px; font-size: 12px; color: #9a5026; line-height: 1.6; }
 .btn-light { background: #fff; color: var(--green); border: none; border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 700; margin-top: 4px; }
 </style>
