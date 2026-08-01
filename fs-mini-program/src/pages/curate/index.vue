@@ -1,9 +1,14 @@
 <template>
   <view class="page">
     <view class="featured-cta">
-      <view style="font-size:16px;font-weight:700">＋ 新建一次策展</view>
-      <view style="font-size:12px;opacity:.85;line-height:1.5;margin:4px 0 12px">输入接触背景与性格，生成「说 / 带 / 问 + 见后跟进」。</view>
-      <button class="btn-cta" @tap="showForm = true">开始策展 →</button>
+      <view style="font-size:16px;font-weight:700">🎯 见面参谋（新版）</view>
+      <view style="font-size:12px;opacity:.9;line-height:1.5;margin:4px 0 12px">基于真实字典，输入客户情况秒出专属「说 / 带 / 问 + 见后跟进」，每条挂真实依据。</view>
+      <button class="btn-cta" @tap="openPrep()">进入见面参谋 →</button>
+    </view>
+    <view class="featured-cta" style="background:#f3f0ea;color:#3d5a3e">
+      <view style="font-size:16px;font-weight:700">＋ 新建一次策展（旧版）</view>
+      <view style="font-size:12px;opacity:.8;line-height:1.5;margin:4px 0 12px">输入接触背景与性格，生成「说 / 带 / 问 + 见后跟进」。</view>
+      <button class="btn-cta" style="background:#3d5a3e" @tap="showForm = true">开始策展 →</button>
     </view>
 
     <view class="section-header"><text class="section-title">方法论文献</text><text class="section-more">6 方法论 · 7 工具箱</text></view>
@@ -210,6 +215,9 @@ export default {
   },
   methods: {
     personaOf(c) { return (personaMap[c.pkey] || personaMap.red).tag },
+    openPrep() {
+      uni.navigateTo({ url: '/package-curation/pages/curate-prep/index' })
+    },
     preselectClient(id) {
       const c = this.userStore.getClient(id)
       if (!c) return

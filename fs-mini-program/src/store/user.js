@@ -155,7 +155,7 @@ export const useUserStore = defineStore('user', {
         { surname: '王', name: '王女士（房东）', rel: '房东', stage: '租住线 / 业主侧', pkey: 'blue', persona: '🔵 关系导向', status: '跟进中', asset: '委托出租，定价跟进待办', level: 'B', addr: '', note: '空置45天委托出租', seed: true },
         { surname: '陈', name: '陈同学（租客）', rel: '租客', stage: '租住线 / ②改善', pkey: 'green', persona: '🟢 理智型', status: '跟进中', asset: '工作调动，租住改善中', level: 'C', addr: '', note: '工作调动近地铁', seed: true }
       ]
-      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c, followups: c.followups || [], timeline: c.timeline || [], memoryPoints: c.memoryPoints || [] }))
+      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c, followups: c.followups || [], timeline: c.timeline || [], memoryPoints: c.memoryPoints || [], cognition: c.cognition || { log: [] } }))
       this._persist()
     },
 
@@ -208,7 +208,7 @@ export const useUserStore = defineStore('user', {
 
     /** 新建客户 */
     addClient(c) {
-      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, followups: [], timeline: [], memoryPoints: [], ...c }
+      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] }, ...c }
       this.clients.unshift(client)
       this._persist()
       return client
@@ -274,6 +274,32 @@ export const useUserStore = defineStore('user', {
       this.curatings.unshift(item)
       this._persist()
       return item
+    },
+
+    /** V3.0 认知复利：把一次见面参谋沉淀进客户认知卡（初始空、靠真实互动涨） */
+    saveCognition(clientId, rec) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c) return
+      if (!c.cognition || !Array.isArray(c.cognition.log)) c.cognition = { log: [] }
+      const log = {
+        at: Date.now(),
+        axisLabel: rec.axisLabel || '',
+        dims: rec.dims || [],
+        sayTitles: rec.sayTitles || [],
+        followThemes: rec.followThemes || [],
+        freeText: rec.freeText || ''
+      }
+      c.cognition.log.unshift(log)
+      // 聚合：已知偏好 = 七维关注 + 说要点；决策信号 = 见后跟进主题
+      const known = new Set()
+      ;(log.dims || []).forEach(d => known.add('关注·' + d))
+      ;(log.sayTitles || []).forEach(s => known.add(s))
+      const signals = new Set()
+      ;(log.followThemes || []).forEach(f => signals.add(f))
+      c.cognition.known = Array.from(new Set([...(c.cognition.known || []), ...known])).slice(0, 12)
+      c.cognition.signals = Array.from(new Set([...(c.cognition.signals || []), ...signals])).slice(0, 12)
+      c.cognition.lastAxis = log.axisLabel
+      this._persist()
     },
 
     /** 新增一次测评记录 */
