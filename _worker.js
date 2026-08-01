@@ -1336,16 +1336,36 @@ export default {
 
     // All other requests → static assets (with security headers)
     const assetResp = await env.ASSETS.fetch(request);
-    // Fix: return proper 404 for non-existent paths (not SPA 200 fallback)
-    if (assetResp.status === 404) {
-      const notFoundHtml = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>404 · 页面不存在</title><style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#0f172a;color:#e2e8f0}h1{font-size:48px;margin:0}p{color:#94a3b8}a{color:#60a5fa}</style></head><body><div style="text-align:center"><h1>404</h1><p>页面不存在</p><a href="/">← 返回首页</a></div></body></html>';
-      return applySecurityHeaders(new Response(notFoundHtml, {
-        status: 404,
-        headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' },
-      }), true);
-    }
     const contentType = assetResp.headers.get('Content-Type') || '';
     const isHtml = contentType.includes('text/html');
+
+    // Fix: return proper 404 for non-existent paths (not SPA 200 fallback)
+    // Cloudflare Pages returns 200+index.html for unknown routes (SPA mode)
+    // Detect: HTML response for a path without file extension that isn't a known route
+    const NOT_FOUND_HTML = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>404 · 页面不存在</title><style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#0f172a;color:#e2e8f0}h1{font-size:48px;margin:0}p{color:#94a3b8}a{color:#60a5fa}</style></head><body><div style="text-align:center"><h1>404</h1><p>页面不存在</p><a href="/">← 返回首页</a></div></body></html>';
+    const notFoundResponse = () => applySecurityHeaders(new Response(NOT_FOUND_HTML, {
+      status: 404,
+      headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' },
+    }), true);
+
+    if (assetResp.status === 404) {
+      return notFoundResponse();
+    }
+    // SPA fallback detection: HTML for a route without file extension
+    if (isHtml && !path.includes('.')) {
+      const KNOWN_ROUTES = new Set([
+        '/', '/about', '/agent-academy', '/assessment', '/breeder', '/care-test',
+        '/dashboard', '/decoder', '/ip-design', '/knowledge', '/management',
+        '/mentor', '/partner', '/privacy', '/quality-test', '/reply',
+        '/s1-report', '/shuowenjiedao', '/skills', '/standard', '/survey',
+        '/terms', '/showing-report', '/dict', '/guide', '/decode',
+        '/breeder/', '/care-test/', '/about/', '/agent-academy/',
+      ]);
+      const normalized = path.endsWith('/') ? path.slice(0, -1) : path;
+      if (!KNOWN_ROUTES.has(path) && !KNOWN_ROUTES.has(normalized) && !KNOWN_ROUTES.has(normalized + '/')) {
+        return notFoundResponse();
+      }
+    }
     return applySecurityHeaders(assetResp, isHtml);
   },
 };
