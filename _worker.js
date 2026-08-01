@@ -1,5 +1,5 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260801-1900 - perf: per-domain split, server-side search, ETag
+// Version: v20260801-1930 - perf: fix knowledge-stats samples, top3 domains, cache v4
 //   + D1 database integration (stats, events, feedback)
 //   + Coze AI chat streaming
 //   + WeChat login with JWT
@@ -987,7 +987,7 @@ async function handleEntries(request, env, ctx) {
   const offset = Math.max(parseInt(url.searchParams.get('offset') || '0') || 0, 0);
 
   // Cache API
-  const cacheKey = new Request('https://cache.local/v3/api/entries' + url.search);
+  const cacheKey = new Request('https://cache.local/v4/api/entries' + url.search);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -1027,25 +1027,37 @@ async function handleEntries(request, env, ctx) {
 
 async function handleKnowledgeStats(request, env, ctx) {
   const cache = caches.default;
-  const cacheKey = new Request('https://cache.local/v3/api/knowledge-stats');
+  const cacheKey = new Request('https://cache.local/v4/api/knowledge-stats');
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
-  // Use manifest only — no need to load any entries
+  // Use manifest only — no need to load all entries
   const manifest = await loadManifest(env);
   if (!manifest) {
     return jsonResponse({ total_entries: 0, total_domains: 0, domains: [], updated: new Date().toISOString() });
   }
-  // Load just the first domain to get samples (lightweight)
-  const firstDomain = manifest.domains[0];
-  const sampleEntries = firstDomain ? await loadDomainEntries(env, firstDomain) : [];
-  const domains = manifest.domains.map(d => ({
+
+  // Sort by count desc, pick top 3 domains for samples
+  const sortedByCount = [...manifest.domains].sort((a, b) => (manifest.counts[b] || 0) - (manifest.counts[a] || 0));
+  const topDomains = sortedByCount.slice(0, 3);
+
+  // Load samples from top 3 domains in parallel
+  const sampleMap = {};
+  const sampleResults = await Promise.all(topDomains.map(d => loadDomainEntries(env, d)));
+  topDomains.forEach((d, i) => {
+    const entries = sampleResults[i] || [];
+    sampleMap[d] = entries.slice(0, 3).map(e => ({
+      id: e.id,
+      name: e.name || e.title || e.id,
+    }));
+  });
+
+  const domains = sortedByCount.map(d => ({
     domain: d,
     count: manifest.counts[d] || 0,
-    samples: (sampleEntries.length > 0 && d === firstDomain)
-      ? sampleEntries.slice(0, 3).map(e => e.name || e.title || e.id)
-      : [],
-  })).sort((a, b) => b.count - a.count);
+    samples: (sampleMap[d] || []).map(e => e.name),
+    sample_ids: (sampleMap[d] || []).map(e => e.id),
+  }));
 
   const resp = jsonResponse({
     total_entries: manifest.total,
@@ -1068,7 +1080,7 @@ async function handleSearch(request, env, ctx) {
     return jsonResponse({ query: '', results: [], total: 0, hint: 'Provide ?q=keyword' });
   }
 
-  const cacheKey = new Request('https://cache.local/v3/api/search?q=' + encodeURIComponent(q.slice(0, 20)));
+  const cacheKey = new Request('https://cache.local/v4/api/search?q=' + encodeURIComponent(q.slice(0, 20)));
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;

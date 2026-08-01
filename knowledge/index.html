@@ -906,7 +906,7 @@ async function loadEntriesData(){
         desc: cfg.desc,
         count: d.count,
         sample_words: d.samples || [],
-        sample_ids: (d.samples || []).map(e=>e.id||e),
+        sample_ids: d.sample_ids || [],
         more_count: Math.max(0, d.count - (d.samples||[]).length),
       };
     });
