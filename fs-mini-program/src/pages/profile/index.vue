@@ -37,15 +37,17 @@
       <view class="menu-item" @tap="toast('关于风声 · 后续版本开放')"><view class="menu-icon">ℹ️</view><view class="menu-text">关于风声</view><view class="menu-arrow">›</view></view>
     </view>
     <view class="icp">⚠️ 客户数据仅你可见，平台不收取、不用于撮合<view>帮助服务者用独立价值获得尊重</view></view>
+    <view class="ver">风声 v{{ appVersion }}<view class="ver-tip">若此版本号不是 3.0.7，说明手机仍是旧包，请重新上传最新 zip</view></view>
   </view>
 </template>
 
 <script>
 import { useUserStore } from '../../store/user'
-import { copyLink, APP_SHARE_TITLE } from '../../utils/share.js'
+import { copyLink, APP_SHARE_TITLE, APP_VERSION } from '../../utils/share.js'
 export default {
   computed: {
     userStore() { return useUserStore() },
+    appVersion() { return APP_VERSION },
     brokerName() { return this.userStore.nickname || '风声用户' },
     brokerInitial() { return (this.userStore.nickname || '风')[0] || '风' },
     points() { return this.userStore.points || 0 },
@@ -87,5 +89,7 @@ export default {
 .sab-desc { font-size: 12px; color: #888; margin: 6px 0 10px; line-height: 1.5; }
 .sab-btns { display: flex; gap: 10px; }
 .sab-btns .btn-light { flex: 1; background: #f7f4ef; color: #3d5a3e; border: 1px solid #e7e0d4; border-radius: 10px; padding: 10px; font-size: 13px; }
+.ver { text-align: center; color: #b0a99e; font-size: 12px; margin-top: 18px; line-height: 1.6; }
+.ver-tip { font-size: 10.5px; color: #c0b8ac; margin-top: 2px; }
 
 </style>

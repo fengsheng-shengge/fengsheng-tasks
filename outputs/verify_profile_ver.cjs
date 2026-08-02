@@ -1,0 +1,20 @@
+const { chromium } = require('/Users/ke/WorkBuddy/Claw/node_modules/playwright');
+const BASE = 'http://localhost:8097';
+(async () => {
+  const b = await chromium.launch();
+  const p = await b.newPage();
+  let errs = [];
+  p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
+  p.on('pageerror', e => errs.push('PAGEERR: ' + e.message));
+  await p.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 30000 });
+  await p.waitForTimeout(1500);
+  await p.locator('.uni-tabbar__item', { hasText: '我的' }).first().click();
+  await p.waitForTimeout(1500);
+  const verText = await p.locator('.ver').first().innerText().catch(() => '');
+  const ok = /风声\s*v\s*3\.0\.7/.test(verText);
+  console.log('版本号文本:', JSON.stringify(verText));
+  console.log(ok ? '✅ 我的页显示 风声 v3.0.7' : '❌ 版本号未正确显示');
+  console.log('JS错误:', errs.length ? errs.slice(0,3) : '无');
+  await b.close();
+  process.exit(ok && errs.length === 0 ? 0 : 1);
+})();
