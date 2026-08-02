@@ -3,6 +3,11 @@
 
 import { post } from './request'
 
+// 工具：包 try/catch，单点 storage 失败不影响调用
+function ssGet(k, defVal) { try { const v = uni.getStorageSync(k); return v ? v : defVal } catch (e) { return defVal } }
+function ssSet(k, v) { try { uni.setStorageSync(k, v) } catch (e) {} }
+function ssDel(k) { try { uni.removeStorageSync(k) } catch (e) {} }
+
 /**
  * 微信静默登录
  * @returns {Promise<{token, openid, userId}>}
@@ -22,10 +27,10 @@ export async function wxLogin() {
           // 2. 换取 token
           const res = await post('/api/auth/wx-login', { code })
 
-          // 3. 存储
-          uni.setStorageSync('fs_token', res.token)
-          uni.setStorageSync('fs_openid', res.openid)
-          uni.setStorageSync('fs_user_id', res.userId)
+          // 3. 存储(单点容错)
+          ssSet('fs_token', res.token)
+          ssSet('fs_openid', res.openid)
+          ssSet('fs_user_id', res.userId)
 
           resolve(res)
         } catch (err) {
@@ -44,23 +49,22 @@ export async function wxLogin() {
  * 检查登录状态
  */
 export function checkLogin() {
-  const token = uni.getStorageSync('fs_token')
-  return !!token
+  return !!ssGet('fs_token')
 }
 
 /**
  * 登出
  */
 export function logout() {
-  uni.removeStorageSync('fs_token')
-  uni.removeStorageSync('fs_openid')
-  uni.removeStorageSync('fs_user_id')
-  uni.removeStorageSync('fs_user')
+  ssDel('fs_token')
+  ssDel('fs_openid')
+  ssDel('fs_user_id')
+  ssDel('fs_user')
 }
 
 /**
  * 获取当前用户ID
  */
 export function getUserId() {
-  return uni.getStorageSync('fs_user_id')
+  return ssGet('fs_user_id')
 }

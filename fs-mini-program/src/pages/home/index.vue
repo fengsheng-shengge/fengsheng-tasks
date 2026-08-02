@@ -60,7 +60,7 @@
 
     <!-- 案例 promo -->
     <view class="case-promo" @tap="go('cases')">
-      <view class="cp-l"><view class="cp-t">🌟 优秀经纪人最佳案例灵感库</view><view class="cp-s">按客户类型 / 业务场景筛选 · 免费翻阅顶尖实战</view></view>
+      <view class="cp-l"><view class="cp-t">🌟 优秀经纪人精选案例灵感库</view><view class="cp-s">按客户类型 / 业务场景筛选 · 免费翻阅顶尖实战</view></view>
       <view class="cp-r">进入 ›</view>
     </view>
 

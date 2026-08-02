@@ -29,11 +29,12 @@
       <view class="menu-item" @tap="go('clients')"><view class="menu-icon">👥</view><view class="menu-text">客户档案</view><view class="menu-arrow">›</view></view>
       <view class="menu-item" @tap="go('cases')"><view class="menu-icon">🌟</view><view class="menu-text">案例灵感库</view><view class="menu-arrow">›</view></view>
       <view class="menu-item" @tap="go('curate')"><view class="menu-icon">💡</view><view class="menu-text">我的策展库</view><view class="menu-arrow">›</view></view>
-      <view class="menu-item" @tap="toast('职业档案（模拟）')"><view class="menu-icon">🎖️</view><view class="menu-text">职业档案</view><view class="menu-arrow">›</view></view>
+      <view class="menu-item" @tap="toast('职业档案 · 后续版本开放')"><view class="menu-icon">🎖️</view><view class="menu-text">职业档案</view><view class="menu-arrow">›</view></view>
     </view>
     <view class="menu-group">
-      <view class="menu-item" @tap="toast('数据导出/迁移（模拟）')"><view class="menu-icon">📦</view><view class="menu-text">数据导出 / 迁移</view><view class="menu-arrow">›</view></view>
-      <view class="menu-item" @tap="toast('关于风声（模拟）')"><view class="menu-icon">ℹ️</view><view class="menu-text">关于风声</view><view class="menu-arrow">›</view></view>
+      <view class="menu-item" @tap="openPrivacy"><view class="menu-icon">🔒</view><view class="menu-text">隐私政策</view><view class="menu-arrow">›</view></view>
+      <view class="menu-item" @tap="toast('数据导出 / 迁移 · 后续版本开放')"><view class="menu-icon">📦</view><view class="menu-text">数据导出 / 迁移</view><view class="menu-arrow">›</view></view>
+      <view class="menu-item" @tap="toast('关于风声 · 后续版本开放')"><view class="menu-icon">ℹ️</view><view class="menu-text">关于风声</view><view class="menu-arrow">›</view></view>
     </view>
     <view class="icp">⚠️ 客户数据仅你可见，平台不收取、不用于撮合<view>帮助服务者用独立价值获得尊重</view></view>
   </view>
@@ -66,6 +67,7 @@ export default {
       else uni.switchTab({ url: '/pages/' + tab + '/index' })
     },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) },
+    openPrivacy() { uni.navigateTo({ url: '/pages/privacy/index' }) },
     copyMiniLink() {
       copyLink('/pages/home/index', '小程序链接已复制 · 打开微信即可跳转')
     }

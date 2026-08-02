@@ -47,6 +47,7 @@ export const useUserStore = defineStore('user', {
     contributions: [], // [{type, entryId, status, timestamp}]
     // ===== V2.1.1a 新增：客户档案 / 策展库 / 测评 / 任务完成态 =====
     clients: [], // [{id, surname, name, rel, stage, pkey, persona, status, asset, level, addr, note, seed, followups[], timeline[], memoryPoints[]}]
+    seeded: false, // 首次启动是否已写入示例客户（避免用户删光后又被重新塞回示例）
     focusClientId: null, // V2.7：首页「今日跟进」直达客户详情（tabBar 页无法 URL 带参，改走 store）
     curatings: [], // [{id, clientId, t, s, ts}]
     assessments: [], // [{id, ts}]
@@ -54,6 +55,7 @@ export const useUserStore = defineStore('user', {
     shares: 0, // 分享次数（案例分享任务）
     // 答题统计
     quizStats: { total: 0, correct: 0, streak: 0, lastAnswerDate: null },
+    _initialized: false, // 首次 initFromStorage 完成标记（页面 onShow 兜底 seed 须等它，避免与 App 200ms 延迟 init 竞态导致重复塞示例）
   }),
 
   getters: {
@@ -77,18 +79,42 @@ export const useUserStore = defineStore('user', {
   },
 
   actions: {
+    /** 安全读 storage：单点失败不影响整体；未就绪(jsbridge too eayly)时返回 defVal */
+    _get(key, defVal) {
+      try {
+        const v = uni.getStorageSync(key)
+        return v === '' || v === null || v === undefined ? defVal : v
+      } catch (e) {
+        // webview 未就绪(jsbridge too eayly) 或存储异常——静默降级到默认值
+        return defVal
+      }
+    },
+    _getJSON(key, defVal) {
+      try {
+        const raw = uni.getStorageSync(key)
+        if (!raw) return defVal
+        return JSON.parse(raw)
+      } catch (e) {
+        return defVal
+      }
+    },
+    _set(key, val) {
+      try { uni.setStorageSync(key, val) } catch (e) { /* 单点失败不污染 */ }
+    },
+
     _persist() {
-      uni.setStorageSync('fs_points', this.points)
-      uni.setStorageSync('fs_points_history', JSON.stringify(this.pointsHistory))
-      uni.setStorageSync('fs_favorites', JSON.stringify(this.favorites))
-      uni.setStorageSync('fs_contributions', JSON.stringify(this.contributions))
-      uni.setStorageSync('fs_quiz_stats', JSON.stringify(this.quizStats))
+      this._set('fs_points', this.points)
+      this._set('fs_points_history', JSON.stringify(this.pointsHistory))
+      this._set('fs_favorites', JSON.stringify(this.favorites))
+      this._set('fs_contributions', JSON.stringify(this.contributions))
+      this._set('fs_quiz_stats', JSON.stringify(this.quizStats))
       // V2.1.1a
-      uni.setStorageSync('fs_clients', JSON.stringify(this.clients))
-      uni.setStorageSync('fs_curatings', JSON.stringify(this.curatings))
-      uni.setStorageSync('fs_assessments', JSON.stringify(this.assessments))
-      uni.setStorageSync('fs_done_flags', JSON.stringify(this.doneFlags))
-      uni.setStorageSync('fs_shares', this.shares)
+      this._set('fs_clients', JSON.stringify(this.clients))
+      this._set('fs_curatings', JSON.stringify(this.curatings))
+      this._set('fs_assessments', JSON.stringify(this.assessments))
+      this._set('fs_done_flags', JSON.stringify(this.doneFlags))
+      this._set('fs_shares', this.shares)
+      this._set('fs_seeded', this.seeded)
     },
 
     async login() {
@@ -114,22 +140,17 @@ export const useUserStore = defineStore('user', {
     },
 
     initFromStorage() {
-      this.token = uni.getStorageSync('fs_token') || null
-      this.openid = uni.getStorageSync('fs_openid') || null
-      this.userId = uni.getStorageSync('fs_user_id') || null
+      if (this._initialized) return   // 幂等：页面 onShow 同步调用与 App onShow 延迟调用只生效一次
+      this.token = this._get('fs_token', null)
+      this.openid = this._get('fs_openid', null)
+      this.userId = this._get('fs_user_id', null)
       this.isLoggedIn = !!this.token
-      this.points = uni.getStorageSync('fs_points') || 0
+      this.points = this._get('fs_points', 0) || 0
+      this.pointsHistory = this._getJSON('fs_points_history', [])
+      this.favorites = this._getJSON('fs_favorites', [])
+      this.contributions = this._getJSON('fs_contributions', [])
       try {
-        this.pointsHistory = JSON.parse(uni.getStorageSync('fs_points_history') || '[]')
-      } catch { this.pointsHistory = [] }
-      try {
-        this.favorites = JSON.parse(uni.getStorageSync('fs_favorites') || '[]')
-      } catch { this.favorites = [] }
-      try {
-        this.contributions = JSON.parse(uni.getStorageSync('fs_contributions') || '[]')
-      } catch { this.contributions = [] }
-      try {
-        const qs = JSON.parse(uni.getStorageSync('fs_quiz_stats') || '{}')
+        const qs = this._getJSON('fs_quiz_stats', {})
         this.quizStats = {
           total: qs.total ?? 0,
           correct: qs.correct ?? 0,
@@ -138,24 +159,34 @@ export const useUserStore = defineStore('user', {
         }
       } catch { this.quizStats = { total: 0, correct: 0, streak: 0, lastAnswerDate: null } }
       // V2.1.1a：客户 / 策展 / 测评 / 任务态
-      try { this.clients = JSON.parse(uni.getStorageSync('fs_clients') || '[]') } catch { this.clients = [] }
-      try { this.curatings = JSON.parse(uni.getStorageSync('fs_curatings') || '[]') } catch { this.curatings = [] }
-      try { this.assessments = JSON.parse(uni.getStorageSync('fs_assessments') || '[]') } catch { this.assessments = [] }
-      try { this.doneFlags = JSON.parse(uni.getStorageSync('fs_done_flags') || '{}') } catch { this.doneFlags = {} }
-      this.shares = uni.getStorageSync('fs_shares') || 0
-      // 首次启动（无缓存）seed 4 个示例客户，让经纪人看到"可录入"的样子
-      if (this.clients.length === 0) this.seedClients()
-    },
+      // 用「fs_clients 这个 key 是否在 storage 中存在」判定是否首次启动，
+      // 而非依赖 seeded 布尔的精确反序列化——H5 预览环境会把 boolean 存成
+      // {"type":"boolean","data":true} 包装对象导致误判；真机虽不受影响，此处统一鲁棒。
+      const rawClients = this._get('fs_clients', '__ABSENT__')
+      const clientsKeyExists = rawClients !== '__ABSENT__'
+      this.clients = clientsKeyExists ? (JSON.parse(rawClients) || []) : []
+      this.curatings = this._getJSON('fs_curatings', [])
+      this.assessments = this._getJSON('fs_assessments', [])
+      this.doneFlags = this._getJSON('fs_done_flags', {})
+      this.shares = this._get('fs_shares', 0) || 0
+      this.seeded = this._get('fs_seeded', false) || false
+      // 仅当 storage 从未写过 clients（真正首次启动）才兜底 seed；
+      // 用户清空/删光后 clients=[] 但 key 已存在，不重新塞回，空态真实可达。
+      if (!clientsKeyExists && this.clients.length === 0) this.seedClients()
+      this._initialized = true
+  },
 
     /** 首次启动写入 4 个示例客户（标记 seed，可删可改） */
     seedClients() {
+      if (this.clients && this.clients.length > 0) return   // 已有客户（首次之后）不重复塞回，避免覆盖真实数据
       const seed = [
         { surname: '林', name: '林先生 & 未婚妻', rel: '买房客户', stage: '购房线 / ①首套', pkey: 'red', persona: '🔴 结果导向', status: '跟进中', asset: '关系建立中，资产初值', level: 'A', addr: '', note: '90后婚房，预算300万，看重学区与通勤', seed: true },
         { surname: '张', name: '张先生（业主）', rel: '业主', stage: '购房线 / ④升级', pkey: 'blue', persona: '🔵 关系导向', status: '已成交', asset: '已购本房，适老改造跟进已规划', level: 'A', addr: '', note: '已购，适老改造咨询', seed: true },
         { surname: '王', name: '王女士（房东）', rel: '房东', stage: '租住线 / 业主侧', pkey: 'blue', persona: '🔵 关系导向', status: '跟进中', asset: '委托出租，定价跟进待办', level: 'B', addr: '', note: '空置45天委托出租', seed: true },
         { surname: '陈', name: '陈同学（租客）', rel: '租客', stage: '租住线 / ②改善', pkey: 'green', persona: '🟢 理智型', status: '跟进中', asset: '工作调动，租住改善中', level: 'C', addr: '', note: '工作调动近地铁', seed: true }
       ]
-      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c, followups: c.followups || [], timeline: c.timeline || [], memoryPoints: c.memoryPoints || [] }))
+      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c, followups: c.followups || [], timeline: c.timeline || [], memoryPoints: c.memoryPoints || [], cognition: c.cognition || { log: [] } }))
+      this.seeded = true
       this._persist()
     },
 
@@ -208,7 +239,7 @@ export const useUserStore = defineStore('user', {
 
     /** 新建客户 */
     addClient(c) {
-      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, followups: [], timeline: [], memoryPoints: [], ...c }
+      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] }, ...c }
       this.clients.unshift(client)
       this._persist()
       return client
@@ -224,6 +255,14 @@ export const useUserStore = defineStore('user', {
     removeClient(id) {
       this.clients = this.clients.filter(c => c.id !== id)
       this._persist()
+    },
+
+    /** 清空所有示例客户（仅删除 seed:true，真实客户不受影响） */
+    clearSamples() {
+      const before = this.clients.length
+      this.clients = this.clients.filter(c => !c.seed)
+      this._persist()
+      return before - this.clients.length
     },
 
     getClient(id) {
@@ -274,6 +313,32 @@ export const useUserStore = defineStore('user', {
       this.curatings.unshift(item)
       this._persist()
       return item
+    },
+
+    /** V3.0 认知复利：把一次见面参谋沉淀进客户认知卡（初始空、靠真实互动涨） */
+    saveCognition(clientId, rec) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c) return
+      if (!c.cognition || !Array.isArray(c.cognition.log)) c.cognition = { log: [] }
+      const log = {
+        at: Date.now(),
+        axisLabel: rec.axisLabel || '',
+        dims: rec.dims || [],
+        sayTitles: rec.sayTitles || [],
+        followThemes: rec.followThemes || [],
+        freeText: rec.freeText || ''
+      }
+      c.cognition.log.unshift(log)
+      // 聚合：已知偏好 = 七维关注 + 说要点；决策信号 = 见后跟进主题
+      const known = new Set()
+      ;(log.dims || []).forEach(d => known.add('关注·' + d))
+      ;(log.sayTitles || []).forEach(s => known.add(s))
+      const signals = new Set()
+      ;(log.followThemes || []).forEach(f => signals.add(f))
+      c.cognition.known = Array.from(new Set([...(c.cognition.known || []), ...known])).slice(0, 12)
+      c.cognition.signals = Array.from(new Set([...(c.cognition.signals || []), ...signals])).slice(0, 12)
+      c.cognition.lastAxis = log.axisLabel
+      this._persist()
     },
 
     /** 新增一次测评记录 */
