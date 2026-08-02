@@ -190,12 +190,10 @@ export default {
   // V2.7：客户档案已提升为 tabBar 页，tabBar 页无法 URL 带参。
   // 首页「今日跟进」改将目标客户写入 store.focusClientId，此处 onShow 读取并打开详情后清空。
   onShow() {
-    // 兜底 seed：极端情况（mp-weixin 真机冷启动 onLaunch 时序、storage 异常清空）导致
-    // clients 仍为空时，进入 tab 时再补一次 seed，避免「完全空白、连 empty 文案也看不到」。
-    // 已 seed 过（含用户主动删光）则不再塞回，让空态真实可达。
-    // 注意：必须等 initFromStorage(_initialized) 完成，否则会与 App 的 200ms 延迟 init 竞态，
-    // 在 reload 后读出旧的 seeded=false 而重复塞回示例（见 store._initialized）。
-    if (this.userStore._initialized && !this.userStore.seeded && this.userStore.clients.length === 0) this.userStore.seedClients()
+    // 同步确保 storage 已就绪：页面 onShow 时 webview 必然已就绪，可直接读 storage，
+    // 不必等 App 的 200ms 延迟（App 延迟 init 仅作兜底）。initFromStorage 内部已按
+    // 「fs_clients key 是否存在」区分首次启动(seed 示例)与用户清空(不回弹)，空态真实可达。
+    if (!this.userStore._initialized) this.userStore.initFromStorage()
     const fid = this.userStore.focusClientId
     if (fid) {
       this.userStore.focusClientId = null

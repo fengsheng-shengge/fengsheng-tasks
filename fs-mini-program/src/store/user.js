@@ -140,6 +140,7 @@ export const useUserStore = defineStore('user', {
     },
 
     initFromStorage() {
+      if (this._initialized) return   // 幂等：页面 onShow 同步调用与 App onShow 延迟调用只生效一次
       this.token = this._get('fs_token', null)
       this.openid = this._get('fs_openid', null)
       this.userId = this._get('fs_user_id', null)
@@ -158,19 +159,26 @@ export const useUserStore = defineStore('user', {
         }
       } catch { this.quizStats = { total: 0, correct: 0, streak: 0, lastAnswerDate: null } }
       // V2.1.1a：客户 / 策展 / 测评 / 任务态
-      this.clients = this._getJSON('fs_clients', [])
+      // 用「fs_clients 这个 key 是否在 storage 中存在」判定是否首次启动，
+      // 而非依赖 seeded 布尔的精确反序列化——H5 预览环境会把 boolean 存成
+      // {"type":"boolean","data":true} 包装对象导致误判；真机虽不受影响，此处统一鲁棒。
+      const rawClients = this._get('fs_clients', '__ABSENT__')
+      const clientsKeyExists = rawClients !== '__ABSENT__'
+      this.clients = clientsKeyExists ? (JSON.parse(rawClients) || []) : []
       this.curatings = this._getJSON('fs_curatings', [])
       this.assessments = this._getJSON('fs_assessments', [])
       this.doneFlags = this._getJSON('fs_done_flags', {})
       this.shares = this._get('fs_shares', 0) || 0
       this.seeded = this._get('fs_seeded', false) || false
-      // 首次启动（无缓存、且此前未 seed 过）写入 4 个示例客户，让经纪人看到"可录入"的样子
-    if (!this.seeded && this.clients.length === 0) this.seedClients()
-    this._initialized = true
+      // 仅当 storage 从未写过 clients（真正首次启动）才兜底 seed；
+      // 用户清空/删光后 clients=[] 但 key 已存在，不重新塞回，空态真实可达。
+      if (!clientsKeyExists && this.clients.length === 0) this.seedClients()
+      this._initialized = true
   },
 
     /** 首次启动写入 4 个示例客户（标记 seed，可删可改） */
     seedClients() {
+      if (this.clients && this.clients.length > 0) return   // 已有客户（首次之后）不重复塞回，避免覆盖真实数据
       const seed = [
         { surname: '林', name: '林先生 & 未婚妻', rel: '买房客户', stage: '购房线 / ①首套', pkey: 'red', persona: '🔴 结果导向', status: '跟进中', asset: '关系建立中，资产初值', level: 'A', addr: '', note: '90后婚房，预算300万，看重学区与通勤', seed: true },
         { surname: '张', name: '张先生（业主）', rel: '业主', stage: '购房线 / ④升级', pkey: 'blue', persona: '🔵 关系导向', status: '已成交', asset: '已购本房，适老改造跟进已规划', level: 'A', addr: '', note: '已购，适老改造咨询', seed: true },
