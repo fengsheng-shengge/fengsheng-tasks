@@ -1051,7 +1051,7 @@ async function handleStatsHealth(request, env) {
     degraded_mode: _degradedMode,
     error_count: _errorCount,
     updated: now,
-    version: 'v20260802-1100',
+    version: 'v20260802-1200',
   };
   if (!env.DB) {
     return jsonResponse({ ...base, status: 'degraded', db: 'not_configured' });
@@ -1326,13 +1326,19 @@ async function handleEntries(request, env, ctx) {
   const offset = Math.min(Math.max(parseInt(url.searchParams.get('offset') || '0') || 0, 0), 10000);
   const subSceneParam = sanitizeQueryParam(url.searchParams.get('subScene') || '', 128) || null;
 
+  // P0: New filter dimensions — clientType, stage, layer
+  const clientTypeParam = sanitizeQueryParam(url.searchParams.get('clientType') || '', 64) || null;
+  const stageParam = sanitizeQueryParam(url.searchParams.get('stage') || '', 64) || null;
+  const layerParam = sanitizeQueryParam(url.searchParams.get('layer') || '', 64) || null;
+  const groupByParam = sanitizeQueryParam(url.searchParams.get('groupBy') || '', 32) || null; // subScene|layer|entryType|severity
+
   // Reject suspicious domain parameters
   if (url.searchParams.get('domain') && !domainParam) {
     return jsonResponse({ error: '无效的域名参数', hint: '请使用正确的业务域名称' }, 400);
   }
 
-  // Cache API
-  const cacheKeyStr = `https://cache.local/v4/api/entries?domain=${domainParam || ''}&limit=${limit}&offset=${offset}&subScene=${subSceneParam || ''}`;
+  // Cache key includes all filter params
+  const cacheKeyStr = `https://cache.local/v5/api/entries?domain=${domainParam || ''}&limit=${limit}&offset=${offset}&subScene=${subSceneParam || ''}&ct=${clientTypeParam || ''}&st=${stageParam || ''}&ly=${layerParam || ''}&gb=${groupByParam || ''}`;
   const cacheKey = new Request(cacheKeyStr);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
@@ -1343,7 +1349,12 @@ async function handleEntries(request, env, ctx) {
   if (domainParam) {
     entries = await loadDomainEntries(env, domainParam);
   } else {
-    entries = [];
+    // If any tag filter is specified without domain, load all entries
+    if (clientTypeParam || stageParam || layerParam) {
+      entries = await loadAllEntries(env);
+    } else {
+      entries = [];
+    }
   }
 
   // Sub-scene metadata from manifest (fast, no extra loading)
@@ -1353,13 +1364,87 @@ async function handleEntries(request, env, ctx) {
     subscenes = manifest.subscenes[domainParam] || [];
   }
 
-  // Apply sub-scene filter if specified
+  // Apply filters
   let filteredEntries = entries;
+
+  // Sub-scene filter
   if (subSceneParam) {
-    filteredEntries = entries.filter(e => e.subScene === subSceneParam);
+    filteredEntries = filteredEntries.filter(e => e.subScene === subSceneParam);
+  }
+
+  // Tags-based filters (clientType, stage, layer)
+  if (clientTypeParam || stageParam || layerParam) {
+    filteredEntries = filteredEntries.filter(e => {
+      const tags = e.tags || {};
+      if (clientTypeParam) {
+        const ct = tags.clientType;
+        if (Array.isArray(ct)) { if (!ct.includes(clientTypeParam)) return false; }
+        else if (ct !== clientTypeParam) return false;
+      }
+      if (stageParam) {
+        const st = tags.stage;
+        if (Array.isArray(st)) { if (!st.includes(stageParam)) return false; }
+        else if (st !== stageParam) return false;
+      }
+      if (layerParam) {
+        const ly = tags.layer;
+        if (Array.isArray(ly)) { if (!ly.includes(layerParam)) return false; }
+        else if (ly !== layerParam) return false;
+      }
+      return true;
+    });
+  }
+
+  // GroupBy: return grouped structure instead of flat list
+  let grouped = null;
+  if (groupByParam && ['subScene', 'layer', 'entryType', 'severity'].includes(groupByParam)) {
+    grouped = {};
+    for (const e of filteredEntries) {
+      const key = groupByParam === 'subScene' ? (e.subScene || '未分类')
+                : groupByParam === 'layer' ? ((e.tags || {}).layer || '未分类')
+                : groupByParam === 'entryType' ? (e.entryType || '未分类')
+                : (e.severity || '未分类');
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(e);
+    }
   }
 
   const total = filteredEntries.length;
+
+  // If grouped, return group summaries (counts) + paginated entries within each group
+  if (grouped) {
+    const groupSummary = {};
+    for (const [key, items] of Object.entries(grouped)) {
+      groupSummary[key] = items.length;
+    }
+    // Paginate within the first requested group, or flatten for offset/limit
+    let result = filteredEntries;
+    if (limit > 0) {
+      result = result.slice(offset, offset + limit);
+    } else if (offset > 0) {
+      result = result.slice(offset);
+    }
+    const respData = {
+      total,
+      returned: result.length,
+      offset,
+      limit: limit || null,
+      domain: domainParam || null,
+      subScene: subSceneParam,
+      filters: { clientType: clientTypeParam, stage: stageParam, layer: layerParam },
+      groupBy: groupByParam,
+      groups: groupSummary,
+      entries: result,
+    };
+    if (!domainParam) delete respData.subScene;
+    const resp = jsonResponse(respData);
+    const cachedResp = new Response(resp.body, resp);
+    cachedResp.headers.set('Cache-Control', 'public, max-age=300, s-maxage=600');
+    addETag(cachedResp, await computeEntriesETag(env));
+    if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+    return cachedResp;
+  }
+
   let result = filteredEntries;
   if (limit > 0) {
     result = result.slice(offset, offset + limit);
@@ -1374,13 +1459,15 @@ async function handleEntries(request, env, ctx) {
     limit: limit || null,
     domain: domainParam || null,
     subScene: subSceneParam,
+    filters: (clientTypeParam || stageParam || layerParam) ? { clientType: clientTypeParam, stage: stageParam, layer: layerParam } : undefined,
     entries: result,
     subscenes,
-    hint: domainParam ? null : 'Specify ?domain=xxx to load entries for a specific domain',
+    hint: domainParam ? null : 'Specify ?domain=xxx to load entries for a specific domain. Add &clientType=buyer&stage=pre&layer=qi for tag filtering, &groupBy=subScene for grouping.',
   };
-  // Remove null fields
+  // Remove null/undefined fields
   if (!domainParam) delete respData.subscenes;
   if (!subSceneParam) delete respData.subScene;
+  if (!respData.filters) delete respData.filters;
 
   const resp = jsonResponse(respData);
   const cachedResp = new Response(resp.body, resp);
@@ -1454,6 +1541,12 @@ async function handleSearch(request, env, ctx) {
     return jsonResponse({ query: q, results: [], total: 0, hint: '请提供至少2个字符的搜索关键词' });
   }
 
+  // P0: Optional filters for search — domain, clientType, stage, layer
+  const domainParam = validateDomainParam(url.searchParams.get('domain'));
+  const clientTypeParam = sanitizeQueryParam(url.searchParams.get('clientType') || '', 64) || null;
+  const stageParam = sanitizeQueryParam(url.searchParams.get('stage') || '', 64) || null;
+  const layerParam = sanitizeQueryParam(url.searchParams.get('layer') || '', 64) || null;
+
   // Search-specific rate limit (CPU-intensive operation)
   const ip = getClientIP(request);
   const now = Date.now();
@@ -1467,7 +1560,10 @@ async function handleSearch(request, env, ctx) {
     SEARCH_RATE_LIMIT.set(ip, { windowStart: now, count: 1 });
   }
 
-  const cacheKey = new Request('https://cache.local/v4/api/search?q=' + encodeURIComponent(q.slice(0, 20)));
+  // Cache key includes filters
+  const cacheKeyStr = 'https://cache.local/v5/api/search?q=' + encodeURIComponent(q.slice(0, 20)) +
+    '&d=' + (domainParam || '') + '&ct=' + (clientTypeParam || '') + '&st=' + (stageParam || '') + '&ly=' + (layerParam || '');
+  const cacheKey = new Request(cacheKeyStr);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -1475,38 +1571,220 @@ async function handleSearch(request, env, ctx) {
   const manifest = await loadManifest(env);
   if (!manifest) return jsonResponse({ query: q, results: [], total: 0 });
 
+  // P0: 10-field weighted search
+  // Weights: name:10, alias:9, consumerQ:8, ownerQ:7, oneLineAnswer:5, corePoint:4, def:3, legalRef:2, sceneDomain:1, subScene:1
+  const FIELD_WEIGHTS = [
+    { key: 'name',         weight: 10, type: 'string' },
+    { key: 'alias',        weight: 9,  type: 'array' },
+    { key: 'consumerQ',    weight: 8,  type: 'string' },
+    { key: 'ownerQ',       weight: 7,  type: 'string' },
+    { key: 'oneLineAnswer', weight: 5, type: 'string' },
+    { key: 'corePoint',    weight: 4,  type: 'array' },
+    { key: 'def',          weight: 3,  type: 'string' },
+    { key: 'legalRef',     weight: 2,  type: 'string' },
+    { key: 'sceneDomain',  weight: 1,  type: 'string' },
+    { key: 'subScene',     weight: 1,  type: 'string' },
+  ];
+
+  const qLower = q.toLowerCase();
   const results = [];
   const maxResults = 100;
-  const domains = manifest.domains || [];
+  const domains = domainParam ? [domainParam] : (manifest.domains || []);
 
   for (const domain of domains) {
-    if (results.length >= maxResults) break;
     const entries = await loadDomainEntries(env, domain);
     for (const e of entries) {
-      if (results.length >= maxResults) break;
-      const text = [
-        e.name || e.title || '',
-        e.def || '',
-        e.consumerQ || '',
-        e.simpleAnswer || '',
-        e.posSpeech || '',
-        e.negSpeech || '',
-        e.alias ? (Array.isArray(e.alias) ? e.alias.join(' ') : e.alias) : '',
-        e.subScene || '',
-        e.domain || '',
-      ].join(' ').toLowerCase();
-      if (text.includes(q)) {
-        results.push(e);
+      // Apply tag filters before scoring
+      if (clientTypeParam || stageParam || layerParam) {
+        const tags = e.tags || {};
+        if (clientTypeParam) {
+          const ct = tags.clientType;
+          if (Array.isArray(ct)) { if (!ct.includes(clientTypeParam)) continue; }
+          else if (ct !== clientTypeParam) continue;
+        }
+        if (stageParam) {
+          const st = tags.stage;
+          if (Array.isArray(st)) { if (!st.includes(stageParam)) continue; }
+          else if (st !== stageParam) continue;
+        }
+        if (layerParam) {
+          const ly = tags.layer;
+          if (Array.isArray(ly)) { if (!ly.includes(layerParam)) continue; }
+          else if (ly !== layerParam) continue;
+        }
+      }
+
+      // Calculate weighted score
+      let score = 0;
+      let matched = false;
+      for (const fw of FIELD_WEIGHTS) {
+        const val = e[fw.key];
+        if (!val) continue;
+        if (fw.type === 'array') {
+          if (Array.isArray(val)) {
+            for (const item of val) {
+              const s = String(item).toLowerCase();
+              if (s.includes(qLower)) {
+                score += fw.weight;
+                // Exact match bonus
+                if (s === qLower) score += fw.weight;
+                matched = true;
+              }
+            }
+          }
+        } else {
+          const s = String(val).toLowerCase();
+          if (s.includes(qLower)) {
+            score += fw.weight;
+            // Exact match bonus
+            if (s === qLower) score += fw.weight;
+            // Starts-with bonus
+            if (s.startsWith(qLower)) score += Math.floor(fw.weight / 2);
+            matched = true;
+          }
+        }
+      }
+
+      if (matched) {
+        results.push({ entry: e, score });
       }
     }
   }
 
+  // Sort by score descending, then by severity (hard > medium > soft)
+  const severityOrder = { hard: 0, medium: 1, soft: 2 };
+  results.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    const sa = severityOrder[a.entry.severity] ?? 9;
+    const sb = severityOrder[b.entry.severity] ?? 9;
+    return sa - sb;
+  });
+
+  const topResults = results.slice(0, maxResults).map(r => r.entry);
+
   const resp = jsonResponse({
     query: q,
-    results,
+    filters: (domainParam || clientTypeParam || stageParam || layerParam)
+      ? { domain: domainParam, clientType: clientTypeParam, stage: stageParam, layer: layerParam }
+      : undefined,
+    results: topResults,
     total: results.length,
+    returned: topResults.length,
     updated: new Date().toISOString(),
   });
+  const respData = JSON.parse(resp.body || '{}');
+  if (!respData.filters) delete respData.filters;
+  const finalResp = jsonResponse(respData);
+
+  const cachedResp = new Response(finalResp.body, finalResp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=120, s-maxage=300');
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
+}
+
+// ============================================================
+//  P0: Entry Detail (落地规格 API#3)
+// ============================================================
+async function handleEntryDetail(request, env, ctx) {
+  const url = new URL(request.url);
+  const id = sanitizeQueryParam(url.searchParams.get('id') || '', 128);
+  if (!id) {
+    return jsonResponse({ error: 'Missing ?id=ENTRY_ID parameter' }, 400);
+  }
+
+  const cacheKey = new Request('https://cache.local/v5/api/entry?id=' + encodeURIComponent(id));
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  // Load all entries to find by ID
+  const allEntries = await loadAllEntries(env);
+  const entry = allEntries.find(e => e.id === id);
+
+  if (!entry) {
+    return jsonResponse({ error: 'Entry not found', id }, 404);
+  }
+
+  // Resolve relatedEntries (ID → summary objects)
+  let related = [];
+  if (entry.relatedEntries && entry.relatedEntries.length > 0) {
+    const idSet = new Set(entry.relatedEntries);
+    related = allEntries
+      .filter(e => idSet.has(e.id))
+      .map(e => ({
+        id: e.id,
+        name: e.name,
+        oneLineAnswer: e.oneLineAnswer || '',
+        severity: e.severity || '',
+        entryType: e.entryType || '',
+      }));
+  }
+
+  const respData = {
+    ...entry,
+    relatedEntriesResolved: related,
+  };
+
+  const resp = jsonResponse(respData);
+  const cachedResp = new Response(resp.body, resp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=600, s-maxage=1800');
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
+}
+
+// ============================================================
+//  P0: Search Suggest / Autocomplete (落地规格 API#8)
+// ============================================================
+async function handleSearchSuggest(request, env, ctx) {
+  const url = new URL(request.url);
+  const q = validateSearchQuery(url.searchParams.get('q') || '');
+  if (!q || q.length < 1) {
+    return jsonResponse({ query: '', suggestions: [] });
+  }
+
+  const cacheKey = new Request('https://cache.local/v5/api/search/suggest?q=' + encodeURIComponent(q.slice(0, 20)));
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  const manifest = await loadManifest(env);
+  if (!manifest) return jsonResponse({ query: q, suggestions: [] });
+
+  const qLower = q.toLowerCase();
+  const suggestions = [];
+  const maxSuggestions = 10;
+  const seen = new Set();
+  const domains = manifest.domains || [];
+
+  for (const domain of domains) {
+    if (suggestions.length >= maxSuggestions) break;
+    const entries = await loadDomainEntries(env, domain);
+    for (const e of entries) {
+      if (suggestions.length >= maxSuggestions) break;
+
+      // Match against name (primary) and alias (secondary)
+      const nameMatch = (e.name || '').toLowerCase().includes(qLower);
+      let aliasMatch = false;
+      if (e.alias && Array.isArray(e.alias)) {
+        aliasMatch = e.alias.some(a => String(a).toLowerCase().includes(qLower));
+      }
+
+      if ((nameMatch || aliasMatch) && !seen.has(e.id)) {
+        seen.add(e.id);
+        suggestions.push({
+          id: e.id,
+          name: e.name,
+          oneLineAnswer: e.oneLineAnswer || '',
+          domain: e.domain || '',
+          subScene: e.subScene || '',
+          severity: e.severity || '',
+          matchType: nameMatch ? 'name' : 'alias',
+        });
+      }
+    }
+  }
+
+  const resp = jsonResponse({ query: q, suggestions });
   const cachedResp = new Response(resp.body, resp);
   cachedResp.headers.set('Cache-Control', 'public, max-age=120, s-maxage=300');
   if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
@@ -1751,6 +2029,9 @@ export default {
     if (path === '/api/entries') return handleEntries(request, env, ctx);
     if (path === '/api/knowledge-stats') return handleKnowledgeStats(request, env, ctx);
     if (path === '/api/search') return handleSearch(request, env, ctx);
+    // P0: Entry detail + search suggest (落地规格 API#3, API#8)
+    if (path === '/api/entry') return handleEntryDetail(request, env, ctx);
+    if (path === '/api/search/suggest') return handleSearchSuggest(request, env, ctx);
 
     // wx-login alias (issue #210: /api/wx-login → /api/auth/wx-login)
     if (path === '/api/wx-login' && request.method === 'POST') {
@@ -1878,8 +2159,10 @@ export default {
     if (path === '/data/entries.json' || path.startsWith('/data/domains/')) {
       return jsonResponse({
         error: 'Direct file access forbidden',
-        hint: 'Use /api/entries?domain=xxx&limit=50 for paginated results',
-        search: 'Use /api/search?q=keyword for server-side search',
+        hint: 'Use /api/entries?domain=xxx&limit=50 for paginated results (supports clientType/stage/layer filters & groupBy)',
+        search: 'Use /api/search?q=keyword for 10-field weighted search (supports domain/clientType/stage/layer filters)',
+        suggest: 'Use /api/search/suggest?q=keyword for autocomplete suggestions',
+        entry: 'Use /api/entry?id=ENTRY_ID for entry detail with resolved relatedEntries',
         docs: 'Use /api/knowledge-stats for domain statistics',
       }, 403);
     }
