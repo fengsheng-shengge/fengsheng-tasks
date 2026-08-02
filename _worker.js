@@ -1,5 +1,5 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260802-1000 - security: crash shield, mem cleanup, input validation, OOM guard
+// Version: v20260802-1100 - security: circuit breaker, API timeout, error counter, degraded mode, host validation
 //   + D1 database integration (stats, events, feedback)
 //   + Coze AI chat streaming
 //   + WeChat login with JWT
@@ -254,24 +254,63 @@ async function parseBodyJson(request) {
 //  Graceful degradation — wrap D1 calls with fallback
 //  Prevents D1 failures from crashing the site
 // ============================================================
+
+// D1 Circuit Breaker: prevents cascading failures when D1 is down
+let _d1CircuitOpen = false;
+let _d1CircuitOpenUntil = 0;
+let _d1ConsecutiveFailures = 0;
+const D1_CIRCUIT_THRESHOLD = 5;       // consecutive failures to trip
+const D1_CIRCUIT_COOLDOWN_MS = 60_000; // 60s cooldown after trip
+
+function recordD1Failure() {
+  _d1ConsecutiveFailures++;
+  if (_d1ConsecutiveFailures >= D1_CIRCUIT_THRESHOLD) {
+    _d1CircuitOpen = true;
+    _d1CircuitOpenUntil = Date.now() + D1_CIRCUIT_COOLDOWN_MS;
+    console.error('D1 CIRCUIT BREAKER TRIPPED: too many consecutive failures, pausing D1 queries for 60s');
+  }
+}
+
+function recordD1Success() {
+  _d1ConsecutiveFailures = 0;
+  if (_d1CircuitOpen && Date.now() >= _d1CircuitOpenUntil) {
+    _d1CircuitOpen = false;
+    console.log('D1 CIRCUIT BREAKER RESET: cooldown expired, resuming D1 queries');
+  }
+}
+
 async function safeD1Query(db, query, bindings = [], fallback = null) {
   if (!db) return fallback;
+  if (_d1CircuitOpen) {
+    if (Date.now() < _d1CircuitOpenUntil) return fallback;
+    _d1CircuitOpen = false;
+    _d1ConsecutiveFailures = 0;
+  }
   try {
     const result = await db.prepare(query).bind(...bindings).run();
+    recordD1Success();
     return result;
   } catch (e) {
     console.error('D1 query failed:', e.message, query.slice(0, 80));
+    recordD1Failure();
     return fallback;
   }
 }
 
 async function safeD1First(db, query, bindings = [], fallback = null) {
   if (!db) return fallback;
+  if (_d1CircuitOpen) {
+    if (Date.now() < _d1CircuitOpenUntil) return fallback;
+    _d1CircuitOpen = false;
+    _d1ConsecutiveFailures = 0;
+  }
   try {
     const result = await db.prepare(query).bind(...bindings).first();
+    recordD1Success();
     return result || fallback;
   } catch (e) {
     console.error('D1 first failed:', e.message, query.slice(0, 80));
+    recordD1Failure();
     return fallback;
   }
 }
@@ -326,6 +365,90 @@ function cleanupRateLimitMaps() {
       BANNED_IPS.delete(entries[i][0]);
     }
   }
+  // Clean search rate limit
+  for (const [key, entry] of SEARCH_RATE_LIMIT) {
+    if (now - entry.windowStart > SEARCH_RATE_WINDOW * 3) {
+      SEARCH_RATE_LIMIT.delete(key);
+    }
+  }
+}
+
+// ============================================================
+//  External API timeout — prevent hanging on slow upstreams
+// ============================================================
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = 10_000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const resp = await fetch(url, { ...options, signal: controller.signal });
+    return resp;
+  } catch (e) {
+    if (e.name === 'AbortError') {
+      console.error(`fetchWithTimeout TIMEOUT: ${url} (${timeoutMs}ms)`);
+    }
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ============================================================
+//  Error counter — detect degradation patterns
+//  If too many errors in a short window, enter degraded mode
+// ============================================================
+
+let _errorCount = 0;
+let _errorWindowStart = 0;
+const ERROR_WINDOW_MS = 60_000;   // 1 minute
+const ERROR_THRESHOLD = 20;        // 20 errors/min → degraded
+let _degradedMode = false;
+let _degradedUntil = 0;
+const DEGRADED_DURATION_MS = 60_000; // 1 min degraded
+
+function recordError() {
+  const now = Date.now();
+  if (now - _errorWindowStart > ERROR_WINDOW_MS) {
+    _errorCount = 0;
+    _errorWindowStart = now;
+  }
+  _errorCount++;
+  if (_errorCount >= ERROR_THRESHOLD && !_degradedMode) {
+    _degradedMode = true;
+    _degradedUntil = now + DEGRADED_DURATION_MS;
+    console.error('WORKER DEGRADED MODE: too many errors in 1 minute, serving degraded responses');
+  }
+}
+
+function isDegraded() {
+  if (_degradedMode && Date.now() >= _degradedUntil) {
+    _degradedMode = false;
+    _errorCount = 0;
+    console.log('WORKER DEGRADED MODE CLEARED: error rate normalized');
+  }
+  return _degradedMode;
+}
+
+// ============================================================
+//  Host header validation — prevent DNS rebinding attacks
+// ============================================================
+
+const ALLOWED_HOSTS = new Set([
+  'fengsheng.tech',
+  'www.fengsheng.tech',
+  'fengsheng.pages.dev',
+  'localhost',
+  '127.0.0.1',
+]);
+
+function validateHostHeader(request) {
+  const host = request.headers.get('Host') || '';
+  // Strip port if present
+  const hostname = host.split(':')[0];
+  if (ALLOWED_HOSTS.has(hostname)) return true;
+  // Allow Cloudflare Pages preview deployments (*.fengsheng-*.pages.dev)
+  if (hostname.endsWith('.pages.dev') && hostname.includes('fengsheng')) return true;
+  return false;
 }
 
 // ============================================================
@@ -342,8 +465,16 @@ function sanitizeQueryParam(val, maxLen = MAX_QUERY_PARAM_LEN) {
   return String(val).slice(0, maxLen).replace(/[<>"'`]/g, '');
 }
 
+// Check if original value contains dangerous chars (before sanitization)
+function hasDangerousChars(val) {
+  if (!val) return false;
+  return /[<>"'`\x00-\x08\x0b\x0c\x0e-\x1f]/.test(String(val));
+}
+
 function validateDomainParam(domain) {
   if (!domain) return null;
+  // Reject if original value contains dangerous chars
+  if (hasDangerousChars(domain)) return null;
   const cleaned = sanitizeQueryParam(domain, MAX_DOMAIN_PARAM_LEN);
   // Only allow Chinese chars, letters, digits, underscores, hyphens
   if (!/^[\u4e00-\u9fff\w-]+$/.test(cleaned)) return null;
@@ -352,6 +483,8 @@ function validateDomainParam(domain) {
 
 function validateSearchQuery(q) {
   if (!q) return '';
+  // Reject if contains dangerous chars
+  if (hasDangerousChars(q)) return '';
   return sanitizeQueryParam(q, MAX_SEARCH_QUERY_LEN);
 }
 
@@ -560,7 +693,7 @@ async function handleWxLogin(request, env) {
       return jsonResponse({ error: 'server config error' }, 500);
     }
     const wxUrl = `${WX_API}?appid=${WX_APPID}&secret=${WX_SECRET}&js_code=${code}&grant_type=authorization_code`;
-    const wxResp = await fetch(wxUrl);
+    const wxResp = await fetchWithTimeout(wxUrl, {}, 10_000);
     const wxData = await wxResp.json();
     if (wxData.errcode) {
       console.error('WeChat API error:', wxData.errcode, wxData.errmsg);
@@ -586,7 +719,7 @@ async function handleWxQrCode(request, env) {
 
     // Get access_token
     const tokenUrl = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${MP_APPID}&secret=${MP_SECRET}`;
-    const tokenResp = await fetch(tokenUrl);
+    const tokenResp = await fetchWithTimeout(tokenUrl, {}, 10_000);
     const tokenData = await tokenResp.json();
     if (tokenData.errcode) {
       console.error('WX access_token error:', tokenData.errcode, tokenData.errmsg);
@@ -612,11 +745,11 @@ async function handleWxQrCode(request, env) {
     };
     if (page) qrBody.page = page;
 
-    const qrResp = await fetch(qrUrl, {
+    const qrResp = await fetchWithTimeout(qrUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(qrBody),
-    });
+    }, 10_000);
 
     const contentType = qrResp.headers.get('content-type') || '';
     if (contentType.includes('image')) {
@@ -666,14 +799,14 @@ async function handleChat(request, env, authenticatedOpenid, resolvedBotId) {
       }],
     };
     if (conversation_id) reqBody.conversation_id = conversation_id;
-    const cozeResp = await fetch(`${COZE_API}/v3/chat`, {
+    const cozeResp = await fetchWithTimeout(`${COZE_API}/v3/chat`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${PAT_TOKEN}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(reqBody),
-    });
+    }, 30_000);
     if (!cozeResp.ok) {
       const errText = await cozeResp.text();
       console.error('Coze API error:', cozeResp.status, errText);
@@ -910,26 +1043,39 @@ async function handleStatsDaily(request, env) {
 
 async function handleStatsHealth(request, env) {
   const now = new Date().toISOString();
+  const base = {
+    status: 'ok',
+    db: 'not_configured',
+    db_connected: false,
+    circuit_breaker: _d1CircuitOpen ? 'open' : 'closed',
+    degraded_mode: _degradedMode,
+    error_count: _errorCount,
+    updated: now,
+    version: 'v20260802-1100',
+  };
   if (!env.DB) {
-    return jsonResponse({ status: 'degraded', db: 'not_configured', db_connected: false, updated: now, version: 'v20260802-1000' });
+    return jsonResponse({ ...base, status: 'degraded', db: 'not_configured' });
+  }
+  if (_d1CircuitOpen) {
+    return jsonResponse({ ...base, status: 'degraded', db: 'circuit_open', db_connected: false });
   }
   try {
     const lastEvent = await safeD1First(env.DB, "SELECT ts, event_type, product FROM events ORDER BY ts DESC LIMIT 1");
     const count24h = await safeD1First(env.DB, "SELECT COUNT(*) as cnt FROM events WHERE created_at >= unixepoch('now', '-1 days')", [], { cnt: 0 });
     const feedbackCount = await safeD1First(env.DB, "SELECT COUNT(*) as cnt FROM events WHERE event_type = 'reply_submit'", [], { cnt: 0 });
     return jsonResponse({
-      status: 'ok',
+      ...base,
+      status: _degradedMode ? 'degraded' : 'ok',
       db: 'connected',
       db_connected: true,
       last_event: lastEvent || null,
       events_24h: count24h?.cnt || 0,
       events_count: count24h?.cnt || 0,
       feedback_count: feedbackCount?.cnt || 0,
-      updated: now,
-      version: 'v20260802-1000',
     });
   } catch (e) {
-    return jsonResponse({ status: 'degraded', db: 'error', db_connected: false, error: e.message, updated: now, version: 'v20260802-1000' });
+    recordD1Failure();
+    return jsonResponse({ ...base, status: 'degraded', db: 'error', db_connected: false, error: e.message });
   }
 }
 
@@ -1292,6 +1438,11 @@ async function handleKnowledgeStats(request, env, ctx) {
 }
 
 // Server-side search (issue #215): search across all domains
+// CPU-intensive: stricter rate limit
+const SEARCH_RATE_LIMIT = new Map();
+const SEARCH_RATE_WINDOW = 30_000; // 30 seconds
+const SEARCH_MAX_PER_WINDOW = 5;   // max 5 searches per 30s per IP
+
 async function handleSearch(request, env, ctx) {
   const url = new URL(request.url);
   const q = validateSearchQuery(url.searchParams.get('q') || '');
@@ -1301,6 +1452,19 @@ async function handleSearch(request, env, ctx) {
   // Reject overly short or single-char queries (too broad, waste CPU)
   if (q.length < 2) {
     return jsonResponse({ query: q, results: [], total: 0, hint: '请提供至少2个字符的搜索关键词' });
+  }
+
+  // Search-specific rate limit (CPU-intensive operation)
+  const ip = getClientIP(request);
+  const now = Date.now();
+  const searchEntry = SEARCH_RATE_LIMIT.get(ip);
+  if (searchEntry && now - searchEntry.windowStart < SEARCH_RATE_WINDOW) {
+    if (searchEntry.count >= SEARCH_MAX_PER_WINDOW) {
+      return jsonResponse({ error: '搜索请求过于频繁，请30秒后再试', query: q }, 429);
+    }
+    searchEntry.count++;
+  } else {
+    SEARCH_RATE_LIMIT.set(ip, { windowStart: now, count: 1 });
   }
 
   const cacheKey = new Request('https://cache.local/v4/api/search?q=' + encodeURIComponent(q.slice(0, 20)));
@@ -1398,6 +1562,19 @@ export default {
     // Layer 0.5: API paths bypass UA/bot detection
     const isAPIPath = path.startsWith('/api/') || path.startsWith('/mentor-api/');
     const isIpDesignApi = path === '/ip-design' && (request.method === 'POST' || request.method === 'OPTIONS');
+
+    // Layer 0.6: Host header validation — prevent DNS rebinding
+    if (!validateHostHeader(request)) {
+      return new Response('Invalid Host', { status: 400, headers: { 'Content-Type': 'text/plain' } });
+    }
+
+    // Layer 0.7: Degraded mode — if too many errors, serve minimal responses
+    if (isDegraded() && !path.startsWith('/api/health') && !path.startsWith('/api/stats/health')) {
+      return applySecurityHeaders(new Response(
+        '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>服务降级中</title><style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#0f172a;color:#e2e8f0}h1{font-size:36px;margin:0}p{color:#94a3b8;margin-top:12px}a{color:#60a5fa}</style></head><body><div style="text-align:center"><h1>服务繁忙，请稍候</h1><p>系统正在自动恢复中，请30秒后刷新</p><a href="/">← 返回首页</a></div></body></html>',
+        { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache', 'Retry-After': '30' } }
+      ), true);
+    }
 
     // Layer 1: IP Ban Check
     const clientIP = getClientIP(request);
@@ -1592,7 +1769,7 @@ export default {
         const outTradeNo = 'FS' + Date.now() + Math.random().toString(36).slice(2, 8);
         const subject = product === 'mentor_unlock' ? '开单导师解锁' : '风声服务';
         const notifyUrl = `${getBaseUrl(request)}/mentor-api/payment/notify`;
-        const alipayResp = await fetch('https://api.alipay.com/gateway.do', {
+        const alipayResp = await fetchWithTimeout('https://api.alipay.com/gateway.do', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({
@@ -1605,7 +1782,7 @@ export default {
             notify_url: notifyUrl,
             app_key: env.ALIPAY_APP_ID || '',
           }).toString()
-        });
+        }, 10_000);
         const alipayData = await alipayResp.json();
         const qrCode = alipayData?.alipay_trade_precreate_response?.qr_code;
         if (!qrCode) {
@@ -1629,7 +1806,7 @@ export default {
       try {
         const outTradeNo = url.searchParams.get('out_trade_no');
         if (!outTradeNo) return jsonResponse({ error: '缺少订单号' }, 400);
-        const alipayResp = await fetch('https://api.alipay.com/gateway.do', {
+        const alipayResp = await fetchWithTimeout('https://api.alipay.com/gateway.do', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({
@@ -1638,7 +1815,7 @@ export default {
             out_trade_no: outTradeNo,
             app_key: env.ALIPAY_APP_ID || '',
           }).toString()
-        });
+        }, 10_000);
         const data = await alipayResp.json();
         const tradeStatus = data?.alipay_trade_query_response?.trade_status;
         const paid = tradeStatus === 'TRADE_SUCCESS' || tradeStatus === 'TRADE_FINISHED';
@@ -1701,7 +1878,21 @@ export default {
     }
 
     // All other requests → static assets (with security headers)
-    const assetResp = await env.ASSETS.fetch(request);
+    let assetResp;
+    try {
+      // Promise.race: timeout for ASSETS binding (internal, not HTTP fetch)
+      assetResp = await Promise.race([
+        env.ASSETS.fetch(request),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('ASSETS_TIMEOUT')), 15_000)),
+      ]);
+    } catch (e) {
+      console.error('ASSETS fetch failed:', e.message);
+      if (e.message !== 'ASSETS_TIMEOUT') recordError();
+      return applySecurityHeaders(new Response(
+        '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>服务暂不可用</title><style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#0f172a;color:#e2e8f0}h1{font-size:36px;margin:0}p{color:#94a3b8;margin-top:12px}a{color:#60a5fa}</style></head><body><div style="text-align:center"><h1>服务暂时不可用</h1><p>请稍后刷新页面重试</p><a href="/">← 返回首页</a></div></body></html>',
+        { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache', 'Retry-After': '30' } }
+      ), true);
+    }
     const contentType = assetResp.headers.get('Content-Type') || '';
     const isHtml = contentType.includes('text/html');
 
@@ -1737,6 +1928,7 @@ export default {
     // ===== CRASH SHIELD: Catch unhandled errors =====
     } catch (err) {
       console.error('WORKER CRASH intercepted:', err.message, err.stack);
+      recordError();
       // Return a graceful error page instead of crashing
       return applySecurityHeaders(new Response(
         '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>服务暂不可用</title><style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#0f172a;color:#e2e8f0}h1{font-size:36px;margin:0}p{color:#94a3b8;margin-top:12px}a{color:#60a5fa}</style></head><body><div style="text-align:center"><h1>服务暂时不可用</h1><p>请稍后刷新页面重试</p><a href="/">← 返回首页</a></div></body></html>',
