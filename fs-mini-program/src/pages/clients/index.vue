@@ -8,7 +8,7 @@
 
     <!-- v3.0.7.2 诊断条：用户进此页即能判断包版本，避免「是新版本还是老版本」歧义根因 -->
     <view class="diag">
-      <text class="diag-v">包版本 v3.0.7.2</text>
+      <text class="diag-v">包版本 v{{ appVersion }}</text>
       <text class="diag-s">初始化 {{ userStore._initialized ? '✓' : '✗' }} · 当前 {{ list.length }} 张 · 存储 {{ hasSamples ? '已seed' : '未seed' }}</text>
       <button v-if="list.length === 0" class="diag-r" @tap="forceSeed">↻ 重试示例</button>
     </view>
@@ -161,6 +161,7 @@
 <script>
 import { personaMap, levelMap, casesData } from '../../utils/v4data.js'
 import { useUserStore } from '../../store/user'
+import { APP_VERSION } from '../../utils/share.js'
 export default {
   data() {
     return {
@@ -185,6 +186,7 @@ export default {
   },
   computed: {
     userStore() { return useUserStore() },
+    appVersion() { return APP_VERSION },
     list() { return this.userStore.clients },
     hasSamples() { return this.userStore.clients.some(c => c.seed) },
     // C：同类案例参考——让详情打开即有实料，不再"几乎空的"

@@ -37,7 +37,7 @@
       <view class="menu-item" @tap="toast('关于风声 · 后续版本开放')"><view class="menu-icon">ℹ️</view><view class="menu-text">关于风声</view><view class="menu-arrow">›</view></view>
     </view>
     <view class="icp">⚠️ 客户数据仅你可见，平台不收取、不用于撮合<view>帮助服务者用独立价值获得尊重</view></view>
-    <view class="ver">风声 v{{ appVersion }}<view class="ver-tip">若此版本号不是 3.0.7，说明手机仍是旧包，请重新上传最新 zip</view></view>
+    <view class="ver">风声 v{{ appVersion }}<view class="ver-tip">若此版本号不是 v{{ appVersion }}，说明手机仍是旧包，请重新上传最新 zip</view></view>
   </view>
 </template>
 
