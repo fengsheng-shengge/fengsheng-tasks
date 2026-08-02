@@ -13,10 +13,10 @@
       <button class="empty-btn" @tap="openForm()">＋ 立即建立第一个客户</button>
     </view>
 
-    <view class="client-card" v-for="c in list" :key="c.id" @tap="openDetail(c)">
+    <view class="client-card" v-for="c in list" :key="c.id" :class="{ sample: c.seed }" @tap="openDetail(c)">
       <view class="avatar">{{ c.surname }}</view>
       <view class="info">
-        <view class="nm">{{ c.name }}</view>
+        <view class="nm">{{ c.name }}<text v-if="c.seed" class="sample-tag">示例</text></view>
         <view class="mt">{{ c.rel }} · {{ c.stage }}<text class="persona" :class="'p-' + c.pkey">{{ personaOf(c) }}</text></view>
       </view>
       <text class="stagebadge" :class="'st-' + statusKey(c.status)">{{ c.status }}</text>
@@ -26,7 +26,7 @@
     <view class="overlay" :class="{ active: showDetail }">
       <view class="ov-nav">
         <button class="back" @tap="showDetail = false">‹</button>
-        <view><view style="font-size:17px;font-weight:700">{{ detail.name }}</view><view class="sub">{{ detail.stage }} · {{ detail.status }}</view></view>
+        <view><view style="font-size:17px;font-weight:700">{{ detail.name }}</view><view class="sub">{{ detail.stage }} · {{ detail.status }}<text v-if="detailSrc && detailSrc.seed" class="sample-flag"> · 示例客户·仅供参考</text></view></view>
       </view>
       <scroll-view class="ovcontent" scroll-y="true">
         <button class="btn-prep" @tap="openPrep(detailSrc)">🎯 准备这次见面（见面参谋）</button>
@@ -269,6 +269,13 @@ export default {
 .empty-btn { display: inline-block; margin: 0; background: #3d5a3e; color: #fff; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 22px; line-height: 1.4; }
 .empty-btn:active { background: #2f4730; }
 .client-card { display: flex; align-items: center; background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+/* 示例客户：灰化 + 虚线框 + 角标，明确「仅参考、非真实客户」 */
+.client-card.sample { opacity: .6; background: #f4f2ed; border-style: dashed; }
+.client-card.sample:active { opacity: .75; }
+.client-card.sample .avatar { background: #e6e3dc; color: #9a948a; }
+.client-card.sample .nm { color: #8a837a; }
+.sample-tag { margin-left: 6px; font-size: 10px; font-weight: 400; padding: 1px 6px; border-radius: 6px; background: #e6e3dc; color: #9a948a; vertical-align: middle; }
+.sample-flag { color: #b0a99e; }
 .avatar { width: 42px; height: 42px; border-radius: 50%; background: #f0ece2; color: #3d5a3e; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: center; margin-right: 12px; }
 .info { flex: 1; min-width: 0; }
 .nm { font-size: 15px; font-weight: 700; color: #2b2b2b; }
