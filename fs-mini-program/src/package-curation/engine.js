@@ -1,6 +1,9 @@
 // V3.0 策展引擎（见面参谋）· 确定性检索增强 · 不依赖 LLM
 // 铁律：依据真不幻觉 —— 仅对真实 legalRef 挂依据徽标；缺失条目诚实标注；绝不编造。
+// V3.1：支持动态 API 数据（generateCurationAsync），静态数据作为降级兜底
 import ENTRIES from './data/entries_slim.js'
+
+const API_BASE = 'https://fengsheng.tech'
 
 // ===== 双纵轴节点（购5 / 租4）与检索关键词 =====
 export const AXIS_GROUPS = [
@@ -56,8 +59,94 @@ function searchable(e) {
     .filter(Boolean).join(' ')
 }
 
-// ===== 主引擎 =====
+// ===== API 字段 → 引擎字段归一化 =====
+function normalizeEntry(apiEntry) {
+  return {
+    id: apiEntry.id || '',
+    name: apiEntry.name || '',
+    alias: apiEntry.alias || [],
+    cq: apiEntry.consumerQ || '',
+    ola: apiEntry.oneLineAnswer || '',
+    cp: Array.isArray(apiEntry.corePoint) ? apiEntry.corePoint : (apiEntry.corePoint ? [apiEntry.corePoint] : []),
+    detail: apiEntry.def || '',
+    legalRef: apiEntry.legalRef || '',
+    consumerBenefit: apiEntry.consumerBenefit || '',
+    tags: apiEntry.tags || {},
+    scene: apiEntry.sceneDomain || '',
+    domain: apiEntry.domain || '',
+    subScene: apiEntry.subScene || ''
+  }
+}
+
+// ===== API 数据拉取（带缓存） =====
+let _cachedEntries = null
+
+async function fetchCurationEntries() {
+  // 拉取签约前 + 签约中 两个域的全部词条，映射到 decoder / see / nego 三组
+  const domainRequests = [
+    { domain: '签约前', grp: 'decoder' },
+    { domain: '签约中', grp: 'nego' }
+  ]
+
+  const grouped = { decoder: [], see: [], nego: [] }
+
+  for (const { domain } of domainRequests) {
+    const resp = await new Promise((resolve, reject) => {
+      uni.request({
+        url: `${API_BASE}/api/entries?domain=${encodeURIComponent(domain)}&limit=1500`,
+        method: 'GET',
+        timeout: 12000,
+        success: (res) => resolve(res.data || {}),
+        fail: (err) => reject(err)
+      })
+    })
+
+    const entries = (resp.entries || []).map(normalizeEntry)
+
+    for (const e of entries) {
+      if (e.domain === '签约前') {
+        // see 组：房源匹配 / 价格评估（看房/带看方向）
+        if (e.subScene === '房源匹配' || e.subScene === '价格评估') {
+          grouped.see.push(e)
+        }
+        // decoder 组：需求确认 / 资格审查 / 及其他签约前子场景
+        if (e.subScene === '需求确认' || e.subScene === '资格审查') {
+          grouped.decoder.push(e)
+        } else if (e.subScene !== '房源匹配' && e.subScene !== '价格评估') {
+          // 其他签约前子场景（如融资贷款、风险识别、合同审查等）也归入 decoder
+          grouped.decoder.push(e)
+        }
+      } else if (e.domain === '签约中') {
+        // nego 组：全部签约中词条
+        grouped.nego.push(e)
+      }
+    }
+  }
+
+  return grouped
+}
+
+// ===== 主引擎（同步版 · 静态数据） =====
 export function generateCuration(input) {
+  return generateCurationFromEntries(input, ENTRIES)
+}
+
+// ===== 主引擎（异步版 · API 数据，静态数据兜底） =====
+export async function generateCurationAsync(input) {
+  try {
+    if (!_cachedEntries) {
+      _cachedEntries = await fetchCurationEntries()
+    }
+    return generateCurationFromEntries(input, _cachedEntries)
+  } catch (e) {
+    console.warn('[curation] API fetch failed, falling back to static data:', e.message)
+    // 降级：使用静态数据
+    return generateCuration(input)
+  }
+}
+
+// ===== 核心引擎逻辑（与数据源无关） =====
+function generateCurationFromEntries(input, entriesByGroup) {
   const { axisType = 'buy', axisNodeKey = 'improve', dimensions = [], freeText = '' } = input || {}
   const group = AXIS_GROUPS.find(g => g.type === axisType) || AXIS_GROUPS[0]
   const node = group.nodes.find(n => n.key === axisNodeKey) || group.nodes[0]
@@ -76,7 +165,7 @@ export function generateCuration(input) {
   // 2) 扁平化 + 打分
   const all = []
   for (const grpKey of ['decoder', 'see', 'nego']) {
-    (ENTRIES[grpKey] || []).forEach(e => {
+    (entriesByGroup[grpKey] || []).forEach(e => {
       const text = searchable(e)
       let score = 0
       qArr.forEach(kw => {

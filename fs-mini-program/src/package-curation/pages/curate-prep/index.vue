@@ -32,7 +32,10 @@
       <view v-if="clientName" class="client-bar">已关联客户：{{ clientName }}（准备结果将存入其认知卡）</view>
 
       <view class="hint">依据来自真实字典 decoder / see / nego，绝不编造；缺失依据诚实标注「依据整理中」。</view>
-      <button class="btn-main" @tap="gen">⚡ 生成见面参谋</button>
+      <view v-if="loadError" class="err-msg">{{ loadError }}</view>
+      <button class="btn-main" @tap="gen" :disabled="loading">
+        {{ loading ? '⏳ 策展中...' : '⚡ 生成见面参谋' }}
+      </button>
     </block>
 
     <!-- 结果态 -->
@@ -106,7 +109,7 @@
 </template>
 
 <script>
-import { AXIS_GROUPS, DIMENSIONS, generateCuration } from '../../engine.js'
+import { AXIS_GROUPS, DIMENSIONS, generateCurationAsync } from '../../engine.js'
 import { useUserStore } from '../../../store/user'
 
 export default {
@@ -121,7 +124,9 @@ export default {
       clientId: null,
       clientName: '',
       result: null,
-      savedTip: ''
+      savedTip: '',
+      loading: false,
+      loadError: ''
     }
   },
   computed: {
@@ -163,14 +168,23 @@ export default {
       else this.selectedDims.push(key)
     },
     gen() {
-      this.result = generateCuration({
+      this.loading = true
+      this.loadError = ''
+      generateCurationAsync({
         axisType: this.axisType,
         axisNodeKey: this.axisNodeKey,
         dimensions: this.selectedDims,
         freeText: this.freeText
+      }).then(res => {
+        this.result = res
+        this.savedTip = ''
+        this.loading = false
+        uni.pageScrollTo({ scrollTop: 0, duration: 200 })
+      }).catch(err => {
+        console.error('[curation] generate failed:', err)
+        this.loadError = '生成失败，请检查网络后重试'
+        this.loading = false
       })
-      this.savedTip = ''
-      uni.pageScrollTo({ scrollTop: 0, duration: 200 })
     },
     save() {
       if (!this.clientId) {
@@ -253,4 +267,6 @@ export default {
 .empty-mini { font-size: 12px; color: #aaa; padding: 6px 0; }
 .actions { margin-top: 4px; }
 .saved-tip { text-align: center; font-size: 12px; color: #3d5a3e; margin-top: 10px; }
+.err-msg { background: #fff0f0; color: #c0392b; padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px; text-align: center; }
+.btn-main:disabled { opacity: 0.6; }
 </style>
