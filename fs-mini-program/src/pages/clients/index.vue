@@ -241,16 +241,27 @@ export default {
       if (!this.form.name || !this.form.name.trim()) { uni.showToast({ title: '请填写称呼 / 全名', icon: 'none' }); return }
       if (!this.form.surname) this.form.surname = (this.form.name || '客')[0]
       const payload = { ...this.form }
-      if (this.editingId) {
-        this.userStore.updateClient(this.editingId, payload)
-        uni.showToast({ title: '已保存修改', icon: 'none' })
-      } else {
-        this.userStore.addClient(payload)
-        this.userStore.markDone('profile')
-        this.userStore.earnPoints(5, '完善客户档案')
-        uni.showToast({ title: '客户已创建 · +5 积分', icon: 'none' })
+      let ok = false
+      try {
+        if (this.editingId) {
+          this.userStore.updateClient(this.editingId, payload)
+        } else {
+          this.userStore.addClient(payload)
+          this.userStore.markDone('profile')
+          this.userStore.earnPoints(5, '完善客户档案')
+        }
+        ok = true
+      } catch (e) {
+        console.error('[clients] saveForm 异常', e)
+        // 真机极端情况下兜底再建一次，保证客户至少写入
+        try { if (!this.editingId) this.userStore.addClient(payload) } catch (_) {}
+      } finally {
+        this.showForm = false   // 无论成功失败都关闭表单，避免「点了没反应」
       }
-      this.showForm = false
+      uni.showToast({
+        title: this.editingId ? (ok ? '已保存修改' : '保存失败，请重试') : (ok ? '客户已创建 · +5 积分' : '创建失败，请重试'),
+        icon: 'none'
+      })
     },
     delClient(c) {
       this.askDel(c)
