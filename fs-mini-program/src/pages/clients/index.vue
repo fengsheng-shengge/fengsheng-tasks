@@ -15,7 +15,7 @@
       <view class="empty-ico">👥</view>
       <view class="empty-t">还没有客户档案</view>
       <view class="empty-s">建档后，每次见面用「见面参谋」生成专属方案，客户的偏好与信号会自动沉淀到认知卡——越服务越懂 TA，复购/转介绍自然来。</view>
-      <button class="empty-btn" @tap="openForm()">＋ 立即建立第一个客户</button>
+      <button class="empty-btn" @tap="openForm()">＋ 立即建立客户档案</button>
     </view>
 
     <view class="client-card" v-for="c in list" :key="c.id" :class="{ sample: c.seed }" @tap="openDetail(c)">
