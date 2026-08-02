@@ -405,6 +405,7 @@ const ERROR_THRESHOLD = 20;        // 20 errors/min → degraded
 let _degradedMode = false;
 let _degradedUntil = 0;
 const DEGRADED_DURATION_MS = 60_000; // 1 min degraded
+const _startTime = Date.now(); // Worker cold-start timestamp
 
 function recordError() {
   const now = Date.now();
@@ -1077,6 +1078,66 @@ async function handleStatsHealth(request, env) {
     recordD1Failure();
     return jsonResponse({ ...base, status: 'degraded', db: 'error', db_connected: false, error: e.message });
   }
+}
+
+// Enhanced heartbeat: comprehensive health check for external monitoring
+async function handleHeartbeat(request, env, ctx) {
+  const now = new Date().toISOString();
+  const checks = {
+    status: 'ok',
+    version: 'v20260802-1330',
+    timestamp: now,
+    uptime_seconds: (Date.now() - _startTime) / 1000,
+    circuit_breaker: _d1CircuitOpen ? 'open' : 'closed',
+    degraded_mode: _degradedMode,
+    checks: {}
+  };
+
+  // Check 1: Manifest loading
+  try {
+    const manifest = await loadManifest(env);
+    if (manifest && manifest.total) {
+      checks.checks.manifest = { ok: true, total_entries: manifest.total, domains: (manifest.domains || []).length };
+    } else {
+      checks.checks.manifest = { ok: false, error: 'manifest empty or null' };
+      checks.status = 'degraded';
+    }
+  } catch (e) {
+    checks.checks.manifest = { ok: false, error: e.message };
+    checks.status = 'degraded';
+  }
+
+  // Check 2: Domain data (spot-check one domain)
+  try {
+    const sample = await loadDomainEntries(env, '签约前');
+    if (sample && sample.length > 0) {
+      checks.checks.domain_data = { ok: true, sample_domain: '签约前', entry_count: sample.length };
+    } else {
+      checks.checks.domain_data = { ok: false, error: 'domain data empty' };
+      checks.status = 'degraded';
+    }
+  } catch (e) {
+    checks.checks.domain_data = { ok: false, error: e.message };
+    checks.status = 'degraded';
+  }
+
+  // Check 3: Cache status
+  checks.checks.cache = {
+    manifest_cached: _manifestCache !== null,
+    domain_caches: _domainCache.size,
+    manifest_cache_age_ms: _manifestCacheTime ? Date.now() - _manifestCacheTime : null
+  };
+
+  // Check 4: D1 (if available)
+  if (env.DB) {
+    checks.checks.d1 = { configured: true };
+  } else {
+    checks.checks.d1 = { configured: false };
+  }
+
+  const resp = jsonResponse(checks);
+  resp.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  return resp;
 }
 
 // Simple handlers for additional routes
@@ -2800,6 +2861,9 @@ export default {
     if (path === '/api/mini/scene/entries') return handleMiniSceneEntries(request, env, ctx);
     // P0 Batch3: Weighted search v2 (API#7)
     if (path === '/api/search/v2') return handleSearchV2(request, env, ctx);
+    // Heartbeat: enhanced health check for monitoring
+    if (path === '/api/heartbeat') return handleHeartbeat(request, env, ctx);
+
     // /api/mini/entry/:id — path-based routing
     if (path.startsWith('/api/mini/entry/')) return handleMiniEntryDetail(request, env, ctx);
     // /api/mini/entry fallback (?id=XXX)
