@@ -18,7 +18,7 @@
       <view class="dict-search">
         <input class="dict-input" v-model="kw" placeholder="搜词条：学区 / 公积金 / 产权 / 甲醛 / 违约…" confirm-type="search" />
       </view>
-      <scroll-view scroll-x="true" enable-flex class="dict-chips">
+      <scroll-view scroll-x="true" enable-flex class="dict-chips" style="height:auto">
         <view class="chip" :class="{ on: curDomain === '' }" @tap="curDomain = ''">全部</view>
         <view class="chip" v-for="d in dictDomains" :key="d.key" :class="{ on: curDomain === d.key }" @tap="curDomain = d.key">{{ d.key }}<text class="chip-n">{{ d.count }}</text></view>
       </scroll-view>
@@ -168,7 +168,8 @@ export default {
 /* 真实词典模块（ascii 类名，合规真机编译） */
 .dict-search { margin-bottom:10px; }
 .dict-input { background:#fff; border:1px solid #e7e0d4; border-radius:10px; padding:10px 12px; font-size:14px; color:#2b2b2b; width:100%; box-sizing:border-box; }
-.dict-chips { white-space:nowrap; display:flex; gap:8px; margin-bottom:12px; }
+.dict-chips { white-space:nowrap; display:flex; gap:8px; margin-bottom:12px; align-items:center; }
+.dict-chips .chip { align-self:center; height:auto; }
 .chip { flex:0 0 auto; padding:7px 12px; background:#f0ece2; border-radius:999px; font-size:13px; color:#555; }
 .chip.on { background:#3d5a3e; color:#fff; font-weight:700; }
 .chip-n { margin-left:6px; font-size:11px; opacity:.7; }

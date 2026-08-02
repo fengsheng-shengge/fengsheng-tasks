@@ -215,9 +215,9 @@ textarea { width: 100%; border: 1px solid var(--border); border-radius: 11px; pa
 .cases-wallet .earn { background: #fff; color: var(--green); border: none; padding: 9px 13px; border-radius: 999px; font-size: 12.5px; font-weight: 700; flex-shrink: 0; }
 .filter-block { margin-bottom: 12px; }
 .filter-label { font-size: 12px; color: var(--text-secondary); margin: 0 2px 7px; font-weight: 600; }
-.chips { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding: 2px 0 4px; }
+.chips { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding: 2px 0 4px; height: auto; }
 .chips::-webkit-scrollbar { display: none; }
-.chip { flex-shrink: 0; background: var(--card); border: 1px solid var(--border); padding: 7px 13px; border-radius: 999px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; }
+.chip { flex-shrink: 0; align-self: center; height: auto; background: var(--card); border: 1px solid var(--border); padding: 7px 13px; border-radius: 999px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; }
 .chip.on { background: var(--green); color: #fff; border-color: var(--green); }
 .case-card { background: var(--card); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 11px; box-shadow: var(--shadow-sm); }
 .case-tags { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
