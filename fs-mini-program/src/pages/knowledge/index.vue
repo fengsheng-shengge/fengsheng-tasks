@@ -85,7 +85,7 @@
 <script>
 import { casesData } from '../../utils/v4data.js'
 import { useUserStore } from '../../store/user'
-import ENTRIES from '../../package-curation/data/entries_slim.js'
+import ENTRIES from '../../utils/entries_slim.js'
 
 // 真实法源判定（与策展引擎同口径）：仅真实 legalRef 挂徽标，缺失诚实标注
 function realLegal(ref) {

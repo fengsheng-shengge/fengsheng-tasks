@@ -1,6 +1,6 @@
 // V3.0 策展引擎（见面参谋）· 确定性检索增强 · 不依赖 LLM
 // 铁律：依据真不幻觉 —— 仅对真实 legalRef 挂依据徽标；缺失条目诚实标注；绝不编造。
-import ENTRIES from './data/entries_slim.js'
+import ENTRIES from '@/utils/entries_slim.js'
 
 // ===== 双纵轴节点（购5 / 租4）与检索关键词 =====
 export const AXIS_GROUPS = [

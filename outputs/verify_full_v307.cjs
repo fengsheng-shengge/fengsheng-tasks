@@ -4,7 +4,7 @@ const { chromium } = require('/Users/ke/WorkBuddy/Claw/node_modules/playwright')
 const fs = require('fs');
 
 const H5_DIR = '/Users/ke/WorkBuddy/Claw/fengsheng-tasks/fs-mini-program/dist/build/h5';
-const BASE = 'http://localhost:8090';
+const BASE = 'http://localhost:8096';
 const OUT = '/Users/ke/WorkBuddy/Claw/fengsheng-tasks/outputs/h5_verify_v307';
 fs.mkdirSync(OUT, { recursive: true });
 
