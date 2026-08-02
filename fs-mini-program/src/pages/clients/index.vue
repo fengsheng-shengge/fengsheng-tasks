@@ -6,6 +6,13 @@
       <button class="add-btn" @tap="openForm()">＋ 新建</button>
     </view>
 
+    <!-- v3.0.7.2 诊断条：用户进此页即能判断包版本，避免「是新版本还是老版本」歧义根因 -->
+    <view class="diag">
+      <text class="diag-v">包版本 v3.0.7.2</text>
+      <text class="diag-s">初始化 {{ userStore._initialized ? '✓' : '✗' }} · 当前 {{ list.length }} 张 · 存储 {{ hasSamples ? '已seed' : '未seed' }}</text>
+      <button v-if="list.length === 0" class="diag-r" @tap="forceSeed">↻ 重试示例</button>
+    </view>
+
     <view class="sample-bar" v-if="hasSamples">
       <text class="sample-bar-t">示例客户仅供演示参考 · 点击可清空</text>
       <button class="sample-clear" @tap="askClear">清空示例</button>
@@ -212,6 +219,17 @@ export default {
     // 不必等 App 的 200ms 延迟（App 延迟 init 仅作兜底）。initFromStorage 内部已按
     // 「fs_clients key 是否存在」区分首次启动(seed 示例)与用户清空(不回弹)，空态真实可达。
     if (!this.userStore._initialized) this.userStore.initFromStorage()
+    // v3.0.7.2 终极兜底：3.0.4 时代曾有"页面渲染但 storage 已空"的真机诡异回归
+    // —— 任何用户都点 '+ 新建' 先看弹层会否弹出，这一招绕开 seed 路径直击问题。
+    // 这里只做"显示空态"，不强行回填示例(尊重用户清空意图)。
+    if (this.userStore.clients.length === 0 && !this.userStore._triedAutoSeed) {
+      this.userStore._triedAutoSeed = true
+      // 只在 storage key 完全不存在(字符串意义上)时尝试一次 seed；
+      // 已存在但解析为空数组 → 尊重用户，不强塞。
+      let raw = ''
+      try { raw = uni.getStorageSync('fs_clients') } catch (e) {}
+      if (!raw) this.userStore.seedClients()
+    }
     const fid = this.userStore.focusClientId
     if (fid) {
       this.userStore.focusClientId = null
@@ -310,6 +328,16 @@ export default {
       this.confirmShow = false
     },
     confirmCancel() { this.confirmShow = false },
+    // v3.0.7.2：诊断条上的「重试示例」按钮——用户若截图见到 [当前 0 张 · 存储 未seed]
+    // 一键重新写入 4 张示例，避免重新加好友列表。生产代码不允许保留的副作用是把
+    // 当前已删示例但确实存 0 真实客户的状态变成有 4 张示例；这是开发期调试对策。
+    forceSeed() {
+      try { uni.removeStorageSync('fs_clients') } catch (e) {}
+      this.userStore.seeded = false
+      this.userStore.clients = []
+      this.userStore.seedClients()
+      uni.showToast({ title: '已写入 4 张示例客户', icon: 'none' })
+    },
     openCurate(c) {
       this.showDetail = false
       uni.$emit('openCurateForm', c.id)
@@ -343,6 +371,12 @@ export default {
 .empty-btn { display: inline-block; margin: 0; background: #3d5a3e; color: #fff; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 22px; line-height: 1.4; }
 .empty-btn:active { background: #2f4730; }
 .sample-bar { display: flex; align-items: center; justify-content: space-between; background: #f7f4ef; border: 1px dashed #d9cfbe; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; }
+/* v3.0.7.2 诊断条：用户进客户档案第一眼能看到包版本和当前状态，一锤定音判断"是新版本还是老版本" */
+.diag { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #fff8e6; border: 1px dashed #d9cfbe; border-radius: 8px; padding: 6px 10px; margin-bottom: 10px; font-size: 11px; color: #6b5b3a; }
+.diag-v { font-weight: 800; color: #c46a3a; }
+.diag-s { flex: 1; min-width: 0; }
+.diag-r { margin: 0; background: #c46a3a; color: #fff; font-size: 11px; padding: 3px 9px; border-radius: 10px; line-height: 1.4; }
+.diag-r:active { background: #a9542c; }
 .sample-bar-t { font-size: 12px; color: #8a837a; }
 .sample-clear { margin: 0; background: #fff; color: #b08a5a; border: 1px solid #e0cdab; font-size: 12px; padding: 5px 12px; border-radius: 16px; line-height: 1.4; }
 .sample-clear:active { background: #f3ead9; }
