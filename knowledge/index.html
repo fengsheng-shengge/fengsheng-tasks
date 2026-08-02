@@ -1237,16 +1237,16 @@ function showEntry(data){
   showEntryDetail(data);
 }
 
-/* ===== 搜索结果列表 ===== */
+/* ===== 搜索结果列表（v2 加权搜索） ===== */
 async function doSearch(query){
   const input=document.getElementById('searchInput');
   input.value=query;
-  const q=query.toLowerCase().trim();
+  const q=query.trim();
   if(!q) return;
 
-  // Server-side search (fast, no need to load all entries)
+  // v2 加权搜索：10字段加权 + score + highlights
   try{
-    const resp=await fetch('/api/search?q='+encodeURIComponent(q));
+    const resp=await fetch('/api/search/v2?q='+encodeURIComponent(q)+'&pageSize=50');
     const data=await resp.json();
     const results=data.results||[];
 
@@ -1259,31 +1259,36 @@ async function doSearch(query){
     }
     if(results.length===1){
       const e=results[0];
-      const entryIcon = e.icon || getDomainIcon(e.domain) || '📄';
       showEntryDetail({
-        icon: entryIcon,
-        title: e.title || e.name || e.id,
+        icon: getEntryTypeIcon(e.entryType) || '📄',
+        title: e.name || e.id,
         id: e.id,
-        def: e.def||'',
-        consumer: e.consumer||e.consumerQ||'',
-        servicer: e.servicer||e.simpleAnswer||'',
+        def: e.oneLineAnswer||'',
+        consumer: e.consumerQ||'',
+        servicer: '',
       });
       return;
     }
     showSearchResults(query, results);
   }catch(e){
-    console.warn('服务器搜索失败', e);
+    console.warn('搜索失败', e);
   }
+}
+
+function getEntryTypeIcon(entryType) {
+  const icons = { LAW: '⚖️', PROC: '📋', RISK: '⚠️', CASE: '📂', STD: '📐', POL: '📜', TERM: '📝' };
+  return icons[entryType] || '📄';
 }
 
 function showSearchResults(query, results){
   const listHtml = '<div class="domain-entry-list">' + results.map(e=>{
-    const icon = e.icon || getDomainIcon(e.domain) || '📄';
-    const title = e.title || e.name || e.id;
-    const meta = [e.domain, e.subScene].filter(Boolean).join(' · ');
+    const icon = getEntryTypeIcon(e.entryType) || '📄';
+    const title = e.name || e.id;
+    const meta = [e.entryType, e.priority, e.severity].filter(Boolean).join(' · ');
+    const score = e.score ? ' <span style="font-size:10px;color:var(--p);background:rgba(61,90,62,0.08);padding:1px 6px;border-radius:3px">'+e.score+'分</span>' : '';
     return '<div class="domain-entry-item" onclick="closeEntry();setTimeout(()=>openEntry(\''+e.id+'\'),150)">' +
            '<span class="de-icon">'+icon+'</span>' +
-           '<div class="de-info"><div class="de-title">'+escapeHtml(title)+'</div>' +
+           '<div class="de-info"><div class="de-title">'+escapeHtml(title)+score+'</div>' +
            '<div class="de-meta">'+escapeHtml(meta||e.id)+'</div></div>' +
            '<span class="de-arrow">→</span></div>';
   }).join('') + '</div>';
