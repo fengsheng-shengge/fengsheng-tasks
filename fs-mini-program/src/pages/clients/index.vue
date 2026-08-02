@@ -6,6 +6,11 @@
       <button class="add-btn" @tap="openForm()">＋ 新建</button>
     </view>
 
+    <view class="sample-bar" v-if="hasSamples">
+      <text class="sample-bar-t">示例客户仅供演示参考 · 点击可清空</text>
+      <button class="sample-clear" @tap="askClear">清空示例</button>
+    </view>
+
     <view v-if="list.length === 0" class="empty">
       <view class="empty-ico">👥</view>
       <view class="empty-t">还没有客户档案</view>
@@ -85,7 +90,7 @@
       </scroll-view>
       <view class="ov-foot">
         <button class="btn-green" @tap="openForm(detailSrc)">✎ 编辑客户</button>
-        <button class="btn-red" @tap="delClient(detailSrc)">🗑 删除客户</button>
+        <button class="btn-red" @tap="askDel(detailSrc)">🗑 删除客户</button>
         <button class="btn-line" @tap="openCurate(detailSrc)">为本次接触生成策展包 →</button>
       </view>
     </view>
@@ -123,6 +128,18 @@
         <button class="btn-green foot-save" @tap="saveForm">✓ {{ editingId ? '保存修改' : '创建客户' }}</button>
       </view>
     </view>
+
+    <!-- 自定义确认弹窗（不依赖系统模态框，真机 / H5 一致可用，避开 uni Web 版 showModal 缺陷） -->
+    <view class="modal-mask" v-if="confirmShow" @tap="confirmCancel">
+      <view class="modal" @tap.stop>
+        <view class="modal-title">{{ confirmTitle }}</view>
+        <view class="modal-content">{{ confirmContent }}</view>
+        <view class="modal-btns">
+          <button class="modal-btn cancel" @tap="confirmCancel">取消</button>
+          <button class="modal-btn ok" @tap="confirmOk">确定</button>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -137,6 +154,11 @@ export default {
       editingId: null,
       detail: {},
       detailSrc: null,
+      confirmShow: false,
+      confirmTitle: '',
+      confirmContent: '',
+      confirmMode: '',
+      delTarget: null,
       form: this.blankForm(),
       relOpts: ['买房客户', '租客', '业主', '房东'],
       stageOpts: ['购房线 / ①首套','购房线 / ②改善','购房线 / ③教育','购房线 / ④升级','购房线 / ⑤适老','租住线 / ①起步','租住线 / ②改善','租住线 / ③家庭','租住线 / ④品质','业主侧'],
@@ -148,7 +170,8 @@ export default {
   },
   computed: {
     userStore() { return useUserStore() },
-    list() { return this.userStore.clients }
+    list() { return this.userStore.clients },
+    hasSamples() { return this.userStore.clients.some(c => c.seed) }
   },
   onLoad(query) {
     uni.$on('openClientDetail', (id) => {
@@ -170,7 +193,9 @@ export default {
     // 兜底 seed：极端情况（mp-weixin 真机冷启动 onLaunch 时序、storage 异常清空）导致
     // clients 仍为空时，进入 tab 时再补一次 seed，避免「完全空白、连 empty 文案也看不到」。
     // 已 seed 过（含用户主动删光）则不再塞回，让空态真实可达。
-    if (!this.userStore.seeded && this.userStore.clients.length === 0) this.userStore.seedClients()
+    // 注意：必须等 initFromStorage(_initialized) 完成，否则会与 App 的 200ms 延迟 init 竞态，
+    // 在 reload 后读出旧的 seeded=false 而重复塞回示例（见 store._initialized）。
+    if (this.userStore._initialized && !this.userStore.seeded && this.userStore.clients.length === 0) this.userStore.seedClients()
     const fid = this.userStore.focusClientId
     if (fid) {
       this.userStore.focusClientId = null
@@ -230,12 +255,34 @@ export default {
       this.showForm = false
     },
     delClient(c) {
-      uni.showModal({
-        title: '删除客户',
-        content: '确定删除「' + c.name + '」？此操作不可恢复。',
-        success: (r) => { if (r.confirm) { this.userStore.removeClient(c.id); this.showDetail = false; uni.showToast({ title: '已删除', icon: 'none' }) } }
-      })
+      this.askDel(c)
     },
+    askDel(c) {
+      this.delTarget = c
+      this.confirmMode = 'del'
+      this.confirmTitle = '删除客户'
+      this.confirmContent = '确定删除「' + c.name + '」？此操作不可恢复。'
+      this.confirmShow = true
+    },
+    askClear() {
+      const n = this.userStore.clients.filter(x => x.seed).length
+      this.confirmMode = 'clear'
+      this.confirmTitle = '清空示例客户'
+      this.confirmContent = '将删除全部 ' + n + ' 张示例客户（真实客户不受影响）。确定？'
+      this.confirmShow = true
+    },
+    confirmOk() {
+      if (this.confirmMode === 'del' && this.delTarget) {
+        this.userStore.removeClient(this.delTarget.id)
+        this.showDetail = false
+        uni.showToast({ title: '已删除', icon: 'none' })
+      } else if (this.confirmMode === 'clear') {
+        const n = this.userStore.clearSamples()
+        uni.showToast({ title: '已清空 ' + n + ' 张示例', icon: 'none' })
+      }
+      this.confirmShow = false
+    },
+    confirmCancel() { this.confirmShow = false },
     openCurate(c) {
       this.showDetail = false
       uni.$emit('openCurateForm', c.id)
@@ -268,6 +315,18 @@ export default {
 .empty-s { font-size: 12px; color: #8a837a; line-height: 1.55; margin-bottom: 18px; }
 .empty-btn { display: inline-block; margin: 0; background: #3d5a3e; color: #fff; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 22px; line-height: 1.4; }
 .empty-btn:active { background: #2f4730; }
+.sample-bar { display: flex; align-items: center; justify-content: space-between; background: #f7f4ef; border: 1px dashed #d9cfbe; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; }
+.sample-bar-t { font-size: 12px; color: #8a837a; }
+.sample-clear { margin: 0; background: #fff; color: #b08a5a; border: 1px solid #e0cdab; font-size: 12px; padding: 5px 12px; border-radius: 16px; line-height: 1.4; }
+.sample-clear:active { background: #f3ead9; }
+.modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1100; display: flex; align-items: center; justify-content: center; }
+.modal { width: 82%; max-width: 320px; background: #fff; border-radius: 14px; padding: 22px 20px 16px; box-sizing: border-box; }
+.modal-title { font-size: 16px; font-weight: 800; color: #2b2b2b; margin-bottom: 10px; }
+.modal-content { font-size: 13.5px; color: #666; line-height: 1.6; margin-bottom: 18px; }
+.modal-btns { display: flex; gap: 12px; }
+.modal-btn { flex: 1; margin: 0; border-radius: 10px; padding: 11px; font-size: 15px; line-height: 1.2; }
+.modal-btn.cancel { background: #f0ece2; color: #555; }
+.modal-btn.ok { background: #c0392b; color: #fff; }
 .client-card { display: flex; align-items: center; background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
 /* 示例客户：灰化 + 虚线框 + 角标，明确「仅参考、非真实客户」 */
 .client-card.sample { opacity: .6; background: #f4f2ed; border-style: dashed; }

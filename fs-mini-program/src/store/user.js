@@ -55,6 +55,7 @@ export const useUserStore = defineStore('user', {
     shares: 0, // 分享次数（案例分享任务）
     // 答题统计
     quizStats: { total: 0, correct: 0, streak: 0, lastAnswerDate: null },
+    _initialized: false, // 首次 initFromStorage 完成标记（页面 onShow 兜底 seed 须等它，避免与 App 200ms 延迟 init 竞态导致重复塞示例）
   }),
 
   getters: {
@@ -164,8 +165,9 @@ export const useUserStore = defineStore('user', {
       this.shares = this._get('fs_shares', 0) || 0
       this.seeded = this._get('fs_seeded', false) || false
       // 首次启动（无缓存、且此前未 seed 过）写入 4 个示例客户，让经纪人看到"可录入"的样子
-      if (!this.seeded && this.clients.length === 0) this.seedClients()
-    },
+    if (!this.seeded && this.clients.length === 0) this.seedClients()
+    this._initialized = true
+  },
 
     /** 首次启动写入 4 个示例客户（标记 seed，可删可改） */
     seedClients() {
@@ -245,6 +247,14 @@ export const useUserStore = defineStore('user', {
     removeClient(id) {
       this.clients = this.clients.filter(c => c.id !== id)
       this._persist()
+    },
+
+    /** 清空所有示例客户（仅删除 seed:true，真实客户不受影响） */
+    clearSamples() {
+      const before = this.clients.length
+      this.clients = this.clients.filter(c => !c.seed)
+      this._persist()
+      return before - this.clients.length
     },
 
     getClient(id) {
