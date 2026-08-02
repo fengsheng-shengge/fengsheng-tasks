@@ -6,7 +6,12 @@
       <button class="add-btn" @tap="openForm()">＋ 新建</button>
     </view>
 
-    <view v-if="list.length === 0" class="empty">还没有客户，点右上角「＋ 新建」建立第一个。</view>
+    <view v-if="list.length === 0" class="empty">
+      <view class="empty-ico">👥</view>
+      <view class="empty-t">还没有客户档案</view>
+      <view class="empty-s">从第一个开始，让每一次见面都有据可依</view>
+      <button class="empty-btn" @tap="openForm()">＋ 立即建立第一个客户</button>
+    </view>
 
     <view class="client-card" v-for="c in list" :key="c.id" @tap="openDetail(c)">
       <view class="avatar">{{ c.surname }}</view>
@@ -24,6 +29,7 @@
         <view><view style="font-size:17px;font-weight:700">{{ detail.name }}</view><view class="sub">{{ detail.stage }} · {{ detail.status }}</view></view>
       </view>
       <scroll-view class="ovcontent" scroll-y="true">
+        <button class="btn-prep" @tap="openPrep(detailSrc)">🎯 准备这次见面（见面参谋）</button>
         <view class="sec dualaxis">
           <view class="h"><text class="em">🧭</text>双纵轴定位（我在服务 TA 的哪一段）</view>
           <view class="axis-row"><text class="axis-name">购5</text><view class="axis-chips">
@@ -64,6 +70,17 @@
             <view class="mp-point">{{ m.point }}</view>
             <view class="mp-at">{{ fmtDate(m.at) }}</view>
           </view>
+        </view>
+        <view class="sec cognition" v-if="detailSrc.cognition">
+          <view class="h"><text class="em">🧠</text>认知卡（越服务越懂客户）</view>
+          <block v-if="(detailSrc.cognition.known || []).length || (detailSrc.cognition.signals || []).length">
+            <view class="cog-sub">已知偏好</view>
+            <view class="cog-chips"><text v-for="(k, i) in detailSrc.cognition.known" :key="i" class="cog-chip">{{ k }}</text></view>
+            <view class="cog-sub">决策信号 / 关怀点</view>
+            <view class="cog-chips"><text v-for="(s, i) in detailSrc.cognition.signals" :key="i" class="cog-chip signal">{{ s }}</text></view>
+            <view class="cog-count">已沉淀 {{ (detailSrc.cognition.log || []).length }} 次见面参谋</view>
+          </block>
+          <view v-else class="cog-empty">暂无认知沉淀。准备一次见面后，客户的偏好与信号会自动长在这里。</view>
         </view>
       </scroll-view>
       <view class="ov-foot">
@@ -150,6 +167,10 @@ export default {
   // V2.7：客户档案已提升为 tabBar 页，tabBar 页无法 URL 带参。
   // 首页「今日跟进」改将目标客户写入 store.focusClientId，此处 onShow 读取并打开详情后清空。
   onShow() {
+    // 兜底 seed：极端情况（mp-weixin 真机冷启动 onLaunch 时序、storage 异常清空）导致
+    // clients 仍为空时，进入 tab 时再补一次 seed，避免「完全空白、连 empty 文案也看不到」。
+    // 已 seed 过（含用户主动删光）则不再塞回，让空态真实可达。
+    if (!this.userStore.seeded && this.userStore.clients.length === 0) this.userStore.seedClients()
     const fid = this.userStore.focusClientId
     if (fid) {
       this.userStore.focusClientId = null
@@ -220,6 +241,11 @@ export default {
       uni.$emit('openCurateForm', c.id)
       uni.switchTab({ url: '/pages/curate/index' })
     },
+    // V3.0：进入见面参谋（分包非 tab 页），携带 clientId 以便沉淀认知卡
+    openPrep(c) {
+      this.showDetail = false
+      uni.navigateTo({ url: '/package-curation/pages/curate-prep/index?clientId=' + (c && c.id) })
+    },
     fmtDate(ts) {
       if (!ts) return ''
       const d = new Date(ts)
@@ -236,7 +262,12 @@ export default {
 .section-title { font-size: 18px; font-weight: 800; color: #3d5a3e; }
 .section-more { font-size: 12px; color: #C8956D; flex: 1; }
 .add-btn { margin: 0; padding: 6px 14px; background: #3d5a3e; color: #fff; font-size: 13px; border-radius: 20px; line-height: 1.6; }
-.empty { background: #fff; border: 1px dashed #e7e0d4; border-radius: 12px; padding: 24px; text-align: center; color: #999; font-size: 13px; }
+.empty { background: #fff; border: 1px dashed #e7e0d4; border-radius: 12px; padding: 32px 20px; text-align: center; color: #999; font-size: 13px; }
+.empty-ico { font-size: 44px; line-height: 1; margin-bottom: 10px; }
+.empty-t { font-size: 15px; font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
+.empty-s { font-size: 12px; color: #8a837a; line-height: 1.55; margin-bottom: 18px; }
+.empty-btn { display: inline-block; margin: 0; background: #3d5a3e; color: #fff; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 22px; line-height: 1.4; }
+.empty-btn:active { background: #2f4730; }
 .client-card { display: flex; align-items: center; background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
 .avatar { width: 42px; height: 42px; border-radius: 50%; background: #f0ece2; color: #3d5a3e; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: center; margin-right: 12px; }
 .info { flex: 1; min-width: 0; }
@@ -292,6 +323,13 @@ export default {
 .ov-foot .foot-cancel { flex: 0 0 auto; }
 .btn-red { background: #fff; color: #c0392b; border: 1px solid #f0c4bd; border-radius: 10px; padding: 12px; font-size: 14px; margin-top: 8px; }
 .btn-line { background: #fff; color: #c46a3a; border: 1px solid #e7d3c2; border-radius: 10px; padding: 12px; font-size: 14px; margin-top: 8px; }
+.btn-prep { background: linear-gradient(135deg, #c46a3a 0%, #b1542c 100%); color: #fff; border-radius: 12px; padding: 13px; font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+.cognition .cog-sub { font-size: 12px; font-weight: 700; color: #3d5a3e; margin: 6px 0 6px; }
+.cog-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cog-chip { font-size: 12px; padding: 4px 10px; border-radius: 8px; background: #eef3ec; color: #3d5a3e; }
+.cog-chip.signal { background: #fff4ec; color: #c46a3a; }
+.cog-count { font-size: 11px; color: #8a837a; margin-top: 10px; }
+.cog-empty { font-size: 12.5px; color: #8a837a; line-height: 1.6; }
 .field { margin-bottom: 14px; }
 .label { display: block; font-size: 13px; font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
 .inp { width: 100%; background: #f7f4ef; border: 1px solid #e7e0d4; border-radius: 8px; padding: 10px; font-size: 14px; box-sizing: border-box; }
