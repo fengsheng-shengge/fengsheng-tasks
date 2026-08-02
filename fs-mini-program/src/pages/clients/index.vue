@@ -103,7 +103,7 @@
           <view v-else class="cog-empty">暂无认知沉淀。准备一次见面后，客户的偏好与信号会自动长在这里。</view>
         </view>
       </scroll-view>
-      <view class="ov-foot">
+      <view class="ov-foot" :style="{ paddingBottom: tabBarSafe + 'px' }">
         <button class="btn-green" @tap="openForm(detailSrc)">✎ 编辑客户</button>
         <button class="btn-red" @tap="askDel(detailSrc)">🗑 删除客户</button>
         <button class="btn-line" @tap="openCurate(detailSrc)">为本次接触生成策展包 →</button>
@@ -138,7 +138,7 @@
         <view class="field"><text class="label">小区 / 地址</text><input class="inp" v-model="form.addr" placeholder="选填" /></view>
         <view class="field"><text class="label">备注（核心诉求 / 敏感点）</text><textarea class="inp" v-model="form.note" placeholder="如 90后婚房，预算300万，看重学区与通勤" /></view>
       </scroll-view>
-      <view class="ov-foot">
+      <view class="ov-foot" :style="{ paddingBottom: tabBarSafe + 'px' }">
         <button class="btn-line foot-cancel" @tap="closeForm">取消</button>
         <button class="btn-green foot-save" @tap="saveForm">✓ {{ editingId ? '保存修改' : '创建客户' }}</button>
       </view>
@@ -175,6 +175,7 @@ export default {
       confirmContent: '',
       confirmMode: '',
       delTarget: null,
+      tabBarSafe: 70, // 原生 tabBar 安全留白(px)，onLoad 用系统信息精确计算覆盖
       form: this.blankForm(),
       relOpts: ['买房客户', '租客', '业主', '房东'],
       stageOpts: ['购房线 / ①首套','购房线 / ②改善','购房线 / ③教育','购房线 / ④升级','购房线 / ⑤适老','租住线 / ①起步','租住线 / ②改善','租住线 / ③家庭','租住线 / ④品质','业主侧'],
@@ -201,6 +202,14 @@ export default {
     }
   },
   onLoad(query) {
+    // 精确计算原生 tabBar 安全留白：原生 tabBar 永远压在 webview 之上，
+    // 浮层底部按钮必须抬到 tabBar 之上才点得到（拍脑袋的 110rpx 在小屏/异形屏不够）。
+    try {
+      const info = uni.getSystemInfoSync()
+      const sb = (info.safeAreaInsets && typeof info.safeAreaInsets.bottom === 'number') ? info.safeAreaInsets.bottom : 0
+      // 微信原生 tabBar 内容高度约 50px(双端) + 安全区 + 16px 缓冲
+      this.tabBarSafe = 50 + sb + 16
+    } catch (e) { this.tabBarSafe = 82 }
     uni.$on('openClientDetail', (id) => {
       const c = this.userStore.getClient(id)
       if (c) this.openDetail(c)
