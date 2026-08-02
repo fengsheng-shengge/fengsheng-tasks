@@ -14,7 +14,7 @@
     <view v-if="list.length === 0" class="empty">
       <view class="empty-ico">👥</view>
       <view class="empty-t">还没有客户档案</view>
-      <view class="empty-s">从第一个开始，让每一次见面都有据可依</view>
+      <view class="empty-s">建档后，每次见面用「见面参谋」生成专属方案，客户的偏好与信号会自动沉淀到认知卡——越服务越懂 TA，复购/转介绍自然来。</view>
       <button class="empty-btn" @tap="openForm()">＋ 立即建立第一个客户</button>
     </view>
 
@@ -75,6 +75,14 @@
             <view class="mp-point">{{ m.point }}</view>
             <view class="mp-at">{{ fmtDate(m.at) }}</view>
           </view>
+        </view>
+        <view class="sec cases-ref" v-if="relatedCases.length">
+          <view class="h"><text class="em">💡</text>案例参考（同类客户怎么被服务好）</view>
+          <view class="cr" v-for="(c, i) in relatedCases" :key="i">
+            <view class="cr-title">{{ c.title }}</view>
+            <view class="cr-preview">{{ c.preview }}</view>
+          </view>
+          <view class="cr-tip">遇到类似场景，在「策展」页用见面参谋一键生成专属方案 →</view>
         </view>
         <view class="sec cognition" v-if="detailSrc.cognition">
           <view class="h"><text class="em">🧠</text>认知卡（越服务越懂客户）</view>
@@ -144,7 +152,7 @@
 </template>
 
 <script>
-import { personaMap, levelMap } from '../../utils/v4data.js'
+import { personaMap, levelMap, casesData } from '../../utils/v4data.js'
 import { useUserStore } from '../../store/user'
 export default {
   data() {
@@ -171,7 +179,17 @@ export default {
   computed: {
     userStore() { return useUserStore() },
     list() { return this.userStore.clients },
-    hasSamples() { return this.userStore.clients.some(c => c.seed) }
+    hasSamples() { return this.userStore.clients.some(c => c.seed) },
+    // C：同类案例参考——让详情打开即有实料，不再"几乎空的"
+    relatedCases() {
+      const role = this.detailSrc ? (this.detailSrc.rel || '') : ''
+      const kw = role.replace('客户', '')
+      const matched = casesData.filter(c => {
+        const r = c.role || ''
+        return !role || r.indexOf(role) >= 0 || (kw && r.indexOf(kw) >= 0)
+      })
+      return (matched.length ? matched : casesData).slice(0, 3)
+    }
   },
   onLoad(query) {
     uni.$on('openClientDetail', (id) => {
@@ -405,6 +423,11 @@ export default {
 .cog-chip.signal { background: #fff4ec; color: #c46a3a; }
 .cog-count { font-size: 11px; color: #8a837a; margin-top: 10px; }
 .cog-empty { font-size: 12.5px; color: #8a837a; line-height: 1.6; }
+.cases-ref .cr { padding: 8px 0; border-bottom: 1px dashed #e7e0d4; }
+.cases-ref .cr:last-of-type { border-bottom: none; }
+.cr-title { font-size: 13.5px; font-weight: 700; color: #2b2b2b; }
+.cr-preview { font-size: 12.5px; color: #666; margin-top: 3px; line-height: 1.55; }
+.cr-tip { font-size: 11.5px; color: #c46a3a; margin-top: 10px; line-height: 1.5; }
 .field { margin-bottom: 14px; }
 .label { display: block; font-size: 13px; font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
 .inp { width: 100%; background: #f7f4ef; border: 1px solid #e7e0d4; border-radius: 8px; padding: 10px; font-size: 14px; box-sizing: border-box; }
