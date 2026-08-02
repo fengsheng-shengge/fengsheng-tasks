@@ -3,7 +3,7 @@
     <view class="section-header">
       <text class="section-title">客户档案</text>
       <text class="section-more">一次委托 · 终生服务</text>
-      <button class="add-btn" @tap="openForm()">＋ 新建</button>
+      <button class="add-btn" @tap="goAdd()">＋ 新建</button>
     </view>
 
     <!-- v3.0.7.2 诊断条：用户进此页即能判断包版本，避免「是新版本还是老版本」歧义根因 -->
@@ -22,7 +22,7 @@
       <view class="empty-ico">👥</view>
       <view class="empty-t">还没有客户档案</view>
       <view class="empty-s">建档后，每次见面用「见面参谋」生成专属方案，客户的偏好与信号会自动沉淀到认知卡——越服务越懂 TA，复购/转介绍自然来。</view>
-      <button class="empty-btn" @tap="openForm()">＋ 立即建立客户档案</button>
+      <button class="empty-btn" @tap="goAdd()">＋ 立即建立客户档案</button>
     </view>
 
     <view class="client-card" v-for="c in list" :key="c.id" :class="{ sample: c.seed }" @tap="openDetail(c)">
@@ -104,43 +104,8 @@
         </view>
       </scroll-view>
       <view class="ov-foot" :style="{ paddingBottom: tabBarSafe + 'px' }">
-        <button class="btn-green" @tap="openForm(detailSrc)">✎ 编辑客户</button>
-        <button class="btn-red" @tap="askDel(detailSrc)">🗑 删除客户</button>
+        <button class="btn-green" @tap="editFromDetail">✎ 编辑客户</button>
         <button class="btn-line" @tap="openCurate(detailSrc)">为本次接触生成策展包 →</button>
-      </view>
-    </view>
-
-    <!-- 新建/编辑客户表单 -->
-    <view class="overlay" :class="{ active: showForm }">
-      <view class="ov-nav">
-        <button class="back" @tap="closeForm">‹</button>
-        <view><view style="font-size:17px;font-weight:700">{{ editingId ? '编辑客户' : '新建客户' }}</view><view class="sub">信息越全，策展越准</view></view>
-      </view>
-      <scroll-view class="ovcontent" scroll-y="true">
-        <view class="field"><text class="label">姓氏（头像）</text><input class="inp" v-model="form.surname" placeholder="如 林" /></view>
-        <view class="field"><text class="label">称呼 / 全名</text><input class="inp" v-model="form.name" placeholder="如 林先生 & 未婚妻" /></view>
-        <view class="field"><text class="label">角色</text>
-          <view class="opt"><view v-for="o in relOpts" :key="o" :class="{ on: form.rel === o }" @tap="form.rel = o">{{ o }}</view></view>
-        </view>
-        <view class="field"><text class="label">双纵轴阶段</text>
-          <input class="inp" v-model="form.stage" placeholder="如 购房线 / ①首套" />
-          <view class="opt wrap"><view v-for="o in stageOpts" :key="o" :class="{ on: form.stage === o }" @tap="form.stage = o">{{ o }}</view></view>
-        </view>
-        <view class="field"><text class="label">性格频道</text>
-          <view class="opt"><view class="p-r" :class="{ on: form.pkey === 'red' }" @tap="form.pkey='red'">🔴 结果</view><view class="p-b" :class="{ on: form.pkey === 'blue' }" @tap="form.pkey='blue'">🔵 关系</view><view class="p-g" :class="{ on: form.pkey === 'green' }" @tap="form.pkey='green'">🟢 理智</view></view>
-        </view>
-        <view class="field"><text class="label">分层</text>
-          <view class="opt"><view v-for="o in levelOpts" :key="o" :class="{ on: form.level === o }" @tap="form.level = o">{{ o }}</view></view>
-        </view>
-        <view class="field"><text class="label">状态</text>
-          <view class="opt"><view v-for="o in statusOpts" :key="o" :class="{ on: form.status === o }" @tap="form.status = o">{{ o }}</view></view>
-        </view>
-        <view class="field"><text class="label">小区 / 地址</text><input class="inp" v-model="form.addr" placeholder="选填" /></view>
-        <view class="field"><text class="label">备注（核心诉求 / 敏感点）</text><textarea class="inp" v-model="form.note" placeholder="如 90后婚房，预算300万，看重学区与通勤" /></view>
-      </scroll-view>
-      <view class="ov-foot" :style="{ paddingBottom: tabBarSafe + 'px' }">
-        <button class="btn-line foot-cancel" @tap="closeForm">取消</button>
-        <button class="btn-green foot-save" @tap="saveForm">✓ {{ editingId ? '保存修改' : '创建客户' }}</button>
       </view>
     </view>
 
@@ -166,17 +131,13 @@ export default {
   data() {
     return {
       showDetail: false,
-      showForm: false,
-      editingId: null,
       detail: {},
       detailSrc: null,
       confirmShow: false,
       confirmTitle: '',
       confirmContent: '',
       confirmMode: '',
-      delTarget: null,
-      tabBarSafe: 70, // 原生 tabBar 安全留白(px)，onLoad 用系统信息精确计算覆盖
-      form: this.blankForm(),
+      tabBarSafe: 70, // 原生 tabBar 安全留白(px)，onLoad 用系统信息精确计算覆盖（仅详情浮层底部按钮用）
       relOpts: ['买房客户', '租客', '业主', '房东'],
       stageOpts: ['购房线 / ①首套','购房线 / ②改善','购房线 / ③教育','购房线 / ④升级','购房线 / ⑤适老','租住线 / ①起步','租住线 / ②改善','租住线 / ③家庭','租住线 / ④品质','业主侧'],
       levelOpts: ['A', 'B', 'C'],
@@ -249,9 +210,6 @@ export default {
     }
   },
   methods: {
-    blankForm() {
-      return { surname: '', name: '', rel: '买房客户', stage: '', pkey: 'red', level: 'A', status: '跟进中', addr: '', note: '' }
-    },
     personaOf(c) { return (personaMap[c.pkey] || personaMap.red).tag },
     statusKey(s) { return ({ '跟进中': 'ing', '已成交': 'done', '已流失': 'lost' })[s] || 'ing' },
     openDetail(c) {
@@ -272,53 +230,11 @@ export default {
     ttCls(type) {
       return { '策展': 'tt-curate', '见面': 'tt-meeting', '跟进': 'tt-followup' }[type] || ''
     },
-    openForm(c) {
+    goAdd() { uni.navigateTo({ url: '/pages/clients/edit' }) },
+    editFromDetail() {
+      const id = this.detailSrc && this.detailSrc.id
       this.showDetail = false
-      if (c) {
-        this.editingId = c.id
-        this.form = { surname: c.surname, name: c.name, rel: c.rel, stage: c.stage, pkey: c.pkey, level: c.level, status: c.status, addr: c.addr || '', note: c.note || '' }
-      } else {
-        this.editingId = null
-        this.form = this.blankForm()
-      }
-      this.showForm = true
-    },
-    closeForm() { this.showForm = false },
-    saveForm() {
-      if (!this.form.name || !this.form.name.trim()) { uni.showToast({ title: '请填写称呼 / 全名', icon: 'none' }); return }
-      if (!this.form.surname) this.form.surname = (this.form.name || '客')[0]
-      const payload = { ...this.form }
-      let ok = false
-      try {
-        if (this.editingId) {
-          this.userStore.updateClient(this.editingId, payload)
-        } else {
-          this.userStore.addClient(payload)
-          this.userStore.markDone('profile')
-          this.userStore.earnPoints(5, '完善客户档案')
-        }
-        ok = true
-      } catch (e) {
-        console.error('[clients] saveForm 异常', e)
-        // 真机极端情况下兜底再建一次，保证客户至少写入
-        try { if (!this.editingId) this.userStore.addClient(payload) } catch (_) {}
-      } finally {
-        this.showForm = false   // 无论成功失败都关闭表单，避免「点了没反应」
-      }
-      uni.showToast({
-        title: this.editingId ? (ok ? '已保存修改' : '保存失败，请重试') : (ok ? '客户已创建 · +5 积分' : '创建失败，请重试'),
-        icon: 'none'
-      })
-    },
-    delClient(c) {
-      this.askDel(c)
-    },
-    askDel(c) {
-      this.delTarget = c
-      this.confirmMode = 'del'
-      this.confirmTitle = '删除客户'
-      this.confirmContent = '确定删除「' + c.name + '」？此操作不可恢复。'
-      this.confirmShow = true
+      if (id) uni.navigateTo({ url: '/pages/clients/edit?id=' + id })
     },
     askClear() {
       const n = this.userStore.clients.filter(x => x.seed).length
@@ -328,11 +244,7 @@ export default {
       this.confirmShow = true
     },
     confirmOk() {
-      if (this.confirmMode === 'del' && this.delTarget) {
-        this.userStore.removeClient(this.delTarget.id)
-        this.showDetail = false
-        uni.showToast({ title: '已删除', icon: 'none' })
-      } else if (this.confirmMode === 'clear') {
+      if (this.confirmMode === 'clear') {
         const n = this.userStore.clearSamples()
         uni.showToast({ title: '已清空 ' + n + ' 张示例', icon: 'none' })
       }
