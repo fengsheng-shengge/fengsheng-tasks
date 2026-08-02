@@ -361,7 +361,7 @@ export default {
 </script>
 
 <style scoped>
-.page { padding: 14px 14px 30px; }
+.page { padding: 14px 14px calc(78px + env(safe-area-inset-bottom)); }
 .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 .section-title { font-size: 18px; font-weight: 800; color: #3d5a3e; }
 .section-more { font-size: 12px; color: #C8956D; flex: 1; }

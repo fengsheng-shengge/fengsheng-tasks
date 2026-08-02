@@ -75,7 +75,7 @@
 
     <!-- 6 方法论（b·P1-3：滑动引导，降低首屏认知负荷） -->
     <view class="section-header"><text class="section-title">6 大方法论</text><text class="section-more">← 左右滑动看全部 6 个</text></view>
-    <scroll-view class="steps-row" scroll-x="true" enable-flex @scroll="onMethodScroll">
+    <scroll-view class="steps-row" scroll-x="true" enable-flex @scroll="onMethodScroll" style="height:auto">
       <view class="step-card" v-for="(m, i) in methods" :key="i">
         <text class="step-num">方法 {{ i + 1 }}</text>
         <view class="step-title">{{ m.name }}</view>
