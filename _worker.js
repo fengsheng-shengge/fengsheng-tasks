@@ -1871,6 +1871,184 @@ async function handleSceneDetail(request, env, ctx) {
 }
 
 // ============================================================
+//  P0 Batch3: Scene Entries List (落地规格 API#1)
+//  GET /api/scene/entries?clientType=buyer&stage=pre&layer=dao&page=1&pageSize=20
+// ============================================================
+async function handleSceneEntries(request, env, ctx) {
+  const url = new URL(request.url);
+  const clientType = sanitizeQueryParam(url.searchParams.get('clientType') || '', 64);
+  const stage = sanitizeQueryParam(url.searchParams.get('stage') || '', 64);
+  const layer = sanitizeQueryParam(url.searchParams.get('layer') || '', 64) || null;
+  if (!clientType || !stage) {
+    return jsonResponse({ error: 'clientType and stage are required', hint: '?clientType=buyer&stage=pre' }, 400);
+  }
+
+  const page = Math.max(parseInt(url.searchParams.get('page') || '1', 10) || 1, 1);
+  const pageSize = Math.min(Math.max(parseInt(url.searchParams.get('pageSize') || '20', 10) || 20, 1), 100);
+
+  const cacheKey = new Request(`https://cache.local/v5/api/scene/entries?ct=${clientType}&st=${stage}&ly=${layer || ''}&p=${page}&ps=${pageSize}`);
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  const allEntries = await loadAllEntries(env);
+
+  // Filter by clientType + stage (+ optional layer)
+  const filtered = allEntries.filter(e => {
+    const tags = e.tags || {};
+    const ct = tags.clientType;
+    const st = tags.stage;
+    const ctMatch = Array.isArray(ct) ? ct.includes(clientType) : ct === clientType;
+    const stMatch = Array.isArray(st) ? st.includes(stage) : st === stage;
+    if (!ctMatch || !stMatch) return false;
+    if (layer) {
+      const ly = tags.layer;
+      return Array.isArray(ly) ? ly.includes(layer) : ly === layer;
+    }
+    return true;
+  });
+
+  const priorityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  filtered.sort((a, b) => (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9));
+
+  const total = filtered.length;
+  const totalPages = Math.ceil(total / pageSize);
+  const offset = (page - 1) * pageSize;
+  const paged = filtered.slice(offset, offset + pageSize).map(e => ({
+    id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+    entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
+    consumerQ: e.consumerQ || '', subScene: e.subScene || '',
+    layer: (e.tags || {}).layer || '',
+  }));
+
+  const resp = jsonResponse({
+    clientType, stage, layer: layer || null,
+    total, page, pageSize, totalPages,
+    entries: paged,
+  });
+  const cachedResp = new Response(resp.body, resp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=120, s-maxage=300');
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
+}
+
+// ============================================================
+//  P0 Batch3: Weighted Search v2 (落地规格 API#7)
+//  GET /api/search/v2?q=keyword&entryType=LAW&severity=hard&page=1&pageSize=20
+// ============================================================
+async function handleSearchV2(request, env, ctx) {
+  const url = new URL(request.url);
+  const q = validateSearchQuery(url.searchParams.get('q') || '');
+  if (!q || q.length < 2) {
+    return jsonResponse({ query: q || '', results: [], total: 0, hint: '请提供至少2个字符的搜索关键词' });
+  }
+
+  const entryType = sanitizeQueryParam(url.searchParams.get('entryType') || '', 64) || null;
+  const severity = sanitizeQueryParam(url.searchParams.get('severity') || '', 64) || null;
+  const layer = sanitizeQueryParam(url.searchParams.get('layer') || '', 64) || null;
+  const page = Math.max(parseInt(url.searchParams.get('page') || '1', 10) || 1, 1);
+  const pageSize = Math.min(Math.max(parseInt(url.searchParams.get('pageSize') || '20', 10) || 20, 1), 50);
+
+  // Search rate-limit
+  const ip = getClientIP(request);
+  const now = Date.now();
+  const searchEntry = SEARCH_RATE_LIMIT.get(ip);
+  if (searchEntry && now - searchEntry.windowStart < SEARCH_RATE_WINDOW) {
+    if (searchEntry.count >= SEARCH_MAX_PER_WINDOW) {
+      return jsonResponse({ error: '搜索请求过于频繁，请30秒后再试', query: q }, 429);
+    }
+    searchEntry.count++;
+  } else {
+    SEARCH_RATE_LIMIT.set(ip, { windowStart: now, count: 1 });
+  }
+
+  const cacheKey = new Request(`https://cache.local/v5/api/search/v2?q=${encodeURIComponent(q.slice(0, 30))}&et=${entryType || ''}&sev=${severity || ''}&ly=${layer || ''}&p=${page}&ps=${pageSize}`);
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  const allEntries = await loadAllEntries(env);
+  const qLower = q.toLowerCase();
+  const results = [];
+
+  for (const e of allEntries) {
+    const name = (e.name || '').toLowerCase();
+    const alias = (e.alias || []).map(String).join(' ').toLowerCase();
+    const consumerQ = (e.consumerQ || '').toLowerCase();
+    const def = (e.def || '').toLowerCase();
+    const oneLine = (e.oneLineAnswer || '').toLowerCase();
+    const subScene = (e.subScene || '').toLowerCase();
+
+    let score = 0;
+    const highlights = [];
+
+    // Exact match on name: bonus 100
+    if (name === qLower) { score += 100; highlights.push('name:exact'); }
+    else if (name.includes(qLower)) { score += 50; highlights.push('name'); }
+
+    // Alias match
+    if (alias.includes(qLower)) { score += 40; highlights.push('alias'); }
+
+    // Consumer Q match
+    if (consumerQ === qLower) { score += 80; highlights.push('consumerQ:exact'); }
+    else if (consumerQ.includes(qLower)) { score += 30; highlights.push('consumerQ'); }
+
+    // One-line answer
+    if (oneLine.includes(qLower)) { score += 25; highlights.push('oneLineAnswer'); }
+
+    // Definition
+    if (def.includes(qLower)) { score += 15; highlights.push('def'); }
+
+    // SubScene
+    if (subScene.includes(qLower)) { score += 10; highlights.push('subScene'); }
+
+    if (score > 0) {
+      results.push({
+        id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+        entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
+        consumerQ: e.consumerQ || '', subScene: e.subScene || '',
+        score, highlights,
+      });
+    }
+  }
+
+  // Apply filters
+  let filtered = results;
+  if (entryType) filtered = filtered.filter(r => r.entryType === entryType);
+  if (severity) filtered = filtered.filter(r => r.severity === severity);
+  if (layer) {
+    filtered = filtered.filter(r => {
+      const entry = allEntries.find(e => e.id === r.id);
+      if (!entry) return false;
+      const ly = (entry.tags || {}).layer;
+      return Array.isArray(ly) ? ly.includes(layer) : ly === layer;
+    });
+  }
+
+  // Sort by score descending
+  filtered.sort((a, b) => b.score - a.score);
+
+  const total = filtered.length;
+  const totalPages = Math.ceil(total / pageSize);
+  const offset = (page - 1) * pageSize;
+  const paged = filtered.slice(offset, offset + pageSize);
+
+  const resp = jsonResponse({
+    query: q,
+    total, page, pageSize, totalPages,
+    results: paged,
+    filterOptions: {
+      entryTypes: [...new Set(results.map(r => r.entryType).filter(Boolean))].sort(),
+      severities: [...new Set(results.map(r => r.severity).filter(Boolean))].sort(),
+    }
+  });
+  const cachedResp = new Response(resp.body, resp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=120, s-maxage=300');
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
+}
+
+// ============================================================
 //  P0 Batch2: Entry Related (落地规格 API#4)
 //  GET /api/entry/related?id=XXX&limit=10
 //  5 association algorithms: sameSubScene(10) / layerPath(8) / sameLegalRef(7) / sameCtStLy(5) / sameTypeSev(3)
@@ -2615,10 +2793,13 @@ export default {
     if (path === '/api/search/suggest') return handleSearchSuggest(request, env, ctx);
     // P0 Batch2: Scene detail, Entry related, Dictionary, Daily v2, Mini scene/entry (API#2,#4,#5,#9,#10,#11)
     if (path === '/api/scene/detail') return handleSceneDetail(request, env, ctx);
+    if (path === '/api/scene/entries') return handleSceneEntries(request, env, ctx);
     if (path === '/api/entry/related') return handleEntryRelated(request, env, ctx);
     if (path === '/api/dictionary') return handleDictionary(request, env, ctx);
     if (path === '/api/daily/v2') return handleDailyV2(request, env, ctx);
     if (path === '/api/mini/scene/entries') return handleMiniSceneEntries(request, env, ctx);
+    // P0 Batch3: Weighted search v2 (API#7)
+    if (path === '/api/search/v2') return handleSearchV2(request, env, ctx);
     // /api/mini/entry/:id — path-based routing
     if (path.startsWith('/api/mini/entry/')) return handleMiniEntryDetail(request, env, ctx);
     // /api/mini/entry fallback (?id=XXX)
@@ -2793,11 +2974,12 @@ export default {
     if (isHtml && !path.includes('.')) {
       const KNOWN_ROUTES = new Set([
         '/', '/about', '/agent-academy', '/assessment', '/breeder', '/care-test',
-        '/dashboard', '/decoder', '/ip-design', '/knowledge', '/management',
+        '/dashboard', '/decoder', '/entry', '/ip-design', '/knowledge', '/management',
         '/mentor', '/partner', '/privacy', '/quality-test', '/reply',
-        '/s1-report', '/shuowenjiedao', '/skills', '/standard', '/survey',
+        '/s1-report', '/scene', '/search', '/shuowenjiedao', '/skills', '/standard', '/survey',
         '/terms', '/showing-report', '/dict', '/guide', '/decode',
         '/breeder/', '/care-test/', '/about/', '/agent-academy/',
+        '/entry/', '/scene/', '/search/',
       ]);
       const normalized = path.endsWith('/') ? path.slice(0, -1) : path;
       if (!KNOWN_ROUTES.has(path) && !KNOWN_ROUTES.has(normalized) && !KNOWN_ROUTES.has(normalized + '/')) {
