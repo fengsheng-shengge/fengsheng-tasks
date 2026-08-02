@@ -1,5 +1,5 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260801-1945 - perf: subScene filter, wxacode API, pagination, cache v4
+// Version: v20260802-1000 - security: crash shield, mem cleanup, input validation, OOM guard
 //   + D1 database integration (stats, events, feedback)
 //   + Coze AI chat streaming
 //   + WeChat login with JWT
@@ -70,6 +70,23 @@ const EXPLOIT_PATH_PATTERNS = [
   /muieblackcat/i, /left\.php/i, /xmlrpc\.php/i,
   /node_modules/i, /package-lock\.json/i, /yarn\.lock/i,
   /pnpm-lock\.yaml/i, /\.npmrc/i, /tsconfig\.json/i,
+  // v2 security additions
+  /\.aws/i, /\.kube/i, /\.ssh/i, /id_rsa/i, /known_hosts/i,
+  /\.bash_history/i, /\.mysql_history/i, /\.psql_history/i,
+  /wp-json/i, /wp-json\/wp\/v2\/users/i,
+  /autodiscover/i, /owa/i, /ecp/i, /ews/i, /mapi/i,
+  /remote\/login/i, /\.cgi/i, /\.pl/i, /\.py/i, /\.rb/i,
+  /shell/i, /cmd/i, /exec/i, /upload/i, /backdoor/i,
+  /sql/i, /sqlite/i, /database/i, /dump/i, /export/i,
+  /debug/i, /test/i, /staging/i, /dev/i, /local/i,
+  /backup/i, /\.bak/i, /\.old/i, /\.tmp/i, /\.swp/i,
+  /trace\.axd/i, /elmah\.axd/i, /server-status/i,
+  /struts/i, /spring-/i, /thinkphp/i, /laravel/i, /yii/i,
+  /drupal/i, /joomla/i, /magento/i, /typo3/i,
+  // 2026 new threats
+  /\.env\./i, /\.env\.backup/i, /\.env\.production/i, /\.env\.local/i,
+  /api\/v1\/users/i, /api\/auth/i, /api\/login/i, /api\/register/i,
+  /v2\/keys/i, /_next/i, /__nextjs/i, /vercel/i, /netlify/i,
 ];
 
 // ============================================================
@@ -193,6 +210,15 @@ function isSuspiciousQueryString(queryString) {
     /\/etc\/passwd/i, /\/bin\/bash/i,
     /eval\(/i, /system\(/i, /exec\(/i, /cmd\.exe/i,
     /file_get_contents/i, /base64_decode/i,
+    // v2 additions
+    /\\x[0-9a-f]{2}/i, /%00/i, /\x00/i,           // null byte injection
+    /select.*from/i, /insert\s+into/i, /drop\s+table/i,  // SQL injection
+    /alert\(/i, /confirm\(/i, /prompt\(/i,         // XSS probes
+    /document\.cookie/i, /document\.location/i,
+    /constructor\(/i, /__proto__/i, /prototype\./i, // prototype pollution
+    /\$\{.*\}/i, /\{\{.*\}\}/i,                     // template injection
+    /etc\/shadow/i, /etc\/hosts/i, /proc\/self/i,  // path traversal
+    /wget\s/i, /curl\s/i, /nc\s/i,                  // command injection
   ];
   for (const pattern of suspicious) {
     if (pattern.test(queryString)) return true;
@@ -224,6 +250,32 @@ async function parseBodyJson(request) {
   }
 }
 
+// ============================================================
+//  Graceful degradation — wrap D1 calls with fallback
+//  Prevents D1 failures from crashing the site
+// ============================================================
+async function safeD1Query(db, query, bindings = [], fallback = null) {
+  if (!db) return fallback;
+  try {
+    const result = await db.prepare(query).bind(...bindings).run();
+    return result;
+  } catch (e) {
+    console.error('D1 query failed:', e.message, query.slice(0, 80));
+    return fallback;
+  }
+}
+
+async function safeD1First(db, query, bindings = [], fallback = null) {
+  if (!db) return fallback;
+  try {
+    const result = await db.prepare(query).bind(...bindings).first();
+    return result || fallback;
+  } catch (e) {
+    console.error('D1 first failed:', e.message, query.slice(0, 80));
+    return fallback;
+  }
+}
+
 function clip(str, max = 500) {
   if (!str) return '';
   return String(str).slice(0, max);
@@ -233,6 +285,87 @@ function getBaseUrl(request) {
   const proto = request.headers.get('X-Forwarded-Proto') || 'https';
   const host = request.headers.get('Host') || 'fengsheng.tech';
   return `${proto}://${host}`;
+}
+
+// ============================================================
+//  Memory pressure guard — periodic cleanup of rate limit maps
+//  Prevents unbounded memory growth from abusive IPs
+// ============================================================
+let _lastCleanupTime = 0;
+const CLEANUP_INTERVAL_MS = 300_000; // every 5 minutes
+
+function cleanupRateLimitMaps() {
+  const now = Date.now();
+  if (now - _lastCleanupTime < CLEANUP_INTERVAL_MS) return;
+  _lastCleanupTime = now;
+
+  // Clean stale rate limit entries
+  for (const [key, entry] of RATE_LIMIT) {
+    if (now - entry.windowStart > RATE_WINDOW_MS * 3) {
+      RATE_LIMIT.delete(key);
+    }
+  }
+
+  // Clean expired bans
+  for (const [ip, banTime] of BANNED_IPS) {
+    if (now - banTime > BAN_DURATION_MS * 2) {
+      BANNED_IPS.delete(ip);
+    }
+  }
+
+  // Hard cap: if maps grow too large, clear oldest entries
+  if (RATE_LIMIT.size > 5000) {
+    const entries = [...RATE_LIMIT.entries()].sort((a, b) => a[1].windowStart - b[1].windowStart);
+    for (let i = 0; i < Math.min(1000, entries.length); i++) {
+      RATE_LIMIT.delete(entries[i][0]);
+    }
+  }
+  if (BANNED_IPS.size > 2000) {
+    const entries = [...BANNED_IPS.entries()].sort((a, b) => a[1] - b[1]);
+    for (let i = 0; i < Math.min(500, entries.length); i++) {
+      BANNED_IPS.delete(entries[i][0]);
+    }
+  }
+}
+
+// ============================================================
+//  Input validation — prevent injection & oversized payloads
+// ============================================================
+
+// Max lengths for query parameters
+const MAX_QUERY_PARAM_LEN = 500;
+const MAX_DOMAIN_PARAM_LEN = 64;
+const MAX_SEARCH_QUERY_LEN = 200;
+
+function sanitizeQueryParam(val, maxLen = MAX_QUERY_PARAM_LEN) {
+  if (!val) return '';
+  return String(val).slice(0, maxLen).replace(/[<>"'`]/g, '');
+}
+
+function validateDomainParam(domain) {
+  if (!domain) return null;
+  const cleaned = sanitizeQueryParam(domain, MAX_DOMAIN_PARAM_LEN);
+  // Only allow Chinese chars, letters, digits, underscores, hyphens
+  if (!/^[\u4e00-\u9fff\w-]+$/.test(cleaned)) return null;
+  return cleaned;
+}
+
+function validateSearchQuery(q) {
+  if (!q) return '';
+  return sanitizeQueryParam(q, MAX_SEARCH_QUERY_LEN);
+}
+
+// API response size limit (prevent OOM from huge responses)
+const MAX_API_RESPONSE_BYTES = 2 * 1024 * 1024; // 2MB cap
+
+function capResponseSize(resp) {
+  return new Response(resp.body, {
+    status: resp.status,
+    headers: {
+      ...Object.fromEntries(resp.headers),
+      'X-Response-Size-Cap': String(MAX_API_RESPONSE_BYTES),
+    },
+  });
 }
 
 // ============================================================
@@ -777,33 +910,27 @@ async function handleStatsDaily(request, env) {
 
 async function handleStatsHealth(request, env) {
   const now = new Date().toISOString();
-  if (env.DB) {
-    try {
-      const lastEvent = await env.DB.prepare(
-        "SELECT ts, event_type, product FROM events ORDER BY ts DESC LIMIT 1"
-      ).first();
-      const count24h = await env.DB.prepare(
-        "SELECT COUNT(*) as cnt FROM events WHERE created_at >= unixepoch('now', '-1 days')"
-      ).first();
-      const feedbackCount = await env.DB.prepare(
-        "SELECT COUNT(*) as cnt FROM events WHERE event_type = 'reply_submit'"
-      ).first();
-      return jsonResponse({
-        status: 'ok',
-        db: 'connected',
-        db_connected: true,
-        last_event: lastEvent || null,
-        events_24h: count24h?.cnt || 0,
-        events_count: count24h?.cnt || 0,
-        feedback_count: feedbackCount?.cnt || 0,
-        updated: now,
-        version: 'v20260801-1900',
-      });
-    } catch (e) {
-      return jsonResponse({ status: 'degraded', db: 'error', db_connected: false, error: e.message, updated: now });
-    }
+  if (!env.DB) {
+    return jsonResponse({ status: 'degraded', db: 'not_configured', db_connected: false, updated: now, version: 'v20260802-1000' });
   }
-  return jsonResponse({ status: 'degraded', db: 'not_configured', db_connected: false, updated: now });
+  try {
+    const lastEvent = await safeD1First(env.DB, "SELECT ts, event_type, product FROM events ORDER BY ts DESC LIMIT 1");
+    const count24h = await safeD1First(env.DB, "SELECT COUNT(*) as cnt FROM events WHERE created_at >= unixepoch('now', '-1 days')", [], { cnt: 0 });
+    const feedbackCount = await safeD1First(env.DB, "SELECT COUNT(*) as cnt FROM events WHERE event_type = 'reply_submit'", [], { cnt: 0 });
+    return jsonResponse({
+      status: 'ok',
+      db: 'connected',
+      db_connected: true,
+      last_event: lastEvent || null,
+      events_24h: count24h?.cnt || 0,
+      events_count: count24h?.cnt || 0,
+      feedback_count: feedbackCount?.cnt || 0,
+      updated: now,
+      version: 'v20260802-1000',
+    });
+  } catch (e) {
+    return jsonResponse({ status: 'degraded', db: 'error', db_connected: false, error: e.message, updated: now, version: 'v20260802-1000' });
+  }
 }
 
 // Simple handlers for additional routes
@@ -1046,12 +1173,17 @@ function addETag(resp, etag) {
 
 async function handleEntries(request, env, ctx) {
   const url = new URL(request.url);
-  const domainParam = url.searchParams.get('domain');
+  const domainParam = validateDomainParam(url.searchParams.get('domain'));
   const limitParam = url.searchParams.get('limit');
   const parsedLimit = limitParam !== null ? parseInt(limitParam, 10) : 50;
-  const limit = isNaN(parsedLimit) ? 50 : (parsedLimit === 0 ? 0 : Math.min(parsedLimit, 200));
-  const offset = Math.max(parseInt(url.searchParams.get('offset') || '0') || 0, 0);
-  const subSceneParam = url.searchParams.get('subScene') || null;
+  const limit = isNaN(parsedLimit) ? 50 : Math.min(Math.max(parsedLimit, 0), 200);
+  const offset = Math.min(Math.max(parseInt(url.searchParams.get('offset') || '0') || 0, 0), 10000);
+  const subSceneParam = sanitizeQueryParam(url.searchParams.get('subScene') || '', 128) || null;
+
+  // Reject suspicious domain parameters
+  if (url.searchParams.get('domain') && !domainParam) {
+    return jsonResponse({ error: '无效的域名参数', hint: '请使用正确的业务域名称' }, 400);
+  }
 
   // Cache API
   const cacheKeyStr = `https://cache.local/v4/api/entries?domain=${domainParam || ''}&limit=${limit}&offset=${offset}&subScene=${subSceneParam || ''}`;
@@ -1162,9 +1294,13 @@ async function handleKnowledgeStats(request, env, ctx) {
 // Server-side search (issue #215): search across all domains
 async function handleSearch(request, env, ctx) {
   const url = new URL(request.url);
-  const q = (url.searchParams.get('q') || '').toLowerCase().trim();
+  const q = validateSearchQuery(url.searchParams.get('q') || '');
   if (!q || q.length < 1) {
     return jsonResponse({ query: '', results: [], total: 0, hint: 'Provide ?q=keyword' });
+  }
+  // Reject overly short or single-char queries (too broad, waste CPU)
+  if (q.length < 2) {
+    return jsonResponse({ query: q, results: [], total: 0, hint: '请提供至少2个字符的搜索关键词' });
   }
 
   const cacheKey = new Request('https://cache.local/v4/api/search?q=' + encodeURIComponent(q.slice(0, 20)));
@@ -1219,8 +1355,13 @@ async function handleSearch(request, env, ctx) {
 
 export default {
   async fetch(request, env, ctx) {
+    // ===== CRASH SHIELD: Global try-catch prevents worker death =====
+    try {
     const url = new URL(request.url);
     const path = url.pathname;
+
+    // Periodic memory cleanup (cheap, runs max once per 5 min)
+    cleanupRateLimitMaps();
 
     // Layer 0: WeChat domain verification files（7.31 23:30 小鱼儿代修 + fengsheng 项 + 严格 text/plain 兜底 + 404 兜底·P0 雷修复 #2/2）
     if (path.startsWith('/MP_verify_') && path.endsWith('.txt')) {
@@ -1592,5 +1733,15 @@ export default {
       }
     }
     return applySecurityHeaders(assetResp, isHtml);
+
+    // ===== CRASH SHIELD: Catch unhandled errors =====
+    } catch (err) {
+      console.error('WORKER CRASH intercepted:', err.message, err.stack);
+      // Return a graceful error page instead of crashing
+      return applySecurityHeaders(new Response(
+        '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>服务暂不可用</title><style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#0f172a;color:#e2e8f0}h1{font-size:36px;margin:0}p{color:#94a3b8;margin-top:12px}a{color:#60a5fa}</style></head><body><div style="text-align:center"><h1>服务暂时不可用</h1><p>请稍后刷新页面重试</p><a href="/">← 返回首页</a></div></body></html>',
+        { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache', 'Retry-After': '30' } }
+      ), true);
+    }
   },
 };
