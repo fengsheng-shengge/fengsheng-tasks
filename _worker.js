@@ -1051,7 +1051,7 @@ async function handleStatsHealth(request, env) {
     degraded_mode: _degradedMode,
     error_count: _errorCount,
     updated: now,
-    version: 'v20260802-1200',
+    version: 'v20260802-1210',
   };
   if (!env.DB) {
     return jsonResponse({ ...base, status: 'degraded', db: 'not_configured' });
@@ -1662,21 +1662,19 @@ async function handleSearch(request, env, ctx) {
 
   const topResults = results.slice(0, maxResults).map(r => r.entry);
 
-  const resp = jsonResponse({
+  const respData = {
     query: q,
-    filters: (domainParam || clientTypeParam || stageParam || layerParam)
-      ? { domain: domainParam, clientType: clientTypeParam, stage: stageParam, layer: layerParam }
-      : undefined,
     results: topResults,
     total: results.length,
     returned: topResults.length,
     updated: new Date().toISOString(),
-  });
-  const respData = JSON.parse(resp.body || '{}');
-  if (!respData.filters) delete respData.filters;
-  const finalResp = jsonResponse(respData);
+  };
+  if (domainParam || clientTypeParam || stageParam || layerParam) {
+    respData.filters = { domain: domainParam, clientType: clientTypeParam, stage: stageParam, layer: layerParam };
+  }
 
-  const cachedResp = new Response(finalResp.body, finalResp);
+  const resp = jsonResponse(respData);
+  const cachedResp = new Response(resp.body, resp);
   cachedResp.headers.set('Cache-Control', 'public, max-age=120, s-maxage=300');
   if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
   return cachedResp;
