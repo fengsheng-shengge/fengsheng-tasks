@@ -1,5 +1,5 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260802-1100 - security: circuit breaker, API timeout, error counter, degraded mode, host validation
+// Version: v20260802-1330 - P0 batch2: scene detail, entry related, dictionary, daily v2, mini scene/entry
 //   + D1 database integration (stats, events, feedback)
 //   + Coze AI chat streaming
 //   + WeChat login with JWT
@@ -1790,6 +1790,589 @@ async function handleSearchSuggest(request, env, ctx) {
 }
 
 // ============================================================
+//  P0 Batch2: Scene Detail (落地规格 API#2)
+//  GET /api/scene/detail?clientType=buyer&stage=pre
+// ============================================================
+async function handleSceneDetail(request, env, ctx) {
+  const url = new URL(request.url);
+  const clientType = sanitizeQueryParam(url.searchParams.get('clientType') || '', 64);
+  const stage = sanitizeQueryParam(url.searchParams.get('stage') || '', 64);
+  if (!clientType || !stage) {
+    return jsonResponse({ error: 'clientType and stage are required', hint: '?clientType=buyer&stage=pre' }, 400);
+  }
+
+  const cacheKey = new Request(`https://cache.local/v5/api/scene/detail?ct=${clientType}&st=${stage}`);
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  const allEntries = await loadAllEntries(env);
+
+  // Filter by clientType + stage
+  const sceneEntries = allEntries.filter(e => {
+    const tags = e.tags || {};
+    const ct = tags.clientType;
+    const st = tags.stage;
+    const ctMatch = Array.isArray(ct) ? ct.includes(clientType) : ct === clientType;
+    const stMatch = Array.isArray(st) ? st.includes(stage) : st === stage;
+    return ctMatch && stMatch;
+  });
+
+  // Group by layer
+  const layerOrder = ['dao', 'fa', 'shu', 'qi'];
+  const layerLabels = { dao: '道·心里懂的', fa: '法·当场走的', shu: '术·嘴上说的', qi: '器·递给客户的' };
+  const priorityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
+
+  const layers = layerOrder.map(layer => {
+    const items = sceneEntries.filter(e => {
+      const ly = (e.tags || {}).layer;
+      return Array.isArray(ly) ? ly.includes(layer) : ly === layer;
+    }).sort((a, b) => (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9));
+
+    return {
+      layer,
+      label: layerLabels[layer],
+      count: items.length,
+      entries: items.slice(0, 50).map(e => ({
+        id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+        entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
+      })),
+    };
+  }).filter(g => g.count > 0);
+
+  // Statistics
+  const byPriority = {};
+  const bySeverity = {};
+  const byEntryType = {};
+  for (const e of sceneEntries) {
+    byPriority[e.priority] = (byPriority[e.priority] || 0) + 1;
+    bySeverity[e.severity] = (bySeverity[e.severity] || 0) + 1;
+    byEntryType[e.entryType] = (byEntryType[e.entryType] || 0) + 1;
+  }
+
+  // Filter enumerations (unique values for secondary filtering)
+  const entryTypes = [...new Set(sceneEntries.map(e => e.entryType).filter(Boolean))].sort();
+  const severities = [...new Set(sceneEntries.map(e => e.severity).filter(Boolean))].sort();
+
+  const respData = {
+    clientType,
+    stage,
+    total: sceneEntries.length,
+    summary: { byLayer: Object.fromEntries(layers.map(l => [l.layer, l.count])), byPriority, bySeverity, byEntryType },
+    filters: { entryTypes, severities, layers: layerOrder.filter(l => layers.some(g => g.layer === l)) },
+    layers,
+  };
+
+  const resp = jsonResponse(respData);
+  const cachedResp = new Response(resp.body, resp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=300, s-maxage=900');
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
+}
+
+// ============================================================
+//  P0 Batch2: Entry Related (落地规格 API#4)
+//  GET /api/entry/related?id=XXX&limit=10
+//  5 association algorithms: sameSubScene(10) / layerPath(8) / sameLegalRef(7) / sameCtStLy(5) / sameTypeSev(3)
+// ============================================================
+async function handleEntryRelated(request, env, ctx) {
+  const url = new URL(request.url);
+  const id = sanitizeQueryParam(url.searchParams.get('id') || '', 128);
+  if (!id) {
+    return jsonResponse({ error: 'Missing ?id=ENTRY_ID parameter' }, 400);
+  }
+  const limitParam = parseInt(url.searchParams.get('limit') || '10', 10);
+  const limit = Math.min(Math.max(limitParam, 1), 30);
+
+  const cacheKey = new Request(`https://cache.local/v5/api/entry/related?id=${encodeURIComponent(id)}&limit=${limit}`);
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  const allEntries = await loadAllEntries(env);
+  const entry = allEntries.find(e => e.id === id);
+  if (!entry) {
+    return jsonResponse({ error: 'Entry not found', id }, 404);
+  }
+
+  const priorityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  const candidates = new Map(); // id → { weight, relation, entry }
+
+  // Algorithm 1: sameSubScene (weight 10)
+  if (entry.subScene) {
+    for (const e of allEntries) {
+      if (e.id !== entry.id && e.subScene === entry.subScene) {
+        candidates.set(e.id, { weight: 10, relation: 'sameSubScene', entry: e });
+      }
+    }
+  }
+
+  // Algorithm 2: layerPath — 道法术器相邻层 (weight 8)
+  const layerSeq = ['dao', 'fa', 'shu', 'qi'];
+  const currentLayer = (entry.tags || {}).layer;
+  const currentIdx = layerSeq.indexOf(currentLayer);
+  if (currentIdx >= 0) {
+    const adjacentLayers = [];
+    if (currentIdx < 3) adjacentLayers.push(layerSeq[currentIdx + 1]);
+    if (currentIdx > 0) adjacentLayers.push(layerSeq[currentIdx - 1]);
+    for (const e of allEntries) {
+      if (e.id !== entry.id && e.subScene === entry.subScene) {
+        const eLy = (e.tags || {}).layer;
+        const match = Array.isArray(eLy) ? eLy.some(l => adjacentLayers.includes(l)) : adjacentLayers.includes(eLy);
+        if (match && (!candidates.has(e.id) || candidates.get(e.id).weight < 8)) {
+          candidates.set(e.id, { weight: 8, relation: 'layerPath', entry: e });
+        }
+      }
+    }
+  }
+
+  // Algorithm 3: sameLegalRef overlap (weight 7)
+  const myLegalRefs = new Set(
+    Array.isArray(entry.legalRef) ? entry.legalRef.filter(Boolean) : (entry.legalRef ? [entry.legalRef] : [])
+  );
+  if (myLegalRefs.size > 0) {
+    for (const e of allEntries) {
+      if (e.id !== entry.id) {
+        const eRefs = new Set(
+          Array.isArray(e.legalRef) ? e.legalRef.filter(Boolean) : (e.legalRef ? [e.legalRef] : [])
+        );
+        const hasOverlap = [...myLegalRefs].some(r => eRefs.has(r));
+        if (hasOverlap && (!candidates.has(e.id) || candidates.get(e.id).weight < 7)) {
+          candidates.set(e.id, { weight: 7, relation: 'sameLegalRef', entry: e });
+        }
+      }
+    }
+  }
+
+  // Algorithm 4: same clientType + stage + layer (weight 5)
+  const myCt = (entry.tags || {}).clientType;
+  const mySt = (entry.tags || {}).stage;
+  const myLy = (entry.tags || {}).layer;
+  if (myCt || mySt || myLy) {
+    for (const e of allEntries) {
+      if (e.id !== entry.id) {
+        const eTags = e.tags || {};
+        const ctMatch = myCt && (Array.isArray(eTags.clientType) ? eTags.clientType.includes(myCt) : eTags.clientType === myCt);
+        const stMatch = mySt && (Array.isArray(eTags.stage) ? eTags.stage.includes(mySt) : eTags.stage === mySt);
+        const lyMatch = myLy && (Array.isArray(eTags.layer) ? eTags.layer.includes(myLy) : eTags.layer === myLy);
+        if ((ctMatch || stMatch || lyMatch) && (!candidates.has(e.id) || candidates.get(e.id).weight < 5)) {
+          candidates.set(e.id, { weight: 5, relation: 'sameCtStLy', entry: e });
+        }
+      }
+    }
+  }
+
+  // Algorithm 5: same entryType + severity (weight 3)
+  if (entry.entryType && entry.severity) {
+    for (const e of allEntries) {
+      if (e.id !== entry.id && e.entryType === entry.entryType && e.severity === entry.severity) {
+        if (!candidates.has(e.id) || candidates.get(e.id).weight < 3) {
+          candidates.set(e.id, { weight: 3, relation: 'sameTypeSev', entry: e });
+        }
+      }
+    }
+  }
+
+  // Sort by weight desc → priority asc → take limit
+  const related = [...candidates.values()]
+    .sort((a, b) => b.weight - a.weight || (priorityOrder[a.entry.priority] ?? 9) - (priorityOrder[b.entry.priority] ?? 9))
+    .slice(0, limit)
+    .map(c => ({
+      id: c.entry.id,
+      name: c.entry.name,
+      oneLineAnswer: c.entry.oneLineAnswer || '',
+      relation: c.relation,
+      weight: c.weight,
+      entryType: c.entry.entryType || '',
+      severity: c.entry.severity || '',
+      priority: c.entry.priority || '',
+      layer: (c.entry.tags || {}).layer || '',
+      subScene: c.entry.subScene || '',
+    }));
+
+  // Layer path info
+  const layerPath = null;
+  if (currentIdx >= 0 && currentIdx < 3) {
+    const nextLayer = layerSeq[currentIdx + 1];
+    const nextEntries = related.filter(r => r.relation === 'layerPath' && r.layer === nextLayer);
+    if (nextEntries.length > 0) {
+      // Will be set below
+    }
+  }
+
+  const respData = {
+    id: entry.id,
+    name: entry.name,
+    currentLayer: currentLayer || null,
+    total: related.length,
+    related,
+  };
+
+  const resp = jsonResponse(respData);
+  const cachedResp = new Response(resp.body, resp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=600, s-maxage=1800');
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
+}
+
+// ============================================================
+//  P0 Batch2: Dictionary (落地规格 API#5)
+//  GET /api/dictionary?clientType=buyer&stage=pre&layer=qi&entryType=LAW&severity=hard&priority=P0
+//    &keyword=定金&page=1&pageSize=20&sort=priority&order=asc
+// ============================================================
+async function handleDictionary(request, env, ctx) {
+  const url = new URL(request.url);
+
+  // 6-dimension filters
+  const clientType = sanitizeQueryParam(url.searchParams.get('clientType') || '', 64) || null;
+  const stage = sanitizeQueryParam(url.searchParams.get('stage') || '', 64) || null;
+  const layer = sanitizeQueryParam(url.searchParams.get('layer') || '', 64) || null;
+  const entryType = sanitizeQueryParam(url.searchParams.get('entryType') || '', 64) || null;
+  const severity = sanitizeQueryParam(url.searchParams.get('severity') || '', 64) || null;
+  const priority = sanitizeQueryParam(url.searchParams.get('priority') || '', 64) || null;
+  const keyword = sanitizeQueryParam(url.searchParams.get('keyword') || '', 128) || null;
+
+  // Pagination
+  const page = Math.max(parseInt(url.searchParams.get('page') || '1', 10) || 1, 1);
+  const pageSize = Math.min(Math.max(parseInt(url.searchParams.get('pageSize') || '20', 10) || 20, 1), 100);
+
+  // Sort
+  const sort = ['priority', 'severity', 'name'].includes(url.searchParams.get('sort')) ? url.searchParams.get('sort') : 'priority';
+  const order = url.searchParams.get('order') === 'desc' ? 'desc' : 'asc';
+
+  const cacheKey = new Request(`https://cache.local/v5/api/dictionary?ct=${clientType || ''}&st=${stage || ''}&ly=${layer || ''}&et=${entryType || ''}&sev=${severity || ''}&pri=${priority || ''}&kw=${keyword || ''}&p=${page}&ps=${pageSize}&sort=${sort}&order=${order}`);
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  const allEntries = await loadAllEntries(env);
+
+  // Apply 6-dimension filters
+  let filtered = allEntries.filter(e => {
+    const tags = e.tags || {};
+    if (clientType) {
+      const ct = tags.clientType;
+      if (Array.isArray(ct)) { if (!ct.includes(clientType)) return false; }
+      else if (ct !== clientType) return false;
+    }
+    if (stage) {
+      const st = tags.stage;
+      if (Array.isArray(st)) { if (!st.includes(stage)) return false; }
+      else if (st !== stage) return false;
+    }
+    if (layer) {
+      const ly = tags.layer;
+      if (Array.isArray(ly)) { if (!ly.includes(layer)) return false; }
+      else if (ly !== layer) return false;
+    }
+    if (entryType && e.entryType !== entryType) return false;
+    if (severity && e.severity !== severity) return false;
+    if (priority && e.priority !== priority) return false;
+    return true;
+  });
+
+  // Keyword search (simple inclusion match across key fields)
+  if (keyword) {
+    const kw = keyword.toLowerCase();
+    filtered = filtered.filter(e => {
+      const fields = [e.name, e.def, e.oneLineAnswer, e.consumerQ, e.ownerQ, e.subScene,
+        ...(e.alias || []), ...(e.corePoint || [])].filter(Boolean).map(String);
+      return fields.some(f => f.toLowerCase().includes(kw));
+    });
+  }
+
+  const total = filtered.length;
+
+  // Sort
+  const priorityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  const severityOrder = { hard: 0, medium: 1, soft: 2 };
+  const sortFn = sort === 'name'
+    ? (a, b) => (a.name || '').localeCompare(b.name || '') * (order === 'desc' ? -1 : 1)
+    : sort === 'severity'
+    ? (a, b) => ((severityOrder[a.severity] ?? 9) - (severityOrder[b.severity] ?? 9)) * (order === 'desc' ? -1 : 1)
+    : (a, b) => ((priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9)) * (order === 'desc' ? -1 : 1);
+
+  filtered.sort(sortFn);
+
+  // Paginate
+  const offset = (page - 1) * pageSize;
+  const pageEntries = filtered.slice(offset, offset + pageSize);
+
+  // Build filter enumerations from ALL entries (not just filtered)
+  const allTags = allEntries.reduce((acc, e) => {
+    const tags = e.tags || {};
+    if (tags.clientType) { const v = Array.isArray(tags.clientType) ? tags.clientType : [tags.clientType]; v.forEach(x => acc.clientTypes.add(x)); }
+    if (tags.stage) { const v = Array.isArray(tags.stage) ? tags.stage : [tags.stage]; v.forEach(x => acc.stages.add(x)); }
+    if (tags.layer) { const v = Array.isArray(tags.layer) ? tags.layer : [tags.layer]; v.forEach(x => acc.layers.add(x)); }
+    if (e.entryType) acc.entryTypes.add(e.entryType);
+    if (e.severity) acc.severities.add(e.severity);
+    if (e.priority) acc.priorities.add(e.priority);
+    return acc;
+  }, { clientTypes: new Set(), stages: new Set(), layers: new Set(), entryTypes: new Set(), severities: new Set(), priorities: new Set() });
+
+  const slimEntries = pageEntries.map(e => ({
+    id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+    entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
+    subScene: e.subScene || '', layer: (e.tags || {}).layer || '',
+    consumerQ: e.consumerQ || '',
+  }));
+
+  const respData = {
+    total,
+    page,
+    pageSize,
+    hasMore: offset + pageSize < total,
+    filters: {
+      clientTypes: [...allTags.clientTypes].sort(),
+      stages: [...allTags.stages].sort(),
+      layers: [...allTags.layers].sort(),
+      entryTypes: [...allTags.entryTypes].sort(),
+      severities: [...allTags.severities].sort(),
+      priorities: [...allTags.priorities].sort(),
+    },
+    appliedFilters: { clientType, stage, layer, entryType, severity, priority, keyword },
+    sort: { field: sort, order },
+    entries: slimEntries,
+  };
+
+  const resp = jsonResponse(respData);
+  const cachedResp = new Response(resp.body, resp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=300, s-maxage=600');
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
+}
+
+// ============================================================
+//  P0 Batch2: Daily v2 (落地规格 API#9)
+//  GET /api/daily/v2?clientType=buyer&stage=pre&count=5
+//  Returns P0 entries with push reason + personalization hints
+// ============================================================
+async function handleDailyV2(request, env, ctx) {
+  const url = new URL(request.url);
+  const clientType = sanitizeQueryParam(url.searchParams.get('clientType') || '', 64) || 'buyer';
+  const stage = sanitizeQueryParam(url.searchParams.get('stage') || '', 64) || null;
+  const count = Math.min(Math.max(parseInt(url.searchParams.get('count') || '5', 10) || 5, 1), 20);
+
+  // Date-based seed for deterministic daily selection
+  const today = new Date().toISOString().slice(0, 10);
+  const seed = today + clientType + (stage || '');
+
+  const cacheKey = new Request(`https://cache.local/v5/api/daily/v2?ct=${clientType}&st=${stage || ''}&count=${count}&date=${today}`);
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  const allEntries = await loadAllEntries(env);
+
+  // Filter P0 hard entries matching clientType (+ optional stage)
+  let pool = allEntries.filter(e => {
+    if (e.priority !== 'P0' && e.severity !== 'hard') return false;
+    const tags = e.tags || {};
+    const ct = tags.clientType;
+    const ctMatch = Array.isArray(ct) ? ct.includes(clientType) : ct === clientType;
+    if (!ctMatch) return false;
+    if (stage) {
+      const st = tags.stage;
+      const stMatch = Array.isArray(st) ? st.includes(stage) : st === stage;
+      if (!stMatch) return false;
+    }
+    return true;
+  });
+
+  // Fallback: if pool too small, expand to P0 + medium
+  if (pool.length < count) {
+    pool = allEntries.filter(e => {
+      if (e.priority !== 'P0' && e.severity !== 'hard' && e.priority !== 'P1') return false;
+      const tags = e.tags || {};
+      const ct = tags.clientType;
+      const ctMatch = Array.isArray(ct) ? ct.includes(clientType) : ct === clientType;
+      if (!ctMatch) return false;
+      return true;
+    });
+  }
+
+  // Deterministic daily selection using date-seeded hash
+  const hashCode = (s) => {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
+    return Math.abs(h);
+  };
+
+  // Shuffle with date seed
+  pool.sort((a, b) => hashCode(seed + a.id) - hashCode(seed + b.id));
+  const selected = pool.slice(0, count);
+
+  // Determine push reason for each entry
+  const layerLabels = { dao: '心里懂的', fa: '当场走的', shu: '嘴上说的', qi: '递给客户的' };
+  const entries = selected.map(e => {
+    const layer = (e.tags || {}).layer || '';
+    const reasons = [];
+    if (e.severity === 'hard') reasons.push('高风险必知');
+    if (e.priority === 'P0') reasons.push('核心知识');
+    if (layer === 'qi') reasons.push('可带走交付物');
+    if (e.entryType === 'LAW') reasons.push('法律依据');
+
+    return {
+      id: e.id,
+      name: e.name,
+      oneLineAnswer: e.oneLineAnswer || '',
+      entryType: e.entryType || '',
+      severity: e.severity || '',
+      priority: e.priority || '',
+      layer,
+      layerLabel: layerLabels[layer] || '',
+      subScene: e.subScene || '',
+      consumerQ: e.consumerQ || '',
+      pushReason: reasons.length > 0 ? reasons[0] : '每日推荐',
+      legalRef: e.legalRef || '',
+    };
+  });
+
+  const respData = {
+    date: today,
+    clientType,
+    stage: stage || null,
+    total: entries.length,
+    poolSize: pool.length,
+    entries,
+  };
+
+  const resp = jsonResponse(respData);
+  const cachedResp = new Response(resp.body, resp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=3600, s-maxage=7200');
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
+}
+
+// ============================================================
+//  P0 Batch2: Mini Scene Entries (落地规格 API#10)
+//  GET /api/mini/scene/entries?clientType=buyer&stage=pre&layer=qi
+//  Same as API#1 + shareCardUrl for qi-layer entries
+// ============================================================
+async function handleMiniSceneEntries(request, env, ctx) {
+  const url = new URL(request.url);
+  const clientType = sanitizeQueryParam(url.searchParams.get('clientType') || '', 64);
+  const stage = sanitizeQueryParam(url.searchParams.get('stage') || '', 64);
+  const layer = sanitizeQueryParam(url.searchParams.get('layer') || '', 64) || null;
+
+  if (!clientType || !stage) {
+    return jsonResponse({ error: 'clientType and stage are required', hint: '?clientType=buyer&stage=pre' }, 400);
+  }
+
+  const cacheKey = new Request(`https://cache.local/v5/api/mini/scene/entries?ct=${clientType}&st=${stage}&ly=${layer || ''}`);
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  const allEntries = await loadAllEntries(env);
+
+  const sceneEntries = allEntries.filter(e => {
+    const tags = e.tags || {};
+    const ctMatch = Array.isArray(tags.clientType) ? tags.clientType.includes(clientType) : tags.clientType === clientType;
+    const stMatch = Array.isArray(tags.stage) ? tags.stage.includes(stage) : tags.stage === stage;
+    let lyMatch = true;
+    if (layer) {
+      const ly = tags.layer;
+      lyMatch = Array.isArray(ly) ? ly.includes(layer) : ly === layer;
+    }
+    return ctMatch && stMatch && lyMatch;
+  });
+
+  const priorityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  sceneEntries.sort((a, b) => (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9));
+
+  const entries = sceneEntries.slice(0, 100).map(e => {
+    const entryLayer = (e.tags || {}).layer || '';
+    const isQi = entryLayer === 'qi' || (Array.isArray(entryLayer) && entryLayer.includes('qi'));
+    return {
+      id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+      entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
+      layer: entryLayer, subScene: e.subScene || '', consumerQ: e.consumerQ || '',
+      // shareCardUrl for qi-layer entries (mini program path)
+      shareCardUrl: isQi ? `weixin://dl/business/?appid=wxd4ccbb319a00bb89&path=pages/entry/detail&query=id%3D${encodeURIComponent(e.id)}&env_version=release` : null,
+    };
+  });
+
+  const respData = {
+    clientType, stage, layer,
+    total: sceneEntries.length,
+    returned: entries.length,
+    entries,
+  };
+
+  const resp = jsonResponse(respData);
+  const cachedResp = new Response(resp.body, resp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=300, s-maxage=600');
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
+}
+
+// ============================================================
+//  P0 Batch2: Mini Entry Detail (落地规格 API#11)
+//  GET /api/mini/entry/:id
+//  Same as API#3 + shareCardConfig
+// ============================================================
+async function handleMiniEntryDetail(request, env, ctx) {
+  const url = new URL(request.url);
+  // Support both /api/mini/entry/:id and ?id=XXX
+  let id = '';
+  const pathParts = url.pathname.replace(/^\/+|\/+$/g, '').split('/');
+  // /api/mini/entry/:id => ['api', 'mini', 'entry', 'ID']
+  if (pathParts.length >= 4 && pathParts[2] === 'entry') {
+    id = sanitizeQueryParam(pathParts[3], 128);
+  }
+  if (!id) {
+    id = sanitizeQueryParam(url.searchParams.get('id') || '', 128);
+  }
+  if (!id) {
+    return jsonResponse({ error: 'Missing entry id', hint: '/api/mini/entry/ENTRY_ID or ?id=ENTRY_ID' }, 400);
+  }
+
+  const cacheKey = new Request(`https://cache.local/v5/api/mini/entry/${encodeURIComponent(id)}`);
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  const allEntries = await loadAllEntries(env);
+  const entry = allEntries.find(e => e.id === id);
+
+  if (!entry) {
+    return jsonResponse({ error: 'Entry not found', id }, 404);
+  }
+
+  // Resolve relatedEntries
+  let related = [];
+  if (entry.relatedEntries && entry.relatedEntries.length > 0) {
+    const idSet = new Set(entry.relatedEntries);
+    related = allEntries.filter(e => idSet.has(e.id)).map(e => ({
+      id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+      entryType: e.entryType || '', severity: e.severity || '', layer: (e.tags || {}).layer || '',
+    }));
+  }
+
+  // shareCardConfig for mini program sharing
+  const entryLayer = (entry.tags || {}).layer || '';
+  const isQi = entryLayer === 'qi' || (Array.isArray(entryLayer) && entryLayer.includes('qi'));
+  const shareCardConfig = {
+    title: entry.name,
+    path: `/pages/entry/detail?id=${encodeURIComponent(entry.id)}`,
+    imageUrl: isQi ? `/api/wxacode?scene=${encodeURIComponent(entry.id)}&page=pages/entry/detail&width=280` : null,
+  };
+
+  const respData = {
+    ...entry,
+    relatedEntriesResolved: related,
+    shareCardConfig,
+  };
+
+  const resp = jsonResponse(respData);
+  const cachedResp = new Response(resp.body, resp);
+  cachedResp.headers.set('Cache-Control', 'public, max-age=600, s-maxage=1800');
+  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
+  return cachedResp;
+}
+
+// ============================================================
 //  Main entry point
 // ============================================================
 
@@ -2030,6 +2613,16 @@ export default {
     // P0: Entry detail + search suggest (落地规格 API#3, API#8)
     if (path === '/api/entry') return handleEntryDetail(request, env, ctx);
     if (path === '/api/search/suggest') return handleSearchSuggest(request, env, ctx);
+    // P0 Batch2: Scene detail, Entry related, Dictionary, Daily v2, Mini scene/entry (API#2,#4,#5,#9,#10,#11)
+    if (path === '/api/scene/detail') return handleSceneDetail(request, env, ctx);
+    if (path === '/api/entry/related') return handleEntryRelated(request, env, ctx);
+    if (path === '/api/dictionary') return handleDictionary(request, env, ctx);
+    if (path === '/api/daily/v2') return handleDailyV2(request, env, ctx);
+    if (path === '/api/mini/scene/entries') return handleMiniSceneEntries(request, env, ctx);
+    // /api/mini/entry/:id — path-based routing
+    if (path.startsWith('/api/mini/entry/')) return handleMiniEntryDetail(request, env, ctx);
+    // /api/mini/entry fallback (?id=XXX)
+    if (path === '/api/mini/entry') return handleMiniEntryDetail(request, env, ctx);
 
     // wx-login alias (issue #210: /api/wx-login → /api/auth/wx-login)
     if (path === '/api/wx-login' && request.method === 'POST') {
