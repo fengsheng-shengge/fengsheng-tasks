@@ -676,12 +676,16 @@ async function handleStatsSummary(request, env) {
 async function handleStatsDaily(request, env) {
   const url = new URL(request.url);
   const days = parseInt(url.searchParams.get('days') || '7');
+  const product = url.searchParams.get('product') || '';
   const now = new Date().toISOString().split('T')[0];
   if (env.DB) {
     try {
-      const daily = await env.DB.prepare(
-        `SELECT date(created_at, 'unixepoch') as date, COUNT(DISTINCT uid) as unique_uids, COUNT(CASE WHEN event_type='pageview' THEN 1 END) as pageviews, COUNT(CASE WHEN event_type='click' THEN 1 END) as clicks, COUNT(CASE WHEN event_type='reply_submit' THEN 1 END) as feedbacks FROM events WHERE created_at >= unixepoch('now', '-${days} days') AND date(created_at, 'unixepoch') IS NOT NULL GROUP BY date(created_at, 'unixepoch') ORDER BY date`
-      ).all();
+      const daysParam = `-${days} days`;
+      let sql = `SELECT date(created_at, 'unixepoch') as date, COUNT(DISTINCT uid) as unique_uids, COUNT(CASE WHEN event_type='pageview' THEN 1 END) as pageviews, COUNT(CASE WHEN event_type='click' THEN 1 END) as clicks, COUNT(CASE WHEN event_type='reply_submit' THEN 1 END) as feedbacks FROM events WHERE created_at >= unixepoch('now', ?) AND date(created_at, 'unixepoch') IS NOT NULL`;
+      const bindParams = [daysParam];
+      if (product) { sql += ` AND product = ?`; bindParams.push(product); }
+      sql += ` GROUP BY date(created_at, 'unixepoch') ORDER BY date`;
+      const daily = await env.DB.prepare(sql).bind(...bindParams).all();
       // Fill missing days with zeros for continuous chart
       const dbResults = daily?.results || [];
       const dateMap = {};
