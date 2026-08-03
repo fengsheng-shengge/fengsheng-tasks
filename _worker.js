@@ -2794,8 +2794,8 @@ export default {
       if (request.method === 'POST') return handleChat(request, env, null, resolvedBotId);
     }
 
-    // Event tracking
-    if (path === '/api/event') {
+    // Event tracking (support both singular and plural for mini-program tracker)
+    if (path === '/api/event' || path === '/api/events') {
       if (request.method !== 'POST') return jsonResponse({ ok: false, error: 'method not allowed' }, 405);
       return handleEvent(request, env);
     }
