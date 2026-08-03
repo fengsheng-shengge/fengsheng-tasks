@@ -78,7 +78,7 @@ const EXPLOIT_PATH_PATTERNS = [
   /remote\/login/i, /\.cgi/i, /\.pl/i, /\.py/i, /\.rb/i,
   /shell/i, /cmd/i, /exec/i, /upload/i, /backdoor/i,
   /sql/i, /sqlite/i, /database/i, /dump/i, /export/i,
-  /debug/i, /test/i, /staging/i, /dev/i, /local/i,
+  /(^|\/)(dev|local|debug)(\/|$)/i, /staging/i,
   /backup/i, /\.bak/i, /\.old/i, /\.tmp/i, /\.swp/i,
   /trace\.axd/i, /elmah\.axd/i, /server-status/i,
   /struts/i, /spring-/i, /thinkphp/i, /laravel/i, /yii/i,
