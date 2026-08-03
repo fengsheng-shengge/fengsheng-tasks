@@ -61,14 +61,14 @@
         <view class="sec"><view class="h"><text class="em">💎</text>客户资产</view><view>{{ detail.asset }}</view></view>
         <view class="sec" v-if="detail.note"><view class="h"><text class="em">📝</text>备注</view><view>{{ detail.note }}</view></view>
         <view class="sec" v-if="detail.addr"><view class="h"><text class="em">📍</text>小区 / 地址</view><view>{{ detail.addr }}</view></view>
-        <view class="sec" v-if="(detailSrc.timeline || []).length">
+        <view class="sec" v-if="detailSrc && (detailSrc.timeline || []).length">
           <view class="h"><text class="em">🕒</text>接触时间线</view>
           <view class="tl" v-for="(t, i) in detailSrc.timeline" :key="i">
             <text class="tl-type" :class="ttCls(t.type)">{{ t.type }}</text>
             <view class="tl-body"><view class="tl-sum">{{ t.summary }}</view><view class="tl-at">{{ fmtDate(t.at) }}</view></view>
           </view>
         </view>
-        <view class="sec" v-if="(detailSrc.followups || []).filter(f => !f.done).length">
+        <view class="sec" v-if="detailSrc && (detailSrc.followups || []).filter(f => !f.done).length">
           <view class="h"><text class="em">💌</text>跟进待办（带新价值 · 非催）</view>
           <view class="fl" v-for="(f, i) in detailSrc.followups.filter(x => !x.done)" :key="i">
             <view class="fl-theme">{{ f.theme }}</view>
@@ -76,7 +76,7 @@
             <view class="fl-lt">LTRUST · {{ f.ltrust }}</view>
           </view>
         </view>
-        <view class="sec" v-if="(detailSrc.memoryPoints || []).length">
+        <view class="sec" v-if="detailSrc && (detailSrc.memoryPoints || []).length">
           <view class="h"><text class="em">⭐</text>记忆点（客户记住你的瞬间）</view>
           <view class="mp" v-for="(m, i) in detailSrc.memoryPoints" :key="i">
             <view class="mp-point">{{ m.point }}</view>
@@ -91,7 +91,7 @@
           </view>
           <view class="cr-tip">遇到类似场景，在「策展」页用见面参谋一键生成专属方案 →</view>
         </view>
-        <view class="sec cognition" v-if="detailSrc.cognition">
+        <view class="sec cognition" v-if="detailSrc && detailSrc.cognition">
           <view class="h"><text class="em">🧠</text>认知卡（越服务越懂客户）</view>
           <block v-if="(detailSrc.cognition.known || []).length || (detailSrc.cognition.signals || []).length">
             <view class="cog-sub">已知偏好</view>
