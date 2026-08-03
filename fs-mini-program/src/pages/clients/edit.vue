@@ -18,9 +18,15 @@
       </view>
       <view class="field">
         <text class="label">人生阶段（双纵轴）</text>
-        <view class="hint">客户处在买房/租房的哪个人生节点：购房线 首套→改善→教育→升级→适老；租住线 起步→改善→家庭→品质。选准了才能说对话</view>
-        <input class="inp" v-model="form.stage" placeholder="如 购房线 / 首套" />
-        <view class="opt wrap"><view v-for="o in stageOpts" :key="o" :class="{ on: form.stage === o }" @tap="form.stage = o">{{ o }}</view></view>
+        <view class="hint">客户处在买房/租房的哪个人生节点，选准了才能说对话</view>
+        <view class="stage-groups">
+          <view class="stage-group" v-for="g in stageGroups" :key="g.title">
+            <view class="stage-group-title">{{ g.title }}<text class="stage-group-meta"> {{ g.meta }}</text></view>
+            <view class="opt">
+              <view v-for="o in g.opts" :key="o.full" :class="{ on: form.stage === o.full }" @tap="form.stage = o.full">{{ o.short }}</view>
+            </view>
+          </view>
+        </view>
       </view>
       <view class="field">
         <text class="label">性格频道（沟通偏好）</text>
@@ -78,7 +84,24 @@ export default {
       editingId: null,
       form: this.blankForm(),
       relOpts: ['买房客户', '租客', '业主', '房东'],
-      stageOpts: ['购房线 / ①首套','购房线 / ②改善','购房线 / ③教育','购房线 / ④升级','购房线 / ⑤适老','租住线 / ①起步','租住线 / ②改善','租住线 / ③家庭','租住线 / ④品质','业主侧'],
+      stageGroups: [
+        { title: '购房线', meta: '5 段 · 买房人生', opts: [
+          { full: '购房线 / ①首套', short: '① 首套' },
+          { full: '购房线 / ②改善', short: '② 改善' },
+          { full: '购房线 / ③教育', short: '③ 教育' },
+          { full: '购房线 / ④升级', short: '④ 升级' },
+          { full: '购房线 / ⑤适老', short: '⑤ 适老' }
+        ] },
+        { title: '租住线', meta: '4 段 · 租房人生', opts: [
+          { full: '租住线 / ①起步', short: '① 起步' },
+          { full: '租住线 / ②改善', short: '② 改善' },
+          { full: '租住线 / ③家庭', short: '③ 家庭' },
+          { full: '租住线 / ④品质', short: '④ 品质' }
+        ] },
+        { title: '业主侧', meta: '已买房的人', opts: [
+          { full: '业主侧', short: '业主侧' }
+        ] }
+      ],
       levelOpts: ['A', 'B', 'C'],
       statusOpts: ['跟进中', '已成交', '已流失'],
       confirmShow: false, confirmTitle: '', confirmContent: ''
@@ -151,10 +174,14 @@ export default {
 .hint { font-size: 11.5px; color: #9a9a9a; line-height: 1.5; margin-bottom: 8px; }
 .inp { width: 100%; background: #f7f4ef; border: 1px solid #e7e0d4; border-radius: 8px; padding: 10px; font-size: 14px; box-sizing: border-box; }
 .opt { display: flex; flex-wrap: wrap; gap: 8px; }
-.opt.wrap { margin-top: 8px; }
 .opt > view { padding: 7px 12px; background: #f0ece2; border-radius: 8px; font-size: 13px; color: #555; border: 1px solid transparent; }
 .opt > view.on { background: #3d5a3e; color: #fff; }
 .p-r.on { background: #c0392b; } .p-b.on { background: #2f6fb0; } .p-g.on { background: #3a8f5b; }
+/* 人生阶段三组分隔 */
+.stage-groups { display: flex; flex-direction: column; gap: 12px; }
+.stage-group { background: #faf7f0; border: 1px solid #ece4d2; border-radius: 10px; padding: 10px 12px; }
+.stage-group-title { font-size: 13px; font-weight: 700; color: #3d5a3e; margin-bottom: 8px; }
+.stage-group-meta { font-size: 11px; font-weight: 400; color: #9a9a9a; margin-left: 4px; }
 .del-btn { margin-top: 8px; text-align: center; color: #c0392b; font-size: 14px; padding: 12px; border: 1px solid #f0c4bd; border-radius: 10px; background: #fff; }
 /* foot 只在页面底部，避让 iPhone 底部安全区即可（非 tab 页无原生 tabBar） */
 .foot { display: flex; gap: 10px; padding: 10px 16px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid #efe9dd; }
