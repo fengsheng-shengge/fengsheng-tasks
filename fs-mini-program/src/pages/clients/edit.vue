@@ -1,26 +1,52 @@
 <template>
   <view class="page">
     <scroll-view class="body" scroll-y="true">
-      <view class="field"><text class="label">姓氏（头像）</text><input class="inp" v-model="form.surname" placeholder="如 林" /></view>
-      <view class="field"><text class="label">称呼 / 全名</text><input class="inp" v-model="form.name" placeholder="如 林先生 & 未婚妻" /></view>
-      <view class="field"><text class="label">角色</text>
+      <view class="field">
+        <text class="label">姓氏（头像）</text>
+        <view class="hint">用于生成客户头像首字，不填则自动取"称呼"首字</view>
+        <input class="inp" v-model="form.surname" placeholder="如 林" />
+      </view>
+      <view class="field">
+        <text class="label">称呼 / 全名</text>
+        <view class="hint">怎么叫这位客户都行，如 林先生、晓雯、林先生 & 未婚妻</view>
+        <input class="inp" v-model="form.name" placeholder="如 林先生 & 未婚妻" />
+      </view>
+      <view class="field">
+        <text class="label">角色</text>
+        <view class="hint">您当前在服务哪类人——决定后续话术与跟进节奏</view>
         <view class="opt"><view v-for="o in relOpts" :key="o" :class="{ on: form.rel === o }" @tap="form.rel = o">{{ o }}</view></view>
       </view>
-      <view class="field"><text class="label">双纵轴阶段</text>
-        <input class="inp" v-model="form.stage" placeholder="如 购房线 / ①首套" />
+      <view class="field">
+        <text class="label">人生阶段（双纵轴）</text>
+        <view class="hint">客户处在买房/租房的哪个人生节点：购房线 首套→改善→教育→升级→适老；租住线 起步→改善→家庭→品质。选准了才能说对话</view>
+        <input class="inp" v-model="form.stage" placeholder="如 购房线 / 首套" />
         <view class="opt wrap"><view v-for="o in stageOpts" :key="o" :class="{ on: form.stage === o }" @tap="form.stage = o">{{ o }}</view></view>
       </view>
-      <view class="field"><text class="label">性格频道</text>
+      <view class="field">
+        <text class="label">性格频道（沟通偏好）</text>
+        <view class="hint">据此调整您的表达方式：🔴结果型=急性子、要效率、直接给结论；🔵关系型=慢热、重信任、先聊人再聊房；🟢理智型=爱分析、要数据、给对比表</view>
         <view class="opt"><view class="p-r" :class="{ on: form.pkey === 'red' }" @tap="form.pkey='red'">🔴 结果</view><view class="p-b" :class="{ on: form.pkey === 'blue' }" @tap="form.pkey='blue'">🔵 关系</view><view class="p-g" :class="{ on: form.pkey === 'green' }" @tap="form.pkey='green'">🟢 理智</view></view>
       </view>
-      <view class="field"><text class="label">分层</text>
+      <view class="field">
+        <text class="label">分层（投入优先级）</text>
+        <view class="hint">您打算给这位客户多少精力：A 重点（高意向/高客单，优先跟）；B 常规；C 潜在长线</view>
         <view class="opt"><view v-for="o in levelOpts" :key="o" :class="{ on: form.level === o }" @tap="form.level = o">{{ o }}</view></view>
       </view>
-      <view class="field"><text class="label">状态</text>
+      <view class="field">
+        <text class="label">状态</text>
+        <view class="hint">当前跟进进展，便于成交后复盘、流失后归因</view>
         <view class="opt"><view v-for="o in statusOpts" :key="o" :class="{ on: form.status === o }" @tap="form.status = o">{{ o }}</view></view>
       </view>
-      <view class="field"><text class="label">小区 / 地址</text><input class="inp" v-model="form.addr" placeholder="选填" /></view>
-      <view class="field"><text class="label">备注（核心诉求 / 敏感点）</text><textarea class="inp" v-model="form.note" placeholder="如 90后婚房，预算300万，看重学区与通勤" /></view>
+      <view class="field">
+        <text class="label">小区 / 地址</text>
+        <view class="hint">客户关注或已购的小区，选填</view>
+        <input class="inp" v-model="form.addr" placeholder="选填" />
+      </view>
+      <view class="field">
+        <text class="label">备注（核心诉求 / 敏感点）</text>
+        <view class="hint">记下他最在意的（学区/通勤/预算）和最忌讳的（别提等）——见面前后都能直接用</view>
+        <textarea class="inp" v-model="form.note" placeholder="如 90后婚房，预算300万，看重学区与通勤" />
+      </view>
 
       <view v-if="editingId" class="del-btn" @tap="askDel">🗑 删除该客户</view>
     </scroll-view>
@@ -122,6 +148,7 @@ export default {
 .body { flex: 1; padding: 16px; box-sizing: border-box; }
 .field { margin-bottom: 14px; }
 .label { display: block; font-size: 13px; font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
+.hint { font-size: 11.5px; color: #9a9a9a; line-height: 1.5; margin-bottom: 8px; }
 .inp { width: 100%; background: #f7f4ef; border: 1px solid #e7e0d4; border-radius: 8px; padding: 10px; font-size: 14px; box-sizing: border-box; }
 .opt { display: flex; flex-wrap: wrap; gap: 8px; }
 .opt.wrap { margin-top: 8px; }

@@ -8,7 +8,7 @@ export const APP_SHARE_TITLE = '风声 · 帮服务者用独立价值获得尊�
 
 // 当前构建版本号（与送审 zip / 微信开发者工具「上传」版本号保持一致）。
 // 用途：让用户一眼确认手机跑的是不是最新包，消除「到底有没有更新」的歧义。
-export const APP_VERSION = '3.0.7.6'
+export const APP_VERSION = '3.0.7.7'
 
 // 生成可分享的 h5 链接（条件编译：H5 用当前域名，小程序用线上域名）
 export function buildShareLink(path) {
