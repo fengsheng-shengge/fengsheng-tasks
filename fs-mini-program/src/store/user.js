@@ -265,6 +265,26 @@ export const useUserStore = defineStore('user', {
       return before - this.clients.length
     },
 
+    /** 导入备份：按 id 合并客户（已存在则覆盖顶层字段，新增则追加）。返回合并条数 */
+    mergeClients(list) {
+      if (!Array.isArray(list)) return 0
+      const map = {}
+      this.clients.forEach(c => { if (c && c.id) map[c.id] = c })
+      let merged = 0
+      list.forEach(c => {
+        if (!c || !c.id) return
+        if (map[c.id]) {
+          Object.assign(map[c.id], c)
+        } else {
+          this.clients.unshift(c)
+          map[c.id] = c
+        }
+        merged++
+      })
+      this._persist()
+      return merged
+    },
+
     getClient(id) {
       return this.clients.find(c => c.id === id) || null
     },

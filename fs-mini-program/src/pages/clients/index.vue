@@ -6,6 +6,13 @@
       <button class="add-btn" @tap="goAdd()">＋ 新建</button>
     </view>
 
+    <!-- 导出/导入备份：手机端最稳的跨设备备份方式（剪贴板 JSON，无需后端） -->
+    <view class="backup-bar">
+      <button class="backup-btn" @tap="exportBackup">📤 导出备份</button>
+      <button class="backup-btn line" @tap="importBackup">📥 导入备份</button>
+      <text class="backup-tip">换手机前先「导出」→ 发到文件传输助手；新手机「导入」即可恢复</text>
+    </view>
+
     <!-- v3.0.7.2 诊断条：用户进此页即能判断包版本，避免「是新版本还是老版本」歧义根因 -->
     <view class="diag">
       <text class="diag-v">包版本 v{{ appVersion }}</text>
@@ -236,6 +243,56 @@ export default {
       this.showDetail = false
       if (id) uni.navigateTo({ url: '/pages/clients/edit?id=' + id })
     },
+    // 导出备份：全部客户序列化为 JSON 复制到剪贴板（数据纯本地，不落云端，隐私安全）
+    exportBackup() {
+      const list = this.userStore.clients || []
+      if (!list.length) { uni.showToast({ title: '暂无客户可备份', icon: 'none' }); return }
+      const payload = {
+        __fs_backup__: 'clients',
+        v: 1,
+        app: 'fengsheng',
+        appVersion: APP_VERSION,
+        exportedAt: new Date().toISOString(),
+        count: list.length,
+        clients: list
+      }
+      uni.setClipboardData({
+        data: JSON.stringify(payload),
+        success: () => {
+          this.showInfo('已复制到剪贴板',
+            '共 ' + list.length + ' 位客户已复制。请粘贴到微信「文件传输助手」或发给自己，换手机后从该聊天复制这段文字，再点「导入备份」即可恢复。\n\n（数据只存在你本机，风声不收集，放心备份）')
+        },
+        fail: () => uni.showToast({ title: '复制失败，请重试', icon: 'none' })
+      })
+    },
+    // 导入备份：从剪贴板读取 JSON，按 id 合并到本机
+    importBackup() {
+      uni.getClipboardData({
+        success: (res) => {
+          const text = res.data || ''
+          let payload = null
+          try { payload = JSON.parse(text) } catch (e) { payload = null }
+          if (!payload || payload.__fs_backup__ !== 'clients' || !Array.isArray(payload.clients)) {
+            this.showInfo('未能识别备份',
+              '剪贴板内容不是有效的风声客户备份。请先在一台手机「导出备份」复制，再到这台手机从聊天里复制那段备份文字，然后点「导入备份」。')
+            return
+          }
+          const incoming = payload.clients.filter(c => c && c.id)
+          if (!incoming.length) { uni.showToast({ title: '备份里没有客户', icon: 'none' }); return }
+          const n = this.userStore.mergeClients(incoming)
+          this.showInfo('导入完成',
+            '成功合并 ' + n + ' 位客户到本机（已存在的按编号更新，新增的追加）。')
+        },
+        fail: () => uni.showToast({ title: '读取剪贴板失败', icon: 'none' })
+      })
+    },
+    // 复用自定义弹窗做说明（避开 uni Web 版 showModal 缺陷，真机/H5 一致）
+    showInfo(title, content) {
+      this.confirmMode = 'info'
+      this.confirmTitle = title
+      this.confirmContent = content
+      this.confirmShow = true
+    },
     askClear() {
       const n = this.userStore.clients.filter(x => x.seed).length
       this.confirmMode = 'clear'
@@ -248,6 +305,7 @@ export default {
         const n = this.userStore.clearSamples()
         uni.showToast({ title: '已清空 ' + n + ' 张示例', icon: 'none' })
       }
+      // 'info' 模式（导出/导入说明）直接关闭即可，无需额外动作
       this.confirmShow = false
     },
     confirmCancel() { this.confirmShow = false },
@@ -287,6 +345,11 @@ export default {
 .section-title { font-size: 18px; font-weight: 800; color: #3d5a3e; }
 .section-more { font-size: 12px; color: #C8956D; flex: 1; }
 .add-btn { margin: 0; padding: 6px 14px; background: #3d5a3e; color: #fff; font-size: 13px; border-radius: 20px; line-height: 1.6; }
+.backup-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.backup-btn { margin: 0; padding: 6px 13px; background: #fff; color: #3d5a3e; border: 1px solid #cfc4ac; font-size: 12.5px; border-radius: 18px; line-height: 1.5; }
+.backup-btn:active { background: #f0ece2; }
+.backup-btn.line { color: #c46a3a; border-color: #e7d3c2; }
+.backup-tip { flex-basis: 100%; font-size: 11px; color: #9a948a; line-height: 1.5; }
 .empty { background: #fff; border: 1px dashed #e7e0d4; border-radius: 12px; padding: 32px 20px; text-align: center; color: #999; font-size: 13px; }
 .empty-ico { font-size: 44px; line-height: 1; margin-bottom: 10px; }
 .empty-t { font-size: 15px; font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
@@ -306,7 +369,7 @@ export default {
 .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1100; display: flex; align-items: center; justify-content: center; }
 .modal { width: 82%; max-width: 320px; background: #fff; border-radius: 14px; padding: 22px 20px 16px; box-sizing: border-box; }
 .modal-title { font-size: 16px; font-weight: 800; color: #2b2b2b; margin-bottom: 10px; }
-.modal-content { font-size: 13.5px; color: #666; line-height: 1.6; margin-bottom: 18px; }
+.modal-content { font-size: 13.5px; color: #666; line-height: 1.6; margin-bottom: 18px; white-space: pre-line; }
 .modal-btns { display: flex; gap: 12px; }
 .modal-btn { flex: 1; margin: 0; border-radius: 10px; padding: 11px; font-size: 15px; line-height: 1.2; }
 .modal-btn.cancel { background: #f0ece2; color: #555; }
