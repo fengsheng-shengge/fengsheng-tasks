@@ -86,6 +86,7 @@
 import { casesData } from '../../utils/v4data.js'
 import { useUserStore } from '../../store/user'
 import ENTRIES from '../../utils/entries_slim.js'
+import { trackEvent } from '../../utils/tracker'
 
 // 真实法源判定（与策展引擎同口径）：仅真实 legalRef 挂徽标，缺失诚实标注
 function realLegal(ref) {
@@ -140,8 +141,8 @@ export default {
     toast(m) { uni.showToast({ title: m, icon: 'none' }) },
     goAssess() { uni.navigateTo({ url: '/pages/assess/index' }) },
     goCases() { uni.navigateTo({ url: '/pages/cases/index' }) },
-    toggleCase(c) { c._open = !c._open },
-    toggleEntry(e) { e._open = !e._open }
+    toggleCase(c) { c._open = !c._open; trackEvent('case_view', 'knowledge', { id: c.id, domain: c.domain || '' }) },
+    toggleEntry(e) { e._open = !e._open; trackEvent('knowledge_view', 'knowledge', { id: e.id, domain: e.domain || '' }) }
   }
 }
 </script>

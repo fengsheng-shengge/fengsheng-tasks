@@ -108,6 +108,7 @@
 <script>
 import { AXIS_GROUPS, DIMENSIONS, generateCuration } from '../../engine.js'
 import { useUserStore } from '../../../store/user'
+import { trackEvent } from '../../../utils/tracker'
 
 export default {
   data() {
@@ -169,6 +170,7 @@ export default {
         dimensions: this.selectedDims,
         freeText: this.freeText
       })
+      trackEvent('curate_generate', 'curate-prep', { axis: this.axisType, dims: this.selectedDims.length, sayN: this.result.say.length, followN: this.result.followups.length })
       this.savedTip = ''
       uni.pageScrollTo({ scrollTop: 0, duration: 200 })
     },
@@ -192,6 +194,7 @@ export default {
       this.userStore.addMemoryPoint(this.clientId, '专业准备：基于真实字典生成见面参谋，每条可点开依据')
       this.userStore.markDone('curate')
       this.userStore.earnPoints(10, '完成见面参谋')
+      trackEvent('curate_save', 'curate-prep', { clientId: this.clientId, axis: this.axisType })
       this.savedTip = '已存入「' + this.clientName + '」的认知卡 · 信任积分 +10'
       uni.showToast({ title: '已存入客户认知卡', icon: 'none' })
     }

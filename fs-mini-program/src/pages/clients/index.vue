@@ -134,6 +134,7 @@
 import { personaMap, levelMap, casesData } from '../../utils/v4data.js'
 import { useUserStore } from '../../store/user'
 import { APP_VERSION } from '../../utils/share.js'
+import { trackEvent } from '../../utils/tracker'
 export default {
   data() {
     return {
@@ -259,6 +260,7 @@ export default {
       uni.setClipboardData({
         data: JSON.stringify(payload),
         success: () => {
+          trackEvent('backup_export', 'clients', { count: list.length })
           this.showInfo('已复制到剪贴板',
             '共 ' + list.length + ' 位客户已复制。请粘贴到微信「文件传输助手」或发给自己，换手机后从该聊天复制这段文字，再点「导入备份」即可恢复。\n\n（数据只存在你本机，风声不收集，放心备份）')
         },

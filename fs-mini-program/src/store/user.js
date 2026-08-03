@@ -1,6 +1,7 @@
 // Pinia 用户状态管理 — V2 完整版
 import { defineStore } from 'pinia'
 import { wxLogin, logout as apiLogout, getUserId as apiGetUserId } from '../api/auth'
+import { trackEvent } from '../utils/tracker'
 
 // 等级配置
 const LEVEL_CONFIG = [
@@ -242,19 +243,21 @@ export const useUserStore = defineStore('user', {
       const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] }, ...c }
       this.clients.unshift(client)
       this._persist()
+      trackEvent('client_add', 'clients', { rel: c.rel || '', stage: c.stage || '' })
       return client
     },
 
     /** 更新客户字段 */
     updateClient(id, patch) {
       const i = this.clients.findIndex(c => c.id === id)
-      if (i >= 0) { this.clients[i] = { ...this.clients[i], ...patch }; this._persist() }
+      if (i >= 0) { this.clients[i] = { ...this.clients[i], ...patch }; this._persist(); trackEvent('client_update', 'clients', { id }) }
     },
 
     /** 删除客户 */
     removeClient(id) {
       this.clients = this.clients.filter(c => c.id !== id)
       this._persist()
+      trackEvent('client_remove', 'clients', { id })
     },
 
     /** 清空所有示例客户（仅删除 seed:true，真实客户不受影响） */
@@ -282,6 +285,7 @@ export const useUserStore = defineStore('user', {
         merged++
       })
       this._persist()
+      trackEvent('backup_import', 'clients', { count: merged })
       return merged
     },
 
@@ -359,6 +363,7 @@ export const useUserStore = defineStore('user', {
       c.cognition.signals = Array.from(new Set([...(c.cognition.signals || []), ...signals])).slice(0, 12)
       c.cognition.lastAxis = log.axisLabel
       this._persist()
+      trackEvent('cognition_save', 'curate', { clientId })
     },
 
     /** 新增一次测评记录 */
@@ -366,6 +371,7 @@ export const useUserStore = defineStore('user', {
       const item = { id: 'as_' + Date.now(), ts: Date.now() }
       this.assessments.unshift(item)
       this._persist()
+      trackEvent('assessment_take', 'assess', {})
       return item
     },
 
