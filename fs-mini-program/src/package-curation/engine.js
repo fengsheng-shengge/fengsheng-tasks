@@ -36,6 +36,160 @@ export const DIMENSIONS = [
   { key: 'free', name: '自在', kw: ['邻里', '社区', '安静', '氛围', '自在'] }
 ]
 
+// ===== 场景化配置（V3.0.12 新增）=====
+// 每个场景定义：关键词注入 + subScene 加权 + 场景化跟进 + 呈现工具推荐
+export const SCENARIOS = {
+  buy: {
+    first_contact: {
+      name: '首次接触', icon: 'handshake',
+      kw: ['首次', '初次', '咨询', '了解', '来电', '到店', '见面'],
+      subScenes: ['需求确认'],
+      tool: '探需卡',
+      followups: [
+        { theme: '资格预审', text: '3天内帮客户完成购房资格预查，锁定真实购买力' },
+        { theme: '区域初筛', text: '按客户预算和通勤偏好，整理2-3个候选板块供下次沟通' }
+      ]
+    },
+    need_discovery: {
+      name: '需求深挖', icon: 'search',
+      kw: ['预算', '资格', '首付', '贷款', '公积金', '学区', '区域', '需求'],
+      subScenes: ['需求确认', '资格审查'],
+      tool: '需求画像报告',
+      followups: [
+        { theme: '预算锁定', text: '整理首付+月供+税费+隐性成本全口径预算表发给客户' },
+        { theme: '资格确认', text: '跟进购房资格核验结果，确认限购套数和贷款成数' }
+      ]
+    },
+    viewing: {
+      name: '带看房源', icon: 'home',
+      kw: ['看房', '带看', '实地', '户型', '朝向', '采光', '配套', '小区'],
+      subScenes: ['房源匹配'],
+      tool: '房源对比卡',
+      followups: [
+        { theme: '看房反馈', text: '见面后当天收集客户对每套房源的真实反馈，标记偏好' },
+        { theme: '候选缩小', text: '按客户反馈缩小范围，下次带看2-3套精选房源' }
+      ]
+    },
+    mandate: {
+      name: '委托签约', icon: 'contract',
+      kw: ['委托', '居间', '协议', '服务', '佣金', '独家'],
+      subScenes: ['资格审查'],
+      tool: '委托服务清单',
+      followups: [
+        { theme: '服务承诺', text: '发送书面服务承诺与看房计划，让客户安心' },
+        { theme: '信息同步', text: '建立每周固定沟通节奏，同步带看进展和市场变化' }
+      ]
+    },
+    negotiation: {
+      name: '议价谈判', icon: 'balance',
+      kw: ['价格', '议价', '砍价', '底价', '成交', '税费', '谈判'],
+      subScenes: ['价格评估'],
+      tool: '价格测算表',
+      followups: [
+        { theme: '价格跟进', text: '24小时内同步双方价格预期差异，给出斡旋建议' },
+        { theme: '税费测算', text: '整理买卖双方各自承担的税费清单，避免签约时争议' }
+      ]
+    },
+    contract: {
+      name: '合同签署', icon: 'signature',
+      kw: ['合同', '签约', '条款', '定金', '订金', '付款', '违约'],
+      subScenes: ['合同条款', '定金订金', '付款方式'],
+      tool: '合同要点清单',
+      followups: [
+        { theme: '签约跟进', text: '签约后发送合同关键条款摘要，标注重要时间节点' },
+        { theme: '贷款对接', text: '协助客户对接银行贷款面签，跟进审批进度' }
+      ]
+    },
+    handover: {
+      name: '交房过户', icon: 'key',
+      kw: ['交房', '过户', '验收', '交接', '物业', '登记', '不动产权'],
+      subScenes: [],
+      tool: '交房验收单',
+      followups: [
+        { theme: '验收跟进', text: '交房后7天内跟进发现的瑕疵问题，协调原业主修复' },
+        { theme: '过户确认', text: '确认不动产证办理进度，同步客户领取时间' }
+      ]
+    },
+    after_sale: {
+      name: '售后关怀', icon: 'heart',
+      kw: ['装修', '入住', '物业', '社区', '邻居', '入住体验'],
+      subScenes: [],
+      tool: '入住关怀卡',
+      followups: [
+        { theme: '入住关怀', text: '入住1个月后回访居住体验，提供社区资源对接' },
+        { theme: '持续服务', text: '定期同步区域房价走势，帮客户跟踪资产价值' }
+      ]
+    }
+  },
+  rent: {
+    first_contact: {
+      name: '首次接触', icon: 'handshake',
+      kw: ['租房', '租住', '出租', '租金', '合租', '整租', '见面'],
+      subScenes: ['需求确认'],
+      tool: '租住需求卡',
+      followups: [
+        { theme: '需求整理', text: '当天整理客户租住需求清单，确认预算和区域偏好' },
+        { theme: '房源初筛', text: '2天内匹配3-5套候选房源，约定带看时间' }
+      ]
+    },
+    need_match: {
+      name: '需求匹配', icon: 'search',
+      kw: ['匹配', '预算', '户型', '通勤', '期限', '合租', '需求'],
+      subScenes: ['需求确认'],
+      tool: '租住画像报告',
+      followups: [
+        { theme: '匹配优化', text: '按客户反馈调整匹配条件，缩小到2-3套优质候选' }
+      ]
+    },
+    viewing: {
+      name: '带看房源', icon: 'home',
+      kw: ['看房', '带看', '实地', '采光', '噪音', '家电', '小区'],
+      subScenes: [],
+      tool: '房源对比卡',
+      followups: [
+        { theme: '看房反馈', text: '当天收集客户对每套房源的反馈，标记偏好和顾虑' }
+      ]
+    },
+    mandate: {
+      name: '委托签约', icon: 'contract',
+      kw: ['委托', '居间', '协议', '佣金', '服务'],
+      subScenes: [],
+      tool: '委托服务清单',
+      followups: [
+        { theme: '服务承诺', text: '发送书面服务承诺，明确看房安排和沟通方式' }
+      ]
+    },
+    lease_signing: {
+      name: '合同签署', icon: 'signature',
+      kw: ['合同', '租约', '押金', '租金', '维修', '转租', '续租'],
+      subScenes: [],
+      tool: '合同要点清单',
+      followups: [
+        { theme: '签约跟进', text: '发送租赁合同关键条款摘要，标注押金退还条件' }
+      ]
+    },
+    move_in: {
+      name: '入住交接', icon: 'key',
+      kw: ['交接', '入住', '水电', '家电', '钥匙', '物品'],
+      subScenes: [],
+      tool: '交接清单',
+      followups: [
+        { theme: '入住跟进', text: '入住1周后回访居住体验，记录需维修项' }
+      ]
+    },
+    move_out: {
+      name: '退租续租', icon: 'refresh',
+      kw: ['退租', '退房', '续租', '验房', '押金退还'],
+      subScenes: [],
+      tool: '退租验房单',
+      followups: [
+        { theme: '退租协助', text: '协助押金退还流程，同步房屋验收结果' },
+        { theme: '续租关怀', text: '如续租，提前30天同步市场租金变化，帮客户谈判' }
+      ]
+    }
+  }
+}
+
 // ===== 工具：真实法源判定（R2 边界）=====
 function isRealLegal(ref) {
   if (!ref) return false
@@ -58,10 +212,11 @@ function searchable(e) {
 
 // ===== 主引擎 =====
 export function generateCuration(input) {
-  const { axisType = 'buy', axisNodeKey = 'improve', dimensions = [], freeText = '' } = input || {}
+  const { axisType = 'buy', axisNodeKey = 'improve', dimensions = [], freeText = '', scenario = '' } = input || {}
   const group = AXIS_GROUPS.find(g => g.type === axisType) || AXIS_GROUPS[0]
   const node = group.nodes.find(n => n.key === axisNodeKey) || group.nodes[0]
   const ct = group.clientType
+  const sc = (SCENARIOS[axisType] || {})[scenario] || null
 
   // 1) 检索词集合
   const qKw = new Set([...node.kw])
@@ -69,6 +224,8 @@ export function generateCuration(input) {
     const d = DIMENSIONS.find(x => x.key === dk)
     if (d) d.kw.forEach(k => qKw.add(k))
   })
+  // 场景关键词注入
+  if (sc) sc.kw.forEach(k => qKw.add(k))
   const freeTokens = tokenize(freeText)
   freeTokens.forEach(t => qKw.add(t))
   const qArr = [...qKw]
@@ -96,6 +253,8 @@ export function generateCuration(input) {
       // 见前阶段（签约前/需求确认）轻微加权
       const stage = (e.tags && e.tags.stage) || ''
       if (String(stage).includes('pre') || (e.domain || '').includes('签约前')) score += 0.5
+      // 场景 subScene 加权：命中该场景配置的 subScene 额外 +2
+      if (sc && sc.subScenes.length && sc.subScenes.includes(e.subScene)) score += 2
       if (score > 0) all.push({ e, score, grp: grpKey })
     })
   }
@@ -150,29 +309,46 @@ export function generateCuration(input) {
     if (q && !seenQ.has(q)) { seenQ.add(q); ask.push({ q }) }
   }
 
-  // 6) 跟（见后跟进 / 持续关怀，按节点 + 维度，禁用操纵词）
-  const followups = buildFollowups(node, dimensions)
+  // 6) 跟（见后跟进 / 持续关怀）
+  // 场景化跟进优先；无场景时走原有节点+维度模板
+  const followups = sc
+    ? sc.followups.concat(buildDimensionFollowups(dimensions)).slice(0, 4)
+    : buildFollowups(node, dimensions)
 
   // 7) 诚实元信息（绝不编造分数）
   const totalMatched = all.length
+  const scenarioNote = sc && totalMatched === 0
+    ? '该场景下暂无匹配词条。' + (axisType === 'rent' ? '租住类知识库持续扩充中' : '该场景词条待补充') + '，建议结合你的专业判断'
+    : null
   const honesty = {
     matchedTotal: strongCount,
     realLegalCount: realLegalStrong,
-    note: totalMatched === 0
+    note: scenarioNote || (totalMatched === 0
       ? '该客户类型下暂无匹配词条。租住类知识库持续扩充中，建议结合你的专业判断补充'
       : strongCount < 3
         ? '匹配条目有限（' + totalMatched + ' 条），建议结合你的专业判断补充'
-        : ('基于真实字典命中 ' + strongCount + ' 条强相关（其中 ' + realLegalStrong + ' 条含真实法源）')
+        : ('基于真实字典命中 ' + strongCount + ' 条强相关（其中 ' + realLegalStrong + ' 条含真实法源）'))
   }
 
   return {
     axisLabel: group.label + ' · ' + node.name,
+    scenarioName: sc ? sc.name : '',
+    scenarioIcon: sc ? sc.icon : '',
+    recommendedTool: sc ? sc.tool : '',
     dimensionLabels: dimensions.map(dk => (DIMENSIONS.find(d => d.key === dk) || {}).name).filter(Boolean),
     freeText,
     say, bring: bring.length ? bring : bringFallback, ask, followups,
     honesty,
     timeline: buildTimeline()
   }
+}
+
+// 维度补充跟进（场景化跟进复用）
+function buildDimensionFollowups(dimensions) {
+  const dimText = []
+  if (dimensions.includes('econ')) dimText.push({ theme: '费用透明', text: '持续关怀：整理本次交易全部成本清单，避免隐性支出' })
+  if (dimensions.includes('conv')) dimText.push({ theme: '通勤实测', text: '见后跟进：提供早晚高峰通勤实测，增强决策依据' })
+  return dimText
 }
 
 // 见后跟进：按节点 + 维度生成，语言用「见后跟进/持续关怀」，禁用钩子/策略/转化
@@ -192,11 +368,7 @@ function buildFollowups(node, dimensions) {
     quality: [{ theme: '社区服务', text: '跟进对物业与社区服务的真实体验反馈' }]
   }
   const base = map[node.key] || [{ theme: '持续关怀', text: '见面后 1–2 天做轻量跟进，确认客户还有哪些顾虑' }]
-  // 维度补充（经济/学区相关关怀）
-  const dimText = []
-  if (dimensions.includes('econ')) dimText.push({ theme: '费用透明', text: '持续关怀：整理本次交易全部成本清单，避免隐性支出' })
-  if (dimensions.includes('conv')) dimText.push({ theme: '通勤实测', text: '见后跟进：提供早晚高峰通勤实测，增强决策依据' })
-  return base.concat(dimText).slice(0, 4)
+  return base.concat(buildDimensionFollowups(dimensions)).slice(0, 4)
 }
 
 // 三段式时间轴（见前/见面/见后）结构，供 UI 渲染

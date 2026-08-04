@@ -18,14 +18,22 @@
       </view>
 
       <view class="card">
-        <view class="label">② 住得好七维 · 客户关注（可多选）</view>
+        <view class="label">② 见面场景（精准匹配该场景建议）</view>
+        <view class="scenarios">
+          <view :class="['sc-item', { on: !scenario }]" @tap="scenario = ''">全场景</view>
+          <view v-for="s in currentScenarios" :key="s.key" :class="['sc-item', { on: scenario === s.key }]" @tap="scenario = s.key">{{ s.name }}</view>
+        </view>
+      </view>
+
+      <view class="card">
+        <view class="label">③ 住得好七维 · 客户关注（可多选）</view>
         <view class="dims">
           <view v-for="d in dimensions" :key="d.key" :class="['dim-item', { on: selectedDims.includes(d.key) }]" @tap="toggleDim(d.key)">{{ d.name }}</view>
         </view>
       </view>
 
       <view class="card">
-        <view class="label">③ 一句自由诉求（选填）</view>
+        <view class="label">④ 一句自由诉求（选填）</view>
         <textarea class="ta" v-model="freeText" placeholder="如：800万改善三房，学区还是居住品质纠结" maxlength="120"></textarea>
       </view>
 
@@ -38,10 +46,11 @@
     <!-- 结果态 -->
     <block v-if="result">
       <view class="result-head">
-        <view class="rh-axis">{{ result.axisLabel }}</view>
+        <view class="rh-axis">{{ result.axisLabel }}<text v-if="result.scenarioName" class="rh-scenario"> · {{ result.scenarioName }}</text></view>
         <view class="rh-dims" v-if="result.dimensionLabels.length">
           <text v-for="(d, i) in result.dimensionLabels" :key="i" class="dim-tag">{{ d }}</text>
         </view>
+        <view v-if="result.recommendedTool" class="rh-tool">推荐呈现工具：{{ result.recommendedTool }}</view>
         <view class="honesty">{{ result.honesty.note }}</view>
       </view>
 
@@ -202,7 +211,7 @@
 </template>
 
 <script>
-import { AXIS_GROUPS, DIMENSIONS, generateCuration } from '../../engine.js'
+import { AXIS_GROUPS, DIMENSIONS, SCENARIOS, generateCuration } from '../../engine.js'
 import { useUserStore } from '../../../store/user'
 import { trackEvent } from '../../../utils/tracker'
 import { generateReportHTML, generateReportSummary } from '../../../utils/report-template.js'
@@ -215,6 +224,7 @@ export default {
       dimensions: DIMENSIONS,
       axisType: 'buy',
       axisNodeKey: 'improve',
+      scenario: '',
       selectedDims: [],
       freeText: '',
       clientId: null,
@@ -231,6 +241,10 @@ export default {
     currentNodes() {
       const g = AXIS_GROUPS.find(x => x.type === this.axisType)
       return g ? g.nodes : []
+    },
+    currentScenarios() {
+      const sc = SCENARIOS[this.axisType] || {}
+      return Object.entries(sc).map(([key, val]) => ({ key, name: val.name, icon: val.icon }))
     },
     userStore() { return useUserStore() }
   },
@@ -262,7 +276,7 @@ export default {
   methods: {
     pickAxis(type) {
       this.axisType = type
-      // 切换纵轴时，节点默认回到该线的第一个
+      this.scenario = ''
       const g = AXIS_GROUPS.find(x => x.type === type)
       this.axisNodeKey = g ? g.nodes[0].key : this.axisNodeKey
     },
@@ -276,9 +290,10 @@ export default {
         axisType: this.axisType,
         axisNodeKey: this.axisNodeKey,
         dimensions: this.selectedDims,
-        freeText: this.freeText
+        freeText: this.freeText,
+        scenario: this.scenario
       })
-      trackEvent('curate_generate', 'curate-prep', { axis: this.axisType, dims: this.selectedDims.length, sayN: this.result.say.length, followN: this.result.followups.length })
+      trackEvent('curate_generate', 'curate-prep', { axis: this.axisType, scenario: this.scenario, dims: this.selectedDims.length, sayN: this.result.say.length, followN: this.result.followups.length })
       this.savedTip = ''
       uni.pageScrollTo({ scrollTop: 0, duration: 200 })
     },
@@ -412,6 +427,9 @@ export default {
 .nodes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .node-item { padding: 7px 12px; background: #f0ece2; border-radius: 8px; font-size: 13px; color: #555; }
 .node-item.on { background: #c46a3a; color: #fff; font-weight: 700; }
+.scenarios { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.sc-item { padding: 7px 12px; background: #f0ece2; border-radius: 8px; font-size: 13px; color: #555; }
+.sc-item.on { background: #3d5a3e; color: #fff; font-weight: 700; }
 .dims { display: flex; flex-wrap: wrap; gap: 8px; }
 .dim-item { padding: 7px 12px; background: #f0ece2; border-radius: 8px; font-size: 13px; color: #555; }
 .dim-item.on { background: #eef3ec; color: #3d5a3e; border: 1px solid #3d5a3e; font-weight: 700; }
@@ -422,6 +440,8 @@ export default {
 .btn-line { background: #fff; color: #c46a3a; border: 1px solid #e7d3c2; border-radius: 12px; padding: 12px; font-size: 14px; margin-top: 8px; }
 .result-head { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 12px; border: 1px solid #efe9dd; }
 .rh-axis { font-size: 16px; font-weight: 700; color: #2b2b2b; }
+.rh-scenario { font-size: 14px; font-weight: 500; color: #c46a3a; }
+.rh-tool { font-size: 12px; color: #3d5a3e; background: #eef3ec; padding: 4px 8px; border-radius: 6px; margin-top: 6px; display: inline-block; }
 .rh-dims { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
 .dim-tag { font-size: 11px; color: #3d5a3e; background: #eef3ec; padding: 3px 8px; border-radius: 6px; }
 .honesty { margin-top: 10px; font-size: 12px; color: #8a837a; line-height: 1.5; }
