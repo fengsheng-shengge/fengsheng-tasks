@@ -47,6 +47,61 @@
       </scroll-view>
     </view>
 
+    <!-- 见前策展包结果 -->
+    <view class="overlay" :class="{ active: showResult }">
+      <view class="ov-nav">
+        <button class="back" @tap="showResult = false">‹</button>
+        <view><view style="font-size:17px;font-weight:700">见前策展包</view><view class="sub">{{ resultSub }}</view></view>
+      </view>
+      <scroll-view class="ovcontent" scroll-y="true">
+        <view class="channel">{{ channelText }}</view>
+        <view class="score"><view class="num">86</view><view class="tx">本次策展信心分</view><view class="tx-sub">命中 <text style="font-weight:700">记忆点 ×2</text> · 赢面较裸聊 +37%</view></view>
+
+        <view class="sec"><view class="h"><text class="em">🎯</text>① 仪式感设计<text class="mtd">准备</text></view>
+          <view class="sec-list"><view class="sec-li">提前 <text class="hl">10 分钟</text>到场，门口迎接并称呼「林先生 / 李小姐」</view><view class="sec-li">备好鞋套、饮水、户型图册，体现专业准备</view><view class="sec-li">开场 30 秒说明今日看房动线，给掌控感</view></view>
+        </view>
+        <view class="sec"><view class="h"><text class="em">📄</text>② 专业依据（书面化先行法）<text class="mtd">方法②</text></view>
+          <view class="sec-list"><view class="sec-li">学区划片以每年 4 月公示为准，本房对应 XX 小学，近三年无调整</view><view class="sec-li">首套公积金贷款额度与利率，按当前政策测算月供</view></view>
+          <view class="ref">依据：XX 区教育局 2025 入学政策 · 公积金管理中心现行利率表</view>
+        </view>
+        <view class="sec"><view class="h"><text class="em">❓</text>③ 需求三板斧话术（客制化沟通法）<text class="mtd">方法④</text></view>
+          <view class="sec-list"><view class="sec-li" v-for="(q, i) in resultQ" :key="i">{{ q }}</view></view>
+        </view>
+        <view class="sec"><view class="h"><text class="em">🏠</text>④ 房源亮点卡<text class="mtd">工具④</text></view>
+          <view class="sec-list"><view class="sec-li"><text style="font-weight:700">匹配点 1（学区）</text>：对应核心诉求 A——落户即入读，近三年划片稳定</view><view class="sec-li"><text style="font-weight:700">匹配点 2（通勤）</text>：对应核心诉求 B——地铁 8 分钟，直达 CBD</view><view class="sec-li"><text style="font-weight:700">匹配点 3（户型）</text>：对应核心诉求 C——南向三开间，婚房改儿童房便利</view></view>
+        </view>
+        <view class="sec"><view class="h"><text class="em">🛡</text>⑤ 异议预案 + 难题顶上<text class="mtd">方法⑤</text></view>
+          <view class="sec-list"><view class="sec-li">「单价偏高」→ 用<text class="hl">总价＝单价×得房率</text>拆解，对比同小区近 3 月成交</view><view class="sec-li"><text style="font-weight:700">难题顶上</text>：遇产权/贷款卡关，识别→拉法务/代书，明确说「我找专家一起帮你确认」</view></view>
+        </view>
+        <view class="sec"><view class="h"><text class="em">💌</text>⑥ 见后跟进（售后飞轮法 · 按客户阶段生成）<text class="mtd">方法⑥</text></view>
+          <view class="sec-list">
+            <view class="sec-li" v-for="(f, i) in resultFollowups" :key="i">
+              <text style="font-weight:700">{{ f.theme }}</text>：{{ f.text }}
+              <view class="lt-ref">LTRUST · {{ f.ltrust }}</view>
+            </view>
+          </view>
+          <view class="sec-list"><view class="sec-li"><text style="font-weight:700">成交后服务清单</text>：1 周入住礼包 / 1 月回访 / 6 月行情报告 / 1 年节气问候 + 年检</view></view>
+        </view>
+        <view class="sec"><view class="h"><text class="em">🛡️</text>LTRUST 信任校准（方法论底层支撑）<text class="mtd">LTRUST</text></view>
+          <view class="ltrust-list">
+            <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">L 听</text> · 开场 3 问 / 需求三板斧已嵌入<view class="ltrust-map">对应 ③</view></view></view>
+            <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">T 险</text> · 主动说 1 个风险已嵌入<view class="ltrust-map">对应 ⑤</view></view></view>
+            <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">R 相关</text> · 客制化频道已匹配<view class="ltrust-map">对应 ① / ④</view></view></view>
+            <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">U 低承</text> · 留 1 个低承诺跟进<view class="ltrust-map">对应 ⑥</view></view></view>
+            <view class="ltrust-row"><view class="ltrust-ck" :class="{ off: !saved }">{{ saved ? '✓' : '○' }}</view><view class="ltrust-tx"><text style="font-weight:700">S 档案</text> · 点保存即写入客户档案<view class="ltrust-map">见下方按钮</view></view></view>
+          </view>
+          <view class="ltrust-prog"><text>{{ ltCount }}</text><view class="bar"><view class="bar-fill" :style="{ width: ltFill }"></view></view></view>
+        </view>
+        <view class="sec"><view class="h"><text class="em">⭐</text>本次信任度（决定 +信任积分）</view>
+          <view class="trust-stars"><text class="ts" :class="{ on: i < trustScore }" v-for="(s, i) in 5" :key="i" @tap="setTrust(i + 1)">★</text></view>
+          <view class="trust-rate-cap">信任度 {{ trustScore }}/5 · 存档案将记录本次信任度</view>
+        </view>
+        <button class="btn-green" @tap="saveCuration">✓ 保存到我的客户档案</button>
+        <button class="btn-line" open-type="share" @tap="setShareCurate">分享给客户</button>
+        <button class="btn-line" @tap="copyCurateLink">复制小程序链接给客户</button>
+      </scroll-view>
+    </view>
+
     <!-- 工具示例浮层 -->
     <view class="overlay" :class="{ active: showToolOverlay }">
       <view class="ov-nav">
@@ -60,14 +115,14 @@
         </view>
         <button class="btn-orange" @tap="useInCurate(tool)">在见面参谋中使用 →</button>
         <button class="btn-line" open-type="share" @tap="sharePayload = { title: '风声工具箱 · ' + tool.name, path: '/pages/curate/index' }">分享给同事/客户</button>
-        <button class="btn-line" @tap="copyLink('/pages/curate/index')">复制小程序链接</button>
+        <button class="btn-line" @tap="copyLink('/pages/curate/index', '小程序链接已复制 · 打开微信即可跳转')">复制小程序链接</button>
       </scroll-view>
     </view>
   </view>
 </template>
 
 <script>
-import { methods, personaMap, toolbox } from '../../utils/v4data.js'
+import { methods, personaMap, personaQ, toolbox, getFollowups } from '../../utils/v4data.js'
 import { buildShareLink, copyLink, APP_SHARE_TITLE } from '../../utils/share.js'
 import { useUserStore } from '../../store/user'
 export default {
@@ -131,7 +186,7 @@ export default {
       this.sharePayload = { title: this.shareTitle(), path: '/pages/curate/index' }
     },
     copyCurateLink() {
-      copyLink('/pages/curate/index', '链接已复制 · 客户在微信外也能打开')
+      copyLink('/pages/curate/index?clientId=' + (this.selectedClientId || ''), '小程序链接已复制 · 打开微信即可跳转', 'clientId=' + (this.selectedClientId || ''))
     }
   }
 }

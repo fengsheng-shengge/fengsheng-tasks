@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>风声 · 词条详情</title>
+<meta name="description" content="风声词条详情页 · 定义 · 要点 · 关联 · 道法术器">
+<style>
+:root {
+  --p: #3d5a3e;
+  --p-light: #5a7d5b;
+  --fire: #c46a3a;
+  --fire-light: #e08a3c;
+  --cream: #f7f4ef;
+  --cream-deep: #ede7dc;
+  --ink: #1a2b26;
+  --ink-soft: #5a6b65;
+  --wood: #c8956d;
+  --line: rgba(61,90,62,0.12);
+  --shadow-sm: 0 2px 8px rgba(61,90,62,0.06);
+  --shadow-md: 0 8px 24px rgba(61,90,62,0.10);
+  --shadow-lg: 0 20px 48px rgba(61,90,62,0.14);
+  --pillar-culture: #3d5a3e;
+  --pillar-mission: #c46a3a;
+  --pillar-vision: #6b5fa8;
+  --pillar-value: #c8956d;
+  --layer-matter: #3d5a3e;
+  --layer-emotion: #c8956d;
+  --layer-spirit: #c46a3a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ===== Nav ===== */
+.nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.88);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1240px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:40px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+.brand-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--p),var(--p-light));display:grid;place-items:center;color:white;font-weight:800;flex-shrink:0}
+.back-link{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:14px;color:var(--ink-soft);transition:all .2s;margin-left:auto}
+.back-link:hover{background:rgba(61,90,62,0.06);color:var(--p)}
+.back-link svg{flex-shrink:0}
+
+/* ===== Page Layout ===== */
+.page{max-width:1240px;margin:0 auto;padding:40px 32px;display:grid;grid-template-columns:1fr 340px;gap:32px;min-height:60vh}
+
+/* ===== Main Content ===== */
+.main{min-width:0}
+
+/* ===== Entry Header ===== */
+.entry-header{margin-bottom:28px}
+.entry-breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);margin-bottom:16px;flex-wrap:wrap}
+.entry-breadcrumb span{color:var(--ink-soft)}
+.entry-breadcrumb .sep{color:var(--line)}
+.entry-breadcrumb .bc-active{color:var(--ink);font-weight:500}
+.entry-name-row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.entry-name{font-size:32px;font-weight:800;letter-spacing:-0.5px;line-height:1.2;flex:1;min-width:0}
+.entry-badges{display:flex;gap:6px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge-type{background:rgba(61,90,62,0.10);color:var(--p)}
+.badge-severity{background:rgba(196,106,58,0.10);color:var(--fire)}
+.badge-priority{background:var(--p);color:white}
+.badge-priority.P1{background:var(--fire)}
+.badge-priority.P2{background:var(--wood)}
+.badge-layer{background:var(--p-light);color:white}
+.badge-layer.dao{background:var(--pillar-vision)}
+.badge-layer.fa{background:var(--pillar-culture)}
+.badge-layer.shu{background:var(--pillar-mission)}
+.badge-layer.qi{background:var(--wood)}
+.entry-id{font-size:12px;color:var(--ink-soft);font-family:ui-monospace,"SF Mono","Cascadia Code",monospace;margin-top:4px}
+
+/* ===== Skeleton / Loading ===== */
+.skeleton{background:linear-gradient(90deg,var(--cream-deep) 25%,var(--cream) 50%,var(--cream-deep) 75%);background-size:200% 100%;animation:skeleton-shimmer 1.5s infinite;border-radius:8px}
+@keyframes skeleton-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk-block{height:20px;margin-bottom:8px;border-radius:8px}
+.sk-block.sk-h1{height:36px;width:60%}
+.sk-block.sk-h2{height:24px;width:40%}
+.sk-block.sk-body{height:16px}
+.sk-block.sk-body.short{width:70%}
+.sk-card{min-height:120px;border-radius:14px;border:1px solid var(--line);background:var(--cream);padding:24px}
+
+/* ===== Error State ===== */
+.error-state{text-align:center;padding:60px 20px}
+.error-state .error-icon{font-size:48px;margin-bottom:16px}
+.error-state h2{font-size:24px;font-weight:800;margin-bottom:8px}
+.error-state p{color:var(--ink-soft);margin-bottom:24px}
+.error-state .btn{display:inline-block;padding:10px 24px;border-radius:8px;background:var(--p);color:white;font-weight:600;font-size:14px;transition:all .2s}
+.error-state .btn:hover{background:var(--p-light)}
+
+/* ===== One Line Answer ===== */
+.one-line-answer{padding:16px 20px;background:rgba(61,90,62,0.04);border-left:4px solid var(--p);border-radius:0 10px 10px 0;margin-bottom:24px;font-size:15px;font-weight:600;color:var(--ink);line-height:1.6}
+.one-line-answer .ola-label{font-size:11px;color:var(--p);font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+
+/* ===== Definition Card ===== */
+.def-card{background:white;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:20px;box-shadow:var(--shadow-sm)}
+.def-card .section-label{font-size:11px;font-weight:700;color:var(--p);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.def-card .section-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--p)}
+.def-card .def-text{font-size:15px;line-height:1.75;color:var(--ink)}
+
+/* ===== Info Grid ===== */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.info-item{background:white;border:1px solid var(--line);border-radius:12px;padding:16px;transition:all .2s}
+.info-item:hover{box-shadow:var(--shadow-sm);border-color:rgba(61,90,62,0.25)}
+.info-item .ii-label{font-size:11px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+.info-item .ii-value{font-size:14px;color:var(--ink);line-height:1.5}
+
+/* ===== Q&A Section ===== */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.qa-card{padding:18px;border-radius:12px;border:1px solid var(--line)}
+.qa-card.consumer{background:rgba(61,90,62,0.03);border-left:3px solid var(--p)}
+.qa-card.owner{background:rgba(196,106,58,0.04);border-left:3px solid var(--fire)}
+.qa-card .qa-label{font-size:11px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.qa-card.consumer .qa-label{color:var(--p)}
+.qa-card.owner .qa-label{color:var(--fire)}
+.qa-card .qa-text{font-size:14px;line-height:1.6;color:var(--ink)}
+
+/* ===== Core Points ===== */
+.core-points{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.core-point{padding:6px 14px;border-radius:100px;background:white;border:1px solid var(--line);font-size:13px;color:var(--ink);transition:all .15s}
+.core-point:hover{background:rgba(61,90,62,0.06);border-color:var(--p)}
+
+/* ===== Legal Ref ===== */
+.legal-ref{padding:14px 18px;background:var(--cream);border:1px solid var(--line);border-radius:10px;font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:20px}
+.legal-ref .lr-label{font-size:11px;font-weight:700;color:var(--p);margin-bottom:6px}
+
+/* ===== Caveat ===== */
+.caveat-box{padding:16px 20px;background:rgba(196,106,58,0.04);border:1px solid rgba(196,106,58,0.2);border-radius:10px;margin-bottom:20px}
+.caveat-box .caveat-label{font-size:11px;font-weight:700;color:var(--fire);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.caveat-box .caveat-text{font-size:14px;color:var(--ink);line-height:1.6}
+
+/* ===== Alias ===== */
+.alias-section{margin-bottom:20px}
+.alias-section .alias-label{font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:8px}
+.alias-tags{display:flex;flex-wrap:wrap;gap:6px}
+.alias-tag{padding:4px 12px;border-radius:100px;background:white;border:1px solid var(--line);font-size:12px;color:var(--ink-soft)}
+.alias-tag:hover{background:var(--cream);color:var(--ink);border-color:var(--ink-soft)}
+
+/* ===== SubScene ===== */
+.subscene-info{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;background:rgba(61,90,62,0.06);color:var(--p);font-size:13px;font-weight:500;margin-bottom:20px}
+
+/* ===== Sidebar ===== */
+.sidebar{position:relative}
+.sidebar-sticky{position:sticky;top:100px}
+.sidebar-title{font-size:16px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px;color:var(--ink)}
+.sidebar-title .count{font-size:12px;color:var(--ink-soft);font-weight:400}
+.related-list{display:flex;flex-direction:column;gap:8px}
+.related-item{padding:14px 16px;background:white;border:1px solid var(--line);border-radius:10px;transition:all .2s;cursor:pointer;display:block;color:inherit}
+.related-item:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm);border-color:var(--p)}
+.related-item .ri-name{font-size:14px;font-weight:600;line-height:1.4;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.related-item .ri-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.related-item .ri-tag{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600}
+.related-item .ri-tag.type{background:rgba(61,90,62,0.08);color:var(--p)}
+.related-item .ri-tag.sev{background:rgba(196,106,58,0.08);color:var(--fire)}
+.related-item .ri-answer{font-size:12px;color:var(--ink-soft);margin-top:4px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+
+/* ===== Qi Layer Section ===== */
+.qi-section{max-width:1240px;margin:0 auto;padding:0 32px 48px}
+.qi-section-title{font-size:20px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.qi-section-sub{font-size:14px;color:var(--ink-soft);margin-bottom:20px}
+.qi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.qi-card{padding:18px;background:white;border:1px solid var(--line);border-radius:12px;transition:all .2s;cursor:pointer;display:block;color:inherit}
+.qi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--wood)}
+.qi-card .qc-relation{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;display:inline-block;margin-bottom:8px;background:rgba(200,149,109,0.12);color:var(--wood)}
+.qi-card .qc-name{font-size:15px;font-weight:700;line-height:1.4;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.qi-card .qc-meta{font-size:11px;color:var(--ink-soft);display:flex;gap:8px;flex-wrap:wrap}
+.qi-card .qc-answer{font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+
+/* ===== Layer Path indicator ===== */
+.layer-path{display:flex;align-items:center;gap:0;margin-bottom:20px;font-size:13px}
+.layer-step{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid var(--line);background:white;color:var(--ink-soft);transition:all .2s}
+.layer-step.active{background:var(--p);color:white;border-color:var(--p);font-weight:600}
+.layer-step-arrow{color:var(--line);margin:0 4px;font-size:12px}
+
+/* ===== No Data ===== */
+.no-data{text-align:center;padding:40px 20px;color:var(--ink-soft);font-size:14px}
+.no-data .nd-icon{font-size:36px;margin-bottom:12px}
+
+/* ===== Footer ===== */
+footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--line)}
+.footer-inner{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+
+/* ===== Responsive ===== */
+@media(max-width:960px){
+  .page{grid-template-columns:1fr;padding:28px 20px}
+  .sidebar{display:none}
+  .qi-section{padding:0 20px 48px}
+  .entry-name{font-size:26px}
+  .info-grid{grid-template-columns:1fr}
+  .qa-grid{grid-template-columns:1fr}
+  .nav-inner{padding:12px 20px;gap:20px}
+}
+@media(max-width:600px){
+  .entry-name{font-size:22px}
+  .qi-grid{grid-template-columns:1fr}
+  .page{padding:20px 16px}
+  .qi-section{padding:0 16px 48px}
+  .nav-inner{padding:10px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Nav ===== -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/knowledge/" class="brand">
+      <div class="brand-mark">风</div>
+      <span>风声</span>
+    </a>
+    <a href="/knowledge/" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>返回知识底座</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ===== Main Content ===== -->
+<div class="page" id="pageContent">
+  <!-- Loading State -->
+  <div class="main" id="mainContent">
+    <div class="skeleton sk-block sk-h1"></div>
+    <div class="skeleton sk-block sk-h2"></div>
+    <div class="skeleton sk-block sk-body"></div>
+    <div class="skeleton sk-block sk-body short"></div>
+    <div class="skeleton sk-card" style="margin-top:20px"></div>
+    <div class="skeleton sk-card" style="margin-top:14px"></div>
+  </div>
+
+  <!-- Sidebar Loading -->
+  <div class="sidebar" id="sidebarContent">
+    <div class="sidebar-sticky">
+      <div class="skeleton sk-block sk-h2" style="width:50%"></div>
+      <div class="skeleton sk-card"></div>
+      <div class="skeleton sk-card" style="margin-top:8px"></div>
+      <div class="skeleton sk-card" style="margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Qi Layer Section ===== -->
+<section class="qi-section" id="qiSection" style="display:none">
+  <h2 class="qi-section-title">器层关联词条</h2>
+  <p class="qi-section-sub">道法术器相邻层级的关联词条，从"知道"到"做到"</p>
+  <div class="qi-grid" id="qiGrid"></div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="footer-inner">
+    <span>风声 · 居住服务者专业基础设施</span>
+    <span>通过独立价值获得尊重</span>
+  </div>
+</footer>
+
+<script>
+// ============================
+// Main Entry
+// ============================
+(function() {
+  'use strict';
+
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  // Get entry ID from URL
+  const params = new URLSearchParams(window.location.search);
+  const entryId = params.get('id');
+
+  // ============================
+  // Render skeleton -> real content
+  // ============================
+
+  function showError(msg) {
+    const main = $('#mainContent');
+    if (!main) return;
+    main.innerHTML = `
+      <div class="error-state">
+        <div class="error-icon">📭</div>
+        <h2>${msg || '未找到词条'}</h2>
+        <p>请检查URL参数中的词条ID是否正确</p>
+        <a href="/knowledge/" class="btn">返回知识底座</a>
+      </div>
+    `;
+    const sidebar = $('#sidebarContent');
+    if (sidebar) sidebar.innerHTML = '';
+    const qi = $('#qiSection');
+    if (qi) qi.style.display = 'none';
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function relationLabel(rel) {
+    const map = {
+      sameSubScene: '同子场景',
+      layerPath: '相邻层级',
+      sameLegalRef: '同法条',
+      sameCtStLy: '同客户/阶段/层级',
+      sameTypeSev: '同类型/严重度'
+    };
+    return map[rel] || rel;
+  }
+
+  function renderEntryDetail(entry) {
+    const main = $('#mainContent');
+    if (!main) return;
+
+    const layer = (entry.tags && entry.tags.layer) || '';
+    const layerSeq = ['dao', 'fa', 'shu', 'qi'];
+    const currentIdx = layerSeq.indexOf(layer);
+    const layerNames = { dao: '道', fa: '法', shu: '术', qi: '器' };
+
+    // Build layer path
+    let layerPathHtml = '';
+    if (layer) {
+      layerPathHtml = '<div class="layer-path">';
+      layerSeq.forEach((l, i) => {
+        if (i > 0) layerPathHtml += '<span class="layer-step-arrow">→</span>';
+        const isActive = l === layer;
+        layerPathHtml += `<span class="layer-step${isActive ? ' active' : ''}">${layerNames[l]}</span>`;
+      });
+      layerPathHtml += '</div>';
+    }
+
+    // Build badges
+    let badgesHtml = '';
+    if (entry.entryType) badgesHtml += `<span class="badge badge-type">${escapeHtml(entry.entryType)}</span>`;
+    if (entry.severity) badgesHtml += `<span class="badge badge-severity">${escapeHtml(entry.severity)}</span>`;
+    if (entry.priority) badgesHtml += `<span class="badge badge-priority ${escapeHtml(entry.priority)}">${escapeHtml(entry.priority)}</span>`;
+    if (layer) badgesHtml += `<span class="badge badge-layer ${escapeHtml(layer)}">${escapeHtml(layerNames[layer] || layer)}</span>`;
+
+    // Build core points
+    let corePointsHtml = '';
+    if (entry.corePoint && Array.isArray(entry.corePoint) && entry.corePoint.length > 0) {
+      corePointsHtml = '<div class="def-card"><div class="section-label">核心要点</div><div class="core-points">';
+      entry.corePoint.forEach(p => {
+        corePointsHtml += `<span class="core-point">${escapeHtml(p)}</span>`;
+      });
+      corePointsHtml += '</div></div>';
+    }
+
+    // Build Q&A
+    let qaHtml = '';
+    if (entry.consumerQ || entry.ownerQ) {
+      qaHtml = '<div class="qa-grid">';
+      if (entry.consumerQ) {
+        qaHtml += `<div class="qa-card consumer"><div class="qa-label">消费者视角</div><div class="qa-text">${escapeHtml(entry.consumerQ)}</div></div>`;
+      }
+      if (entry.ownerQ) {
+        qaHtml += `<div class="qa-card owner"><div class="qa-label">服务者视角</div><div class="qa-text">${escapeHtml(entry.ownerQ)}</div></div>`;
+      }
+      qaHtml += '</div>';
+    }
+
+    // Build legal ref
+    let legalHtml = '';
+    if (entry.legalRef) {
+      const refs = Array.isArray(entry.legalRef) ? entry.legalRef : [entry.legalRef];
+      legalHtml = `<div class="legal-ref"><div class="lr-label">法律依据</div>${refs.map(r => escapeHtml(r)).join('<br>')}</div>`;
+    }
+
+    // Build caveat
+    let caveatHtml = '';
+    if (entry.caveat) {
+      caveatHtml = `<div class="caveat-box"><div class="caveat-label">注意事项</div><div class="caveat-text">${escapeHtml(entry.caveat)}</div></div>`;
+    }
+
+    // Build alias
+    let aliasHtml = '';
+    if (entry.alias && Array.isArray(entry.alias) && entry.alias.length > 0) {
+      aliasHtml = '<div class="alias-section"><div class="alias-label">别名</div><div class="alias-tags">';
+      entry.alias.forEach(a => {
+        aliasHtml += `<span class="alias-tag">${escapeHtml(a)}</span>`;
+      });
+      aliasHtml += '</div></div>';
+    }
+
+    // Build subScene
+    let subSceneHtml = '';
+    if (entry.subScene) {
+      subSceneHtml = `<div class="subscene-info">${escapeHtml(entry.subScene)}</div>`;
+    }
+
+    // Build info grid
+    let infoGridHtml = '<div class="info-grid">';
+    if (entry.domain) infoGridHtml += `<div class="info-item"><div class="ii-label">业务域</div><div class="ii-value">${escapeHtml(entry.domain)}</div></div>`;
+    if (entry.sceneDomain) infoGridHtml += `<div class="info-item"><div class="ii-label">场景域</div><div class="ii-value">${escapeHtml(entry.sceneDomain)}</div></div>`;
+    if (entry.source) infoGridHtml += `<div class="info-item"><div class="ii-label">来源</div><div class="ii-value">${escapeHtml(entry.source)}</div></div>`;
+    if (entry.lastVerified) infoGridHtml += `<div class="info-item"><div class="ii-label">最后验证</div><div class="ii-value">${escapeHtml(entry.lastVerified)}</div></div>`;
+    infoGridHtml += '</div>';
+
+    // Render
+    main.innerHTML = `
+      <div class="entry-header">
+        <div class="entry-breadcrumb">
+          <a href="/knowledge/">知识底座</a>
+          <span class="sep">/</span>
+          ${entry.subScene ? `<span>${escapeHtml(entry.subScene)}</span><span class="sep">/</span>` : ''}
+          <span class="bc-active">词条详情</span>
+        </div>
+        <div class="entry-name-row">
+          <h1 class="entry-name">${escapeHtml(entry.name || '未命名词条')}</h1>
+          <div class="entry-badges">${badgesHtml}</div>
+        </div>
+        <div class="entry-id">${escapeHtml(entry.id || '')}</div>
+      </div>
+
+      ${entry.oneLineAnswer ? `<div class="one-line-answer"><div class="ola-label">一句话回答</div>${escapeHtml(entry.oneLineAnswer)}</div>` : ''}
+
+      ${subSceneHtml}
+      ${layerPathHtml}
+
+      ${entry.def ? `<div class="def-card"><div class="section-label">定义</div><div class="def-text">${escapeHtml(entry.def)}</div></div>` : ''}
+
+      ${corePointsHtml}
+      ${infoGridHtml}
+      ${qaHtml}
+      ${legalHtml}
+      ${caveatHtml}
+      ${aliasHtml}
+    `;
+
+    // Update document title
+    document.title = `风声 · ${entry.name || '词条详情'}`;
+  }
+
+  function renderRelatedEntries(related) {
+    const sidebar = $('#sidebarContent');
+    if (!sidebar) return;
+
+    if (!related || related.length === 0) {
+      sidebar.innerHTML = `
+        <div class="sidebar-sticky">
+          <div class="sidebar-title">关联词条 <span class="count">0</span></div>
+          <div class="no-data"><div class="nd-icon">📚</div>暂无直接关联词条</div>
+        </div>`;
+      return;
+    }
+
+    let html = '<div class="sidebar-sticky"><div class="sidebar-title">关联词条 <span class="count">' + related.length + '</span></div><div class="related-list">';
+
+    related.forEach(r => {
+      html += `
+        <a class="related-item" href="?id=${encodeURIComponent(r.id)}">
+          <div class="ri-name">${escapeHtml(r.name)}</div>
+          <div class="ri-meta">
+            ${r.entryType ? `<span class="ri-tag type">${escapeHtml(r.entryType)}</span>` : ''}
+            ${r.severity ? `<span class="ri-tag sev">${escapeHtml(r.severity)}</span>` : ''}
+          </div>
+          ${r.oneLineAnswer ? `<div class="ri-answer">${escapeHtml(r.oneLineAnswer)}</div>` : ''}
+        </a>`;
+    });
+
+    html += '</div></div>';
+    sidebar.innerHTML = html;
+  }
+
+  function renderQiRelated(related) {
+    const qiSection = $('#qiSection');
+    const qiGrid = $('#qiGrid');
+    if (!qiSection || !qiGrid) return;
+
+    if (!related || related.length === 0) {
+      qiSection.style.display = 'none';
+      return;
+    }
+
+    qiSection.style.display = 'block';
+    let html = '';
+    related.forEach(r => {
+      html += `
+        <a class="qi-card" href="?id=${encodeURIComponent(r.id)}">
+          <span class="qc-relation">${escapeHtml(relationLabel(r.relation))}</span>
+          <div class="qc-name">${escapeHtml(r.name)}</div>
+          <div class="qc-meta">
+            ${r.entryType ? `<span>${escapeHtml(r.entryType)}</span>` : ''}
+            ${r.severity ? `<span>${escapeHtml(r.severity)}</span>` : ''}
+            ${r.priority ? `<span>${escapeHtml(r.priority)}</span>` : ''}
+            ${r.layer ? `<span>${escapeHtml(r.layer)}</span>` : ''}
+          </div>
+          ${r.oneLineAnswer ? `<div class="qc-answer">${escapeHtml(r.oneLineAnswer)}</div>` : ''}
+        </a>`;
+    });
+    qiGrid.innerHTML = html;
+  }
+
+  // ============================
+  // Fetch Data
+  // ============================
+
+  async function loadEntry() {
+    if (!entryId) {
+      showError('缺少词条ID参数');
+      return;
+    }
+
+    try {
+      // Fetch entry detail and related entries in parallel
+      const [entryResp, relatedResp] = await Promise.all([
+        fetch('/api/entry?id=' + encodeURIComponent(entryId)),
+        fetch('/api/entry/related?id=' + encodeURIComponent(entryId) + '&limit=15')
+      ]);
+
+      if (!entryResp.ok) {
+        if (entryResp.status === 404) {
+          showError('未找到词条 "' + escapeHtml(entryId) + '"');
+        } else {
+          showError('加载失败（' + entryResp.status + '）');
+        }
+        return;
+      }
+
+      const entry = await entryResp.json();
+
+      // Render entry detail
+      renderEntryDetail(entry);
+
+      // Render directly related entries (from relatedEntriesResolved)
+      renderRelatedEntries(entry.relatedEntriesResolved || []);
+
+      // Render qi-layer related entries
+      if (relatedResp.ok) {
+        const relatedData = await relatedResp.json();
+        // Filter for qi-layer entries
+        const qiRelated = (relatedData || []).filter(r => r.layer === 'qi');
+        renderQiRelated(qiRelated);
+      }
+
+    } catch (err) {
+      console.error('Failed to load entry:', err);
+      showError('网络错误，请稍后重试');
+    }
+  }
+
+  // Start loading
+  loadEntry();
+})();
+</script>
+</body>
+</html>

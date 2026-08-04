@@ -40,7 +40,10 @@
       <view v-if="clientName" class="client-bar">已关联客户：{{ clientName }}（准备结果将存入其认知卡）</view>
 
       <view class="hint">依据来自真实字典 decoder / see / nego，绝不编造；缺失依据诚实标注「依据整理中」。</view>
-      <button class="btn-main" @tap="gen">⚡ 生成见面参谋</button>
+      <view v-if="loadError" class="err-msg">{{ loadError }}</view>
+      <button class="btn-main" @tap="gen" :disabled="loading">
+        {{ loading ? '⏳ 策展中...' : '⚡ 生成见面参谋' }}
+      </button>
     </block>
 
     <!-- 结果态 -->
@@ -211,7 +214,7 @@
 </template>
 
 <script>
-import { AXIS_GROUPS, DIMENSIONS, SCENARIOS, generateCuration } from '../../engine.js'
+import { AXIS_GROUPS, DIMENSIONS, SCENARIOS, generateCuration, generateCurationAsync } from '../../engine.js'
 import { useUserStore } from '../../../store/user'
 import { trackEvent } from '../../../utils/tracker'
 import { generateReportHTML, generateReportSummary } from '../../../utils/report-template.js'
@@ -234,7 +237,9 @@ export default {
       saved: false,
       showPromptOverlay: false,
       promptTypes: getPromptTypes(),
-      sharePayload: null
+      sharePayload: null,
+      loading: false,
+      loadError: ''
     }
   },
   computed: {
@@ -286,16 +291,25 @@ export default {
       else this.selectedDims.push(key)
     },
     gen() {
-      this.result = generateCuration({
+      this.loading = true
+      this.loadError = ''
+      generateCurationAsync({
         axisType: this.axisType,
         axisNodeKey: this.axisNodeKey,
         dimensions: this.selectedDims,
         freeText: this.freeText,
         scenario: this.scenario
+      }).then(res => {
+        this.result = res
+        trackEvent('curate_generate', 'curate-prep', { axis: this.axisType, scenario: this.scenario, dims: this.selectedDims.length, sayN: this.result.say.length, followN: this.result.followups.length })
+        this.savedTip = ''
+        this.loading = false
+        uni.pageScrollTo({ scrollTop: 0, duration: 200 })
+      }).catch(err => {
+        console.error('[curation] generate failed:', err)
+        this.loadError = '生成失败，请检查网络后重试'
+        this.loading = false
       })
-      trackEvent('curate_generate', 'curate-prep', { axis: this.axisType, scenario: this.scenario, dims: this.selectedDims.length, sayN: this.result.say.length, followN: this.result.followups.length })
-      this.savedTip = ''
-      uni.pageScrollTo({ scrollTop: 0, duration: 200 })
     },
     save() {
       if (!this.clientId) {
@@ -512,4 +526,6 @@ export default {
 .ns-title { font-size: 14px; font-weight: 700; color: #2b2b2b; }
 .ns-desc { font-size: 12px; color: #8a837a; margin-top: 2px; line-height: 1.4; }
 .ns-arrow { font-size: 20px; color: #c8956d; flex-shrink: 0; }
+.err-msg { background: #fff0f0; color: #c0392b; padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px; text-align: center; }
+.btn-main:disabled { opacity: 0.6; }
 </style>

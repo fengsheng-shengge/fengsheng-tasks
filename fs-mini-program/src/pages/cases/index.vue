@@ -5,7 +5,7 @@
       <view style="display:flex;flex-direction:column;gap:6px">
         <button class="earn" @tap="scrollEarn">如何赚积分 ›</button>
         <button class="earn" open-type="share">分享案例给客户 ›</button>
-        <button class="earn" @tap="copyLink('/pages/cases/index')">复制链接 ›</button>
+        <button class="earn" @tap="copyLink('/pages/cases/index', '小程序链接已复制 · 打开微信即可跳转')">复制小程序链接 ›</button>
       </view>
     </view>
 

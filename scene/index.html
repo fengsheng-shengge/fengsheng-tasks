@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>风声 · 场景导航</title>
+<meta name="description" content="风声场景导航 · 买方/业主/租户 × 售前/售中/售后 · 道法术器四层词条 · 5067条知识底座">
+<style>
+:root {
+  --p: #3d5a3e; --p-light: #5a7d5b; --fire: #c46a3a; --fire-light: #e08a3c;
+  --cream: #f7f4ef; --cream-deep: #ede7dc; --ink: #1a2b26; --ink-soft: #5a6b65;
+  --wood: #c8956d; --line: rgba(61,90,62,0.12);
+  --shadow-sm: 0 2px 8px rgba(61,90,62,0.06);
+  --shadow-md: 0 8px 24px rgba(61,90,62,0.10);
+  --shadow-lg: 0 20px 48px rgba(61,90,62,0.14);
+  --layer-dao: #3d5a3e; --layer-fa: #c46a3a; --layer-shu: #6b5fa8; --layer-qi: #c8956d;
+  --layer-dao-bg: rgba(61,90,62,0.06); --layer-fa-bg: rgba(196,106,58,0.06);
+  --layer-shu-bg: rgba(107,95,168,0.06); --layer-qi-bg: rgba(200,149,109,0.06);
+  --badge-p0: #c46a3a; --badge-p1: #e08a3c; --badge-p2: #5a7d5b; --badge-p3: #5a6b65;
+  --type-law: #3d5a3e; --type-proc: #c46a3a; --type-risk: #c46a3a; --type-case: #6b5fa8;
+  --type-std: #5a7d5b; --type-pol: #c8956d; --type-term: #5a6b65;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+
+/* Nav */
+.nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.88);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1240px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:32px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;white-space:nowrap}
+.brand-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--p),var(--p-light));display:grid;place-items:center;color:white;font-weight:800;flex-shrink:0}
+.brand a{display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:4px;flex:1;flex-wrap:wrap}
+.nav-link{padding:8px 16px;border-radius:8px;font-size:14px;color:var(--ink-soft);transition:all .2s;white-space:nowrap}
+.nav-link:hover{background:rgba(61,90,62,0.06);color:var(--p)}
+.nav-link.active{color:var(--p);font-weight:600;background:rgba(61,90,62,0.08)}
+
+/* Hero */
+.hero{position:relative;padding:60px 32px 40px;max-width:1240px;margin:0 auto;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(196,106,58,0.12) 0%,transparent 70%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;background:rgba(61,90,62,0.08);color:var(--p);font-size:13px;font-weight:500;margin-bottom:20px}
+.hero h1{font-size:48px;font-weight:800;line-height:1.1;letter-spacing:-1.5px;margin-bottom:16px;max-width:800px}
+.hero h1 .accent{background:linear-gradient(135deg,var(--p),var(--fire));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:17px;color:var(--ink-soft);max-width:560px;margin-bottom:32px}
+
+/* Scene Selector */
+.scene-selector{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px}
+.selector-group{display:flex;flex-direction:column;gap:6px}
+.selector-label{font-size:12px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.5px}
+.selector-options{display:flex;gap:6px}
+.selector-opt{padding:10px 20px;border-radius:10px;border:1.5px solid var(--line);background:white;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--ink-soft);white-space:nowrap}
+.selector-opt:hover{border-color:var(--p);color:var(--p)}
+.selector-opt.active{background:var(--p);color:white;border-color:var(--p);box-shadow:var(--shadow-sm)}
+.selector-opt .opt-emoji{margin-right:4px}
+
+/* Stats bar */
+.stats-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:0;padding:0 0 20px 0}
+.stat-item{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:10px;background:white;border:1px solid var(--line);font-size:13px;transition:all .2s}
+.stat-item .stat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.stat-item .stat-dot.p0{background:var(--badge-p0)}.stat-item .stat-dot.p1{background:var(--badge-p1)}
+.stat-item .stat-dot.p2{background:var(--badge-p2)}.stat-item .stat-dot.p3{background:var(--badge-p3)}
+.stat-item .stat-dot.dao{background:var(--layer-dao)}.stat-item .stat-dot.fa{background:var(--layer-fa)}
+.stat-item .stat-dot.shu{background:var(--layer-shu)}.stat-item .stat-dot.qi{background:var(--layer-qi)}
+.stat-item strong{color:var(--ink);font-size:18px}
+
+/* Layer tabs */
+.section{max-width:1240px;margin:0 auto;padding:32px 32px 48px}
+.layer-tabs{display:flex;gap:0;margin-bottom:0;background:white;border:1px solid var(--line);border-radius:14px 14px 0 0;padding:6px}
+.layer-tab{flex:1;padding:14px 16px;border-radius:10px;font-size:15px;font-weight:600;text-align:center;cursor:pointer;transition:all .25s;color:var(--ink-soft);position:relative}
+.layer-tab:hover{background:var(--cream)}
+.layer-tab .tab-count{font-size:11px;font-weight:400;opacity:0.7;display:block;margin-top:2px}
+.layer-tab.active{color:white}
+.layer-tab.dao.active{background:var(--layer-dao)}
+.layer-tab.fa.active{background:var(--layer-fa)}
+.layer-tab.shu.active{background:var(--layer-shu)}
+.layer-tab.qi.active{background:var(--layer-qi)}
+
+/* Layer body */
+.layer-body{background:white;border:1px solid var(--line);border-top:none;border-radius:0 0 14px 14px;padding:32px;min-height:300px}
+.layer-panel{display:none}
+.layer-panel.active{display:block;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Filter bar */
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:24px;flex-wrap:wrap}
+.filter-label{font-size:13px;font-weight:600;color:var(--ink-soft)}
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap}
+.filter-chip{padding:5px 14px;border-radius:100px;font-size:12px;background:var(--cream);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:all .15s;white-space:nowrap}
+.filter-chip:hover{background:var(--p);color:white;border-color:var(--p)}
+.filter-chip.active{background:var(--p);color:white;border-color:var(--p);font-weight:600}
+
+/* Entry cards grid */
+.entry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.entry-card{padding:18px 20px;border-radius:12px;border:1.5px solid var(--line);background:var(--cream);transition:all .2s;cursor:pointer;position:relative}
+.entry-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--p)}
+.entry-card .ec-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.entry-card .ec-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.entry-card .ec-title{font-size:15px;font-weight:700;line-height:1.4;flex:1}
+.entry-card .ec-answer{font-size:13px;color:var(--ink-soft);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.entry-card .ec-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.entry-card .ec-badge{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
+.entry-card .ec-badge.p0{background:rgba(196,106,58,0.12);color:var(--badge-p0)}
+.entry-card .ec-badge.p1{background:rgba(224,138,60,0.12);color:var(--badge-p1)}
+.entry-card .ec-badge.p2{background:rgba(90,125,91,0.12);color:var(--badge-p2)}
+.entry-card .ec-badge.p3{background:rgba(90,107,101,0.12);color:var(--badge-p3)}
+.entry-card .ec-badge.hard{background:rgba(196,106,58,0.12);color:var(--fire)}
+.entry-card .ec-badge.medium{background:rgba(224,138,60,0.12);color:var(--fire-light)}
+.entry-card .ec-badge.soft{background:rgba(90,107,101,0.12);color:var(--ink-soft)}
+.entry-card .ec-badge.type{background:rgba(61,90,62,0.08);color:var(--p)}
+.entry-card .ec-consumer{font-size:12px;color:var(--wood);font-style:italic;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+
+/* Empty state */
+.empty-state{text-align:center;padding:60px 20px;color:var(--ink-soft)}
+.empty-state .empty-icon{font-size:48px;margin-bottom:16px}
+.empty-state .empty-title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--ink)}
+.empty-state .empty-desc{font-size:14px}
+
+/* Loading */
+.loading{display:flex;align-items:center;justify-content:center;padding:60px;gap:10px}
+.spinner{width:24px;height:24px;border:3px solid var(--line);border-top-color:var(--p);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--ink-soft)}
+
+/* Modal */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,43,38,0.6);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:white;border-radius:20px;max-width:720px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.modal-head{padding:24px 28px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;position:sticky;top:0;background:white;z-index:1;border-radius:20px 20px 0 0}
+.modal-icon{font-size:28px}
+.modal-info{flex:1}
+.modal-title{font-size:20px;font-weight:800}
+.modal-id{font-size:11px;color:var(--ink-soft);font-family:monospace;margin-top:2px}
+.modal-close{margin-left:auto;width:32px;height:32px;border-radius:50%;background:var(--cream);border:none;cursor:pointer;display:grid;place-items:center;font-size:18px}
+.modal-close:hover{background:var(--cream-deep)}
+.modal-body{padding:24px 28px}
+.modal-section{margin-bottom:20px}
+.modal-section-title{font-size:13px;font-weight:700;color:var(--p);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.modal-def{padding:12px 16px;background:var(--cream);border-left:3px solid var(--p);border-radius:8px;font-size:14px;line-height:1.7}
+.modal-field{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}
+.modal-field:last-child{border-bottom:none}
+.modal-field-label{font-size:12px;font-weight:600;color:var(--ink-soft);min-width:72px;flex-shrink:0}
+.modal-field-value{font-size:14px;line-height:1.5}
+.modal-badges{display:flex;gap:6px;flex-wrap:wrap}
+.modal-badge{padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+.modal-badge.p0{background:rgba(196,106,58,0.12);color:var(--badge-p0)}
+.modal-badge.p1{background:rgba(224,138,60,0.12);color:var(--badge-p1)}
+.modal-badge.p2{background:rgba(90,125,91,0.12);color:var(--badge-p2)}
+.modal-badge.p3{background:rgba(90,107,101,0.12);color:var(--badge-p3)}
+.modal-badge.hard{background:rgba(196,106,58,0.12);color:var(--fire)}
+.modal-badge.medium{background:rgba(224,138,60,0.12);color:var(--fire-light)}
+.modal-badge.soft{background:rgba(90,107,101,0.12);color:var(--ink-soft)}
+.modal-badge.type{background:rgba(61,90,62,0.08);color:var(--p)}
+.modal-badge.layer{background:rgba(107,95,168,0.08);color:var(--layer-shu)}
+
+/* Tips */
+.tips{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+.tip-chip{padding:5px 12px;border-radius:100px;background:white;border:1px solid var(--line);font-size:12px;cursor:pointer;transition:all .15s;color:var(--ink-soft)}
+.tip-chip:hover{background:var(--p);color:white;border-color:var(--p)}
+
+/* Footer */
+footer{background:var(--cream-deep);padding:32px;text-align:center;color:var(--ink-soft);font-size:13px}
+footer a{color:var(--p)}
+
+/* Responsive */
+@media(max-width:960px){
+  .hero h1{font-size:32px}
+  .entry-grid{grid-template-columns:1fr}
+  .layer-tabs{flex-wrap:wrap}.layer-tab{font-size:13px;padding:10px 8px}
+  .layer-body{padding:20px}
+  .nav-links{display:none}
+}
+@media(max-width:600px){
+  .hero h1{font-size:26px}
+  .scene-selector{gap:10px}
+  .selector-opt{padding:8px 14px;font-size:13px}
+  .stats-bar{gap:6px}
+  .stat-item{padding:8px 12px;font-size:12px}
+  .stat-item strong{font-size:15px}
+  .section{padding:24px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand">
+      <a href="/">
+        <div class="brand-mark">风</div>
+        <span>风声</span>
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-link">首页</a>
+      <a href="/knowledge/" class="nav-link">知识底座</a>
+      <a href="/scene/" class="nav-link active">场景导航</a>
+      <a href="/search/" class="nav-link">搜索</a>
+      <a href="/decoder/" class="nav-link">客户解码器</a>
+      <a href="/mentor/" class="nav-link">开单导师</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-tag">场景导航</div>
+  <h1>用<span class="accent">场景</span>定位知识，<br>用<span class="accent">道法术器</span>分层应用</h1>
+  <p class="hero-sub">选择客户类型与交易阶段，按四层分层查看词条，快速找到当下最需要的知识</p>
+
+  <!-- Scene Selector -->
+  <div class="scene-selector">
+    <div class="selector-group">
+      <div class="selector-label">客户类型</div>
+      <div class="selector-options" id="clientTypeOptions">
+        <button class="selector-opt active" data-ct="buyer"><span class="opt-emoji">🏠</span>买方</button>
+        <button class="selector-opt" data-ct="owner"><span class="opt-emoji">🔑</span>业主</button>
+        <button class="selector-opt" data-ct="tenant"><span class="opt-emoji">🏡</span>租户</button>
+      </div>
+    </div>
+    <div class="selector-group">
+      <div class="selector-label">交易阶段</div>
+      <div class="selector-options" id="stageOptions">
+        <button class="selector-opt active" data-stage="pre"><span class="opt-emoji">🔍</span>售前</button>
+        <button class="selector-opt" data-stage="mid"><span class="opt-emoji">🤝</span>售中</button>
+        <button class="selector-opt" data-stage="post"><span class="opt-emoji">✅</span>售后</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar" id="statsBar"></div>
+
+  <!-- Quick Tips -->
+  <div class="tips" id="quickTips" style="margin-top:12px">
+    <span style="font-size:12px;color:var(--ink-soft)">热门场景：</span>
+    <span class="tip-chip" data-ct="buyer" data-stage="pre">买方·售前</span>
+    <span class="tip-chip" data-ct="owner" data-stage="pre">业主·售前</span>
+    <span class="tip-chip" data-ct="buyer" data-stage="mid">买方·售中</span>
+    <span class="tip-chip" data-ct="tenant" data-stage="pre">租户·售前</span>
+    <span class="tip-chip" data-ct="buyer" data-stage="post">买方·售后</span>
+  </div>
+</section>
+
+<!-- Layer Tabs -->
+<section class="section" id="layerSection">
+  <div class="layer-tabs" id="layerTabs">
+    <button class="layer-tab dao active" data-layer="dao">
+      道·心里懂的<span class="tab-count" id="daoCount">0 条</span>
+    </button>
+    <button class="layer-tab fa" data-layer="fa">
+      法·当场走的<span class="tab-count" id="faCount">0 条</span>
+    </button>
+    <button class="layer-tab shu" data-layer="shu">
+      术·嘴上说的<span class="tab-count" id="shuCount">0 条</span>
+    </button>
+    <button class="layer-tab qi" data-layer="qi">
+      器·递给客户的<span class="tab-count" id="qiCount">0 条</span>
+    </button>
+  </div>
+
+  <div class="layer-body">
+    <!-- Filter bar -->
+    <div class="filter-bar" id="filterBar">
+      <span class="filter-label">筛选：</span>
+      <div class="filter-chips" id="entryTypeFilters"></div>
+      <span style="margin: 0 4px;color:var(--line)">|</span>
+      <div class="filter-chips" id="severityFilters"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <span class="loading-text">加载中...</span>
+    </div>
+
+    <!-- Layer panels -->
+    <div class="layer-panel active" id="panel-dao">
+      <div class="entry-grid" id="entries-dao"></div>
+    </div>
+    <div class="layer-panel" id="panel-fa">
+      <div class="entry-grid" id="entries-fa"></div>
+    </div>
+    <div class="layer-panel" id="panel-shu">
+      <div class="entry-grid" id="entries-shu"></div>
+    </div>
+    <div class="layer-panel" id="panel-qi">
+      <div class="entry-grid" id="entries-qi"></div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">暂无数据</div>
+      <div class="empty-desc">该场景下没有匹配的词条，请尝试切换客户类型或交易阶段</div>
+    </div>
+  </div>
+</section>
+
+<!-- Entry Detail Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div class="modal-icon" id="modalIcon">📋</div>
+      <div class="modal-info">
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-id" id="modalId"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div>风声 · 场景导航 | <a href="/knowledge/">知识底座</a> | <a href="/">返回首页</a></div>
+</footer>
+
+<script>
+// State
+let currentClientType = 'buyer';
+let currentStage = 'pre';
+let currentLayer = 'dao';
+let currentEntryType = null;
+let currentSeverity = null;
+let allEntries = [];
+let sceneData = null;
+
+// Icons
+const LAYER_ICONS = { dao: '🧠', fa: '⚖️', shu: '🗣️', qi: '📱' };
+const LAYER_LABELS = { dao: '道·心里懂的', fa: '法·当场走的', shu: '术·嘴上说的', qi: '器·递给客户的' };
+const TYPE_ICONS = { LAW: '⚖️', PROC: '📋', RISK: '⚠️', CASE: '📂', STD: '📐', POL: '📜', TERM: '📝' };
+const SEVERITY_LABELS = { hard: '硬边界', medium: '中边界', soft: '软边界' };
+
+// DOM
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  initSelectors();
+  initLayerTabs();
+  loadSceneData();
+});
+
+// Selectors
+function initSelectors() {
+  // Client type
+  $('#clientTypeOptions').addEventListener('click', (e) => {
+    const btn = e.target.closest('.selector-opt');
+    if (!btn) return;
+    $$('#clientTypeOptions .selector-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentClientType = btn.dataset.ct;
+    loadSceneData();
+  });
+
+  // Stage
+  $('#stageOptions').addEventListener('click', (e) => {
+    const btn = e.target.closest('.selector-opt');
+    if (!btn) return;
+    $$('#stageOptions .selector-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentStage = btn.dataset.stage;
+    loadSceneData();
+  });
+
+  // Quick tips
+  $('#quickTips').addEventListener('click', (e) => {
+    const chip = e.target.closest('.tip-chip');
+    if (!chip) return;
+    const ct = chip.dataset.ct;
+    const st = chip.dataset.stage;
+    if (ct) {
+      currentClientType = ct;
+      $$('#clientTypeOptions .selector-opt').forEach(b => b.classList.toggle('active', b.dataset.ct === ct));
+    }
+    if (st) {
+      currentStage = st;
+      $$('#stageOptions .selector-opt').forEach(b => b.classList.toggle('active', b.dataset.stage === st));
+    }
+    loadSceneData();
+  });
+}
+
+// Layer tabs
+function initLayerTabs() {
+  $('#layerTabs').addEventListener('click', (e) => {
+    const tab = e.target.closest('.layer-tab');
+    if (!tab) return;
+    currentLayer = tab.dataset.layer;
+    $$('.layer-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    $$('.layer-panel').forEach(p => p.classList.remove('active'));
+    $(`#panel-${currentLayer}`).classList.add('active');
+    renderCurrentLayer();
+  });
+}
+
+// Load data
+async function loadSceneData() {
+  showLoading(true);
+  hideEmpty();
+
+  try {
+    const resp = await fetch(`/api/scene/detail?clientType=${currentClientType}&stage=${currentStage}`);
+    const data = await resp.json();
+    sceneData = data;
+    allEntries = [];
+
+    // Collect all entries from all layer groups
+    (data.groups || []).forEach(group => {
+      (group.entries || []).forEach(e => {
+        allEntries.push({ ...e, _layer: group.layer });
+      });
+    });
+
+    renderStats(data);
+    renderLayerCounts(data);
+    renderFilterOptions(data);
+    renderCurrentLayer();
+  } catch (err) {
+    console.error('Failed to load scene data:', err);
+    showEmpty();
+  }
+
+  showLoading(false);
+}
+
+// Render stats
+function renderStats(data) {
+  const total = data.total || 0;
+  const byLayer = data.byLayer || {};
+  const byPriority = data.byPriority || {};
+
+  let html = `
+    <div class="stat-item">
+      <strong>${total}</strong>
+      <span>词条总数</span>
+    </div>
+  `;
+  ['dao', 'fa', 'shu', 'qi'].forEach(l => {
+    if (byLayer[l]) {
+      html += `<div class="stat-item"><span class="stat-dot ${l}"></span><strong>${byLayer[l]}</strong><span>${LAYER_LABELS[l].split('·')[0]}</span></div>`;
+    }
+  });
+  $('#statsBar').innerHTML = html;
+}
+
+// Render layer counts
+function renderLayerCounts(data) {
+  const byLayer = data.byLayer || {};
+  ['dao', 'fa', 'shu', 'qi'].forEach(l => {
+    const el = document.getElementById(`${l}Count`);
+    if (el) el.textContent = `${byLayer[l] || 0} 条`;
+  });
+}
+
+// Render filter options
+function renderFilterOptions(data) {
+  const filterOptions = data.filterOptions || {};
+  const entryTypes = filterOptions.entryTypes || [];
+  const severities = filterOptions.severities || [];
+
+  let typeHtml = '<span class="filter-chip active" data-type="">全部</span>';
+  entryTypes.forEach(t => {
+    typeHtml += `<span class="filter-chip" data-type="${t}">${t}</span>`;
+  });
+  $('#entryTypeFilters').innerHTML = typeHtml;
+
+  let sevHtml = '<span class="filter-chip active" data-sev="">全部</span>';
+  severities.forEach(s => {
+    sevHtml += `<span class="filter-chip" data-sev="${s}">${SEVERITY_LABELS[s] || s}</span>`;
+  });
+  $('#severityFilters').innerHTML = sevHtml;
+
+  // Filter chip events
+  $('#entryTypeFilters').addEventListener('click', (e) => {
+    const chip = e.target.closest('.filter-chip');
+    if (!chip) return;
+    currentEntryType = chip.dataset.type || null;
+    $$('#entryTypeFilters .filter-chip').forEach(c => c.classList.toggle('active', c.dataset.type === (currentEntryType || '')));
+    renderCurrentLayer();
+  });
+
+  $('#severityFilters').addEventListener('click', (e) => {
+    const chip = e.target.closest('.filter-chip');
+    if (!chip) return;
+    currentSeverity = chip.dataset.sev || null;
+    $$('#severityFilters .filter-chip').forEach(c => c.classList.toggle('active', c.dataset.sev === (currentSeverity || '')));
+    renderCurrentLayer();
+  });
+}
+
+// Render current layer
+function renderCurrentLayer() {
+  if (!allEntries.length) return;
+
+  let filtered = allEntries.filter(e => e._layer === currentLayer);
+  if (currentEntryType) filtered = filtered.filter(e => e.entryType === currentEntryType);
+  if (currentSeverity) filtered = filtered.filter(e => e.severity === currentSeverity);
+
+  const container = document.getElementById(`entries-${currentLayer}`);
+  if (!container) return;
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">该层暂无匹配词条</div><div class="empty-desc">试试调整筛选条件或切换其他层级</div></div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(e => {
+    const icon = TYPE_ICONS[e.entryType] || '📋';
+    const priority = e.priority || '';
+    const severity = e.severity || '';
+    const consumerQ = e.consumerQ || '';
+    return `
+      <div class="entry-card" onclick="openEntryDetail('${e.id}')">
+        <div class="ec-head">
+          <span class="ec-icon">${icon}</span>
+          <span class="ec-title">${escapeHtml(e.name)}</span>
+        </div>
+        ${e.oneLineAnswer ? `<div class="ec-answer">${escapeHtml(e.oneLineAnswer)}</div>` : ''}
+        <div class="ec-meta">
+          ${priority ? `<span class="ec-badge ${priority.toLowerCase()}">${priority}</span>` : ''}
+          ${severity ? `<span class="ec-badge ${severity.toLowerCase()}">${SEVERITY_LABELS[severity] || severity}</span>` : ''}
+          ${e.entryType ? `<span class="ec-badge type">${e.entryType}</span>` : ''}
+        </div>
+        ${consumerQ ? `<div class="ec-consumer">💬 ${escapeHtml(consumerQ)}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+// Entry detail modal
+async function openEntryDetail(id) {
+  const overlay = $('#modalOverlay');
+  overlay.classList.add('active');
+
+  // Show loading
+  $('#modalTitle').textContent = '加载中...';
+  $('#modalBody').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+  try {
+    const resp = await fetch(`/api/entry?id=${encodeURIComponent(id)}`);
+    const data = await resp.json();
+    const entry = data.entry || data;
+
+    if (!entry || !entry.name) {
+      $('#modalBody').innerHTML = '<div class="empty-state"><div class="empty-title">词条不存在</div></div>';
+      return;
+    }
+
+    $('#modalIcon').textContent = TYPE_ICONS[entry.entryType] || '📋';
+    $('#modalTitle').textContent = entry.name;
+    $('#modalId').textContent = entry.id || '';
+
+    let html = '';
+
+    // One-line answer
+    if (entry.oneLineAnswer) {
+      html += `<div class="modal-section"><div class="modal-def">${escapeHtml(entry.oneLineAnswer)}</div></div>`;
+    }
+
+    // Badges
+    html += `<div class="modal-section"><div class="modal-badges">`;
+    if (entry.priority) html += `<span class="modal-badge ${entry.priority.toLowerCase()}">${entry.priority}</span>`;
+    if (entry.severity) html += `<span class="modal-badge ${entry.severity.toLowerCase()}">${SEVERITY_LABELS[entry.severity] || entry.severity}</span>`;
+    if (entry.entryType) html += `<span class="modal-badge type">${entry.entryType}</span>`;
+    html += `</div></div>`;
+
+    // Fields
+    if (entry.def) {
+      html += `<div class="modal-section">
+        <div class="modal-section-title">📖 详细定义</div>
+        <div class="modal-def">${escapeHtml(entry.def)}</div>
+      </div>`;
+    }
+
+    if (entry.consumerQ || entry.ownerQ) {
+      html += `<div class="modal-section">
+        <div class="modal-section-title">💬 对话示例</div>`;
+      if (entry.consumerQ) html += `<div class="modal-field"><span class="modal-field-label">客户问</span><span class="modal-field-value">${escapeHtml(entry.consumerQ)}</span></div>`;
+      if (entry.ownerQ) html += `<div class="modal-field"><span class="modal-field-label">业主问</span><span class="modal-field-value">${escapeHtml(entry.ownerQ)}</span></div>`;
+      html += `</div>`;
+    }
+
+    if (entry.legalRef) {
+      html += `<div class="modal-section">
+        <div class="modal-section-title">⚖️ 法条依据</div>
+        <div class="modal-field-value">${escapeHtml(entry.legalRef)}</div>
+      </div>`;
+    }
+
+    if (entry.caveat) {
+      html += `<div class="modal-section">
+        <div class="modal-section-title">⚠️ 适用边界</div>
+        <div class="modal-field-value">${escapeHtml(entry.caveat)}</div>
+      </div>`;
+    }
+
+    if (entry.corePoint && entry.corePoint.length) {
+      html += `<div class="modal-section">
+        <div class="modal-section-title">🔑 核心要点</div>
+        <div class="modal-field-value">${entry.corePoint.map(p => escapeHtml(p)).join('；')}</div>
+      </div>`;
+    }
+
+    // Related entries
+    if (entry.relatedEntries && entry.relatedEntries.length) {
+      html += `<div class="modal-section">
+        <div class="modal-section-title">🔗 关联词条</div>
+        <div class="entry-grid" style="grid-template-columns:1fr">`;
+      entry.relatedEntries.slice(0, 5).forEach(r => {
+        html += `<div class="entry-card" onclick="openEntryDetail('${r.id}')" style="padding:12px 16px">
+          <div class="ec-head"><span class="ec-title" style="font-size:13px">${escapeHtml(r.name)}</span></div>
+          ${r.oneLineAnswer ? `<div class="ec-answer" style="font-size:12px">${escapeHtml(r.oneLineAnswer)}</div>` : ''}
+        </div>`;
+      });
+      html += `</div></div>`;
+    }
+
+    $('#modalBody').innerHTML = html;
+  } catch (err) {
+    console.error('Failed to load entry:', err);
+    $('#modalBody').innerHTML = '<div class="empty-state"><div class="empty-title">加载失败</div></div>';
+  }
+}
+
+function closeModal() {
+  $('#modalOverlay').classList.remove('active');
+}
+
+// Close modal on overlay click
+$('#modalOverlay').addEventListener('click', (e) => {
+  if (e.target === $('#modalOverlay')) closeModal();
+});
+
+// Close modal on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// Helpers
+function showLoading(on) {
+  $('#loading').style.display = on ? 'flex' : 'none';
+}
+
+function hideEmpty() {
+  $('#emptyState').style.display = 'none';
+}
+
+function showEmpty() {
+  $('#emptyState').style.display = 'block';
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+
+</body>
+</html>

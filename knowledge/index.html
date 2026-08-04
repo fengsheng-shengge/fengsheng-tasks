@@ -891,54 +891,34 @@ function getDomainDesc(domain){
 /* ===== 动态词条计数 ===== */
 async function loadEntriesData(){
   try{
-    const resp=await fetch('/data/entries.json');
+    // Load manifest only (fast, no need for full entries)
+    const resp=await fetch('/api/knowledge-stats');
     if(!resp.ok) return;
-    const entries=await resp.json();
-    // #181 fix: 存入全局变量供showDomainModal/openEntry使用
-    allEntries = entries;
-    allEntriesMap = {};
-    entries.forEach(e => { allEntriesMap[e.id] = e; });
+    const data=await resp.json();
 
-    // 动态构建 businessDomains（从 entries.json 实际 domain 字段）
-    const domainCounts={};
-    const domainSamples={}; // 每个域存5个样本词条
-    entries.forEach(e=>{
-      const d=e.domain||'unknown';
-      domainCounts[d]=(domainCounts[d]||0)+1;
-      if(!domainSamples[d]) domainSamples[d]=[];
-      if(domainSamples[d].length<5) domainSamples[d].push(e);
-    });
-
-    // 按词条数降序排列域
-    const sortedDomains = Object.entries(domainCounts)
-      .sort((a,b)=>b[1]-a[1])
-      .filter(([d])=>d!=='unknown');
-
-    businessDomains = sortedDomains.map(([domain,count])=>{
-      const cfg = DOMAIN_CONFIG[domain] || { icon:'📄', title:domain, desc:'' };
-      const samples = domainSamples[domain] || [];
+    // Build businessDomains from manifest
+    businessDomains = data.domains.map(d=>{
+      const cfg = DOMAIN_CONFIG[d.domain] || { icon:'📄', title:d.domain, desc:'' };
       return {
-        code: domain,
+        code: d.domain,
         title: cfg.title,
         icon: cfg.icon,
         desc: cfg.desc,
-        count: count,
-        sample_words: samples.map(e=>e.name||e.title||e.id),
-        sample_ids: samples.map(e=>e.id),
-        more_count: Math.max(0, count - samples.length),
+        count: d.count,
+        sample_words: d.samples || [],
+        sample_ids: d.sample_ids || [],
+        more_count: Math.max(0, d.count - (d.samples||[]).length),
       };
     });
 
-    totalEntries = entries.length;
-    totalDomains = businessDomains.length;
+    totalEntries = data.total_entries;
+    totalDomains = data.total_domains;
 
-    // 更新 badge/stats
     updateDomainStats();
-    // 重新渲染
     renderDomains();
-    console.log('✅ 词条动态加载完成:', totalEntries, '条,', totalDomains, '个域');
+    console.log('✅ 词条清单加载完成:', totalEntries, '条,', totalDomains, '个域 (按需加载模式)');
   }catch(e){
-    console.warn('⚠️ 动态加载 entries.json 失败',e);
+    console.warn('⚠️ 加载 knowledge-stats 失败',e);
   }
 }
 
@@ -1046,27 +1026,61 @@ function openEntry(entryId){
 }
 
 /* ===== 域浏览器状态 ===== */
-let domainBrowseState = { domain: null, page: 0, perPage: 20, subScene: null, filtered: [] };
+let domainBrowseState = { domain: null, page: 0, perPage: 20, subScene: null, filtered: [], entries: [], subSceneMeta: [], total: 0 };
 
-function showDomainModal(domain){
-  domainBrowseState = { domain: domain, page: 0, perPage: 20, subScene: null, filtered: [] };
-  renderDomainBrowser();
+async function showDomainModal(domain){
+  domainBrowseState = { domain: domain, page: 0, perPage: 20, subScene: null, filtered: [], entries: [], subSceneMeta: [], total: 0, loading: true };
+  renderDomainBrowser(); // Show loading state
+  try{
+    // Load only 20 entries + sub-scene metadata (not all entries!)
+    const params = new URLSearchParams({domain: domain.code, limit: '20', offset: '0'});
+    const resp=await fetch('/api/entries?'+params.toString());
+    const data=await resp.json();
+    domainBrowseState.entries = data.entries||[];
+    domainBrowseState.total = data.total||0;
+    domainBrowseState.subSceneMeta = data.subscenes||[];
+    // Accumulate into global map for openEntry lookup
+    (data.entries||[]).forEach(e=>{ allEntriesMap[e.id]=e; });
+    domainBrowseState.loading = false;
+    renderDomainBrowser();
+  }catch(e){
+    domainBrowseState.loading = false;
+    renderDomainBrowser();
+    console.warn('加载域词条失败',e);
+  }
+}
+
+// Load a specific page of entries
+async function loadDomainPage(page){
+  const d = domainBrowseState.domain;
+  if(!d) return;
+  const offset = page * domainBrowseState.perPage;
+  try{
+    const params = new URLSearchParams({domain: d.code, limit: String(domainBrowseState.perPage), offset: String(offset)});
+    if(domainBrowseState.subScene) params.set('subScene', domainBrowseState.subScene);
+    const resp=await fetch('/api/entries?'+params.toString());
+    const data=await resp.json();
+    domainBrowseState.entries = data.entries||[];
+    (data.entries||[]).forEach(e=>{ allEntriesMap[e.id]=e; });
+    domainBrowseState.page = page;
+    domainBrowseState.total = data.total||0;
+    domainBrowseState.subSceneMeta = data.subscenes||[];
+    renderDomainBrowser();
+  }catch(e){
+    console.warn('加载页面失败',e);
+  }
 }
 
 function getSubScenes(domainCode){
-  const scenes = {};
-  allEntries.forEach(e=>{
-    if(e.domain===domainCode && e.subScene){
-      scenes[e.subScene] = (scenes[e.subScene]||0)+1;
-    }
-  });
-  return Object.entries(scenes).sort((a,b)=>b[1]-a[1]);
+  // Use sub-scene metadata from API (fast, no computation needed)
+  const meta = domainBrowseState.subSceneMeta || [];
+  return meta.map(({name, count}) => [name, count]);
 }
 
 function filterDomainEntries(){
   const d = domainBrowseState.domain;
   if(!d) return;
-  let entries = allEntries.filter(e=>e.domain===d.code);
+  let entries = domainBrowseState.entries||[];
   if(domainBrowseState.subScene){
     entries = entries.filter(e=>e.subScene===domainBrowseState.subScene);
   }
@@ -1076,18 +1090,29 @@ function filterDomainEntries(){
 function renderDomainBrowser(){
   const d = domainBrowseState.domain;
   if(!d) return;
-  filterDomainEntries();
 
-  const allEntries_count = allEntries.filter(e=>e.domain===d.code).length;
-  const filtered = domainBrowseState.filtered;
-  const totalPages = Math.max(1, Math.ceil(filtered.length / domainBrowseState.perPage));
+  // Loading state
+  if(domainBrowseState.loading){
+    document.getElementById('modalIcon').textContent = d.icon;
+    document.getElementById('modalTitle').textContent = d.title;
+    document.getElementById('modalId').textContent = '加载中...';
+    document.getElementById('modalDef').innerHTML = '<div style="text-align:center;padding:40px;color:var(--ink-soft)">⏳ 加载词条中...</div>';
+    document.getElementById('modalDef').style.display = 'block';
+    const prosconsSection = document.querySelector('#entryModal .proscons').closest('.modal-section');
+    if(prosconsSection) prosconsSection.style.display = 'none';
+    const ctaSection = document.querySelector('#entryModal .modal-cta');
+    if(ctaSection) ctaSection.style.display = 'none';
+    document.getElementById('entryModal').classList.add('active');
+    return;
+  }
+
+  const allEntries_count = domainBrowseState.total || 0;
+  const filtered = domainBrowseState.entries || [];
+  const totalPages = Math.max(1, Math.ceil(allEntries_count / domainBrowseState.perPage));
   if(domainBrowseState.page >= totalPages) domainBrowseState.page = totalPages - 1;
   if(domainBrowseState.page < 0) domainBrowseState.page = 0;
 
-  const start = domainBrowseState.page * domainBrowseState.perPage;
-  const pageEntries = filtered.slice(start, start + domainBrowseState.perPage);
-
-  // 子场景筛选 chips
+  // 子场景筛选 chips (from metadata)
   const subScenes = getSubScenes(d.code);
   const filterHtml = subScenes.length > 0
     ? '<div class="subscene-filters">' +
@@ -1099,8 +1124,8 @@ function renderDomainBrowser(){
     : '';
 
   // 词条列表
-  const listHtml = pageEntries.length > 0
-    ? '<div class="domain-entry-list">' + pageEntries.map(e=>{
+  const listHtml = filtered.length > 0
+    ? '<div class="domain-entry-list">' + filtered.map(e=>{
         const icon = e.icon || getDomainIcon(e.domain) || '📄';
         const title = e.title || e.name || e.id;
         const meta = [e.subScene, e.severity, e.source].filter(Boolean).join(' · ');
@@ -1113,14 +1138,14 @@ function renderDomainBrowser(){
     : '<div style="text-align:center;padding:40px;color:var(--ink-soft)">没有符合条件的词条</div>';
 
   // 分页
-  const paginationHtml = filtered.length > domainBrowseState.perPage
+  const paginationHtml = allEntries_count > domainBrowseState.perPage
     ? '<div class="domain-pagination">' +
-      '<span class="domain-page-info">第 '+(domainBrowseState.page+1)+' / '+totalPages+' 页 · 共 '+filtered.length+' 条' + (domainBrowseState.subScene?'（筛选后）':'') + '</span>' +
+      '<span class="domain-page-info">第 '+(domainBrowseState.page+1)+' / '+totalPages+' 页 · 共 '+allEntries_count+' 条' + (domainBrowseState.subScene?'（筛选后）':'') + '</span>' +
       '<div class="domain-page-btns">' +
       '<button class="domain-page-btn" onclick="changePage(-1)" '+(domainBrowseState.page===0?'disabled':'')+'>← 上一页</button>' +
       '<button class="domain-page-btn" onclick="changePage(1)" '+(domainBrowseState.page>=totalPages-1?'disabled':'')+'>下一页 →</button>' +
       '</div></div>'
-    : '<div class="domain-pagination"><span class="domain-page-info">共 '+filtered.length+' 条</span></div>';
+    : '<div class="domain-pagination"><span class="domain-page-info">共 '+allEntries_count+' 条</span></div>';
 
   // 设置弹窗
   document.getElementById('modalIcon').textContent = d.icon;
@@ -1137,15 +1162,35 @@ function renderDomainBrowser(){
   document.getElementById('entryModal').classList.add('active');
 }
 
-function filterSubScene(scene){
+async function filterSubScene(scene){
   domainBrowseState.subScene = scene;
   domainBrowseState.page = 0;
+  const d = domainBrowseState.domain;
+  if(!d) return;
+  domainBrowseState.loading = true;
   renderDomainBrowser();
+  try{
+    const params = new URLSearchParams({domain: d.code, limit: String(domainBrowseState.perPage), offset: '0'});
+    if(scene) params.set('subScene', scene);
+    const resp = await fetch('/api/entries?'+params.toString());
+    const data = await resp.json();
+    domainBrowseState.entries = data.entries||[];
+    domainBrowseState.total = data.total||0;
+    domainBrowseState.subSceneMeta = data.subscenes||[];
+    (data.entries||[]).forEach(e=>{ allEntriesMap[e.id]=e; });
+    domainBrowseState.loading = false;
+    renderDomainBrowser();
+  }catch(e){
+    domainBrowseState.loading = false;
+    renderDomainBrowser();
+  }
 }
 
-function changePage(delta){
-  domainBrowseState.page += delta;
-  renderDomainBrowser();
+async function changePage(delta){
+  const newPage = domainBrowseState.page + delta;
+  const totalPages = Math.max(1, Math.ceil((domainBrowseState.total||0) / domainBrowseState.perPage));
+  if(newPage < 0 || newPage >= totalPages) return;
+  await loadDomainPage(newPage);
 }
 
 function escapeHtml(text){
@@ -1192,67 +1237,58 @@ function showEntry(data){
   showEntryDetail(data);
 }
 
-/* ===== 搜索结果列表 ===== */
-function doSearch(query){
+/* ===== 搜索结果列表（v2 加权搜索） ===== */
+async function doSearch(query){
   const input=document.getElementById('searchInput');
   input.value=query;
-  const q=query.toLowerCase().trim();
+  const q=query.trim();
   if(!q) return;
 
-  // 搜索 allEntriesMap
-  const results = [];
-  for(const e of allEntries){
-    const text=[
-      e.name||e.title||'',
-      e.def||'',
-      e.consumerQ||'',
-      e.simpleAnswer||'',
-      e.posSpeech||'',
-      e.negSpeech||'',
-      e.alias ? (Array.isArray(e.alias) ? e.alias.join(' ') : e.alias) : '',
-      e.subScene||'',
-      e.domain||''
-    ].join(' ').toLowerCase();
-    if(text.includes(q)){
-      results.push(e);
-      if(results.length >= 100) break; // 最多100条结果
+  // v2 加权搜索：10字段加权 + score + highlights
+  try{
+    const resp=await fetch('/api/search/v2?q='+encodeURIComponent(q)+'&pageSize=50');
+    const data=await resp.json();
+    const results=data.results||[];
+
+    // Accumulate into global map for openEntry lookup
+    results.forEach(e=>{ allEntriesMap[e.id]=e; });
+
+    if(results.length===0){
+      showSearchResults(query, []);
+      return;
     }
-  }
-
-  // 也搜 entryDatabase 兜底
-  if(results.length === 0){
-    for(const[id,d] of Object.entries(entryDatabase)){
-      const text=[d.title,d.def||'',d.consumer||'',d.servicer||''].join(' ').toLowerCase();
-      if(text.includes(q)){ results.push({id, ...d}); break; }
+    if(results.length===1){
+      const e=results[0];
+      showEntryDetail({
+        icon: getEntryTypeIcon(e.entryType) || '📄',
+        title: e.name || e.id,
+        id: e.id,
+        def: e.oneLineAnswer||'',
+        consumer: e.consumerQ||'',
+        servicer: '',
+      });
+      return;
     }
+    showSearchResults(query, results);
+  }catch(e){
+    console.warn('搜索失败', e);
   }
+}
 
-  if(results.length === 0){
-    // 没有匹配，切换到相关柱
-    if(q.includes('物质')||q.includes('安全')||q.includes('健康')||q.includes('美好居住')||q.includes('三层')) switchPillar('mission');
-    else if(q.includes('人生')||q.includes('阶段')||q.includes('学区')||q.includes('适老')) switchPillar('vision');
-    else if(q.includes('服务者')||q.includes('岗位')||q.includes('能力')) switchPillar('value');
-    else switchPillar('culture');
-    return;
-  }
-
-  if(results.length === 1){
-    openEntry(results[0].id);
-    return;
-  }
-
-  // 多条结果：显示搜索结果列表
-  showSearchResults(query, results);
+function getEntryTypeIcon(entryType) {
+  const icons = { LAW: '⚖️', PROC: '📋', RISK: '⚠️', CASE: '📂', STD: '📐', POL: '📜', TERM: '📝' };
+  return icons[entryType] || '📄';
 }
 
 function showSearchResults(query, results){
   const listHtml = '<div class="domain-entry-list">' + results.map(e=>{
-    const icon = e.icon || getDomainIcon(e.domain) || '📄';
-    const title = e.title || e.name || e.id;
-    const meta = [e.domain, e.subScene].filter(Boolean).join(' · ');
+    const icon = getEntryTypeIcon(e.entryType) || '📄';
+    const title = e.name || e.id;
+    const meta = [e.entryType, e.priority, e.severity].filter(Boolean).join(' · ');
+    const score = e.score ? ' <span style="font-size:10px;color:var(--p);background:rgba(61,90,62,0.08);padding:1px 6px;border-radius:3px">'+e.score+'分</span>' : '';
     return '<div class="domain-entry-item" onclick="closeEntry();setTimeout(()=>openEntry(\''+e.id+'\'),150)">' +
            '<span class="de-icon">'+icon+'</span>' +
-           '<div class="de-info"><div class="de-title">'+escapeHtml(title)+'</div>' +
+           '<div class="de-info"><div class="de-title">'+escapeHtml(title)+score+'</div>' +
            '<div class="de-meta">'+escapeHtml(meta||e.id)+'</div></div>' +
            '<span class="de-arrow">→</span></div>';
   }).join('') + '</div>';
@@ -1280,7 +1316,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeEntry()});
 
 /* ===== Init ===== */
 renderDomains();
-loadEntriesData();  // 动态从 data/entries.json 加载实际词条数
+loadEntriesData();  // 动态从 /api/knowledge-stats 加载 (按需加载模式)
 renderRoles();
 renderQualityCards();
 </script>
