@@ -1,5 +1,5 @@
 // FengSheng Pages Worker - handles all API routes
-// Version: v20260802-1330 - P0 batch2: scene detail, entry related, dictionary, daily v2, mini scene/entry
+// Version: v20260804-1930 - P0 batch2: scene detail, entry related, dictionary, daily v2, mini scene/entry
 //   + D1 database integration (stats, events, feedback)
 //   + Coze AI chat streaming
 //   + WeChat login with JWT
@@ -1085,7 +1085,7 @@ async function handleHeartbeat(request, env, ctx) {
   const now = new Date().toISOString();
   const checks = {
     status: 'ok',
-    version: 'v20260802-1330',
+    version: 'v20260804-1930',
     timestamp: now,
     uptime_seconds: (Date.now() - _startTime) / 1000,
     circuit_breaker: _d1CircuitOpen ? 'open' : 'closed',
@@ -1633,15 +1633,15 @@ async function handleSearch(request, env, ctx) {
   if (!manifest) return jsonResponse({ query: q, results: [], total: 0 });
 
   // P0: 10-field weighted search
-  // Weights: name:10, alias:9, consumerQ:8, ownerQ:7, oneLineAnswer:5, corePoint:4, def:3, legalRef:2, sceneDomain:1, subScene:1
+  // Weights: name:10, alias:9, consumerQ:8, ownerQ:7, ola:5, cp:4, detail:3, legalRef:2, sceneDomain:1, subScene:1
   const FIELD_WEIGHTS = [
     { key: 'name',         weight: 10, type: 'string' },
     { key: 'alias',        weight: 9,  type: 'array' },
     { key: 'consumerQ',    weight: 8,  type: 'string' },
     { key: 'ownerQ',       weight: 7,  type: 'string' },
-    { key: 'oneLineAnswer', weight: 5, type: 'string' },
-    { key: 'corePoint',    weight: 4,  type: 'array' },
-    { key: 'def',          weight: 3,  type: 'string' },
+    { key: 'ola', weight: 5, type: 'string' },
+    { key: 'cp',    weight: 4,  type: 'array' },
+    { key: 'detail',          weight: 3,  type: 'string' },
     { key: 'legalRef',     weight: 2,  type: 'string' },
     { key: 'sceneDomain',  weight: 1,  type: 'string' },
     { key: 'subScene',     weight: 1,  type: 'string' },
@@ -1773,7 +1773,7 @@ async function handleEntryDetail(request, env, ctx) {
       .map(e => ({
         id: e.id,
         name: e.name,
-        oneLineAnswer: e.oneLineAnswer || '',
+        ola: e.ola || '',
         severity: e.severity || '',
         entryType: e.entryType || '',
       }));
@@ -1844,7 +1844,7 @@ async function handleSearchSuggest(request, env, ctx) {
         suggestions.push({
           id: e.id,
           name: e.name,
-          oneLineAnswer: e.oneLineAnswer || '',
+          ola: e.ola || '',
           domain: e.domain || '',
           subScene: e.subScene || '',
           severity: e.severity || '',
@@ -1908,7 +1908,7 @@ async function handleSceneDetail(request, env, ctx) {
       label: layerLabels[layer],
       count: items.length,
       entries: items.slice(0, 50).map(e => ({
-        id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+        id: e.id, name: e.name, ola: e.ola || '',
         entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
       })),
     };
@@ -1993,7 +1993,7 @@ async function handleSceneEntries(request, env, ctx) {
   const totalPages = Math.ceil(total / pageSize);
   const offset = (page - 1) * pageSize;
   const paged = filtered.slice(offset, offset + pageSize).map(e => ({
-    id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+    id: e.id, name: e.name, ola: e.ola || '',
     entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
     consumerQ: e.consumerQ || '', subScene: e.subScene || '',
     layer: (e.tags || {}).layer || '',
@@ -2054,8 +2054,8 @@ async function handleSearchV2(request, env, ctx) {
     const name = (e.name || '').toLowerCase();
     const alias = (e.alias || []).map(String).join(' ').toLowerCase();
     const consumerQ = (e.consumerQ || '').toLowerCase();
-    const def = (e.def || '').toLowerCase();
-    const oneLine = (e.oneLineAnswer || '').toLowerCase();
+    const detail = (e.detail || '').toLowerCase();
+    const oneLine = (e.ola || '').toLowerCase();
     const subScene = (e.subScene || '').toLowerCase();
 
     let score = 0;
@@ -2073,17 +2073,17 @@ async function handleSearchV2(request, env, ctx) {
     else if (consumerQ.includes(qLower)) { score += 30; highlights.push('consumerQ'); }
 
     // One-line answer
-    if (oneLine.includes(qLower)) { score += 25; highlights.push('oneLineAnswer'); }
+    if (oneLine.includes(qLower)) { score += 25; highlights.push('ola'); }
 
     // Definition
-    if (def.includes(qLower)) { score += 15; highlights.push('def'); }
+    if (detail.includes(qLower)) { score += 15; highlights.push('detail'); }
 
     // SubScene
     if (subScene.includes(qLower)) { score += 10; highlights.push('subScene'); }
 
     if (score > 0) {
       results.push({
-        id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+        id: e.id, name: e.name, ola: e.ola || '',
         entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
         consumerQ: e.consumerQ || '', subScene: e.subScene || '',
         score, highlights,
@@ -2238,7 +2238,7 @@ async function handleEntryRelated(request, env, ctx) {
     .map(c => ({
       id: c.entry.id,
       name: c.entry.name,
-      oneLineAnswer: c.entry.oneLineAnswer || '',
+      ola: c.entry.ola || '',
       relation: c.relation,
       weight: c.weight,
       entryType: c.entry.entryType || '',
@@ -2333,8 +2333,8 @@ async function handleDictionary(request, env, ctx) {
   if (keyword) {
     const kw = keyword.toLowerCase();
     filtered = filtered.filter(e => {
-      const fields = [e.name, e.def, e.oneLineAnswer, e.consumerQ, e.ownerQ, e.subScene,
-        ...(e.alias || []), ...(e.corePoint || [])].filter(Boolean).map(String);
+      const fields = [e.name, e.detail, e.ola, e.consumerQ, e.ownerQ, e.subScene,
+        ...(e.alias || []), ...(e.cp || [])].filter(Boolean).map(String);
       return fields.some(f => f.toLowerCase().includes(kw));
     });
   }
@@ -2369,7 +2369,7 @@ async function handleDictionary(request, env, ctx) {
   }, { clientTypes: new Set(), stages: new Set(), layers: new Set(), entryTypes: new Set(), severities: new Set(), priorities: new Set() });
 
   const slimEntries = pageEntries.map(e => ({
-    id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+    id: e.id, name: e.name, ola: e.ola || '',
     entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
     subScene: e.subScene || '', layer: (e.tags || {}).layer || '',
     consumerQ: e.consumerQ || '',
@@ -2473,7 +2473,7 @@ async function handleDailyV2(request, env, ctx) {
     return {
       id: e.id,
       name: e.name,
-      oneLineAnswer: e.oneLineAnswer || '',
+      ola: e.ola || '',
       entryType: e.entryType || '',
       severity: e.severity || '',
       priority: e.priority || '',
@@ -2505,7 +2505,7 @@ async function handleDailyV2(request, env, ctx) {
 // ============================================================
 //  P1: Dictionary Export (落地规格 API#6)
 //  POST /api/dictionary/export
-//  Body: { filters, format: "json"|"csv", fields: ["name","oneLineAnswer",...] }
+//  Body: { filters, format: "json"|"csv", fields: ["name","ola",...] }
 //  Returns all matching entries (no pagination) as JSON or CSV
 // ============================================================
 async function handleDictionaryExport(request, env, ctx) {
@@ -2522,7 +2522,7 @@ async function handleDictionaryExport(request, env, ctx) {
 
   const filters = body.filters || {};
   const format = (body.format || 'json').toLowerCase();
-  const fields = body.fields || ['name', 'oneLineAnswer', 'entryType', 'severity', 'priority', 'layer', 'subScene', 'consumerQ'];
+  const fields = body.fields || ['name', 'ola', 'entryType', 'severity', 'priority', 'layer', 'subScene', 'consumerQ'];
   const keyword = sanitizeQueryParam(body.keyword || '', 128) || null;
 
   if (!['json', 'csv'].includes(format)) {
@@ -2559,8 +2559,8 @@ async function handleDictionaryExport(request, env, ctx) {
   if (keyword) {
     const kw = keyword.toLowerCase();
     filtered = filtered.filter(e => {
-      const searchFields = [e.name, e.def, e.oneLineAnswer, e.consumerQ, e.ownerQ, e.subScene,
-        ...(e.alias || []), ...(e.corePoint || [])].filter(Boolean).map(String);
+      const searchFields = [e.name, e.detail, e.ola, e.consumerQ, e.ownerQ, e.subScene,
+        ...(e.alias || []), ...(e.cp || [])].filter(Boolean).map(String);
       return searchFields.some(f => f.toLowerCase().includes(kw));
     });
   }
@@ -2582,8 +2582,8 @@ async function handleDictionaryExport(request, env, ctx) {
       switch (f) {
         case 'id': row.id = e.id; break;
         case 'name': row.name = e.name; break;
-        case 'oneLineAnswer': row.oneLineAnswer = e.oneLineAnswer || ''; break;
-        case 'def': row.def = e.def || ''; break;
+        case 'ola': row.ola = e.ola || ''; break;
+        case 'detail': row.detail = e.detail || ''; break;
         case 'entryType': row.entryType = e.entryType || ''; break;
         case 'severity': row.severity = e.severity || ''; break;
         case 'priority': row.priority = e.priority || ''; break;
@@ -2594,7 +2594,7 @@ async function handleDictionaryExport(request, env, ctx) {
         case 'legalRef': row.legalRef = e.legalRef || ''; break;
         case 'caveat': row.caveat = e.caveat || ''; break;
         case 'alias': row.alias = (e.alias || []).join('; '); break;
-        case 'corePoint': row.corePoint = (e.corePoint || []).join('; '); break;
+        case 'cp': row.cp = (e.cp || []).join('; '); break;
         default: row[f] = '';
       }
     });
@@ -2730,7 +2730,7 @@ async function handleMiniSceneEntries(request, env, ctx) {
     const entryLayer = (e.tags || {}).layer || '';
     const isQi = entryLayer === 'qi' || (Array.isArray(entryLayer) && entryLayer.includes('qi'));
     return {
-      id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+      id: e.id, name: e.name, ola: e.ola || '',
       entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
       layer: entryLayer, subScene: e.subScene || '', consumerQ: e.consumerQ || '',
       // shareCardUrl for qi-layer entries (mini program path)
@@ -2790,7 +2790,7 @@ async function handleMiniEntryDetail(request, env, ctx) {
   if (entry.relatedEntries && entry.relatedEntries.length > 0) {
     const idSet = new Set(entry.relatedEntries);
     related = allEntries.filter(e => idSet.has(e.id)).map(e => ({
-      id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+      id: e.id, name: e.name, ola: e.ola || '',
       entryType: e.entryType || '', severity: e.severity || '', layer: (e.tags || {}).layer || '',
     }));
   }
