@@ -180,6 +180,34 @@ a{color:inherit;text-decoration:none}
 footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--line)}
 .footer-inner{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
 
+/* ===== 3-Second Summary (3秒区) ===== */
+.quick-summary{background:linear-gradient(135deg,rgba(61,90,62,0.06),rgba(196,106,58,0.04));border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin-bottom:24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.quick-summary .qs-left{flex:1;min-width:200px}
+.quick-summary .qs-answer{font-size:16px;font-weight:700;color:var(--ink);line-height:1.5;margin-bottom:10px}
+.quick-summary .qs-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.quick-summary .qs-right{flex-shrink:0;display:flex;gap:10px;align-items:center}
+.quick-summary .qs-decision{text-align:center;padding:12px 18px;background:white;border-radius:10px;border:1px solid var(--line);min-width:72px}
+.quick-summary .qs-decision-label{font-size:10px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.quick-summary .qs-decision-value{font-size:14px;font-weight:800}
+.quick-summary .qs-decision-value.hard{color:var(--fire)}
+.quick-summary .qs-decision-value.medium{color:var(--fire-light)}
+.quick-summary .qs-decision-value.soft{color:var(--p)}
+.quick-summary .qs-decision-value.p0{color:var(--fire)}
+.quick-summary .qs-decision-value.p1{color:var(--fire-light)}
+.quick-summary .qs-decision-value.p2{color:var(--p)}
+.quick-summary .qs-decision-value.p3{color:var(--ink-soft)}
+
+/* ===== Bottom Action Bar ===== */
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:12px 32px;display:flex;align-items:center;gap:12px;z-index:50;justify-content:center;box-shadow:0 -4px 20px rgba(0,0,0,0.06)}
+.bottom-bar .bb-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid var(--line);background:white;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--ink-soft);text-decoration:none;white-space:nowrap}
+.bottom-bar .bb-btn:hover{background:var(--p);color:white;border-color:var(--p)}
+.bottom-bar .bb-btn.primary{background:var(--p);color:white;border-color:var(--p)}
+.bottom-bar .bb-btn.primary:hover{background:var(--p-d)}
+.bottom-bar .bb-toast{position:absolute;top:-42px;left:50%;transform:translateX(-50%);padding:6px 16px;border-radius:100px;background:var(--ink);color:white;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;animation:toastIn .3s ease-out,toastOut .3s ease-out 1.5s forwards}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateX(-50%) translateY(-4px)}}
+body.has-bottom-bar{padding-bottom:70px}
+
 /* ===== Responsive ===== */
 @media(max-width:960px){
   .page{grid-template-columns:1fr;padding:28px 20px}
@@ -252,6 +280,14 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     <span>通过独立价值获得尊重</span>
   </div>
 </footer>
+
+<!-- ===== Bottom Action Bar ===== -->
+<div class="bottom-bar" id="bottomBar">
+  <a class="bb-btn" href="javascript:history.back()" title="返回上一页">← 返回</a>
+  <button class="bb-btn" id="btnFavorite" title="收藏词条">★ 收藏</button>
+  <button class="bb-btn" id="btnCopyLink" title="复制链接">🔗 复制链接</button>
+  <a class="bb-btn primary" id="btnGoScene" href="/scene/" title="查看场景">📋 场景导航</a>
+</div>
 
 <script>
 // ============================
@@ -394,6 +430,38 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     if (entry.lastVerified) infoGridHtml += `<div class="info-item"><div class="ii-label">最后验证</div><div class="ii-value">${escapeHtml(entry.lastVerified)}</div></div>`;
     infoGridHtml += '</div>';
 
+    // Build 3-second summary
+    const severityLabels = { hard: '硬边界', medium: '中边界', soft: '软边界' };
+    const severityClass = entry.severity || 'soft';
+    const priorityClass = entry.priority || 'P3';
+    const priorityLabels = { P0: '最高优', P1: '高优', P2: '中优', P3: '一般' };
+
+    let quickSummaryHtml = '';
+    if (entry.oneLineAnswer) {
+      quickSummaryHtml = `
+        <div class="quick-summary">
+          <div class="qs-left">
+            <div class="qs-answer">${escapeHtml(entry.oneLineAnswer)}</div>
+            <div class="qs-meta">
+              ${entry.entryType ? `<span class="badge badge-type">${escapeHtml(entry.entryType)}</span>` : ''}
+              ${entry.severity ? `<span class="badge badge-severity">${escapeHtml(severityLabels[entry.severity] || entry.severity)}</span>` : ''}
+              ${entry.priority ? `<span class="badge badge-priority ${escapeHtml(entry.priority)}">${escapeHtml(entry.priority)}</span>` : ''}
+              ${layer ? `<span class="badge badge-layer ${escapeHtml(layer)}">${escapeHtml(layerNames[layer] || layer)}</span>` : ''}
+            </div>
+          </div>
+          <div class="qs-right">
+            <div class="qs-decision">
+              <div class="qs-decision-label">严重度</div>
+              <div class="qs-decision-value ${escapeHtml(severityClass)}">${escapeHtml(severityLabels[entry.severity] || '一般')}</div>
+            </div>
+            <div class="qs-decision">
+              <div class="qs-decision-label">优先级</div>
+              <div class="qs-decision-value ${escapeHtml(priorityClass.toLowerCase())}">${escapeHtml(priorityLabels[entry.priority] || '一般')}</div>
+            </div>
+          </div>
+        </div>`;
+    }
+
     // Render
     main.innerHTML = `
       <div class="entry-header">
@@ -410,7 +478,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
         <div class="entry-id">${escapeHtml(entry.id || '')}</div>
       </div>
 
-      ${entry.oneLineAnswer ? `<div class="one-line-answer"><div class="ola-label">一句话回答</div>${escapeHtml(entry.oneLineAnswer)}</div>` : ''}
+      ${quickSummaryHtml}
 
       ${subSceneHtml}
       ${layerPathHtml}
@@ -526,9 +594,21 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
       // Render qi-layer related entries
       if (relatedResp.ok) {
         const relatedData = await relatedResp.json();
-        // Filter for qi-layer entries
-        const qiRelated = (relatedData || []).filter(r => r.layer === 'qi');
+        // relatedData is { id, name, currentLayer, total, related: [...] }
+        const allRelated = Array.isArray(relatedData) ? relatedData : (relatedData.related || []);
+        const qiRelated = allRelated.filter(r => r.layer === 'qi');
         renderQiRelated(qiRelated);
+      }
+
+    // Update scene link
+      const entryTags = entry.tags || {};
+      const ct = entryTags.clientType;
+      const st = entryTags.stage;
+      const btnGoScene = document.getElementById('btnGoScene');
+      if (btnGoScene && ct && st) {
+        const ctVal = Array.isArray(ct) ? ct[0] : ct;
+        const stVal = Array.isArray(st) ? st[0] : st;
+        btnGoScene.href = '/scene/?clientType=' + encodeURIComponent(ctVal) + '&stage=' + encodeURIComponent(stVal);
       }
 
     } catch (err) {
@@ -537,7 +617,146 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     }
   }
 
-  // Start loading
+  // Start loading moved below — after favorites/history setup
+
+  // Bottom bar actions
+  document.body.classList.add('has-bottom-bar');
+
+  var btnCopyLink = document.getElementById('btnCopyLink');
+  if (btnCopyLink) {
+    btnCopyLink.addEventListener('click', function() {
+      var url = window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+          showToast('链接已复制');
+        });
+      } else {
+        // Fallback
+        var ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('链接已复制');
+      }
+    });
+  }
+
+  // Update scene link based on entry tags
+  function showToast(msg) {
+    var existing = document.querySelector('.bb-toast');
+    if (existing) existing.remove();
+    var toast = document.createElement('div');
+    toast.className = 'bb-toast';
+    toast.textContent = msg;
+    document.getElementById('bottomBar').appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 2000);
+  }
+
+  // ====== Favorites (localStorage) ======
+  var FAV_KEY = 'fengsheng_favorites';
+  var currentEntryId = null;
+
+  function getFavorites() {
+    try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); } catch(e) { return []; }
+  }
+
+  function isFavorited(id) {
+    return getFavorites().indexOf(id) !== -1;
+  }
+
+  function toggleFavorite(id) {
+    var favs = getFavorites();
+    var idx = favs.indexOf(id);
+    if (idx === -1) {
+      favs.unshift(id);
+      localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+      return true; // added
+    } else {
+      favs.splice(idx, 1);
+      localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+      return false; // removed
+    }
+  }
+
+  function updateFavButton() {
+    var btn = document.getElementById('btnFavorite');
+    if (!btn || !currentEntryId) return;
+    if (isFavorited(currentEntryId)) {
+      btn.textContent = '★ 已收藏';
+      btn.style.color = 'var(--fire)';
+      btn.style.borderColor = 'rgba(196,106,58,0.3)';
+      btn.style.background = 'rgba(196,106,58,0.06)';
+    } else {
+      btn.textContent = '☆ 收藏';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+      btn.style.background = '';
+    }
+  }
+
+  var btnFav = document.getElementById('btnFavorite');
+  if (btnFav) {
+    btnFav.addEventListener('click', function() {
+      if (!currentEntryId) return;
+      var added = toggleFavorite(currentEntryId);
+      updateFavButton();
+      showToast(added ? '已加入收藏' : '已取消收藏');
+    });
+  }
+
+  // ====== History recording (localStorage) ======
+  var HIST_KEY = 'fengsheng_history';
+  var MAX_HIST = 100;
+
+  function recordHistory(id) {
+    if (!id) return;
+    try {
+      var hist = JSON.parse(localStorage.getItem(HIST_KEY) || '[]');
+      // Remove existing entry for this id
+      hist = hist.filter(function(h) { return h.id !== id; });
+      // Add to front
+      hist.unshift({ id: id, ts: Date.now() });
+      // Trim
+      if (hist.length > MAX_HIST) hist = hist.slice(0, MAX_HIST);
+      localStorage.setItem(HIST_KEY, JSON.stringify(hist));
+    } catch(e) {}
+  }
+
+  // Record history after entry loads
+  var origLoadEntry = loadEntry;
+  loadEntry = function() {
+    var result = origLoadEntry();
+    // Record history after the entry data is fetched
+    var checkAndRecord = function() {
+      var el = document.getElementById('entryName');
+      if (el) {
+        currentEntryId = getEntryId();
+        if (currentEntryId) {
+          recordHistory(currentEntryId);
+          updateFavButton();
+        }
+      } else {
+        setTimeout(checkAndRecord, 500);
+      }
+    };
+    setTimeout(checkAndRecord, 300);
+    return result;
+  };
+
+  function getEntryId() {
+    var params = new URLSearchParams(window.location.search);
+    return params.get('id') || '';
+  }
+
+  // Initialize
+  currentEntryId = getEntryId();
+  updateFavButton();
+
+  // Start loading — now after override setup
   loadEntry();
 })();
 </script>

@@ -120,6 +120,7 @@ main{flex:1;max-width:1240px;width:100%;margin:0 auto;padding:32px 32px 60px}
 .meta-tag.priority{background:rgba(61,90,62,0.06);color:var(--ink-soft)}
 .result-desc{font-size:14px;color:var(--ink-soft);line-height:1.7;margin-bottom:8px}
 .result-desc mark{background:rgba(196,106,58,0.2);color:var(--ink);padding:1px 3px;border-radius:2px;font-weight:500}
+.result-name mark{background:rgba(196,106,58,0.25);color:var(--ink);padding:1px 3px;border-radius:2px;font-weight:700}
 .result-highlights{display:flex;flex-wrap:wrap;gap:4px}
 .highlight-tag{font-size:10px;padding:2px 6px;border-radius:3px;background:rgba(61,90,62,0.06);color:var(--p);border:1px solid rgba(61,90,62,0.15)}
 
@@ -270,7 +271,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     totalPages: 1,
     loading: false,
     filters: { entryType: '', severity: '', layer: '' },
-    filterOptions: { entryTypes: [], severities: [] },
+    filterOptions: { entryTypes: [], severities: [], layers: [] },
     suggestTimer: null,
     suggestAbort: null,
     searchAbort: null,
@@ -295,10 +296,12 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
   const $layerChips = document.getElementById('layerChips');
 
   // ========== Layer Options ==========
+  const LAYER_LABELS = { dao: '道', fa: '法', shu: '术', qi: '器' };
   const LAYER_OPTIONS = [
-    { value: 'matter', label: '物质' },
-    { value: 'emotion', label: '情感' },
-    { value: 'spirit', label: '精神' },
+    { value: 'dao', label: '道' },
+    { value: 'fa', label: '法' },
+    { value: 'shu', label: '术' },
+    { value: 'qi', label: '器' },
   ];
 
   // ========== Init ==========
@@ -362,7 +365,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     state.page = 1;
     state.totalPages = 1;
     state.filters = { entryType: '', severity: '', layer: '' };
-    state.filterOptions = { entryTypes: [], severities: [] };
+    state.filterOptions = { entryTypes: [], severities: [], layers: [] };
     $clear.classList.remove('visible');
     hideSuggestions();
     hideResults();
@@ -384,10 +387,70 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
   function debounceSuggest(q) {
     clearTimeout(state.suggestTimer);
     if (!q || q.length < 1) {
+      // Show recent searches when input is empty
+      showRecentSearches();
+      return;
+    }
+    state.suggestTimer = setTimeout(() => fetchSuggest(q), 250);
+  }
+
+  // ========== Recent Searches (localStorage) ==========
+  var RECENT_KEY = 'fengsheng_recent_searches';
+  var MAX_RECENT = 8;
+
+  function getRecentSearches() {
+    try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch(e) { return []; }
+  }
+
+  function addRecentSearch(q) {
+    if (!q || q.length < 2) return;
+    var recent = getRecentSearches();
+    recent = recent.filter(function(r) { return r !== q; });
+    recent.unshift(q);
+    if (recent.length > MAX_RECENT) recent = recent.slice(0, MAX_RECENT);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
+  }
+
+  function showRecentSearches() {
+    var recent = getRecentSearches();
+    if (!recent.length) {
       hideSuggestions();
       return;
     }
-    state.suggestTimer = setTimeout(() => fetchSuggest(q), 300);
+    var html = '<div style="padding:8px 16px;font-size:11px;font-weight:700;color:var(--ink-soft);border-bottom:1px solid var(--line)">最近搜索</div>';
+    recent.forEach(function(r) {
+      html += '<div class="suggest-item recent-item" data-query="' + escapeHtml(r) + '">' +
+        '<span class="si-icon">🕐</span>' +
+        '<div class="si-content"><div class="si-name">' + escapeHtml(r) + '</div></div>' +
+        '<button class="recent-remove" data-query="' + escapeHtml(r) + '" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--ink-soft);padding:4px">&times;</button>' +
+        '</div>';
+    });
+    $suggestions.innerHTML = html;
+    $suggestions.classList.add('active');
+
+    // Click recent item
+    $suggestions.querySelectorAll('.recent-item').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        if (e.target.closest('.recent-remove')) return;
+        var q = this.dataset.query;
+        $input.value = q;
+        state.query = q;
+        $clear.classList.add('visible');
+        hideSuggestions();
+        doSearch();
+      });
+    });
+
+    // Remove recent item
+    $suggestions.querySelectorAll('.recent-remove').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var q = this.dataset.query;
+        var recent = getRecentSearches().filter(function(r) { return r !== q; });
+        localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
+        showRecentSearches();
+      });
+    });
   }
 
   // ========== Fetch Suggest ==========
@@ -420,13 +483,28 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
       $suggestions.classList.add('active');
       return;
     }
+
+    var svLabels = { hard: '硬边界', medium: '中边界', soft: '软边界' };
+
     let html = '';
     for (const item of items) {
+      var metaHtml = '';
+      if (item.severity) {
+        metaHtml += '<span class="meta-tag severity-' + (item.severity === 'hard' ? 'hard' : item.severity === 'medium' ? 'medium' : 'soft') + '">' + escapeHtml(svLabels[item.severity] || item.severity) + '</span>';
+      }
+      if (item.priority) {
+        metaHtml += '<span class="meta-tag priority-' + escapeHtml(item.priority) + '">' + escapeHtml(item.priority) + '</span>';
+      }
+      if (item.layer) {
+        metaHtml += '<span class="meta-tag entryType" style="background:rgba(61,90,62,0.06);color:var(--p)">' + escapeHtml(LAYER_LABELS[item.layer] || item.layer) + '</span>';
+      }
+
       html += '<div class="suggest-item" data-id="' + escapeHtml(item.id) + '" data-name="' + escapeHtml(item.name) + '">' +
         '<span class="si-icon">&#128221;</span>' +
         '<div class="si-content">' +
         '<div class="si-name">' + highlightText(item.name, state.query) + '</div>' +
         '<div class="si-desc">' + escapeHtml(item.oneLineAnswer || '') + '</div>' +
+        (metaHtml ? '<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">' + metaHtml + '</div>' : '') +
         '</div>' +
         '<span class="si-meta">' + escapeHtml(item.subScene || item.domain || '') + '</span>' +
         '</div>';
@@ -462,6 +540,9 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     }
     if (page) state.page = page;
     else state.page = 1;
+
+    // Record recent search
+    addRecentSearch(state.query);
 
     if (state.searchAbort) state.searchAbort.abort();
     const controller = new AbortController();
@@ -542,8 +623,12 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
   }
 
   function renderLayerChips() {
+    const apiLayers = state.filterOptions.layers || [];
+    const layers = apiLayers.length > 0
+      ? apiLayers.map(l => ({ value: l, label: LAYER_LABELS[l] || l }))
+      : LAYER_OPTIONS;
     let html = '<div class="filter-chip' + (!state.filters.layer ? ' active' : '') + '" data-filter="layer" data-value="">全部</div>';
-    for (const layer of LAYER_OPTIONS) {
+    for (const layer of layers) {
       html += '<div class="filter-chip' + (state.filters.layer === layer.value ? ' active' : '') + '" data-filter="layer" data-value="' + layer.value + '">' + layer.label + '</div>';
     }
     $layerChips.innerHTML = html;
@@ -644,7 +729,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     const escaped = escapeHtml(text);
     const qEscaped = escapeHtml(query);
     // Escape regex special chars in query
-    const qRegex = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const qRegex = qEscaped.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const re = new RegExp('(' + qRegex + ')', 'gi');
     return escaped.replace(re, '<mark>$1</mark>');
   }

@@ -257,6 +257,80 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .feedback-btn:hover{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
 .feedback-btn.active{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
 
+/* ===== 场景导航模块 ===== */
+.scene-nav-section{padding:60px 8% 20px}
+.scene-nav-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px 24px;border-top:3px solid var(--p)}
+.scene-nav-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.scene-nav-icon{width:36px;height:36px;border-radius:8px;background:rgba(61,90,62,.10);display:grid;place-items:center;font-size:18px}
+.scene-nav-title{font-size:17px;font-weight:800;color:var(--dk);letter-spacing:.5px}
+.scene-nav-sub{font-size:11px;color:var(--td);margin-left:auto}
+.scene-nav-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}
+.scene-nav-group{flex:1;min-width:200px}
+.scene-nav-label{font-size:10px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-left:4px}
+.scene-nav-chips{display:flex;gap:6px;flex-wrap:wrap}
+.scene-nav-chip{flex:1;min-width:80px;padding:12px 14px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center;color:var(--ts);user-select:none;-webkit-tap-highlight-color:transparent}
+.scene-nav-chip:hover{border-color:var(--p);color:var(--p);background:rgba(61,90,62,.04)}
+.scene-nav-chip .chip-emoji{font-size:16px;display:block;margin-bottom:2px}
+.scene-nav-chip.active{background:var(--p);color:#fff;border-color:var(--p);box-shadow:0 2px 8px rgba(61,90,62,.15)}
+.scene-nav-chip.active .chip-count{color:rgba(255,255,255,.8)}
+.scene-nav-chip .chip-count{font-size:10px;font-weight:400;display:block;margin-top:2px;color:var(--td)}
+.scene-nav-divider{display:flex;align-items:center;justify-content:center;padding:8px 0;font-size:18px;color:var(--td);font-weight:700}
+.scene-nav-result{display:none;margin-top:20px;padding:16px 20px;background:rgba(61,90,62,.04);border-radius:10px;border:1px solid rgba(61,90,62,.08)}
+.scene-nav-result.show{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.scene-nav-result .result-info{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.scene-nav-result .result-count{font-size:28px;font-weight:900;color:var(--p)}
+.scene-nav-result .result-label{font-size:13px;color:var(--ts)}
+.scene-nav-result .result-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border-radius:8px;background:var(--p);color:#fff;font-size:13px;font-weight:700;text-decoration:none;transition:all .2s;white-space:nowrap}
+.scene-nav-result .result-btn:hover{background:var(--p-d);transform:translateY(-1px)}
+.scene-nav-result .result-btn:active{transform:scale(.96)}
+.scene-nav-mini-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.scene-nav-mini-tag{font-size:11px;padding:3px 10px;border-radius:100px;font-weight:600;background:rgba(61,90,62,.08);color:var(--p);white-space:nowrap}
+
+@media(max-width:767px){
+  .scene-nav-chip{min-width:70px;padding:10px 8px;font-size:12px}
+  .scene-nav-result.show{flex-direction:column;align-items:flex-start}
+  .scene-nav-divider{display:none}
+}
+
+/* ===== 每日速递模块 ===== */
+.daily-section{padding:40px 8% 20px}
+.daily-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;border-top:3px solid var(--fire)}
+.daily-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.daily-icon{font-size:24px}
+.daily-title{font-size:17px;font-weight:800;color:var(--dk);letter-spacing:.5px}
+.daily-date{font-size:11px;color:var(--td);margin-left:auto}
+.daily-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.daily-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;transition:all .2s;cursor:pointer;text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent}
+.daily-item:hover{background:#fff;border-color:var(--p);transform:translateY(-1px);box-shadow:0 2px 8px rgba(61,90,62,.06)}
+.daily-item .di-reason{font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.daily-item .di-reason.hard{background:rgba(196,106,58,.12);color:var(--fire)}
+.daily-item .di-reason.core{background:rgba(61,90,62,.1);color:var(--p)}
+.daily-item .di-reason.qi{background:rgba(200,149,109,.12);color:var(--wood)}
+.daily-item .di-reason.law{background:rgba(107,95,168,.1);color:#7e6a90}
+.daily-item .di-body{flex:1;min-width:0}
+.daily-item .di-name{font-size:14px;font-weight:700;color:var(--dk);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px}
+.daily-item .di-answer{font-size:12px;color:var(--ts);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.daily-item .di-layer{font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;margin-top:4px;display:inline-block}
+.daily-item .di-layer.dao{background:rgba(61,90,62,.08);color:var(--p)}
+.daily-item .di-layer.fa{background:rgba(196,106,58,.08);color:var(--fire)}
+.daily-item .di-layer.shu{background:rgba(107,95,168,.08);color:#7e6a90}
+.daily-item .di-layer.qi{background:rgba(200,149,109,.08);color:var(--wood)}
+.daily-loading{text-align:center;padding:20px;color:var(--td);font-size:13px}
+.daily-empty{text-align:center;padding:16px;color:var(--td);font-size:13px}
+.daily-config{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.daily-config-label{font-size:11px;font-weight:700;color:var(--ts)}
+.daily-config-select{font-size:12px;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--tx);outline:none;cursor:pointer}
+.daily-config-select:focus{border-color:var(--p)}
+.daily-more{text-align:right;margin-top:12px}
+.daily-more a{font-size:12px;font-weight:600;color:var(--p);text-decoration:none}
+.daily-more a:hover{text-decoration:underline}
+
+@media(max-width:767px){
+  .daily-grid{grid-template-columns:1fr}
+  .daily-item{padding:10px 12px}
+  .daily-item .di-name{font-size:13px}
+}
+
 </style>
 <!-- 全站数据追踪器 v1.0 -->
 <script src="/tracker.js" async></script>
@@ -288,6 +362,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     <a href="/reply/">客户解码</a>
     <a href="/ip-design/">IP设计</a>
     <a href="/knowledge/">知识底座</a>
+    <a href="/favorites/">收藏</a>
+    <a href="/history/">历史</a>
     <a href="/dashboard/">管理看板</a>
   </div>
   <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
@@ -422,6 +498,73 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
       <div class="path-who">定义什么是好<br>行业评判权<br>米其林模式</div>
       <a class="path-btn c" href="/knowledge/">看标准</a>
     </div>
+  </div>
+</div>
+
+<!-- 知识底座·场景导航 -->
+<div class="scene-nav-section pub-section">
+  <div class="scene-nav-card">
+    <div class="scene-nav-header">
+      <div class="scene-nav-icon">📚</div>
+      <div class="scene-nav-title">知识底座 · 场景导航</div>
+      <div class="scene-nav-sub">5067条词条 · 道法术器四层</div>
+    </div>
+    <div class="scene-nav-row">
+      <div class="scene-nav-group">
+        <div class="scene-nav-label">我是谁？</div>
+        <div class="scene-nav-chips" id="sceneNavClientType">
+          <div class="scene-nav-chip" data-ct="buyer"><span class="chip-emoji">🏠</span>买方</div>
+          <div class="scene-nav-chip" data-ct="owner"><span class="chip-emoji">🔑</span>业主</div>
+          <div class="scene-nav-chip" data-ct="tenant"><span class="chip-emoji">🔗</span>租户</div>
+        </div>
+      </div>
+      <div class="scene-nav-divider">×</div>
+      <div class="scene-nav-group">
+        <div class="scene-nav-label">什么阶段？</div>
+        <div class="scene-nav-chips" id="sceneNavStage">
+          <div class="scene-nav-chip" data-st="pre"><span class="chip-emoji">🔍</span>售前</div>
+          <div class="scene-nav-chip" data-st="mid"><span class="chip-emoji">📋</span>售中</div>
+          <div class="scene-nav-chip" data-st="post"><span class="chip-emoji">✅</span>售后</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene-nav-result" id="sceneNavResult">
+      <div class="result-info">
+        <span class="result-count" id="sceneNavCount">-</span>
+        <span class="result-label">条匹配词条</span>
+        <div class="scene-nav-mini-grid" id="sceneNavMiniGrid"></div>
+      </div>
+      <a class="result-btn" id="sceneNavLink" href="#">进入场景 <span style="font-size:16px">→</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- 每日速递 -->
+<div class="daily-section pub-section" id="dailySection">
+  <div class="daily-card">
+    <div class="daily-header">
+      <div class="daily-icon">📬</div>
+      <div class="daily-title">每日速递</div>
+      <div class="daily-date" id="dailyDate"></div>
+    </div>
+    <div class="daily-config">
+      <span class="daily-config-label">场景：</span>
+      <select class="daily-config-select" id="dailyClientType">
+        <option value="buyer">买方</option>
+        <option value="owner">业主</option>
+        <option value="tenant">租户</option>
+      </select>
+      <select class="daily-config-select" id="dailyStage">
+        <option value="">全部阶段</option>
+        <option value="pre">售前</option>
+        <option value="mid">售中</option>
+        <option value="post">售后</option>
+      </select>
+    </div>
+    <div class="daily-grid" id="dailyGrid">
+      <div class="daily-loading">加载中...</div>
+    </div>
+    <div class="daily-more"><a href="/dictionary/">查看全量词典 →</a></div>
   </div>
 </div>
 
@@ -862,6 +1005,146 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   })();
 
   // ===== 合作意向(路径B 完整版) 移至外部 partner.js,避开 CSP 'self' 限制 =====
+
+  // ===== 场景导航交互 =====
+  (function() {
+    var selectedCt = null;
+    var selectedSt = null;
+    var $ctChips = document.getElementById('sceneNavClientType');
+    var $stChips = document.getElementById('sceneNavStage');
+    var $result = document.getElementById('sceneNavResult');
+    var $count = document.getElementById('sceneNavCount');
+    var $miniGrid = document.getElementById('sceneNavMiniGrid');
+    var $link = document.getElementById('sceneNavLink');
+
+    if (!$ctChips || !$stChips) return;
+
+    // Client type click
+    $ctChips.addEventListener('click', function(e) {
+      var chip = e.target.closest('.scene-nav-chip');
+      if (!chip) return;
+      selectedCt = chip.dataset.ct;
+      $ctChips.querySelectorAll('.scene-nav-chip').forEach(function(c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      updateResult();
+    });
+
+    // Stage click
+    $stChips.addEventListener('click', function(e) {
+      var chip = e.target.closest('.scene-nav-chip');
+      if (!chip) return;
+      selectedSt = chip.dataset.st;
+      $stChips.querySelectorAll('.scene-nav-chip').forEach(function(c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      updateResult();
+    });
+
+    function updateResult() {
+      if (!selectedCt || !selectedSt) {
+        $result.classList.remove('show');
+        return;
+      }
+
+      $result.classList.add('show');
+      $count.textContent = '...';
+      $miniGrid.innerHTML = '';
+      $link.href = '/scene/?clientType=' + selectedCt + '&stage=' + selectedSt;
+
+      // Fetch scene detail to get counts
+      fetch('/api/scene/detail?clientType=' + selectedCt + '&stage=' + selectedSt)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var total = data.total || 0;
+          $count.textContent = total;
+          var byLayer = data.byLayer || {};
+          var layerOrder = ['dao', 'fa', 'shu', 'qi'];
+          var layerLabels = { dao: '道', fa: '法', shu: '术', qi: '器' };
+          var tags = '';
+          layerOrder.forEach(function(l) {
+            if (byLayer[l]) {
+              tags += '<span class="scene-nav-mini-tag">' + layerLabels[l] + '：' + byLayer[l] + '</span>';
+            }
+          });
+          $miniGrid.innerHTML = tags;
+        })
+        .catch(function() {
+          $count.textContent = '?';
+        });
+    }
+  })();
+
+  // ===== 每日速递模块 =====
+  (function() {
+    var $grid = document.getElementById('dailyGrid');
+    var $date = document.getElementById('dailyDate');
+    var $ct = document.getElementById('dailyClientType');
+    var $st = document.getElementById('dailyStage');
+
+    if (!$grid || !$ct) return;
+
+    // Set today's date
+    var today = new Date();
+    $date.textContent = today.getFullYear() + '-' +
+      ('0' + (today.getMonth() + 1)).slice(-2) + '-' +
+      ('0' + today.getDate()).slice(-2);
+
+    var reasonClass = {
+      '高风险必知': 'hard',
+      '核心知识': 'core',
+      '可带走交付物': 'qi',
+      '法律依据': 'law',
+      '每日推荐': 'core'
+    };
+    var layerLabels = { dao: '道', fa: '法', shu: '术', qi: '器' };
+
+    function loadDaily() {
+      $grid.innerHTML = '<div class="daily-loading">加载中...</div>';
+
+      var ct = $ct.value;
+      var st = $st.value;
+      var url = '/api/daily/v2?clientType=' + ct + '&count=6';
+      if (st) url += '&stage=' + st;
+
+      fetch(url)
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+          if (!data || !data.entries || data.entries.length === 0) {
+            $grid.innerHTML = '<div class="daily-empty">今日暂无推荐词条</div>';
+            return;
+          }
+
+          var html = data.entries.map(function(e) {
+            var reason = e.pushReason || '每日推荐';
+            var rc = reasonClass[reason] || 'core';
+            var layer = e.layer || '';
+            return '<a class="daily-item" href="/entry/?id=' + encodeURIComponent(e.id) + '">' +
+              '<span class="di-reason ' + rc + '">' + escHtml(reason) + '</span>' +
+              '<div class="di-body">' +
+                '<div class="di-name">' + escHtml(e.name) + '</div>' +
+                '<div class="di-answer">' + escHtml(e.oneLineAnswer || '') + '</div>' +
+                (layer ? '<span class="di-layer ' + escHtml(layer) + '">' + escHtml(layerLabels[layer] || layer) + '</span>' : '') +
+              '</div>' +
+            '</a>';
+          }).join('');
+
+          $grid.innerHTML = html;
+        })
+        .catch(function() {
+          $grid.innerHTML = '<div class="daily-empty">加载失败，请稍后重试</div>';
+        });
+    }
+
+    function escHtml(s) {
+      if (!s) return '';
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    $ct.addEventListener('change', loadDaily);
+    $st.addEventListener('change', loadDaily);
+
+    // Initial load
+    loadDaily();
+  })();
 </script>
 <script src="/partner.js" async></script>
 </body>

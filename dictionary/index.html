@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>风声 · 全量词典</title>
+<meta name="description" content="风声知识底座 · 全量词典 · 六维筛选 · 道法术器 · 5067条词条">
+<style>
+:root {
+  --p: #3d5a3e; --p-light: #5a7d5b; --fire: #c46a3a; --fire-light: #e08a3c;
+  --cream: #f7f4ef; --cream-deep: #ede7dc; --ink: #1a2b26; --ink-soft: #5a6b65;
+  --wood: #c8956d; --line: rgba(61,90,62,0.12);
+  --shadow-sm: 0 2px 8px rgba(61,90,62,0.06);
+  --shadow-md: 0 8px 24px rgba(61,90,62,0.10);
+  --layer-dao: #3d5a3e; --layer-fa: #c46a3a; --layer-shu: #6b5fa8; --layer-qi: #c8956d;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+
+/* Nav */
+.nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.88);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1240px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:32px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;flex-shrink:0}
+.brand-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--p),var(--p-light));display:grid;place-items:center;color:white;font-weight:800}
+.nav-links{display:flex;gap:4px;flex:1;flex-wrap:wrap}
+.nav-link{padding:8px 16px;border-radius:8px;font-size:14px;color:var(--ink-soft);transition:all .2s;white-space:nowrap}
+.nav-link:hover{background:rgba(61,90,62,0.06);color:var(--p)}
+.nav-link.active{color:var(--p);font-weight:600;background:rgba(61,90,62,0.08)}
+
+/* Main */
+main{flex:1;max-width:1240px;width:100%;margin:0 auto;padding:32px 32px 60px}
+
+/* Hero */
+.hero{margin-bottom:28px}
+.hero h1{font-size:32px;font-weight:800;letter-spacing:-0.5px;margin-bottom:8px}
+.hero-sub{font-size:14px;color:var(--ink-soft);margin-bottom:20px}
+
+/* Search */
+.search-row{display:flex;gap:10px;align-items:center;margin-bottom:24px;flex-wrap:wrap}
+.search-box{display:flex;align-items:center;gap:10px;padding:10px 16px;background:white;border:1.5px solid var(--line);border-radius:10px;flex:1;min-width:240px;max-width:480px;transition:all .2s}
+.search-box:focus-within{border-color:var(--p);box-shadow:var(--shadow-sm)}
+.search-box input{flex:1;border:none;outline:none;font-size:14px;color:var(--ink);background:transparent;font-family:inherit}
+.search-box input::placeholder{color:var(--ink-soft)}
+.search-box svg{color:var(--ink-soft);flex-shrink:0}
+.search-clear{width:24px;height:24px;border-radius:50%;background:var(--cream);border:none;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:12px;color:var(--ink-soft);flex-shrink:0}
+.search-clear.visible{display:flex}
+.search-btn{padding:10px 20px;border-radius:8px;background:var(--p);color:white;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
+.search-btn:hover{background:var(--p-light)}
+.count-badge{font-size:13px;color:var(--ink-soft);white-space:nowrap}
+.count-badge strong{color:var(--p);font-size:16px}
+
+/* Filters */
+.filters-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.filter-row{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.filter-label{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.5px;min-width:48px;padding-top:6px;flex-shrink:0}
+.filter-chips{display:flex;gap:5px;flex-wrap:wrap;flex:1}
+.filter-chip{font-size:12px;padding:4px 12px;border-radius:100px;background:white;border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:all .15s;white-space:nowrap;user-select:none}
+.filter-chip:hover{background:rgba(61,90,62,0.06);border-color:var(--p)}
+.filter-chip.active{background:var(--p);color:white;border-color:var(--p);font-weight:600}
+.filter-chip .count{font-size:10px;opacity:0.7;margin-left:3px}
+
+/* Table */
+.table-wrap{overflow-x:auto;background:white;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-sm);margin-bottom:24px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{padding:12px 14px;text-align:left;font-weight:700;font-size:12px;color:var(--ink-soft);border-bottom:2px solid var(--line);white-space:nowrap;background:rgba(61,90,62,0.03);position:sticky;top:0;cursor:pointer;user-select:none;transition:all .15s}
+thead th:hover{color:var(--p);background:rgba(61,90,62,0.06)}
+thead th .sort-arrow{font-size:10px;margin-left:4px;opacity:0.4}
+thead th.sorted .sort-arrow{opacity:1;color:var(--p)}
+tbody td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(61,90,62,0.03)}
+tbody tr{cursor:pointer;transition:background .15s}
+.col-name{font-weight:600;color:var(--ink);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.col-answer{max-width:300px;color:var(--ink-soft);font-size:12px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.col-layer{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.col-layer.dao{background:rgba(61,90,62,0.08);color:var(--layer-dao)}
+.col-layer.fa{background:rgba(196,106,58,0.08);color:var(--layer-fa)}
+.col-layer.shu{background:rgba(107,95,168,0.08);color:var(--layer-shu)}
+.col-layer.qi{background:rgba(200,149,109,0.08);color:var(--layer-qi)}
+.col-type{font-size:11px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(61,90,62,0.06);color:var(--p);white-space:nowrap}
+.col-sev{font-size:11px;font-weight:600;white-space:nowrap}
+.col-sev.hard{color:var(--fire)}
+.col-sev.medium{color:var(--fire-light)}
+.col-sev.soft{color:var(--ink-soft)}
+.col-pri{font-size:11px;font-weight:700;white-space:nowrap}
+.col-pri.P0{color:var(--fire)}
+.col-pri.P1{color:var(--fire-light)}
+.col-pri.P2{color:var(--p)}
+.col-pri.P3{color:var(--ink-soft)}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:40px;flex-wrap:wrap}
+.page-btn{padding:8px 14px;border-radius:8px;background:white;border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+.page-btn:hover:not(:disabled){background:var(--p);color:white;border-color:var(--p)}
+.page-btn.active{background:var(--p);color:white;border-color:var(--p);font-weight:700}
+.page-btn:disabled{opacity:0.4;cursor:not-allowed}
+.page-info{font-size:12px;color:var(--ink-soft);padding:0 8px}
+
+/* Loading */
+.loading-row{text-align:center;padding:40px;color:var(--ink-soft)}
+.spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--line);border-top-color:var(--p);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Empty */
+.empty{text-align:center;padding:60px 20px;color:var(--ink-soft)}
+.empty-icon{font-size:48px;margin-bottom:12px;opacity:0.3}
+.empty-title{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.empty-desc{font-size:14px}
+
+/* Footer */
+footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--line)}
+.footer-inner{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hero h1{font-size:24px}
+  main{padding:20px 16px}
+  .filter-row{flex-direction:column;gap:6px}
+  .table-wrap{font-size:12px}
+  thead th,tbody td{padding:8px 10px}
+  .col-name{max-width:140px}
+  .col-answer{max-width:180px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="brand">
+      <div class="brand-mark">风</div>
+      <span>风声</span>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">首页</a>
+      <a href="/knowledge/" class="nav-link">知识底座</a>
+      <a href="/scene/" class="nav-link">场景导航</a>
+      <a href="/search/" class="nav-link">搜索</a>
+      <a href="/dictionary/" class="nav-link active">全量词典</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="hero">
+    <h1>全量词典</h1>
+    <p class="hero-sub">六维筛选 · 快速定位 · 5067条词条全覆盖</p>
+  </div>
+
+  <!-- Search -->
+  <div class="search-row">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="keywordInput" placeholder="搜索词条名称、一句话回答、消费者问题..." autocomplete="off">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button class="search-btn" id="searchBtn">搜索</button>
+    <button class="search-btn" id="exportBtn" style="background:white;color:var(--p);border:1px solid var(--line)">导出</button>
+    <span class="count-badge" id="countBadge"></span>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-wrap" id="filtersWrap">
+    <div class="filter-row">
+      <span class="filter-label">客户</span>
+      <div class="filter-chips" id="filterClientType"></div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">阶段</span>
+      <div class="filter-chips" id="filterStage"></div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">层级</span>
+      <div class="filter-chips" id="filterLayer"></div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">类型</span>
+      <div class="filter-chips" id="filterEntryType"></div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">严重度</span>
+      <div class="filter-chips" id="filterSeverity"></div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">优先级</span>
+      <div class="filter-chips" id="filterPriority"></div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap" id="tableWrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-sort="name" style="width:22%">词条名称 <span class="sort-arrow">↕</span></th>
+          <th data-sort="priority" style="width:8%">优先级 <span class="sort-arrow">↕</span></th>
+          <th data-sort="severity" style="width:8%">严重度 <span class="sort-arrow">↕</span></th>
+          <th style="width:8%">层级</th>
+          <th style="width:10%">类型</th>
+          <th style="width:44%">一句话回答</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr class="loading-row"><td colspan="6"><div class="spinner"></div><div>加载中...</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" id="pagination"></div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span>风声 · 居住服务者专业基础设施</span>
+    <span>通过独立价值获得尊重</span>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  var state = {
+    filters: {
+      clientType: '', stage: '', layer: '', entryType: '', severity: '', priority: ''
+    },
+    filterOptions: {},
+    keyword: '',
+    page: 1, pageSize: 20, total: 0, totalPages: 0,
+    sort: 'priority', order: 'asc',
+    entries: [],
+    loading: false
+  };
+
+  var $ = function(s) { return document.querySelector(s); };
+  var $$ = function(s) { return document.querySelectorAll(s); };
+
+  var layerLabels = { dao: '道', fa: '法', shu: '术', qi: '器' };
+  var severityLabels = { hard: '硬边界', medium: '中边界', soft: '软边界' };
+  var ctLabels = { buyer: '买方', owner: '业主', tenant: '租户' };
+  var stLabels = { pre: '售前', mid: '售中', post: '售后' };
+
+  function init() {
+    var params = new URLSearchParams(window.location.search);
+    ['clientType','stage','layer','entryType','severity','priority'].forEach(function(k) {
+      var v = params.get(k);
+      if (v) state.filters[k] = v;
+    });
+    state.keyword = params.get('keyword') || '';
+
+    if (state.keyword) {
+      $('#keywordInput').value = state.keyword;
+      $('#searchClear').classList.add('visible');
+    }
+
+    loadData();
+    setupEvents();
+  }
+
+  function setupEvents() {
+    $('#searchBtn').addEventListener('click', function() {
+      state.keyword = $('#keywordInput').value.trim();
+      state.page = 1;
+      loadData();
+    });
+
+    $('#keywordInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        state.keyword = this.value.trim();
+        state.page = 1;
+        loadData();
+      }
+    });
+
+    $('#keywordInput').addEventListener('input', function() {
+      $('#searchClear').classList.toggle('visible', this.value.length > 0);
+    });
+
+    $('#searchClear').addEventListener('click', function() {
+      $('#keywordInput').value = '';
+      $('#searchClear').classList.remove('visible');
+      state.keyword = '';
+      state.page = 1;
+      loadData();
+    });
+
+    // Filter chips
+    $('#filtersWrap').addEventListener('click', function(e) {
+      var chip = e.target.closest('.filter-chip');
+      if (!chip) return;
+      var filter = chip.dataset.filter;
+      var value = chip.dataset.value;
+      state.filters[filter] = value;
+      state.page = 1;
+      loadData();
+      renderFilters();
+    });
+
+    // Sort
+    $('#tableWrap').addEventListener('click', function(e) {
+      var th = e.target.closest('th[data-sort]');
+      if (!th) return;
+      var sort = th.dataset.sort;
+      if (state.sort === sort) {
+        state.order = state.order === 'asc' ? 'desc' : 'asc';
+      } else {
+        state.sort = sort;
+        state.order = 'asc';
+      }
+      loadData();
+    });
+
+    // Row click -> entry detail
+    $('#tableBody').addEventListener('click', function(e) {
+      var tr = e.target.closest('tr[data-id]');
+      if (!tr) return;
+      window.location.href = '/entry/?id=' + encodeURIComponent(tr.dataset.id);
+    });
+
+    // Export button
+    $('#exportBtn').addEventListener('click', function() {
+      doExport();
+    });
+  }
+
+  function loadData() {
+    if (state.loading) return;
+    state.loading = true;
+
+    var url = '/api/dictionary?page=' + state.page + '&pageSize=' + state.pageSize +
+      '&sort=' + state.sort + '&order=' + state.order;
+
+    Object.keys(state.filters).forEach(function(k) {
+      if (state.filters[k]) url += '&' + k + '=' + encodeURIComponent(state.filters[k]);
+    });
+    if (state.keyword) url += '&keyword=' + encodeURIComponent(state.keyword);
+
+    // Update URL
+    var params = new URLSearchParams();
+    Object.keys(state.filters).forEach(function(k) {
+      if (state.filters[k]) params.set(k, state.filters[k]);
+    });
+    if (state.keyword) params.set('keyword', state.keyword);
+    params.set('page', state.page);
+    params.set('sort', state.sort);
+    params.set('order', state.order);
+    var qs = params.toString();
+    var newUrl = window.location.pathname + (qs ? '?' + qs : '');
+    if (window.location.search !== (qs ? '?' + qs : '')) {
+      window.history.replaceState({}, '', newUrl);
+    }
+
+    fetch(url)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        state.entries = data.entries || [];
+        state.total = data.total || 0;
+        state.totalPages = Math.ceil(state.total / state.pageSize);
+        state.filterOptions = data.filters || {};
+        state.loading = false;
+
+        renderFilters();
+        renderTable();
+        renderPagination();
+        renderCount();
+      })
+      .catch(function(err) {
+        console.error('Load failed:', err);
+        state.loading = false;
+        $('#tableBody').innerHTML = '<tr class="loading-row"><td colspan="6">加载失败，请重试</td></tr>';
+      });
+  }
+
+  function renderFilters() {
+    var opts = state.filterOptions;
+    renderFilterChips('filterClientType', 'clientType', opts.clientTypes || [], ctLabels);
+    renderFilterChips('filterStage', 'stage', opts.stages || [], stLabels);
+    renderFilterChips('filterLayer', 'layer', opts.layers || [], layerLabels);
+    renderFilterChips('filterEntryType', 'entryType', opts.entryTypes || [], null);
+    renderFilterChips('filterSeverity', 'severity', opts.severities || [], severityLabels);
+    renderFilterChips('filterPriority', 'priority', opts.priorities || [], null);
+  }
+
+  function renderFilterChips(containerId, filterKey, options, labelMap) {
+    var container = $('#' + containerId);
+    if (!container) return;
+    var html = '<span class="filter-chip' + (!state.filters[filterKey] ? ' active' : '') + '" data-filter="' + filterKey + '" data-value="">全部</span>';
+    options.forEach(function(opt) {
+      var label = labelMap ? (labelMap[opt] || opt) : opt;
+      html += '<span class="filter-chip' + (state.filters[filterKey] === opt ? ' active' : '') + '" data-filter="' + filterKey + '" data-value="' + escapeHtml(opt) + '">' + escapeHtml(label) + '</span>';
+    });
+    container.innerHTML = html;
+  }
+
+  function renderTable() {
+    var tbody = $('#tableBody');
+    if (!state.entries.length) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">📚</div><div class="empty-title">暂无匹配词条</div><div class="empty-desc">尝试调整筛选条件或清空关键词</div></div></td></tr>';
+      return;
+    }
+
+    // Update sort indicator
+    $$('thead th[data-sort]').forEach(function(th) {
+      th.classList.toggle('sorted', th.dataset.sort === state.sort);
+      var arrow = th.querySelector('.sort-arrow');
+      if (arrow) {
+        if (th.dataset.sort === state.sort) {
+          arrow.textContent = state.order === 'asc' ? '↑' : '↓';
+        } else {
+          arrow.textContent = '↕';
+        }
+      }
+    });
+
+    var html = '';
+    state.entries.forEach(function(e) {
+      var layer = Array.isArray(e.layer) ? e.layer[0] : (e.layer || '');
+      html += '<tr data-id="' + escapeHtml(e.id) + '">' +
+        '<td class="col-name" title="' + escapeHtml(e.name || '') + '">' + escapeHtml(e.name || '') + '</td>' +
+        '<td><span class="col-pri ' + escapeHtml(e.priority || '') + '">' + escapeHtml(e.priority || '') + '</span></td>' +
+        '<td><span class="col-sev ' + escapeHtml(e.severity || '') + '">' + escapeHtml(severityLabels[e.severity] || e.severity || '') + '</span></td>' +
+        '<td><span class="col-layer ' + escapeHtml(layer) + '">' + escapeHtml(layerLabels[layer] || layer || '') + '</span></td>' +
+        '<td><span class="col-type">' + escapeHtml(e.entryType || '') + '</span></td>' +
+        '<td class="col-answer">' + escapeHtml(e.oneLineAnswer || '') + '</td>' +
+        '</tr>';
+    });
+    tbody.innerHTML = html;
+  }
+
+  function renderPagination() {
+    var pager = $('#pagination');
+    if (state.totalPages <= 1) {
+      pager.innerHTML = '';
+      return;
+    }
+
+    var html = '';
+    html += '<button class="page-btn" data-page="' + (state.page - 1) + '"' + (state.page <= 1 ? ' disabled' : '') + '>‹ 上一页</button>';
+
+    var maxVisible = 7;
+    var start = Math.max(1, state.page - Math.floor(maxVisible / 2));
+    var end = Math.min(state.totalPages, start + maxVisible - 1);
+    if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1);
+
+    if (start > 1) {
+      html += '<button class="page-btn" data-page="1">1</button>';
+      if (start > 2) html += '<span class="page-info">...</span>';
+    }
+    for (var i = start; i <= end; i++) {
+      html += '<button class="page-btn' + (i === state.page ? ' active' : '') + '" data-page="' + i + '"' + (i === state.page ? ' disabled' : '') + '>' + i + '</button>';
+    }
+    if (end < state.totalPages) {
+      if (end < state.totalPages - 1) html += '<span class="page-info">...</span>';
+      html += '<button class="page-btn" data-page="' + state.totalPages + '">' + state.totalPages + '</button>';
+    }
+
+    html += '<button class="page-btn" data-page="' + (state.page + 1) + '"' + (state.page >= state.totalPages ? ' disabled' : '') + '>下一页 ›</button>';
+
+    pager.innerHTML = html;
+
+    pager.querySelectorAll('.page-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var p = parseInt(this.dataset.page, 10);
+        if (p && p >= 1 && p <= state.totalPages && p !== state.page) {
+          state.page = p;
+          loadData();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
+  }
+
+  function renderCount() {
+    var badge = $('#countBadge');
+    if (badge) {
+      badge.innerHTML = '共 <strong>' + state.total + '</strong> 条词条';
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function doExport() {
+    var btn = $('#exportBtn');
+    var origText = btn.textContent;
+    btn.textContent = '导出中...';
+    btn.disabled = true;
+
+    var filters = {};
+    Object.keys(state.filters).forEach(function(k) {
+      if (state.filters[k]) filters[k] = state.filters[k];
+    });
+
+    fetch('/api/dictionary/export', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filters: filters,
+        keyword: state.keyword,
+        format: 'csv',
+        fields: ['name', 'oneLineAnswer', 'entryType', 'severity', 'priority', 'layer', 'subScene', 'consumerQ']
+      })
+    })
+    .then(function(r) {
+      if (!r.ok) throw new Error('Export failed');
+      return r.blob();
+    })
+    .then(function(blob) {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'fengsheng-dictionary-' + new Date().toISOString().slice(0, 10) + '.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      btn.textContent = origText;
+      btn.disabled = false;
+    })
+    .catch(function(err) {
+      console.error('Export failed:', err);
+      btn.textContent = origText;
+      btn.disabled = false;
+      alert('导出失败，请重试');
+    });
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

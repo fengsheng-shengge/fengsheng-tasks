@@ -1779,8 +1779,19 @@ async function handleEntryDetail(request, env, ctx) {
       }));
   }
 
+  // Compute layerPath
+  const layerSeq = ['dao', 'fa', 'shu', 'qi'];
+  const layerLabels = { dao: '道', fa: '法', shu: '术', qi: '器' };
+  const entryLayer = (entry.tags || {}).layer || '';
+  const layerPath = layerSeq.map(l => ({
+    layer: l,
+    label: layerLabels[l],
+    active: l === entryLayer,
+  }));
+
   const respData = {
     ...entry,
+    layerPath,
     relatedEntriesResolved: related,
   };
 
@@ -1837,6 +1848,8 @@ async function handleSearchSuggest(request, env, ctx) {
           domain: e.domain || '',
           subScene: e.subScene || '',
           severity: e.severity || '',
+          priority: e.priority || '',
+          layer: (e.tags || {}).layer || '',
           matchType: nameMatch ? 'name' : 'alias',
         });
       }
@@ -1915,13 +1928,17 @@ async function handleSceneDetail(request, env, ctx) {
   const entryTypes = [...new Set(sceneEntries.map(e => e.entryType).filter(Boolean))].sort();
   const severities = [...new Set(sceneEntries.map(e => e.severity).filter(Boolean))].sort();
 
+  const byLayerMap = Object.fromEntries(layers.map(l => [l.layer, l.count]));
   const respData = {
     clientType,
     stage,
     total: sceneEntries.length,
-    summary: { byLayer: Object.fromEntries(layers.map(l => [l.layer, l.count])), byPriority, bySeverity, byEntryType },
-    filters: { entryTypes, severities, layers: layerOrder.filter(l => layers.some(g => g.layer === l)) },
-    layers,
+    byLayer: byLayerMap,
+    byPriority,
+    bySeverity,
+    byEntryType,
+    filterOptions: { entryTypes, severities, layers: layerOrder.filter(l => layers.some(g => g.layer === l)) },
+    groups: layers,
   };
 
   const resp = jsonResponse(respData);
@@ -2031,6 +2048,7 @@ async function handleSearchV2(request, env, ctx) {
   const allEntries = await loadAllEntries(env);
   const qLower = q.toLowerCase();
   const results = [];
+  const layerOrder = ['dao', 'fa', 'shu', 'qi'];
 
   for (const e of allEntries) {
     const name = (e.name || '').toLowerCase();
@@ -2101,6 +2119,7 @@ async function handleSearchV2(request, env, ctx) {
     filterOptions: {
       entryTypes: [...new Set(results.map(r => r.entryType).filter(Boolean))].sort(),
       severities: [...new Set(results.map(r => r.severity).filter(Boolean))].sort(),
+      layers: layerOrder,
     }
   });
   const cachedResp = new Response(resp.body, resp);
@@ -2484,6 +2503,193 @@ async function handleDailyV2(request, env, ctx) {
 }
 
 // ============================================================
+//  P1: Dictionary Export (落地规格 API#6)
+//  POST /api/dictionary/export
+//  Body: { filters, format: "json"|"csv", fields: ["name","oneLineAnswer",...] }
+//  Returns all matching entries (no pagination) as JSON or CSV
+// ============================================================
+async function handleDictionaryExport(request, env, ctx) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'Method not allowed. Use POST.', hint: 'POST /api/dictionary/export' }, 405);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse({ error: 'Invalid JSON body' }, 400);
+  }
+
+  const filters = body.filters || {};
+  const format = (body.format || 'json').toLowerCase();
+  const fields = body.fields || ['name', 'oneLineAnswer', 'entryType', 'severity', 'priority', 'layer', 'subScene', 'consumerQ'];
+  const keyword = sanitizeQueryParam(body.keyword || '', 128) || null;
+
+  if (!['json', 'csv'].includes(format)) {
+    return jsonResponse({ error: 'Invalid format. Use "json" or "csv".' }, 400);
+  }
+
+  const allEntries = await loadAllEntries(env);
+
+  // Apply same 6-dimension filters as dictionary API
+  let filtered = allEntries.filter(e => {
+    const tags = e.tags || {};
+    if (filters.clientType) {
+      const ct = tags.clientType;
+      if (Array.isArray(ct)) { if (!ct.includes(filters.clientType)) return false; }
+      else if (ct !== filters.clientType) return false;
+    }
+    if (filters.stage) {
+      const st = tags.stage;
+      if (Array.isArray(st)) { if (!st.includes(filters.stage)) return false; }
+      else if (st !== filters.stage) return false;
+    }
+    if (filters.layer) {
+      const ly = tags.layer;
+      if (Array.isArray(ly)) { if (!ly.includes(filters.layer)) return false; }
+      else if (ly !== filters.layer) return false;
+    }
+    if (filters.entryType && e.entryType !== filters.entryType) return false;
+    if (filters.severity && e.severity !== filters.severity) return false;
+    if (filters.priority && e.priority !== filters.priority) return false;
+    return true;
+  });
+
+  // Keyword search
+  if (keyword) {
+    const kw = keyword.toLowerCase();
+    filtered = filtered.filter(e => {
+      const searchFields = [e.name, e.def, e.oneLineAnswer, e.consumerQ, e.ownerQ, e.subScene,
+        ...(e.alias || []), ...(e.corePoint || [])].filter(Boolean).map(String);
+      return searchFields.some(f => f.toLowerCase().includes(kw));
+    });
+  }
+
+  // Sort by priority then severity
+  const priorityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  const severityOrder = { hard: 0, medium: 1, soft: 2 };
+  filtered.sort((a, b) => {
+    const pd = (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9);
+    if (pd !== 0) return pd;
+    return (severityOrder[a.severity] ?? 9) - (severityOrder[b.severity] ?? 9);
+  });
+
+  // Build output rows
+  const layerLabels = { dao: '道', fa: '法', shu: '术', qi: '器' };
+  const rows = filtered.map(e => {
+    const row = {};
+    fields.forEach(f => {
+      switch (f) {
+        case 'id': row.id = e.id; break;
+        case 'name': row.name = e.name; break;
+        case 'oneLineAnswer': row.oneLineAnswer = e.oneLineAnswer || ''; break;
+        case 'def': row.def = e.def || ''; break;
+        case 'entryType': row.entryType = e.entryType || ''; break;
+        case 'severity': row.severity = e.severity || ''; break;
+        case 'priority': row.priority = e.priority || ''; break;
+        case 'layer': row.layer = layerLabels[(e.tags || {}).layer] || (e.tags || {}).layer || ''; break;
+        case 'subScene': row.subScene = e.subScene || ''; break;
+        case 'consumerQ': row.consumerQ = e.consumerQ || ''; break;
+        case 'ownerQ': row.ownerQ = e.ownerQ || ''; break;
+        case 'legalRef': row.legalRef = e.legalRef || ''; break;
+        case 'caveat': row.caveat = e.caveat || ''; break;
+        case 'alias': row.alias = (e.alias || []).join('; '); break;
+        case 'corePoint': row.corePoint = (e.corePoint || []).join('; '); break;
+        default: row[f] = '';
+      }
+    });
+    return row;
+  });
+
+  if (format === 'csv') {
+    // Build CSV
+    const headers = fields.map(f => `"${f}"`).join(',');
+    const csvRows = rows.map(r => fields.map(f => {
+      const val = String(r[f] || '').replace(/"/g, '""');
+      return `"${val}"`;
+    }).join(','));
+    const csv = '\uFEFF' + headers + '\n' + csvRows.join('\n'); // UTF-8 BOM for Excel
+
+    const resp = new Response(csv, {
+      headers: {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': `attachment; filename="fengsheng-dictionary-${new Date().toISOString().slice(0,10)}.csv"`,
+        'Cache-Control': 'no-cache',
+      },
+    });
+    return resp;
+  }
+
+  // JSON format
+  const respData = {
+    exportedAt: new Date().toISOString(),
+    total: filtered.length,
+    filters: { ...filters, keyword },
+    entries: rows,
+  };
+
+  const resp = jsonResponse(respData);
+  resp.headers.set('Content-Disposition', `attachment; filename="fengsheng-dictionary-${new Date().toISOString().slice(0,10)}.json"`);
+  resp.headers.set('Cache-Control', 'no-cache');
+  return resp;
+}
+
+// ============================================================
+//  P1: Favorites API (localStorage-backed, server passthrough)
+//  GET /api/favorites — returns favorites list from request body
+//  POST /api/favorites — batch update favorites
+// ============================================================
+async function handleFavorites(request, env, ctx) {
+  const url = new URL(request.url);
+
+  if (request.method === 'POST') {
+    let body;
+    try { body = await request.json(); } catch {
+      return jsonResponse({ error: 'Invalid JSON body' }, 400);
+    }
+    const action = body.action; // 'add', 'remove', 'list', 'sync'
+    const entryId = sanitizeQueryParam(body.entryId || '', 64) || null;
+    const ids = body.ids || [];
+
+    if (action === 'sync') {
+      // Sync favorites from client — returns normalized list
+      const unique = [...new Set(ids)].filter(Boolean);
+      return jsonResponse({ ok: true, ids: unique, count: unique.length });
+    }
+
+    return jsonResponse({ ok: true, action, entryId });
+  }
+
+  // GET: return empty template (actual data from localStorage)
+  return jsonResponse({ ids: [], count: 0, hint: 'Favorites are stored client-side (localStorage). Use POST /api/favorites with action=sync.' });
+}
+
+// ============================================================
+//  P1: History API (localStorage-backed, server passthrough)
+//  GET /api/history — returns empty template
+//  POST /api/history — record history entry
+// ============================================================
+async function handleHistory(request, env, ctx) {
+  if (request.method === 'POST') {
+    let body;
+    try { body = await request.json(); } catch {
+      return jsonResponse({ error: 'Invalid JSON body' }, 400);
+    }
+    const action = body.action; // 'record', 'list', 'clear'
+    const entryId = sanitizeQueryParam(body.entryId || '', 64) || null;
+    const ids = body.ids || [];
+
+    if (action === 'sync') {
+      return jsonResponse({ ok: true, ids, count: ids.length });
+    }
+
+    return jsonResponse({ ok: true, action, entryId });
+  }
+
+  return jsonResponse({ ids: [], count: 0, hint: 'History is stored client-side (localStorage). Use POST /api/history with action=sync.' });
+}
+
+// ============================================================
 //  P0 Batch2: Mini Scene Entries (落地规格 API#10)
 //  GET /api/mini/scene/entries?clientType=buyer&stage=pre&layer=qi
 //  Same as API#1 + shareCardUrl for qi-layer entries
@@ -2857,7 +3063,10 @@ export default {
     if (path === '/api/scene/entries') return handleSceneEntries(request, env, ctx);
     if (path === '/api/entry/related') return handleEntryRelated(request, env, ctx);
     if (path === '/api/dictionary') return handleDictionary(request, env, ctx);
+    if (path === '/api/dictionary/export') return handleDictionaryExport(request, env, ctx);
     if (path === '/api/daily/v2') return handleDailyV2(request, env, ctx);
+    if (path === '/api/favorites') return handleFavorites(request, env, ctx);
+    if (path === '/api/history') return handleHistory(request, env, ctx);
     if (path === '/api/mini/scene/entries') return handleMiniSceneEntries(request, env, ctx);
     // P0 Batch3: Weighted search v2 (API#7)
     if (path === '/api/search/v2') return handleSearchV2(request, env, ctx);
@@ -3038,12 +3247,13 @@ export default {
     if (isHtml && !path.includes('.')) {
       const KNOWN_ROUTES = new Set([
         '/', '/about', '/agent-academy', '/assessment', '/breeder', '/care-test',
-        '/dashboard', '/decoder', '/entry', '/ip-design', '/knowledge', '/management',
+        '/dashboard', '/decoder', '/dictionary', '/entry', '/favorites', '/history',
+        '/ip-design', '/knowledge', '/management',
         '/mentor', '/partner', '/privacy', '/quality-test', '/reply',
         '/s1-report', '/scene', '/search', '/shuowenjiedao', '/skills', '/standard', '/survey',
         '/terms', '/showing-report', '/dict', '/guide', '/decode',
         '/breeder/', '/care-test/', '/about/', '/agent-academy/',
-        '/entry/', '/scene/', '/search/',
+        '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
       ]);
       const normalized = path.endsWith('/') ? path.slice(0, -1) : path;
       if (!KNOWN_ROUTES.has(path) && !KNOWN_ROUTES.has(normalized) && !KNOWN_ROUTES.has(normalized + '/')) {
