@@ -366,7 +366,35 @@ export const useUserStore = defineStore('user', {
       trackEvent('cognition_save', 'curate', { clientId })
     },
 
-    /** 新增一次测评记录 */
+    /** V3.0.12 记录客户反馈（见面后客户的真实反应） */
+    addClientFeedback(clientId, feedback) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c) return
+      if (!Array.isArray(c.feedbacks)) c.feedbacks = []
+      c.feedbacks.unshift({
+        at: Date.now(),
+        type: feedback.type || '见面反馈',
+        mood: feedback.mood || '',
+        content: feedback.content || '',
+        action: feedback.action || ''
+      })
+      // 同时写入时间线
+      this.addTimelineEvent(clientId, { type: '见面', summary: '客户反馈：' + (feedback.content || '').slice(0, 40) })
+      this._persist()
+      trackEvent('client_feedback', 'clients', { clientId, mood: feedback.mood })
+    },
+
+    /** V3.0.12 标记跟进待办完成 */
+    completeFollowup(clientId, index) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !Array.isArray(c.followups)) return
+      if (c.followups[index]) {
+        c.followups[index].done = true
+        c.followups[index].doneAt = Date.now()
+        this._persist()
+        trackEvent('followup_done', 'clients', { clientId })
+      }
+    },
     addAssessment() {
       const item = { id: 'as_' + Date.now(), ts: Date.now() }
       this.assessments.unshift(item)

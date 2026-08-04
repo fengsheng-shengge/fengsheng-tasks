@@ -88,9 +88,11 @@ export function generateCuration(input) {
         else if (inCore) score += 2
         else if (inBody) score += 1
       })
-      // 客户类型匹配（不匹配大幅降权，但不直接丢弃）
+      // 客户类型硬过滤：词条 clientType 必须包含目标客户类型才保留
+      // agent 标签表示"经纪人也应知道"，不等于"适用于所有客户类型"
+      // 如 buyer+agent 的词条在租客场景下不出现
       const eCt = (e.tags && e.tags.clientType) || []
-      if (eCt.length && !eCt.includes(ct)) score *= 0.15
+      if (eCt.length && !eCt.includes(ct)) return
       // 见前阶段（签约前/需求确认）轻微加权
       const stage = (e.tags && e.tags.stage) || ''
       if (String(stage).includes('pre') || (e.domain || '').includes('签约前')) score += 0.5
@@ -105,9 +107,9 @@ export function generateCuration(input) {
   const strongCount = strong.length
   const realLegalStrong = strong.filter(x => isRealLegal(x.e.legalRef)).length
 
-  // 3) 说（关键要点，优先含真实法源）
+  // 3) 说（关键要点，优先含真实法源）—— 阈值提升到 score>=4 确保强匹配
   const sayRaw = topN
-    .filter(x => x.score >= 3 && (x.e.ola || (x.e.cp && x.e.cp.length)))
+    .filter(x => x.score >= 4 && (x.e.ola || (x.e.cp && x.e.cp.length)))
     .slice(0, 12)
     .sort((a, b) => (isRealLegal(b.e.legalRef) ? 1 : 0) - (isRealLegal(a.e.legalRef) ? 1 : 0) || b.score - a.score)
   const say = sayRaw.slice(0, 5).map(x => ({
@@ -119,7 +121,7 @@ export function generateCuration(input) {
     entryId: x.e.id
   }))
 
-  // 4) 带（看房/房源匹配方向，取自 see 组）
+  // 4) 带（看房/房源匹配方向，取自 see 组）—— 限定客户类型匹配
   const bring = topN
     .filter(x => x.grp === 'see')
     .slice(0, 4)
@@ -127,6 +129,17 @@ export function generateCuration(input) {
       title: x.e.name,
       benefit: x.e.consumerBenefit || (x.e.detail || '').slice(0, 40)
     }))
+
+  // 4b) 如果 see 组在该客户类型下无结果（如租客），从 decoder 组补充实用建议
+  const bringFallback = bring.length === 0
+    ? topN
+        .filter(x => x.grp === 'decoder' && x.score >= 4 && x.e.consumerBenefit)
+        .slice(0, 3)
+        .map(x => ({
+          title: x.e.name,
+          benefit: x.e.consumerBenefit || (x.e.detail || '').slice(0, 40)
+        }))
+    : []
 
   // 5) 问（必问 cq，去重取相关）
   const seenQ = new Set()
@@ -141,19 +154,22 @@ export function generateCuration(input) {
   const followups = buildFollowups(node, dimensions)
 
   // 7) 诚实元信息（绝不编造分数）
+  const totalMatched = all.length
   const honesty = {
     matchedTotal: strongCount,
     realLegalCount: realLegalStrong,
-    note: strongCount < 3
-      ? '匹配条目有限，建议结合你的专业判断补充'
-      : ('基于真实字典命中 ' + strongCount + ' 条强相关（其中 ' + realLegalStrong + ' 条含真实法源）')
+    note: totalMatched === 0
+      ? '该客户类型下暂无匹配词条。租住类知识库持续扩充中，建议结合你的专业判断补充'
+      : strongCount < 3
+        ? '匹配条目有限（' + totalMatched + ' 条），建议结合你的专业判断补充'
+        : ('基于真实字典命中 ' + strongCount + ' 条强相关（其中 ' + realLegalStrong + ' 条含真实法源）')
   }
 
   return {
     axisLabel: group.label + ' · ' + node.name,
     dimensionLabels: dimensions.map(dk => (DIMENSIONS.find(d => d.key === dk) || {}).name).filter(Boolean),
     freeText,
-    say, bring, ask, followups,
+    say, bring: bring.length ? bring : bringFallback, ask, followups,
     honesty,
     timeline: buildTimeline()
   }

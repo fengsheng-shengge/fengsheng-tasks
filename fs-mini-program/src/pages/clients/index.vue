@@ -80,7 +80,18 @@
           <view class="fl" v-for="(f, i) in detailSrc.followups.filter(x => !x.done)" :key="i">
             <view class="fl-theme">{{ f.theme }}</view>
             <view class="fl-text">{{ f.text }}</view>
-            <view class="fl-lt">LTRUST · {{ f.ltrust }}</view>
+            <view class="fl-lt">LTRUST · {{ f.ltrust }} <text class="fl-done" @tap.stop="markFollowupDone(i)">✓ 完成</text></view>
+          </view>
+        </view>
+        <view class="sec" v-if="detailSrc && (detailSrc.feedbacks || []).length">
+          <view class="h"><text class="em">💬</text>客户反馈记录</view>
+          <view class="fb" v-for="(fb, i) in detailSrc.feedbacks" :key="i">
+            <view class="fb-head">
+              <text class="fb-type" :class="'fb-' + (fb.mood || 'neutral')">{{ fb.mood || '反馈' }}</text>
+              <text class="fb-at">{{ fmtDate(fb.at) }}</text>
+            </view>
+            <view class="fb-content">{{ fb.content }}</view>
+            <view class="fb-action" v-if="fb.action">→ {{ fb.action }}</view>
           </view>
         </view>
         <view class="sec" v-if="detailSrc && (detailSrc.memoryPoints || []).length">
@@ -111,8 +122,9 @@
         </view>
       </scroll-view>
       <view class="ov-foot" :style="{ paddingBottom: tabBarSafe + 'px' }">
-        <button class="btn-green" @tap="editFromDetail">✎ 编辑客户</button>
-        <button class="btn-line" @tap="openCurate(detailSrc)">为本次接触生成策展包 →</button>
+        <button class="btn-green" @tap="editFromDetail">✎ 编辑</button>
+        <button class="btn-line" @tap="openCurate(detailSrc)">策展</button>
+        <button class="btn-feedback" @tap="showFeedbackForm">💬 反馈</button>
       </view>
     </view>
 
@@ -124,6 +136,27 @@
         <view class="modal-btns">
           <button class="modal-btn cancel" @tap="confirmCancel">取消</button>
           <button class="modal-btn ok" @tap="confirmOk">确定</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 客户反馈记录表单 -->
+    <view class="modal-mask" v-if="feedbackShow" @tap="feedbackShow = false">
+      <view class="modal feedback-modal" @tap.stop>
+        <view class="modal-title">记录客户反馈</view>
+        <view class="fb-form">
+          <view class="fb-label">客户反应</view>
+          <view class="fb-mood-row">
+            <view v-for="m in moodOpts" :key="m.key" :class="['fb-mood-chip', { on: feedbackMood === m.key }]" @tap="feedbackMood = m.key">{{ m.icon }} {{ m.label }}</view>
+          </view>
+          <view class="fb-label">客户说了什么 / 反应如何</view>
+          <textarea class="fb-textarea" v-model="feedbackContent" placeholder="如：对学区信息很感兴趣，问了具体划片范围" maxlength="300"></textarea>
+          <view class="fb-label">你的下一步动作</view>
+          <textarea class="fb-textarea mini" v-model="feedbackAction" placeholder="如：下周帮他核实学区划片并同步" maxlength="200"></textarea>
+        </view>
+        <view class="modal-btns">
+          <button class="modal-btn cancel" @tap="feedbackShow = false">取消</button>
+          <button class="modal-btn ok" @tap="saveFeedback">保存</button>
         </view>
       </view>
     </view>
@@ -145,13 +178,23 @@ export default {
       confirmTitle: '',
       confirmContent: '',
       confirmMode: '',
+      feedbackShow: false,
+      feedbackMood: '',
+      feedbackContent: '',
+      feedbackAction: '',
       tabBarSafe: 70, // 原生 tabBar 安全留白(px)，onLoad 用系统信息精确计算覆盖（仅详情浮层底部按钮用）
       relOpts: ['买房客户', '租客', '业主', '房东'],
       stageOpts: ['购房线 / ①首套','购房线 / ②改善','购房线 / ③教育','购房线 / ④升级','购房线 / ⑤适老','租住线 / ①起步','租住线 / ②改善','租住线 / ③家庭','租住线 / ④品质','业主侧'],
       levelOpts: ['A', 'B', 'C'],
       statusOpts: ['跟进中', '已成交', '已流失'],
       buyAxis: ['①首套', '②改善', '③教育', '④升级', '⑤适老'],
-      rentAxis: ['①起步', '②改善', '③家庭', '④品质']
+      rentAxis: ['①起步', '②改善', '③家庭', '④品质'],
+      moodOpts: [
+        { key: 'positive', icon: '😊', label: '积极' },
+        { key: 'neutral', icon: '😐', label: '中立' },
+        { key: 'concerned', icon: '😟', label: '顾虑' },
+        { key: 'negative', icon: '😕', label: '冷淡' }
+      ]
     }
   },
   computed: {
@@ -311,6 +354,38 @@ export default {
       this.confirmShow = false
     },
     confirmCancel() { this.confirmShow = false },
+    showFeedbackForm() {
+      this.feedbackMood = ''
+      this.feedbackContent = ''
+      this.feedbackAction = ''
+      this.feedbackShow = true
+    },
+    saveFeedback() {
+      if (!this.feedbackContent.trim()) {
+        uni.showToast({ title: '请填写反馈内容', icon: 'none' })
+        return
+      }
+      const moodLabel = (this.moodOpts.find(m => m.key === this.feedbackMood) || {}).label || ''
+      this.userStore.addClientFeedback(this.detailSrc.id, {
+        mood: moodLabel,
+        content: this.feedbackContent.trim(),
+        action: this.feedbackAction.trim()
+      })
+      this.feedbackShow = false
+      uni.showToast({ title: '反馈已记录', icon: 'none' })
+      // 刷新 detailSrc 引用让 UI 更新
+      this.detailSrc = this.userStore.getClient(this.detailSrc.id)
+    },
+    markFollowupDone(visibleIndex) {
+      if (!this.detailSrc) return
+      const undone = this.detailSrc.followups.filter(f => !f.done)
+      const target = undone[visibleIndex]
+      if (!target) return
+      const realIndex = this.detailSrc.followups.indexOf(target)
+      this.userStore.completeFollowup(this.detailSrc.id, realIndex)
+      this.detailSrc = this.userStore.getClient(this.detailSrc.id)
+      uni.showToast({ title: '已完成 ✓', icon: 'none' })
+    },
     // v3.0.7.2：诊断条上的「重试示例」按钮——用户若截图见到 [当前 0 张 · 存储 未seed]
     // 一键重新写入 4 张示例，避免重新加好友列表。生产代码不允许保留的副作用是把
     // 当前已删示例但确实存 0 真实客户的状态变成有 4 张示例；这是开发期调试对策。
@@ -439,6 +514,27 @@ export default {
 .btn-red { background: #fff; color: #c0392b; border: 1px solid #f0c4bd; border-radius: 10px; padding: 12px; font-size: 14px; margin-top: 8px; }
 .btn-line { background: #fff; color: #c46a3a; border: 1px solid #e7d3c2; border-radius: 10px; padding: 12px; font-size: 14px; margin-top: 8px; }
 .btn-prep { background: linear-gradient(135deg, #c46a3a 0%, #b1542c 100%); color: #fff; border-radius: 12px; padding: 13px; font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+.btn-feedback { background: #fff; color: #c46a3a; border: 1px solid #e7d3c2; border-radius: 10px; padding: 12px; font-size: 14px; margin-top: 0; flex: 0 0 auto; }
+.fl-done { margin-left: 8px; color: #3a8f5b; font-size: 12px; font-weight: 700; }
+.fb { padding: 8px 0; border-bottom: 1px dashed #e7e0d4; }
+.fb:last-child { border-bottom: none; }
+.fb-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.fb-type { font-size: 11px; padding: 2px 7px; border-radius: 6px; }
+.fb-positive { background: #eef6ef; color: #3a8f5b; }
+.fb-neutral { background: #f0f0f0; color: #888; }
+.fb-concerned { background: #fff4ec; color: #c46a3a; }
+.fb-negative { background: #fde8e6; color: #c0392b; }
+.fb-at { font-size: 11px; color: #999; }
+.fb-content { font-size: 13px; color: #2b2b2b; line-height: 1.5; }
+.fb-action { font-size: 12px; color: #c46a3a; margin-top: 4px; }
+.fb-form { margin-bottom: 12px; }
+.fb-label { font-size: 13px; font-weight: 700; color: #3d5a3e; margin: 10px 0 6px; }
+.fb-mood-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.fb-mood-chip { padding: 7px 12px; background: #f0ece2; border-radius: 8px; font-size: 13px; color: #555; border: 1px solid transparent; }
+.fb-mood-chip.on { background: #3d5a3e; color: #fff; border-color: #3d5a3e; }
+.fb-textarea { width: 100%; background: #f7f4ef; border: 1px solid #e7e0d4; border-radius: 8px; padding: 10px; font-size: 13px; box-sizing: border-box; min-height: 70px; }
+.fb-textarea.mini { min-height: 50px; }
+.feedback-modal { max-width: 340px; width: 88%; }
 .cognition .cog-sub { font-size: 12px; font-weight: 700; color: #3d5a3e; margin: 6px 0 6px; }
 .cog-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .cog-chip { font-size: 12px; padding: 4px 10px; border-radius: 8px; background: #eef3ec; color: #3d5a3e; }

@@ -127,10 +127,47 @@
       </view>
 
       <view class="actions">
-        <button class="btn-main" @tap="save">✓ 存入客户认知卡</button>
-        <button class="btn-line" @tap="result = null">← 修改重生成</button>
+        <button class="btn-main" @tap="save" v-if="!saved">✓ 存入客户认知卡</button>
+        <button class="btn-line" @tap="result = null" v-if="!saved">← 修改重生成</button>
       </view>
-      <view v-if="savedTip" class="saved-tip">{{ savedTip }}</view>
+      <view v-if="savedTip && !saved" class="saved-tip">{{ savedTip }}</view>
+
+      <!-- 存完后的下一步引导 -->
+      <view v-if="saved" class="next-steps">
+        <view class="ns-head">✓ 已存入认知卡，接下来：</view>
+        <view class="ns-item" @tap="goClientDetail">
+          <text class="ns-icon">📋</text>
+          <view class="ns-body">
+            <view class="ns-title">去客户档案查看跟进待办</view>
+            <view class="ns-desc">{{ result.followups.length }} 条见后跟进已写入「{{ clientName }}」的跟进待办</view>
+          </view>
+          <text class="ns-arrow">›</text>
+        </view>
+        <view class="ns-item" @tap="copySummary">
+          <text class="ns-icon">💬</text>
+          <view class="ns-body">
+            <view class="ns-title">复制要点发客户</view>
+            <view class="ns-desc">把该说的要点整理成微信消息，见面时直接用</view>
+          </view>
+          <text class="ns-arrow">›</text>
+        </view>
+        <view class="ns-item" @tap="copyHTML">
+          <text class="ns-icon">🌐</text>
+          <view class="ns-body">
+            <view class="ns-title">生成 HTML 报告</view>
+            <view class="ns-desc">专业呈现，浏览器打开即可给客户看</view>
+          </view>
+          <text class="ns-arrow">›</text>
+        </view>
+        <view class="ns-item" @tap="result = null">
+          <text class="ns-icon">🔄</text>
+          <view class="ns-body">
+            <view class="ns-title">为下一个客户生成策展包</view>
+            <view class="ns-desc">回到输入，开始服务下一位</view>
+          </view>
+          <text class="ns-arrow">›</text>
+        </view>
+      </view>
     </block>
 
     <!-- 豆包提示词选择浮层 -->
@@ -184,6 +221,7 @@ export default {
       clientName: '',
       result: null,
       savedTip: '',
+      saved: false,
       showPromptOverlay: false,
       promptTypes: getPromptTypes(),
       sharePayload: null
@@ -259,6 +297,14 @@ export default {
         followThemes,
         freeText: this.freeText
       })
+      // 把见后跟进写入客户档案 followups[]（可操作待办，不再是"只存了标签"）
+      if (this.result.followups && this.result.followups.length) {
+        this.userStore.addFollowups(this.clientId, this.result.followups.map(f => ({
+          theme: f.theme,
+          text: f.text,
+          ltrust: '持续关怀'
+        })))
+      }
       // 联动既有经营记录（时间线 + 记忆点 + 信任积分）
       this.userStore.addTimelineEvent(this.clientId, { type: '策展', summary: '见面参谋生成（' + this.result.axisLabel + ' · ' + this.result.say.length + ' 说 / ' + this.result.followups.length + ' 见后跟进）' })
       this.userStore.addMemoryPoint(this.clientId, '专业准备：基于真实字典生成见面参谋，每条可点开依据')
@@ -266,7 +312,14 @@ export default {
       this.userStore.earnPoints(10, '完成见面参谋')
       trackEvent('curate_save', 'curate-prep', { clientId: this.clientId, axis: this.axisType })
       this.savedTip = '已存入「' + this.clientName + '」的认知卡 · 信任积分 +10'
+      this.saved = true
       uni.showToast({ title: '已存入客户认知卡', icon: 'none' })
+    },
+    goClientDetail() {
+      uni.switchTab({ url: '/pages/clients/index' })
+      setTimeout(() => {
+        uni.$emit('openClientDetail', this.clientId)
+      }, 300)
     },
     // V3.0.11 呈现工具
     getAgentName() {
@@ -429,4 +482,14 @@ export default {
 .prompt-tip { background: #eef3ec; border-radius: 12px; padding: 14px; margin-top: 6px; }
 .pt-title { font-size: 13px; font-weight: 700; color: #3d5a3e; margin-bottom: 8px; }
 .pt-step { font-size: 12px; color: #555; line-height: 1.6; padding: 2px 0; }
+.next-steps { background: #fff; border: 1px solid #e7e0d4; border-radius: 14px; padding: 14px; margin-top: 12px; }
+.ns-head { font-size: 15px; font-weight: 700; color: #3d5a3e; margin-bottom: 12px; }
+.ns-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px dashed #e7e0d4; }
+.ns-item:last-child { border-bottom: none; }
+.ns-item:active { background: #f7f4ef; }
+.ns-icon { font-size: 24px; flex-shrink: 0; }
+.ns-body { flex: 1; min-width: 0; }
+.ns-title { font-size: 14px; font-weight: 700; color: #2b2b2b; }
+.ns-desc { font-size: 12px; color: #8a837a; margin-top: 2px; line-height: 1.4; }
+.ns-arrow { font-size: 20px; color: #c8956d; flex-shrink: 0; }
 </style>
