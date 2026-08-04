@@ -96,12 +96,71 @@
         </view>
       </view>
 
+      <!-- V3.0.11 拿得出手 · 呈现工具 -->
+      <view class="export-section">
+        <view class="export-h">🎁 拿得出手 · 呈现工具</view>
+        <view class="export-sub">把这次策展变成可以直接给客户看的专业呈现</view>
+        <view class="export-grid">
+          <view class="export-card" @tap="copyHTML">
+            <view class="ec-icon">🌐</view>
+            <view class="ec-name">HTML报告</view>
+            <view class="ec-desc">复制后在浏览器打开<br/>可直接打印为PDF</view>
+          </view>
+          <view class="export-card" @tap="showPromptPicker">
+            <view class="ec-icon">🤖</view>
+            <view class="ec-name">豆包提示词</view>
+            <view class="ec-desc">复制后粘贴到豆包<br/>一键生成PPT/视频</view>
+          </view>
+        </view>
+        <view class="export-grid" style="margin-top:8px">
+          <view class="export-card export-mini" @tap="copySummary">
+            <view class="ec-icon">📋</view>
+            <view class="ec-name">摘要文本</view>
+            <view class="ec-desc">快速复制要点<br/>微信直接发给客户</view>
+          </view>
+          <view class="export-card export-mini" @tap="shareReport">
+            <view class="ec-icon">📤</view>
+            <view class="ec-name">分享给同事</view>
+            <view class="ec-desc">转发策展方案<br/>让同事也能参考</view>
+          </view>
+        </view>
+      </view>
+
       <view class="actions">
         <button class="btn-main" @tap="save">✓ 存入客户认知卡</button>
         <button class="btn-line" @tap="result = null">← 修改重生成</button>
       </view>
       <view v-if="savedTip" class="saved-tip">{{ savedTip }}</view>
     </block>
+
+    <!-- 豆包提示词选择浮层 -->
+    <view class="overlay" :class="{ active: showPromptOverlay }">
+      <view class="ov-nav">
+        <button class="back" @tap="showPromptOverlay = false">‹</button>
+        <view>
+          <view style="font-size:17px;font-weight:700">豆包提示词</view>
+          <view class="sub">选一种类型 · 复制后粘贴到豆包即可生成</view>
+        </view>
+      </view>
+      <scroll-view class="ovcontent" scroll-y="true">
+        <view class="prompt-card" v-for="p in promptTypes" :key="p.key" @tap="copyPrompt(p.key)">
+          <view class="pc-head">
+            <text class="pc-icon">{{ p.icon }}</text>
+            <text class="pc-name">{{ p.name }}</text>
+            <text class="pc-badge">{{ p.badge }}</text>
+          </view>
+          <view class="pc-desc">{{ p.desc }}</view>
+          <view class="pc-action">点击复制提示词 →</view>
+        </view>
+        <view class="prompt-tip">
+          <view class="pt-title">📌 使用方法</view>
+          <view class="pt-step">1. 点击上方任意类型，提示词自动复制到剪贴板</view>
+          <view class="pt-step">2. 打开豆包（doubao.com）或豆包App</view>
+          <view class="pt-step">3. 粘贴提示词，豆包会根据策展内容生成PPT/视频/报告</view>
+          <view class="pt-step">4. 生成后可二次编辑调整，加上你的个人风格</view>
+        </view>
+      </scroll-view>
+    </view>
   </view>
 </template>
 
@@ -109,6 +168,8 @@
 import { AXIS_GROUPS, DIMENSIONS, generateCuration } from '../../engine.js'
 import { useUserStore } from '../../../store/user'
 import { trackEvent } from '../../../utils/tracker'
+import { generateReportHTML, generateReportSummary } from '../../../utils/report-template.js'
+import { getPromptTypes, generatePrompt } from '../../../utils/doubao-prompt.js'
 
 export default {
   data() {
@@ -122,7 +183,10 @@ export default {
       clientId: null,
       clientName: '',
       result: null,
-      savedTip: ''
+      savedTip: '',
+      showPromptOverlay: false,
+      promptTypes: getPromptTypes(),
+      sharePayload: null
     }
   },
   computed: {
@@ -150,6 +214,12 @@ export default {
         if (c.note) this.freeText = c.note
       }
     }
+  },
+  onShareAppMessage() {
+    return this.sharePayload || { title: '风声 · 见面策展工具', path: '/package-curation/pages/curate-prep/index' }
+  },
+  onShareTimeline() {
+    return { title: '风声 · 见面策展工具', query: '' }
   },
   methods: {
     pickAxis(type) {
@@ -197,6 +267,80 @@ export default {
       trackEvent('curate_save', 'curate-prep', { clientId: this.clientId, axis: this.axisType })
       this.savedTip = '已存入「' + this.clientName + '」的认知卡 · 信任积分 +10'
       uni.showToast({ title: '已存入客户认知卡', icon: 'none' })
+    },
+    // V3.0.11 呈现工具
+    getAgentName() {
+      const u = this.userStore
+      return (u && u.profile && u.profile.name) || '风声经纪人'
+    },
+    getReportOpts() {
+      return {
+        agentName: this.getAgentName(),
+        clientName: this.clientName || '',
+        dateStr: new Date().toLocaleDateString('zh-CN')
+      }
+    },
+    copyHTML() {
+      const html = generateReportHTML(this.result, this.getReportOpts())
+      uni.setClipboardData({
+        data: html,
+        success: () => {
+          trackEvent('report_copy_html', 'curate-prep', { sayN: this.result.say.length })
+          uni.showModal({
+            title: 'HTML已复制',
+            content: '已复制完整报告HTML。请打开手机浏览器，粘贴到地址栏或保存为.html文件即可查看，也可打印为PDF。',
+            showCancel: false,
+            confirmText: '知道了'
+          })
+        },
+        fail: () => uni.showToast({ title: '复制失败，请重试', icon: 'none' })
+      })
+    },
+    copySummary() {
+      const text = generateReportSummary(this.result, this.getReportOpts())
+      uni.setClipboardData({
+        data: text,
+        success: () => {
+          trackEvent('report_copy_summary', 'curate-prep', {})
+          uni.showToast({ title: '摘要已复制 · 可直接粘贴发送', icon: 'none' })
+        },
+        fail: () => uni.showToast({ title: '复制失败', icon: 'none' })
+      })
+    },
+    showPromptPicker() {
+      this.showPromptOverlay = true
+    },
+    copyPrompt(type) {
+      const prompt = generatePrompt(type, this.result, this.getReportOpts())
+      uni.setClipboardData({
+        data: prompt,
+        success: () => {
+          trackEvent('report_copy_prompt', 'curate-prep', { type })
+          this.showPromptOverlay = false
+          uni.showModal({
+            title: '提示词已复制',
+            content: '请打开豆包（doubao.com），粘贴提示词即可生成。生成后可二次编辑调整。',
+            showCancel: true,
+            confirmText: '去豆包',
+            cancelText: '知道了',
+            success: (res) => {
+              if (res.confirm) {
+                // 小程序内无法直接打开外部链接，提示用户
+                uni.showToast({ title: '请在浏览器打开 doubao.com', icon: 'none' })
+              }
+            }
+          })
+        },
+        fail: () => uni.showToast({ title: '复制失败', icon: 'none' })
+      })
+    },
+    shareReport() {
+      this.sharePayload = {
+        title: '我为你准备了这次见面的专业方案 · 风声策展',
+        path: '/package-curation/pages/curate-prep/index'
+      }
+      trackEvent('report_share', 'curate-prep', {})
+      uni.showToast({ title: '点击右上角分享给同事', icon: 'none' })
     }
   }
 }
@@ -256,4 +400,33 @@ export default {
 .empty-mini { font-size: 12px; color: #aaa; padding: 6px 0; }
 .actions { margin-top: 4px; }
 .saved-tip { text-align: center; font-size: 12px; color: #3d5a3e; margin-top: 10px; }
+.export-section { background: #fff; border-radius: 14px; padding: 16px 14px; margin-bottom: 12px; border: 1px solid #efe9dd; }
+.export-h { font-size: 16px; font-weight: 700; color: #3d5a3e; }
+.export-sub { font-size: 12px; color: #8a837a; margin-top: 4px; line-height: 1.5; }
+.export-grid { display: flex; gap: 10px; margin-top: 12px; }
+.export-card { flex: 1; background: linear-gradient(135deg, #f7f4ef, #fff); border: 1px solid #e7e0d4; border-radius: 12px; padding: 14px 12px; text-align: center; }
+.export-card.export-mini { padding: 10px 8px; }
+.export-card:active { background: #f0ece2; }
+.ec-icon { font-size: 28px; margin-bottom: 6px; }
+.export-mini .ec-icon { font-size: 22px; }
+.ec-name { font-size: 14px; font-weight: 700; color: #2b2b2b; }
+.export-mini .ec-name { font-size: 13px; }
+.ec-desc { font-size: 11px; color: #8a837a; margin-top: 4px; line-height: 1.4; }
+.overlay { position: fixed; inset: 0; z-index: 50; background: #f7f4ef; transform: translateY(100%); transition: transform .25s ease; pointer-events: none; display: flex; flex-direction: column; }
+.overlay.active { transform: translateY(0); pointer-events: auto; }
+.ov-nav { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: #fff; border-bottom: 1px solid #e7e0d4; }
+.ov-nav .back { background: none; border: none; font-size: 22px; color: #3d5a3e; line-height: 1; }
+.ov-nav .sub { font-size: 12px; color: #888; margin-top: 2px; }
+.ovcontent { flex: 1; padding: 16px; overflow-y: auto; padding-bottom: calc(10px + 110rpx + env(safe-area-inset-bottom)); }
+.prompt-card { background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+.prompt-card:active { background: #f7f4ef; }
+.pc-head { display: flex; align-items: center; gap: 8px; }
+.pc-icon { font-size: 22px; }
+.pc-name { font-size: 15px; font-weight: 700; color: #2b2b2b; flex: 1; }
+.pc-badge { font-size: 10px; color: #c46a3a; background: #fbf6ee; padding: 2px 8px; border-radius: 6px; font-weight: 700; }
+.pc-desc { font-size: 12px; color: #777; margin-top: 6px; line-height: 1.5; }
+.pc-action { font-size: 13px; color: #3d5a3e; font-weight: 700; margin-top: 8px; }
+.prompt-tip { background: #eef3ec; border-radius: 12px; padding: 14px; margin-top: 6px; }
+.pt-title { font-size: 13px; font-weight: 700; color: #3d5a3e; margin-bottom: 8px; }
+.pt-step { font-size: 12px; color: #555; line-height: 1.6; padding: 2px 0; }
 </style>
