@@ -33,12 +33,20 @@ a{color:inherit;text-decoration:none}
 main{flex:1;max-width:1240px;width:100%;margin:0 auto;padding:32px 32px 60px}
 
 /* Hero */
-.hero{margin-bottom:28px}
+.hero{margin-bottom:24px}
 .hero h1{font-size:32px;font-weight:800;letter-spacing:-0.5px;margin-bottom:8px}
-.hero-sub{font-size:14px;color:var(--ink-soft);margin-bottom:20px}
+.hero-sub{font-size:14px;color:var(--ink-soft);margin-bottom:16px}
+
+/* Scene Tabs — 业务场景 */
+.scene-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;padding:6px;background:rgba(61,90,62,0.06);border-radius:12px}
+.scene-tab{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all .15s;white-space:nowrap}
+.scene-tab:hover{color:var(--p)}
+.scene-tab.active{background:var(--p);color:white;box-shadow:0 2px 8px rgba(61,90,62,0.15)}
+.scene-tab .count{font-size:10px;opacity:0.7;margin-left:4px;font-weight:500}
+.scene-tab.active .count{opacity:0.8}
 
 /* Search */
-.search-row{display:flex;gap:10px;align-items:center;margin-bottom:24px;flex-wrap:wrap}
+.search-row{display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
 .search-box{display:flex;align-items:center;gap:10px;padding:10px 16px;background:white;border:1.5px solid var(--line);border-radius:10px;flex:1;min-width:240px;max-width:480px;transition:all .2s}
 .search-box:focus-within{border-color:var(--p);box-shadow:var(--shadow-sm)}
 .search-box input{flex:1;border:none;outline:none;font-size:14px;color:var(--ink);background:transparent;font-family:inherit}
@@ -52,14 +60,29 @@ main{flex:1;max-width:1240px;width:100%;margin:0 auto;padding:32px 32px 60px}
 .count-badge strong{color:var(--p);font-size:16px}
 
 /* Filters */
-.filters-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
-.filter-row{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
-.filter-label{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.5px;min-width:48px;padding-top:6px;flex-shrink:0}
+.filters-wrap{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;padding:16px 20px;background:white;border:1px solid var(--line);border-radius:12px}
+.filter-row{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;padding:6px 0;border-bottom:1px dashed var(--line)}
+.filter-row:last-child{border-bottom:none;padding-bottom:0}
+.filter-row:first-child{padding-top:0}
+.filter-label{font-size:11px;font-weight:700;color:var(--p);letter-spacing:0.5px;min-width:56px;padding-top:6px;flex-shrink:0;display:flex;align-items:center;gap:4px}
+.filter-label .help-icon{font-size:10px;cursor:help;opacity:0.6}
 .filter-chips{display:flex;gap:5px;flex-wrap:wrap;flex:1}
-.filter-chip{font-size:12px;padding:4px 12px;border-radius:100px;background:white;border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:all .15s;white-space:nowrap;user-select:none}
-.filter-chip:hover{background:rgba(61,90,62,0.06);border-color:var(--p)}
+.filter-chips.grouped{flex-direction:column;gap:2px;align-items:stretch}
+.filter-chip{font-size:12px;padding:4px 12px;border-radius:100px;background:var(--cream);border:1px solid transparent;color:var(--ink-soft);cursor:pointer;transition:all .15s;white-space:nowrap;user-select:none}
+.filter-chip:hover{background:rgba(61,90,62,0.08);color:var(--p)}
 .filter-chip.active{background:var(--p);color:white;border-color:var(--p);font-weight:600}
 .filter-chip .count{font-size:10px;opacity:0.7;margin-left:3px}
+
+/* Filter groups */
+.filter-group-title{font-size:11px;font-weight:800;color:var(--ink);margin:4px 0 2px;letter-spacing:0.5px}
+.filter-subgroup{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:4px}
+.filter-subgroup-label{font-size:10px;font-weight:700;color:var(--ink-soft);min-width:44px;padding-top:5px;flex-shrink:0}
+
+/* Severity tooltip */
+.sev-help{position:relative;display:inline-block}
+.sev-help-popup{display:none;position:absolute;top:100%;left:0;margin-top:6px;padding:10px 14px;background:var(--ink);color:white;border-radius:8px;font-size:12px;line-height:1.8;white-space:nowrap;z-index:10;box-shadow:var(--shadow-md)}
+.sev-help:hover .sev-help-popup{display:block}
+.sev-help-popup .sev-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
 
 /* Table */
 .table-wrap{overflow-x:auto;background:white;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-sm);margin-bottom:24px}
@@ -146,7 +169,17 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
 <main>
   <div class="hero">
     <h1>全量词典</h1>
-    <p class="hero-sub">七维筛选 · 快速定位 · 5067条词条全覆盖</p>
+    <p class="hero-sub">5417条词条 · 按业务场景分类 · 多维度筛选定位</p>
+  </div>
+
+  <!-- 业务场景 Tabs -->
+  <div class="scene-tabs" id="sceneTabs">
+    <span class="scene-tab active" data-scene="all">全部场景</span>
+    <span class="scene-tab" data-scene="rental">租赁服务</span>
+    <span class="scene-tab" data-scene="trading">房屋买卖</span>
+    <span class="scene-tab" data-scene="owner">业主服务</span>
+    <span class="scene-tab" data-scene="career">职业成长</span>
+    <span class="scene-tab" data-scene="cross">跨域通用</span>
   </div>
 
   <!-- Search -->
@@ -164,27 +197,37 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
   <!-- Filters -->
   <div class="filters-wrap" id="filtersWrap">
     <div class="filter-row">
-      <span class="filter-label">客户</span>
+      <span class="filter-label">服务对象</span>
       <div class="filter-chips" id="filterClientType"></div>
     </div>
     <div class="filter-row">
-      <span class="filter-label">阶段</span>
+      <span class="filter-label">服务阶段</span>
       <div class="filter-chips" id="filterStage"></div>
     </div>
     <div class="filter-row">
       <span class="filter-label">知识域</span>
-      <div class="filter-chips" id="filterDomain"></div>
+      <div class="filter-chips grouped" id="filterDomain"></div>
     </div>
     <div class="filter-row">
-      <span class="filter-label">层级</span>
+      <span class="filter-label">知识层级</span>
       <div class="filter-chips" id="filterLayer"></div>
     </div>
     <div class="filter-row">
-      <span class="filter-label">类型</span>
+      <span class="filter-label">词条类型</span>
       <div class="filter-chips" id="filterEntryType"></div>
     </div>
     <div class="filter-row">
-      <span class="filter-label">严重度</span>
+      <span class="filter-label">
+        风险等级
+        <span class="sev-help">
+          <span class="help-icon">ⓘ</span>
+          <span class="sev-help-popup">
+            <span><span class="sev-dot" style="background:#c46a3a"></span>红线：绝对不能碰，必出问题</span><br>
+            <span><span class="sev-dot" style="background:#e08a3c"></span>提醒：需要注意，容易出纠纷</span><br>
+            <span><span class="sev-dot" style="background:#5a7d5b"></span>建议：做好了更专业，客户更信任</span>
+          </span>
+        </span>
+      </span>
       <div class="filter-chips" id="filterSeverity"></div>
     </div>
     <div class="filter-row">
@@ -200,7 +243,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
         <tr>
           <th data-sort="name" style="width:22%">词条名称 <span class="sort-arrow">↕</span></th>
           <th data-sort="priority" style="width:8%">优先级 <span class="sort-arrow">↕</span></th>
-          <th data-sort="severity" style="width:8%">严重度 <span class="sort-arrow">↕</span></th>
+          <th data-sort="severity" style="width:9%">风险等级 <span class="sort-arrow">↕</span></th>
           <th style="width:8%">层级</th>
           <th style="width:10%">类型</th>
           <th style="width:44%">一句话回答</th>
@@ -243,13 +286,16 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
   var $$ = function(s) { return document.querySelectorAll(s); };
 
   var layerLabels = { dao: '道', fa: '法', shu: '术', qi: '器' };
-  var severityLabels = { hard: '硬边界', medium: '中边界', soft: '软边界' };
+  var severityLabels = { hard: '红线', medium: '提醒', soft: '建议' };
   var ctLabels = {
     agent: '经纪人', buyer: '买方', landlord: '房东',
-    owner: '业主', seller: '卖家', tenant: '租户'
+    owner: '业主', seller: '卖家', tenant: '租户',
+    renter: '租户'
   };
   var stLabels = {
-    all: '全部阶段', pre: '售前', mid: '售中', post: '售后'
+    all: '全部阶段', pre: '售前', mid: '售中', post: '售后',
+    holding: '持有中', own: '业主侧', pst: '售后',
+    selling: '出售中', sng: '场景中'
   };
   var entryTypeLabels = {
     CASE: '案例类', Knowledge: '知识类', LAW: '法律类',
@@ -258,6 +304,48 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
   };
   var priorityLabels = {
     P0: '最高优', P1: '高优', P2: '中优', P3: '一般'
+  };
+  // 知识域全量中文映射（含代码→中文）
+  var domainLabels = {
+    // 生命周期类
+    '签约前': '签约前', '签约中': '签约中', '签约后': '签约后',
+    '居住中': '居住中', '退租出售': '退租出售',
+    // 业务职能类
+    '业主': '业主服务', '职业成长': '职业成长',
+    '资产持有与运营': '资产持有与运营', '跨域通用': '跨域通用',
+    '资产持有与运营·业主侧': '资产持有·业主侧',
+    '业主侧': '业主侧', '业主出售': '业主出售',
+    // 子域类
+    '谈判斡旋': '谈判斡旋', '客户解码': '客户解码',
+    '法规政策': '法规政策', '学区教育': '学区教育',
+    '带看服务': '带看服务', '交房售后': '交房售后',
+    '购房': '购房', '房东出租': '房东出租', '租住': '租住',
+    // 英文代码 → 中文
+    'CAR': '资产域', 'OWN': '业主域', 'SNG': '场景域',
+    'trade': '交易域', 'CRO': '客关域',
+    // 岗位代码 → 中文（A类=交易线，B类=租赁/家装，C类=家政线，G类=适老，H类=...）
+    'A1': '房产经纪人', 'A2': '居住服务顾问', 'A3': 'A3岗', 'A4': 'A4岗',
+    'B1': '租赁管家', 'B2': '整装设计师', 'B3': '家装监理', 'B4': 'B4岗',
+    'C1': '家政服务员', 'C2': '收纳整理师', 'C3': 'C3岗',
+    'G1': 'G1岗', 'G2': 'G2岗', 'G3': 'G3岗', 'G4': 'G4岗',
+    'H1': 'H1岗', 'H2': 'H2岗', 'H3': 'H3岗', 'H4': 'H4岗'
+  };
+  // 知识域分组（按类别组织，便于用户理解）
+  var domainGroups = [
+    { key: 'lifecycle', label: '客户生命周期', items: ['签约前', '签约中', '签约后', '居住中', '退租出售'] },
+    { key: 'business',  label: '业务职能域', items: ['业主服务', '资产持有与运营', '资产持有·业主侧', '职业成长', '跨域通用'] },
+    { key: 'sub',       label: '子场景域', items: ['客户解码', '带看服务', '谈判斡旋', '交房售后', '法规政策', '学区教育', '购房', '房东出租', '租住', '业主出售', '业主侧'] },
+    { key: 'code',      label: '代码域', items: ['资产域', '业主域', '场景域', '交易域', '客关域'] },
+    { key: 'post',      label: '岗位域', items: ['房产经纪人', '居住服务顾问', '租赁管家', '整装设计师', '家装监理', '家政服务员', '收纳整理师'] },
+  ];
+  // 业务场景 → 筛选条件映射
+  var sceneFilters = {
+    all:     { clientType: null, domain: null,  label: '全部场景' },
+    rental:  { clientType: 'tenant', domain: null, label: '租赁服务' },
+    trading: { clientType: 'buyer',  domain: null, label: '房屋买卖' },
+    owner:   { clientType: 'owner',  domain: null, label: '业主服务' },
+    career:  { clientType: null, domain: '职业成长', label: '职业成长' },
+    cross:   { clientType: null, domain: '跨域通用', label: '跨域通用' },
   };
 
   function init() {
@@ -268,6 +356,10 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     });
     state.keyword = params.get('keyword') || '';
 
+    // 从URL参数或当前筛选推断业务场景
+    var scene = params.get('scene') || detectScene();
+    setScene(scene, false);
+
     if (state.keyword) {
       $('#keywordInput').value = state.keyword;
       $('#searchClear').classList.add('visible');
@@ -277,7 +369,46 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     setupEvents();
   }
 
+  // 根据当前筛选推断所在场景
+  function detectScene() {
+    var f = state.filters;
+    if (f.domain === '职业成长') return 'career';
+    if (f.domain === '跨域通用') return 'cross';
+    if (f.clientType === 'tenant' || f.clientType === 'landlord') return 'rental';
+    if (f.clientType === 'buyer' || f.clientType === 'seller') return 'trading';
+    if (f.clientType === 'owner') return 'owner';
+    return 'all';
+  }
+
+  function setScene(sceneKey, reload) {
+    var sf = sceneFilters[sceneKey];
+    if (!sf) return;
+    state.currentScene = sceneKey;
+
+    // 更新 Tab 样式
+    document.querySelectorAll('.scene-tab').forEach(function(tab) {
+      tab.classList.toggle('active', tab.dataset.scene === sceneKey);
+    });
+
+    // 应用场景筛选（覆盖对应的筛选维度）
+    if (sf.clientType !== undefined) state.filters.clientType = sf.clientType || '';
+    if (sf.domain !== undefined) state.filters.domain = sf.domain || '';
+
+    if (reload !== false) {
+      state.page = 1;
+      loadData();
+      renderFilters();
+    }
+  }
+
   function setupEvents() {
+    // 业务场景 Tab
+    document.querySelectorAll('.scene-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        setScene(this.dataset.scene, true);
+      });
+    });
+
     $('#searchBtn').addEventListener('click', function() {
       state.keyword = $('#keywordInput').value.trim();
       state.page = 1;
@@ -395,7 +526,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     var opts = state.filterOptions;
     renderFilterChips('filterClientType', 'clientType', opts.clientTypes || [], ctLabels);
     renderFilterChips('filterStage', 'stage', opts.stages || [], stLabels);
-    renderFilterChips('filterDomain', 'domain', opts.domains || [], null);
+    renderDomainChips('filterDomain', opts.domains || []);
     renderFilterChips('filterLayer', 'layer', opts.layers || [], layerLabels);
     renderFilterChips('filterEntryType', 'entryType', opts.entryTypes || [], entryTypeLabels);
     renderFilterChips('filterSeverity', 'severity', opts.severities || [], severityLabels);
@@ -410,6 +541,60 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
       var label = labelMap ? (labelMap[opt] || opt) : opt;
       html += '<span class="filter-chip' + (state.filters[filterKey] === opt ? ' active' : '') + '" data-filter="' + filterKey + '" data-value="' + escapeHtml(opt) + '">' + escapeHtml(label) + '</span>';
     });
+    container.innerHTML = html;
+  }
+
+  // 知识域分组渲染
+  function renderDomainChips(containerId, options) {
+    var container = $('#' + containerId);
+    if (!container) return;
+
+    // 先把原始 domain 值映射成中文 label，并建立 label→原始值的反向映射
+    var rawByLabel = {};
+    options.forEach(function(opt) {
+      var label = domainLabels[opt] || opt;
+      if (!rawByLabel[label]) rawByLabel[label] = [];
+      rawByLabel[label].push(opt);
+    });
+
+    // 全部按钮
+    var html = '<span class="filter-chip' + (!state.filters.domain ? ' active' : '') + '" data-filter="domain" data-value="">全部</span>';
+
+    // 按分组渲染
+    var allLabels = Object.keys(rawByLabel);
+    var rendered = new Set();
+
+    domainGroups.forEach(function(group) {
+      var groupLabels = group.items.filter(function(l) {
+        return allLabels.indexOf(l) >= 0;
+      });
+      if (groupLabels.length === 0) return;
+
+      groupLabels.forEach(function(l) { rendered.add(l); });
+
+      html += '<div class="filter-group-title">' + group.label + '</div>';
+      html += '<div class="filter-subgroup">';
+      groupLabels.forEach(function(label) {
+        var rawValues = rawByLabel[label];
+        var rawVal = rawValues[0]; // 取第一个原始值（多数情况只有一个）
+        html += '<span class="filter-chip' + (state.filters.domain === rawVal ? ' active' : '') + '" data-filter="domain" data-value="' + escapeHtml(rawVal) + '">' + escapeHtml(label) + '</span>';
+      });
+      html += '</div>';
+    });
+
+    // 未分类的（兜底）
+    var ungrouped = allLabels.filter(function(l) { return !rendered.has(l); });
+    if (ungrouped.length > 0) {
+      html += '<div class="filter-group-title">其他</div>';
+      html += '<div class="filter-subgroup">';
+      ungrouped.forEach(function(label) {
+        var rawValues = rawByLabel[label];
+        var rawVal = rawValues[0];
+        html += '<span class="filter-chip' + (state.filters.domain === rawVal ? ' active' : '') + '" data-filter="domain" data-value="' + escapeHtml(rawVal) + '">' + escapeHtml(label) + '</span>';
+      });
+      html += '</div>';
+    }
+
     container.innerHTML = html;
   }
 

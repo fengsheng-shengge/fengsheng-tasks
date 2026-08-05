@@ -212,7 +212,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
       <div class="filter-chips" id="entryTypeChips"></div>
     </div>
     <div class="filter-group" id="severityGroup">
-      <span class="filter-label">严重度</span>
+      <span class="filter-label">风险等级</span>
       <div class="filter-chips" id="severityChips"></div>
     </div>
     <div class="filter-group" id="layerGroup">
@@ -658,7 +658,8 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     const domains = state.filterOptions.domains || [];
     let html = '<div class="filter-chip' + (!state.filters.domain ? ' active' : '') + '" data-filter="domain" data-value="">全部</div>';
     for (const d of domains) {
-      html += '<div class="filter-chip' + (state.filters.domain === d ? ' active' : '') + '" data-filter="domain" data-value="' + escapeHtml(d) + '">' + escapeHtml(d) + '</div>';
+      const label = DOMAIN_LABELS[d] || d;
+      html += '<div class="filter-chip' + (state.filters.domain === d ? ' active' : '') + '" data-filter="domain" data-value="' + escapeHtml(d) + '">' + escapeHtml(label) + '</div>';
     }
     $domainChips.innerHTML = html;
   }
@@ -770,9 +771,30 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
   }
 
   function severityLabel(sev) {
-    const map = { hard: '硬性', medium: '中性', soft: '柔性' };
+    const map = { hard: '红线', medium: '提醒', soft: '建议' };
     return map[sev] || sev;
   }
+
+  // 知识域全量中文映射
+  const DOMAIN_LABELS = {
+    '签约前': '签约前', '签约中': '签约中', '签约后': '签约后',
+    '居住中': '居住中', '退租出售': '退租出售',
+    '业主': '业主服务', '职业成长': '职业成长',
+    '资产持有与运营': '资产持有与运营', '跨域通用': '跨域通用',
+    '资产持有与运营·业主侧': '资产持有·业主侧',
+    '业主侧': '业主侧', '业主出售': '业主出售',
+    '谈判斡旋': '谈判斡旋', '客户解码': '客户解码',
+    '法规政策': '法规政策', '学区教育': '学区教育',
+    '带看服务': '带看服务', '交房售后': '交房售后',
+    '购房': '购房', '房东出租': '房东出租', '租住': '租住',
+    'CAR': '资产域', 'OWN': '业主域', 'SNG': '场景域',
+    'trade': '交易域', 'CRO': '客关域',
+    'A1': '房产经纪人', 'A2': '居住服务顾问', 'A3': 'A3岗', 'A4': 'A4岗',
+    'B1': '租赁管家', 'B2': '整装设计师', 'B3': '家装监理', 'B4': 'B4岗',
+    'C1': '家政服务员', 'C2': '收纳整理师', 'C3': 'C3岗',
+    'G1': 'G1岗', 'G2': 'G2岗', 'G3': 'G3岗', 'G4': 'G4岗',
+    'H1': 'H1岗', 'H2': 'H2岗', 'H3': 'H3岗', 'H4': 'H4岗'
+  };
 
   function highlightLabel(h) {
     const map = {
