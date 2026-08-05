@@ -36,8 +36,9 @@ function postBuildInject() {
         // app.wxss 为单行压缩；keyframes 形如 @keyframes shadow-preload{0%{...}100%{...}}
         wxss = wxss.replace(/@-webkit-keyframes shadow-preload\{.*?\}\}/g, '')
         wxss = wxss.replace(/@keyframes shadow-preload\{.*?\}\}/g, '')
-        // 顺手清掉 page::after 上对 shadow-preload 的动画引用（keyframes 已删，引用变无害；此处一并去除更干净）
-        wxss = wxss.replace(/animation:shadow-preload[^;}]*/g, '')
+        // 清掉 page::after 上对 shadow-preload 的动画引用（keyframes 已删，引用变无害；此处一并去除更干净）
+        // 注意：必须连同 -webkit- 前缀一起匹配，否则 -webkit-animation:shadow-preload 会被拆成非法 '-webkit-;' 导致 IDE 编译 code 10
+        wxss = wxss.replace(/(?:-webkit-)?animation:shadow-preload[^;}]*/g, '')
         wxss = wxss.replace(/shadow-grey\.png/g, '')
         if (wxss.length !== before) {
           writeFileSync(wxssPath, wxss)
