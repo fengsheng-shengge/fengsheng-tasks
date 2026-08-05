@@ -219,6 +219,10 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
       <span class="filter-label">层级</span>
       <div class="filter-chips" id="layerChips"></div>
     </div>
+    <div class="filter-group" id="domainGroup">
+      <span class="filter-label">知识域</span>
+      <div class="filter-chips" id="domainChips"></div>
+    </div>
   </section>
 
   <!-- Results Header -->
@@ -270,8 +274,8 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     pageSize: 20,
     totalPages: 1,
     loading: false,
-    filters: { entryType: '', severity: '', layer: '' },
-    filterOptions: { entryTypes: [], severities: [], layers: [] },
+    filters: { entryType: '', severity: '', layer: '', domain: '' },
+    filterOptions: { entryTypes: [], severities: [], layers: [], domains: [] },
     suggestTimer: null,
     suggestAbort: null,
     searchAbort: null,
@@ -294,6 +298,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
   const $entryTypeChips = document.getElementById('entryTypeChips');
   const $severityChips = document.getElementById('severityChips');
   const $layerChips = document.getElementById('layerChips');
+  const $domainChips = document.getElementById('domainChips');
 
   // ========== Layer Options ==========
   const LAYER_LABELS = { dao: '道', fa: '法', shu: '术', qi: '器' };
@@ -315,6 +320,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
       doSearch();
     }
     renderLayerChips();
+    renderDomainChips();
     setupEvents();
   }
 
@@ -364,8 +370,8 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     state.total = 0;
     state.page = 1;
     state.totalPages = 1;
-    state.filters = { entryType: '', severity: '', layer: '' };
-    state.filterOptions = { entryTypes: [], severities: [], layers: [] };
+    state.filters = { entryType: '', severity: '', layer: '', domain: '' };
+    state.filterOptions = { entryTypes: [], severities: [], layers: [], domains: [] };
     $clear.classList.remove('visible');
     hideSuggestions();
     hideResults();
@@ -375,6 +381,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     updateURL();
     renderFilters();
     renderLayerChips();
+    renderDomainChips();
   }
 
   function onDocClick(e) {
@@ -558,6 +565,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     if (state.filters.entryType) url += '&entryType=' + encodeURIComponent(state.filters.entryType);
     if (state.filters.severity) url += '&severity=' + encodeURIComponent(state.filters.severity);
     if (state.filters.layer) url += '&layer=' + encodeURIComponent(state.filters.layer);
+    if (state.filters.domain) url += '&domain=' + encodeURIComponent(state.filters.domain);
 
     updateURL();
 
@@ -584,6 +592,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
 
       hideLoading();
       renderFilters();
+      renderDomainChips();
       renderResults();
       renderPagination();
     } catch (err) {
@@ -610,13 +619,14 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     $severityChips.innerHTML = sevHtml;
 
     // Click handlers
-    document.querySelectorAll('#entryTypeChips .filter-chip, #severityChips .filter-chip, #layerChips .filter-chip').forEach(chip => {
+    document.querySelectorAll('#entryTypeChips .filter-chip, #severityChips .filter-chip, #layerChips .filter-chip, #domainChips .filter-chip').forEach(chip => {
       chip.addEventListener('click', function() {
         const filter = this.dataset.filter;
         const value = this.dataset.value;
         state.filters[filter] = value;
         renderFilters();
         renderLayerChips();
+        renderDomainChips();
         doSearch(1);
       });
     });
@@ -632,6 +642,15 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
       html += '<div class="filter-chip' + (state.filters.layer === layer.value ? ' active' : '') + '" data-filter="layer" data-value="' + layer.value + '">' + layer.label + '</div>';
     }
     $layerChips.innerHTML = html;
+  }
+
+  function renderDomainChips() {
+    const domains = state.filterOptions.domains || [];
+    let html = '<div class="filter-chip' + (!state.filters.domain ? ' active' : '') + '" data-filter="domain" data-value="">全部</div>';
+    for (const d of domains) {
+      html += '<div class="filter-chip' + (state.filters.domain === d ? ' active' : '') + '" data-filter="domain" data-value="' + escapeHtml(d) + '">' + escapeHtml(d) + '</div>';
+    }
+    $domainChips.innerHTML = html;
   }
 
   function renderResults() {

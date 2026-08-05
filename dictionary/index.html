@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>风声 · 全量词典</title>
-<meta name="description" content="风声知识底座 · 全量词典 · 六维筛选 · 道法术器 · 5067条词条">
+<meta name="description" content="风声知识底座 · 全量词典 · 七维筛选 · 道法术器 · 5067条词条">
 <style>
 :root {
   --p: #3d5a3e; --p-light: #5a7d5b; --fire: #c46a3a; --fire-light: #e08a3c;
@@ -172,6 +172,10 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
       <div class="filter-chips" id="filterStage"></div>
     </div>
     <div class="filter-row">
+      <span class="filter-label">知识域</span>
+      <div class="filter-chips" id="filterDomain"></div>
+    </div>
+    <div class="filter-row">
       <span class="filter-label">层级</span>
       <div class="filter-chips" id="filterLayer"></div>
     </div>
@@ -225,7 +229,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
 
   var state = {
     filters: {
-      clientType: '', stage: '', layer: '', entryType: '', severity: '', priority: ''
+      clientType: '', stage: '', domain: '', layer: '', entryType: '', severity: '', priority: ''
     },
     filterOptions: {},
     keyword: '',
@@ -378,6 +382,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     var opts = state.filterOptions;
     renderFilterChips('filterClientType', 'clientType', opts.clientTypes || [], ctLabels);
     renderFilterChips('filterStage', 'stage', opts.stages || [], stLabels);
+    renderFilterChips('filterDomain', 'domain', opts.domains || [], null);
     renderFilterChips('filterLayer', 'layer', opts.layers || [], layerLabels);
     renderFilterChips('filterEntryType', 'entryType', opts.entryTypes || [], null);
     renderFilterChips('filterSeverity', 'severity', opts.severities || [], severityLabels);

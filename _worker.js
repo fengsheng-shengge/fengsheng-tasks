@@ -2024,6 +2024,7 @@ async function handleSearchV2(request, env, ctx) {
   const entryType = sanitizeQueryParam(url.searchParams.get('entryType') || '', 64) || null;
   const severity = sanitizeQueryParam(url.searchParams.get('severity') || '', 64) || null;
   const layer = sanitizeQueryParam(url.searchParams.get('layer') || '', 64) || null;
+  const domain = sanitizeQueryParam(url.searchParams.get('domain') || '', 64) || null;
   const page = Math.max(parseInt(url.searchParams.get('page') || '1', 10) || 1, 1);
   const pageSize = Math.min(Math.max(parseInt(url.searchParams.get('pageSize') || '20', 10) || 20, 1), 50);
 
@@ -2040,7 +2041,7 @@ async function handleSearchV2(request, env, ctx) {
     SEARCH_RATE_LIMIT.set(ip, { windowStart: now, count: 1 });
   }
 
-  const cacheKey = new Request(`https://cache.local/v5/api/search/v2?q=${encodeURIComponent(q.slice(0, 30))}&et=${entryType || ''}&sev=${severity || ''}&ly=${layer || ''}&p=${page}&ps=${pageSize}`);
+  const cacheKey = new Request(`https://cache.local/v6/api/search/v2?q=${encodeURIComponent(q.slice(0, 30))}&et=${entryType || ''}&sev=${severity || ''}&ly=${layer || ''}&dom=${domain || ''}&p=${page}&ps=${pageSize}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -2103,6 +2104,14 @@ async function handleSearchV2(request, env, ctx) {
       return Array.isArray(ly) ? ly.includes(layer) : ly === layer;
     });
   }
+  if (domain) {
+    filtered = filtered.filter(r => {
+      const entry = allEntries.find(e => e.id === r.id);
+      if (!entry) return false;
+      const d = entry.domain || entry.sceneDomain || '';
+      return d === domain;
+    });
+  }
 
   // Sort by score descending
   filtered.sort((a, b) => b.score - a.score);
@@ -2120,6 +2129,7 @@ async function handleSearchV2(request, env, ctx) {
       entryTypes: [...new Set(results.map(r => r.entryType).filter(Boolean))].sort(),
       severities: [...new Set(results.map(r => r.severity).filter(Boolean))].sort(),
       layers: layerOrder,
+      domains: [...new Set(allEntries.filter(e => results.some(r => r.id === e.id)).map(e => e.domain || e.sceneDomain || '').filter(Boolean))].sort(),
     }
   });
   const cachedResp = new Response(resp.body, resp);
@@ -2281,10 +2291,11 @@ async function handleEntryRelated(request, env, ctx) {
 async function handleDictionary(request, env, ctx) {
   const url = new URL(request.url);
 
-  // 6-dimension filters
+  // 7-dimension filters (新增 domain/场景域)
   const clientType = sanitizeQueryParam(url.searchParams.get('clientType') || '', 64) || null;
   const stage = sanitizeQueryParam(url.searchParams.get('stage') || '', 64) || null;
   const layer = sanitizeQueryParam(url.searchParams.get('layer') || '', 64) || null;
+  const domain = sanitizeQueryParam(url.searchParams.get('domain') || '', 64) || null;
   const entryType = sanitizeQueryParam(url.searchParams.get('entryType') || '', 64) || null;
   const severity = sanitizeQueryParam(url.searchParams.get('severity') || '', 64) || null;
   const priority = sanitizeQueryParam(url.searchParams.get('priority') || '', 64) || null;
@@ -2298,14 +2309,14 @@ async function handleDictionary(request, env, ctx) {
   const sort = ['priority', 'severity', 'name'].includes(url.searchParams.get('sort')) ? url.searchParams.get('sort') : 'priority';
   const order = url.searchParams.get('order') === 'desc' ? 'desc' : 'asc';
 
-  const cacheKey = new Request(`https://cache.local/v5/api/dictionary?ct=${clientType || ''}&st=${stage || ''}&ly=${layer || ''}&et=${entryType || ''}&sev=${severity || ''}&pri=${priority || ''}&kw=${keyword || ''}&p=${page}&ps=${pageSize}&sort=${sort}&order=${order}`);
+  const cacheKey = new Request(`https://cache.local/v6/api/dictionary?ct=${clientType || ''}&st=${stage || ''}&ly=${layer || ''}&dom=${domain || ''}&et=${entryType || ''}&sev=${severity || ''}&pri=${priority || ''}&kw=${keyword || ''}&p=${page}&ps=${pageSize}&sort=${sort}&order=${order}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
   const allEntries = await loadAllEntries(env);
 
-  // Apply 6-dimension filters
+  // Apply 7-dimension filters
   let filtered = allEntries.filter(e => {
     const tags = e.tags || {};
     if (clientType) {
@@ -2322,6 +2333,10 @@ async function handleDictionary(request, env, ctx) {
       const ly = tags.layer;
       if (Array.isArray(ly)) { if (!ly.includes(layer)) return false; }
       else if (ly !== layer) return false;
+    }
+    if (domain) {
+      const d = e.domain || e.sceneDomain || '';
+      if (d !== domain) return false;
     }
     if (entryType && e.entryType !== entryType) return false;
     if (severity && e.severity !== severity) return false;
@@ -2362,11 +2377,13 @@ async function handleDictionary(request, env, ctx) {
     if (tags.clientType) { const v = Array.isArray(tags.clientType) ? tags.clientType : [tags.clientType]; v.forEach(x => acc.clientTypes.add(x)); }
     if (tags.stage) { const v = Array.isArray(tags.stage) ? tags.stage : [tags.stage]; v.forEach(x => acc.stages.add(x)); }
     if (tags.layer) { const v = Array.isArray(tags.layer) ? tags.layer : [tags.layer]; v.forEach(x => acc.layers.add(x)); }
+    const d = e.domain || e.sceneDomain || '';
+    if (d) acc.domains.add(d);
     if (e.entryType) acc.entryTypes.add(e.entryType);
     if (e.severity) acc.severities.add(e.severity);
     if (e.priority) acc.priorities.add(e.priority);
     return acc;
-  }, { clientTypes: new Set(), stages: new Set(), layers: new Set(), entryTypes: new Set(), severities: new Set(), priorities: new Set() });
+  }, { clientTypes: new Set(), stages: new Set(), layers: new Set(), domains: new Set(), entryTypes: new Set(), severities: new Set(), priorities: new Set() });
 
   const slimEntries = pageEntries.map(e => ({
     id: e.id, name: e.name, ola: e.ola || '',
@@ -2384,11 +2401,12 @@ async function handleDictionary(request, env, ctx) {
       clientTypes: [...allTags.clientTypes].sort(),
       stages: [...allTags.stages].sort(),
       layers: [...allTags.layers].sort(),
+      domains: [...allTags.domains].sort(),
       entryTypes: [...allTags.entryTypes].sort(),
       severities: [...allTags.severities].sort(),
       priorities: [...allTags.priorities].sort(),
     },
-    appliedFilters: { clientType, stage, layer, entryType, severity, priority, keyword },
+    appliedFilters: { clientType, stage, layer, domain, entryType, severity, priority, keyword },
     sort: { field: sort, order },
     entries: slimEntries,
   };
@@ -2531,7 +2549,7 @@ async function handleDictionaryExport(request, env, ctx) {
 
   const allEntries = await loadAllEntries(env);
 
-  // Apply same 6-dimension filters as dictionary API
+  // Apply same 7-dimension filters as dictionary API
   let filtered = allEntries.filter(e => {
     const tags = e.tags || {};
     if (filters.clientType) {
@@ -2548,6 +2566,10 @@ async function handleDictionaryExport(request, env, ctx) {
       const ly = tags.layer;
       if (Array.isArray(ly)) { if (!ly.includes(filters.layer)) return false; }
       else if (ly !== filters.layer) return false;
+    }
+    if (filters.domain) {
+      const d = e.domain || e.sceneDomain || '';
+      if (d !== filters.domain) return false;
     }
     if (filters.entryType && e.entryType !== filters.entryType) return false;
     if (filters.severity && e.severity !== filters.severity) return false;

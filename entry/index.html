@@ -88,15 +88,38 @@ a{color:inherit;text-decoration:none}
 .error-state .btn{display:inline-block;padding:10px 24px;border-radius:8px;background:var(--p);color:white;font-weight:600;font-size:14px;transition:all .2s}
 .error-state .btn:hover{background:var(--p-light)}
 
-/* ===== One Line Answer ===== */
-.one-line-answer{padding:16px 20px;background:rgba(61,90,62,0.04);border-left:4px solid var(--p);border-radius:0 10px 10px 0;margin-bottom:24px;font-size:15px;font-weight:600;color:var(--ink);line-height:1.6}
-.one-line-answer .ola-label{font-size:11px;color:var(--p);font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+/* ===== FABE Card ===== */
+.fabe-card{background:white;border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow-sm)}
+.fabe-header{display:flex;align-items:center;gap:10px;padding:16px 24px;background:linear-gradient(135deg,rgba(61,90,62,0.05),rgba(196,106,58,0.03));border-bottom:1px solid var(--line)}
+.fabe-header .fabe-badge{font-size:11px;font-weight:800;padding:3px 10px;border-radius:6px;background:var(--p);color:white;letter-spacing:1px}
+.fabe-header .fabe-title{font-size:14px;font-weight:700;color:var(--ink)}
+.fabe-sections{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.fabe-section{padding:20px 24px;border-bottom:1px solid var(--line);position:relative}
+.fabe-section:nth-child(odd){border-right:1px solid var(--line)}
+.fabe-section:nth-child(3),.fabe-section:nth-child(4){border-bottom:none}
+.fabe-section .fs-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.fabe-section .fs-letter{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-size:13px;font-weight:800;color:white;flex-shrink:0}
+.fabe-section .fs-letter.f{background:var(--p)}
+.fabe-section .fs-letter.a{background:var(--fire)}
+.fabe-section .fs-letter.b{background:var(--pillar-vision)}
+.fabe-section .fs-letter.e{background:var(--wood)}
+.fabe-section .fs-label{font-size:13px;font-weight:700;color:var(--ink)}
+.fabe-section .fs-sub{font-size:11px;color:var(--ink-soft);margin-left:4px}
+.fabe-section .fs-body{font-size:14px;line-height:1.7;color:var(--ink)}
+.fabe-section .fs-empty{font-size:13px;color:var(--ink-soft);font-style:italic;padding:8px 0}
+.fabe-section .fs-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.fabe-section .fs-tag{padding:4px 12px;border-radius:100px;background:var(--cream);border:1px solid var(--line);font-size:12px;color:var(--ink)}
+.fabe-section .fs-ref{font-size:12px;color:var(--ink-soft);line-height:1.6;margin-top:6px;padding:8px 12px;background:rgba(61,90,62,0.03);border-radius:8px;border-left:3px solid var(--p)}
+.fabe-section .fs-ref .ref-item{margin-bottom:4px}
+.fabe-section .fs-ref .ref-item:last-child{margin-bottom:0}
 
-/* ===== Definition Card ===== */
-.def-card{background:white;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:20px;box-shadow:var(--shadow-sm)}
-.def-card .section-label{font-size:11px;font-weight:700;color:var(--p);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.def-card .section-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--p)}
-.def-card .def-text{font-size:15px;line-height:1.75;color:var(--ink)}
+@media(max-width:768px){
+  .fabe-sections{grid-template-columns:1fr}
+  .fabe-section:nth-child(odd){border-right:none}
+  .fabe-section:nth-child(3){border-bottom:1px solid var(--line)}
+}
+
+/* ===== One Line Answer (legacy, kept for fallback) ===== */
 
 /* ===== Info Grid ===== */
 .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
@@ -364,41 +387,127 @@ body.has-bottom-bar{padding-bottom:70px}
     }
 
     // Build badges
+    const severityLabels = { hard: '硬边界', medium: '中边界', soft: '软边界' };
     let badgesHtml = '';
     if (entry.entryType) badgesHtml += `<span class="badge badge-type">${escapeHtml(entry.entryType)}</span>`;
-    if (entry.severity) badgesHtml += `<span class="badge badge-severity">${escapeHtml(entry.severity)}</span>`;
+    if (entry.severity) badgesHtml += `<span class="badge badge-severity">${escapeHtml(severityLabels[entry.severity] || entry.severity)}</span>`;
     if (entry.priority) badgesHtml += `<span class="badge badge-priority ${escapeHtml(entry.priority)}">${escapeHtml(entry.priority)}</span>`;
     if (layer) badgesHtml += `<span class="badge badge-layer ${escapeHtml(layer)}">${escapeHtml(layerNames[layer] || layer)}</span>`;
 
-    // Build core points
-    let corePointsHtml = '';
+    // === FABE Card ===
+    // F - Feature: oneLineAnswer + definition
+    let fHtml = '';
+    if (entry.oneLineAnswer) {
+      fHtml += `<div class="fs-body" style="font-weight:600;margin-bottom:8px">${escapeHtml(entry.oneLineAnswer)}</div>`;
+    }
+    if (entry.def) {
+      fHtml += `<div class="fs-body" style="color:var(--ink-soft);font-size:13px">${escapeHtml(entry.def)}</div>`;
+    }
+    if (!entry.oneLineAnswer && !entry.def) {
+      fHtml = '<div class="fs-empty">暂无特征描述</div>';
+    }
+
+    // A - Advantage: corePoint + cp
+    let aHtml = '';
     if (entry.corePoint && Array.isArray(entry.corePoint) && entry.corePoint.length > 0) {
-      corePointsHtml = '<div class="def-card"><div class="section-label">核心要点</div><div class="core-points">';
+      aHtml += '<div class="fs-tags">';
       entry.corePoint.forEach(p => {
-        corePointsHtml += `<span class="core-point">${escapeHtml(p)}</span>`;
+        aHtml += `<span class="fs-tag">${escapeHtml(p)}</span>`;
       });
-      corePointsHtml += '</div></div>';
+      aHtml += '</div>';
+    }
+    if (entry.cp) {
+      aHtml += `<div class="fs-body" style="margin-top:8px">${escapeHtml(entry.cp)}</div>`;
+    }
+    if (!aHtml) {
+      aHtml = '<div class="fs-empty">暂无竞争优势信息</div>';
     }
 
-    // Build Q&A
-    let qaHtml = '';
-    if (entry.consumerQ || entry.ownerQ) {
-      qaHtml = '<div class="qa-grid">';
-      if (entry.consumerQ) {
-        qaHtml += `<div class="qa-card consumer"><div class="qa-label">消费者视角</div><div class="qa-text">${escapeHtml(entry.consumerQ)}</div></div>`;
-      }
-      if (entry.ownerQ) {
-        qaHtml += `<div class="qa-card owner"><div class="qa-label">服务者视角</div><div class="qa-text">${escapeHtml(entry.ownerQ)}</div></div>`;
-      }
-      qaHtml += '</div>';
+    // B - Benefit: consumerBenefit + consumerQ
+    let bHtml = '';
+    if (entry.consumerBenefit) {
+      bHtml += `<div class="fs-body">${escapeHtml(entry.consumerBenefit)}</div>`;
+    }
+    if (entry.consumerQ) {
+      bHtml += `<div class="fs-body" style="margin-top:8px;font-size:13px;color:var(--ink-soft);font-style:italic">"${escapeHtml(entry.consumerQ)}"</div>`;
+    }
+    if (!bHtml) {
+      bHtml = '<div class="fs-empty">暂无消费者利益信息</div>';
     }
 
-    // Build legal ref
-    let legalHtml = '';
+    // E - Evidence: legalRef + dataRef + caseRef
+    let eHtml = '';
     if (entry.legalRef) {
       const refs = Array.isArray(entry.legalRef) ? entry.legalRef : [entry.legalRef];
-      legalHtml = `<div class="legal-ref"><div class="lr-label">法律依据</div>${refs.map(r => escapeHtml(r)).join('<br>')}</div>`;
+      eHtml += '<div class="fs-ref">';
+      refs.forEach(r => {
+        eHtml += `<div class="ref-item">${escapeHtml(r)}</div>`;
+      });
+      eHtml += '</div>';
     }
+    if (entry.dataRef) {
+      eHtml += `<div class="fs-body" style="margin-top:8px;font-size:13px">数据引证：${escapeHtml(entry.dataRef)}</div>`;
+    }
+    if (entry.caseRef) {
+      eHtml += `<div class="fs-body" style="margin-top:4px;font-size:13px">案例引证：${escapeHtml(entry.caseRef)}</div>`;
+    }
+    if (!eHtml) {
+      eHtml = '<div class="fs-empty">暂无引证信息</div>';
+    }
+
+    const fabeCardHtml = `
+      <div class="fabe-card">
+        <div class="fabe-header">
+          <span class="fabe-badge">FABE</span>
+          <span class="fabe-title">知识卡片</span>
+        </div>
+        <div class="fabe-sections">
+          <div class="fabe-section">
+            <div class="fs-head">
+              <span class="fs-letter f">F</span>
+              <span class="fs-label">特征</span>
+              <span class="fs-sub">是什么</span>
+            </div>
+            ${fHtml}
+          </div>
+          <div class="fabe-section">
+            <div class="fs-head">
+              <span class="fs-letter a">A</span>
+              <span class="fs-label">优势</span>
+              <span class="fs-sub">为什么更好</span>
+            </div>
+            ${aHtml}
+          </div>
+          <div class="fabe-section">
+            <div class="fs-head">
+              <span class="fs-letter b">B</span>
+              <span class="fs-label">利益</span>
+              <span class="fs-sub">消费者获得什么</span>
+            </div>
+            ${bHtml}
+          </div>
+          <div class="fabe-section">
+            <div class="fs-head">
+              <span class="fs-letter e">E</span>
+              <span class="fs-label">证据</span>
+              <span class="fs-sub">法律/数据/案例</span>
+            </div>
+            ${eHtml}
+          </div>
+        </div>
+      </div>`;
+
+    // Build info grid
+    let infoGridHtml = '<div class="info-grid">';
+    if (entry.domain || entry.sceneDomain) {
+      const domainVal = entry.domain || entry.sceneDomain || '';
+      infoGridHtml += `<div class="info-item"><div class="ii-label">知识域</div><div class="ii-value">${escapeHtml(domainVal)}</div></div>`;
+    }
+    if (entry.subScene) infoGridHtml += `<div class="info-item"><div class="ii-label">子场景</div><div class="ii-value">${escapeHtml(entry.subScene)}</div></div>`;
+    if (entry.ownerQ) infoGridHtml += `<div class="info-item"><div class="ii-label">服务者视角</div><div class="ii-value">${escapeHtml(entry.ownerQ)}</div></div>`;
+    if (entry.source) infoGridHtml += `<div class="info-item"><div class="ii-label">来源</div><div class="ii-value">${escapeHtml(entry.source)}</div></div>`;
+    if (entry.lastVerified) infoGridHtml += `<div class="info-item"><div class="ii-label">最后验证</div><div class="ii-value">${escapeHtml(entry.lastVerified)}</div></div>`;
+    infoGridHtml += '</div>';
 
     // Build caveat
     let caveatHtml = '';
@@ -414,52 +523,6 @@ body.has-bottom-bar{padding-bottom:70px}
         aliasHtml += `<span class="alias-tag">${escapeHtml(a)}</span>`;
       });
       aliasHtml += '</div></div>';
-    }
-
-    // Build subScene
-    let subSceneHtml = '';
-    if (entry.subScene) {
-      subSceneHtml = `<div class="subscene-info">${escapeHtml(entry.subScene)}</div>`;
-    }
-
-    // Build info grid
-    let infoGridHtml = '<div class="info-grid">';
-    if (entry.domain) infoGridHtml += `<div class="info-item"><div class="ii-label">业务域</div><div class="ii-value">${escapeHtml(entry.domain)}</div></div>`;
-    if (entry.sceneDomain) infoGridHtml += `<div class="info-item"><div class="ii-label">场景域</div><div class="ii-value">${escapeHtml(entry.sceneDomain)}</div></div>`;
-    if (entry.source) infoGridHtml += `<div class="info-item"><div class="ii-label">来源</div><div class="ii-value">${escapeHtml(entry.source)}</div></div>`;
-    if (entry.lastVerified) infoGridHtml += `<div class="info-item"><div class="ii-label">最后验证</div><div class="ii-value">${escapeHtml(entry.lastVerified)}</div></div>`;
-    infoGridHtml += '</div>';
-
-    // Build 3-second summary
-    const severityLabels = { hard: '硬边界', medium: '中边界', soft: '软边界' };
-    const severityClass = entry.severity || 'soft';
-    const priorityClass = entry.priority || 'P3';
-    const priorityLabels = { P0: '最高优', P1: '高优', P2: '中优', P3: '一般' };
-
-    let quickSummaryHtml = '';
-    if (entry.oneLineAnswer) {
-      quickSummaryHtml = `
-        <div class="quick-summary">
-          <div class="qs-left">
-            <div class="qs-answer">${escapeHtml(entry.oneLineAnswer)}</div>
-            <div class="qs-meta">
-              ${entry.entryType ? `<span class="badge badge-type">${escapeHtml(entry.entryType)}</span>` : ''}
-              ${entry.severity ? `<span class="badge badge-severity">${escapeHtml(severityLabels[entry.severity] || entry.severity)}</span>` : ''}
-              ${entry.priority ? `<span class="badge badge-priority ${escapeHtml(entry.priority)}">${escapeHtml(entry.priority)}</span>` : ''}
-              ${layer ? `<span class="badge badge-layer ${escapeHtml(layer)}">${escapeHtml(layerNames[layer] || layer)}</span>` : ''}
-            </div>
-          </div>
-          <div class="qs-right">
-            <div class="qs-decision">
-              <div class="qs-decision-label">严重度</div>
-              <div class="qs-decision-value ${escapeHtml(severityClass)}">${escapeHtml(severityLabels[entry.severity] || '一般')}</div>
-            </div>
-            <div class="qs-decision">
-              <div class="qs-decision-label">优先级</div>
-              <div class="qs-decision-value ${escapeHtml(priorityClass.toLowerCase())}">${escapeHtml(priorityLabels[entry.priority] || '一般')}</div>
-            </div>
-          </div>
-        </div>`;
     }
 
     // Render
@@ -478,17 +541,11 @@ body.has-bottom-bar{padding-bottom:70px}
         <div class="entry-id">${escapeHtml(entry.id || '')}</div>
       </div>
 
-      ${quickSummaryHtml}
-
-      ${subSceneHtml}
       ${layerPathHtml}
 
-      ${entry.def ? `<div class="def-card"><div class="section-label">定义</div><div class="def-text">${escapeHtml(entry.def)}</div></div>` : ''}
+      ${fabeCardHtml}
 
-      ${corePointsHtml}
       ${infoGridHtml}
-      ${qaHtml}
-      ${legalHtml}
       ${caveatHtml}
       ${aliasHtml}
     `;
