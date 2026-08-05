@@ -292,12 +292,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   .scene-nav-divider{display:none}
 }
 
-/* ===== 每日速递模块 ===== */
+/* ===== 今日知识模块 ===== */
 .daily-section{padding:40px 8% 20px}
-.daily-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;border-top:3px solid var(--fire)}
-.daily-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.daily-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;border-top:3px solid var(--p)}
+.daily-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
 .daily-icon{font-size:24px}
 .daily-title{font-size:17px;font-weight:800;color:var(--dk);letter-spacing:.5px}
+.daily-subtitle{font-size:12px;color:var(--ts);margin-bottom:16px;margin-left:36px}
 .daily-date{font-size:11px;color:var(--td);margin-left:auto}
 .daily-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
 .daily-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;transition:all .2s;cursor:pointer;text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent}
@@ -321,14 +322,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .daily-config-label{font-size:11px;font-weight:700;color:var(--ts)}
 .daily-config-select{font-size:12px;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--tx);outline:none;cursor:pointer}
 .daily-config-select:focus{border-color:var(--p)}
-.daily-more{text-align:right;margin-top:12px}
+.daily-more{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px dashed var(--border)}
 .daily-more a{font-size:12px;font-weight:600;color:var(--p);text-decoration:none}
 .daily-more a:hover{text-decoration:underline}
+.daily-more .daily-source{font-size:11px;color:var(--td)}
+.daily-more .daily-source strong{color:var(--p)}
 
 @media(max-width:767px){
   .daily-grid{grid-template-columns:1fr}
   .daily-item{padding:10px 12px}
   .daily-item .di-name{font-size:13px}
+  .daily-subtitle{margin-left:0}
 }
 
 </style>
@@ -539,14 +543,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   </div>
 </div>
 
-<!-- 每日速递 -->
+<!-- 今日知识 -->
 <div class="daily-section pub-section" id="dailySection">
   <div class="daily-card">
     <div class="daily-header">
-      <div class="daily-icon">📬</div>
-      <div class="daily-title">每日速递</div>
+      <div class="daily-icon">📖</div>
+      <div class="daily-title">今日知识</div>
       <div class="daily-date" id="dailyDate"></div>
     </div>
+    <div class="daily-subtitle">从风声知识底座 5067 条词条中，每天精选 6 条核心知识</div>
     <div class="daily-config">
       <span class="daily-config-label">场景：</span>
       <select class="daily-config-select" id="dailyClientType">
@@ -564,7 +569,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     <div class="daily-grid" id="dailyGrid">
       <div class="daily-loading">加载中...</div>
     </div>
-    <div class="daily-more"><a href="/dictionary/">查看全量词典 →</a></div>
+    <div class="daily-more">
+      <span class="daily-source">📚 内容来源：<strong>风声知识底座</strong></span>
+      <a href="/dictionary/">查看全量词典 →</a>
+    </div>
   </div>
 </div>
 
