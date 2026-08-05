@@ -28,22 +28,25 @@ function postBuildInject() {
       } catch (e) {
         console.warn('⚠️ 注入 libVersion 失败:', e.message)
       }
-      // 3) app.wxss → 删除 uni-app 默认注入的 shadow-preload CDN 预加载段
-      //    避免真机/模拟器请求 cdn1.dcloud.net.cn 的 shadow-grey.png 超时红字
+      // 3) 彻底删除 app.wxss 中 uni-app 注入的 shadow-preload CDN 段（真机预加载 dcloud shadow-grey.png 会超时）
       const wxssPath = join(process.cwd(), 'dist/build/mp-weixin/app.wxss')
       try {
         let wxss = readFileSync(wxssPath, 'utf-8')
-        const start = wxss.indexOf("page::after{position:fixed;content:'';left:-1000px;top:-1000px;")
-        if (start !== -1) {
-          const end = wxss.indexOf('page{', start + 1)
-          if (end !== -1) {
-            wxss = wxss.slice(0, start) + wxss.slice(end)
-            writeFileSync(wxssPath, wxss)
-            console.log('✅ app.wxss shadow-preload CDN 段已清理')
-          }
+        const before = wxss.length
+        // app.wxss 为单行压缩；keyframes 形如 @keyframes shadow-preload{0%{...}100%{...}}
+        wxss = wxss.replace(/@-webkit-keyframes shadow-preload\{.*?\}\}/g, '')
+        wxss = wxss.replace(/@keyframes shadow-preload\{.*?\}\}/g, '')
+        // 顺手清掉 page::after 上对 shadow-preload 的动画引用（keyframes 已删，引用变无害；此处一并去除更干净）
+        wxss = wxss.replace(/animation:shadow-preload[^;}]*/g, '')
+        wxss = wxss.replace(/shadow-grey\.png/g, '')
+        if (wxss.length !== before) {
+          writeFileSync(wxssPath, wxss)
+          console.log('✅ 已清除 app.wxss 中 shadow-preload CDN 段（' + (before - wxss.length) + ' 字节）')
+        } else {
+          console.log('ℹ️ app.wxss 未发现 shadow-preload CDN 段（已干净）')
         }
       } catch (e) {
-        console.warn('⚠️ 清理 app.wxss shadow-preload 失败:', e.message)
+        console.warn('⚠️ 清理 shadow-preload 失败:', e.message)
       }
     }
   }

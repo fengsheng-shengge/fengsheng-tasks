@@ -25,7 +25,7 @@
     </view>
 
     <!-- 搜索 -->
-    <view class="search-bar" @tap="toast('搜索功能 · 后续版本开放')">
+    <view class="search-bar" @tap="toast('搜索 · 后续版本开放')">
       <text class="icon">🔍</text><text class="text">搜索知识 / 工具 / 客户</text><text class="btn">搜索</text>
     </view>
 
@@ -75,7 +75,7 @@
 
     <!-- 6 方法论（b·P1-3：滑动引导，降低首屏认知负荷） -->
     <view class="section-header"><text class="section-title">6 大方法论</text><text class="section-more">← 左右滑动看全部 6 个</text></view>
-    <scroll-view class="steps-row" scroll-x="true" enable-flex @scroll="onMethodScroll" style="height:auto">
+    <scroll-view class="steps-row" scroll-x="true" enable-flex @scroll="onMethodScroll">
       <view class="step-card" v-for="(m, i) in methods" :key="i">
         <text class="step-num">方法 {{ i + 1 }}</text>
         <view class="step-title">{{ m.name }}</view>
