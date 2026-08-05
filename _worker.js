@@ -226,6 +226,105 @@ function isSuspiciousQueryString(queryString) {
   return false;
 }
 
+// ============================================================
+//  Layer 7.5: Log4Shell / fastjson JNDI 注入专项防御 (P1 紧急)
+//  部署：2026-08-05 · 5 payload 持续污染 events 表
+//  覆盖：
+//    1. ${jndi:ldap://...}            — Log4Shell LDAP
+//    2. ${jndi:ldap://hostname-${hostName}.username-${sys:user.name}...}  — 变量窃取
+//    3. ${jndi:rmi://...}             — Log4Shell RMI
+//    4. {"@type": "jar:http:..cmd_inject.6c6..."}  — fastjson jar 加载
+//    5. {"@type": "jar:http:..cmd_inject.b29f7..."} — fastjson jar 加载
+//  通用模式：JNDI Lookup 全部协议 + 变量绕过 + fastjson 远程类
+// ============================================================
+const LOG4SHELL_ATTACK_PATTERNS = [
+  // === JNDI Lookup 原型（CVE-2021-44228 / CVE-2021-45046 / CVE-2021-45105）===
+  /\$\{\s*jndi\s*:/i,                                 // ${jndi:ldap://...} / ${jndi:rmi://...}
+  /\$\{\s*jndi\s*:\s*rmi/i,                           // ${jndi:rmi://...}
+  /\$\{\s*jndi\s*:\s*dns/i,                           // ${jndi:dns://...}
+  /\$\{\s*jndi\s*:\s*nis/i,                           // ${jndi:nis://...}
+  /\$\{\s*jndi\s*:\s*corba/i,                         // ${jndi:corba://...}
+  /\$\{\s*jndi\s*:\s*iiop/i,                          // ${jndi:iiop://...}
+  // === Log4j 2.15+ 变量绕过（CVE-2021-45046 bypass）===
+  /\$\{\s*lower\s*:/i,                                 // ${lower:j} → ${j}
+  /\$\{\s*upper\s*:/i,                                 // ${upper:j} → ${J}
+  /\$\{\s*env\s*:/i,                                   // ${env:...}
+  /\$\{\s*sys\s*:/i,                                   // ${sys:user.name} 主机信息窃取
+  /\$\{\s*hostName\s*\}/i,                            // ${hostName}
+  /\$\{\s*::-/i,                                        // ${::-j} 嵌套绕过
+  /\$\{\s*\$\{/i,                                     // 嵌套变量 ${${...}
+  /\$\{[^}]*\$\{[^}]*\}/i,                            // ${a${b}c} 多层嵌套
+  /\$\{\s*ctx\s*:/i,                                   // ${ctx:...}
+  /\$\{\s*date\s*:/i,                                  // ${date:...}
+  /\$\{\s*marker\s*:/i,                                // ${marker:...}
+  /\$\{\s*main\s*:/i,                                  // ${main:...}
+  /\$\{\s*web\s*:/i,                                   // ${web:...}
+  /\$\{\s*bundle\s*:/i,                                // ${bundle:...}
+  // === 攻击者 URL / 标识符特征 ===
+  /\bjdk\s*\d{10,}\b/i,                                // jdk1826259236124faf...
+  /\bbypass[a-z0-9]{20,}\b/i,                            // bypassd750b93acf0f817557d730156
+  /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s*:\s*(1389|1099|1388|1090|4444|5555)\b/i,  // 攻击者IP:port
+  /ldaps?:\/\/[^\s<>"'`]+\.log4j/i,                   // log4j-themed
+  /rmi:\/\/[^\s<>"'`]+\.(com|net|org|io|cn)/i,        // rmi://attacker.com
+  // === fastjson @type 反序列化（CVE-2017-18349）===
+  /"@type"\s*:\s*"(jar|http|https|file|netdoc|bsh|groovy|jvmti)\s*:/i,
+  /\{[^}]{0,500}"@type"\s*:\s*"/i,                      // {"@type":...}
+  /\bcmd_inject\b/i,                                     // 攻击者标识符
+  /\b\d{10,}\b[^}]{0,50}(jar:http|cmd_inject)/i,        // 长数字标识 + 攻击特征
+  /"@type"\s*:\s*"\s*\$\s*\{/i,                       // {"@type":"${...}"} 嵌套绕过
+  /"@type"\s*:\s*"[a-z]+\.[a-z]+\.[A-Z]/i,            // com.sun.org.apache.xalan
+];
+
+function isLog4ShellAttack(input) {
+  if (!input || typeof input !== 'string') return null;
+  // 截断 4096 字符 (payload 通常较短)
+  const text = input.length > 4096 ? input.slice(0, 4096) : input;
+  for (const pattern of LOG4SHELL_ATTACK_PATTERNS) {
+    if (pattern.test(text)) {
+      return { pattern: pattern.toString(), reason: 'log4shell-jndi-attack' };
+    }
+  }
+  return null;
+}
+
+async function checkLog4ShellWAF(request) {
+  let url;
+  try { url = new URL(request.url); } catch (e) { return null; }
+  // 1. URL path
+  let attack = isLog4ShellAttack(url.pathname);
+  if (attack) return { source: 'path', ...attack };
+  // 2. URL query
+  attack = isLog4ShellAttack(url.search);
+  if (attack) return { source: 'query', ...attack };
+  // 3. Headers (跳过正常 headers)
+  const skipHeaders = new Set([
+    'accept','accept-encoding','accept-language','cf-connecting-ip','cf-ray',
+    'cf-ipcountry','cf-worker','cf-cache-status','cf-visitor','host','connection',
+    'content-length','expect-ct','pragma','cache-control','sec-fetch-mode',
+    'sec-fetch-site','sec-fetch-dest','sec-ch-ua','sec-ch-ua-mobile','sec-ch-ua-platform',
+    'upgrade-insecure-requests','te','dnt','priority'
+  ]);
+  for (const [key, value] of request.headers) {
+    if (skipHeaders.has(key.toLowerCase())) continue;
+    if (!value) continue;
+    attack = isLog4ShellAttack(key + ': ' + value);
+    if (attack) return { source: 'header.' + key, ...attack };
+  }
+  // 4. Body (POST/PUT/PATCH) — 限制大小，先 clone
+  if (request.method === 'POST' || request.method === 'PUT' || request.method === 'PATCH') {
+    const contentLength = parseInt(request.headers.get('Content-Length') || '0');
+    if (contentLength > 0 && contentLength < 65536) {
+      try {
+        const cloned = request.clone();
+        const bodyText = await cloned.text();
+        attack = isLog4ShellAttack(bodyText);
+        if (attack) return { source: 'body', ...attack };
+      } catch (e) { /* body 读取失败不阻断 */ }
+    }
+  }
+  return null;
+}
+
 function jsonResponse(data, status = 200, headers = {}) {
   const responseHeaders = {
     'Content-Type': 'application/json;charset=UTF-8',
@@ -964,6 +1063,73 @@ async function handleStats(request, env) {
   return jsonResponse({
     uv: null, total_users: null, pv: null, chats: null,
     last_event_ts: null, updated: now,
+    note: 'no database configured — events are not persisted',
+  });
+}
+
+// /api/chats — dedicated chat count endpoint (fix for chats=0 root cause)
+// Returns real chat count from D1 events table (event_type IN ('chat', 'mentor_chat'))
+// Previously this route was missing → catch-all returned 404 → callers showed 0.
+async function handleChats(request, env, ctx) {
+  const url = new URL(request.url);
+  const sinceParam = url.searchParams.get('since');
+  const now = new Date().toISOString();
+  const today = now.split('T')[0];
+  if (env.DB) {
+    try {
+      let totalChats, recentChats;
+      if (sinceParam) {
+        const sinceDays = parseInt(sinceParam) || 0;
+        const sinceTs = sinceDays > 0
+          ? Math.floor((Date.now() - sinceDays * 86400_000) / 1000)
+          : 0;
+        totalChats = await env.DB.prepare(
+          "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat') AND ts >= ?"
+        ).bind(sinceTs).first();
+        recentChats = await env.DB.prepare(
+          "SELECT uid, event_type, product, ts FROM events WHERE event_type IN ('chat', 'mentor_chat') AND ts >= ? ORDER BY ts DESC LIMIT 10"
+        ).bind(sinceTs).all();
+      } else {
+        totalChats = await env.DB.prepare(
+          "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat')"
+        ).first();
+        recentChats = await env.DB.prepare(
+          "SELECT uid, event_type, product, ts FROM events WHERE event_type IN ('chat', 'mentor_chat') ORDER BY ts DESC LIMIT 10"
+        ).all();
+      }
+      const todayStart = Math.floor(new Date(today + 'T00:00:00Z').getTime() / 1000);
+      const todayChats = await env.DB.prepare(
+        "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat') AND ts >= ?"
+      ).bind(todayStart).first();
+      const uniqueChatUsers = await env.DB.prepare(
+        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE event_type IN ('chat', 'mentor_chat')"
+      ).first();
+      const lastChatTs = await env.DB.prepare(
+        "SELECT ts FROM events WHERE event_type IN ('chat', 'mentor_chat') ORDER BY ts DESC LIMIT 1"
+      ).first();
+      return jsonResponse({
+        chats: totalChats?.c || 0,
+        chats_today: todayChats?.c || 0,
+        unique_chat_users: uniqueChatUsers?.c || 0,
+        last_chat_ts: lastChatTs?.ts || null,
+        recent: recentChats?.results || [],
+        updated: now,
+        source: 'db',
+        since_days: sinceParam ? parseInt(sinceParam) : null,
+      });
+    } catch (e) {
+      console.error('chats: DB query failed', e.message);
+      return jsonResponse({
+        chats: 0, chats_today: 0, unique_chat_users: 0,
+        last_chat_ts: null, recent: [], updated: now,
+        source: 'db_error', error: e.message,
+      }, 500);
+    }
+  }
+  return jsonResponse({
+    chats: 0, chats_today: 0, unique_chat_users: 0,
+    last_chat_ts: null, recent: [], updated: now,
+    source: 'no_database',
     note: 'no database configured — events are not persisted',
   });
 }
@@ -2941,6 +3107,23 @@ export default {
       return new Response('Forbidden', { status: 403, headers: { 'Content-Type': 'text/plain', 'X-Blocked': 'suspicious-query' } });
     }
 
+    // Layer 7.5: Log4Shell / JNDI / fastjson 专项防御 (P1 紧急·2026-08-05)
+    // 检查范围: URL path/query + 所有 header + POST/PUT/PATCH body
+    // 命中后 ban IP + 返回 403 + 控制台告警
+    const log4shellAttack = await checkLog4ShellWAF(request);
+    if (log4shellAttack) {
+      banIP(clientIP);
+      console.error(`[WAF] Log4Shell/JNDI attack blocked: ip=${clientIP} source=${log4shellAttack.source} pattern=${log4shellAttack.pattern} ua=${ua.slice(0,80)} path=${path}`);
+      return new Response('Forbidden', {
+        status: 403,
+        headers: {
+          'Content-Type': 'text/plain',
+          'X-Blocked': 'log4shell',
+          'X-Attack-Source': log4shellAttack.source,
+        },
+      });
+    }
+
     // API rate limiting
     if (isAPIPath || isIpDesignApi) {
       if (!checkRateLimit(request)) {
@@ -3094,6 +3277,9 @@ export default {
     if (path === '/api/search/v2') return handleSearchV2(request, env, ctx);
     // Heartbeat: enhanced health check for monitoring
     if (path === '/api/heartbeat') return handleHeartbeat(request, env, ctx);
+
+    // /api/chats — dedicated chat count endpoint (fix chats=0 root cause)
+    if (path === '/api/chats') return handleChats(request, env, ctx);
 
     // /api/mini/entry/:id — path-based routing
     if (path.startsWith('/api/mini/entry/')) return handleMiniEntryDetail(request, env, ctx);
