@@ -25,7 +25,7 @@
     </view>
 
     <!-- 搜索 -->
-    <view class="search-bar" @tap="toast('搜索功能（模拟）')">
+    <view class="search-bar" @tap="toast('搜索功能 · 后续版本开放')">
       <text class="icon">🔍</text><text class="text">搜索知识 / 工具 / 客户</text><text class="btn">搜索</text>
     </view>
 

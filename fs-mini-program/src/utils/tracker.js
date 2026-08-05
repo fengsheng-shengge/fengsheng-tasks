@@ -19,6 +19,13 @@ function getUid() {
 }
 
 function send(type, page, data) {
+  // H5 本地调试（127.0.0.1）跳过向 fengsheng.tech 的跨域请求，避免 console 刷 CORS 报错。
+  // mp-weixin 真机无 window，仍按 MP 后台合法域名决定能否上报，失败亦静默，不影响主流程。
+  try {
+    if (typeof window !== 'undefined' && window.location && window.location.hostname === '127.0.0.1') {
+      return
+    }
+  } catch (e) { /* 忽略，继续上报 */ }
   try {
     uni.request({
       url: BASE + '/api/events',

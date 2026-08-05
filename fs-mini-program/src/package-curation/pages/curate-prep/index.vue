@@ -68,23 +68,37 @@
         </view>
       </view>
 
-      <!-- 说 -->
+      <!-- 说 · M2 提议 -->
       <view class="sec">
-        <view class="sec-h"><text class="em">📢</text>① 该说的（每条挂真实依据）</view>
+        <view class="sec-h"><text class="em">📢</text>① 该说的（FABE · 每条挂真实依据）<text class="mot-tag">M2 提议</text></view>
         <view v-for="(s, i) in result.say" :key="i" class="say-item">
           <view class="say-title">{{ s.title }}</view>
           <view class="say-point">{{ s.point }}</view>
           <view v-if="s.detail" class="say-detail">{{ s.detail }}</view>
-          <view :class="['ref', s.hasLegal ? 'ref-ok' : 'ref-wait']">
-            <text v-if="s.hasLegal">真实法源 ✓ {{ s.legalRef }}</text>
-            <text v-else>经验要点 · 依据整理中</text>
+          <!-- FABE 四维卡片 -->
+          <view class="fabe">
+            <view class="fabe-row"><text class="fabe-k">功能</text><text class="fabe-v">{{ s.fabe.f.text }}</text></view>
+            <view class="fabe-row"><text class="fabe-k">优势</text><text class="fabe-v">{{ s.fabe.a.text }}</text></view>
+            <view class="fabe-row"><text class="fabe-k">利益</text><text class="fabe-v">{{ s.fabe.b.text }}</text></view>
+            <view class="fabe-row fabe-evidence">
+              <text class="fabe-k">佐证</text>
+              <view class="fabe-ev">
+                <text v-if="s.fabe.e.legal" class="ev-ok">✓ 法源：{{ s.fabe.e.legal }}</text>
+                <text v-else class="ev-wait">法源：依据整理中</text>
+                <text v-if="s.fabe.e.data" class="ev-ok">✓ 数据：{{ s.fabe.e.data }}</text>
+                <text v-else class="ev-wait">数据：待补充</text>
+                <text v-if="s.fabe.e.case" class="ev-ok">✓ 案例：{{ s.fabe.e.case }}</text>
+                <text v-else class="ev-wait">案例：待补充</text>
+              </view>
+            </view>
           </view>
         </view>
+        <view v-if="!result.say.length" class="empty-mini">暂无匹配词条 · 该场景知识库持续完善中，建议结合专业判断补充</view>
       </view>
 
-      <!-- 带 -->
+      <!-- 带 · M3 行动 -->
       <view class="sec">
-        <view class="sec-h"><text class="em">🏠</text>② 该带的（看房 / 房源方向）</view>
+        <view class="sec-h"><text class="em">🏠</text>② 该带的（看房 / 房源方向）<text class="mot-tag">M3 行动</text></view>
         <view v-for="(b, i) in result.bring" :key="i" class="bring-item">
           <view class="bring-title">{{ b.title }}</view>
           <view class="bring-benefit">{{ b.benefit }}</view>
@@ -92,16 +106,16 @@
         <view v-if="!result.bring.length" class="empty-mini">暂无强相关条目，建议结合实勘补充</view>
       </view>
 
-      <!-- 问 -->
+      <!-- 问 · M1 探索 -->
       <view class="sec">
-        <view class="sec-h"><text class="em">❓</text>③ 该问的（必问 · 探需求）</view>
+        <view class="sec-h"><text class="em">❓</text>③ 该问的（必问 · 探需求）<text class="mot-tag">M1 探索</text></view>
         <view v-for="(a, i) in result.ask" :key="i" class="ask-item">{{ a.q }}</view>
         <view v-if="!result.ask.length" class="empty-mini">暂无必问条目</view>
       </view>
 
-      <!-- 跟 -->
+      <!-- 跟 · M4 确认 -->
       <view class="sec">
-        <view class="sec-h"><text class="em">💌</text>④ 见后跟进（持续关怀）</view>
+        <view class="sec-h"><text class="em">💌</text>④ 见后跟进（持续关怀）<text class="mot-tag">M4 确认</text></view>
         <view v-for="(f, i) in result.followups" :key="i" class="follow-item">
           <view class="follow-theme">{{ f.theme }}</view>
           <view class="follow-text">{{ f.text }}</view>
@@ -112,6 +126,13 @@
       <view class="export-section">
         <view class="export-h">🎁 拿得出手 · 呈现工具</view>
         <view class="export-sub">把这次策展变成可以直接给客户看的专业呈现</view>
+        <view class="export-hero" @tap="goClientView">
+          <view class="eh-left">
+            <view class="eh-name">📱 客户可见页（有形呈现）</view>
+            <view class="eh-desc">数据看板 + 真实案例 + 要点速览，一页式转发 / 打印给客户</view>
+          </view>
+          <view class="eh-arrow">›</view>
+        </view>
         <view class="export-grid">
           <view class="export-card" @tap="copyHTML">
             <view class="ec-icon">🌐</view>
@@ -214,7 +235,7 @@
 </template>
 
 <script>
-import { AXIS_GROUPS, DIMENSIONS, SCENARIOS, generateCuration, generateCurationAsync } from '../../engine.js'
+import { AXIS_GROUPS, DIMENSIONS, SCENARIOS, generateCuration } from '../../engine.js'
 import { useUserStore } from '../../../store/user'
 import { trackEvent } from '../../../utils/tracker'
 import { generateReportHTML, generateReportSummary } from '../../../utils/report-template.js'
@@ -293,13 +314,15 @@ export default {
     gen() {
       this.loading = true
       this.loadError = ''
-      generateCurationAsync({
+      // V3.0.13：静态策展数据（634 条精编 slim 包）已覆盖 购/租/售 三线，作为主路径；
+      // 实时 API（generateCurationAsync）为 V3.1 增强，待后端数据齐备后启用，避免线上返回稀疏数据。
+      Promise.resolve(generateCuration({
         axisType: this.axisType,
         axisNodeKey: this.axisNodeKey,
         dimensions: this.selectedDims,
         freeText: this.freeText,
         scenario: this.scenario
-      }).then(res => {
+      })).then(res => {
         this.result = res
         trackEvent('curate_generate', 'curate-prep', { axis: this.axisType, scenario: this.scenario, dims: this.selectedDims.length, sayN: this.result.say.length, followN: this.result.followups.length })
         this.savedTip = ''
@@ -423,6 +446,16 @@ export default {
       }
       trackEvent('report_share', 'curate-prep', {})
       uni.showToast({ title: '点击右上角分享给同事', icon: 'none' })
+    },
+    goClientView() {
+      const q = [
+        'axisType=' + this.axisType,
+        'axisNodeKey=' + this.axisNodeKey,
+        'scenario=' + this.scenario,
+        'freeText=' + encodeURIComponent(this.freeText || '')
+      ].join('&')
+      trackEvent('curate_client_enter', 'curate-prep', { axis: this.axisType, scenario: this.scenario })
+      uni.navigateTo({ url: '/package-curation/pages/curate-client/index?' + q })
     }
   }
 }
@@ -472,9 +505,15 @@ export default {
 .say-title { font-size: 14px; font-weight: 700; color: #2b2b2b; }
 .say-point { font-size: 13px; color: #444; margin-top: 4px; line-height: 1.55; }
 .say-detail { font-size: 12px; color: #8a837a; margin-top: 4px; line-height: 1.5; }
-.ref { font-size: 11px; margin-top: 6px; padding: 4px 8px; border-radius: 6px; line-height: 1.4; }
-.ref-ok { background: #eef3ec; color: #3d5a3e; }
-.ref-wait { background: #f3f0ea; color: #8a837a; }
+.mot-tag { font-size: 11px; font-weight: 700; color: #fff; background: #3d5a3e; padding: 2px 9px; border-radius: 10px; margin-left: auto; flex-shrink: 0; }
+.fabe { margin-top: 8px; background: #fff; border: 1px solid #e7e0d4; border-radius: 8px; padding: 8px 10px; }
+.fabe-row { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 1px dashed #f0ece2; }
+.fabe-row:last-child { border-bottom: none; }
+.fabe-k { flex-shrink: 0; width: 32px; font-size: 12px; font-weight: 700; color: #c46a3a; line-height: 1.5; }
+.fabe-v { flex: 1; font-size: 12px; color: #444; line-height: 1.55; }
+.fabe-ev { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.ev-ok { align-self: flex-start; font-size: 11px; color: #3d5a3e; background: #eef3ec; border-radius: 5px; padding: 3px 7px; line-height: 1.45; }
+.ev-wait { font-size: 11px; color: #aaa; line-height: 1.45; }
 .bring-item { padding: 8px 0; border-bottom: 1px dashed #eee; }
 .bring-item:last-child { border-bottom: none; }
 .bring-title { font-size: 14px; font-weight: 600; color: #2b2b2b; }
@@ -488,6 +527,12 @@ export default {
 .actions { margin-top: 4px; }
 .saved-tip { text-align: center; font-size: 12px; color: #3d5a3e; margin-top: 10px; }
 .export-section { background: #fff; border-radius: 14px; padding: 16px 14px; margin-bottom: 12px; border: 1px solid #efe9dd; }
+.export-hero { display: flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #3d5a3e, #4d6e4e); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.export-hero:active { opacity: 0.92; }
+.eh-left { flex: 1; min-width: 0; }
+.eh-name { font-size: 15px; font-weight: 700; color: #fff; }
+.eh-desc { font-size: 11.5px; color: rgba(255,255,255,0.85); margin-top: 3px; line-height: 1.4; }
+.eh-arrow { font-size: 22px; color: #f3c9a8; flex-shrink: 0; }
 .export-h { font-size: 16px; font-weight: 700; color: #3d5a3e; }
 .export-sub { font-size: 12px; color: #8a837a; margin-top: 4px; line-height: 1.5; }
 .export-grid { display: flex; gap: 10px; margin-top: 12px; }
