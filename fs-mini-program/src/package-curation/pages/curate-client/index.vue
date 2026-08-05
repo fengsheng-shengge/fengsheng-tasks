@@ -4,10 +4,10 @@
       <view class="brand">风声 · 客户建议</view>
       <view class="h1">{{ h1 }}</view>
       <view class="sub">{{ result.axisLabel }}<text v-if="result.scenarioName" class="rh-sc"> · {{ result.scenarioName }}</text></view>
-      <view class="hon">法源 100% 真实 · 数据/案例待补全</view>
+      <view class="hon">法源真实标注 · 数据/案例持续补全</view>
     </view>
 
-    <view class="warn">⚠ 当前知识库 dataRef / caseRef 覆盖率 0%，下方数据/案例为版式示意（公开政策），真实数据待小眼镜补入字典后自动替换。</view>
+    <view class="warn">⚠ 当前知识库 dataRef / caseRef 覆盖率 0%，下方数据/案例为版式示意（公开政策），真实数据补入字典后自动替换。</view>
 
     <!-- 数据看板 -->
     <view class="sec">
@@ -47,7 +47,7 @@
           <view class="ctag">案例 · 示意</view>
           <view class="ctitle">{{ demoCase.title }}</view>
           <view class="cbody">{{ demoCase.body }}</view>
-          <view class="cnote">※ 示意案例，待小眼镜补入真实成交案例（字典 caseRef 当前 0%）</view>
+          <view class="cnote">※ 示意案例，待补入真实成交案例（字典 caseRef 当前 0%）</view>
         </view>
       </block>
       <block v-else>
@@ -113,7 +113,7 @@ export default {
             { label: '首套', val: 15, max: 30, unit: '%', color: '#3d5a3e' },
             { label: '二套', val: 25, max: 30, unit: '%', color: '#c46a3a' }
           ],
-          note: '数据来源：各地差别化住房信贷政策（示意，待小眼镜补入字典真实数据）'
+          note: '数据来源：各地差别化住房信贷政策（示意，真实数据补入字典后自动替换）'
         },
         {
           title: '契税税率（公开政策示意）',
@@ -121,7 +121,7 @@ export default {
             { label: '首套>90㎡', val: 1.5, max: 3, unit: '%', color: '#3d5a3e' },
             { label: '二套', val: 2, max: 3, unit: '%', color: '#c46a3a' }
           ],
-          note: '数据来源：契税优惠政策（示意，待小眼镜补入字典真实数据）'
+          note: '数据来源：契税优惠政策（示意，真实数据补入字典后自动替换）'
         }
       ],
       demoCase: {
