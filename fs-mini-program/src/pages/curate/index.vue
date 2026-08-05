@@ -8,7 +8,7 @@
     <view class="featured-cta" style="background:#f3f0ea;color:#3d5a3e">
       <view style="font-size:16px;font-weight:700">📇 从客户档案生成</view>
       <view style="font-size:12px;opacity:.8;line-height:1.5;margin:4px 0 12px">选一个客户，自动带入其双纵轴阶段与诉求，生成专属参谋包并沉淀到认知卡。</view>
-      <button class="btn-cta" style="background:#3d5a3e" @tap="showPicker = true">选择客户 →</button>
+      <button class="btn-cta" style="background:#3d5a3e;color:#fff" @tap="showPicker = true">选择客户 →</button>
     </view>
 
     <view class="section-header"><text class="section-title">方法论文献</text><text class="section-more">6 方法论 · 7 工具箱</text></view>

@@ -36,6 +36,24 @@ export default {
 
 <style>
 /* ========== 风声 v4 贝壳风格 · 全局样式（唯一真源：小程序设计样本_v4_贝壳风格.html） ========== */
+
+/* 禁用 uni-app 默认 shadow-preload，避免真机请求 dcloud CDN(shadow-grey.png)超时 */
+page::after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+  -webkit-animation: none !important;
+  background-image: none !important;
+}
+@keyframes shadow-preload {
+  0% { background-image: none; }
+  100% { background-image: none; }
+}
+@-webkit-keyframes shadow-preload {
+  0% { background-image: none; }
+  100% { background-image: none; }
+}
+
 page {
   /* 品牌色规范 V2.0（7.20 更新） */
   --green: #3d5a3e;

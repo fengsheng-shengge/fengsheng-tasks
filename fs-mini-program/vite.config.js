@@ -28,6 +28,23 @@ function postBuildInject() {
       } catch (e) {
         console.warn('⚠️ 注入 libVersion 失败:', e.message)
       }
+      // 3) app.wxss → 删除 uni-app 默认注入的 shadow-preload CDN 预加载段
+      //    避免真机/模拟器请求 cdn1.dcloud.net.cn 的 shadow-grey.png 超时红字
+      const wxssPath = join(process.cwd(), 'dist/build/mp-weixin/app.wxss')
+      try {
+        let wxss = readFileSync(wxssPath, 'utf-8')
+        const start = wxss.indexOf("page::after{position:fixed;content:'';left:-1000px;top:-1000px;")
+        if (start !== -1) {
+          const end = wxss.indexOf('page{', start + 1)
+          if (end !== -1) {
+            wxss = wxss.slice(0, start) + wxss.slice(end)
+            writeFileSync(wxssPath, wxss)
+            console.log('✅ app.wxss shadow-preload CDN 段已清理')
+          }
+        }
+      } catch (e) {
+        console.warn('⚠️ 清理 app.wxss shadow-preload 失败:', e.message)
+      }
     }
   }
 }
