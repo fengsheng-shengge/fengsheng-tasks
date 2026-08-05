@@ -1042,7 +1042,7 @@ async function handleStats(request, env) {
         "SELECT COUNT(*) as pv FROM events WHERE event_type = 'pageview'"
       ).first();
       const chatResult = await env.DB.prepare(
-        "SELECT COUNT(*) as chats FROM events WHERE event_type IN ('chat', 'mentor_chat')"
+        "SELECT COUNT(*) as chats FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open')"
       ).first();
       const lastEvent = await env.DB.prepare(
         "SELECT ts FROM events ORDER BY ts DESC LIMIT 1"
@@ -1068,7 +1068,7 @@ async function handleStats(request, env) {
 }
 
 // /api/chats — dedicated chat count endpoint (fix for chats=0 root cause)
-// Returns real chat count from D1 events table (event_type IN ('chat', 'mentor_chat'))
+// Returns real chat count from D1 events table (event_type IN ('chat', 'mentor_chat', 'coze_chat_open'))
 // Previously this route was missing → catch-all returned 404 → callers showed 0.
 async function handleChats(request, env, ctx) {
   const url = new URL(request.url);
@@ -1084,28 +1084,28 @@ async function handleChats(request, env, ctx) {
           ? Math.floor((Date.now() - sinceDays * 86400_000) / 1000)
           : 0;
         totalChats = await env.DB.prepare(
-          "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat') AND ts >= ?"
+          "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND ts >= ?"
         ).bind(sinceTs).first();
         recentChats = await env.DB.prepare(
-          "SELECT uid, event_type, product, ts FROM events WHERE event_type IN ('chat', 'mentor_chat') AND ts >= ? ORDER BY ts DESC LIMIT 10"
+          "SELECT uid, event_type, product, ts FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND ts >= ? ORDER BY ts DESC LIMIT 10"
         ).bind(sinceTs).all();
       } else {
         totalChats = await env.DB.prepare(
-          "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat')"
+          "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open')"
         ).first();
         recentChats = await env.DB.prepare(
-          "SELECT uid, event_type, product, ts FROM events WHERE event_type IN ('chat', 'mentor_chat') ORDER BY ts DESC LIMIT 10"
+          "SELECT uid, event_type, product, ts FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') ORDER BY ts DESC LIMIT 10"
         ).all();
       }
       const todayStart = Math.floor(new Date(today + 'T00:00:00Z').getTime() / 1000);
       const todayChats = await env.DB.prepare(
-        "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat') AND ts >= ?"
+        "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND ts >= ?"
       ).bind(todayStart).first();
       const uniqueChatUsers = await env.DB.prepare(
-        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE event_type IN ('chat', 'mentor_chat')"
+        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open')"
       ).first();
       const lastChatTs = await env.DB.prepare(
-        "SELECT ts FROM events WHERE event_type IN ('chat', 'mentor_chat') ORDER BY ts DESC LIMIT 1"
+        "SELECT ts FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') ORDER BY ts DESC LIMIT 1"
       ).first();
       return jsonResponse({
         chats: totalChats?.c || 0,
