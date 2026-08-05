@@ -300,6 +300,16 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
   const $layerChips = document.getElementById('layerChips');
   const $domainChips = document.getElementById('domainChips');
 
+  // ========== Label Maps ==========
+  const ENTRY_TYPE_LABELS = {
+    CASE: '案例类', Knowledge: '知识类', LAW: '法律类',
+    POL: '政策类', PROC: '流程类', RISK: '风险类',
+    STD: '标准类', TERM: '术语类'
+  };
+  const PRIORITY_LABELS = {
+    P0: '最高优', P1: '高优', P2: '中优', P3: '一般'
+  };
+
   // ========== Layer Options ==========
   const LAYER_LABELS = { dao: '道', fa: '法', shu: '术', qi: '器' };
   const LAYER_OPTIONS = [
@@ -500,7 +510,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
         metaHtml += '<span class="meta-tag severity-' + (item.severity === 'hard' ? 'hard' : item.severity === 'medium' ? 'medium' : 'soft') + '">' + escapeHtml(svLabels[item.severity] || item.severity) + '</span>';
       }
       if (item.priority) {
-        metaHtml += '<span class="meta-tag priority-' + escapeHtml(item.priority) + '">' + escapeHtml(item.priority) + '</span>';
+        metaHtml += '<span class="meta-tag priority-' + escapeHtml(item.priority) + '">' + escapeHtml(PRIORITY_LABELS[item.priority] || item.priority) + '</span>';
       }
       if (item.layer) {
         metaHtml += '<span class="meta-tag entryType" style="background:rgba(61,90,62,0.06);color:var(--p)">' + escapeHtml(LAYER_LABELS[item.layer] || item.layer) + '</span>';
@@ -607,7 +617,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     // EntryType chips
     let etHtml = '<div class="filter-chip' + (!state.filters.entryType ? ' active' : '') + '" data-filter="entryType" data-value="">全部</div>';
     for (const et of (state.filterOptions.entryTypes || [])) {
-      etHtml += '<div class="filter-chip' + (state.filters.entryType === et ? ' active' : '') + '" data-filter="entryType" data-value="' + escapeHtml(et) + '">' + escapeHtml(et) + '</div>';
+      etHtml += '<div class="filter-chip' + (state.filters.entryType === et ? ' active' : '') + '" data-filter="entryType" data-value="' + escapeHtml(et) + '">' + escapeHtml(ENTRY_TYPE_LABELS[et] || et) + '</div>';
     }
     $entryTypeChips.innerHTML = etHtml;
 
@@ -679,9 +689,9 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
         '<div class="result-score">' + r.score + '</div>' +
         '</div>' +
         '<div class="result-meta">';
-      if (r.entryType) html += '<span class="meta-tag entryType">' + escapeHtml(r.entryType) + '</span>';
+      if (r.entryType) html += '<span class="meta-tag entryType">' + escapeHtml(ENTRY_TYPE_LABELS[r.entryType] || r.entryType) + '</span>';
       if (r.severity) html += '<span class="meta-tag ' + sevClass + '">' + severityLabel(r.severity) + '</span>';
-      if (r.priority) html += '<span class="meta-tag ' + priClass + '">' + escapeHtml(r.priority) + '</span>';
+      if (r.priority) html += '<span class="meta-tag ' + priClass + '">' + escapeHtml(PRIORITY_LABELS[r.priority] || r.priority) + '</span>';
       html += '</div>' +
         '<div class="result-desc">' + descHl + '</div>' +
         '<div class="result-highlights">';

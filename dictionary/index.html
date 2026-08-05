@@ -146,7 +146,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
 <main>
   <div class="hero">
     <h1>全量词典</h1>
-    <p class="hero-sub">六维筛选 · 快速定位 · 5067条词条全覆盖</p>
+    <p class="hero-sub">七维筛选 · 快速定位 · 5067条词条全覆盖</p>
   </div>
 
   <!-- Search -->
@@ -244,12 +244,25 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
 
   var layerLabels = { dao: '道', fa: '法', shu: '术', qi: '器' };
   var severityLabels = { hard: '硬边界', medium: '中边界', soft: '软边界' };
-  var ctLabels = { buyer: '买方', owner: '业主', tenant: '租户' };
-  var stLabels = { pre: '售前', mid: '售中', post: '售后' };
+  var ctLabels = {
+    agent: '经纪人', buyer: '买方', landlord: '房东',
+    owner: '业主', seller: '卖家', tenant: '租户'
+  };
+  var stLabels = {
+    all: '全部阶段', pre: '售前', mid: '售中', post: '售后'
+  };
+  var entryTypeLabels = {
+    CASE: '案例类', Knowledge: '知识类', LAW: '法律类',
+    POL: '政策类', PROC: '流程类', RISK: '风险类',
+    STD: '标准类', TERM: '术语类'
+  };
+  var priorityLabels = {
+    P0: '最高优', P1: '高优', P2: '中优', P3: '一般'
+  };
 
   function init() {
     var params = new URLSearchParams(window.location.search);
-    ['clientType','stage','layer','entryType','severity','priority'].forEach(function(k) {
+    ['clientType','stage','domain','layer','entryType','severity','priority'].forEach(function(k) {
       var v = params.get(k);
       if (v) state.filters[k] = v;
     });
@@ -384,9 +397,9 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     renderFilterChips('filterStage', 'stage', opts.stages || [], stLabels);
     renderFilterChips('filterDomain', 'domain', opts.domains || [], null);
     renderFilterChips('filterLayer', 'layer', opts.layers || [], layerLabels);
-    renderFilterChips('filterEntryType', 'entryType', opts.entryTypes || [], null);
+    renderFilterChips('filterEntryType', 'entryType', opts.entryTypes || [], entryTypeLabels);
     renderFilterChips('filterSeverity', 'severity', opts.severities || [], severityLabels);
-    renderFilterChips('filterPriority', 'priority', opts.priorities || [], null);
+    renderFilterChips('filterPriority', 'priority', opts.priorities || [], priorityLabels);
   }
 
   function renderFilterChips(containerId, filterKey, options, labelMap) {
@@ -425,10 +438,10 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
       var layer = Array.isArray(e.layer) ? e.layer[0] : (e.layer || '');
       html += '<tr data-id="' + escapeHtml(e.id) + '">' +
         '<td class="col-name" title="' + escapeHtml(e.name || '') + '">' + escapeHtml(e.name || '') + '</td>' +
-        '<td><span class="col-pri ' + escapeHtml(e.priority || '') + '">' + escapeHtml(e.priority || '') + '</span></td>' +
+        '<td><span class="col-pri ' + escapeHtml(e.priority || '') + '">' + escapeHtml(priorityLabels[e.priority] || e.priority || '') + '</span></td>' +
         '<td><span class="col-sev ' + escapeHtml(e.severity || '') + '">' + escapeHtml(severityLabels[e.severity] || e.severity || '') + '</span></td>' +
         '<td><span class="col-layer ' + escapeHtml(layer) + '">' + escapeHtml(layerLabels[layer] || layer || '') + '</span></td>' +
-        '<td><span class="col-type">' + escapeHtml(e.entryType || '') + '</span></td>' +
+        '<td><span class="col-type">' + escapeHtml(entryTypeLabels[e.entryType] || e.entryType || '') + '</span></td>' +
         '<td class="col-answer">' + escapeHtml(e.oneLineAnswer || '') + '</td>' +
         '</tr>';
     });
