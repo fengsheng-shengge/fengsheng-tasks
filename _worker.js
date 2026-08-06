@@ -2469,7 +2469,24 @@ async function handleDictionary(request, env, ctx) {
   const entryType = sanitizeQueryParam(url.searchParams.get('entryType') || '', 64) || null;
   const severity = sanitizeQueryParam(url.searchParams.get('severity') || '', 64) || null;
   const priority = sanitizeQueryParam(url.searchParams.get('priority') || '', 64) || null;
+  const subSceneGroup = sanitizeQueryParam(url.searchParams.get('subSceneGroup') || '', 64) || null;
   const keyword = sanitizeQueryParam(url.searchParams.get('keyword') || '', 128) || null;
+
+  // 业务场景分组映射
+  const SUBSCENE_GROUPS = {
+    '带看匹配': ['需求确认', '房源匹配', '带看服务', '价格评估', '资格审查', '看房接待', '房源包装', '房源评估', '家庭画像与需求预判', '商圈分析与服务'],
+    '谈判斡旋': ['谈判斡旋', '议价谈判', '客户解码'],
+    '合同签署': ['合同审查', '合同条款', '合同签署', '网签备案', '资金监管', '付款方式', '定金订金', '阴阳合同', '税费计算', '税费缴纳', '税务筹划', '继承赠与'],
+    '交易办理': ['贷款办理', '产权登记', '过户交房', '融资贷款', '抵押贷款', '贷款还款', '购房·贷款办理', '购房·整装服务', '资格审查', '贷款不批合同解除', '贷款审批失败退定金', '公积金贷款失败'],
+    '交房售后': ['交房流程', '交房验房', '售后服务', '权属维护'],
+    '纠纷处理': ['纠纷', '纠纷处理', '纠纷处置', '维权', '租客纠纷应对', '邻里纠纷', '物业费纠纷', '跳单后果', '跳单抗辩', '跳单认定', '跳单调解'],
+    '出租管理': ['出租管理', '租赁管理', '退租', '出租', '租住·租期内服务', '租住·续约谈判', '租住·转租换租', '租赁法规', '出租定价与空置控制', '租客筛选与背调', '租赁合同与押金约定', '转租纠纷', '押金保护新规'],
+    '业主服务': ['出售管理', '出售决策', '出售', '房屋维护', '房屋维护维修', '房产改造', '装修', '装修装饰', '资产运营', '空置期管理', '出售委托', '出售咨询', '委托托管与维修责任', '委托管理模式', '托管合同与风险', '代运营服务', '便民服务'],
+    '职业发展': ['职业发展', '考试', '考试考证', '资格考试', '技能', '成长', '成长发展', '专业技能', '通用基础'],
+    '合规风控': ['合规经营', '合规', '风险识别', '安全保障', '保险', '保险保障', '政策', '政策应对', '调控政策', '不动产法律', '法规政策'],
+    '社区服务': ['社区关系维护', '社区治理', '社区治理参与', '社区活动与口碑', '邻里关系', '物业管理', '社区服务', '公共收益归属', '公共设施维修', '物业管理'],
+    '学区教育': ['学区房', '学区政策', '学校评估', '教育规划'],
+  };
 
   // Pagination
   const page = Math.max(parseInt(url.searchParams.get('page') || '1', 10) || 1, 1);
@@ -2479,7 +2496,7 @@ async function handleDictionary(request, env, ctx) {
   const sort = ['priority', 'severity', 'name'].includes(url.searchParams.get('sort')) ? url.searchParams.get('sort') : 'priority';
   const order = url.searchParams.get('order') === 'desc' ? 'desc' : 'asc';
 
-  const cacheKey = new Request(`https://cache.local/v6/api/dictionary?ct=${clientType || ''}&st=${stage || ''}&ly=${layer || ''}&dom=${domain || ''}&et=${entryType || ''}&sev=${severity || ''}&pri=${priority || ''}&kw=${keyword || ''}&p=${page}&ps=${pageSize}&sort=${sort}&order=${order}`);
+  const cacheKey = new Request(`https://cache.local/v7/api/dictionary?ct=${clientType || ''}&st=${stage || ''}&ly=${layer || ''}&dom=${domain || ''}&et=${entryType || ''}&sev=${severity || ''}&pri=${priority || ''}&sg=${subSceneGroup || ''}&kw=${keyword || ''}&p=${page}&ps=${pageSize}&sort=${sort}&order=${order}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -2511,6 +2528,12 @@ async function handleDictionary(request, env, ctx) {
     if (entryType && e.entryType !== entryType) return false;
     if (severity && e.severity !== severity) return false;
     if (priority && e.priority !== priority) return false;
+    if (subSceneGroup) {
+      const sceneValues = SUBSCENE_GROUPS[subSceneGroup];
+      if (sceneValues) {
+        if (!sceneValues.includes(e.subScene || '')) return false;
+      }
+    }
     return true;
   });
 
@@ -2575,8 +2598,9 @@ async function handleDictionary(request, env, ctx) {
       entryTypes: [...allTags.entryTypes].sort(),
       severities: [...allTags.severities].sort(),
       priorities: [...allTags.priorities].sort(),
+      subSceneGroups: Object.keys(SUBSCENE_GROUPS).sort(),
     },
-    appliedFilters: { clientType, stage, layer, domain, entryType, severity, priority, keyword },
+    appliedFilters: { clientType, stage, layer, domain, entryType, severity, priority, subSceneGroup, keyword },
     sort: { field: sort, order },
     entries: slimEntries,
   };
@@ -2744,6 +2768,10 @@ async function handleDictionaryExport(request, env, ctx) {
     if (filters.entryType && e.entryType !== filters.entryType) return false;
     if (filters.severity && e.severity !== filters.severity) return false;
     if (filters.priority && e.priority !== filters.priority) return false;
+    if (filters.subSceneGroup) {
+      const sceneValues = SUBSCENE_GROUPS[filters.subSceneGroup];
+      if (sceneValues && !sceneValues.includes(e.subScene || '')) return false;
+    }
     return true;
   });
 

@@ -234,6 +234,10 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
       <span class="filter-label">优先级</span>
       <div class="filter-chips" id="filterPriority"></div>
     </div>
+    <div class="filter-row">
+      <span class="filter-label">业务场景</span>
+      <div class="filter-chips" id="filterSubSceneGroup"></div>
+    </div>
   </div>
 
   <!-- Table -->
@@ -272,7 +276,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
 
   var state = {
     filters: {
-      clientType: '', stage: '', domain: '', layer: '', entryType: '', severity: '', priority: ''
+      clientType: '', stage: '', domain: '', layer: '', entryType: '', severity: '', priority: '', subSceneGroup: ''
     },
     filterOptions: {},
     keyword: '',
@@ -350,7 +354,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
 
   function init() {
     var params = new URLSearchParams(window.location.search);
-    ['clientType','stage','domain','layer','entryType','severity','priority'].forEach(function(k) {
+    ['clientType','stage','domain','layer','entryType','severity','priority','subSceneGroup'].forEach(function(k) {
       var v = params.get(k);
       if (v) state.filters[k] = v;
     });
@@ -533,6 +537,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     renderFilterChips('filterEntryType', 'entryType', opts.entryTypes || [], entryTypeLabels);
     renderFilterChips('filterSeverity', 'severity', opts.severities || [], severityLabels);
     renderFilterChips('filterPriority', 'priority', opts.priorities || [], priorityLabels);
+    renderFilterChips('filterSubSceneGroup', 'subSceneGroup', opts.subSceneGroups || [], null);
   }
 
   function renderFilterChips(containerId, filterKey, options, labelMap) {
