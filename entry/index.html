@@ -387,7 +387,7 @@ body.has-bottom-bar{padding-bottom:70px}
     }
 
     // Build badges
-    const severityLabels = { hard: '硬边界', medium: '中边界', soft: '软边界' };
+    const severityLabels = { hard: '红线', medium: '提醒', soft: '建议' };
     let badgesHtml = '';
     if (entry.entryType) badgesHtml += `<span class="badge badge-type">${escapeHtml(entry.entryType)}</span>`;
     if (entry.severity) badgesHtml += `<span class="badge badge-severity">${escapeHtml(severityLabels[entry.severity] || entry.severity)}</span>`;

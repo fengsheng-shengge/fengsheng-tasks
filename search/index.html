@@ -304,7 +304,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
   const ENTRY_TYPE_LABELS = {
     CASE: '案例类', Knowledge: '知识类', LAW: '法律类',
     POL: '政策类', PROC: '流程类', RISK: '风险类',
-    STD: '标准类', TERM: '术语类'
+    STD: '标准类', TERM: '术语类', SKILL: '技能类'
   };
   const PRIORITY_LABELS = {
     P0: '最高优', P1: '高优', P2: '中优', P3: '一般'
@@ -501,7 +501,7 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
       return;
     }
 
-    var svLabels = { hard: '硬边界', medium: '中边界', soft: '软边界' };
+    var svLabels = { hard: '红线', medium: '提醒', soft: '建议' };
 
     let html = '';
     for (const item of items) {
