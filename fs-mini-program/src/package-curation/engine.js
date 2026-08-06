@@ -1,7 +1,7 @@
 // V3.0 策展引擎（见面参谋）· 确定性检索增强 · 不依赖 LLM
 // 铁律：依据真不幻觉 —— 仅对真实 legalRef 挂依据徽标；缺失条目诚实标注；绝不编造。
 // V3.1：支持动态 API 数据（generateCurationAsync），静态数据作为降级兜底
-import ENTRIES from '@/utils/entries_slim.js'
+import ENTRIES from './entries_slim.js'
 
 const API_BASE = 'https://fengsheng.tech'
 
@@ -41,14 +41,72 @@ export const AXIS_GROUPS = [
 ]
 
 // ===== 住得好七维 与检索关键词 =====
+// V3.2 生产化：每维补充「锚点」——定义 / 子维 / 1-10 标尺 / 升分信号 / 降分信号 / 让客户认同话术
+// 锚点为经纪人实战共识（方法性指引，非统计假数据），用于让经纪人知道怎么打分、依据什么。
 export const DIMENSIONS = [
-  { key: 'safety', name: '物质安全', kw: ['产权', '安全', '物业', '隔音', '消防', '质量'] },
-  { key: 'health', name: '健康', kw: ['采光', '通风', '噪音', '环境', '甲醛', '绿化', '空气'] },
-  { key: 'conv', name: '便利', kw: ['通勤', '地铁', '配套', '商圈', '学校', '医院', '交通'] },
-  { key: 'econ', name: '经济', kw: ['预算', '价格', '税费', '成本', '月供', '首付', '划算', '费用'] },
-  { key: 'comfort', name: '舒适', kw: ['户型', '朝向', '采光', '楼层', '空间', '通风'] },
-  { key: 'beauty', name: '美观', kw: ['装修', '风格', '颜值', '设计', '外观'] },
-  { key: 'free', name: '自在', kw: ['邻里', '社区', '安静', '氛围', '自在'] }
+  {
+    key: 'safety', name: '物质安全', kw: ['产权', '安全', '物业', '隔音', '消防', '质量'],
+    def: '房子能不能稳稳托住基本生活与资产安全——产权清不清、结构牢不牢、物业靠不靠谱。',
+    sub: '产权(是否查封/抵押/共有) · 结构(楼龄/质量/渗漏) · 物业(安保/消防/维修响应)',
+    scale: '1-3 不在意 ｜ 4-6 常规要求 ｜ 7-10 高度敏感(有娃/老人/资产安全焦虑)',
+    up: '客户主动问「产权干净吗/会不会查封/月供扛不扛得住」→ 升',
+    down: '客户说「老点旧点无所谓，能住就行」→ 降',
+    script: '您最怕的是钱花出去不安心，对吧？产权清不清、房子稳不稳，这俩我先帮您把关。'
+  },
+  {
+    key: 'health', name: '健康', kw: ['采光', '通风', '噪音', '环境', '甲醛', '绿化', '空气'],
+    def: '居住空间对身体的长期影响——采光、通风、噪音、空气、社区环境。',
+    sub: '采光朝向 · 通风对流 · 噪音源(路/轨/工) · 空气与绿化',
+    scale: '1-3 无所谓 ｜ 4-6 一般 ｜ 7-10 高敏感(娃/老人/过敏体质)',
+    up: '反复问「采光好不好/吵不吵/甲醛」→ 升',
+    down: '「只要便宜，环境差点能忍」→ 降',
+    script: '家里有老人小孩的话，采光和安静最影响日常舒服度，这块我帮您重点看。'
+  },
+  {
+    key: 'conv', name: '便利', kw: ['通勤', '地铁', '配套', '商圈', '学校', '医院', '交通'],
+    def: '日常通勤与生活配套的省心程度——上班、上学、买菜、就医是否方便。',
+    sub: '通勤时长/方式 · 地铁商业医疗配套 · 学区可达性',
+    scale: '1-3 不挑 ｜ 4-6 均衡 ｜ 7-10 强约束(通勤焦虑/依赖地铁)',
+    up: '反复确认「到公司多久/地铁多远」→ 升',
+    down: '「平时不出门，远近都行」→ 降',
+    script: '通勤是每天的事，您理想单程多久能接受？我按这个帮您卡半径。'
+  },
+  {
+    key: 'econ', name: '经济', kw: ['预算', '价格', '税费', '成本', '月供', '首付', '划算', '费用'],
+    def: '这笔钱花得值不值、扛不扛得住——总价、月供、税费、持有成本。',
+    sub: '总价预算 · 首付来源 · 月供承受 · 税费与隐性成本',
+    scale: '1-3 预算宽松 ｜ 4-6 有规划 ｜ 7-10 高度敏感(月供压力大/精打细算)',
+    up: '反复问「月供多少/税费多少/首付缺口」→ 升',
+    down: '「钱不是问题，看中就买」→ 降',
+    script: '买房大头在月供和税费，我把总账算给您看，您心里就有底了。'
+  },
+  {
+    key: 'comfort', name: '舒适', kw: ['户型', '朝向', '采光', '楼层', '空间', '通风'],
+    def: '户内空间的体感舒服度——户型方正、朝向、楼层、空间感。',
+    sub: '户型方正度 · 朝向采光 · 楼层视野 · 空间利用',
+    scale: '1-3 不挑 ｜ 4-6 一般 ｜ 7-10 高要求(改善/品质客)',
+    up: '强调「要通透/要大面宽/不要暗卫」→ 升',
+    down: '「能住人就行，舒服次要」→ 降',
+    script: '住得舒不舒服主要看户型和朝向，我带您重点感受这几处。'
+  },
+  {
+    key: 'beauty', name: '美观', kw: ['装修', '风格', '颜值', '设计', '外观'],
+    def: '房子和社区的「颜值」带来的心理满足——装修风格、外立面、社区调性。',
+    sub: '装修风格 · 外立面与公区 · 社区调性 · 园林',
+    scale: '1-3 不在意 ｜ 4-6 一般 ｜ 7-10 高要求(颜值控/社交展示)',
+    up: '说「要发朋友圈/要有面子/装修要喜欢」→ 升',
+    down: '「后期自己装，现在丑点没事」→ 降',
+    script: '房子也是您生活品味的延伸，外观和装修对味，住着心情都不一样。'
+  },
+  {
+    key: 'free', name: '自在', kw: ['邻里', '社区', '安静', '氛围', '自在'],
+    def: '社区氛围与邻里关系带来的松弛感——安静、自在、不被打扰。',
+    sub: '邻里密度 · 社区氛围 · 安静度 · 管理尺度',
+    scale: '1-3 无所谓 ｜ 4-6 一般 ｜ 7-10 高敏感(社恐/重视隐私/养老)',
+    up: '问「邻居好不好相处/闹不闹/物业管不管」→ 升',
+    down: '「回家关门就行，邻里不重要」→ 降',
+    script: '住得自在不自在，邻里和物业氛围很关键，这块我帮您打听清楚。'
+  }
 ]
 
 // ===== 场景化配置（V3.0.13 升级：全生命周期 4 线 34 场景）=====
@@ -582,7 +640,7 @@ export async function generateCurationAsync(input) {
 
 // ===== 核心引擎逻辑（与数据源无关） =====
 function generateCurationFromEntries(input, entriesByGroup) {
-  const { axisType = 'buy', axisNodeKey = 'improve', dimensions = [], freeText = '', scenario = '' } = input || {}
+  const { axisType = 'buy', axisNodeKey = 'improve', dimensions = [], freeText = '', scenario = '', dimScores = {}, dimSelfScores = {} } = input || {}
   const group = AXIS_GROUPS.find(g => g.type === axisType) || AXIS_GROUPS[0]
   const node = group.nodes.find(n => n.key === axisNodeKey) || group.nodes[0]
   const ct = group.clientType
@@ -727,9 +785,42 @@ function generateCurationFromEntries(input, entriesByGroup) {
     freeText,
     say, bring: bringFinal, ask, followups,
     mot: buildMot(sc, ask, say, bringFinal, followups),
+    dimsInsight: buildDimsInsight(dimensions, dimScores, dimSelfScores),
     honesty,
     timeline: buildTimeline()
   }
+}
+
+// ===== 七维洞察（双轨：经纪人评 + 客户自评）=====
+// 差异 >3 分的维度 = 见面重点对齐的突破口（数据差本身是产品金矿）
+function buildDimsInsight(dimensions, dimScores, dimSelfScores) {
+  const items = dimensions.map(dk => {
+    const d = DIMENSIONS.find(x => x.key === dk)
+    if (!d) return null
+    const broker = +(dimScores[dk] || 0)
+    const self = +(dimSelfScores[dk] || 0)
+    const hasBroker = broker > 0
+    const hasSelf = self > 0
+    const diff = (hasBroker && hasSelf) ? Math.abs(broker - self) : 0
+    return { key: dk, name: d.name, broker, self, hasBroker, hasSelf, diff, flag: diff > 3 }
+  }).filter(Boolean)
+  const enabled = items.some(i => i.hasBroker)
+  const selfEval = items.some(i => i.hasSelf)
+  const diffItems = items.filter(i => i.flag)
+  const diffNames = diffItems.map(i => i.name)
+  // conclusion：经纪人内页视角（工作语言）
+  let conclusion = ''
+  if (!enabled) conclusion = '七维尚未评分——见面时按锚点给分，能更准地画出客户画像。'
+  else if (selfEval && diffItems.length) conclusion = '经纪人与客户在「' + diffNames.join('、') + '」上看法差异较大（差>3分），见面重点对齐这几点。'
+  else if (selfEval) conclusion = '经纪人与客户评分基本一致，画像可信度高，直接按画像推进。'
+  else conclusion = '已按经纪人视角完成七维画像，建议让客户自评一次，差异往往是面谈金矿。'
+  // clientConclusion：客户可见页视角（对客语言，不出现"经纪人评/画像/面谈金矿"等内部说法）
+  let clientConclusion = ''
+  if (!enabled) clientConclusion = ''
+  else if (selfEval && diffItems.length) clientConclusion = '在「' + diffNames.join('、') + '」上，我们的理解和您的想法还有一些出入。见面时我们重点听您讲讲，把方案调到您真正在意的地方。'
+  else if (selfEval) clientConclusion = '我们对您需求的理解，和您自己的判断基本一致。接下来就按这个方向为您筛选。'
+  else clientConclusion = '这是我们目前对您居住需求的理解。哪一项不准，随时告诉我们，我们再调。'
+  return { enabled, selfEval, items, diffNames, conclusion, clientConclusion }
 }
 
 // ===== FABE × MOT 包装层 =====

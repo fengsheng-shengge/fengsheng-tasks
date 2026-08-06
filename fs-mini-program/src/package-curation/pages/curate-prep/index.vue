@@ -26,9 +26,34 @@
       </view>
 
       <view class="card">
-        <view class="label">③ 住得好七维 · 客户关注（可多选）</view>
+        <view class="label">③ 住得好七维 · 选客户关注的维度（可多选）</view>
         <view class="dims">
           <view v-for="d in dimensions" :key="d.key" :class="['dim-item', { on: selectedDims.includes(d.key) }]" @tap="toggleDim(d.key)">{{ d.name }}</view>
+        </view>
+        <view v-if="selectedDims.length" class="dim-score">
+          <view class="ds-head">
+            <view class="ds-tip">按锚点给分（0-10）· 打完让客户反向核对认同</view>
+            <view class="ds-sw" :class="{ on: selfEvalOn }" @tap="selfEvalOn = !selfEvalOn">{{ selfEvalOn ? '客户自评：开' : '客户自评：关' }}</view>
+          </view>
+          <view v-for="dk in selectedDims" :key="dk" class="ds-row">
+            <view class="ds-name">{{ dimName(dk) }}<text class="ds-info" @tap="toggleAnchor(dk)">ⓘ</text></view>
+            <view v-if="anchorOpen === dk" class="ds-anchor">
+              <view class="anc-sec"><b>定义</b>{{ dimDef(dk).def }}</view>
+              <view class="anc-sec"><b>子维</b>{{ dimDef(dk).sub }}</view>
+              <view class="anc-sec"><b>1-10 标尺</b>{{ dimDef(dk).scale }}</view>
+              <view class="anc-sec"><b>↑ 升分信号</b>{{ dimDef(dk).up }}</view>
+              <view class="anc-sec"><b>↓ 降分信号</b>{{ dimDef(dk).down }}</view>
+              <view class="anc-sec"><b>让客户认同</b>{{ dimDef(dk).script }}</view>
+            </view>
+            <view class="ds-slider">
+              <text class="ds-tag b">经纪人评</text>
+              <slider class="sl" min="0" max="10" step="1" :value="dimScores[dk] || 0" show-value activeColor="#c46a3a" @change="onScore($event, dk)"></slider>
+            </view>
+            <view v-if="selfEvalOn" class="ds-slider">
+              <text class="ds-tag s">客户自评</text>
+              <slider class="sl" min="0" max="10" step="1" :value="dimSelfScores[dk] || 0" show-value activeColor="#3d5a3e" @change="onSelfScore($event, dk)"></slider>
+            </view>
+          </view>
         </view>
       </view>
 
@@ -120,6 +145,27 @@
           <view class="follow-theme">{{ f.theme }}</view>
           <view class="follow-text">{{ f.text }}</view>
         </view>
+      </view>
+
+      <!-- 七维洞察（双轨：经纪人评 + 客户自评）-->
+      <view class="sec" v-if="result.dimsInsight && result.dimsInsight.enabled">
+        <view class="sec-h"><text class="em">🎯</text>七维需求洞察<text class="mot-tag">双轨</text></view>
+        <view v-for="(it, i) in insightItems" :key="i" class="di-row">
+          <view class="di-name">{{ it.name }}<text v-if="it.flag" class="di-flag">⚠ 差异大</text></view>
+          <view class="di-bars">
+            <view class="di-bar">
+              <text class="di-lbl b">经纪</text>
+              <view class="di-track"><view class="di-fill b" :style="{ width: (it.broker * 10) + '%' }"></view></view>
+              <text class="di-v">{{ it.broker }}</text>
+            </view>
+            <view class="di-bar" v-if="result.dimsInsight.selfEval">
+              <text class="di-lbl s">客户</text>
+              <view class="di-track"><view class="di-fill s" :style="{ width: (it.self * 10) + '%' }"></view></view>
+              <text class="di-v">{{ it.self }}</text>
+            </view>
+          </view>
+        </view>
+        <view class="di-conc">{{ result.dimsInsight.conclusion }}</view>
       </view>
 
       <!-- V3.0.11 拿得出手 · 呈现工具 -->
@@ -251,6 +297,10 @@ export default {
       scenario: '',
       selectedDims: [],
       freeText: '',
+      dimScores: {},
+      dimSelfScores: {},
+      anchorOpen: null,
+      selfEvalOn: false,
       clientId: null,
       clientName: '',
       result: null,
@@ -272,7 +322,11 @@ export default {
       const sc = SCENARIOS[this.axisType] || {}
       return Object.entries(sc).map(([key, val]) => ({ key, name: val.name, icon: val.icon }))
     },
-    userStore() { return useUserStore() }
+    userStore() { return useUserStore() },
+    insightItems() {
+      if (!this.result || !this.result.dimsInsight) return []
+      return this.result.dimsInsight.items.filter(i => i.hasBroker)
+    }
   },
   onLoad(options) {
     if (options && options.clientId) {
@@ -311,6 +365,23 @@ export default {
       if (i >= 0) this.selectedDims.splice(i, 1)
       else this.selectedDims.push(key)
     },
+    dimName(key) {
+      const d = DIMENSIONS.find(x => x.key === key)
+      return d ? d.name : key
+    },
+    dimDef(key) {
+      const d = DIMENSIONS.find(x => x.key === key) || {}
+      return { def: d.def || '', sub: d.sub || '', scale: d.scale || '', up: d.up || '', down: d.down || '', script: d.script || '' }
+    },
+    toggleAnchor(key) {
+      this.anchorOpen = this.anchorOpen === key ? null : key
+    },
+    onScore(e, key) {
+      this.$set(this.dimScores, key, e.detail.value)
+    },
+    onSelfScore(e, key) {
+      this.$set(this.dimSelfScores, key, e.detail.value)
+    },
     gen() {
       this.loading = true
       this.loadError = ''
@@ -321,7 +392,9 @@ export default {
         axisNodeKey: this.axisNodeKey,
         dimensions: this.selectedDims,
         freeText: this.freeText,
-        scenario: this.scenario
+        scenario: this.scenario,
+        dimScores: this.dimScores,
+        dimSelfScores: this.dimSelfScores
       })).then(res => {
         this.result = res
         trackEvent('curate_generate', 'curate-prep', { axis: this.axisType, scenario: this.scenario, dims: this.selectedDims.length, sayN: this.result.say.length, followN: this.result.followups.length })
@@ -452,7 +525,10 @@ export default {
         'axisType=' + this.axisType,
         'axisNodeKey=' + this.axisNodeKey,
         'scenario=' + this.scenario,
-        'freeText=' + encodeURIComponent(this.freeText || '')
+        'freeText=' + encodeURIComponent(this.freeText || ''),
+        'dimensions=' + encodeURIComponent((this.selectedDims || []).join(',')),
+        'dimScores=' + encodeURIComponent(JSON.stringify(this.dimScores || {})),
+        'dimSelfScores=' + encodeURIComponent(JSON.stringify(this.dimSelfScores || {}))
       ].join('&')
       trackEvent('curate_client_enter', 'curate-prep', { axis: this.axisType, scenario: this.scenario })
       uni.navigateTo({ url: '/package-curation/pages/curate-client/index?' + q })
@@ -573,4 +649,38 @@ export default {
 .ns-arrow { font-size: 20px; color: #c8956d; flex-shrink: 0; }
 .err-msg { background: #fff0f0; color: #c0392b; padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px; text-align: center; }
 .btn-main:disabled { opacity: 0.6; }
+/* ===== 七维评分（V3.2 生产化）===== */
+.dim-score { margin-top: 12px; background: #f7f4ef; border-radius: 12px; padding: 12px; }
+.ds-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.ds-tip { font-size: 11.5px; color: #8a837a; line-height: 1.4; flex: 1; }
+.ds-sw { flex-shrink: 0; font-size: 12px; font-weight: 700; color: #8a837a; background: #fff; border: 1px solid #e0d8c8; border-radius: 14px; padding: 5px 12px; }
+.ds-sw.on { color: #fff; background: #3d5a3e; border-color: #3d5a3e; }
+.ds-row { padding: 10px 0; border-bottom: 1px dashed #e7e0d4; }
+.ds-row:last-child { border-bottom: none; }
+.ds-name { font-size: 14px; font-weight: 700; color: #2b2b2b; display: flex; align-items: center; gap: 6px; }
+.ds-info { font-size: 13px; color: #c46a3a; background: #fbf6ee; border: 1px solid #f0d9c6; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 18px; }
+.ds-anchor { margin: 8px 0; background: #fff; border: 1px solid #e7e0d4; border-radius: 10px; padding: 10px 12px; }
+.anc-sec { font-size: 11.5px; color: #555; line-height: 1.55; padding: 3px 0; }
+.anc-sec b { color: #3d5a3e; margin-right: 4px; }
+.ds-slider { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.ds-tag { flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; }
+.ds-tag.b { color: #c46a3a; background: #fbf1ea; }
+.ds-tag.s { color: #3d5a3e; background: #eef3ec; }
+.sl { flex: 1; }
+/* 七维洞察（结果）*/
+.di-row { padding: 10px 0; border-bottom: 1px dashed #e7e0d4; }
+.di-row:last-of-type { border-bottom: none; }
+.di-name { font-size: 13.5px; font-weight: 700; color: #2b2b2b; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.di-flag { font-size: 10.5px; font-weight: 700; color: #c0392b; background: #fdecea; padding: 2px 8px; border-radius: 10px; }
+.di-bars { display: flex; flex-direction: column; gap: 5px; }
+.di-bar { display: flex; align-items: center; gap: 8px; }
+.di-lbl { flex-shrink: 0; width: 30px; font-size: 11px; font-weight: 700; }
+.di-lbl.b { color: #c46a3a; }
+.di-lbl.s { color: #3d5a3e; }
+.di-track { flex: 1; height: 12px; background: #efeae0; border-radius: 6px; overflow: hidden; }
+.di-fill { height: 100%; border-radius: 6px; }
+.di-fill.b { background: #c46a3a; }
+.di-fill.s { background: #3d5a3e; }
+.di-v { flex-shrink: 0; width: 22px; text-align: right; font-size: 12px; font-weight: 700; color: #4a443c; }
+.di-conc { margin-top: 10px; font-size: 12px; color: #3d5a3e; background: #eef3ec; border-radius: 8px; padding: 9px 11px; line-height: 1.55; }
 </style>

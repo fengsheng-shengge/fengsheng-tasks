@@ -27,7 +27,7 @@ export function generatePPTPrompt(curation, opts = {}) {
     `- ${f.theme}：${f.text}`
   ).join('\n')
 
-  return `你是一位资深房产经纪人的AI助手。请根据以下见面策展方案，帮我生成一份专业的客户展示PPT（大约8-12页）。
+  return `你是一位资深房产经纪人的数字助手。请根据以下见面策展方案，帮我生成一份专业的客户展示PPT（大约8-12页）。
 
 ## 客户背景
 - 客户类型：${r.axisLabel}
@@ -78,7 +78,7 @@ export function generateVideoPrompt(curation, opts = {}) {
 
   const askHighlights = (r.ask || []).slice(0, 2).map((a, i) => `问题${i + 1}：${a.q}`).join('\n')
 
-  return `你是一位房产经纪人的AI助手。请根据以下见面策展要点，帮我写一段60秒的短视频脚本（适合发朋友圈/视频号）。
+  return `你是一位房产经纪人的数字助手。请根据以下见面策展要点，帮我写一段60秒的短视频脚本（适合发朋友圈/视频号）。
 
 ## 策展背景
 - 客户场景：${r.axisLabel}
@@ -119,7 +119,7 @@ export function generateReportPrompt(curation, opts = {}) {
    依据：${s.hasLegal ? s.legalRef : '经验要点'}`
   ).join('\n\n')
 
-  return `你是一位房产经纪人的AI分析助手。请根据以下见面策展数据，帮我生成一份2-3页的详细客户分析报告（Word文档格式）。
+  return `你是一位房产经纪人的数字分析助手。请根据以下见面策展数据，帮我生成一份2-3页的详细客户分析报告（Word文档格式）。
 
 ## 客户信息
 - 客户：${client}

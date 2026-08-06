@@ -4,59 +4,33 @@
       <view class="brand">风声 · 客户建议</view>
       <view class="h1">{{ h1 }}</view>
       <view class="sub">{{ result.axisLabel }}<text v-if="result.scenarioName" class="rh-sc"> · {{ result.scenarioName }}</text></view>
-      <view class="hon">法源真实标注 · 数据/案例持续补全</view>
+      <view class="hon">法源真实标注 · 数据/案例持续补全，最终以专业判断为准</view>
     </view>
-
-    <view class="warn">⚠ 当前知识库 dataRef / caseRef 覆盖率 0%，下方数据/案例为版式示意（公开政策），真实数据补入字典后自动替换。</view>
 
     <!-- 数据看板 -->
     <view class="sec">
       <view class="sec-h"><text class="em">📊</text>数据看板</view>
 
-      <block v-if="showDemoData">
-        <view class="stats">
-          <view class="sc" v-for="(s, i) in demoStats" :key="i">
-            <view class="snum" :class="s.c">{{ s.num }}</view>
-            <view class="scap">{{ s.cap }}</view>
-          </view>
-        </view>
-        <view class="chart" v-for="(c, i) in demoCharts" :key="'c'+i">
-          <view class="cht">{{ c.title }}</view>
-          <view class="brow" v-for="(b, j) in c.bars" :key="j">
-            <text class="bl">{{ b.label }}</text>
-            <view class="btrack"><view class="bfill" :style="{ width: (b.val / b.max * 100) + '%', background: b.color }"></view></view>
-            <text class="bv">{{ b.val }}{{ b.unit || '%' }}</text>
-          </view>
-          <view class="cnote">{{ c.note }}</view>
-        </view>
-      </block>
-
-      <block v-else>
+      <block v-if="realData.length">
         <view class="dcard" v-for="(d, i) in realData" :key="i">
           <view class="dtitle">{{ d.label }}</view>
           <view class="dval">{{ d.text }}</view>
         </view>
       </block>
+      <view v-else class="empty-mini">真实数据补入中 · 见面以专业判断为准</view>
     </view>
 
     <!-- 真实案例 -->
     <view class="sec">
       <view class="sec-h"><text class="em">📁</text>真实案例</view>
-      <block v-if="showDemoCase">
-        <view class="case">
-          <view class="ctag">案例 · 示意</view>
-          <view class="ctitle">{{ demoCase.title }}</view>
-          <view class="cbody">{{ demoCase.body }}</view>
-          <view class="cnote">※ 示意案例，待补入真实成交案例（字典 caseRef 当前 0%）</view>
-        </view>
-      </block>
-      <block v-else>
+      <block v-if="realCases.length">
         <view class="case" v-for="(c, i) in realCases" :key="i">
           <view class="ctag ok">真实案例</view>
           <view class="ctitle">{{ c.title }}</view>
           <view class="cbody">{{ c.body }}</view>
         </view>
       </block>
+      <view v-else class="empty-mini">真实成交案例补入中 · 见面以专业判断为准</view>
     </view>
 
     <!-- 要点速览 -->
@@ -72,6 +46,19 @@
           </view>
         </block>
       </view>
+    </view>
+
+    <!-- 我们对您居住需求的理解（对客视角，不使用内部术语）-->
+    <view class="sec" v-if="dimsInsight && dimsInsight.enabled">
+      <view class="sec-h"><text class="em">🎯</text>我们对您居住需求的理解</view>
+      <view v-for="(it, i) in insightItems" :key="i" class="di-row">
+        <view class="di-name">{{ it.name }}<text v-if="it.flag" class="di-flag">待对齐</text></view>
+        <view class="di-bars">
+          <view class="di-bar"><text class="di-lbl b">我们</text><view class="di-track"><view class="di-fill b" :style="{ width: (it.broker * 10) + '%' }"></view></view><text class="di-v">{{ it.broker }}</text></view>
+          <view class="di-bar" v-if="dimsInsight.selfEval"><text class="di-lbl s">您</text><view class="di-track"><view class="di-fill s" :style="{ width: (it.self * 10) + '%' }"></view></view><text class="di-v">{{ it.self }}</text></view>
+        </view>
+      </view>
+      <view class="di-conc" v-if="dimsInsight.clientConclusion">{{ dimsInsight.clientConclusion }}</view>
     </view>
 
     <view class="ft">本建议由您的专属服务顾问<br>通过「风声」整理提供</view>
@@ -96,78 +83,80 @@ export default {
       scenario: '',
       freeText: '',
       result: { axisLabel: '', scenarioName: '', say: [] },
-      showDemoData: true,
-      showDemoCase: true,
+      dimsInsight: null,
+      dimensions: [],
+      dimScores: {},
+      dimSelfScores: {},
       realData: [],
       realCases: [],
-      points: [],
-      demoStats: [
-        { num: '15%', cap: '首套最低首付', c: 'g' },
-        { num: '25%', cap: '二套最低首付', c: 'o' },
-        { num: '2027', cap: '换购退税截止', c: 'g' }
-      ],
-      demoCharts: [
-        {
-          title: '首付比例下限（公开政策示意）',
-          bars: [
-            { label: '首套', val: 15, max: 30, unit: '%', color: '#3d5a3e' },
-            { label: '二套', val: 25, max: 30, unit: '%', color: '#c46a3a' }
-          ],
-          note: '数据来源：各地差别化住房信贷政策（示意，真实数据补入字典后自动替换）'
-        },
-        {
-          title: '契税税率（公开政策示意）',
-          bars: [
-            { label: '首套>90㎡', val: 1.5, max: 3, unit: '%', color: '#3d5a3e' },
-            { label: '二套', val: 2, max: 3, unit: '%', color: '#c46a3a' }
-          ],
-          note: '数据来源：契税优惠政策（示意，真实数据补入字典后自动替换）'
-        }
-      ],
-      demoCase: {
-        title: '同小区换房客户：先卖后买 vs 先买后买 资金占用对比',
-        body: '先卖后买：资金无缺口、但需短租过渡；先买后卖：免搬迁但二套首付+利率双高、月供压力大。结合退税政策，先卖后买更优。'
-      }
+      points: []
     }
   },
   computed: {
     h1() {
       return '为您准备的' + (AXIS_TITLE[this.axisType] || '购房') + '建议'
+    },
+    insightItems() {
+      if (!this.dimsInsight) return []
+      return this.dimsInsight.items.filter(i => i.hasBroker)
     }
   },
   onLoad(options) {
+    let dimScores = {}, dimSelfScores = {}, dimensions = []
     if (options) {
       this.axisType = options.axisType || 'buy'
       this.axisNodeKey = options.axisNodeKey || 'improve'
       this.scenario = options.scenario || ''
       this.freeText = options.freeText ? decodeURIComponent(options.freeText) : ''
+      try { dimScores = options.dimScores ? JSON.parse(decodeURIComponent(options.dimScores)) : {} } catch (e) { dimScores = {} }
+      try { dimSelfScores = options.dimSelfScores ? JSON.parse(decodeURIComponent(options.dimSelfScores)) : {} } catch (e) { dimSelfScores = {} }
+      try {
+        dimensions = options.dimensions ? decodeURIComponent(options.dimensions).split(',').filter(Boolean) : []
+      } catch (e) { dimensions = [] }
     }
+    // 兜底：未显式传维度时，用打过分的维度还原（避免七维洞察在客户页丢失）
+    if (!dimensions.length) {
+      dimensions = Array.from(new Set([...Object.keys(dimScores), ...Object.keys(dimSelfScores)]))
+    }
+    this.dimensions = dimensions
+    this.dimScores = dimScores
+    this.dimSelfScores = dimSelfScores
     const res = generateCuration({
       axisType: this.axisType,
       axisNodeKey: this.axisNodeKey,
-      dimensions: [],
+      dimensions,
       freeText: this.freeText,
-      scenario: this.scenario
+      scenario: this.scenario,
+      dimScores,
+      dimSelfScores
     })
     this.result = res
-    // 真实数据/案例：有则展示真实，无则展示示意
+    this.dimsInsight = res.dimsInsight || null
+    // 真实数据/案例：有则展示真实，无则诚实留白（不编造示意数据）
     this.realData = (res.say || [])
       .filter(s => s.fabe && s.fabe.e && s.fabe.e.data)
       .map(s => ({ label: s.title || s.fabe.f.text, text: s.fabe.e.data }))
-    this.showDemoData = this.realData.length === 0
     this.realCases = (res.say || [])
       .filter(s => s.fabe && s.fabe.e && s.fabe.e.case)
       .map(s => ({ title: s.title || s.fabe.f.text, body: s.fabe.e.case }))
-    this.showDemoCase = this.realCases.length === 0
-    this.points = (res.say || []).map(s => ({
-      title: (s.fabe && s.fabe.f && s.fabe.f.text) || s.title || '',
-      legal: s.fabe && s.fabe.e && s.fabe.e.legal
-    }))
+    // 客户页要点速览：仅保留 FABE 结构完整的条目（避免把 broker 笔记式 title 漏给客户）
+    this.points = (res.say || [])
+      .filter(s => s && s.fabe && s.fabe.f && s.fabe.f.text)
+      .map(s => ({
+        title: s.fabe.f.text,
+        legal: s.fabe.e && s.fabe.e.legal
+      }))
   },
   onShareAppMessage() {
     return {
       title: '我为您准备了这次见面的专业建议 · 风声',
-      path: '/package-curation/pages/curate-client/index?axisType=' + this.axisType + '&axisNodeKey=' + this.axisNodeKey + '&scenario=' + this.scenario + '&freeText=' + encodeURIComponent(this.freeText)
+      path: '/package-curation/pages/curate-client/index?axisType=' + this.axisType +
+        '&axisNodeKey=' + this.axisNodeKey +
+        '&scenario=' + this.scenario +
+        '&freeText=' + encodeURIComponent(this.freeText) +
+        '&dimensions=' + encodeURIComponent((this.dimensions || []).join(',')) +
+        '&dimScores=' + encodeURIComponent(JSON.stringify(this.dimScores || {})) +
+        '&dimSelfScores=' + encodeURIComponent(JSON.stringify(this.dimSelfScores || {}))
     }
   },
   methods: {
@@ -219,6 +208,22 @@ export default {
 .ptx { flex: 1; font-size: 13px; color: #3a342c; line-height: 1.4; }
 .lb { flex-shrink: 0; font-size: 10px; color: #3d5a3e; background: #eef3ec; padding: 2px 6px; border-radius: 5px; }
 .empty-mini { font-size: 12px; color: #aaa; padding: 6px 0; }
+/* 七维洞察（双轨）*/
+.di-row { padding: 10px 0; border-bottom: 1px dashed #e7e0d4; }
+.di-row:last-of-type { border-bottom: none; }
+.di-name { font-size: 13.5px; font-weight: 700; color: #2b2b2b; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.di-flag { font-size: 10.5px; font-weight: 700; color: #c0392b; background: #fdecea; padding: 2px 8px; border-radius: 10px; }
+.di-bars { display: flex; flex-direction: column; gap: 5px; }
+.di-bar { display: flex; align-items: center; gap: 8px; }
+.di-lbl { flex-shrink: 0; width: 30px; font-size: 11px; font-weight: 700; }
+.di-lbl.b { color: #c46a3a; }
+.di-lbl.s { color: #3d5a3e; }
+.di-track { flex: 1; height: 12px; background: #efeae0; border-radius: 6px; overflow: hidden; }
+.di-fill { height: 100%; border-radius: 6px; }
+.di-fill.b { background: #c46a3a; }
+.di-fill.s { background: #3d5a3e; }
+.di-v { flex-shrink: 0; width: 22px; text-align: right; font-size: 12px; font-weight: 700; color: #4a443c; }
+.di-conc { margin-top: 10px; font-size: 12px; color: #3d5a3e; background: #eef3ec; border-radius: 8px; padding: 9px 11px; line-height: 1.55; }
 .ft { padding: 14px; color: #8a837a; font-size: 11px; text-align: center; line-height: 1.6; }
 .actions { margin-top: 4px; }
 .btn-main { background: #c46a3a; color: #fff; border-radius: 12px; padding: 13px; font-size: 15px; font-weight: 700; }
