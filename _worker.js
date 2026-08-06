@@ -3492,6 +3492,7 @@ export default {
         '/mentor', '/partner', '/privacy', '/quality-test', '/reply',
         '/s1-report', '/scene', '/search', '/shuowenjiedao', '/skills', '/standard', '/survey',
         '/terms', '/showing-report', '/dict', '/guide', '/decode',
+        '/agreement', '/okr', '/docs',
         '/breeder/', '/care-test/', '/about/', '/agent-academy/',
         '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
       ]);
