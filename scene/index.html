@@ -215,7 +215,9 @@ footer a{color:var(--p)}
       <div class="selector-label">客户类型</div>
       <div class="selector-options" id="clientTypeOptions">
         <button class="selector-opt active" data-ct="buyer"><span class="opt-emoji">🏠</span>买方</button>
+        <button class="selector-opt" data-ct="seller"><span class="opt-emoji">💰</span>卖家</button>
         <button class="selector-opt" data-ct="owner"><span class="opt-emoji">🔑</span>业主</button>
+        <button class="selector-opt" data-ct="landlord"><span class="opt-emoji">🏘️</span>房东</button>
         <button class="selector-opt" data-ct="tenant"><span class="opt-emoji">🏡</span>租户</button>
       </div>
     </div>
@@ -331,7 +333,9 @@ let sceneData = null;
 // Icons
 const LAYER_ICONS = { dao: '🧠', fa: '⚖️', shu: '🗣️', qi: '📱' };
 const LAYER_LABELS = { dao: '道·心里懂的', fa: '法·当场走的', shu: '术·嘴上说的', qi: '器·递给客户的' };
-const TYPE_ICONS = { LAW: '⚖️', PROC: '📋', RISK: '⚠️', CASE: '📂', STD: '📐', POL: '📜', TERM: '📝' };
+const TYPE_ICONS = { LAW: '⚖️', PROC: '📋', RISK: '⚠️', CASE: '📂', STD: '📐', POL: '📜', TERM: '📝', SKILL: '🎯' };
+const TYPE_LABELS = { CASE: '案例类', LAW: '法律类', POL: '政策类', PROC: '流程类', RISK: '风险类', STD: '标准类', TERM: '术语类', SKILL: '技能类' };
+const PRIORITY_LABELS = { P0: '最高优', P1: '高优', P2: '中优', P3: '一般' };
 const SEVERITY_LABELS = { hard: '红线', medium: '提醒', soft: '建议' };
 
 // DOM
@@ -344,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const ctParam = params.get('clientType');
   const stParam = params.get('stage');
-  if (ctParam && ['buyer', 'owner', 'tenant'].includes(ctParam)) {
+  if (ctParam && ['buyer', 'seller', 'owner', 'landlord', 'tenant'].includes(ctParam)) {
     currentClientType = ctParam;
     $$('#clientTypeOptions .selector-opt').forEach(b => b.classList.toggle('active', b.dataset.ct === ctParam));
   }
@@ -479,7 +483,7 @@ function renderFilterOptions(data) {
 
   let typeHtml = '<span class="filter-chip active" data-type="">全部</span>';
   entryTypes.forEach(t => {
-    typeHtml += `<span class="filter-chip" data-type="${t}">${t}</span>`;
+    typeHtml += `<span class="filter-chip" data-type="${t}">${TYPE_LABELS[t] || t}</span>`;
   });
   $('#entryTypeFilters').innerHTML = typeHtml;
 
@@ -536,9 +540,9 @@ function renderCurrentLayer() {
         </div>
         ${e.oneLineAnswer ? `<div class="ec-answer">${escapeHtml(e.oneLineAnswer)}</div>` : ''}
         <div class="ec-meta">
-          ${priority ? `<span class="ec-badge ${priority.toLowerCase()}">${priority}</span>` : ''}
+          ${priority ? `<span class="ec-badge ${priority.toLowerCase()}">${PRIORITY_LABELS[priority] || priority}</span>` : ''}
           ${severity ? `<span class="ec-badge ${severity.toLowerCase()}">${SEVERITY_LABELS[severity] || severity}</span>` : ''}
-          ${e.entryType ? `<span class="ec-badge type">${e.entryType}</span>` : ''}
+          ${e.entryType ? `<span class="ec-badge type">${TYPE_LABELS[e.entryType] || e.entryType}</span>` : ''}
         </div>
         ${consumerQ ? `<div class="ec-consumer">💬 ${escapeHtml(consumerQ)}</div>` : ''}
       </div>
@@ -578,9 +582,9 @@ async function openEntryDetail(id) {
 
     // Badges
     html += `<div class="modal-section"><div class="modal-badges">`;
-    if (entry.priority) html += `<span class="modal-badge ${entry.priority.toLowerCase()}">${entry.priority}</span>`;
+    if (entry.priority) html += `<span class="modal-badge ${entry.priority.toLowerCase()}">${PRIORITY_LABELS[entry.priority] || entry.priority}</span>`;
     if (entry.severity) html += `<span class="modal-badge ${entry.severity.toLowerCase()}">${SEVERITY_LABELS[entry.severity] || entry.severity}</span>`;
-    if (entry.entryType) html += `<span class="modal-badge type">${entry.entryType}</span>`;
+    if (entry.entryType) html += `<span class="modal-badge type">${TYPE_LABELS[entry.entryType] || entry.entryType}</span>`;
     html += `</div></div>`;
 
     // Fields
