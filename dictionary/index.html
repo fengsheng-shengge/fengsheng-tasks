@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>风声 · 全量词典</title>
-<meta name="description" content="风声知识底座 · 全量词典 · 七维筛选 · 道法术器 · 5067条词条">
+<meta name="description" content="风声知识底座 · 全量词典 · 多维度筛选 · 道法术器 · 5417条词条">
 <style>
 :root {
   --p: #3d5a3e; --p-light: #5a7d5b; --fire: #c46a3a; --fire-light: #e08a3c;
@@ -289,11 +289,10 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
   var severityLabels = { hard: '红线', medium: '提醒', soft: '建议' };
   var ctLabels = {
     agent: '经纪人', buyer: '买方', landlord: '房东',
-    owner: '业主', seller: '卖家', tenant: '租户',
-    renter: '租户'
+    owner: '业主', seller: '卖家', tenant: '租户'
   };
   var stLabels = {
-    all: '全部阶段', pre: '售前', mid: '售中', post: '售后',
+    pre: '售前', mid: '售中', post: '售后',
     holding: '持有中', own: '业主侧', pst: '售后',
     selling: '出售中', sng: '场景中'
   };
@@ -333,10 +332,9 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
   // 知识域分组（按类别组织，便于用户理解）
   var domainGroups = [
     { key: 'lifecycle', label: '客户生命周期', items: ['签约前', '签约中', '签约后', '居住中', '退租出售'] },
-    { key: 'business',  label: '业务职能域', items: ['业主服务', '资产持有与运营', '资产持有·业主侧', '职业成长', '跨域通用'] },
-    { key: 'sub',       label: '子场景域', items: ['客户解码', '带看服务', '谈判斡旋', '交房售后', '法规政策', '学区教育', '购房', '房东出租', '租住', '业主出售', '业主侧'] },
-    { key: 'code',      label: '代码域', items: ['资产域', '业主域', '场景域', '交易域', '客关域'] },
-    { key: 'post',      label: '岗位域', items: ['房产经纪人', '居住服务顾问', '租赁管家', '整装设计师', '家装监理', '家政服务员', '收纳整理师'] },
+    { key: 'business',  label: '业务职能域', items: ['业主服务', '资产持有与运营', '职业成长', '跨域通用'] },
+    { key: 'code',      label: '代码域', items: ['资产域', '业主域', '场景域', '交易域'] },
+    { key: 'post',      label: '岗位域', items: ['房产经纪人', '居住服务顾问', '租赁管家', '整装设计师', '家装监理', '家政服务员', '收纳整理师', 'A3岗', 'A4岗', 'B4岗', 'C3岗', 'G1岗', 'G2岗', 'G3岗', 'G4岗', 'H1岗', 'H2岗', 'H3岗', 'H4岗'] },
   ];
   // 业务场景 → 筛选条件映射
   var sceneFilters = {
@@ -525,7 +523,9 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
   function renderFilters() {
     var opts = state.filterOptions;
     renderFilterChips('filterClientType', 'clientType', opts.clientTypes || [], ctLabels);
-    renderFilterChips('filterStage', 'stage', opts.stages || [], stLabels);
+    // 过滤掉"all"阶段（和默认"全部"重复）
+    var stages = (opts.stages || []).filter(function(s) { return s !== 'all'; });
+    renderFilterChips('filterStage', 'stage', stages, stLabels);
     renderDomainChips('filterDomain', opts.domains || []);
     renderFilterChips('filterLayer', 'layer', opts.layers || [], layerLabels);
     renderFilterChips('filterEntryType', 'entryType', opts.entryTypes || [], entryTypeLabels);
