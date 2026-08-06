@@ -93,63 +93,75 @@
         </view>
       </view>
 
-      <!-- 说 · M2 提议 -->
-      <view class="sec">
-        <view class="sec-h"><text class="em">📢</text>① 该说的（FABE · 每条挂真实依据）<text class="mot-tag">M2 提议</text></view>
-        <view v-for="(s, i) in result.say" :key="i" class="say-item">
-          <view class="say-title">{{ s.title }}</view>
-          <view class="say-point">{{ s.point }}</view>
-          <view v-if="s.detail" class="say-detail">{{ s.detail }}</view>
-          <!-- FABE 四维卡片 -->
-          <view class="fabe">
-            <view class="fabe-row"><text class="fabe-k">功能</text><text class="fabe-v">{{ s.fabe.f.text }}</text></view>
-            <view class="fabe-row"><text class="fabe-k">优势</text><text class="fabe-v">{{ s.fabe.a.text }}</text></view>
-            <view class="fabe-row"><text class="fabe-k">利益</text><text class="fabe-v">{{ s.fabe.b.text }}</text></view>
-            <view class="fabe-row fabe-evidence">
-              <text class="fabe-k">佐证</text>
-              <view class="fabe-ev">
-                <text v-if="s.fabe.e.legal" class="ev-ok">✓ 法源：{{ s.fabe.e.legal }}</text>
-                <text v-else class="ev-wait">法源：依据整理中</text>
-                <text v-if="s.fabe.e.data" class="ev-ok">✓ 数据：{{ s.fabe.e.data }}</text>
-                <text v-else class="ev-wait">数据：待补充</text>
-                <text v-if="s.fabe.e.case" class="ev-ok">✓ 案例：{{ s.fabe.e.case }}</text>
-                <text v-else class="ev-wait">案例：待补充</text>
+      <!-- MOT 四步 Tab（探索 → 提议 → 行动 → 确认，对齐 V3.2.7 原型）-->
+      <view class="mot-tabs">
+        <view v-for="(m, i) in motSteps" :key="m.key" :class="['mot-tab', { on: activeMot === i }]" @tap="activeMot = i">
+          <text class="mt-ico">{{ m.icon }}</text>
+          <text class="mt-lbl">{{ m.label }}</text>
+        </view>
+      </view>
+
+      <view class="sec mot-sec">
+        <view class="sec-h"><text class="em">{{ motSteps[activeMot].icon }}</text>{{ motSteps[activeMot].title }}<text class="mot-tag">{{ motSteps[activeMot].label }}</text></view>
+
+        <!-- M1 探索 · 该问的 -->
+        <block v-if="motSteps[activeMot].type === 'ask'">
+          <view v-for="(a, i) in motSteps[activeMot].items" :key="i" class="ask-item">{{ a.q }}</view>
+          <view v-if="!motSteps[activeMot].items.length" class="empty-mini">{{ motSteps[activeMot].empty }}</view>
+        </block>
+
+        <!-- M2 提议 · 该说的 FABE -->
+        <block v-else-if="motSteps[activeMot].type === 'say'">
+          <view v-for="(s, i) in motSteps[activeMot].items" :key="i" class="say-item">
+            <view class="say-title">{{ s.title }}</view>
+            <view class="say-point">{{ s.point }}</view>
+            <view v-if="s.detail" class="say-detail">{{ s.detail }}</view>
+            <view class="fabe">
+              <view class="fabe-row"><text class="fabe-k">功能</text><text class="fabe-v">{{ s.fabe.f.text }}</text></view>
+              <view class="fabe-row"><text class="fabe-k">优势</text><text class="fabe-v">{{ s.fabe.a.text }}</text></view>
+              <view class="fabe-row"><text class="fabe-k">利益</text><text class="fabe-v">{{ s.fabe.b.text }}</text></view>
+              <view class="fabe-row fabe-evidence">
+                <text class="fabe-k">佐证</text>
+                <view class="fabe-ev">
+                  <text v-if="s.fabe.e.legal" class="ev-ok">✓ 法源：{{ s.fabe.e.legal }}</text>
+                  <text v-else class="ev-wait">法源：依据整理中</text>
+                  <text v-if="s.fabe.e.data" class="ev-ok">✓ 数据：{{ s.fabe.e.data }}</text>
+                  <text v-else class="ev-wait">数据：待补充</text>
+                  <text v-if="s.fabe.e.case" class="ev-ok">✓ 案例：{{ s.fabe.e.case }}</text>
+                  <text v-else class="ev-wait">案例：待补充</text>
+                </view>
               </view>
             </view>
           </view>
-        </view>
-        <view v-if="!result.say.length" class="empty-mini">暂无匹配词条 · 该场景知识库持续完善中，建议结合专业判断补充</view>
+          <view v-if="!motSteps[activeMot].items.length" class="empty-mini">{{ motSteps[activeMot].empty }}</view>
+        </block>
+
+        <!-- M3 行动 · 该带的 -->
+        <block v-else-if="motSteps[activeMot].type === 'bring'">
+          <view v-for="(b, i) in motSteps[activeMot].items" :key="i" class="bring-item">
+            <view class="bring-title">{{ b.title }}</view>
+            <view class="bring-benefit">{{ b.benefit }}</view>
+          </view>
+          <view v-if="!motSteps[activeMot].items.length" class="empty-mini">{{ motSteps[activeMot].empty }}</view>
+        </block>
+
+        <!-- M4 确认 · 见后跟进 -->
+        <block v-else-if="motSteps[activeMot].type === 'follow'">
+          <view v-for="(f, i) in motSteps[activeMot].items" :key="i" class="follow-item">
+            <view class="follow-theme">{{ f.theme }}</view>
+            <view class="follow-text">{{ f.text }}</view>
+          </view>
+          <view v-if="!motSteps[activeMot].items.length" class="empty-mini">{{ motSteps[activeMot].empty }}</view>
+        </block>
       </view>
 
-      <!-- 带 · M3 行动 -->
-      <view class="sec">
-        <view class="sec-h"><text class="em">🏠</text>② 该带的（看房 / 房源方向）<text class="mot-tag">M3 行动</text></view>
-        <view v-for="(b, i) in result.bring" :key="i" class="bring-item">
-          <view class="bring-title">{{ b.title }}</view>
-          <view class="bring-benefit">{{ b.benefit }}</view>
-        </view>
-        <view v-if="!result.bring.length" class="empty-mini">暂无强相关条目，建议结合实勘补充</view>
-      </view>
-
-      <!-- 问 · M1 探索 -->
-      <view class="sec">
-        <view class="sec-h"><text class="em">❓</text>③ 该问的（必问 · 探需求）<text class="mot-tag">M1 探索</text></view>
-        <view v-for="(a, i) in result.ask" :key="i" class="ask-item">{{ a.q }}</view>
-        <view v-if="!result.ask.length" class="empty-mini">暂无必问条目</view>
-      </view>
-
-      <!-- 跟 · M4 确认 -->
-      <view class="sec">
-        <view class="sec-h"><text class="em">💌</text>④ 见后跟进（持续关怀）<text class="mot-tag">M4 确认</text></view>
-        <view v-for="(f, i) in result.followups" :key="i" class="follow-item">
-          <view class="follow-theme">{{ f.theme }}</view>
-          <view class="follow-text">{{ f.text }}</view>
-        </view>
-      </view>
-
-      <!-- 七维洞察（双轨：经纪人评 + 客户自评）-->
-      <view class="sec" v-if="result.dimsInsight && result.dimsInsight.enabled">
+      <!-- 七维洞察（双轨：经纪人评 + 客户自评，含雷达图）-->
+      <view class="sec" v-if="dimsInsightEnabled">
         <view class="sec-h"><text class="em">🎯</text>七维需求洞察<text class="mot-tag">双轨</text></view>
+        <view class="radar-wrap">
+          <image class="radar" :src="radarUrlStr" :style="{ width: radarW + 'px', height: radarH + 'px' }"></image>
+        </view>
+        <view v-if="radarSelfEval" class="legend"><span class="lg lg-b"></span>经纪人评 <span class="lg lg-s"></span>客户自评</view>
         <view v-for="(it, i) in insightItems" :key="i" class="di-row">
           <view class="di-name">{{ it.name }}<text v-if="it.flag" class="di-flag">⚠ 差异大</text></view>
           <view class="di-bars">
@@ -158,7 +170,7 @@
               <view class="di-track"><view class="di-fill b" :style="{ width: (it.broker * 10) + '%' }"></view></view>
               <text class="di-v">{{ it.broker }}</text>
             </view>
-            <view class="di-bar" v-if="result.dimsInsight.selfEval">
+            <view class="di-bar" v-if="radarSelfEval">
               <text class="di-lbl s">客户</text>
               <view class="di-track"><view class="di-fill s" :style="{ width: (it.self * 10) + '%' }"></view></view>
               <text class="di-v">{{ it.self }}</text>
@@ -282,6 +294,7 @@
 
 <script>
 import { AXIS_GROUPS, DIMENSIONS, SCENARIOS, generateCuration } from '../../engine.js'
+import { buildRadarDataUrl } from '../../radar.js'
 import { useUserStore } from '../../../store/user'
 import { trackEvent } from '../../../utils/tracker'
 import { generateReportHTML, generateReportSummary } from '../../../utils/report-template.js'
@@ -307,6 +320,10 @@ export default {
       savedTip: '',
       saved: false,
       showPromptOverlay: false,
+      activeMot: 0,
+      radarW: 250,
+      radarH: 230,
+      radarUrlStr: '',
       promptTypes: getPromptTypes(),
       sharePayload: null,
       loading: false,
@@ -326,6 +343,43 @@ export default {
     insightItems() {
       if (!this.result || !this.result.dimsInsight) return []
       return this.result.dimsInsight.items.filter(i => i.hasBroker)
+    },
+    // MOT 四步 Tab：探索→提议→行动→确认（对齐 V3.2.7 原型）
+    motSteps() {
+      if (!this.result) return []
+      return [
+        { key: 'explore', label: 'M1 探索', icon: '❓', title: '该问的（探需求）', items: this.result.ask, type: 'ask', empty: '暂无必问条目 · 建议结合专业判断补充' },
+        { key: 'propose', label: 'M2 提议', icon: '📢', title: '该说的（FABE · 每条挂真实依据）', items: this.result.say, type: 'say', empty: '暂无匹配词条 · 该场景知识库持续完善中' },
+        { key: 'act', label: 'M3 行动', icon: '🏠', title: '该带的（看房 / 房源方向）', items: this.result.bring, type: 'bring', empty: '暂无强相关条目，建议结合实勘补充' },
+        { key: 'confirm', label: 'M4 确认', icon: '💌', title: '见后跟进（持续关怀）', items: this.result.followups, type: 'follow', empty: '暂无跟进条目' }
+      ]
+    },
+    dimsInsightEnabled() {
+      return this.result && this.result.dimsInsight && this.result.dimsInsight.enabled
+    },
+    radarSelfEval() {
+      return !!(this.result && this.result.dimsInsight && this.result.dimsInsight.selfEval)
+    },
+    radarDims() {
+      return (this.selectedDims || []).map(k => this.dimName(k))
+    },
+    radarBroker() {
+      return (this.selectedDims || []).map(k => +(this.dimScores[k] || 0))
+    },
+    radarSelf() {
+      return (this.selectedDims || []).map(k => +(this.dimSelfScores[k] || 0))
+    },
+    radarUrl() {
+      // 保留计算属性供外部使用；页面实际用 radarUrlStr（data 属性，在生成时一次性计算）
+      if (!this.dimsInsightEnabled || !this.radarDims.length) return ''
+      return buildRadarDataUrl({
+        W: this.radarW,
+        H: this.radarH,
+        dims: this.radarDims,
+        broker: this.radarBroker,
+        self: this.radarSelf,
+        selfEval: this.radarSelfEval
+      })
     }
   },
   onLoad(options) {
@@ -400,6 +454,10 @@ export default {
         trackEvent('curate_generate', 'curate-prep', { axis: this.axisType, scenario: this.scenario, dims: this.selectedDims.length, sayN: this.result.say.length, followN: this.result.followups.length })
         this.savedTip = ''
         this.loading = false
+        this.activeMot = 0
+        this.radarUrlStr = (this.dimsInsightEnabled && this.radarDims.length)
+          ? buildRadarDataUrl({ W: this.radarW, H: this.radarH, dims: this.radarDims, broker: this.radarBroker, self: this.radarSelf, selfEval: this.radarSelfEval })
+          : ''
         uni.pageScrollTo({ scrollTop: 0, duration: 200 })
       }).catch(err => {
         console.error('[curation] generate failed:', err)
@@ -683,4 +741,17 @@ export default {
 .di-fill.s { background: #3d5a3e; }
 .di-v { flex-shrink: 0; width: 22px; text-align: right; font-size: 12px; font-weight: 700; color: #4a443c; }
 .di-conc { margin-top: 10px; font-size: 12px; color: #3d5a3e; background: #eef3ec; border-radius: 8px; padding: 9px 11px; line-height: 1.55; }
+/* ===== MOT 四步 Tab（V3.2.7 表现层补全）===== */
+.mot-tabs { display: flex; background: #fff; border-radius: 12px; padding: 4px; margin-bottom: 12px; border: 1px solid #efe9dd; }
+.mot-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px; font-size: 12px; color: #8a837a; border-radius: 8px; }
+.mot-tab.on { background: #3d5a3e; color: #fff; font-weight: 700; }
+.mt-ico { font-size: 16px; line-height: 1.1; }
+.mt-lbl { font-size: 11px; }
+.mot-sec { margin-bottom: 12px; }
+.radar-wrap { display: flex; justify-content: center; padding: 6px 0 2px; }
+.radar { display: block; }
+.legend { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 11px; color: #6b6359; margin: 6px 0 2px; }
+.lg { display: inline-block; width: 14px; height: 8px; border-radius: 4px; }
+.lg-b { background: #c46a3a; }
+.lg-s { background: #3d5a3e; }
 </style>

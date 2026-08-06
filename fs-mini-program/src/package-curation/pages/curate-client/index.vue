@@ -51,6 +51,10 @@
     <!-- 我们对您居住需求的理解（对客视角，不使用内部术语）-->
     <view class="sec" v-if="dimsInsight && dimsInsight.enabled">
       <view class="sec-h"><text class="em">🎯</text>我们对您居住需求的理解</view>
+      <view class="radar-wrap">
+        <image class="radar" :src="radarUrlStr" :style="{ width: radarW + 'px', height: radarH + 'px' }"></image>
+      </view>
+      <view v-if="radarSelfEval" class="legend"><span class="lg lg-b"></span>我们的理解 <span class="lg lg-s"></span>您的自评</view>
       <view v-for="(it, i) in insightItems" :key="i" class="di-row">
         <view class="di-name">{{ it.name }}<text v-if="it.flag" class="di-flag">待对齐</text></view>
         <view class="di-bars">
@@ -72,6 +76,7 @@
 
 <script>
 import { generateCuration } from '../../engine.js'
+import { buildRadarDataUrl } from '../../radar.js'
 
 const AXIS_TITLE = { buy: '购房', rent: '租住', sell: '出售', lease_out: '出租' }
 
@@ -89,7 +94,10 @@ export default {
       dimSelfScores: {},
       realData: [],
       realCases: [],
-      points: []
+      points: [],
+      radarW: 250,
+      radarH: 230,
+      radarUrlStr: ''
     }
   },
   computed: {
@@ -99,6 +107,29 @@ export default {
     insightItems() {
       if (!this.dimsInsight) return []
       return this.dimsInsight.items.filter(i => i.hasBroker)
+    },
+    radarSelfEval() {
+      return !!(this.dimsInsight && this.dimsInsight.selfEval)
+    },
+    radarDims() {
+      return this.insightItems.map(i => i.name)
+    },
+    radarBroker() {
+      return this.insightItems.map(i => +(i.broker || 0))
+    },
+    radarSelf() {
+      return this.insightItems.map(i => +(i.self || 0))
+    },
+    radarUrl() {
+      if (!this.dimsInsight || !this.dimsInsight.enabled || !this.radarDims.length) return ''
+      return buildRadarDataUrl({
+        W: this.radarW,
+        H: this.radarH,
+        dims: this.radarDims,
+        broker: this.radarBroker,
+        self: this.radarSelf,
+        selfEval: this.radarSelfEval
+      })
     }
   },
   onLoad(options) {
@@ -146,6 +177,9 @@ export default {
         title: s.fabe.f.text,
         legal: s.fabe.e && s.fabe.e.legal
       }))
+    this.radarUrlStr = (this.dimsInsight && this.dimsInsight.enabled && this.radarDims.length)
+      ? buildRadarDataUrl({ W: this.radarW, H: this.radarH, dims: this.radarDims, broker: this.radarBroker, self: this.radarSelf, selfEval: this.radarSelfEval })
+      : ''
   },
   onShareAppMessage() {
     return {
@@ -224,6 +258,13 @@ export default {
 .di-fill.s { background: #3d5a3e; }
 .di-v { flex-shrink: 0; width: 22px; text-align: right; font-size: 12px; font-weight: 700; color: #4a443c; }
 .di-conc { margin-top: 10px; font-size: 12px; color: #3d5a3e; background: #eef3ec; border-radius: 8px; padding: 9px 11px; line-height: 1.55; }
+/* 七维雷达图（V3.2.7 表现层补全）*/
+.radar-wrap { display: flex; justify-content: center; padding: 6px 0 2px; }
+.radar { display: block; }
+.legend { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 11px; color: #6b6359; margin: 6px 0 2px; }
+.lg { display: inline-block; width: 14px; height: 8px; border-radius: 4px; }
+.lg-b { background: #c46a3a; }
+.lg-s { background: #3d5a3e; }
 .ft { padding: 14px; color: #8a837a; font-size: 11px; text-align: center; line-height: 1.6; }
 .actions { margin-top: 4px; }
 .btn-main { background: #c46a3a; color: #fff; border-radius: 12px; padding: 13px; font-size: 15px; font-weight: 700; }
