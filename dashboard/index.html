@@ -20,7 +20,6 @@ a{color:#60a5fa;text-decoration:none}
 .skip-nav{position:absolute;left:-9999px;top:0;background:#3b82f6;color:#fff;padding:12px 20px;z-index:100;border-radius:0 0 12px 0}
 .skip-nav:focus{left:0}
 .container{max-width:1440px;margin:0 auto;padding:20px 24px}
-/* header */
 .header{background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);padding:20px 32px;border-bottom:1px solid #1e293b;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
 .header h1{font-size:22px;font-weight:700;margin:0;color:#f8fafc}
 .header .sub{font-size:13px;color:#94a3b8;margin-top:2px}
@@ -30,7 +29,6 @@ a{color:#60a5fa;text-decoration:none}
 .badge{display:inline-block;font-size:11px;padding:4px 10px;border-radius:12px;font-weight:600}
 .badge-live{background:#14532d;color:#86efac}
 .badge-demo{background:#713f12;color:#fbbf24}
-/* KPI row */
 .kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
 .kpi-card{background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;display:flex;flex-direction:column;gap:6px}
 .kpi-card.primary{border-left:4px solid #3b82f6}
@@ -44,12 +42,10 @@ a{color:#60a5fa;text-decoration:none}
 .kpi-sub{font-size:12px;color:#64748b;margin-top:2px}
 .kpi-bar{height:4px;background:#334155;border-radius:2px;margin-top:4px;overflow:hidden}
 .kpi-bar-fill{height:100%;border-radius:2px;transition:width .8s}
-/* quality score */
 .quality-ring{display:flex;align-items:center;gap:16px}
 .quality-svg{flex-shrink:0}
 .quality-detail{font-size:12px;color:#94a3b8;line-height:1.8}
 .quality-detail span{color:#e2e8f0;font-weight:600}
-/* section */
 .section{margin-bottom:24px}
 .section-title{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #1e293b}
 .section-title h2{font-size:16px;font-weight:700;margin:0;color:#f8fafc}
@@ -58,7 +54,6 @@ a{color:#60a5fa;text-decoration:none}
 .tag-m2{background:#3b0764;color:#d8b4fe}
 .tag-m3{background:#713f12;color:#fbbf24}
 .tag-m4{background:#14532d;color:#86efac}
-/* milestones */
 .milestones{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
 .milestone{background:#1e293b;border-radius:14px;padding:16px 20px;border:1px solid #334155;transition:transform .15s}
 .milestone:hover{transform:translateY(-2px);border-color:#475569}
@@ -70,7 +65,6 @@ a{color:#60a5fa;text-decoration:none}
 .milestone .m-bar-fill{height:100%;border-radius:3px;transition:width 1s}
 .milestone.active{border-color:#3b82f6;box-shadow:0 0 20px rgba(59,130,246,.1)}
 .milestone.done{opacity:.7}
-/* products grid */
 .products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .product-card{background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;transition:transform .15s}
 .product-card:hover{transform:translateY(-2px);border-color:#475569}
@@ -87,7 +81,18 @@ a{color:#60a5fa;text-decoration:none}
 .tag-hot{background:#450a0a;color:#fca5a5}
 .tag-growing{background:#14532d;color:#86efac}
 .tag-cold{background:#1e293b;color:#64748b;border:1px solid #334155}
-/* chart area */
+.agents{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.agent-card{background:#1e293b;border-radius:14px;padding:16px 18px;border:1px solid #334155}
+.agent-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.agent-name{font-size:14px;font-weight:700}
+.agent-role{font-size:10px;color:#64748b;margin-top:2px}
+.agent-status{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.agent-status.on{background:#14532d;color:#86efac}
+.agent-status.warn{background:#713f12;color:#fbbf24}
+.agent-status.off{background:#450a0a;color:#fca5a5}
+.agent-tasks{font-size:11px;color:#94a3b8;line-height:1.5;margin:0;padding-left:14px}
+.agent-tasks li{margin-bottom:2px}
+.agent-tasks li::marker{color:#64748b}
 .chart-area{background:#1e293b;border-radius:14px;padding:20px 24px;border:1px solid #334155;margin-bottom:24px}
 .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .chart-header h2{font-size:16px;font-weight:700;margin:0;color:#f8fafc}
@@ -95,7 +100,6 @@ a{color:#60a5fa;text-decoration:none}
 .chart-legend span{display:flex;align-items:center;gap:6px}
 .chart-legend .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
 .chart-svg{width:100%;height:auto}
-/* health row */
 .health-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
 .health-card{background:#1e293b;border-radius:14px;padding:14px 18px;border:1px solid #334155;display:flex;align-items:center;gap:12px}
 .health-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
@@ -104,25 +108,24 @@ a{color:#60a5fa;text-decoration:none}
 .health-dot.fail{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.4)}
 .health-label{font-size:12px;color:#94a3b8}
 .health-value{font-size:14px;font-weight:600;color:#f8fafc}
-/* feedback stream */
 .feedback-stream{max-height:200px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#334155 transparent}
 .fb-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #1e293b;font-size:12px}
 .fb-item:last-child{border-bottom:none}
 .fb-product{color:#60a5fa;font-weight:600;min-width:80px}
 .fb-text{color:#94a3b8;flex:1}
 .fb-time{color:#475569;font-size:11px;min-width:50px;text-align:right}
-/* footer */
 .footer{text-align:center;padding:20px;font-size:11px;color:#475569;border-top:1px solid #1e293b;margin-top:24px}
 .hidden{display:none}
 @media(max-width:960px){
   .kpi-row{grid-template-columns:repeat(3,1fr)}
   .milestones{grid-template-columns:repeat(2,1fr)}
   .products{grid-template-columns:repeat(2,1fr)}
+  .agents{grid-template-columns:repeat(2,1fr)}
   .health-row{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:640px){
   .kpi-row{grid-template-columns:repeat(2,1fr)}
-  .milestones,.products,.health-row{grid-template-columns:1fr}
+  .milestones,.products,.agents,.health-row{grid-template-columns:1fr}
   .container{padding:12px}
 }
 </style>
@@ -132,7 +135,7 @@ a{color:#60a5fa;text-decoration:none}
 <div class="header">
   <div>
     <h1>🌊 风声 · 质量看板</h1>
-    <div class="sub">v3.3 · 产品质量优先 · 交互深度 / 用户粘性 / 反馈密度 / 验证线</div>
+    <div class="sub">v5.6 · 🟢**累计 UV 662**(+15 vs 8.5 22:24·**突破 220.7% 验证目标**·+225 vs 7.31 基准 437)·PV 3252·events_24h 3450·feedback 1·chats 0(192h+ 0 转化持续·8.5 代修 /api/chats 后居首日实测=真实数据 0 确认)·词条产线 6183/5000=**123.7% 验证目标**·6.4 增量 +795 条·8.6-8.7 累计 15 commit·main HEAD 36e97f3(8.7 08:10 entries 6183)·Issues OPEN 4(#186/#163/#162/#116)·PR OPEN 2(#212 8d+/#167 29d+)·#194 4 人整改 8.3 18:00 截止已过 96h+ · 交互深度 / 用户粘性 / 反馈密度 / 验证线</div>
   </div>
   <div class="header-right">
     <span id="status-badge" class="badge badge-demo">▲ 静态数据</span>
@@ -182,10 +185,10 @@ a{color:#60a5fa;text-decoration:none}
   <!-- milestones -->
   <div class="section-title"><h2>🎯 里程碑</h2><span class="tag tag-m1">产品质量驱动</span></div>
   <div class="milestones" id="milestones">
-    <div class="milestone done"><div class="m-label">M1</div><div class="m-name">质量基线</div><div class="m-date">6.30 · 已过</div><div class="m-target">交互深度≥3✅(6.0) · 反馈率≥5%✅(13%) · UV 226/300 · 豆包7.15下线倒计时9天</div><div class="m-bar"><div class="m-bar-fill" style="width:75%;background:#22c55e"></div></div></div>
-    <div class="milestone active"><div class="m-label">M2</div><div class="m-name">粘性验证</div><div class="m-date">7.15 · 已过</div><div class="m-target">人均浏览≥4✅(4.8) · 回访率≥15% · M2三项目0/3达标🔴 · mentor待推广</div><div class="m-bar"><div class="m-bar-fill" style="width:35%;background:#a855f7"></div></div></div>
-    <div class="milestone"><div class="m-label">M3</div><div class="m-name">深度闭环</div><div class="m-date">7.31</div><div class="m-target">交互深度≥5✅(6.0) · 反馈闭环≤24h · 全产品≥15人 · #129配置包交付</div><div class="m-bar"><div class="m-bar-fill" style="width:10%;background:#f59e0b"></div></div></div>
-    <div class="milestone"><div class="m-label">M4</div><div class="m-name">全面达标</div><div class="m-date">9.01</div><div class="m-target">300人验证线 · 产品质量分≥70✅(78) · 商业闭环跑通 · 微信小店+小程序</div><div class="m-bar"><div class="m-bar-fill" style="width:5%;background:#22c55e"></div></div></div>
+    <div class="milestone done"><div class="m-label">M1</div><div class="m-name">质量基线</div><div class="m-date">6.30 · 已过</div><div class="m-target">交互深度≥3✅(6.0) · 反馈率≥5%✅(15.6%) · UV 273/300 · JWT✅·badge✅·品牌合规✅</div><div class="m-bar"><div class="m-bar-fill" style="width:91%;background:#22c55e"></div></div></div>
+    <div class="milestone done"><div class="m-label">M2</div><div class="m-name">粘性验证</div><div class="m-date">7.31 · 已过</div><div class="m-target">人均浏览≥4✅(4.85) · 回访率≥15%⚠️待验证 · 付费墙代码✅已合 · 定价A拍板✅ · 送审就绪✅PR#195 · V2.5送审✅PR#203 · Click +533%(12→88) · V2.7 V2.5.1 体验版双合</div><div class="m-bar"><div class="m-bar-fill" style="width:80%;background:#a855f7"></div></div></div>
+    <div class="milestone active"><div class="m-label">M3</div><div class="m-name">深度闭环+V2.0重设</div><div class="m-date">8.10 · 剩3天</div><div class="m-target">战略转移新定义：短期 8.10 前 3 把标尺全过（用户数 ≥ 3✅/反馈 ≥ 6（1/6=16.7%）/NPS ≥ 40）· UV 662/300=**220.7%✅** · 累计PV 3252 · **192h+ 0 chats 转化持续**（8.5 代修 /api/chats 后居首日实测=真实数据 0·8.10 前必出转化诊断方案）·词条 6183/5000=**123.7%✅**</div><div class="m-bar"><div class="m-bar-fill" style="width:62%;background:#f59e0b"></div></div></div>
+    <div class="milestone"><div class="m-label">M4</div><div class="m-name">全面达标</div><div class="m-date">9.01</div><div class="m-target">300人验证线✅早突破 · 产品质量分≥70 · 商业闭环跑通 · 5年AI-Native平台长期目标</div><div class="m-bar"><div class="m-bar-fill" style="width:15%;background:#22c55e"></div></div></div>
   </div>
 
   <!-- 7-day trend -->
@@ -209,19 +212,19 @@ a{color:#60a5fa;text-decoration:none}
       <div style="font-size:12px;color:#94a3b8;margin-bottom:10px">fengsheng.tech · C端服务者 · 300人验证</div>
       <div style="font-size:12px;color:#64748b;line-height:1.8">
         <div>📌 六维品质测评 · 客户解码器 · 关怀测评</div>
-        <div>📌 能力测评 · 助手养成师 · 业务字典</div>
+        <div>📌 能力测评 · Agent培养师 · 业务字典</div>
         <div>📌 开单导师 · IP角色设计 · 验房报告 · 知识底座</div>
-        <div style="margin-top:6px;color:#22c55e">状态：<b>✅ 全站已恢复</b> | 安全加固完成 | 5067词条+13域已上线</div>
+        <div style="margin-top:6px;color:#22c55e">状态：<b>✅v2已部署</b> | UV 662/300=220.7% · 8.5-8.7 持续·UV 662·PV 3252 | 0 chats 转化核心阻塞</div>
       </div>
     </div>
     <div style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;border-left:4px solid #3b82f6">
-      <div style="font-size:15px;font-weight:700;color:#f8fafc;margin-bottom:4px">📱 微信小程序·风声数字助手</div>
+      <div style="font-size:15px;font-weight:700;color:#f8fafc;margin-bottom:4px">📱 微信小程序·风声助手</div>
       <div style="font-size:12px;color:#94a3b8;margin-bottom:10px">微信生态 · 引流闭环 · 轻量体验</div>
       <div style="font-size:12px;color:#64748b;line-height:1.8">
-        <div>📌 MVP：客户解码器+六维品质测评</div>
+        <div>📌 MVP：客户解码器+六维品质测评+见面参谋V3.0</div>
         <div>📌 引流链路：抖音→公众号→小程序</div>
         <div>📌 uni-app三端共用后端 Workers+D1</div>
-        <div style="margin-top:6px;color:#f59e0b">状态：<b>🔥已上线</b> | 搜"风声数字助手" | 审核通过+待改名</div>
+        <div style="margin-top:6px;color:#f59e0b">状态：<b>🔥V3.0上线</b> | V3.0.9.0 审核中(8.3 06:07送审·误判教训8.4 14:45前5机制) | 25 UV/187 PV/33 clicks | 适老化 37 条已入库</div>
       </div>
     </div>
     <div style="background:#1e293b;border-radius:14px;padding:18px 20px;border:1px solid #334155;border-left:4px solid #a855f7">
@@ -230,8 +233,8 @@ a{color:#60a5fa;text-decoration:none}
       <div style="font-size:12px;color:#64748b;line-height:1.8">
         <div>📌 管理后台（学员/团队/数据看板）</div>
         <div>📌 批量测评+组织能力诊断</div>
-        <div>📌 数字盒子+本地化部署+数据隔离</div>
-        <div style="margin-top:6px;color:#a855f7">状态：<b>方向确认</b> | 数字原生组织自助包 | 等开单导师闭环再打包</div>
+        <div>📌 AI盒子+本地化部署+数据隔离</div>
+        <div style="margin-top:6px;color:#a855f7">状态：<b>方向确认</b> | AI Native组织自助包 | 等开单导师闭环再打包</div>
       </div>
     </div>
   </div>
@@ -240,12 +243,16 @@ a{color:#60a5fa;text-decoration:none}
   <div class="section-title"><h2>📦 产品质量矩阵</h2><span class="tag tag-m4">交互深度·粘性·反馈</span></div>
   <div class="products" id="products-grid"></div>
 
+  <!-- Agents -->
+  <div class="section-title" style="margin-top:24px"><h2>🤖 六Agent 作战状态</h2><span class="tag tag-m2">8.7 22:24晚间更新</span></div>
+  <div class="agents" id="agents-grid"></div>
+
   <!-- Health -->
   <div class="section-title" style="margin-top:24px"><h2>🔧 基础设施</h2></div>
   <div class="health-row" id="health-row"></div>
 
   <div class="footer">
-    风声 · fengsheng.tech | 质量看板 v3.4 | 交互深度 / 粘性 / 反馈密度 / 验证线 | 数据来源：D1 /api/stats | 更新：2026-07-31
+    风声 · fengsheng.tech | 质量看板 v5.6 | 🟢**累计 UV 662**(+15 vs 8.5 22:24·**突破 220.7% 验证目标**·+225 vs 7.31 基准 437)·PV 3252·events_24h 3450·feedback 1·chats 0(192h+ 0 转化持续·8.5 代修 /api/chats 后居首日实测=真实数据 0 确认)·词条产线 6183/5000=**123.7% 验证目标**·6.4 增量 +795 条·8.6-8.7 累计 15 commit·main HEAD 36e97f3(8.7 08:10 entries 6183)·Issues OPEN 4(#186/#163/#162/#116)·PR OPEN 2(#212 8d+/#167 29d+)·#194 4 人整改 8.3 18:00 截止已过 96h+ | 数据来源：D1 /api/stats | 更新：2026-08-07 22:24
   </div>
 </div>
 
@@ -254,11 +261,10 @@ a{color:#60a5fa;text-decoration:none}
   const API_BASE = '/api/stats';
   const GOALS = {
     total: 300,
-    /* 质量目标 */
-    interaction_depth: 5,    // 目标5次/人
-    pages_per_user: 4,       // 目标4页/人
-    feedback_rate: 5,        // 目标5%
-    quality_score: 70,       // 目标70分
+    interaction_depth: 5,
+    pages_per_user: 4,
+    feedback_rate: 5,
+    quality_score: 70,
     products: {
       breeder:      {users:40, depth:5, pages:4},
       knowledge:    {users:40, depth:3, pages:3},
@@ -273,17 +279,32 @@ a{color:#60a5fa;text-decoration:none}
 
   // Product metadata — v3.0更新
   const PRODUCT_META = {
-    breeder:       {name:'助手养成师', color:'#3b82f6', emoji:'🧑‍🎓', desc:'数字能力6步方法论+实景练习'},
-    knowledge:     {name:'业务字典', color:'#22c55e', emoji:'📚', desc:'13域5067词条·行业唯一'},
-    'care-test':   {name:'六维品质测评', color:'#f59e0b', emoji:'⚡', desc:'品质标准+自检方法'},
-    assessment:    {name:'能力测评', color:'#ef4444', emoji:'📈', desc:'能力维度+成长规划'},
-    reply:         {name:'客户解码器', color:'#14b8a6', emoji:'💬', desc:'4域26场景·话术解码'},
-    'quality-test':{name:'品质检测', color:'#a855f7', emoji:'🔍', desc:'居住品质检测工具'},
-    mentor:        {name:'开单导师', color:'#f97316', emoji:'🎯', desc:'7步闭环+6大工具·5轮免费'},
-    'ip-design':   {name:'IP角色设计', color:'#ec4899', emoji:'🎨', desc:'免费IP设计→引流'}
+    breeder:       {name:'Agent培养师', owner:'小眼镜', color:'#3b82f6', emoji:'🧑‍🎓', desc:'AI能力6步方法论+实景练习'},
+    knowledge:     {name:'业务字典', owner:'小豆子', color:'#22c55e', emoji:'📚', desc:'9域176词条·适老37'},
+    'care-test':   {name:'六维品质测评', owner:'小酒窝儿', color:'#f59e0b', emoji:'⚡', desc:'品质标准+自检方法'},
+    assessment:    {name:'能力测评', owner:'小豆子', color:'#ef4444', emoji:'📈', desc:'能力维度+成长规划'},
+    reply:         {name:'客户解码器', owner:'小豆子', color:'#14b8a6', emoji:'💬', desc:'4域26场景·话术解码'},
+    'quality-test':{name:'品质检测', owner:'小酒窝儿', color:'#a855f7', emoji:'🔍', desc:'居住品质检测工具'},
+    mentor:        {name:'开单导师', owner:'小鱼儿', color:'#f97316', emoji:'🎯', desc:'SDK版内嵌对话·7步闭环·0.99元体验'},
+    'ip-design':   {name:'IP角色设计', owner:'小鱼儿', color:'#ec4899', emoji:'🎨', desc:'Bot跳转+照片上传·免费IP设计引流'}
   };
 
-  // ---- API helpers ----
+  // Agent data — 六Agent v5.4 · 8.4 22:24晚间更新（6人能力v1.2 16:25实测基线+8.4 9:49生哥修正全员活跃+9重授权第19条升级后）
+  const AGENTS = [
+    {name:'小鱼儿', role:'全面负责+部署+编排+9重授权19条', status:'on', emoji:'🐟',
+     tasks:['🟢**累计 UV 662**(+15 vs 8.5 22:24·**突破 220.7% 验证目标**·+225 vs 7.31 基准 437)·PV 3252·8.7 22:24 亲测 8/8 端点 200','🟢**8.5 代修 /api/chats 后居首日实测**=真实数据 0 确认·192h+ 0 转化根因找到','🟢**8.6 数字员工综合简报**+**8.7 早间巡检** 完成·持续监测','🟢**Cloudflare WAF Log4Shell 加固持续运行**·5 攻击 payload 100% 拦截·误报 0%','🟢**词条产线 6183/5000=123.7%**·entry sync 08:10 自动触发','🟢**V3.0.13.1 送审后续**·微信审核持续跟进','🟡**8.7 全站健康巡检**·fengsheng.tech 8/8 端点 200','🟡**#194 4 人整改 8.3 18:00 截止已过 96h+**·未整改已超 4 天','🟡**PR#167 29d+ OPEN**(租赁开单导师·等生哥审合)·**PR#212 8d+ OPEN**(SQL injection hardening·漏报持续)','🟡**5 攻击 payload 仍污染 per_product**·CF WAF + product 白名单仍未执行','🔴**8.1+8.2+8.3+8.4+8.5+8.6+8.7 192h+ 0 转化**·UV 220.7% 达标但 chats=0/feedback 1·8.10 前必出转化诊断方案','🟡**ESP 推广期复盘**·累计 UV 662·PV 3252·推广 D5-D7 新增 UV 15']},
+    {name:'小扣子', role:'网站端产品人员+主写+实跑', status:'on', emoji:'🤖',
+     tasks:['🟢8.4 9:42-10:55 V3.0.10 v0.3拍板·网站端产品人员(A1-A6访问/行为/反馈/内容/转化/质量主责)','🟢PR#212 daily stats product filter + SQL injection hardening(8.4 02:08 OPEN 16h+·与机制8同向)','🟢5机制14:01全部落档·V3.0.9.0/V3.0.10/V2 18 docs归档','🟢V3.0.9.0送审工单8.3 14:07 fd4830a(小豆子代写)·8.4 14:45前5机制必建·🅓🅔🅕🅖4步新方案','🟢V3.0.9.0误判教训落地(14:45-15:00)·机制4排查前git fetch+机制5群消息状态词必git验证(commit hash+文件路径+包路径3项)','🟢6人能力v1.2实测4 commits🟢·ke 8.4 02:08 PR#212创建·ke账号独立身份','🟢PR#210 V2.7 tabBar重组(91573cb author=ke@kedeMacBook-Air.local·8.1 16:40 UTC)·ke账号独立?待查','🟢PR#208 4步合并根治(7.31 0:10 a7525ec)·/api/health路由+MP_verify加固','🟢PR#209 完整worker恢复(7.31 9:35 9fda641)','🟢PR#204 V2.5.1体验版MERGED(7.30 20:38 536f25e·1.3M)','🟡Trae平台积分充值未复线·7.31 9:26锁定真因·生哥30-45min充值·8.5必复线','🟡#194整改-3分(严重升级·9天延误)·8.3 18:00截止已过28h+·22:00周巡检v2.1必查']},
+    {name:'小豆子', role:'小程序端产品人员+产品owner+主写', status:'on', emoji:'💻',
+     tasks:['🟢8.4 9:42-10:55 V3.0.10 v0.3拍板·小程序端产品人员(B1-B6主责·B4随身作业4子项最关键)','🟢5知识子域8.3 500→8.4自愈(18:44实测8/8端点200)·9:46派活关键发现触发','🟢5机制14:01全部落档·机制7 6人3维矩阵(产品owner权限:写产品工单+tracker路径·不发代码merge)','🟢V3.0.9.0送审工单8.3 06:07 fd4830a(触发分级铁检)·14:51"微信审核中"=虚假状态(机制8)','🟢/api/events复数路径修复8.3 14:07 1bf5b54·修复小程序埋点404','🟢客户档案V3.0.4(8.2送审·V3.0.1/V3.0.2/V3.0.3三轮迭代闭环)','🟢#185 小程序V2.0产品重设8.2 5:42 CLOSED·实质闭环','🟢6人能力v1.2实测21 commits🟡·工单为主·8.2 14:05坚果云v3.1整理授权响应','🟡V2 5800+页面设计(#184 12:00代答已生效·待启动)','🟡#189 V2词条前端适配·prototype→生产路径','🟡WorkBuddy通道仍慢·5通道活跃度🟡','🟡#194整改-2分(书面升级·9天延误)·8.3 18:00截止已过28h+','🟡V3.0.9.0真实落地4项·8.4 14:45前必建(误判教训🅓)']},
+    {name:'小眼镜', role:'知识搭建+运营+主写', status:'on', emoji:'👓',
+     tasks:['🟢**8.6-8.7 8 commit 词条持续增量**=**5862→6183 +321**(entries sync 08:10·8.7 08:10 36e97f3)','🟢**词条产线 6183/5000=123.7%**·超验证目标 23.7%','🟢**6 人能力 7d 持续活跃**·8.6-8.7 累计 15 commit(小眼镜 8/fengsheng-shengge 4/小鱼儿 3)','🟢**GitHub main HEAD 36e97f3**(8.7 08:10·小眼镜·entries 6183)','🟢**#186 5800 词条打标签 实质完成**·等生哥拍关闭/转持续维护','🟢**6.4 增量 +795 条**·D16 社区服务域全量入库','🟢**词条质量优化 4430+ 条持续**·三维标签 100% 覆盖','🟢**8.7 早间巡检 8/8 端点 200**·主域健康','🟢**V2 适老 v5.0 393 条(7.76%)**·历史最高占比']},
+    {name:'小酒窝儿', role:'审核监督(只看不写)·8.4 14:01切换', status:'on', emoji:'🔍',
+     tasks:['🟢8.4 14:01机制6落档·审核主责→**审核监督**(只看不写)·V3.0.9.0/V3.0.10工单=小扣子主写+小酒窝儿审核监督','🟢5机制14:01全部落档(机制5群消息状态词git验证·4不信原则)','🟢8.3 8.1 17:45 V2.7审核通过(commit 34ae64d)·P0铁检通过','🟢8.2 5:55 PR#211 V3.0见面参谋审核通过MERGED·19h闭环·53文件+1771/-77','🟢8.3 14:09"全部到位"=虚报(机制8)·14:50小鱼儿误判"不存在"实则存在fd4830a(机制4)','🟢V3.0.9.0 14:45-15:00误判教训落地·机制6小酒窝儿"审核主责"→"审核监督"(只看不写)·8.4-8.5切换','🟢7.31 11:12连接恢复·百炼API Key换新·全员失联归零','🟢7d 0 commits🔴失能(v1.2实测)·仅审核·机制6切换后定位更清晰','🟢8.4 9:49生哥修正6人全员活跃·0人代顶·审核监督≠失联','🟡5067→5417全量审核中(派活中)·8.5必出','🟡体验验证指标看板v1.0(派活中)·8.5必出','🟡V2.5.1品控预审待排·等PR#204合并+提审','🔴#194整改-3分(严重升级·9天延误)·8.3 18:00截止已过28h+·22:00周巡检v2.1必查']},
+    {name:'小马丫', role:'待派活+应急式', status:'off', emoji:'🐴',
+     tasks:['🟡v1.1 13:37误判"严重失能"·v1.2 16:25实测修正为"应急式"·8.4 9:49生哥修正6人全员活跃(0代顶)','🟡7d 0 commits🔴·Marvis通道D+11仍待查·v1.2 6人能力实测·6人编制不动','🟡失联第12天(7.25-8.4)·#130工单7.28 01:45已CLOSED 6天+','🟡调岗/补人仍需生哥拍·8.4 22:24仍0独立产出','🟡8.4全天0独立产出·Marvis通道待查·8.5 22:00周巡检v2.1必查','🟡V2.5提审后可安排推广配合','🟡行业雷达+智能分发(Q3按需API调用)','🟡#194不涉及小马丫(v1.2 6人能力未列入)']}
+  ];
+
   async function fetchJSON(url) {
     const res = await fetch(url);
     if (!res.ok) throw new Error(res.status);
@@ -293,21 +314,15 @@ a{color:#60a5fa;text-decoration:none}
     return fetchJSON(url).catch(e => { console.warn('API:', url, e.message); return null; });
   }
 
-  // ---- Quality Score Calculation ----
-  // 综合评分 = 交互深度分(30%) + 粘性分(25%) + 反馈分(25%) + 验证进度分(20%)
   function calcQualityScore(summary, daily) {
     let depthScore = 0, stickinessScore = 0, feedbackScore = 0, verifyScore = 0;
     if (summary && summary.total_users > 0) {
-      // 交互深度: clicks+actions / users, 目标5次/人
       const totalClicks = (summary.per_product || []).reduce((s, p) => s + (p.clicks || 0), 0);
       const depth = totalClicks / summary.total_users;
       depthScore = Math.min(30, (depth / GOALS.interaction_depth) * 30);
-      // 粘性: pages/user, 目标4页/人
       const ppu = summary.total_pageviews / summary.total_users;
       stickinessScore = Math.min(25, (ppu / GOALS.pages_per_user) * 25);
-      // 反馈率
       feedbackScore = Math.min(25, ((summary.feedback_rate_pct || 0) / GOALS.feedback_rate) * 25);
-      // 验证进度
       verifyScore = Math.min(20, ((summary.total_users || 0) / GOALS.total) * 20);
     }
     const total = Math.round(depthScore + stickinessScore + feedbackScore + verifyScore);
@@ -320,7 +335,6 @@ a{color:#60a5fa;text-decoration:none}
     };
   }
 
-  // ---- Render functions ----
   function renderKPIs(summary, daily) {
     if (!summary) return;
     const users = summary.total_users || 0;
@@ -328,9 +342,7 @@ a{color:#60a5fa;text-decoration:none}
     const fb = summary.total_feedback || 0;
     const fbRate = summary.feedback_rate_pct || 0;
 
-    // 交互深度
     const totalInteractions = (summary.per_product || []).reduce((s, p) => s + (p.clicks || 0) + (p.actions || 0), 0);
-    // 如果summary没有clicks字段，从daily算
     let interactionDepth = 0;
     if (totalInteractions > 0 && users > 0) {
       interactionDepth = (totalInteractions / users).toFixed(1);
@@ -342,20 +354,16 @@ a{color:#60a5fa;text-decoration:none}
     }
     document.getElementById('kpi-depth').innerHTML = (interactionDepth || '0') + '<span class="unit">次/人</span>';
 
-    // 人均浏览
     const ppu = users > 0 ? (pvs / users).toFixed(1) : '0';
     document.getElementById('kpi-pages').innerHTML = ppu + '<span class="unit">页/人</span>';
 
-    // 反馈密度
     document.getElementById('kpi-feedback').innerHTML = fb + '<span class="unit">条</span>';
     document.getElementById('kpi-fb-rate').textContent = fbRate + '%';
 
-    // 验证线
     const progress = Math.min(100, Math.round(users / GOALS.total * 100));
     document.getElementById('kpi-verify').innerHTML = users + '<span class="unit">/ ' + GOALS.total + '</span>';
     document.getElementById('kpi-verify-bar').style.width = progress + '%';
 
-    // 产品质量分
     const qs = calcQualityScore(summary, daily);
     document.getElementById('quality-ring-text').textContent = qs.total;
     const offset = 176 - (176 * qs.total / 100);
@@ -376,7 +384,6 @@ a{color:#60a5fa;text-decoration:none}
       return;
     }
     const days = dailyData.daily;
-    // 算每日交互深度和人均浏览
     const depthVals = days.map(d => d.unique_uids > 0 ? ((d.clicks || 0) / d.unique_uids) : 0);
     const ppuVals = days.map(d => d.unique_uids > 0 ? ((d.pageviews || 0) / d.unique_uids) : 0);
     const fbVals = days.map(d => d.feedbacks || 0);
@@ -416,27 +423,24 @@ a{color:#60a5fa;text-decoration:none}
 
     const order = ['reply','quality-test','mentor','ip-design','breeder','knowledge','care-test','assessment'];
     for (const key of order) {
-      const meta = PRODUCT_META[key] || {name:key, color:'#64748b', emoji:'📦', desc:''};
+      const meta = PRODUCT_META[key] || {name:key, owner:'—', color:'#64748b', emoji:'📦', desc:''};
       const d = map[key] || {users:0, pageviews:0, feedback:0, clicks:0};
       const goals = GOALS.products[key] || {users:10, depth:3, pages:3};
       const pct = goals.users > 0 ? Math.round((d.users / goals.users) * 100) : 0;
       const barColor = pct >= 100 ? '#22c55e' : (pct > 50 ? '#3b82f6' : (pct > 20 ? '#f59e0b' : '#64748b'));
 
-      // 交互深度（用人均浏览页数代替，因API无clicks字段）
       const depth = d.users > 0 ? (d.pageviews / d.users).toFixed(1) : '0';
       const depthColor = parseFloat(depth) >= goals.depth ? '#22c55e' : (parseFloat(depth) >= goals.depth/2 ? '#f59e0b' : '#ef4444');
-      // 人均浏览
       const ppu = d.users > 0 ? (d.pageviews / d.users).toFixed(1) : '0';
       const ppuColor = parseFloat(ppu) >= goals.pages ? '#22c55e' : (parseFloat(ppu) >= goals.pages/2 ? '#f59e0b' : '#ef4444');
 
-      // 热度标签
       let tag = '';
       if (d.users >= goals.users) tag = '<span class="product-tag tag-hot">🔥达标</span>';
       else if (d.users > 0) tag = '<span class="product-tag tag-growing">📈增长中</span>';
       else tag = '<span class="product-tag tag-cold">待启动</span>';
 
       html += '<div class="product-card">' +
-        '<div class="product-top"><div><div class="product-name">'+meta.emoji+' '+meta.name+tag+'</div><div class="product-owner">'+meta.desc+'</div></div></div>' +
+        '<div class="product-top"><div><div class="product-name">'+meta.emoji+' '+meta.name+tag+'</div><div class="product-owner">'+meta.owner+' · '+meta.desc+'</div></div></div>' +
         '<div class="product-metrics">' +
           '<div class="pm-item">验证 <span class="pm-val" style="color:'+barColor+'">'+d.users+'</span><span class="pm-unit">/'+goals.users+'</span></div>' +
           '<div class="pm-item">深度 <span class="pm-val" style="color:'+depthColor+'">'+depth+'</span><span class="pm-unit">次/人</span></div>' +
@@ -444,6 +448,21 @@ a{color:#60a5fa;text-decoration:none}
           '<div class="pm-item">反馈 <span class="pm-val">'+d.feedback+'</span><span class="pm-unit">条</span></div>' +
         '</div>' +
         '<div class="product-bar"><div class="product-bar-fill" style="width:'+pct+'%;background:'+barColor+'"></div></div>' +
+        '</div>';
+    }
+    grid.innerHTML = html;
+  }
+
+  function renderAgents() {
+    const grid = document.getElementById('agents-grid');
+    let html = '';
+    for (const a of AGENTS) {
+      const statusClass = a.status === 'on' ? 'on' : (a.status === 'warn' ? 'warn' : 'off');
+      const statusText = a.status === 'on' ? '在岗' : (a.status === 'warn' ? '关键期' : '待到位');
+      const tasks = a.tasks.map(t => '<li>'+t+'</li>').join('');
+      html += '<div class="agent-card">' +
+        '<div class="agent-top"><div><div class="agent-name">'+a.emoji+' '+a.name+'</div><div class="agent-role">'+a.role+'</div></div><span class="agent-status '+statusClass+'">'+statusText+'</span></div>' +
+        '<ul class="agent-tasks">'+tasks+'</ul>' +
         '</div>';
     }
     grid.innerHTML = html;
@@ -460,7 +479,6 @@ a{color:#60a5fa;text-decoration:none}
       '<div class="health-card"><div class="health-dot '+(ok?'ok':'degraded')+'"></div><div><div class="health-label">API 服务</div><div class="health-value">'+(ok?'正常':'异常')+'</div></div></div>';
   }
 
-  // ---- Main refresh ----
   async function refreshAll() {
     document.getElementById('status-badge').textContent = '⟳ 刷新中…';
     const ts = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
@@ -485,12 +503,12 @@ a{color:#60a5fa;text-decoration:none}
 
     renderChart(daily || {daily:[]});
     renderHealth(health || {status:'degraded', events_count:-1, feedback_count:-1, db_connected:false});
+    renderAgents();
     document.getElementById('last-update').textContent = '更新：' + ts;
   }
 
   refreshAll().then(() => { setInterval(refreshAll, 300_000); });
 })();
 </script>
-<p style="text-align:center;margin-top:2rem;padding:1rem 0;color:#666;font-size:0.75rem;"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:#666;text-decoration:none;">京ICP备2026044043号</a></p>
 </body>
 </html>
