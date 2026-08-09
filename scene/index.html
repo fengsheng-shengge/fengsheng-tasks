@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>风声 · 场景导航</title>
-<meta name="description" content="风声场景导航 · 买方/业主/租户 × 售前/售中/售后 · 道法术器四层词条 · 5067条知识底座">
+<meta name="description" content="风声场景导航 · 买方/租户/卖家/业主/房东 全生命周期场景 · 道法术器四层词条 · 6183条知识底座">
 <style>
 :root {
   --p: #3d5a3e; --p-light: #5a7d5b; --fire: #c46a3a; --fire-light: #e08a3c;
@@ -207,7 +207,7 @@ footer a{color:var(--p)}
 <section class="hero">
   <div class="hero-tag">场景导航</div>
   <h1>用<span class="accent">场景</span>定位知识，<br>用<span class="accent">道法术器</span>分层应用</h1>
-  <p class="hero-sub">选择客户类型与交易阶段，按四层分层查看词条，快速找到当下最需要的知识</p>
+  <p class="hero-sub">选择客户类型与全生命周期阶段，精准匹配词条，按道法术器四层快速找到当下最需要的知识</p>
 
   <!-- Scene Selector -->
   <div class="scene-selector">
@@ -222,11 +222,9 @@ footer a{color:var(--p)}
       </div>
     </div>
     <div class="selector-group">
-      <div class="selector-label">交易阶段</div>
+      <div class="selector-label">业务阶段</div>
       <div class="selector-options" id="stageOptions">
-        <button class="selector-opt active" data-stage="pre"><span class="opt-emoji">🔍</span>售前</button>
-        <button class="selector-opt" data-stage="mid"><span class="opt-emoji">🤝</span>售中</button>
-        <button class="selector-opt" data-stage="post"><span class="opt-emoji">✅</span>售后</button>
+        <!-- Dynamically rendered based on client type -->
       </div>
     </div>
   </div>
@@ -237,11 +235,11 @@ footer a{color:var(--p)}
   <!-- Quick Tips -->
   <div class="tips" id="quickTips" style="margin-top:12px">
     <span style="font-size:12px;color:var(--ink-soft)">热门场景：</span>
-    <span class="tip-chip" data-ct="buyer" data-stage="pre">买方·售前</span>
-    <span class="tip-chip" data-ct="owner" data-stage="pre">业主·售前</span>
-    <span class="tip-chip" data-ct="buyer" data-stage="mid">买方·售中</span>
-    <span class="tip-chip" data-ct="tenant" data-stage="pre">租户·售前</span>
-    <span class="tip-chip" data-ct="buyer" data-stage="post">买方·售后</span>
+    <span class="tip-chip" data-ct="buyer" data-lifecycle="first_contact">买方·首次接触</span>
+    <span class="tip-chip" data-ct="buyer" data-lifecycle="viewing">买方·带看房源</span>
+    <span class="tip-chip" data-ct="buyer" data-lifecycle="contract">买方·合同签署</span>
+    <span class="tip-chip" data-ct="tenant" data-lifecycle="viewing">租户·带看房源</span>
+    <span class="tip-chip" data-ct="seller" data-lifecycle="entrust">卖家·出售委托</span>
   </div>
 </section>
 
@@ -321,9 +319,98 @@ footer a{color:var(--p)}
 </footer>
 
 <script>
+// ============================================================
+// 全生命周期阶段定义（按客户类型）
+// ============================================================
+const LIFECYCLE_STAGES = {
+  buyer: [
+    { key: 'first_contact', name: '首次接触', icon: '👋', stage: 'pre', desc: '初次与客户建立联系，了解购房意向' },
+    { key: 'need_discovery', name: '需求深挖', icon: '🔍', stage: 'pre', desc: '深入挖掘客户需求、预算、偏好' },
+    { key: 'viewing', name: '带看房源', icon: '🏠', stage: 'pre', desc: '安排房源带看，现场讲解与答疑' },
+    { key: 'mandate', name: '委托签约', icon: '📝', stage: 'pre', desc: '签订购房委托协议，建立正式委托关系' },
+    { key: 'negotiation', name: '议价谈判', icon: '🤝', stage: 'mid', desc: '与卖家议价、斡旋、谈条件' },
+    { key: 'contract', name: '合同签署', icon: '✍️', stage: 'mid', desc: '签署购房合同、定金协议、补充条款' },
+    { key: 'loan_process', name: '贷款办理', icon: '🏦', stage: 'mid', desc: '协助办理贷款面签、审批、放款' },
+    { key: 'handover', name: '交房过户', icon: '🔑', stage: 'post', desc: '办理过户缴税、物业交割、交房验收' },
+    { key: 'renovation', name: '整装服务', icon: '🎨', stage: 'post', desc: '提供装修整装方案，对接设计师' },
+    { key: 'after_sale', name: '售后关怀', icon: '💝', stage: 'post', desc: '售后回访、节日关怀、长期维护' },
+    { key: 'asset_manage', name: '资产管理', icon: '📊', stage: 'post', desc: '房产价值跟踪、出租置换建议' },
+  ],
+  tenant: [
+    { key: 'first_contact', name: '首次接触', icon: '👋', stage: 'pre', desc: '初次与租客联系，了解租房需求' },
+    { key: 'need_match', name: '需求匹配', icon: '🎯', stage: 'pre', desc: '匹配房源、筛选符合条件的选项' },
+    { key: 'viewing', name: '带看房源', icon: '🏠', stage: 'pre', desc: '安排房源带看，介绍周边环境' },
+    { key: 'mandate', name: '委托签约', icon: '📝', stage: 'pre', desc: '签订租房委托协议' },
+    { key: 'lease_signing', name: '合同签署', icon: '✍️', stage: 'mid', desc: '签署租赁合同、押金条款' },
+    { key: 'move_in', name: '入住交接', icon: '🚚', stage: 'post', desc: '办理入住手续、水电燃气交接' },
+    { key: 'in_lease_service', name: '租期内服务', icon: '🔧', stage: 'post', desc: '维修协调、物业对接、纠纷处理' },
+    { key: 'renewal', name: '续约谈判', icon: '🔄', stage: 'post', desc: '续租谈判、租金调整沟通' },
+    { key: 'move_out', name: '退租续租', icon: '📦', stage: 'post', desc: '退租验收、押金退还、续租方案' },
+    { key: 'sublet', name: '转租换租', icon: '🔄', stage: 'post', desc: '转租合规、新房源匹配' },
+  ],
+  landlord: [
+    { key: 'entrust', name: '委托出租', icon: '🔑', stage: 'pre', desc: '房东委托出租房屋' },
+    { key: 'evaluate', name: '房屋评估', icon: '📏', stage: 'pre', desc: '评估租金合理性、市场行情' },
+    { key: 'renovate', name: '整装翻新', icon: '🎨', stage: 'mid', desc: '出租前翻新装修建议' },
+    { key: 'manage', name: '租赁托管', icon: '🛡️', stage: 'post', desc: '长期资产管理、托管服务' },
+  ],
+  seller: [
+    { key: 'consult', name: '出售咨询', icon: '💬', stage: 'pre', desc: '初步了解卖房资格、时机、价格' },
+    { key: 'evaluate', name: '房源评估', icon: '📏', stage: 'pre', desc: '专业估价、同小区成交对比' },
+    { key: 'entrust', name: '出售委托', icon: '📝', stage: 'pre', desc: '签订委托、挂牌、制定销售策略' },
+    { key: 'staging', name: '房源包装', icon: '✨', stage: 'pre', desc: '保洁维修、软装拍照、VR制作' },
+    { key: 'showing', name: '看房接待', icon: '🚪', stage: 'mid', desc: '安排买家看房、收集反馈' },
+    { key: 'negotiation', name: '议价谈判', icon: '🤝', stage: 'mid', desc: '与买家议价、斡旋、谈条件' },
+    { key: 'contract', name: '合同签署', icon: '✍️', stage: 'mid', desc: '签署居间合同、定金协议' },
+    { key: 'handover', name: '过户交房', icon: '🔑', stage: 'post', desc: '赎楼网签、过户缴税、物业交割' },
+    { key: 'optimize', name: '资产优化', icon: '📊', stage: 'post', desc: '多套房产持有优化、置换建议' },
+  ],
+  owner: [
+    { key: 'after_sale', name: '售后关怀', icon: '💝', stage: 'post', desc: '购房后关怀、节日问候、长期维护' },
+    { key: 'evaluate', name: '房屋评估', icon: '📏', stage: 'mid', desc: '房产价值评估、市场行情跟踪' },
+    { key: 'renovate', name: '整装翻新', icon: '🎨', stage: 'mid', desc: '装修翻新建议、整装方案对接' },
+    { key: 'manage', name: '租赁托管', icon: '🛡️', stage: 'post', desc: '出租管理、委托托管服务' },
+    { key: 'optimize', name: '资产优化', icon: '📊', stage: 'post', desc: '资产配置、置换升级、税筹规划' },
+  ],
+};
+
+// Map lifecycle stage key to sceneDomain values for filtering
+const LIFECYCLE_SCENE_DOMAIN = {
+  // 买方
+  first_contact: ['签约前', '客户解码', '购房'],
+  need_discovery: ['签约前', '客户解码', '购房'],
+  viewing: ['带看服务', '购房', '签约前'],
+  mandate: ['签约前', '房产交易'],
+  negotiation: ['谈判斡旋', '签约中'],
+  contract: ['签约中', '房产交易·合同效力', '合同效力'],
+  loan_process: ['贷款纠纷', '签约中'],
+  handover: ['交房售后', '签约后'],
+  renovation: ['保洁服务', '搬家服务', '交房售后'],
+  after_sale: ['签约后', '交房售后'],
+  asset_manage: ['资产持有与运营', '资产持有与运营·业主侧', '业主侧'],
+  // 租户
+  need_match: ['租住', '房屋租赁'],
+  lease_signing: ['签约中', '房屋租赁'],
+  move_in: ['交房售后', '签约后', '租住'],
+  in_lease_service: ['居住中', '物业管理', '社区服务与运营', '邻里关系'],
+  renewal: ['退租出售', '租住'],
+  move_out: ['退租出售', '租住', '签约后'],
+  sublet: ['退租出售', '租住', '房屋租赁'],
+  // 房东/卖家/业主
+  entrust: ['房东出租', '业主出售', '房产交易', '签约前'],
+  evaluate: ['房东出租', '资产持有与运营', 'CRO', '业主出售'],
+  renovate: ['保洁服务', '房东出租'],
+  manage: ['资产托管服务', '房东出租', '资产持有与运营'],
+  staging: ['业主出售', '保洁服务'],
+  showing: ['带看服务', '业主出售'],
+  optimize: ['资产持有与运营', '资产持有与运营·业主侧', '业主侧', 'CRO'],
+  // 卖家 specific
+  consult: ['业主出售', 'CRO', 'OWN'],
+};
+
 // State
 let currentClientType = 'buyer';
-let currentStage = 'pre';
+let currentLifecycleKey = 'first_contact';
 let currentLayer = 'dao';
 let currentEntryType = null;
 let currentSeverity = null;
@@ -347,20 +434,46 @@ document.addEventListener('DOMContentLoaded', () => {
   // Read URL parameters
   const params = new URLSearchParams(window.location.search);
   const ctParam = params.get('clientType');
-  const stParam = params.get('stage');
+  const lcParam = params.get('lifecycle');
   if (ctParam && ['buyer', 'seller', 'owner', 'landlord', 'tenant'].includes(ctParam)) {
     currentClientType = ctParam;
     $$('#clientTypeOptions .selector-opt').forEach(b => b.classList.toggle('active', b.dataset.ct === ctParam));
   }
-  if (stParam && ['pre', 'mid', 'post'].includes(stParam)) {
-    currentStage = stParam;
-    $$('#stageOptions .selector-opt').forEach(b => b.classList.toggle('active', b.dataset.stage === stParam));
+  // Build stage options first
+  renderStageOptions(currentClientType);
+  // Then set lifecycle if provided
+  if (lcParam && LIFECYCLE_STAGES[currentClientType]?.some(s => s.key === lcParam)) {
+    currentLifecycleKey = lcParam;
+    $$('#stageOptions .selector-opt').forEach(b => b.classList.toggle('active', b.dataset.lifecycle === lcParam));
   }
 
   initSelectors();
   initLayerTabs();
   loadSceneData();
 });
+
+// Render stage options based on client type
+function renderStageOptions(clientType) {
+  const stages = LIFECYCLE_STAGES[clientType] || LIFECYCLE_STAGES.buyer;
+  const container = $('#stageOptions');
+  container.innerHTML = stages.map(s => `
+    <button class="selector-opt ${s.key === currentLifecycleKey ? 'active' : ''}" data-lifecycle="${s.key}" data-stage="${s.stage}" title="${s.desc}">
+      <span class="opt-emoji">${s.icon}</span>${s.name}
+    </button>
+  `).join('');
+  // Ensure currentLifecycleKey is valid
+  if (!stages.some(s => s.key === currentLifecycleKey)) {
+    currentLifecycleKey = stages[0].key;
+    container.querySelector('.selector-opt').classList.add('active');
+  }
+}
+
+// Get current stage value from lifecycle
+function getCurrentStage() {
+  const stages = LIFECYCLE_STAGES[currentClientType] || LIFECYCLE_STAGES.buyer;
+  const current = stages.find(s => s.key === currentLifecycleKey);
+  return current ? current.stage : 'pre';
+}
 
 // Selectors
 function initSelectors() {
@@ -371,16 +484,20 @@ function initSelectors() {
     $$('#clientTypeOptions .selector-opt').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentClientType = btn.dataset.ct;
+    // Reset to first lifecycle stage
+    const stages = LIFECYCLE_STAGES[currentClientType] || LIFECYCLE_STAGES.buyer;
+    currentLifecycleKey = stages[0].key;
+    renderStageOptions(currentClientType);
     loadSceneData();
   });
 
-  // Stage
+  // Stage (lifecycle)
   $('#stageOptions').addEventListener('click', (e) => {
     const btn = e.target.closest('.selector-opt');
     if (!btn) return;
     $$('#stageOptions .selector-opt').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    currentStage = btn.dataset.stage;
+    currentLifecycleKey = btn.dataset.lifecycle;
     loadSceneData();
   });
 
@@ -389,14 +506,14 @@ function initSelectors() {
     const chip = e.target.closest('.tip-chip');
     if (!chip) return;
     const ct = chip.dataset.ct;
-    const st = chip.dataset.stage;
+    const lc = chip.dataset.lifecycle;
     if (ct) {
       currentClientType = ct;
       $$('#clientTypeOptions .selector-opt').forEach(b => b.classList.toggle('active', b.dataset.ct === ct));
     }
-    if (st) {
-      currentStage = st;
-      $$('#stageOptions .selector-opt').forEach(b => b.classList.toggle('active', b.dataset.stage === st));
+    if (lc) {
+      currentLifecycleKey = lc;
+      renderStageOptions(currentClientType);
     }
     loadSceneData();
   });
@@ -422,7 +539,12 @@ async function loadSceneData() {
   hideEmpty();
 
   try {
-    const resp = await fetch(`/api/scene/detail?clientType=${currentClientType}&stage=${currentStage}`);
+    const stage = getCurrentStage();
+    const lifecycle = currentLifecycleKey;
+    const sceneDomains = LIFECYCLE_SCENE_DOMAIN[lifecycle] || [];
+    // Use first sceneDomain for filtering, or empty string for none
+    const sd = sceneDomains.length > 0 ? sceneDomains[0] : '';
+    const resp = await fetch(`/api/scene/detail?clientType=${currentClientType}&stage=${stage}&sceneDomain=${encodeURIComponent(sd)}`);
     const data = await resp.json();
     sceneData = data;
     allEntries = [];

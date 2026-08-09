@@ -2035,31 +2035,42 @@ async function handleSearchSuggest(request, env, ctx) {
 
 // ============================================================
 //  P0 Batch2: Scene Detail (落地规格 API#2)
-//  GET /api/scene/detail?clientType=buyer&stage=pre
+//  GET /api/scene/detail?clientType=buyer&stage=pre&sceneDomain=购房
 // ============================================================
 async function handleSceneDetail(request, env, ctx) {
   const url = new URL(request.url);
   const clientType = sanitizeQueryParam(url.searchParams.get('clientType') || '', 64);
   const stage = sanitizeQueryParam(url.searchParams.get('stage') || '', 64);
+  const sceneDomain = sanitizeQueryParam(url.searchParams.get('sceneDomain') || '', 128);
   if (!clientType || !stage) {
     return jsonResponse({ error: 'clientType and stage are required', hint: '?clientType=buyer&stage=pre' }, 400);
   }
 
-  const cacheKey = new Request(`https://cache.local/v5/api/scene/detail?ct=${clientType}&st=${stage}`);
+  const cacheKey = new Request(`https://cache.local/v7/api/scene/detail?ct=${clientType}&st=${stage}&sd=${sceneDomain}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
   const allEntries = await loadAllEntries(env);
 
-  // Filter by clientType + stage
+  // Filter by clientType + stage (+ optional sceneDomain)
   const sceneEntries = allEntries.filter(e => {
     const tags = e.tags || {};
     const ct = tags.clientType;
     const st = tags.stage;
     const ctMatch = Array.isArray(ct) ? ct.includes(clientType) : ct === clientType;
     const stMatch = Array.isArray(st) ? st.includes(stage) : st === stage;
-    return ctMatch && stMatch;
+    if (!ctMatch || !stMatch) return false;
+    // If sceneDomain is specified, also filter by sceneDomain
+    if (sceneDomain) {
+      const sd = e.sceneDomain || '';
+      // sceneDomain can be a single value or comma-separated list
+      const sdList = Array.isArray(sd) ? sd : sd.split(',').map(s => s.trim()).filter(Boolean);
+      // Check if any of the entry's sceneDomains match the requested sceneDomain
+      // Also check if the lifecycle stage key (used as sceneDomain) matches via sceneDomain list
+      return sdList.some(s => s === sceneDomain);
+    }
+    return true;
   });
 
   // Group by layer

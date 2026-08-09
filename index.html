@@ -388,13 +388,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     <div class="scene-inline-row" id="sceneNavClientType">
       <div class="scene-inline-chip" data-ct="buyer"><span class="chip-sub">买房</span></div>
       <div class="scene-inline-chip" data-ct="tenant"><span class="chip-sub">租房</span></div>
+      <div class="scene-inline-chip" data-ct="seller"><span class="chip-sub">卖家</span></div>
       <div class="scene-inline-chip" data-ct="owner"><span class="chip-sub">业主</span></div>
+      <div class="scene-inline-chip" data-ct="landlord"><span class="chip-sub">房东</span></div>
     </div>
     <div class="scene-inline-label">业务阶段</div>
     <div class="scene-inline-row scene-inline-stages" id="sceneNavStage">
-      <div class="scene-inline-chip" data-st="pre"><span class="chip-sub">前期</span></div>
-      <div class="scene-inline-chip" data-st="mid"><span class="chip-sub">中期</span></div>
-      <div class="scene-inline-chip" data-st="post"><span class="chip-sub">后期</span></div>
+      <!-- 根据客户类型动态渲染 -->
     </div>
     <div class="scene-inline-result" id="sceneNavResult">
       <div class="result-info">
@@ -824,10 +824,43 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
   // ===== 合作意向(路径B) 移至外部 partner.js =====
 
-  // ===== 场景导航交互 =====
+  // ===== 场景导航交互（全生命周期版） =====
   (function() {
+    // 全生命周期阶段定义（精简版，与场景导航页保持一致）
+    var HOME_LIFECYCLE = {
+      buyer: [
+        { key: 'viewing', name: '带看房源', icon: '🏠', stage: 'pre' },
+        { key: 'contract', name: '合同签署', icon: '✍️', stage: 'mid' },
+        { key: 'handover', name: '交房过户', icon: '🔑', stage: 'post' },
+        { key: 'after_sale', name: '售后关怀', icon: '💝', stage: 'post' },
+      ],
+      tenant: [
+        { key: 'viewing', name: '带看房源', icon: '🏠', stage: 'pre' },
+        { key: 'lease_signing', name: '合同签署', icon: '✍️', stage: 'mid' },
+        { key: 'move_in', name: '入住交接', icon: '🚚', stage: 'post' },
+        { key: 'move_out', name: '退租续租', icon: '📦', stage: 'post' },
+      ],
+      owner: [
+        { key: 'after_sale', name: '售后关怀', icon: '💝', stage: 'post' },
+        { key: 'evaluate', name: '房屋评估', icon: '📏', stage: 'mid' },
+        { key: 'manage', name: '租赁托管', icon: '🛡️', stage: 'post' },
+        { key: 'optimize', name: '资产优化', icon: '📊', stage: 'post' },
+      ],
+      seller: [
+        { key: 'entrust', name: '出售委托', icon: '📝', stage: 'pre' },
+        { key: 'showing', name: '看房接待', icon: '🚪', stage: 'mid' },
+        { key: 'contract', name: '合同签署', icon: '✍️', stage: 'mid' },
+        { key: 'handover', name: '过户交房', icon: '🔑', stage: 'post' },
+      ],
+      landlord: [
+        { key: 'entrust', name: '委托出租', icon: '🔑', stage: 'pre' },
+        { key: 'evaluate', name: '房屋评估', icon: '📏', stage: 'pre' },
+        { key: 'manage', name: '租赁托管', icon: '🛡️', stage: 'post' },
+      ],
+    };
+
     var selectedCt = null;
-    var selectedSt = null;
+    var selectedLc = null;
     var $ctChips = document.getElementById('sceneNavClientType');
     var $stChips = document.getElementById('sceneNavStage');
     var $result = document.getElementById('sceneNavResult');
@@ -837,26 +870,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
     if (!$ctChips || !$stChips) return;
 
+    // 渲染阶段选项
+    function renderStages(clientType) {
+      var stages = HOME_LIFECYCLE[clientType] || HOME_LIFECYCLE.buyer;
+      $stChips.innerHTML = stages.map(function(s) {
+        return '<div class="scene-inline-chip" data-lifecycle="' + s.key + '" data-stage="' + s.stage + '"><span class="chip-sub">' + s.icon + ' ' + s.name + '</span></div>';
+      }).join('');
+      selectedLc = null;
+    }
+
     $ctChips.addEventListener('click', function(e) {
       var chip = e.target.closest('.scene-inline-chip');
       if (!chip) return;
       selectedCt = chip.dataset.ct;
       $ctChips.querySelectorAll('.scene-inline-chip').forEach(function(c) { c.classList.remove('active'); });
       chip.classList.add('active');
-      updateResult();
+      renderStages(selectedCt);
+      $result.classList.remove('show');
     });
 
     $stChips.addEventListener('click', function(e) {
       var chip = e.target.closest('.scene-inline-chip');
       if (!chip) return;
-      selectedSt = chip.dataset.st;
+      selectedLc = chip.dataset.lifecycle;
       $stChips.querySelectorAll('.scene-inline-chip').forEach(function(c) { c.classList.remove('active'); });
       chip.classList.add('active');
       updateResult();
     });
 
     function updateResult() {
-      if (!selectedCt || !selectedSt) {
+      if (!selectedCt || !selectedLc) {
         $result.classList.remove('show');
         return;
       }
@@ -864,9 +907,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
       $result.classList.add('show');
       $count.textContent = '...';
       $miniGrid.innerHTML = '';
-      $link.href = '/scene/?clientType=' + selectedCt + '&stage=' + selectedSt;
+      $link.href = '/scene/?clientType=' + selectedCt + '&lifecycle=' + selectedLc;
 
-      fetch('/api/scene/detail?clientType=' + selectedCt + '&stage=' + selectedSt)
+      var stages = HOME_LIFECYCLE[selectedCt] || HOME_LIFECYCLE.buyer;
+      var cur = null;
+      for (var i = 0; i < stages.length; i++) {
+        if (stages[i].key === selectedLc) { cur = stages[i]; break; }
+      }
+      var stageVal = cur ? cur.stage : 'pre';
+
+      fetch('/api/scene/detail?clientType=' + selectedCt + '&stage=' + stageVal)
         .then(function(r) { return r.json(); })
         .then(function(data) {
           var total = data.total || 0;
