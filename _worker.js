@@ -3498,14 +3498,14 @@ export default {
     if (isHtml && !path.includes('.')) {
       const KNOWN_ROUTES = new Set([
         '/', '/about', '/agent-academy', '/assessment', '/breeder', '/care-test',
-        '/dashboard', '/decoder', '/dictionary', '/entry', '/favorites', '/history',
+        '/clients', '/dashboard', '/decoder', '/dictionary', '/entry', '/favorites', '/history',
         '/ip-design', '/knowledge', '/management',
         '/mentor', '/partner', '/privacy', '/quality-test', '/reply',
         '/s1-report', '/scene', '/search', '/shuowenjiedao', '/skills', '/standard', '/survey',
         '/terms', '/showing-report', '/dict', '/guide', '/decode',
         '/agreement', '/okr', '/docs',
         '/breeder/', '/care-test/', '/about/', '/agent-academy/',
-        '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
+        '/clients/', '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
       ]);
       const normalized = path.endsWith('/') ? path.slice(0, -1) : path;
       if (!KNOWN_ROUTES.has(path) && !KNOWN_ROUTES.has(normalized) && !KNOWN_ROUTES.has(normalized + '/')) {
