@@ -213,6 +213,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .feedback-btn:hover{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
 .feedback-btn.active{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
 
+/* ===== 客户概览 ===== */
+.client-overview{padding:16px 8% 10px}
+.client-overview-inner{max-width:700px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px}
+.client-ov-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.client-ov-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:var(--dk)}
+.client-ov-link{font-size:12px;font-weight:700;color:var(--brand);text-decoration:none;display:flex;align-items:center;gap:4px;padding:6px 14px;border-radius:8px;border:1.5px solid var(--brand);transition:all .2s}
+.client-ov-link:hover{background:var(--brand);color:#fff}
+.client-ov-stats{display:flex;gap:16px;flex-wrap:wrap}
+.client-ov-stat{flex:1;min-width:80px;text-align:center;padding:12px 8px;background:var(--bg);border-radius:10px;border:1px solid var(--border)}
+.client-ov-num{font-size:22px;font-weight:900;color:var(--dk);line-height:1.2}
+.client-ov-num.ing{color:var(--brand)}
+.client-ov-num.done{color:#6d8f55}
+.client-ov-num.lost{color:var(--td)}
+.client-ov-label{font-size:11px;color:var(--ts);margin-top:2px}
+.client-ov-empty{font-size:13px;color:var(--ts);padding:14px 0;text-align:center;line-height:1.6}
+.client-ov-empty a{color:var(--brand);font-weight:700;text-decoration:none}
+.client-ov-empty a:hover{text-decoration:underline}
+.client-ov-progress{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.client-ov-bar{flex:1;height:6px;background:var(--bg2);border-radius:999px;overflow:hidden}
+.client-ov-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .6s ease}
+.client-ov-pct{font-size:11px;font-weight:700;color:var(--ts);white-space:nowrap}
+
 /* ===== 合作意向浮层(路径B) ===== */
 .partner-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .partner-overlay.show{display:flex}
@@ -260,6 +282,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   .stats-row { gap: 12px !important; }
   .stat-item { min-width: 80px !important; max-width: 120px !important; padding: 10px 14px !important; }
   .stat-num { font-size: 22px !important; }
+  .client-overview-inner { padding: 16px !important; }
+  .client-ov-stats { gap: 8px !important; }
+  .client-ov-stat { min-width: 60px !important; padding: 8px 4px !important; }
+  .client-ov-num { font-size: 18px !important; }
   .scene-inline-card { padding: 16px !important; }
   .scene-inline-chip { min-width: 60px !important; padding: 6px 10px !important; font-size: 11px !important; }
   .scene-inline-result.show { flex-direction: column; align-items: flex-start !important; }
@@ -305,6 +331,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     <a href="/care-test/">关怀测评</a>
     <a href="/reply/">客户解码</a>
     <a href="/ip-design/">IP设计</a>
+    <a href="/clients/">客户档案</a>
     <a href="/favorites/">收藏</a>
     <a href="/history/">历史</a>
     <a href="/dashboard/">管理看板</a>
@@ -421,6 +448,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     <div class="stat-item">
       <div class="stat-num">8</div>
       <div class="stat-label">知识域</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 客户概览 ====== -->
+<div class="client-overview" id="clientOverview">
+  <div class="client-overview-inner">
+    <div class="client-ov-header">
+      <div class="client-ov-title">👥 客户档案</div>
+      <a class="client-ov-link" href="/clients/">管理客户 →</a>
+    </div>
+    <div id="clientOvContent">
+      <div class="client-ov-empty">加载中...</div>
     </div>
   </div>
 </div>
@@ -936,6 +976,51 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
           $count.textContent = '?';
         });
     }
+  })();
+
+  // ===== 客户概览加载 =====
+  (function() {
+    var container = document.getElementById('clientOvContent');
+    if (!container) return;
+
+    function loadClientOverview() {
+      var clients = [];
+      try {
+        var raw = localStorage.getItem('fs_web_clients');
+        if (raw) clients = JSON.parse(raw) || [];
+      } catch(e) {}
+
+      if (clients.length === 0) {
+        container.innerHTML = '<div class="client-ov-empty">还没有客户档案 · <a href="/clients/">立即创建第一个</a></div>';
+        return;
+      }
+
+      var total = clients.length;
+      var ing = clients.filter(function(c) { return c.status === '跟进中' }).length;
+      var done = clients.filter(function(c) { return c.status === '已成交' }).length;
+      var lost = clients.filter(function(c) { return c.status === '已流失' }).length;
+      var real = clients.filter(function(c) { return !c.seed }).length;
+      var pct = real > 0 ? Math.min(100, Math.round(real / total * 100)) : 0;
+
+      container.innerHTML =
+        '<div class="client-ov-stats">' +
+          '<div class="client-ov-stat"><div class="client-ov-num ing">' + ing + '</div><div class="client-ov-label">跟进中</div></div>' +
+          '<div class="client-ov-stat"><div class="client-ov-num done">' + done + '</div><div class="client-ov-label">已成交</div></div>' +
+          '<div class="client-ov-stat"><div class="client-ov-num lost">' + lost + '</div><div class="client-ov-label">已流失</div></div>' +
+          '<div class="client-ov-stat"><div class="client-ov-num">' + total + '</div><div class="client-ov-label">全部客户</div></div>' +
+        '</div>' +
+        '<div class="client-ov-progress">' +
+          '<span style="font-size:11px;color:var(--ts)">真实客户占比</span>' +
+          '<div class="client-ov-bar"><div class="client-ov-fill" style="width:' + pct + '%"></div></div>' +
+          '<span class="client-ov-pct">' + pct + '%</span>' +
+        '</div>';
+    }
+
+    loadClientOverview();
+    // 每次页面显示时重新加载（用户可能在其他 tab 修改了客户数据）
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) loadClientOverview();
+    });
   })();
 
   // ===== 每日速递模块 =====

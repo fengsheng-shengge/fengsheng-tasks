@@ -1,0 +1,723 @@
+<!-- v20260809 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>客户档案 · 风声</title>
+<style>
+:root{
+  --bg:#f7f4ef;--bg2:#e8e4d9;--card:#fff;--card-h:#f5f1ec;
+  --border:rgba(80,90,70,.09);--border-h:rgba(60,80,50,.2);
+  --p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--p-bg:rgba(61,90,62,.05);
+  --fire:#c46a3a;--fire-l:#d89060;--charcoal:#3a3a38;
+  --dk:#1a1a1a;--tx:#555555;--ts:#7a8478;--td:#a8b0a6;
+  --brand:#2C5F3A;--brand-light:#4a8a5c;--accent:#E8742C;
+  --r:8px;--r2:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ===== 顶部导航 ===== */
+.nav{position:sticky;top:0;z-index:100;background:var(--bg);padding:12px 16px 8px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.nav a{text-decoration:none;color:var(--brand);font-size:17px;font-weight:700;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.nav a:hover{color:var(--brand-light)}
+.nav-title{flex:1;font-size:17px;font-weight:800;color:var(--dk);text-align:center;letter-spacing:.5px}
+.nav-sub{font-size:11px;color:var(--ts);font-weight:400;letter-spacing:0}
+.nav-action{font-size:13px;font-weight:700;color:var(--brand);background:none;border:1.5px solid var(--brand);border-radius:8px;padding:6px 14px;cursor:pointer;flex-shrink:0;transition:all .2s}
+.nav-action:hover{background:var(--brand);color:#fff}
+
+/* ===== 页面内容 ===== */
+.page{max-width:720px;margin:0 auto;padding:0 12px 80px}
+
+/* ===== 示例提示条 ===== */
+.sample-bar{display:flex;align-items:center;justify-content:space-between;background:rgba(232,116,44,.06);border:1px solid rgba(232,116,44,.12);border-radius:var(--r);padding:10px 14px;margin:12px 0}
+.sample-bar-t{font-size:12px;color:var(--fire);font-weight:500}
+.sample-clear{font-size:11px;color:var(--fire);background:rgba(232,116,44,.08);border:1px solid rgba(232,116,44,.15);border-radius:6px;padding:4px 10px;cursor:pointer;transition:all .2s}
+.sample-clear:hover{background:var(--fire);color:#fff}
+
+/* ===== 空状态 ===== */
+.empty{text-align:center;padding:60px 20px}
+.empty-ico{font-size:52px;margin-bottom:12px;opacity:.6}
+.empty-t{font-size:17px;font-weight:700;color:var(--dk);margin-bottom:6px}
+.empty-s{font-size:13px;color:var(--ts);margin-bottom:20px}
+.empty-btn{display:inline-flex;align-items:center;gap:6px;padding:12px 28px;border-radius:var(--r);font-size:14px;font-weight:700;border:none;cursor:pointer;background:var(--brand);color:#fff;transition:all .25s}
+.empty-btn:hover{background:var(--brand-light);transform:translateY(-1px)}
+
+/* ===== 客户卡片 ===== */
+.client-card{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.client-card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(60,50,40,.06);border-color:var(--border-h)}
+.client-card:active{transform:scale(.99)}
+.client-card.sample{opacity:.85}
+.client-card.sample::after{content:"示例";font-size:9px;font-weight:700;color:var(--fire);background:rgba(232,116,44,.08);border:1px solid rgba(232,116,44,.12);border-radius:4px;padding:1px 5px;margin-left:auto;flex-shrink:0}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--p-bg);color:var(--brand);display:grid;place-items:center;font-size:17px;font-weight:800;flex-shrink:0}
+.info{flex:1;min-width:0}
+.nm{font-size:14px;font-weight:700;color:var(--dk);display:flex;align-items:center;gap:6px}
+.mt{font-size:12px;color:var(--ts);margin-top:2px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.persona{font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px}
+.persona.p-red{background:rgba(196,106,58,.08);color:#c46a3a}
+.persona.p-blue{background:rgba(78,126,142,.08);color:#4e7e8e}
+.persona.p-green{background:rgba(109,143,85,.08);color:#6d8f55}
+.stagebadge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;flex-shrink:0}
+.stagebadge.st-ing{background:rgba(44,95,58,.08);color:var(--brand)}
+.stagebadge.st-done{background:rgba(109,143,85,.08);color:#6d8f55}
+.stagebadge.st-lost{background:rgba(180,180,170,.08);color:#999}
+
+/* ===== 覆盖层（详情 / 表单） ===== */
+.overlay{position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;display:none;flex-direction:column}
+.overlay.active{display:flex}
+.ov-nav{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;align-items:center;gap:10px;padding:12px 16px 8px;border-bottom:1px solid var(--border)}
+.ov-back{font-size:24px;color:var(--brand);background:none;border:none;cursor:pointer;padding:4px 8px;flex-shrink:0;font-weight:700;transition:opacity .2s}
+.ov-back:hover{opacity:.7}
+.ov-title{font-size:17px;font-weight:800;color:var(--dk);flex:1}
+.ov-sub{font-size:12px;color:var(--ts);font-weight:400}
+.ov-content{flex:1;overflow-y:auto;padding:16px;padding-bottom:90px}
+.ov-foot{position:sticky;bottom:0;z-index:10;background:var(--bg);border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap}
+.ov-foot .btn{flex:1;text-align:center;padding:12px;border-radius:var(--r);font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .2s;min-width:0}
+.ov-foot .btn:active{transform:scale(.97)}
+.ov-foot .btn-primary{background:var(--brand);color:#fff}
+.ov-foot .btn-primary:hover{background:var(--brand-light)}
+.ov-foot .btn-danger{background:rgba(196,58,58,.08);color:#c43a3a;border:1px solid rgba(196,58,58,.12)}
+.ov-foot .btn-danger:hover{background:rgba(196,58,58,.12)}
+.ov-foot .btn-outline{background:var(--card);color:var(--tx);border:1px solid var(--border)}
+.ov-foot .btn-outline:hover{border-color:var(--brand);color:var(--brand)}
+.ov-foot .btn-accent{background:var(--accent);color:#fff}
+.ov-foot .btn-accent:hover{background:#d06020}
+
+/* ===== 详情区块 ===== */
+.sec{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:12px}
+.sec-h{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--dk);margin-bottom:8px}
+.sec-h .em{font-size:16px}
+.sec-body{font-size:13px;color:var(--tx);line-height:1.6}
+.sec-body .sub{font-size:11px;color:var(--ts);margin-top:4px}
+
+/* 双纵轴定位 */
+.axis-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+.axis-name{font-size:11px;font-weight:700;color:var(--ts);width:32px;flex-shrink:0}
+.axis-chips{display:flex;gap:4px;flex-wrap:wrap}
+.achip{font-size:11px;padding:2px 8px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--ts)}
+.achip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.rel-tag{font-size:11px;color:var(--ts);margin-top:4px}
+
+/* 跟进待办 */
+.fl-item{background:var(--bg);border-radius:var(--r);padding:12px;margin-bottom:8px;border-left:3px solid var(--accent)}
+.fl-theme{font-size:13px;font-weight:700;color:var(--dk);margin-bottom:3px}
+.fl-text{font-size:12px;color:var(--tx);line-height:1.5;margin-bottom:4px}
+.fl-lt{font-size:11px;color:var(--fire);font-weight:500}
+
+/* 时间线 */
+.tl-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.tl-item:last-child{border-bottom:none}
+.tl-type{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;height:fit-content;margin-top:1px}
+.tl-type.tt-curate{background:rgba(44,95,58,.08);color:var(--brand)}
+.tl-type.tt-meeting{background:rgba(232,116,44,.08);color:var(--accent)}
+.tl-type.tt-followup{background:rgba(78,126,142,.08);color:#4e7e8e}
+.tl-body{flex:1}
+.tl-sum{font-size:13px;color:var(--dk)}
+.tl-at{font-size:11px;color:var(--td);margin-top:2px}
+
+/* 记忆点 */
+.mp-item{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border)}
+.mp-item:last-child{border-bottom:none}
+.mp-point{font-size:13px;color:var(--dk);flex:1}
+.mp-at{font-size:11px;color:var(--td);flex-shrink:0;margin-left:8px}
+
+/* 认知卡 */
+.cog-empty{font-size:12px;color:var(--ts);padding:12px 0;text-align:center;line-height:1.5}
+.cog-sub{font-size:12px;font-weight:700;color:var(--ts);margin:8px 0 4px}
+.cog-chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px}
+.cog-chip{font-size:11px;padding:3px 8px;border-radius:4px;background:var(--p-bg);color:var(--p);border:1px solid rgba(61,90,62,.1)}
+.cog-chip.signal{background:rgba(232,116,44,.06);color:var(--fire);border-color:rgba(232,116,44,.12)}
+.cog-count{font-size:11px;color:var(--td);margin-top:6px;text-align:right}
+
+/* ===== 表单 ===== */
+.field{margin-bottom:14px}
+.field .label{display:block;font-size:12px;font-weight:700;color:var(--ts);margin-bottom:4px;letter-spacing:.3px}
+.field .inp{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;background:var(--card);color:var(--dk);outline:none;transition:border-color .2s;font-family:inherit;resize:none}
+.field .inp:focus{border-color:var(--brand)}
+.field .inp::placeholder{color:var(--td)}
+.field .opt{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.field .opt view,.field .opt .opt-item{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;border:1.5px solid var(--border);cursor:pointer;transition:all .2s;background:var(--bg);color:var(--ts);user-select:none}
+.field .opt view:hover{background:var(--p-bg);color:var(--brand)}
+.field .opt view.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* ===== 确认弹窗 ===== */
+.modal-mask{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
+.modal-mask.active{display:flex}
+.modal{background:var(--card);border-radius:16px;padding:24px;max-width:340px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+.modal-title{font-size:17px;font-weight:800;color:var(--dk);margin-bottom:8px;text-align:center}
+.modal-content{font-size:13px;color:var(--tx);line-height:1.5;margin-bottom:20px;text-align:center}
+.modal-btns{display:flex;gap:10px}
+.modal-btn{flex:1;padding:10px;border-radius:var(--r);font-size:14px;font-weight:700;border:none;cursor:pointer;transition:all .2s;text-align:center}
+.modal-btn.cancel{background:var(--bg);color:var(--tx);border:1px solid var(--border)}
+.modal-btn.cancel:hover{background:var(--bg2)}
+.modal-btn.ok{background:var(--brand);color:#fff}
+.modal-btn.ok:hover{background:var(--brand-light)}
+.modal-btn.danger{background:#c43a3a;color:#fff}
+.modal-btn.danger:hover{background:#a83232}
+
+/* ===== Toast 提示 ===== */
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:400;background:rgba(0,0,0,.78);color:#fff;padding:14px 24px;border-radius:12px;font-size:14px;font-weight:600;max-width:280px;text-align:center;pointer-events:none;opacity:0;transition:opacity .3s}
+.toast.show{opacity:1}
+
+/* ===== 响应式 ===== */
+@media(max-width:480px){
+  .page{padding:0 10px 80px}
+  .client-card{padding:12px 14px}
+  .avatar{width:38px;height:38px;font-size:15px}
+  .nav{padding:10px 12px 6px}
+  .nav-title{font-size:15px}
+  .ov-content{padding:12px;padding-bottom:90px}
+  .sec{padding:14px;margin-bottom:10px}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="/">‹ 风声</a>
+  <div class="nav-title">客户档案 <span class="nav-sub">一次委托 · 终生服务</span></div>
+  <button class="nav-action" onclick="openForm()">+ 新建</button>
+</div>
+
+<div class="page" id="app">
+  <!-- 示例客户提示条 -->
+  <div class="sample-bar" id="sampleBar" style="display:none">
+    <span class="sample-bar-t">📌 示例客户仅供演示参考</span>
+    <button class="sample-clear" onclick="askClear()">清空示例</button>
+  </div>
+
+  <!-- 空状态 -->
+  <div class="empty" id="emptyState">
+    <div class="empty-ico">👥</div>
+    <div class="empty-t">还没有客户档案</div>
+    <div class="empty-s">从第一个开始，让每一次见面都有据可依</div>
+    <button class="empty-btn" onclick="openForm()">+ 立即建立第一个客户</button>
+  </div>
+
+  <!-- 客户列表 -->
+  <div id="clientList"></div>
+</div>
+
+<!-- ===== 客户详情覆盖层 ===== -->
+<div class="overlay" id="detailOverlay">
+  <div class="ov-nav">
+    <button class="ov-back" onclick="closeDetail()">‹</button>
+    <div class="ov-title" id="detailName"></div>
+    <div class="ov-sub" id="detailMeta"></div>
+  </div>
+  <div class="ov-content" id="detailContent"></div>
+  <div class="ov-foot">
+    <button class="btn btn-primary" onclick="openFormFromDetail()">✎ 编辑客户</button>
+    <button class="btn btn-danger" onclick="askDelDetail()">🗑 删除</button>
+    <button class="btn btn-accent" onclick="openPrep()">🎯 见面参谋</button>
+  </div>
+</div>
+
+<!-- ===== 新建/编辑表单覆盖层 ===== -->
+<div class="overlay" id="formOverlay">
+  <div class="ov-nav">
+    <button class="ov-back" onclick="closeForm()">‹</button>
+    <div class="ov-title" id="formTitle">新建客户</div>
+    <div class="ov-sub">信息越全，策展越准</div>
+  </div>
+  <div class="ov-content">
+    <div class="field">
+      <label class="label">姓氏（头像）</label>
+      <input class="inp" id="fSurname" placeholder="如 林" />
+    </div>
+    <div class="field">
+      <label class="label">称呼 / 全名</label>
+      <input class="inp" id="fName" placeholder="如 林先生 & 未婚妻" />
+    </div>
+    <div class="field">
+      <label class="label">角色</label>
+      <div class="opt" id="fRelOpts"></div>
+    </div>
+    <div class="field">
+      <label class="label">双纵轴阶段</label>
+      <input class="inp" id="fStage" placeholder="如 购房线 / ①首套" />
+      <div class="opt wrap" id="fStageOpts"></div>
+    </div>
+    <div class="field">
+      <label class="label">性格频道</label>
+      <div class="opt" id="fPkeyOpts"></div>
+    </div>
+    <div class="field">
+      <label class="label">分层</label>
+      <div class="opt" id="fLevelOpts"></div>
+    </div>
+    <div class="field">
+      <label class="label">状态</label>
+      <div class="opt" id="fStatusOpts"></div>
+    </div>
+    <div class="field">
+      <label class="label">小区 / 地址</label>
+      <input class="inp" id="fAddr" placeholder="选填" />
+    </div>
+    <div class="field">
+      <label class="label">备注（核心诉求 / 敏感点）</label>
+      <textarea class="inp" id="fNote" rows="3" placeholder="如 90后婚房，预算300万，看重学区与通勤"></textarea>
+    </div>
+  </div>
+  <div class="ov-foot">
+    <button class="btn btn-outline" onclick="closeForm()" style="flex:0 0 auto;min-width:80px">取消</button>
+    <button class="btn btn-primary" onclick="saveForm()" id="formSaveBtn">✓ 创建客户</button>
+  </div>
+</div>
+
+<!-- ===== 确认弹窗 ===== -->
+<div class="modal-mask" id="confirmModal">
+  <div class="modal">
+    <div class="modal-title" id="confirmTitle">确认</div>
+    <div class="modal-content" id="confirmContent">确定执行此操作？</div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="confirmCancel()">取消</button>
+      <button class="modal-btn ok" id="confirmOkBtn" onclick="confirmOk()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// 数据模型与常量
+// ============================================================
+const PERSONA_MAP = {
+  red: { tag: '🔴 结果导向', tip: '直接给结论与数据，少寒暄' },
+  blue: { tag: '🔵 关系导向', tip: '先建信任、化繁为简、多关心' },
+  green: { tag: '🟢 理智型', tip: '给完整数据链、对比表、风险分析' }
+}
+const LEVEL_MAP = {
+  A: { tag: 'A 类（高价值）', act: '定制行情报告·生日礼·台风巡屋', freq: '每月' },
+  B: { tag: 'B 类（潜力）', act: '房价涨幅·政策解读·节日问候', freq: '每季' },
+  C: { tag: 'C 类（基础）', act: '社群内容·节气卡片·便民活动', freq: '每半年' }
+}
+const REL_OPTS = ['买房客户', '租客', '业主', '房东']
+const STAGE_OPTS = ['购房线 / ①首套','购房线 / ②改善','购房线 / ③教育','购房线 / ④升级','购房线 / ⑤适老','租住线 / ①起步','租住线 / ②改善','租住线 / ③家庭','租住线 / ④品质','业主侧']
+const LEVEL_OPTS = ['A', 'B', 'C']
+const STATUS_OPTS = ['跟进中', '已成交', '已流失']
+const BUY_AXIS = ['①首套', '②改善', '③教育', '④升级', '⑤适老']
+const RENT_AXIS = ['①起步', '②改善', '③家庭', '④品质']
+const STORAGE_KEY = 'fs_web_clients'
+
+// ============================================================
+// 状态管理
+// ============================================================
+let clients = []
+let editingId = null
+let detailTarget = null
+let confirmMode = ''
+let confirmTarget = null
+
+// ============================================================
+// 存储
+// ============================================================
+function persist() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(clients)) } catch(e) {}
+}
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (raw) { clients = JSON.parse(raw); return true }
+  } catch(e) {}
+  return false
+}
+
+// ============================================================
+// 示例客户
+// ============================================================
+function seedClients() {
+  if (clients.length > 0) return
+  const seeds = [
+    { surname: '林', name: '林先生 & 未婚妻', rel: '买房客户', stage: '购房线 / ①首套', pkey: 'red', persona: '🔴 结果导向', status: '跟进中', asset: '关系建立中，资产初值', level: 'A', addr: '', note: '90后婚房，预算300万，看重学区与通勤', seed: true, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] } },
+    { surname: '张', name: '张先生（业主）', rel: '业主', stage: '购房线 / ④升级', pkey: 'blue', persona: '🔵 关系导向', status: '已成交', asset: '已购本房，适老改造跟进已规划', level: 'A', addr: '', note: '已购，适老改造咨询', seed: true, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] } },
+    { surname: '王', name: '王女士（房东）', rel: '房东', stage: '租住线 / 业主侧', pkey: 'blue', persona: '🔵 关系导向', status: '跟进中', asset: '委托出租，定价跟进待办', level: 'B', addr: '', note: '空置45天委托出租', seed: true, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] } },
+    { surname: '陈', name: '陈同学（租客）', rel: '租客', stage: '租住线 / ②改善', pkey: 'green', persona: '🟢 理智型', status: '跟进中', asset: '工作调动，租住改善中', level: 'C', addr: '', note: '工作调动近地铁', seed: true, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] } }
+  ]
+  clients = seeds.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c }))
+  persist()
+}
+
+// ============================================================
+// 工具函数
+// ============================================================
+function genId() { return 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7) }
+function statusKey(s) { return ({ '跟进中': 'ing', '已成交': 'done', '已流失': 'lost' })[s] || 'ing' }
+function fmtDate(ts) {
+  const d = new Date(ts)
+  return d.getMonth()+1 + '月' + d.getDate() + '日 ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0')
+}
+
+// ============================================================
+// Toast
+// ============================================================
+function showToast(msg) {
+  const el = document.getElementById('toast')
+  el.textContent = msg
+  el.classList.add('show')
+  clearTimeout(el._t)
+  el._t = setTimeout(() => el.classList.remove('show'), 2000)
+}
+
+// ============================================================
+// 渲染列表
+// ============================================================
+function render() {
+  const listEl = document.getElementById('clientList')
+  const emptyEl = document.getElementById('emptyState')
+  const sampleBar = document.getElementById('sampleBar')
+
+  const hasSamples = clients.some(c => c.seed)
+  sampleBar.style.display = hasSamples ? 'flex' : 'none'
+
+  if (clients.length === 0) {
+    listEl.innerHTML = ''
+    emptyEl.style.display = 'block'
+    return
+  }
+  emptyEl.style.display = 'none'
+
+  listEl.innerHTML = clients.map(c => `
+    <div class="client-card${c.seed ? ' sample' : ''}" onclick="openDetail('${c.id}')">
+      <div class="avatar">${c.surname || (c.name || '客')[0]}</div>
+      <div class="info">
+        <div class="nm">${escHtml(c.name)}</div>
+        <div class="mt">${escHtml(c.rel)} · ${escHtml(c.stage)}<span class="persona p-${c.pkey || 'red'}">${PERSONA_MAP[c.pkey] ? PERSONA_MAP[c.pkey].tag : PERSONA_MAP.red.tag}</span></div>
+      </div>
+      <span class="stagebadge st-${statusKey(c.status)}">${escHtml(c.status)}</span>
+    </div>
+  `).join('')
+}
+
+function escHtml(s) {
+  if (!s) return ''
+  const d = document.createElement('div')
+  d.textContent = s
+  return d.innerHTML
+}
+
+// ============================================================
+// 客户详情
+// ============================================================
+function openDetail(id) {
+  const c = clients.find(x => x.id === id)
+  if (!c) return
+  detailTarget = c
+  const pm = PERSONA_MAP[c.pkey] || PERSONA_MAP.red
+  const lm = LEVEL_MAP[c.level] || LEVEL_MAP.C
+  const isBuy = (c.stage || '').startsWith('购房线')
+  const curSeg = (c.stage || '').split(' / ')[1] || ''
+  const relLabel = ({ '买房客户': '买方', '租客': '租客', '业主': '业主', '房东': '房东' })[c.rel] || c.rel
+
+  document.getElementById('detailName').textContent = c.name
+  document.getElementById('detailMeta').textContent = c.stage + ' · ' + c.status + (c.seed ? ' · 示例客户' : '')
+
+  let html = ''
+
+  // 双纵轴定位
+  html += `<div class="sec">
+    <div class="sec-h"><span class="em">🧭</span>双纵轴定位（我在服务 TA 的哪一段）</div>
+    <div class="sec-body">
+      <div class="axis-row"><span class="axis-name">购5</span><div class="axis-chips">${BUY_AXIS.map(s => `<span class="achip${isBuy && curSeg === s ? ' on' : ''}">${s}</span>`).join('')}</div></div>
+      <div class="axis-row"><span class="axis-name">租4</span><div class="axis-chips">${RENT_AXIS.map(s => `<span class="achip${!isBuy && curSeg === s ? ' on' : ''}">${s}</span>`).join('')}<span class="achip${!isBuy && curSeg === '业主侧' ? ' on' : ''}">业主侧</span></div></div>
+      <div class="rel-tag">关系类型：${relLabel}</div>
+    </div>
+  </div>`
+
+  // 客户描摹
+  html += `<div class="sec">
+    <div class="sec-h"><span class="em">🎨</span>客户描摹（红蓝绿）</div>
+    <div class="sec-body">${pm.tag}——${pm.tip}</div>
+  </div>`
+
+  // 分层运营
+  html += `<div class="sec">
+    <div class="sec-h"><span class="em">🏷️</span>分层运营（A/B/C）</div>
+    <div class="sec-body">${lm.tag}<div class="sub">维护动作：${lm.act} ｜ 频率：${lm.freq}</div></div>
+  </div>`
+
+  // 服务进度
+  html += `<div class="sec">
+    <div class="sec-h"><span class="em">🔄</span>服务进度回报（透明回报法）</div>
+    <div class="sec-body">委托第 1 天：启动拍照/VR/上架/配对清单。<br>每周 1 次：带看次数、买方反应、同栋最新成交。<br>关键节点：有出价 2 小时内电话 + 书面同步。</div>
+  </div>`
+
+  // 客户资产
+  if (c.asset) {
+    html += `<div class="sec">
+      <div class="sec-h"><span class="em">💎</span>客户资产</div>
+      <div class="sec-body">${escHtml(c.asset)}</div>
+    </div>`
+  }
+
+  // 备注
+  if (c.note) {
+    html += `<div class="sec">
+      <div class="sec-h"><span class="em">📝</span>备注</div>
+      <div class="sec-body">${escHtml(c.note)}</div>
+    </div>`
+  }
+
+  // 地址
+  if (c.addr) {
+    html += `<div class="sec">
+      <div class="sec-h"><span class="em">📍</span>小区 / 地址</div>
+      <div class="sec-body">${escHtml(c.addr)}</div>
+    </div>`
+  }
+
+  // 跟进待办
+  const followups = (c.followups || []).filter(f => !f.done)
+  if (followups.length > 0) {
+    html += `<div class="sec">
+      <div class="sec-h"><span class="em">💌</span>跟进待办（带新价值 · 非催）</div>
+      <div class="sec-body">${followups.map(f => `
+        <div class="fl-item">
+          <div class="fl-theme">${escHtml(f.theme)}</div>
+          <div class="fl-text">${escHtml(f.text)}</div>
+          <div class="fl-lt">LTRUST · ${escHtml(f.ltrust)}</div>
+        </div>
+      `).join('')}</div>
+    </div>`
+  }
+
+  // 接触时间线
+  const timeline = c.timeline || []
+  if (timeline.length > 0) {
+    html += `<div class="sec">
+      <div class="sec-h"><span class="em">🕒</span>接触时间线</div>
+      <div class="sec-body">${timeline.map(t => `
+        <div class="tl-item">
+          <span class="tl-type tt-${t.type === '策展' ? 'curate' : t.type === '见面' ? 'meeting' : 'followup'}">${escHtml(t.type)}</span>
+          <div class="tl-body"><div class="tl-sum">${escHtml(t.summary)}</div><div class="tl-at">${fmtDate(t.at)}</div></div>
+        </div>
+      `).join('')}</div>
+    </div>`
+  }
+
+  // 记忆点
+  const mps = c.memoryPoints || []
+  if (mps.length > 0) {
+    html += `<div class="sec">
+      <div class="sec-h"><span class="em">⭐</span>记忆点（客户记住你的瞬间）</div>
+      <div class="sec-body">${mps.map(m => `
+        <div class="mp-item">
+          <span class="mp-point">${escHtml(m.point)}</span>
+          <span class="mp-at">${fmtDate(m.at)}</span>
+        </div>
+      `).join('')}</div>
+    </div>`
+  }
+
+  // 认知卡
+  const cog = c.cognition || { log: [] }
+  const hasCog = (cog.known || []).length > 0 || (cog.signals || []).length > 0
+  html += `<div class="sec">
+    <div class="sec-h"><span class="em">🧠</span>认知卡（越服务越懂客户）</div>
+    <div class="sec-body">`
+  if (hasCog) {
+    html += `<div class="cog-sub">已知偏好</div>
+      <div class="cog-chips">${(cog.known || []).map(k => `<span class="cog-chip">${escHtml(k)}</span>`).join('')}</div>
+      <div class="cog-sub">决策信号 / 关怀点</div>
+      <div class="cog-chips">${(cog.signals || []).map(s => `<span class="cog-chip signal">${escHtml(s)}</span>`).join('')}</div>
+      <div class="cog-count">已沉淀 ${(cog.log || []).length} 次见面参谋</div>`
+  } else {
+    html += `<div class="cog-empty">暂无认知沉淀。准备一次见面后，客户的偏好与信号会自动长在这里。</div>`
+  }
+  html += `</div></div>`
+
+  document.getElementById('detailContent').innerHTML = html
+  document.getElementById('detailOverlay').classList.add('active')
+  document.body.style.overflow = 'hidden'
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('active')
+  document.body.style.overflow = ''
+  detailTarget = null
+}
+
+function openFormFromDetail() {
+  if (detailTarget) openForm(detailTarget.id)
+}
+
+function askDelDetail() {
+  if (detailTarget) askDel(detailTarget)
+}
+
+function openPrep() {
+  if (detailTarget) {
+    showToast('见面参谋功能即将上线，敬请期待')
+  }
+}
+
+// ============================================================
+// 新建 / 编辑表单
+// ============================================================
+function openForm(id) {
+  const c = id ? clients.find(x => x.id === id) : null
+  editingId = c ? c.id : null
+
+  document.getElementById('formTitle').textContent = editingId ? '编辑客户' : '新建客户'
+  document.getElementById('formSaveBtn').textContent = editingId ? '✓ 保存修改' : '✓ 创建客户'
+
+  const f = {
+    surname: c ? c.surname : '',
+    name: c ? c.name : '',
+    rel: c ? c.rel : '买房客户',
+    stage: c ? c.stage : '',
+    pkey: c ? c.pkey : 'red',
+    level: c ? c.level : 'A',
+    status: c ? c.status : '跟进中',
+    addr: c ? c.addr : '',
+    note: c ? c.note : ''
+  }
+
+  document.getElementById('fSurname').value = f.surname
+  document.getElementById('fName').value = f.name
+  document.getElementById('fStage').value = f.stage
+  document.getElementById('fAddr').value = f.addr
+  document.getElementById('fNote').value = f.note
+
+  // 渲染选项
+  renderOpts('fRelOpts', REL_OPTS, f.rel, (v) => { document.getElementById('fRelOpts').querySelectorAll('view, .opt-item').forEach(el => { el.classList.toggle('on', el.dataset.val === v) }) })
+  renderOpts('fStageOpts', STAGE_OPTS, f.stage, (v) => {
+    document.getElementById('fStage').value = v
+    document.getElementById('fStageOpts').querySelectorAll('view, .opt-item').forEach(el => { el.classList.toggle('on', el.dataset.val === v) })
+  })
+  renderPkeyOpts(f.pkey)
+  renderOpts('fLevelOpts', LEVEL_OPTS, f.level, (v) => { document.getElementById('fLevelOpts').querySelectorAll('view, .opt-item').forEach(el => { el.classList.toggle('on', el.dataset.val === v) }) })
+  renderOpts('fStatusOpts', STATUS_OPTS, f.status, (v) => { document.getElementById('fStatusOpts').querySelectorAll('view, .opt-item').forEach(el => { el.classList.toggle('on', el.dataset.val === v) }) })
+
+  // 关闭详情
+  document.getElementById('detailOverlay').classList.remove('active')
+  document.getElementById('formOverlay').classList.add('active')
+  document.body.style.overflow = 'hidden'
+}
+
+function renderOpts(containerId, opts, selected, onChange) {
+  const container = document.getElementById(containerId)
+  container.innerHTML = opts.map(o => `<view class="opt-item" data-val="${o}" onclick="this.parentElement.querySelectorAll('view, .opt-item').forEach(el => el.classList.remove('on')); this.classList.add('on'); (${onChange.toString()})('${o}')">${o}</view>`).join('')
+  container.querySelectorAll('.opt-item').forEach(el => { if (el.dataset.val === selected) el.classList.add('on') })
+}
+
+function renderPkeyOpts(selected) {
+  const container = document.getElementById('fPkeyOpts')
+  const opts = [
+    { val: 'red', label: '🔴 结果导向' },
+    { val: 'blue', label: '🔵 关系导向' },
+    { val: 'green', label: '🟢 理智型' }
+  ]
+  container.innerHTML = opts.map(o => `<view class="opt-item" data-val="${o.val}" onclick="
+    this.parentElement.querySelectorAll('view, .opt-item').forEach(el => el.classList.remove('on'));
+    this.classList.add('on');
+  ">${o.label}</view>`).join('')
+  container.querySelectorAll('.opt-item').forEach(el => { if (el.dataset.val === selected) el.classList.add('on') })
+}
+
+function closeForm() {
+  document.getElementById('formOverlay').classList.remove('active')
+  document.body.style.overflow = ''
+}
+
+function saveForm() {
+  const name = document.getElementById('fName').value.trim()
+  if (!name) { showToast('请填写称呼 / 全名'); return }
+  let surname = document.getElementById('fSurname').value.trim()
+  if (!surname) surname = name[0]
+
+  const rel = document.querySelector('#fRelOpts .on') ? document.querySelector('#fRelOpts .on').dataset.val : '买房客户'
+  const stage = document.getElementById('fStage').value.trim()
+  const pkey = document.querySelector('#fPkeyOpts .on') ? document.querySelector('#fPkeyOpts .on').dataset.val : 'red'
+  const level = document.querySelector('#fLevelOpts .on') ? document.querySelector('#fLevelOpts .on').dataset.val : 'A'
+  const status = document.querySelector('#fStatusOpts .on') ? document.querySelector('#fStatusOpts .on').dataset.val : '跟进中'
+  const addr = document.getElementById('fAddr').value.trim()
+  const note = document.getElementById('fNote').value.trim()
+
+  const persona = PERSONA_MAP[pkey] ? PERSONA_MAP[pkey].tag : PERSONA_MAP.red.tag
+
+  if (editingId) {
+    const idx = clients.findIndex(c => c.id === editingId)
+    if (idx >= 0) {
+      clients[idx] = { ...clients[idx], surname, name, rel, stage, pkey, persona, level, status, addr, note }
+    }
+    showToast('已保存修改')
+  } else {
+    const client = { id: genId(), surname, name, rel, stage, pkey, persona, level, status, addr, note, seed: false, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] } }
+    clients.unshift(client)
+    showToast('客户已创建')
+  }
+
+  persist()
+  closeForm()
+  render()
+}
+
+// ============================================================
+// 删除 / 清空
+// ============================================================
+function askDel(c) {
+  confirmMode = 'del'
+  confirmTarget = c
+  document.getElementById('confirmTitle').textContent = '删除客户'
+  document.getElementById('confirmContent').textContent = '确定删除「' + c.name + '」？此操作不可恢复。'
+  document.getElementById('confirmOkBtn').className = 'modal-btn danger'
+  document.getElementById('confirmOkBtn').textContent = '确定删除'
+  document.getElementById('confirmModal').classList.add('active')
+}
+
+function askClear() {
+  const n = clients.filter(x => x.seed).length
+  if (n === 0) { showToast('没有示例客户可清空'); return }
+  confirmMode = 'clear'
+  confirmTarget = null
+  document.getElementById('confirmTitle').textContent = '清空示例客户'
+  document.getElementById('confirmContent').textContent = '将删除全部 ' + n + ' 张示例客户（真实客户不受影响）。确定？'
+  document.getElementById('confirmOkBtn').className = 'modal-btn ok'
+  document.getElementById('confirmOkBtn').textContent = '确定'
+  document.getElementById('confirmModal').classList.add('active')
+}
+
+function confirmOk() {
+  if (confirmMode === 'del' && confirmTarget) {
+    clients = clients.filter(c => c.id !== confirmTarget.id)
+    persist()
+    render()
+    closeDetail()
+    showToast('已删除')
+  } else if (confirmMode === 'clear') {
+    const before = clients.length
+    clients = clients.filter(c => !c.seed)
+    const n = before - clients.length
+    persist()
+    render()
+    showToast('已清空 ' + n + ' 张示例')
+  }
+  document.getElementById('confirmModal').classList.remove('active')
+  confirmTarget = null
+}
+
+function confirmCancel() {
+  document.getElementById('confirmModal').classList.remove('active')
+  confirmTarget = null
+}
+
+// ============================================================
+// 初始化
+// ============================================================
+function init() {
+  if (!loadFromStorage()) {
+    seedClients()
+  }
+  render()
+}
+
+init()
+</script>
+</body>
+</html>
