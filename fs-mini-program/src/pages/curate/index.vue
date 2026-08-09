@@ -1,232 +1,243 @@
 <template>
   <view class="page">
-    <view class="featured-cta">
-      <view style="font-size:16px;font-weight:700">🎯 见面参谋（真实字典生成）</view>
-      <view style="font-size:12px;opacity:.9;line-height:1.5;margin:4px 0 12px">基于真实字典，输入客户当下情况秒出专属「说 / 带 / 问 + 见后跟进」，每条挂真实依据，随客户不同而不同。</view>
-      <button class="btn-cta" @tap="openPrep()">进入见面参谋 →</button>
-    </view>
-    <view class="featured-cta" style="background:#f3f0ea;color:#3d5a3e">
-      <view style="font-size:16px;font-weight:700">📇 从客户档案生成</view>
-      <view style="font-size:12px;opacity:.8;line-height:1.5;margin:4px 0 12px">选一个客户，自动带入其双纵轴阶段与诉求，生成专属参谋包并沉淀到认知卡。</view>
-      <button class="btn-cta" style="background:#3d5a3e;color:#fff" @tap="showPicker = true">选择客户 →</button>
-    </view>
-
-    <view class="section-header"><text class="section-title">方法论文献</text><text class="section-more">6 方法论 · 7 工具箱</text></view>
-    <view class="methodcard" v-for="(m, i) in methods" :key="i" :class="{ open: m.open }" @tap="m.open = !m.open">
-      <view class="mh"><text>{{ m.icon }}</text>{{ m.n }} {{ m.name }}<text class="arrow">›</text></view>
-      <view class="ms">{{ m.desc }}</view>
+    <!-- 头部定位：顾问简报三维度 -->
+    <view class="hero">
+      <view class="hero-title">顾问简报</view>
+      <view class="hero-sub">从“带你看房的人”，变成“帮客户做家庭资产决策的顾问”</view>
+      <view class="hero-tags">
+        <text class="tag">顾问人设</text>
+        <text class="tag">有形呈现</text>
+        <text class="tag">证据决策</text>
+      </view>
     </view>
 
-    <!-- V2.1.1a P0-3：工具箱（独立可用） -->
-    <view class="section-header" style="margin-top:14px"><text class="section-title">工具箱（独立可用）</text><text class="section-more">点开即用 · 不依赖策展</text></view>
-    <view class="toolcard" v-for="(t, i) in toolbox" :key="i" @tap="showTool(t)">
-      <view class="th"><text class="ti">{{ t.icon }}</text>{{ t.name }}<text class="tchip">{{ t.mtd }}</text></view>
-      <view class="ts">{{ t.one }}</view>
+    <!-- 产品介绍：让用户理解这页干嘛、能产出什么 -->
+    <view class="intro">
+      <view class="intro-t">这是什么</view>
+      <view class="intro-b">顾问简报，是把一次客户沟通变成「有依据的决策建议」的工具。你填客户画像，它从真实知识库检索，产出：</view>
+      <view class="intro-list">
+        <text>① 破除客户固有误区（每条附政策 / 数据依据）</text>
+        <text>② 立方案 · 分步行动时间轴</text>
+        <text>③ 可一键转发给客户的长图简报</text>
+      </view>
     </view>
 
-    <view class="section-header" style="margin-top:14px"><text class="section-title">我的策展库</text><text class="section-more">{{ lib.length }} 次</text></view>
-    <view v-if="lib.length === 0" class="empty">还没有策展，点上方「进入见面参谋」开始。</view>
+    <!-- 测评结论预填提示 -->
+    <view v-if="assessInfo" class="assess-tip">
+      <text class="at-ico">✓</text>
+      <text class="at-tx">已采集七维品质测评结论（{{ assessInfo.type === 'living' ? '住得好' : '服务者' }}，将带入简报作为客户自评维度）</text>
+      <text class="at-clear" @tap="clearAssess">不用</text>
+    </view>
+
+    <!-- 入口一：快速生成（结构化客户画像） -->
+    <view class="card">
+      <view class="card-h"><text class="ci">📝</text>快速生成<text class="chip">约 2 分钟</text></view>
+      <view class="card-sub">填客户结构化画像，秒出专属顾问简报：破误区 · 立方案 · 分步行动，每条挂真实依据。</view>
+      <view v-if="!showForm">
+        <button class="btn-main" @tap="showForm = true">填写客户画像 →</button>
+      </view>
+      <view v-else class="form">
+        <view class="fld">
+          <text class="lab">客户姓名</text>
+          <input class="inp" :value="form.name" @input="onInput('name', $event)" placeholder="如：王女士" />
+        </view>
+        <view class="fld">
+          <text class="lab">客户类型</text>
+          <view class="seg">
+            <text v-for="t in ctypes" :key="t" class="seg-i" :class="{ on: form.ctype === t }" @tap="form.ctype = t">{{ t }}</text>
+          </view>
+        </view>
+        <view class="fld">
+          <text class="lab">总预算（万元）</text>
+          <input class="inp" type="digit" :value="form.budget" @input="onInput('budget', $event)" placeholder="如 800" />
+        </view>
+        <view class="fld">
+          <text class="lab">购房 / 置业目的</text>
+          <view class="seg">
+            <text v-for="t in purposeOpts" :key="t" class="seg-i" :class="{ on: form.purpose === t }" @tap="form.purpose = t">{{ t }}</text>
+          </view>
+        </view>
+        <view class="fld">
+          <text class="lab">付款方式</text>
+          <view class="seg">
+            <text v-for="t in payTypeOpts" :key="t" class="seg-i" :class="{ on: form.payType === t }" @tap="form.payType = t">{{ t }}</text>
+          </view>
+        </view>
+        <view class="fld">
+          <text class="lab">家庭结构</text>
+          <view class="seg">
+            <text v-for="t in familyOpts" :key="t" class="seg-i" :class="{ on: form.family === t }" @tap="form.family = t">{{ t }}</text>
+          </view>
+        </view>
+        <view class="fld">
+          <text class="lab">关键时间事件</text>
+          <input class="inp" :value="form.event" @input="onInput('event', $event)" placeholder="如 孩子 2027 年上小学" />
+        </view>
+        <view class="fld">
+          <text class="lab">客户已有的想法（可多选）</text>
+          <view class="chk" v-for="o in ideaOpts" :key="o" @tap="toggleIdea(o)">
+            <text class="box" :class="{ on: form.ideas.includes(o) }">{{ form.ideas.includes(o) ? '✓' : '' }}</text>
+            <text class="ck-tx">{{ o }}</text>
+          </view>
+          <input class="inp" :value="form.customIdea" @input="onInput('customIdea', $event)" placeholder="或自定义，如：先买后卖更安全" />
+        </view>
+        <button class="btn-main" @tap="genBrief">生成顾问简报 →</button>
+      </view>
+    </view>
+
+    <!-- 入口二：语音录入（外部依赖，先占位） -->
+    <view class="card">
+      <view class="card-h"><text class="ci">🎙️</text>语音录入<text class="chip dim">即将上线</text></view>
+      <view class="card-sub">带看途中对着微信录音，转写后自动抽取约束，生成简报。</view>
+      <button class="btn-dis" disabled>录音生成（即将开放）</button>
+    </view>
+
+    <!-- 入口三：我的客户 -->
+    <view class="card">
+      <view class="card-h"><text class="ci">📇</text>我的客户<text class="chip">{{ clientList.length }} 位</text></view>
+      <view class="card-sub">查看历史简报，一键重新生成最新政策版。</view>
+      <button class="btn-line" @tap="goClients">打开客户档案 →</button>
+    </view>
+
+    <!-- 我的简报库 -->
+    <view class="sec-h">我的顾问简报库<text class="sec-m">{{ lib.length }} 份</text></view>
+    <view v-if="lib.length === 0" class="empty">还没有简报，点上方「快速生成」开始。</view>
     <view class="libitem" v-for="(l, i) in lib" :key="i" @tap="openPrep()">
       <view class="lt"><view class="t">{{ l.t }}</view><view class="s">{{ l.s }}</view></view>
       <text class="ok">已生成</text>
-    </view>
-
-    <!-- 选择客户浮层（用于「从客户档案生成」） -->
-    <view class="overlay" :class="{ active: showPicker }">
-      <view class="ov-nav">
-        <button class="back" @tap="showPicker = false">‹</button>
-        <view><view style="font-size:17px;font-weight:700">选择客户</view><view class="sub">选后自动带入其双纵轴与诉求</view></view>
-      </view>
-      <scroll-view class="ovcontent" scroll-y="true">
-        <view class="pick-item" v-for="c in clientList" :key="c.id" @tap="pickClient(c)">
-          <view class="pi-name">{{ c.name }}</view>
-          <view class="pi-meta">{{ c.rel }} · {{ c.stage }} · {{ personaOf(c) }}</view>
-        </view>
-        <view v-if="clientList.length === 0" class="empty">还没有客户，去「客户」页新建。</view>
-        <button class="btn-line" @tap="goClients">＋ 去客户页新建</button>
-      </scroll-view>
-    </view>
-
-    <!-- 见前策展包结果 -->
-    <view class="overlay" :class="{ active: showResult }">
-      <view class="ov-nav">
-        <button class="back" @tap="showResult = false">‹</button>
-        <view><view style="font-size:17px;font-weight:700">见前策展包</view><view class="sub">{{ resultSub }}</view></view>
-      </view>
-      <scroll-view class="ovcontent" scroll-y="true">
-        <view class="channel">{{ channelText }}</view>
-        <view class="score"><view class="num">86</view><view class="tx">本次策展信心分</view><view class="tx-sub">命中 <text style="font-weight:700">记忆点 ×2</text> · 赢面较裸聊 +37%</view></view>
-
-        <view class="sec"><view class="h"><text class="em">🎯</text>① 仪式感设计<text class="mtd">准备</text></view>
-          <view class="sec-list"><view class="sec-li">提前 <text class="hl">10 分钟</text>到场，门口迎接并称呼「林先生 / 李小姐」</view><view class="sec-li">备好鞋套、饮水、户型图册，体现专业准备</view><view class="sec-li">开场 30 秒说明今日看房动线，给掌控感</view></view>
-        </view>
-        <view class="sec"><view class="h"><text class="em">📄</text>② 专业依据（书面化先行法）<text class="mtd">方法②</text></view>
-          <view class="sec-list"><view class="sec-li">学区划片以每年 4 月公示为准，本房对应 XX 小学，近三年无调整</view><view class="sec-li">首套公积金贷款额度与利率，按当前政策测算月供</view></view>
-          <view class="ref">依据：XX 区教育局 2025 入学政策 · 公积金管理中心现行利率表</view>
-        </view>
-        <view class="sec"><view class="h"><text class="em">❓</text>③ 需求三板斧话术（客制化沟通法）<text class="mtd">方法④</text></view>
-          <view class="sec-list"><view class="sec-li" v-for="(q, i) in resultQ" :key="i">{{ q }}</view></view>
-        </view>
-        <view class="sec"><view class="h"><text class="em">🏠</text>④ 房源亮点卡<text class="mtd">工具④</text></view>
-          <view class="sec-list"><view class="sec-li"><text style="font-weight:700">匹配点 1（学区）</text>：对应核心诉求 A——落户即入读，近三年划片稳定</view><view class="sec-li"><text style="font-weight:700">匹配点 2（通勤）</text>：对应核心诉求 B——地铁 8 分钟，直达 CBD</view><view class="sec-li"><text style="font-weight:700">匹配点 3（户型）</text>：对应核心诉求 C——南向三开间，婚房改儿童房便利</view></view>
-        </view>
-        <view class="sec"><view class="h"><text class="em">🛡</text>⑤ 异议预案 + 难题顶上<text class="mtd">方法⑤</text></view>
-          <view class="sec-list"><view class="sec-li">「单价偏高」→ 用<text class="hl">总价＝单价×得房率</text>拆解，对比同小区近 3 月成交</view><view class="sec-li"><text style="font-weight:700">难题顶上</text>：遇产权/贷款卡关，识别→拉法务/代书，明确说「我找专家一起帮你确认」</view></view>
-        </view>
-        <view class="sec"><view class="h"><text class="em">💌</text>⑥ 见后跟进（售后飞轮法 · 按客户阶段生成）<text class="mtd">方法⑥</text></view>
-          <view class="sec-list">
-            <view class="sec-li" v-for="(f, i) in resultFollowups" :key="i">
-              <text style="font-weight:700">{{ f.theme }}</text>：{{ f.text }}
-              <view class="lt-ref">LTRUST · {{ f.ltrust }}</view>
-            </view>
-          </view>
-          <view class="sec-list"><view class="sec-li"><text style="font-weight:700">成交后服务清单</text>：1 周入住礼包 / 1 月回访 / 6 月行情报告 / 1 年节气问候 + 年检</view></view>
-        </view>
-        <view class="sec"><view class="h"><text class="em">🛡️</text>LTRUST 信任校准（方法论底层支撑）<text class="mtd">LTRUST</text></view>
-          <view class="ltrust-list">
-            <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">L 听</text> · 开场 3 问 / 需求三板斧已嵌入<view class="ltrust-map">对应 ③</view></view></view>
-            <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">T 险</text> · 主动说 1 个风险已嵌入<view class="ltrust-map">对应 ⑤</view></view></view>
-            <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">R 相关</text> · 客制化频道已匹配<view class="ltrust-map">对应 ① / ④</view></view></view>
-            <view class="ltrust-row"><view class="ltrust-ck">✓</view><view class="ltrust-tx"><text style="font-weight:700">U 低承</text> · 留 1 个低承诺跟进<view class="ltrust-map">对应 ⑥</view></view></view>
-            <view class="ltrust-row"><view class="ltrust-ck" :class="{ off: !saved }">{{ saved ? '✓' : '○' }}</view><view class="ltrust-tx"><text style="font-weight:700">S 档案</text> · 点保存即写入客户档案<view class="ltrust-map">见下方按钮</view></view></view>
-          </view>
-          <view class="ltrust-prog"><text>{{ ltCount }}</text><view class="bar"><view class="bar-fill" :style="{ width: ltFill }"></view></view></view>
-        </view>
-        <view class="sec"><view class="h"><text class="em">⭐</text>本次信任度（决定 +信任积分）</view>
-          <view class="trust-stars"><text class="ts" :class="{ on: i < trustScore }" v-for="(s, i) in 5" :key="i" @tap="setTrust(i + 1)">★</text></view>
-          <view class="trust-rate-cap">信任度 {{ trustScore }}/5 · 存档案将记录本次信任度</view>
-        </view>
-        <button class="btn-green" @tap="saveCuration">✓ 保存到我的客户档案</button>
-        <button class="btn-line" open-type="share" @tap="setShareCurate">分享给客户</button>
-        <button class="btn-line" @tap="copyCurateLink">复制小程序链接给客户</button>
-      </scroll-view>
-    </view>
-
-    <!-- 工具示例浮层 -->
-    <view class="overlay" :class="{ active: showToolOverlay }">
-      <view class="ov-nav">
-        <button class="back" @tap="showToolOverlay = false">‹</button>
-        <view><view style="font-size:17px;font-weight:700">{{ tool.name }}</view><view class="sub">{{ tool.mtd }} · 工具示例</view></view>
-      </view>
-      <scroll-view class="ovcontent" scroll-y="true">
-        <view class="sec"><view class="h"><text class="em">🎯</text>一句话用途</view><view>{{ tool.one }}</view></view>
-        <view class="sec"><view class="h"><text class="em">📌</text>示例</view>
-          <view class="sec-list"><view class="sec-li" v-for="(s, i) in tool.sample" :key="i">{{ s }}</view></view>
-        </view>
-        <button class="btn-orange" @tap="useInCurate(tool)">在见面参谋中使用 →</button>
-        <button class="btn-line" open-type="share" @tap="sharePayload = { title: '风声工具箱 · ' + tool.name, path: '/pages/curate/index' }">分享给同事/客户</button>
-        <button class="btn-line" @tap="copyLink('/pages/curate/index', '小程序链接已复制 · 打开微信即可跳转')">复制小程序链接</button>
-      </scroll-view>
     </view>
   </view>
 </template>
 
 <script>
-import { methods, personaMap, personaQ, toolbox, getFollowups } from '../../utils/v4data.js'
-import { buildShareLink, copyLink, APP_SHARE_TITLE } from '../../utils/share.js'
 import { useUserStore } from '../../store/user'
 export default {
   data() {
     return {
-      methods: methods.map(m => ({ ...m, open: false })),
-      toolbox: toolbox,
-      showPicker: false,
-      showToolOverlay: false,
-      tool: {},
-      sharePayload: null
+      showForm: false,
+      ctypes: ['学区', '改善', '首置', '租赁', '业主售房'],
+      purposeOpts: ['自住', '学区', '改善', '婚房', '投资'],
+      payTypeOpts: ['全款', '按揭', '先买后卖', '先卖后买'],
+      familyOpts: ['单身', '夫妻', '有孩家庭', '三代同堂'],
+      ideaOpts: ['先买后卖更安全', '预算够买两居', '慢慢看不着急', '买名校旁才放心'],
+      form: { name: '', ctype: '学区', budget: '', purpose: '自住', payType: '按揭', family: '夫妻', event: '', ideas: [], customIdea: '' },
+      assessInfo: null
     }
   },
   computed: {
     userStore() { return useUserStore() },
-    clientList() { return this.userStore.clients },
-    lib() {
-      return this.userStore.curatings.map(c => ({ t: c.t, s: c.s }))
-    }
+    clientList() { return this.userStore.clients || [] },
+    lib() { return (this.userStore.curatings || []).map(c => ({ t: c.t, s: c.s })) }
   },
-  onLoad() {
-    // 客户档案页「去策展」事件：直接带客户进入真实引擎
-    uni.$on('openCurateForm', (id) => {
-      this.openPrep(id)
-    })
+  onShow() {
+    try {
+      const a = uni.getStorageSync('fs_last_assess')
+      if (a && a.scores) this.assessInfo = a
+    } catch (e) {}
   },
-  onUnload() { uni.$off('openCurateForm') },
   onShareAppMessage() {
-    return this.sharePayload || { title: APP_SHARE_TITLE, path: '/pages/curate/index' }
-  },
-  onShareTimeline() {
-    return { title: '风声 · 见面策展工具', query: '' }
+    return { title: '风声 · 顾问简报', path: '/pages/curate/index' }
   },
   methods: {
-    personaOf(c) { return (personaMap[c.pkey] || personaMap.red).tag },
+    onInput(field, e) {
+      const v = (e.detail && e.detail.value) || (e.target && e.target.value) || ''
+      this.form[field] = v
+    },
+    clearAssess() {
+      this.assessInfo = null
+      try { uni.removeStorageSync('fs_last_assess') } catch (e) {}
+    },
+    toggleIdea(o) {
+      const i = this.form.ideas.indexOf(o)
+      if (i >= 0) this.form.ideas.splice(i, 1)
+      else this.form.ideas.push(o)
+    },
+    genBrief() {
+      if (!this.form.name.trim()) { uni.showToast({ title: '请填写客户姓名', icon: 'none' }); return }
+      if (!this.form.budget) { uni.showToast({ title: '请填写总预算', icon: 'none' }); return }
+      const axisType = (this.form.ctype === '租赁' || this.form.ctype === '业主售房') ? 'buy' : 'buy'
+      const dimensions = ['safe', 'health', 'conv', 'econ', 'comfort', 'beauty', 'free']
+      const parts = []
+      parts.push('客户类型：' + this.form.ctype)
+      parts.push('预算' + this.form.budget + '万')
+      parts.push('置业目的：' + this.form.purpose)
+      parts.push('付款方式：' + this.form.payType)
+      parts.push('家庭结构：' + this.form.family)
+      if (this.form.event.trim()) parts.push('关键时间：' + this.form.event.trim())
+      if (this.form.ideas.length) parts.push('已有想法：' + this.form.ideas.join('；'))
+      if (this.form.customIdea.trim()) parts.push(this.form.customIdea.trim())
+      let freeText = parts.join('；')
+      // 七维品质测评结论预填 self 轨（1-5 → 0-10）
+      let dimSelfScores = {}
+      if (this.assessInfo && this.assessInfo.scores) {
+        for (const k in this.assessInfo.scores) dimSelfScores[k] = Math.round(this.assessInfo.scores[k] * 2)
+        freeText += '；已基于七维品质测评结论（客户自评带入）'
+      }
+      // 知识字典「加入简报」的真实词条，作为参考依据一并带入
+      const kb = uni.getStorageSync('fs_brief_kb') || []
+      if (kb.length) {
+        freeText += '；参考依据：' + kb.map(s => s.title).join('、')
+        uni.removeStorageSync('fs_brief_kb')
+      }
+      const url = '/package-curation/pages/curate-client/index?axisType=' + axisType +
+        '&scenario=&freeText=' + encodeURIComponent(freeText) +
+        '&dimensions=' + encodeURIComponent(dimensions.join(',')) +
+        '&dimSelfScores=' + encodeURIComponent(JSON.stringify(dimSelfScores))
+      uni.setStorageSync('briefDraft', { ...this.form, ideas: [...this.form.ideas], customIdea: this.form.customIdea })
+      uni.navigateTo({ url })
+    },
     openPrep(id) {
       let url = '/package-curation/pages/curate-prep/index'
       if (id) url += '?clientId=' + id
       uni.navigateTo({ url })
     },
-    pickClient(c) {
-      this.showPicker = false
-      this.openPrep(c.id)
-    },
-    goClients() {
-      this.showPicker = false
-      uni.switchTab({ url: '/pages/clients/index' })
-    },
-    showTool(t) {
-      this.tool = t
-      this.showToolOverlay = true
-    },
-    useInCurate(t) {
-      this.showToolOverlay = false
-      this.openPrep()
-    },
-    shareTitle() {
-      return '我为客户准备了这次见面的专业方案，请查收'
-    },
-    setShareCurate() {
-      this.sharePayload = { title: this.shareTitle(), path: '/pages/curate/index' }
-    },
-    copyCurateLink() {
-      copyLink('/pages/curate/index?clientId=' + (this.selectedClientId || ''), '小程序链接已复制 · 打开微信即可跳转', 'clientId=' + (this.selectedClientId || ''))
-    }
+    goClients() { uni.navigateTo({ url: '/pages/clients/index' }) }
   }
 }
 </script>
 
 <style scoped>
-.toolcard { background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
-.th { font-size: 15px; font-weight: 700; color: #2b2b2b; display: flex; align-items: center; }
-.ti { margin-right: 6px; }
-.tchip { margin-left: auto; font-size: 11px; color: #C8956D; background: #fbf6ee; padding: 2px 8px; border-radius: 6px; font-weight: 700; }
-.ts { font-size: 12.5px; color: #777; margin-top: 4px; line-height: 1.5; }
+.page { padding: 14px; }
+.hero { background: linear-gradient(135deg, #3d5a3e, #4d7050); color: #fff; border-radius: 16px; padding: 18px 16px; margin-bottom: 14px; }
+.hero-title { font-size: 22px; font-weight: 800; letter-spacing: 1px; }
+.hero-sub { font-size: 12.5px; opacity: .9; line-height: 1.6; margin-top: 6px; }
+.hero-tags { display: flex; gap: 8px; margin-top: 12px; }
+.tag { font-size: 11px; background: rgba(255,255,255,.18); padding: 4px 10px; border-radius: 999px; }
+.intro { background: #fff; border: 1px solid #e7e0d4; border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+.intro-t { font-size: 14px; font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
+.intro-b { font-size: 12.5px; color: #555; line-height: 1.6; }
+.intro-list { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.intro-list text { font-size: 12.5px; color: #777; line-height: 1.5; }
+.assess-tip { display: flex; align-items: center; gap: 8px; background: #eef3ec; border: 1px solid #cfe0cf; border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; }
+.at-ico { color: #3d5a3e; font-weight: 800; }
+.at-tx { flex: 1; font-size: 12px; color: #3d5a3e; line-height: 1.5; }
+.at-clear { font-size: 12px; color: #c46a3a; font-weight: 700; }
+.card { background: #fff; border: 1px solid #e7e0d4; border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+.card-h { font-size: 16px; font-weight: 700; color: #2b2b2b; display: flex; align-items: center; }
+.ci { margin-right: 6px; }
+.chip { margin-left: auto; font-size: 11px; color: #c46a3a; background: #fbf6ee; padding: 2px 8px; border-radius: 6px; font-weight: 700; }
+.chip.dim { color: #999; background: #f2f0ec; }
+.card-sub { font-size: 12.5px; color: #777; line-height: 1.6; margin: 8px 0 12px; }
+.btn-main { background: #c46a3a; color: #fff; border: none; border-radius: 999px; padding: 12px; font-size: 15px; font-weight: 700; }
+.btn-line { background: #fff; color: #c46a3a; border: 1px solid #e7d3c2; border-radius: 10px; padding: 12px; font-size: 14px; margin-top: 4px; }
+.btn-dis { background: #f2f0ec; color: #aaa; border: none; border-radius: 10px; padding: 12px; font-size: 14px; }
+.form { margin-top: 4px; }
+.fld { margin-bottom: 14px; }
+.lab { font-size: 12.5px; color: #555; font-weight: 700; display: block; margin-bottom: 6px; }
+.inp { background: #f7f4ef; border: 1px solid #e7e0d4; border-radius: 10px; padding: 10px 12px; font-size: 14px; color: #2b2b2b; }
+.seg { display: flex; gap: 8px; flex-wrap: wrap; }
+.seg-i { font-size: 13px; padding: 8px 14px; border-radius: 999px; background: #f7f4ef; border: 1px solid #e7e0d4; color: #666; }
+.seg-i.on { background: #3d5a3e; color: #fff; border-color: #3d5a3e; }
+.chk { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+.box { width: 18px; height: 18px; border-radius: 5px; border: 1px solid #cbb; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; }
+.box.on { background: #3d5a3e; border-color: #3d5a3e; }
+.ck-tx { font-size: 13px; color: #555; }
+.sec-h { display: flex; align-items: baseline; justify-content: space-between; margin: 16px 4px 10px; font-size: 15px; font-weight: 700; color: #2b2b2b; }
+.sec-m { font-size: 11px; color: #999; font-weight: 400; }
 .empty { background: #fff; border: 1px dashed #e7e0d4; border-radius: 12px; padding: 18px; text-align: center; color: #999; font-size: 13px; margin-bottom: 10px; }
-.methodcard { background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
-.mh { font-size: 15px; font-weight: 700; color: #2b2b2b; display: flex; align-items: center; }
-.mh .arrow { margin-left: auto; color: #bbb; }
-.ms { font-size: 12.5px; color: #777; margin-top: 6px; line-height: 1.6; }
-.featured-cta { background: linear-gradient(135deg,#3d5a3e,#4d7050); color:#fff; border-radius:14px; padding:16px; margin-bottom:14px; }
-.btn-cta { background:#fff; color:#3d5a3e; border:none; border-radius:999px; padding:11px 18px; font-size:14px; font-weight:700; }
-.section-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px; }
-.section-title { font-size:15px; font-weight:700; color:#2b2b2b; }
-.section-more { font-size:11px; color:#999; }
-.libitem { background:#fff; border:1px solid #e7e0d4; border-radius:12px; padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
-.lt { flex:1; }
-.lt .t { font-size:14px; font-weight:700; color:#2b2b2b; }
-.lt .s { font-size:12px; color:#888; margin-top:2px; }
-.ok { font-size:11px; color:#3d5a3e; background:#eef3ec; padding:3px 8px; border-radius:6px; font-weight:700; }
-.overlay { position:fixed; inset:0; z-index:50; background:#f7f4ef; transform:translateY(100%); transition:transform .25s ease; pointer-events:none; display:flex; flex-direction:column; }
-.overlay.active { transform:translateY(0); pointer-events:auto; }
-.ov-nav { display:flex; align-items:center; gap:10px; padding:14px 16px; background:#fff; border-bottom:1px solid #e7e0d4; }
-.ov-nav .back { background:none; border:none; font-size:22px; color:#3d5a3e; line-height:1; }
-.ov-nav .sub { font-size:12px; color:#888; margin-top:2px; }
-.ovcontent { flex:1; padding:16px; overflow-y:auto; padding-bottom:calc(10px + 110rpx + env(safe-area-inset-bottom)); }
-.pick-item { background:#fff; border:1px solid #e7e0d4; border-radius:10px; padding:12px; margin-bottom:8px; }
-.pi-name { font-size:15px; font-weight:700; color:#2b2b2b; }
-.pi-meta { font-size:12px; color:#888; margin-top:2px; }
-.btn-line { background:#fff; color:#c46a3a; border:1px solid #e7d3c2; border-radius:10px; padding:12px; font-size:14px; margin-top:8px; }
-.btn-orange { background:#c46a3a; color:#fff; border-radius:10px; padding:12px; font-size:15px; margin-top:6px; }
-.sec { background:#fff; border:1px solid #e7e0d4; border-radius:12px; padding:12px 14px; margin-bottom:10px; }
-.sec .h { font-size:14px; font-weight:700; color:#2b2b2b; display:flex; align-items:center; gap:6px; margin-bottom:8px; }
-.sec .em { font-size:15px; }
-.sec-list { }
-.sec-li { font-size:13px; color:#555; line-height:1.6; padding:4px 0; border-bottom:1px dashed #eee; }
+.libitem { background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.lt { flex: 1; }
+.lt .t { font-size: 14px; font-weight: 700; color: #2b2b2b; }
+.lt .s { font-size: 12px; color: #888; margin-top: 2px; }
+.ok { font-size: 11px; color: #3d5a3e; background: #eef3ec; padding: 3px 8px; border-radius: 6px; font-weight: 700; }
 </style>

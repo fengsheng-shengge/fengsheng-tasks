@@ -26,7 +26,7 @@
     </view>
 
     <view class="menu-group">
-      <view class="menu-item" @tap="go('clients')"><view class="menu-icon">👥</view><view class="menu-text">客户档案</view><view class="menu-arrow">›</view></view>
+      <view class="menu-item" @tap="go('clients')"><view class="menu-icon">👥</view><view class="menu-text">客户档案（{{ clientCount }} 位）</view><view class="menu-arrow">›</view></view>
       <view class="menu-item" @tap="go('cases')"><view class="menu-icon">🌟</view><view class="menu-text">案例灵感库</view><view class="menu-arrow">›</view></view>
       <view class="menu-item" @tap="go('curate')"><view class="menu-icon">💡</view><view class="menu-text">我的策展库</view><view class="menu-arrow">›</view></view>
       <view class="menu-item" @tap="toast('职业档案 · 后续版本开放')"><view class="menu-icon">🎖️</view><view class="menu-text">职业档案</view><view class="menu-arrow">›</view></view>
@@ -51,6 +51,7 @@ export default {
     brokerName() { return this.userStore.nickname || '风声用户' },
     brokerInitial() { return (this.userStore.nickname || '风')[0] || '风' },
     points() { return this.userStore.points || 0 },
+    clientCount() { return (this.userStore.clients || []).length },
     // 真实服务动作数：由用户真实产品路径累计，不送假数据（seed 示例客户不计入，登录不计入服务次数）
     serviceCount() {
       const u = this.userStore
@@ -64,18 +65,18 @@ export default {
   },
   methods: {
     go(tab) {
-      // V2.7：clients/curate 是 tabBar 页 → switchTab；cases 已降级为非 tab 页 → navigateTo
-      if (tab === 'cases') uni.navigateTo({ url: '/pages/cases/index' })
+      // 客户档案、案例灵感库已移出 tabBar → navigateTo；其余 tab → switchTab
+      if (['cases', 'clients'].includes(tab)) uni.navigateTo({ url: '/pages/' + tab + '/index' })
       else uni.switchTab({ url: '/pages/' + tab + '/index' })
     },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) },
     openPrivacy() { uni.navigateTo({ url: '/pages/privacy/index' }) },
     copyMiniLink() {
-      copyLink('/pages/home/index', '小程序链接已复制 · 打开微信即可跳转')
+      copyLink('/pages/assess/index', '小程序链接已复制 · 打开微信即可跳转')
     }
   },
   onShareAppMessage() {
-    return { title: APP_SHARE_TITLE, path: '/pages/home/index' }
+    return { title: APP_SHARE_TITLE, path: '/pages/assess/index' }
   },
   onShareTimeline() {
     return { title: APP_SHARE_TITLE }

@@ -11,7 +11,17 @@
     <view class="hero-dots">
       <view class="dot" :class="{ on: heroIdx === i }" v-for="(d, i) in slides" :key="i" @tap="goSlide(i)"></view>
     </view>
-    <view class="hero-badge">风声 · 智能工具包</view>
+    <view class="hero-badge">风声 · 经纪人的决策参谋</view>
+    <!-- 产品是什么 + 能给你的支持（铁律：首屏要让经纪人一眼看懂） -->
+    <view class="value-banner">
+      <view class="vb-t">这是给房产经纪人的「决策参谋」工具</view>
+      <view class="vb-s">帮你把一次客户沟通，变成有依据的家庭资产决策建议——让专业被客户看见、被信任。</view>
+      <view class="vb-support">
+        <view class="vb-item"><text class="vb-ico">📊</text><view><text class="vb-h">品质测评</text><text class="vb-d">7 维确认客户真需求</text></view></view>
+        <view class="vb-item"><text class="vb-ico">📋</text><view><text class="vb-h">顾问简报</text><text class="vb-d">破误区·立方案·出证据</text></view></view>
+        <view class="vb-item"><text class="vb-ico">📖</text><view><text class="vb-h">知识字典</text><text class="vb-d">主动搜真实依据</text></view></view>
+      </view>
+    </view>
 
     <!-- 信任积分 -->
     <view class="trust-banner">
@@ -34,8 +44,8 @@
     <view class="product-grid">
       <view class="product-card featured" @tap="go('curate')">
         <view class="product-icon orange">💡</view>
-        <view class="product-name">见面策展</view>
-        <view class="product-desc">见前策展 + 见后跟进，把零散认知变专业方案</view>
+        <view class="product-name">顾问简报</view>
+        <view class="product-desc">填客户画像，秒出「破误区 · 立方案 · 分步行动」证据简报</view>
         <text class="product-tag hot">核心</text>
       </view>
       <view class="product-card" @tap="go('clients')">
@@ -71,7 +81,7 @@
       <view class="fc-text">{{ f.text }}</view>
       <view class="fc-lt">LTRUST · {{ f.ltrust }}</view>
     </view>
-    <view class="follow-empty" v-if="!todayFollowups.length">暂无待跟进 · 去「见面策展」生成带新价值的跟进触点 ›</view>
+    <view class="follow-empty" v-if="!todayFollowups.length">暂无待跟进 · 去「顾问简报」生成带新价值的跟进触点 ›</view>
 
     <!-- 6 方法论（b·P1-3：滑动引导，降低首屏认知负荷） -->
     <view class="section-header"><text class="section-title">6 大方法论</text><text class="section-more">← 左右滑动看全部 6 个</text></view>
@@ -103,8 +113,8 @@ export default {
       heroIdx: 0,
       methodIdx: 0,
       slides: [
-        { img: hero1, ht: '把专业装进口袋', hs: '顶尖经纪人的「方法论 + 工具箱」，一次见面全用上' },
-        { img: hero2, ht: '住得更好的样子', hs: '从「说得多没依据」到「讲得准、有依据、做得多」' },
+        { img: hero1, ht: '从带看中介，到决策顾问', hs: '把一次客户沟通，变成有依据的家庭资产决策建议' },
+        { img: hero2, ht: '住得更好的样子', hs: '从「说得空」到「讲得准、有依据、做得多」' },
         { img: hero3, ht: '深耕你的商圈', hs: '把一个社区吃到骨头里——信任来自重复、专业、在场' },
         { img: hero4, ht: '一次委托 · 终生服务', hs: '售后飞轮转起来——被记住，才有转介绍与下一单' }
       ]
@@ -144,15 +154,15 @@ export default {
     },
     goSlide(i) { this.heroIdx = i },
     go(tab) {
-      // V2.7：tabBar 页（首页/知识/策展/客户档案/我的）用 switchTab；非 tab 页（测评/案例）用 navigateTo
-      const tabs = ['home', 'knowledge', 'curate', 'clients', 'profile']
+      // 客户档案已移出 tabBar（纳入「我的」），统一走 navigateTo；其余 tab 用 switchTab
+      const tabs = ['home', 'knowledge', 'curate', 'profile']
       if (tabs.indexOf(tab) >= 0) uni.switchTab({ url: '/pages/' + tab + '/index' })
       else uni.navigateTo({ url: '/pages/' + tab + '/index' })
     },
     goFollowup(clientId) {
-      // 客户档案已提升为 tabBar 页，无法 URL 带参；改写入 store.focusClientId 由 clients.onShow 读取
+      // 客户档案已移出 tabBar（纳入「我的」），无法 URL 带参；改写入 store.focusClientId 由 clients.onShow 读取
       this.userStore.focusClientId = clientId
-      uni.switchTab({ url: '/pages/clients/index' })
+      uni.navigateTo({ url: '/pages/clients/index' })
     },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) }
   }
@@ -160,6 +170,15 @@ export default {
 </script>
 
 <style scoped>
+.value-banner { background: #fff; border: 1px solid #e7e0d4; border-radius: 14px; padding: 14px 16px; margin: 12px 0; }
+.vb-t { font-size: 15px; font-weight: 800; color: #2b2b2b; }
+.vb-s { font-size: 12.5px; color: #666; line-height: 1.6; margin-top: 6px; }
+.vb-support { display: flex; gap: 8px; margin-top: 12px; }
+.vb-item { flex: 1; background: #f7f4ef; border-radius: 10px; padding: 10px 8px; display: flex; align-items: center; gap: 6px; }
+.vb-ico { font-size: 18px; }
+.vb-item > view { display: flex; flex-direction: column; }
+.vb-h { font-size: 12.5px; font-weight: 700; color: #3d5a3e; }
+.vb-d { font-size: 10.5px; color: #999; margin-top: 2px; line-height: 1.4; }
 .follow-card { background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 12px; margin: 0 0 10px; }
 .follow-card:active { background: #f7f4ef; }
 .fc-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }

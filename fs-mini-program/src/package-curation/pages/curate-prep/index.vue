@@ -53,6 +53,28 @@
               <text class="ds-tag s">客户自评</text>
               <slider class="sl" min="0" max="10" step="1" :value="dimSelfScores[dk] || 0" show-value activeColor="#3d5a3e" @change="onSelfScore($event, dk)"></slider>
             </view>
+            <view v-if="selfEvalOn" class="self-quiz">
+              <button class="sq-open" @tap="openSelfQuiz">📝 让客户答题自评（约 2 分钟，自动算分）</button>
+              <view v-if="selfQuizOpen" class="sq-card">
+                <view class="sq-head">
+                  <text class="sq-prog">第 {{ selfQuizIdx + 1 }} / {{ selfQuizTotal }} 题</text>
+                  <text class="sq-close" @tap="closeSelfQuiz">✕</text>
+                </view>
+                <view class="sq-q">{{ curSelfQ.text }}</view>
+                <view class="sq-opts">
+                  <view v-for="o in LIKERT" :key="o.v" :class="['sq-opt', { on: selfAnswers[curSelfQ.id] === o.v }]" @tap="pickSelf(o)">
+                    <text class="sq-opt-v">{{ o.v }}</text>
+                    <text class="sq-opt-t">{{ o.t }}</text>
+                  </view>
+                </view>
+                <view class="sq-foot">
+                  <button class="sq-btn ghost" v-if="selfQuizIdx > 0" @tap="prevSelf">上一题</button>
+                  <view class="sq-spacer" v-else></view>
+                  <button class="sq-btn primary" v-if="selfQuizIdx < selfQuizTotal - 1" :disabled="!selfAnswers[curSelfQ.id]" @tap="nextSelf">下一题</button>
+                  <button class="sq-btn primary" v-else :disabled="!selfAnswers[curSelfQ.id]" @tap="submitSelfQuiz">生成自评</button>
+                </view>
+              </view>
+            </view>
           </view>
         </view>
       </view>
@@ -295,6 +317,7 @@
 <script>
 import { AXIS_GROUPS, DIMENSIONS, SCENARIOS, generateCuration } from '../../engine.js'
 import { buildRadarDataUrl } from '../../radar.js'
+import { livingQuestions, LIKERT } from '../../../utils/assess-data.js'
 import { useUserStore } from '../../../store/user'
 import { trackEvent } from '../../../utils/tracker'
 import { generateReportHTML, generateReportSummary } from '../../../utils/report-template.js'
@@ -314,6 +337,9 @@ export default {
       dimSelfScores: {},
       anchorOpen: null,
       selfEvalOn: false,
+      selfQuizOpen: false,
+      selfAnswers: {},
+      selfQuizIdx: 0,
       clientId: null,
       clientName: '',
       result: null,
@@ -380,7 +406,14 @@ export default {
         self: this.radarSelf,
         selfEval: this.radarSelfEval
       })
-    }
+    },
+    // 客户自评问卷（复用真实题库 livingQuestions，21 题）
+    curSelfQ() {
+      return livingQuestions[this.selfQuizIdx] || {}
+    },
+    selfQuizTotal() {
+      return livingQuestions.length
+    },
   },
   onLoad(options) {
     if (options && options.clientId) {
@@ -435,6 +468,43 @@ export default {
     },
     onSelfScore(e, key) {
       this.$set(this.dimSelfScores, key, e.detail.value)
+    },
+    // ===== 客户自评问卷：真实题库自动算七维分（替代手滑滑块，更真实、数据诚实）=====
+    openSelfQuiz() {
+      this.selfQuizOpen = true
+      this.selfQuizIdx = 0
+      this.selfAnswers = {}
+    },
+    closeSelfQuiz() {
+      this.selfQuizOpen = false
+    },
+    pickSelf(o) {
+      this.$set(this.selfAnswers, this.curSelfQ.id, o.v)
+    },
+    nextSelf() {
+      if (this.selfQuizIdx < livingQuestions.length - 1) this.selfQuizIdx++
+    },
+    prevSelf() {
+      if (this.selfQuizIdx > 0) this.selfQuizIdx--
+    },
+    submitSelfQuiz() {
+      const scores = this.calcSelfScores(this.selfAnswers)
+      Object.keys(scores).forEach(k => this.$set(this.dimSelfScores, k, scores[k]))
+      this.selfQuizOpen = false
+      uni.showToast({ title: '客户自评已生成', icon: 'success' })
+    },
+    calcSelfScores(answers) {
+      // 问卷 1-5 Likert → 按维度求均值 → ×2 转 0-10（与现有手滑分制一致，雷达图/客户页无需改动）
+      const dims = (this.selectedDims && this.selectedDims.length) ? this.selectedDims : livingQuestions.map(q => q.dim)
+      const out = {}
+      dims.forEach(dk => {
+        const qs = livingQuestions.filter(q => q.dim === dk)
+        const valid = qs.filter(q => answers[q.id])
+        if (!valid.length) return
+        const sum = valid.reduce((a, q) => a + (answers[q.id] || 0), 0)
+        out[dk] = Math.round((sum / valid.length) * 2 * 10) / 10
+      })
+      return out
     },
     gen() {
       this.loading = true
@@ -499,7 +569,7 @@ export default {
       uni.showToast({ title: '已存入客户认知卡', icon: 'none' })
     },
     goClientDetail() {
-      uni.switchTab({ url: '/pages/clients/index' })
+      uni.navigateTo({ url: '/pages/clients/index' })
       setTimeout(() => {
         uni.$emit('openClientDetail', this.clientId)
       }, 300)
@@ -708,6 +778,25 @@ export default {
 .err-msg { background: #fff0f0; color: #c0392b; padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px; text-align: center; }
 .btn-main:disabled { opacity: 0.6; }
 /* ===== 七维评分（V3.2 生产化）===== */
+/* 客户自评问卷（真实题库，自动算七维分）*/
+.self-quiz { margin-top: 10px; }
+.sq-open { background: #eef3ec; color: #3d5a3e; border: 1px solid #c9d8c9; border-radius: 10px; font-size: 13px; font-weight: 700; padding: 10px; line-height: 1.3; }
+.sq-card { margin-top: 8px; background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 14px; }
+.sq-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.sq-prog { font-size: 12px; color: #8a837a; font-weight: 700; }
+.sq-close { font-size: 16px; color: #b0a99e; padding: 0 4px; }
+.sq-q { font-size: 15px; font-weight: 700; color: #2b2b2b; line-height: 1.5; margin-bottom: 14px; }
+.sq-opts { display: flex; flex-direction: column; gap: 8px; }
+.sq-opt { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #e7e0d4; border-radius: 9px; background: #f7f4ef; }
+.sq-opt.on { border-color: #3d5a3e; background: #eef3ec; }
+.sq-opt-v { width: 22px; height: 22px; border-radius: 50%; background: #3d5a3e; color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sq-opt-t { font-size: 13px; color: #555; }
+.sq-foot { display: flex; gap: 10px; margin-top: 14px; }
+.sq-spacer { flex: 1; }
+.sq-btn { flex: 1; border-radius: 20px; font-size: 14px; font-weight: 700; padding: 10px; line-height: 1.2; }
+.sq-btn.ghost { background: #fff; color: #8a837a; border: 1px solid #e7e0d4; }
+.sq-btn.primary { background: #3d5a3e; color: #fff; }
+.sq-btn.primary[disabled] { background: #c9c4ba; color: #f0ece2; }
 .dim-score { margin-top: 12px; background: #f7f4ef; border-radius: 12px; padding: 12px; }
 .ds-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
 .ds-tip { font-size: 11.5px; color: #8a837a; line-height: 1.4; flex: 1; }

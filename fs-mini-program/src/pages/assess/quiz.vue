@@ -112,6 +112,7 @@ export default {
       this.scores = scores
       this.advice = this.buildAdvice(scores)
       this.phase = 'result'
+      try { uni.setStorageSync('fs_last_assess', { type: this.type, scores: { ...scores }, ts: Date.now() }) } catch (e) {}
       this.$nextTick(() => { this.drawRadar() })
     },
     buildAdvice(scores) {
