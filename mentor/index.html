@@ -294,6 +294,11 @@ function addMessage(role, text, isError) {
   return msg;
 }
 
+function hideWelcome() {
+  var wel = document.querySelector('.welcome');
+  if (wel) wel.style.display = 'none';
+}
+
 function addTypingIndicator() {
   hideWelcome();
   const el = document.createElement('div');
@@ -391,6 +396,11 @@ async function sendMessage() {
 
     if (!fullText) {
       bubble.textContent = '（未收到回复，请重试）';
+    }
+
+    // API调用成功后才增加计数
+    if (!paid) {
+      incrementMessageCount();
     }
 
   } catch (err) {
@@ -596,11 +606,6 @@ async function sendMessage() {
   if (!paid && count >= PAYWALL_FREE_ROUNDS) {
     showPaywallModal(text);
     return;
-  }
-
-  // 增加计数（已付费用户不受限制）
-  if (!paid) {
-    incrementMessageCount();
   }
 
   // 继续原有逻辑

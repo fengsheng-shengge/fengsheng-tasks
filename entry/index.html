@@ -16,6 +16,7 @@
   --ink: #1a2b26;
   --ink-soft: #5a6b65;
   --wood: #c8956d;
+  --p-d: #2c4430;
   --line: rgba(61,90,62,0.12);
   --shadow-sm: 0 2px 8px rgba(61,90,62,0.06);
   --shadow-md: 0 8px 24px rgba(61,90,62,0.10);
@@ -789,7 +790,7 @@ body.has-bottom-bar{padding-bottom:70px}
     var result = origLoadEntry();
     // Record history after the entry data is fetched
     var checkAndRecord = function() {
-      var el = document.getElementById('entryName');
+      var el = document.querySelector('.entry-name');
       if (el) {
         currentEntryId = getEntryId();
         if (currentEntryId) {

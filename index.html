@@ -29,6 +29,7 @@
   --sc-body:#5e7e5c;--sc-mind:#6d8f55;--sc-dignity:#7e6a90;--sc-life:#4e7e8e;
   --pathA:#c46a3a;--pathB:#4e7e8e;--pathC:#7e6a90;
   --brand:#2C5F3A;--brand-light:#4a8a5c;--accent:#E8742C;
+  --wood:#c8956d;
   --r:8px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -206,6 +207,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
 /* ===== 版权+反馈 ===== */
 .page-footer{text-align:center;padding:24px 16px;margin-top:32px;border-top:1px solid var(--border,rgba(80,90,70,.09));font-size:11px;color:var(--ts,#7a8478);line-height:1.8}
+.page-footer .footer-brand{font-size:14px;font-weight:700;color:var(--dk);margin-bottom:4px;letter-spacing:.5px}
 .page-footer .copyright{margin-bottom:8px}
 .feedback-bar{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:12px;padding:12px;background:var(--card,#fff);border-radius:8px;border:1px solid var(--border,rgba(80,90,70,.09))}
 .feedback-bar span{font-size:13px;color:var(--tx,#555)}
@@ -552,6 +554,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
           <div class="wb-task-meta">创建客户档案后，这里会显示最近 5 位客户</div>
         </div>
         <a class="wb-task-action" href="/clients/">创建 →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 客户分布（分层+状态） -->
+  <div class="wb-dash-section">
+    <div class="wb-dash-section-title">
+      📊 客户分布
+    </div>
+    <div id="dashClientDist" style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="text-align:center;padding:10px 0;color:var(--td);font-size:13px;width:100%">暂无数据</div>
+    </div>
+  </div>
+
+  <!-- LTRUST 温度分布 -->
+  <div class="wb-dash-section">
+    <div class="wb-dash-section-title">
+      🌡️ LTRUST 温度分布
+    </div>
+    <div id="dashLtrustDist" style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="text-align:center;padding:10px 0;color:var(--td);font-size:13px;width:100%">暂无数据</div>
+    </div>
+  </div>
+
+  <!-- 备忘提醒 -->
+  <div class="wb-dash-section">
+    <div class="wb-dash-section-title">
+      📌 备忘提醒
+      <a class="wb-more" href="/clients/">管理客户 →</a>
+    </div>
+    <div id="dashPrepNotes">
+      <div class="wb-dash-task">
+        <div class="wb-task-body">
+          <div class="wb-task-name">暂无备忘</div>
+          <div class="wb-task-meta">在客户详情页使用"见面参谋"功能，保存备忘后会在这里显示</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1074,27 +1112,69 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
         }
       }
 
-      // 今日待办（基于客户数据生成）
+      // 今日待办（基于客户数据生成 + 跟进待办）
       var todoList = document.getElementById('dashTodoList');
       if (todoList) {
         var todos = [];
-        // 近期更新的客户需要跟进
         var now = Date.now();
         var threeDays = 3 * 24 * 60 * 60 * 1000;
+
+        // 1. 客户未完成的跟进待办（优先级最高）
         for (var i = 0; i < clients.length; i++) {
           var c = clients[i];
-          if (c.status === '跟进中') {
-            var updated = c.updatedAt ? new Date(c.updatedAt).getTime() : 0;
-            if (now - updated > threeDays) {
-              todos.push({ name: c.name + ' — 超过3天未跟进', type: 'urgent', link: '/clients/' });
+          var followups = c.followups || [];
+          for (var j = 0; j < followups.length; j++) {
+            var f = followups[j];
+            if (!f.done && todos.length < 8) {
+              todos.push({
+                name: c.name + ' — ' + (f.theme || '跟进待办'),
+                type: 'urgent',
+                link: '/clients/',
+                detail: f.text || ''
+              });
             }
           }
         }
-        // 已成交客户 -> 售后关怀
-        for (var i = 0; i < clients.length; i++) {
-          var c = clients[i];
-          if (c.status === '已成交' && todos.length < 6) {
-            todos.push({ name: c.name + ' — 售后关怀提醒', type: 'normal', link: '/clients/' });
+
+        // 2. 跟进中客户超过3天未跟进
+        if (todos.length < 5) {
+          for (var i = 0; i < clients.length; i++) {
+            var c = clients[i];
+            if (c.status === '跟进中') {
+              // 检查是否有时间线记录
+              var tl = c.timeline || [];
+              var lastContact = tl.length > 0 ? tl[0].at : null;
+              if (lastContact && now - lastContact > threeDays) {
+                todos.push({
+                  name: c.name + ' — 超过3天未跟进',
+                  type: 'urgent',
+                  link: '/clients/',
+                  detail: '建议主动联系，了解近况'
+                });
+              } else if (!lastContact) {
+                todos.push({
+                  name: c.name + ' — 尚未建立首次接触',
+                  type: 'normal',
+                  link: '/clients/',
+                  detail: '建议安排首次见面或电话'
+                });
+              }
+            }
+          }
+        }
+
+        // 3. 已成交客户 -> 售后关怀
+        if (todos.length < 5) {
+          for (var i = 0; i < clients.length; i++) {
+            var c = clients[i];
+            if (c.status === '已成交' && todos.length < 6) {
+              todos.push({
+                name: c.name + ' — 售后关怀提醒',
+                type: 'normal',
+                link: '/clients/',
+                detail: '定期维护客户关系，获取转介绍'
+              });
+            }
           }
         }
 
@@ -1103,19 +1183,132 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
             '<div class="wb-dash-task"><div class="wb-task-dot done"></div><div class="wb-task-body"><div class="wb-task-name">暂无待办，保持好状态</div><div class="wb-task-meta">有客户跟进需求时会在这里提醒</div></div></div>';
         } else {
           var html = '';
-          for (var i = 0; i < Math.min(5, todos.length); i++) {
+          var maxShow = Math.min(6, todos.length);
+          for (var i = 0; i < maxShow; i++) {
             var t = todos[i];
             var dotClass = t.type === 'urgent' ? 'urgent' : 'normal';
             html += '<div class="wb-dash-task">' +
               '<div class="wb-task-dot ' + dotClass + '"></div>' +
               '<div class="wb-task-body">' +
               '<div class="wb-task-name">' + t.name + '</div>' +
-              '<div class="wb-task-meta">' + (t.type === 'urgent' ? '⚠️ 需要尽快处理' : '💡 建议主动联系') + '</div>' +
+              '<div class="wb-task-meta">' + (t.detail ? t.detail : (t.type === 'urgent' ? '⚠️ 需要尽快处理' : '💡 建议主动联系')) + '</div>' +
               '</div>' +
               '<a class="wb-task-action" href="' + t.link + '">处理 →</a>' +
               '</div>';
           }
+          // 如果还有更多
+          if (todos.length > maxShow) {
+            html += '<div class="wb-dash-task"><div class="wb-task-body"><div class="wb-task-name" style="color:var(--ts);text-align:center">还有 ' + (todos.length - maxShow) + ' 项待办</div></div><a class="wb-task-action" href="/clients/">查看全部 →</a></div>';
+          }
           todoList.innerHTML = html;
+        }
+      }
+
+      // ===== 客户分布（分层+状态） =====
+      var distEl = document.getElementById('dashClientDist');
+      if (distEl) {
+        var levelCounts = { A: 0, B: 0, C: 0 };
+        var statusCounts = { '跟进中': 0, '已成交': 0, '已流失': 0 };
+        for (var i = 0; i < clients.length; i++) {
+          var c = clients[i];
+          if (c.level && levelCounts[c.level] !== undefined) levelCounts[c.level]++;
+          if (c.status && statusCounts[c.status] !== undefined) statusCounts[c.status]++;
+        }
+        var lColors = { A: 'var(--accent)', B: 'var(--brand)', C: 'var(--td)' };
+        var distHtml = '';
+        var hasLevel = false, hasStatus = false;
+        for (var lv in levelCounts) {
+          if (levelCounts[lv] > 0) {
+            hasLevel = true;
+            distHtml += '<div style="flex:1;min-width:60px;text-align:center;padding:8px 4px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">' +
+              '<div style="font-size:18px;font-weight:900;color:' + lColors[lv] + '">' + levelCounts[lv] + '</div>' +
+              '<div style="font-size:10px;color:var(--ts);margin-top:2px">' + lv + '类客户</div></div>';
+          }
+        }
+        // 先计算状态，再判断是否加分隔线
+        for (var st in statusCounts) {
+          if (statusCounts[st] > 0) {
+            hasStatus = true;
+          }
+        }
+        if (hasLevel && hasStatus) distHtml += '<div style="width:1px;background:var(--border);margin:4px 0"></div>';
+        for (var st in statusCounts) {
+          if (statusCounts[st] > 0) {
+            var stColor = st === '跟进中' ? 'var(--brand)' : st === '已成交' ? 'var(--health)' : 'var(--td)';
+            distHtml += '<div style="flex:1;min-width:60px;text-align:center;padding:8px 4px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">' +
+              '<div style="font-size:18px;font-weight:900;color:' + stColor + '">' + statusCounts[st] + '</div>' +
+              '<div style="font-size:10px;color:var(--ts);margin-top:2px">' + st + '</div></div>';
+          }
+        }
+        if (hasLevel || hasStatus) {
+          distEl.innerHTML = distHtml;
+        } else {
+          distEl.innerHTML = '<div style="text-align:center;padding:10px 0;color:var(--td);font-size:13px;width:100%">暂无数据</div>';
+        }
+      }
+
+      // ===== LTRUST 温度分布 =====
+      var ltrustEl = document.getElementById('dashLtrustDist');
+      if (ltrustEl) {
+        var ltrustCounts = { '带新价值': 0, '回应关切': 0, '关心人': 0 };
+        for (var i = 0; i < clients.length; i++) {
+          var c = clients[i];
+          var followups = c.followups || [];
+          for (var j = 0; j < followups.length; j++) {
+            var f = followups[j];
+            if (!f.done && f.ltrust && ltrustCounts[f.ltrust] !== undefined) {
+              ltrustCounts[f.ltrust]++;
+            }
+          }
+        }
+        var totalLtrust = ltrustCounts['带新价值'] + ltrustCounts['回应关切'] + ltrustCounts['关心人'];
+        if (totalLtrust > 0) {
+          var ltColors = { '带新价值': 'var(--accent)', '回应关切': 'var(--brand)', '关心人': '#4e7e8e' };
+          var ltEmojis = { '带新价值': '🔥', '回应关切': '💚', '关心人': '🤗' };
+          var ltHtml = '';
+          for (var lt in ltrustCounts) {
+            if (ltrustCounts[lt] > 0) {
+              var pct = Math.round(ltrustCounts[lt] / totalLtrust * 100);
+              ltHtml += '<div style="flex:1;min-width:70px;text-align:center;padding:8px 4px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">' +
+                '<div style="font-size:16px;font-weight:900;color:' + ltColors[lt] + '">' + ltEmojis[lt] + ' ' + ltrustCounts[lt] + '</div>' +
+                '<div style="font-size:10px;color:var(--ts);margin-top:2px">' + lt + '</div>' +
+                '<div style="height:4px;background:var(--bg2);border-radius:4px;margin-top:4px;overflow:hidden">' +
+                '<div style="height:100%;width:' + pct + '%;background:' + ltColors[lt] + ';border-radius:4px"></div></div></div>';
+            }
+          }
+          ltrustEl.innerHTML = ltHtml;
+        } else {
+          ltrustEl.innerHTML = '<div style="text-align:center;padding:10px 0;color:var(--td);font-size:13px;width:100%">暂无待办温度数据</div>';
+        }
+      }
+
+      // ===== 备忘提醒 =====
+      var prepEl = document.getElementById('dashPrepNotes');
+      if (prepEl) {
+        var prepNotes = {};
+        try {
+          var raw = localStorage.getItem('fs_prep_notes');
+          if (raw) prepNotes = JSON.parse(raw);
+        } catch(e) {}
+        var keys = Object.keys(prepNotes);
+        if (keys.length > 0) {
+          var sorted = keys.sort(function(a, b) { return (prepNotes[b].updatedAt || 0) - (prepNotes[a].updatedAt || 0) });
+          var prepHtml = '';
+          var maxPrep = Math.min(4, sorted.length);
+          for (var i = 0; i < maxPrep; i++) {
+            var note = prepNotes[sorted[i]];
+            var goalText = note.goal || '（未填写目标）';
+            var agendaText = (note.agenda || []).length > 0 ? '议程：' + note.agenda.join(' · ') : '';
+            prepHtml += '<div class="wb-dash-task">' +
+              '<div class="wb-task-dot urgent"></div>' +
+              '<div class="wb-task-body">' +
+              '<div class="wb-task-name">' + (note.clientName || '客户') + '</div>' +
+              '<div class="wb-task-meta">🎯 ' + goalText + (agendaText ? ' · ' + agendaText : '') + '</div>' +
+              '</div>' +
+              '<a class="wb-task-action" href="/clients/">查看 →</a>' +
+              '</div>';
+          }
+          prepEl.innerHTML = prepHtml;
         }
       }
     }
@@ -1380,7 +1573,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
       var real = clients.filter(function(c) { return !c.seed }).length;
       var pct = real > 0 ? Math.min(100, Math.round(real / total * 100)) : 0;
 
-      container.innerHTML =
+      // 分层统计
+      var levelCounts = { A: 0, B: 0, C: 0 };
+      for (var i = 0; i < clients.length; i++) {
+        var c = clients[i];
+        if (c.level && levelCounts[c.level] !== undefined) levelCounts[c.level]++;
+      }
+
+      // 超期未跟进提醒
+      var now = Date.now();
+      var threeDays = 3 * 24 * 60 * 60 * 1000;
+      var overdueAlerts = [];
+      for (var i = 0; i < clients.length; i++) {
+        var c = clients[i];
+        if (c.status === '跟进中') {
+          var tl = c.timeline || [];
+          var lastContact = tl.length > 0 ? tl[0].at : null;
+          if (lastContact && now - lastContact > threeDays) {
+            overdueAlerts.push(c.name);
+          } else if (!lastContact) {
+            overdueAlerts.push(c.name + '（未接触）');
+          }
+        }
+      }
+
+      var html =
         '<div class="client-ov-stats">' +
           '<div class="client-ov-stat"><div class="client-ov-num ing">' + ing + '</div><div class="client-ov-label">跟进中</div></div>' +
           '<div class="client-ov-stat"><div class="client-ov-num done">' + done + '</div><div class="client-ov-label">已成交</div></div>' +
@@ -1392,6 +1609,45 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
           '<div class="client-ov-bar"><div class="client-ov-fill" style="width:' + pct + '%"></div></div>' +
           '<span class="client-ov-pct">' + pct + '%</span>' +
         '</div>';
+
+      // 分层分布
+      html += '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">';
+      var lColors = { A: 'var(--accent)', B: 'var(--brand)', C: 'var(--td)' };
+      for (var lv in levelCounts) {
+        if (levelCounts[lv] > 0) {
+          html += '<div style="flex:1;min-width:50px;text-align:center;padding:6px 4px;background:rgba(44,95,58,.03);border-radius:6px;border:1px solid rgba(44,95,58,.06)">' +
+            '<div style="font-size:15px;font-weight:900;color:' + lColors[lv] + '">' + levelCounts[lv] + '</div>' +
+            '<div style="font-size:10px;color:var(--ts)">' + lv + '类</div></div>';
+        }
+      }
+      html += '</div>';
+
+      // 超期提醒
+      if (overdueAlerts.length > 0) {
+        var maxShow = Math.min(3, overdueAlerts.length);
+        html += '<div style="margin-top:10px;padding:8px 10px;background:rgba(232,116,44,.06);border:1px solid rgba(232,116,44,.12);border-radius:6px">' +
+          '<div style="font-size:11px;font-weight:700;color:var(--fire);margin-bottom:4px">⚠️ 跟进超期提醒</div>';
+        for (var i = 0; i < maxShow; i++) {
+          html += '<div style="font-size:11px;color:var(--tx);padding:2px 0">· ' + overdueAlerts[i] + '</div>';
+        }
+        if (overdueAlerts.length > maxShow) {
+          html += '<div style="font-size:10px;color:var(--td);margin-top:2px">还有 ' + (overdueAlerts.length - maxShow) + ' 位客户</div>';
+        }
+        html += '</div>';
+      }
+
+      // 快捷操作
+      html += '<div style="display:flex;gap:8px;margin-top:10px">' +
+        '<a href="/clients/" style="flex:1;text-align:center;padding:8px;border-radius:8px;background:var(--brand);color:#fff;font-size:12px;font-weight:700;text-decoration:none">管理客户</a>' +
+        '<a href="/clients/" style="flex:1;text-align:center;padding:8px;border-radius:8px;border:1px solid var(--border);color:var(--tx);font-size:12px;font-weight:700;text-decoration:none" onclick="event.preventDefault();openNewClientTab()">+ 新建客户</a>' +
+        '</div>';
+
+      container.innerHTML = html;
+    }
+
+    // 暴露新建客户函数
+    window.openNewClientTab = function() {
+      window.location.href = '/clients/';
     }
 
     loadClientOverview();
@@ -1474,45 +1730,110 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 </script>
 <script src="/partner.js" async></script>
 
-<!-- 浮动聊天 -->
+<!-- 浮动聊天 v2 -->
 <button class="chat-fab" id="chatFab" aria-label="咨询数字助手"><span>💬</span><span class="chat-fab-dot"></span></button>
 <div class="chat-dialog" id="chatDialog">
   <div class="chat-head"><span>💬 风声数字助手</span><button class="chat-close" id="chatClose">✕</button></div>
   <div class="chat-body" id="chatBody">
-    <div class="chat-welcome"><strong>你好！</strong><br>我是风声数字助手，可以帮你了解居住服务知识、行业案例、政策法规。有什么想问的？</div>
+    <div class="chat-welcome" id="chatWelcome">
+      <strong>👋 你好！</strong><br>
+      我是风声数字助手，可以帮你查知识、看案例、找政策。试试下面这些：
+    </div>
+    <div class="chat-quick" id="chatQuick">
+      <button class="chat-q-btn" data-q="什么是品质六维？">🏠 品质六维</button>
+      <button class="chat-q-btn" data-q="介绍一下四维关怀">💚 四维关怀</button>
+      <button class="chat-q-btn" data-q="首套房客户怎么服务？">📋 首套服务</button>
+      <button class="chat-q-btn" data-q="学区房政策">🎓 学区政策</button>
+    </div>
   </div>
   <div class="chat-foot">
-    <input class="chat-input" id="chatInput" placeholder="输入你的问题..." maxlength="500">
+    <input class="chat-input" id="chatInput" placeholder="输入问题..." maxlength="500">
     <button class="chat-send" id="chatSend">发送</button>
   </div>
 </div>
+<style>
+.chat-quick{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 12px}
+.chat-q-btn{font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid rgba(61,90,62,.15);background:rgba(255,255,255,.85);color:var(--p);cursor:pointer;transition:all .15s;font-weight:600;white-space:nowrap;font-family:inherit}
+.chat-q-btn:hover{background:var(--p);color:#fff;border-color:var(--p)}
+</style>
 <script>
 (function(){
-  var fab=document.getElementById('chatFab'), dialog=document.getElementById('chatDialog'), close=document.getElementById('chatClose'), body=document.getElementById('chatBody'), input=document.getElementById('chatInput'), send=document.getElementById('chatSend');
+  var fab=document.getElementById('chatFab'), dialog=document.getElementById('chatDialog'), close=document.getElementById('chatClose'), body=document.getElementById('chatBody'), input=document.getElementById('chatInput'), send=document.getElementById('chatSend'), welcome=document.getElementById('chatWelcome'), quick=document.getElementById('chatQuick');
   if(!fab||!dialog)return;
-  var conversationId=null, streaming=false;
+  var conversationId=null, streaming=false, localMode=false;
   fab.addEventListener('click',function(){dialog.classList.toggle('open');fab.style.display='none';if(dialog.classList.contains('open'))setTimeout(function(){input.focus()},300)});
   close.addEventListener('click',function(){dialog.classList.remove('open');fab.style.display='flex'});
   function addMsg(text,role){
     var d=document.createElement('div');d.className='chat-msg '+role;d.textContent=text;body.appendChild(d);body.scrollTop=body.scrollHeight;
     return d;
   }
+  // 本地知识兜底
+  var localKB = {
+    '品质六维': '品质六维是风声定义的居住服务品质标准：\n🏠 安全（交易安全、资金安全）\n🔍 透明（信息对称、流程透明）\n💎 专业（知识储备、服务能力）\n❤️ 关怀（理解客户、超越期望）\n🎯 效率（响应速度、问题解决）\n📈 价值（为客户创造长期价值）',
+    '四维关怀': '四维关怀是风声对服务者本人的关怀体系：\n💪 身体（健康管理、精力分配）\n🧠 心理（情绪调节、压力管理）\n👔 尊严（职业尊严、社会认同）\n🏡 质感（生活品质、工作环境）',
+    '首套': '首套房客户服务要点：\n1️⃣ 理解焦虑：首次购房压力大，多给选择少给压力\n2️⃣ 教育前置：提前解释流程、费用、时间线\n3️⃣ 匹配精准：严格按照预算筛选，避免超支\n4️⃣ 陪伴决策：陪看、陪聊、陪纠结，不催单',
+    '学区': '学区房相关信息：\n1️⃣ 关注学区划片政策年度调整\n2️⃣ 落户年限要求因区而异\n3️⃣ 学位占用情况需核实\n4️⃣ 建议关注教育资源均衡化趋势',
+    '默认': '风声知识底座涵盖 5942 条专业词条，覆盖 8 大知识域。你可以：\n• 问具体知识点（如"什么是品质六维？"）\n• 描述客户场景（如"首套房客户怎么服务？"）\n• 查政策法规（如"学区房政策"）'
+  };
+  function localReply(msg){
+    var lower = msg.toLowerCase();
+    if(lower.indexOf('品质')>=0||lower.indexOf('六维')>=0) return localKB['品质六维'];
+    if(lower.indexOf('四维')>=0||lower.indexOf('关怀')>=0) return localKB['四维关怀'];
+    if(lower.indexOf('首套')>=0||lower.indexOf('首次')>=0) return localKB['首套'];
+    if(lower.indexOf('学区')>=0||lower.indexOf('教育')>=0) return localKB['学区'];
+    return localKB['默认'];
+  }
   function sendMsg(){
     var msg=input.value.trim();if(!msg||streaming)return;
     input.value='';send.disabled=true;streaming=true;
+    // 隐藏欢迎引导
+    if(welcome)welcome.style.display='none';
+    if(quick)quick.style.display='none';
     addMsg(msg,'user');
     var loading=addMsg('思考中...','bot loading');
+    // 先尝试API
     fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,conversation_id:conversationId})})
-    .then(function(r){if(!r.ok)throw new Error('请求失败');var reader=r.body.getReader(),decoder=new TextDecoder(),buffer='';loading.className='chat-msg bot';loading.textContent='';
-      function read(){reader.read().then(function(r2){if(r2.done){streaming=false;send.disabled=false;return}var text=decoder.decode(r2.value,{stream:true});buffer+=text;
-        var parts=buffer.split('\n');buffer=parts.pop();
-        for(var i=0;i<parts.length;i++){var line=parts[i].trim();if(line.startsWith('data:')){var data=line.slice(5).trim();if(data==='[DONE]'){streaming=false;send.disabled=false;return}
-          try{var j=JSON.parse(data);if(j.content){loading.textContent+=j.content;body.scrollTop=body.scrollHeight}if(j.conversation_id)conversationId=j.conversation_id}catch(e){}}}}).catch(function(e){loading.textContent='连接中断，请重试';loading.className='chat-msg bot';streaming=false;send.disabled=false});
-      }read()})
-    .catch(function(e){loading.textContent='请求失败，请稍后重试';loading.className='chat-msg bot';streaming=false;send.disabled=false});
+    .then(function(r){
+      if(!r.ok)throw new Error('API不可用');
+      var reader=r.body.getReader(),decoder=new TextDecoder(),buffer='';
+      loading.className='chat-msg bot';loading.textContent='';
+      function read(){
+        reader.read().then(function(r2){
+          if(r2.done){streaming=false;send.disabled=false;return}
+          var text=decoder.decode(r2.value,{stream:true});buffer+=text;
+          var parts=buffer.split('\n');buffer=parts.pop();
+          for(var i=0;i<parts.length;i++){
+            var line=parts[i].trim();
+            if(line.startsWith('data:')){
+              var data=line.slice(5).trim();
+              if(data==='[DONE]'){streaming=false;send.disabled=false;return}
+              try{var j=JSON.parse(data);if(j.content){loading.textContent+=j.content;body.scrollTop=body.scrollHeight}if(j.conversation_id)conversationId=j.conversation_id}catch(e){}
+            }
+          }
+        }).catch(function(e){
+          // 流式读取失败，回退到本地
+          loading.textContent='';loading.className='chat-msg bot';
+          loading.textContent=localReply(msg);
+          body.scrollTop=body.scrollHeight;
+          streaming=false;send.disabled=false;
+        });
+      }read()
+    })
+    .catch(function(e){
+      // API不可用，使用本地知识库
+      loading.textContent='';loading.className='chat-msg bot';
+      loading.textContent=localReply(msg) + '\n\n（当前为离线模式，部分功能受限）';
+      body.scrollTop=body.scrollHeight;
+      streaming=false;send.disabled=false;
+    });
   }
   send.addEventListener('click',sendMsg);
   input.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}});
+  // 快速问题按钮
+  body.addEventListener('click',function(e){
+    var btn=e.target.closest('.chat-q-btn');
+    if(btn&&btn.dataset.q){input.value=btn.dataset.q;sendMsg()}
+  });
 })();
 </script>
 

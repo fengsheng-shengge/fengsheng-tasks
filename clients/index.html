@@ -14,6 +14,7 @@
   --fire:#c46a3a;--fire-l:#d89060;--charcoal:#3a3a38;
   --dk:#1a1a1a;--tx:#555555;--ts:#7a8478;--td:#a8b0a6;
   --brand:#2C5F3A;--brand-light:#4a8a5c;--accent:#E8742C;
+  --cozy:#4e7e8e;--health:#6d8f55;
   --r:8px;--r2:12px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -142,6 +143,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .field .opt view,.field .opt .opt-item{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;border:1.5px solid var(--border);cursor:pointer;transition:all .2s;background:var(--bg);color:var(--ts);user-select:none}
 .field .opt view:hover{background:var(--p-bg);color:var(--brand)}
 .field .opt view.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.field .opt.wrap{flex-wrap:wrap}
+view{display:inline}
 
 /* ===== 确认弹窗 ===== */
 .modal-mask{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
@@ -161,6 +164,71 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 /* ===== Toast 提示 ===== */
 .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:400;background:rgba(0,0,0,.78);color:#fff;padding:14px 24px;border-radius:12px;font-size:14px;font-weight:600;max-width:280px;text-align:center;pointer-events:none;opacity:0;transition:opacity .3s}
 .toast.show{opacity:1}
+
+/* ===== 见面参谋 ===== */
+.prep-header{display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:12px}
+.prep-avatar{width:48px;height:48px;border-radius:50%;background:var(--p-bg);color:var(--brand);display:grid;place-items:center;font-size:20px;font-weight:800;flex-shrink:0}
+.prep-info{flex:1;min-width:0}
+.prep-name{font-size:16px;font-weight:800;color:var(--dk)}
+.prep-meta{font-size:12px;color:var(--ts);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.prep-temp{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px}
+.prep-temp.hot{background:rgba(232,116,44,.08);color:var(--accent)}
+.prep-temp.warm{background:rgba(44,95,58,.08);color:var(--brand)}
+.prep-temp.cool{background:rgba(78,126,142,.08);color:#4e7e8e}
+.prep-temp.cold{background:rgba(180,180,170,.08);color:#999}
+.prep-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:10px}
+.prep-section-h{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--dk);margin-bottom:8px}
+.prep-section-h .badge{font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:auto}
+.prep-section-h .badge.red{background:rgba(196,106,58,.08);color:var(--fire)}
+.prep-section-h .badge.green{background:rgba(44,95,58,.08);color:var(--brand)}
+.prep-check-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(80,90,70,.04)}
+.prep-check-item:last-child{border-bottom:none}
+.prep-checkbox{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;margin-top:2px;cursor:pointer;display:grid;place-items:center;transition:all .2s;font-size:11px;color:transparent}
+.prep-checkbox:hover{border-color:var(--brand)}
+.prep-checkbox.done{background:var(--brand);border-color:var(--brand);color:#fff}
+.prep-check-body{flex:1;min-width:0}
+.prep-check-theme{font-size:13px;font-weight:600;color:var(--dk)}
+.prep-check-text{font-size:11px;color:var(--ts);margin-top:2px}
+.prep-check-lt{font-size:10px;font-weight:600;margin-top:3px;padding:1px 6px;border-radius:3px;display:inline-block}
+.prep-check-lt.fire{background:rgba(232,116,44,.06);color:var(--accent)}
+.prep-check-lt.green{background:rgba(44,95,58,.06);color:var(--brand)}
+.prep-check-lt.teal{background:rgba(78,126,142,.06);color:#4e7e8e}
+.prep-script{border-left:3px solid var(--accent);background:rgba(232,116,44,.03);padding:10px 14px;border-radius:0 var(--r) var(--r) 0;margin-bottom:6px}
+.prep-script:last-child{margin-bottom:0}
+.prep-script-t{font-size:13px;font-weight:600;color:var(--dk);margin-bottom:2px}
+.prep-script-s{font-size:11px;color:var(--tx);line-height:1.5}
+.prep-goal-text{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;background:var(--bg);color:var(--dk);outline:none;transition:border-color .2s;font-family:inherit;resize:none;min-height:56px}
+.prep-goal-text:focus{border-color:var(--brand)}
+.prep-goal-text::placeholder{color:var(--td)}
+.prep-agenda{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.prep-agenda-chip{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--ts);cursor:pointer;transition:all .2s}
+.prep-agenda-chip:hover{background:var(--p-bg);color:var(--brand);border-color:var(--brand)}
+.prep-agenda-chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.prep-summary{background:rgba(44,95,58,.03);border:1px solid rgba(44,95,58,.08);border-radius:var(--r);padding:12px;margin-bottom:10px;display:flex;gap:12px;flex-wrap:wrap}
+.prep-summary-item{flex:1;min-width:70px;text-align:center}
+.prep-summary-num{font-size:20px;font-weight:900;color:var(--brand)}
+.prep-summary-label{font-size:10px;color:var(--ts);margin-top:1px}
+.prep-tl-mini{display:flex;gap:12px;padding:6px 0;border-bottom:1px solid rgba(80,90,70,.04)}
+.prep-tl-mini:last-child{border-bottom:none}
+.prep-tl-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.prep-tl-dot.curate{background:var(--brand)}
+.prep-tl-dot.meeting{background:var(--accent)}
+.prep-tl-dot.followup{background:#4e7e8e}
+.prep-tl-body{flex:1}
+.prep-tl-sum{font-size:12px;color:var(--dk)}
+.prep-tl-at{font-size:10px;color:var(--td);margin-top:1px}
+.prep-cog-grid{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px}
+.prep-cog-tag{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--p-bg);color:var(--p);border:1px solid rgba(61,90,62,.1)}
+.prep-cog-tag.signal{background:rgba(232,116,44,.06);color:var(--fire);border-color:rgba(232,116,44,.12)}
+.prep-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.prep-actions .btn{flex:1;text-align:center;padding:10px 16px;border-radius:var(--r);font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .2s;min-width:0;text-decoration:none}
+.prep-actions .btn:active{transform:scale(.97)}
+.prep-actions .btn-primary{background:var(--brand);color:#fff}
+.prep-actions .btn-primary:hover{background:var(--brand-light)}
+.prep-actions .btn-accent{background:var(--accent);color:#fff}
+.prep-actions .btn-accent:hover{background:#d06020}
+.prep-actions .btn-outline{background:var(--card);color:var(--tx);border:1px solid var(--border)}
+.prep-actions .btn-outline:hover{border-color:var(--brand);color:var(--brand)}
 
 /* ===== 响应式 ===== */
 @media(max-width:480px){
@@ -210,9 +278,75 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   </div>
   <div class="ov-content" id="detailContent"></div>
   <div class="ov-foot">
-    <button class="btn btn-primary" onclick="openFormFromDetail()">✎ 编辑客户</button>
-    <button class="btn btn-danger" onclick="askDelDetail()">🗑 删除</button>
-    <button class="btn btn-accent" onclick="openPrep()">🎯 见面参谋</button>
+    <button class="btn btn-primary" onclick="openFormFromDetail()">✎ 编辑</button>
+    <button class="btn btn-accent" onclick="openFollowupForm()">📝 跟进</button>
+    <button class="btn btn-outline" onclick="openPrep()">🎯 参谋</button>
+    <button class="btn btn-danger" onclick="askDelDetail()">🗑</button>
+  </div>
+</div>
+
+<!-- ===== 跟进记录表单覆盖层 ===== -->
+<div class="overlay" id="followupOverlay">
+  <div class="ov-nav">
+    <button class="ov-back" onclick="closeFollowupForm()">‹</button>
+    <div class="ov-title">添加跟进记录</div>
+    <div class="ov-sub">记下每次接触，时间线自动累积</div>
+  </div>
+  <div class="ov-content">
+    <div class="field">
+      <label class="label">跟进类型</label>
+      <div class="opt" id="fupTypeOpts">
+        <view class="opt-item on" data-val="curate">策展</view>
+        <view class="opt-item" data-val="meeting">见面</view>
+        <view class="opt-item" data-val="followup">跟进</view>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">内容摘要</label>
+      <textarea class="inp" id="fupSummary" rows="3" placeholder="如：带看了3套房，客户对学区房比较满意，但价格还有顾虑"></textarea>
+    </div>
+    <div class="field">
+      <label class="label">是否需要跟进待办？</label>
+      <div class="opt" id="fupNeedTodo">
+        <view class="opt-item" data-val="no">不需要</view>
+        <view class="opt-item on" data-val="yes">需要</view>
+      </div>
+    </div>
+    <div class="field" id="fupTodoField">
+      <label class="label">待办主题</label>
+      <input class="inp" id="fupTodoTheme" placeholder="如：准备学区房对比表" />
+    </div>
+    <div class="field" id="fupTodoTextField">
+      <label class="label">待办说明</label>
+      <textarea class="inp" id="fupTodoText" rows="2" placeholder="如：整理西城区3个学区房的对比数据"></textarea>
+    </div>
+    <div class="field" id="fupTodoLtrustField">
+      <label class="label">LTRUST 温度</label>
+      <div class="opt" id="fupLtrustOpts">
+        <view class="opt-item" data-val="带新价值">🔥 带新价值</view>
+        <view class="opt-item" data-val="回应关切">💚 回应关切</view>
+        <view class="opt-item" data-val="关心人">🤗 关心人</view>
+      </div>
+    </div>
+  </div>
+  <div class="ov-foot">
+    <button class="btn btn-outline" onclick="closeFollowupForm()">取消</button>
+    <button class="btn btn-primary" onclick="saveFollowup()">✓ 保存跟进</button>
+  </div>
+</div>
+
+<!-- ===== 见面参谋覆盖层 ===== -->
+<div class="overlay" id="prepOverlay">
+  <div class="ov-nav">
+    <button class="ov-back" onclick="closePrep()">‹</button>
+    <div class="ov-title">🎯 见面参谋</div>
+    <div class="ov-sub">见面之前，把功课做足</div>
+  </div>
+  <div class="ov-content" id="prepContent"></div>
+  <div class="ov-foot">
+    <button class="btn btn-outline" onclick="closePrep()">关闭</button>
+    <button class="btn btn-primary" onclick="prepStartFollowup()">📝 开始跟进</button>
+    <button class="btn btn-accent" onclick="prepSendPrep()">📤 备忘提醒</button>
   </div>
 </div>
 
@@ -333,11 +467,66 @@ function loadFromStorage() {
 // ============================================================
 function seedClients() {
   if (clients.length > 0) return
+  const now = Date.now();
+  const day = 86400000;
   const seeds = [
-    { surname: '林', name: '林先生 & 未婚妻', rel: '买房客户', stage: '购房线 / ①首套', pkey: 'red', persona: '🔴 结果导向', status: '跟进中', asset: '关系建立中，资产初值', level: 'A', addr: '', note: '90后婚房，预算300万，看重学区与通勤', seed: true, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] } },
-    { surname: '张', name: '张先生（业主）', rel: '业主', stage: '购房线 / ④升级', pkey: 'blue', persona: '🔵 关系导向', status: '已成交', asset: '已购本房，适老改造跟进已规划', level: 'A', addr: '', note: '已购，适老改造咨询', seed: true, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] } },
-    { surname: '王', name: '王女士（房东）', rel: '房东', stage: '租住线 / 业主侧', pkey: 'blue', persona: '🔵 关系导向', status: '跟进中', asset: '委托出租，定价跟进待办', level: 'B', addr: '', note: '空置45天委托出租', seed: true, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] } },
-    { surname: '陈', name: '陈同学（租客）', rel: '租客', stage: '租住线 / ②改善', pkey: 'green', persona: '🟢 理智型', status: '跟进中', asset: '工作调动，租住改善中', level: 'C', addr: '', note: '工作调动近地铁', seed: true, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] } }
+    { surname: '林', name: '林先生 & 未婚妻', rel: '买房客户', stage: '购房线 / ①首套', pkey: 'red', persona: '🔴 结果导向', status: '跟进中', asset: '首次带看已完成，客户对学区房感兴趣', level: 'A', addr: '朝阳区', note: '90后婚房，预算300万，看重学区与通勤', seed: true,
+      followups: [
+        { theme: '准备学区房对比表', text: '整理西城区3个学区房的对比数据，包括价格、学校排名、通勤', ltrust: '带新价值', done: false, createdAt: now - 2*day },
+        { theme: '约周末看房', text: '客户周末有空，安排3套学区房带看', ltrust: '回应关切', done: true, createdAt: now - 5*day }
+      ],
+      timeline: [
+        { type: '跟进', summary: '电话沟通，确认周末看房时间', at: now - 2*day },
+        { type: '策展', summary: '发送了3套学区房资料，客户对实验二小片区感兴趣', at: now - 4*day },
+        { type: '见面', summary: '首次见面，了解了客户需求和预算', at: now - 7*day }
+      ],
+      memoryPoints: [
+        { point: '客户提到未婚妻喜欢日式装修风格', at: now - 7*day },
+        { point: '客户对西城区的学区政策特别关注', at: now - 4*day }
+      ],
+      cognition: { known: ['预算300万', '看重学区', '通勤优先'], signals: ['对价格敏感', '决策需要伴侣确认'], log: [{ at: now - 7*day }] }
+    },
+    { surname: '张', name: '张先生（业主）', rel: '业主', stage: '购房线 / ④升级', pkey: 'blue', persona: '🔵 关系导向', status: '已成交', asset: '已购本房，适老改造跟进已规划', level: 'A', addr: '', note: '已购，适老改造咨询', seed: true,
+      followups: [
+        { theme: '适老改造方案跟进', text: '联系适老改造团队，获取报价和方案', ltrust: '带新价值', done: false, createdAt: now - 1*day }
+      ],
+      timeline: [
+        { type: '跟进', summary: '回访客户，询问入住体验，提到适老改造需求', at: now - 1*day },
+        { type: '见面', summary: '交房仪式，客户对房子很满意', at: now - 30*day },
+        { type: '策展', summary: '提供了3套改善型房源对比', at: now - 45*day }
+      ],
+      memoryPoints: [
+        { point: '客户是老师，注重细节', at: now - 45*day },
+        { point: '客户父亲腿脚不便，需要适老设计', at: now - 1*day }
+      ],
+      cognition: { known: ['改善型需求', '注重品质', '教师家庭'], signals: ['决策理性', '看重售后'], log: [] }
+    },
+    { surname: '王', name: '王女士（房东）', rel: '房东', stage: '租住线 / 业主侧', pkey: 'blue', persona: '🔵 关系导向', status: '跟进中', asset: '委托出租，定价跟进待办', level: 'B', addr: '海淀区', note: '空置45天委托出租', seed: true,
+      followups: [
+        { theme: '租金定价建议', text: '根据同小区最新成交数据，给出合理租金区间', ltrust: '带新价值', done: false, createdAt: now - 3*day }
+      ],
+      timeline: [
+        { type: '跟进', summary: '沟通租金定价策略，客户希望尽快出租', at: now - 3*day },
+        { type: '策展', summary: '拍摄房屋照片，制作房源信息', at: now - 5*day },
+        { type: '见面', summary: '实地看房，了解房屋状况和业主需求', at: now - 7*day }
+      ],
+      memoryPoints: [
+        { point: '客户很在意租客素质', at: now - 7*day },
+        { point: '客户提到可以接受长租', at: now - 5*day }
+      ],
+      cognition: { known: ['委托出租', '空置中', '急租'], signals: ['价格敏感', '看重租客背景'], log: [] }
+    },
+    { surname: '陈', name: '陈同学（租客）', rel: '租客', stage: '租住线 / ②改善', pkey: 'green', persona: '🟢 理智型', status: '跟进中', asset: '工作调动，租住改善中', level: 'C', addr: '', note: '工作调动近地铁', seed: true,
+      followups: [],
+      timeline: [
+        { type: '策展', summary: '发送了5套近地铁房源', at: now - 2*day },
+        { type: '见面', summary: '了解需求：近地铁、一居室、预算4000内', at: now - 5*day }
+      ],
+      memoryPoints: [
+        { point: '客户刚换工作，对通勤时间很敏感', at: now - 5*day }
+      ],
+      cognition: { known: ['近地铁', '一居室', '预算4000'], signals: ['效率优先', '线上沟通为主'], log: [] }
+    }
   ]
   clients = seeds.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c }))
   persist()
@@ -471,18 +660,68 @@ function openDetail(id) {
     </div>`
   }
 
-  // 跟进待办
-  const followups = (c.followups || []).filter(f => !f.done)
-  if (followups.length > 0) {
-    html += `<div class="sec">
-      <div class="sec-h"><span class="em">💌</span>跟进待办（带新价值 · 非催）</div>
-      <div class="sec-body">${followups.map(f => `
-        <div class="fl-item">
-          <div class="fl-theme">${escHtml(f.theme)}</div>
-          <div class="fl-text">${escHtml(f.text)}</div>
-          <div class="fl-lt">LTRUST · ${escHtml(f.ltrust)}</div>
+  // 服务概览
+  const allTimeline = c.timeline || []
+  const today = Date.now()
+  const firstContact = allTimeline.length > 0 ? allTimeline[allTimeline.length - 1].at : null
+  const daysSince = firstContact ? Math.max(1, Math.floor((today - firstContact) / 86400000)) : '-'
+  const lastContact = allTimeline.length > 0 ? allTimeline[0].at : null
+  const daysSinceLast = lastContact ? Math.floor((today - lastContact) / 86400000) : '-'
+  const overdue = (typeof daysSinceLast === 'number' && daysSinceLast > 3) ? ' ⚠️ 超过3天未跟进' : ''
+
+  html += `<div class="sec" style="background:rgba(44,95,58,.04);border:1px solid rgba(44,95,58,.08)">
+    <div class="sec-h"><span class="em">📊</span>服务概览</div>
+    <div class="sec-body">
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:80px;text-align:center;padding:10px 8px;background:#fff;border-radius:8px;border:1px solid rgba(80,90,70,.08)">
+          <div style="font-size:22px;font-weight:900;color:var(--brand)">${daysSince}</div>
+          <div style="font-size:11px;color:var(--ts)">服务天数</div>
         </div>
-      `).join('')}</div>
+        <div style="flex:1;min-width:80px;text-align:center;padding:10px 8px;background:#fff;border-radius:8px;border:1px solid rgba(80,90,70,.08)">
+          <div style="font-size:22px;font-weight:900;color:var(--brand)">${allTimeline.length}</div>
+          <div style="font-size:11px;color:var(--ts)">接触次数</div>
+        </div>
+        <div style="flex:1;min-width:80px;text-align:center;padding:10px 8px;background:#fff;border-radius:8px;border:1px solid rgba(80,90,70,.08)">
+          <div style="font-size:22px;font-weight:900;color:${daysSinceLast > 3 ? 'var(--fire)' : 'var(--brand)'}">${daysSinceLast}${overdue}</div>
+          <div style="font-size:11px;color:var(--ts)">最近接触${daysSinceLast > 3 ? ' ⚠️' : ''}</div>
+        </div>
+        <div style="flex:1;min-width:80px;text-align:center;padding:10px 8px;background:#fff;border-radius:8px;border:1px solid rgba(80,90,70,.08)">
+          <div style="font-size:22px;font-weight:900;color:var(--brand)">${lm.tag}</div>
+          <div style="font-size:11px;color:var(--ts)">分层等级</div>
+        </div>
+      </div>
+    </div>
+  </div>`
+
+  // 跟进待办（含完成按钮）
+  const allFollowups = c.followups || []
+  const pendingTodos = allFollowups.filter(f => !f.done)
+  const doneTodos = allFollowups.filter(f => f.done)
+  if (pendingTodos.length > 0) {
+    html += `<div class="sec">
+      <div class="sec-h"><span class="em">💌</span>跟进待办 <span style="font-size:11px;font-weight:400;color:var(--fire)">${pendingTodos.length}项待处理</span></div>
+      <div class="sec-body">${pendingTodos.map(function(f, idx) {
+        var realIdx = allFollowups.indexOf(f)
+        return '<div class="fl-item" style="border-left-color:' + (f.ltrust === '带新价值' ? 'var(--accent)' : f.ltrust === '回应关切' ? 'var(--brand)' : 'var(--cozy)') + '">' +
+          '<div class="fl-theme">' + escHtml(f.theme) + '</div>' +
+          '<div class="fl-text">' + escHtml(f.text) + '</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">' +
+          '<span class="fl-lt">LTRUST · ' + escHtml(f.ltrust) + '</span>' +
+          '<button class="btn btn-outline" style="padding:4px 10px;font-size:11px" onclick="event.stopPropagation();markTodoDone(\'' + c.id + '\',' + realIdx + ')">✓ 完成</button>' +
+          '</div></div>'
+      }).join('')}</div>
+    </div>`
+  }
+
+  // 已完成待办
+  if (doneTodos.length > 0) {
+    html += `<div class="sec">
+      <div class="sec-h"><span class="em">✅</span>已完成待办</div>
+      <div class="sec-body">${doneTodos.map(function(f) {
+        return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(80,90,70,.04);color:var(--td)">' +
+          '<span>✓</span><span style="text-decoration:line-through">' + escHtml(f.theme) + '</span>' +
+          '<span style="font-size:11px;margin-left:auto">' + escHtml(f.ltrust) + '</span></div>'
+      }).join('')}</div>
     </div>`
   }
 
@@ -551,9 +790,318 @@ function askDelDetail() {
 }
 
 function openPrep() {
-  if (detailTarget) {
-    showToast('见面参谋功能即将上线，敬请期待')
+  if (!detailTarget) return
+  var c = detailTarget
+  var pm = PERSONA_MAP[c.pkey] || PERSONA_MAP.red
+  var lm = LEVEL_MAP[c.level] || LEVEL_MAP.C
+  var allTimeline = c.timeline || []
+  var allFollowups = c.followups || []
+  var pendingTodos = allFollowups.filter(function(f) { return !f.done })
+  var now = Date.now()
+  var lastContact = allTimeline.length > 0 ? allTimeline[0].at : null
+  var daysSinceLast = lastContact ? Math.floor((now - lastContact) / 86400000) : '-'
+
+  // 计算温度
+  var tempLevel = 'warm', tempLabel = '🌡️ 温暖', tempClass = 'warm'
+  var recentLtrust = allFollowups.filter(function(f) { return !f.done }).map(function(f) { return f.ltrust })
+  if (recentLtrust.length > 0) {
+    if (recentLtrust.some(function(l) { return l === '带新价值' })) {
+      tempLevel = 'hot'; tempLabel = '🔥 灼热（带新价值）'; tempClass = 'hot'
+    } else if (recentLtrust.some(function(l) { return l === '回应关切' })) {
+      tempLevel = 'warm'; tempLabel = '🌡️ 温暖（回应关切）'; tempClass = 'warm'
+    } else {
+      tempLevel = 'cool'; tempLabel = '❄️ 微凉（关心人）'; tempClass = 'cool'
+    }
+  } else if (typeof daysSinceLast === 'number' && daysSinceLast > 7) {
+    tempLevel = 'cold'; tempLabel = '🧊 冰冷（超过7天未联系）'; tempClass = 'cold'
   }
+
+  // 计算话术建议
+  var scripts = []
+  if (c.pkey === 'red') {
+    scripts.push({ t: '🎯 开门见山', s: '"林先生，上次看的实验二小片区，我整理了三套最新上市的房源，先给您过目数据——"（直接给结论，不要绕弯子）' })
+    scripts.push({ t: '📊 数据锚定', s: '"这周同小区成交了一套同户型，单价XX万，比您预算高5%，但楼层更好——您看要不要调整一下筛选条件？"（用数据说话）' })
+  } else if (c.pkey === 'blue') {
+    scripts.push({ t: '💚 先问近况', s: '"张先生，最近家里都好吧？上次您提到父亲腿脚，我这边联系了一个适老改造的团队，您看要不要先了解一下？"（先关心人，再谈事）' })
+    scripts.push({ t: '🤝 建立共识', s: '"您放心，我这边一直在帮您留意。这周有几套新出的房源，我觉得符合您说的要求，要不咱们约个时间看看？"（强调站在客户一边）' })
+  } else {
+    scripts.push({ t: '📋 数据先行', s: '"陈同学，上次说的5套近地铁房源，我做了个详细的对比表，包括通勤时间、租金、周边配套——您先看看，有问题随时问我。"（先给完整信息）' })
+    scripts.push({ t: '🔍 风险提示', s: '"这三套房源里，A小区虽然价格最低，但离地铁站1.2公里，通勤不太方便——建议优先考虑B和C。"（主动分析风险）' })
+  }
+  // 基于阶段补充话术
+  if (c.stage && c.stage.indexOf('①首套') >= 0) {
+    scripts.push({ t: '🏠 首套关怀', s: '"第一次买房难免紧张，我这边每一步都会提前跟您沟通清楚，咱们不着急，慢慢来。"（缓解首套焦虑）' })
+  } else if (c.stage && c.stage.indexOf('③教育') >= 0) {
+    scripts.push({ t: '🎓 教育提醒', s: '"学区政策每年可能有调整，我这边会持续关注，有变化第一时间通知您。"（体现专业价值）' })
+  }
+
+  // 快速议程选项
+  var agendaOpts = ['📋 确认需求变化', '📊 展示最新数据', '🔑 带看/复看', '💰 价格谈判', '📝 合同准备', '💚 售后关怀', '🏠 适老/改造', '📄 文件签署']
+
+  // 构建HTML
+  var html = ''
+
+  // 头部
+  html += '<div class="prep-header">' +
+    '<div class="prep-avatar">' + (c.surname || (c.name || '客')[0]) + '</div>' +
+    '<div class="prep-info">' +
+    '<div class="prep-name">' + escHtml(c.name) + '</div>' +
+    '<div class="prep-meta">' + escHtml(c.stage) + ' · ' + pm.tag + ' · ' + lm.tag +
+    '<span class="prep-temp ' + tempClass + '">' + tempLabel + '</span></div>' +
+    '</div></div>'
+
+  // 服务摘要
+  var firstContact = allTimeline.length > 0 ? allTimeline[allTimeline.length - 1].at : null
+  var daysSince = firstContact ? Math.max(1, Math.floor((now - firstContact) / 86400000)) : '-'
+  html += '<div class="prep-summary">' +
+    '<div class="prep-summary-item"><div class="prep-summary-num">' + daysSince + '</div><div class="prep-summary-label">服务天数</div></div>' +
+    '<div class="prep-summary-item"><div class="prep-summary-num">' + allTimeline.length + '</div><div class="prep-summary-label">接触次数</div></div>' +
+    '<div class="prep-summary-item"><div class="prep-summary-num">' + (typeof daysSinceLast === 'number' ? daysSinceLast : '-') + '</div><div class="prep-summary-label">距上次联系(天)</div></div>' +
+    '<div class="prep-summary-item"><div class="prep-summary-num">' + pendingTodos.length + '</div><div class="prep-summary-label">待办项</div></div>' +
+    '</div>'
+
+  // 待办检查清单
+  html += '<div class="prep-section">' +
+    '<div class="prep-section-h">📋 待办检查清单 <span class="badge ' + (pendingTodos.length > 0 ? 'red' : 'green') + '">' + pendingTodos.length + '项待处理</span></div>' +
+    '<div class="sec-body">'
+  if (pendingTodos.length > 0) {
+    for (var pi = 0; pi < pendingTodos.length; pi++) {
+      var f = pendingTodos[pi]
+      var ltClass = f.ltrust === '带新价值' ? 'fire' : f.ltrust === '回应关切' ? 'green' : 'teal'
+      html += '<div class="prep-check-item">' +
+        '<div class="prep-checkbox" onclick="prepMarkDone(' + pi + ')">✓</div>' +
+        '<div class="prep-check-body">' +
+        '<div class="prep-check-theme">' + escHtml(f.theme) + '</div>' +
+        (f.text ? '<div class="prep-check-text">' + escHtml(f.text) + '</div>' : '') +
+        '<span class="prep-check-lt ' + ltClass + '">LTRUST · ' + escHtml(f.ltrust) + '</span>' +
+        '</div></div>'
+    }
+  } else {
+    html += '<div style="text-align:center;padding:10px 0;color:var(--health);font-size:13px;font-weight:600">✅ 所有待办已完成，状态不错</div>'
+  }
+  html += '</div></div>'
+
+  // 最近时间线
+  html += '<div class="prep-section">' +
+    '<div class="prep-section-h">🕒 最近接触回顾</div>'
+  if (allTimeline.length > 0) {
+    var maxShow = Math.min(5, allTimeline.length)
+    for (var ti = 0; ti < maxShow; ti++) {
+      var t = allTimeline[ti]
+      var dotClass = t.type === '策展' ? 'curate' : t.type === '见面' ? 'meeting' : 'followup'
+      html += '<div class="prep-tl-mini">' +
+        '<div class="prep-tl-dot ' + dotClass + '"></div>' +
+        '<div class="prep-tl-body">' +
+        '<div class="prep-tl-sum"><strong>' + escHtml(t.type) + '</strong> ' + escHtml(t.summary) + '</div>' +
+        '<div class="prep-tl-at">' + fmtDate(t.at) + '</div>' +
+        '</div></div>'
+    }
+    if (allTimeline.length > maxShow) {
+      html += '<div style="text-align:center;padding:6px 0;font-size:11px;color:var(--td)">还有 ' + (allTimeline.length - maxShow) + ' 条记录，<a href="#" onclick="event.preventDefault();closePrep();openDetail(\'' + c.id + '\')" style="color:var(--brand)">查看全部 →</a></div>'
+    }
+  } else {
+    html += '<div style="text-align:center;padding:10px 0;color:var(--td);font-size:13px">暂无接触记录</div>'
+  }
+  html += '</div>'
+
+  // 认知卡
+  var cog = c.cognition || { log: [] }
+  html += '<div class="prep-section">' +
+    '<div class="prep-section-h">🧠 认知卡（越服务越懂客户）</div>'
+  if ((cog.known || []).length > 0 || (cog.signals || []).length > 0) {
+    if ((cog.known || []).length > 0) {
+      html += '<div style="font-size:11px;font-weight:700;color:var(--ts);margin-bottom:4px">已知偏好</div>' +
+        '<div class="prep-cog-grid">' + cog.known.map(function(k) { return '<span class="prep-cog-tag">' + escHtml(k) + '</span>' }).join('') + '</div>'
+    }
+    if ((cog.signals || []).length > 0) {
+      html += '<div style="font-size:11px;font-weight:700;color:var(--ts);margin:6px 0 4px">决策信号 / 关怀点</div>' +
+        '<div class="prep-cog-grid">' + cog.signals.map(function(s) { return '<span class="prep-cog-tag signal">' + escHtml(s) + '</span>' }).join('') + '</div>'
+    }
+  } else {
+    html += '<div style="text-align:center;padding:10px 0;color:var(--td);font-size:13px">暂无认知沉淀</div>'
+  }
+  html += '</div>'
+
+  // 话术建议
+  html += '<div class="prep-section">' +
+    '<div class="prep-section-h">💬 话术建议（基于' + pm.tag + '）</div>'
+  for (var si = 0; si < scripts.length; si++) {
+    html += '<div class="prep-script">' +
+      '<div class="prep-script-t">' + scripts[si].t + '</div>' +
+      '<div class="prep-script-s">' + scripts[si].s + '</div></div>'
+  }
+  html += '</div>'
+
+  // 本次见面目标 & 议程
+  html += '<div class="prep-section">' +
+    '<div class="prep-section-h">🎯 本次见面目标</div>' +
+    '<textarea class="prep-goal-text" id="prepGoalText" placeholder="例：确认客户对学区房的态度是否有变化，推动下一步看房"></textarea>' +
+    '<div class="prep-section-h" style="margin-top:10px">📌 快速议程</div>' +
+    '<div class="prep-agenda" id="prepAgenda">' +
+    agendaOpts.map(function(a) { return '<span class="prep-agenda-chip" onclick="this.classList.toggle(\'on\')">' + a + '</span>' }).join('') +
+    '</div></div>'
+
+  document.getElementById('prepContent').innerHTML = html
+  document.getElementById('prepOverlay').classList.add('active')
+  document.body.style.overflow = 'hidden'
+}
+
+function closePrep() {
+  document.getElementById('prepOverlay').classList.remove('active')
+  document.body.style.overflow = ''
+}
+
+function prepMarkDone(idx) {
+  if (!detailTarget) return
+  var c = detailTarget
+  var pendingTodos = (c.followups || []).filter(function(f) { return !f.done })
+  if (pendingTodos[idx]) {
+    var realIdx = (c.followups || []).indexOf(pendingTodos[idx])
+    if (realIdx >= 0) {
+      c.followups[realIdx].done = true
+      persist()
+      openPrep() // 刷新参谋
+      showToast('✓ 待办已标记完成')
+    }
+  }
+}
+
+function prepStartFollowup() {
+  closePrep()
+  // 短暂延迟后打开跟进表单
+  setTimeout(function() { openFollowupForm() }, 300)
+}
+
+function prepSendPrep() {
+  if (!detailTarget) return
+  var goal = document.getElementById('prepGoalText')
+  var goalText = goal ? goal.value.trim() : ''
+  var c = detailTarget
+
+  // 写入本地存储作为备忘
+  var prepNotes = {}
+  try {
+    var raw = localStorage.getItem('fs_prep_notes')
+    if (raw) prepNotes = JSON.parse(raw)
+  } catch(e) {}
+  prepNotes[c.id] = {
+    clientId: c.id,
+    clientName: c.name,
+    goal: goalText,
+    agenda: Array.from(document.querySelectorAll('#prepAgenda .prep-agenda-chip.on')).map(function(el) { return el.textContent }),
+    updatedAt: Date.now()
+  }
+  try { localStorage.setItem('fs_prep_notes', JSON.stringify(prepNotes)) } catch(e) {}
+
+  showToast('✓ 备忘已保存，首页工作台可查看')
+}
+
+// ============================================================
+// 跟进记录表单
+// ============================================================
+function openFollowupForm() {
+  if (!detailTarget) return
+  // 重置表单
+  var typeOpts = document.querySelectorAll('#fupTypeOpts .opt-item')
+  typeOpts.forEach(function(el, i) { el.classList.toggle('on', i === 0) })
+  document.getElementById('fupSummary').value = ''
+  document.getElementById('fupTodoTheme').value = ''
+  document.getElementById('fupTodoText').value = ''
+  var needTodo = document.querySelectorAll('#fupNeedTodo .opt-item')
+  needTodo.forEach(function(el) { el.classList.toggle('on', el.dataset.val === 'yes') })
+  document.getElementById('fupTodoField').style.display = 'block'
+  document.getElementById('fupTodoTextField').style.display = 'block'
+  document.getElementById('fupTodoLtrustField').style.display = 'block'
+  var ltrustOpts = document.querySelectorAll('#fupLtrustOpts .opt-item')
+  ltrustOpts.forEach(function(el) { el.classList.toggle('on', el.dataset.val === '带新价值') })
+
+  document.getElementById('followupOverlay').classList.add('active')
+  document.body.style.overflow = 'hidden'
+}
+
+function closeFollowupForm() {
+  document.getElementById('followupOverlay').classList.remove('active')
+  document.body.style.overflow = ''
+}
+
+// 跟进类型切换 → 显示/隐藏待办字段
+document.addEventListener('DOMContentLoaded', function() {
+  var needTodoOpts = document.getElementById('fupNeedTodo')
+  if (needTodoOpts) {
+    needTodoOpts.addEventListener('click', function(e) {
+      var chip = e.target.closest('.opt-item')
+      if (!chip) return
+      var show = chip.dataset.val === 'yes'
+      document.getElementById('fupTodoField').style.display = show ? 'block' : 'none'
+      document.getElementById('fupTodoTextField').style.display = show ? 'block' : 'none'
+      document.getElementById('fupTodoLtrustField').style.display = show ? 'block' : 'none'
+    })
+  }
+})
+
+function saveFollowup() {
+  if (!detailTarget) return
+  var c = detailTarget
+
+  // 收集数据
+  var type = 'curate'
+  var typeOpts = document.querySelectorAll('#fupTypeOpts .opt-item')
+  typeOpts.forEach(function(el) { if (el.classList.contains('on')) type = el.dataset.val })
+
+  var summary = document.getElementById('fupSummary').value.trim()
+  if (!summary) { showToast('请填写内容摘要'); return }
+
+  var now = Date.now()
+  var typeLabel = ({ curate: '策展', meeting: '见面', followup: '跟进' })[type] || '跟进'
+
+  // 添加时间线记录
+  if (!c.timeline) c.timeline = []
+  c.timeline.unshift({ type: typeLabel, summary: summary, at: now })
+
+  // 检查是否需要添加待办
+  var needTodo = false
+  var needTodoOpts = document.querySelectorAll('#fupNeedTodo .opt-item')
+  needTodoOpts.forEach(function(el) { if (el.classList.contains('on') && el.dataset.val === 'yes') needTodo = true })
+
+  if (needTodo) {
+    var theme = document.getElementById('fupTodoTheme').value.trim()
+    var text = document.getElementById('fupTodoText').value.trim()
+    var ltrust = '带新价值'
+    var ltrustOpts = document.querySelectorAll('#fupLtrustOpts .opt-item')
+    ltrustOpts.forEach(function(el) { if (el.classList.contains('on')) ltrust = el.dataset.val })
+
+    if (!c.followups) c.followups = []
+    c.followups.unshift({
+      theme: theme || '跟进待办',
+      text: text || '待办说明',
+      ltrust: ltrust,
+      done: false,
+      createdAt: now
+    })
+  }
+
+  // 更新客户数据
+  var idx = clients.findIndex(function(x) { return x.id === c.id })
+  if (idx >= 0) {
+    clients[idx] = c
+    persist()
+  }
+
+  closeFollowupForm()
+  openDetail(c.id) // 刷新详情
+  showToast('✓ 跟进记录已保存')
+}
+
+// ============================================================
+// 待办完成标记
+// ============================================================
+function markTodoDone(clientId, todoIdx) {
+  var c = clients.find(function(x) { return x.id === clientId })
+  if (!c || !c.followups) return
+  c.followups[todoIdx].done = true
+  persist()
+  openDetail(clientId)
+  showToast('✓ 待办已标记完成')
 }
 
 // ============================================================
