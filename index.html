@@ -297,6 +297,70 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   .hero h1 { font-size: 36px !important; }
   .section { padding: 32px 6% 8px !important; }
 }
+
+/* ====== 工作台侧边栏 ====== */
+.wb-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.35);display:none;opacity:0;transition:opacity .25s}
+.wb-overlay.show{display:block;opacity:1}
+.wb-sidebar{position:fixed;top:0;left:0;bottom:0;z-index:201;width:280px;background:#fff;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:4px 0 20px rgba(0,0,0,.08)}
+.wb-sidebar.open{transform:translateX(0)}
+.wb-sb-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(80,90,70,.08);flex-shrink:0}
+.wb-sb-brand{font-size:17px;font-weight:800;color:var(--brand);display:flex;align-items:center;gap:6px}
+.wb-sb-close{font-size:20px;color:var(--ts);background:none;border:none;cursor:pointer;padding:4px;line-height:1}
+.wb-sb-close:hover{color:var(--dk)}
+.wb-sb-user{padding:14px 20px;border-bottom:1px solid rgba(80,90,70,.06);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.wb-sb-avatar{width:36px;height:36px;border-radius:50%;background:var(--p-bg);color:var(--brand);display:grid;place-items:center;font-size:15px;font-weight:800}
+.wb-sb-name{font-size:14px;font-weight:700;color:var(--dk)}
+.wb-sb-role{font-size:11px;color:var(--ts)}
+.wb-sb-nav{flex:1;overflow-y:auto;padding:12px 0}
+.wb-sb-group{padding:0 12px;margin-bottom:8px}
+.wb-sb-group-title{font-size:10px;font-weight:700;color:var(--td);text-transform:uppercase;letter-spacing:1px;padding:8px 8px 4px}
+.wb-sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--tx);text-decoration:none;transition:all .15s;cursor:pointer}
+.wb-sb-item:hover{background:var(--p-bg);color:var(--brand)}
+.wb-sb-item.active{background:var(--p-bg);color:var(--brand);font-weight:700}
+.wb-sb-item .wb-sb-ico{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.wb-sb-item .wb-sb-badge{margin-left:auto;font-size:10px;padding:1px 8px;border-radius:10px;background:var(--p-bg);color:var(--brand);font-weight:700}
+.wb-sb-foot{padding:12px 20px;border-top:1px solid rgba(80,90,70,.06);font-size:11px;color:var(--td);flex-shrink:0;text-align:center}
+
+/* ====== 工作台仪表盘 ====== */
+.wb-dashboard{display:none}
+.wb-dashboard.active{display:block}
+.wb-dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:700px;margin:0 auto 16px}
+.wb-dash-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 14px;text-align:center}
+.wb-dash-num{font-size:26px;font-weight:900;color:var(--brand);line-height:1.1}
+.wb-dash-label{font-size:11px;color:var(--ts);margin-top:4px;font-weight:500}
+.wb-dash-trend{font-size:10px;font-weight:700;margin-top:2px}
+.wb-dash-trend.up{color:#6d8f55}
+.wb-dash-trend.down{color:var(--fire)}
+.wb-dash-section{max-width:700px;margin:0 auto 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px}
+.wb-dash-section-title{font-size:14px;font-weight:800;color:var(--dk);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.wb-dash-section-title .wb-more{font-size:11px;font-weight:600;color:var(--brand);margin-left:auto;text-decoration:none}
+.wb-dash-task{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(80,90,70,.05)}
+.wb-dash-task:last-child{border-bottom:none}
+.wb-dash-task .wb-task-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.wb-dash-task .wb-task-dot.urgent{background:var(--fire)}
+.wb-dash-task .wb-task-dot.normal{background:var(--brand)}
+.wb-dash-task .wb-task-dot.done{background:var(--td)}
+.wb-dash-task .wb-task-body{flex:1;min-width:0}
+.wb-dash-task .wb-task-name{font-size:13px;font-weight:600;color:var(--dk)}
+.wb-dash-task .wb-task-meta{font-size:11px;color:var(--ts);margin-top:1px}
+.wb-dash-task .wb-task-action{font-size:11px;color:var(--brand);font-weight:600;text-decoration:none;white-space:nowrap}
+
+/* ====== 视图切换 ====== */
+.wb-view-toggle{display:flex;gap:4px;background:var(--bg2);border-radius:8px;padding:3px;margin:0 auto 20px;max-width:700px}
+#wbExploreView{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.wb-view-btn{flex:1;text-align:center;padding:8px 12px;border-radius:6px;font-size:13px;font-weight:700;color:var(--ts);border:none;background:none;cursor:pointer;transition:all .2s}
+.wb-view-btn.active{background:#fff;color:var(--dk);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.wb-view-btn:hover:not(.active){color:var(--dk)}
+
+/* ====== 侧边栏触发按钮（导航栏内） ====== */
+.wb-menu-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--brand);padding:4px;display:flex;align-items:center;gap:4px;font-weight:700;line-height:1;margin-right:2px}
+
+/* ====== 响应式 ====== */
+@media (min-width: 1024px) {
+  .wb-sidebar{width:260px}
+  .wb-overlay{display:none!important}
+}
 </style>
 <!-- 全站数据追踪器 v1.0 -->
 <script src="/tracker.js" async></script>
@@ -319,6 +383,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
 <!-- 风声统一导航栏 -->
 <nav class="fs-nav">
+  <button class="wb-menu-btn" id="wbMenuBtn" onclick="toggleSidebar()" aria-label="打开菜单">☰</button>
   <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
   <div class="fs-nav-links">
     <a href="/">首页</a>
@@ -338,6 +403,80 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   </div>
   <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
 </nav>
+
+<!-- ====== 工作台侧边栏 ====== -->
+<div class="wb-overlay" id="wbOverlay" onclick="toggleSidebar()"></div>
+<div class="wb-sidebar" id="wbSidebar">
+  <div class="wb-sb-header">
+    <div class="wb-sb-brand">🌬️ 风声工作台</div>
+    <button class="wb-sb-close" onclick="toggleSidebar()">✕</button>
+  </div>
+  <div class="wb-sb-user">
+    <div class="wb-sb-avatar">经</div>
+    <div>
+      <div class="wb-sb-name">经纪人</div>
+      <div class="wb-sb-role">居住服务者 · 风声</div>
+    </div>
+  </div>
+  <div class="wb-sb-nav">
+    <div class="wb-sb-group">
+      <div class="wb-sb-group-title">工作台</div>
+      <a class="wb-sb-item active" href="/" onclick="event.preventDefault();switchView('workbench');toggleSidebar()">
+        <span class="wb-sb-ico">📊</span> 工作台仪表盘
+      </a>
+      <a class="wb-sb-item" href="/" onclick="event.preventDefault();switchView('explore');toggleSidebar()">
+        <span class="wb-sb-ico">🔍</span> 探索发现
+      </a>
+      <a class="wb-sb-item" href="/clients/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">👥</span> 客户档案
+        <span class="wb-sb-badge" id="sbClientCount">0</span>
+      </a>
+      <a class="wb-sb-item" href="/scene/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🧭</span> 场景导航
+      </a>
+    </div>
+    <div class="wb-sb-group">
+      <div class="wb-sb-group-title">知识工具</div>
+      <a class="wb-sb-item" href="/dictionary/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">📖</span> 知识词典
+      </a>
+      <a class="wb-sb-item" href="/search/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🔍</span> 搜索
+      </a>
+      <a class="wb-sb-item" href="/knowledge/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🧰</span> 知识底座
+      </a>
+      <a class="wb-sb-item" href="/mentor/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🔥</span> 开单导师
+      </a>
+    </div>
+    <div class="wb-sb-group">
+      <div class="wb-sb-group-title">客户服务</div>
+      <a class="wb-sb-item" href="/reply/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">💬</span> 客户解码器
+      </a>
+      <a class="wb-sb-item" href="/quality-test/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🏠</span> 品质测评
+      </a>
+      <a class="wb-sb-item" href="/care-test/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">💚</span> 关怀测评
+      </a>
+    </div>
+    <div class="wb-sb-group">
+      <div class="wb-sb-group-title">个人成长</div>
+      <a class="wb-sb-item" href="/assessment/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🎯</span> 能力测评
+      </a>
+      <a class="wb-sb-item" href="/breeder/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🤖</span> Agent培养师
+      </a>
+      <a class="wb-sb-item" href="/ip-design/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🎨</span> IP角色设计
+      </a>
+    </div>
+  </div>
+  <div class="wb-sb-foot">风声 · 通过独立价值获得尊重 v3.0</div>
+</div>
 <style>
 .fs-nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:#fff;border-bottom:1px solid rgba(80,90,70,.09);position:sticky;top:0;z-index:100}
 .fs-nav-brand{font-size:16px;font-weight:700;color:#3d5a3e;text-decoration:none;display:flex;align-items:center;gap:4px}
@@ -353,6 +492,87 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 </style>
 
 <div class="main">
+
+<!-- ====== 视图切换 ====== -->
+<div class="wb-view-toggle">
+  <button class="wb-view-btn active" id="wbViewWorkbench" onclick="switchView('workbench')">📊 工作台</button>
+  <button class="wb-view-btn" id="wbViewExplore" onclick="switchView('explore')">🔍 探索</button>
+</div>
+
+<!-- ====== 工作台仪表盘视图 ====== -->
+<div class="wb-dashboard active" id="wbDashboard">
+  <!-- 核心指标 -->
+  <div class="wb-dash-grid">
+    <div class="wb-dash-card">
+      <div class="wb-dash-num" id="dashClientTotal">-</div>
+      <div class="wb-dash-label">客户总数</div>
+      <div class="wb-dash-trend up" id="dashClientTrend"></div>
+    </div>
+    <div class="wb-dash-card">
+      <div class="wb-dash-num" id="dashClientIng">-</div>
+      <div class="wb-dash-label">跟进中</div>
+    </div>
+    <div class="wb-dash-card">
+      <div class="wb-dash-num" id="dashClientDone">-</div>
+      <div class="wb-dash-label">已成交</div>
+    </div>
+    <div class="wb-dash-card">
+      <div class="wb-dash-num" id="dashEntryTotal">5942</div>
+      <div class="wb-dash-label">知识词条</div>
+    </div>
+  </div>
+
+  <!-- 今日待办 -->
+  <div class="wb-dash-section">
+    <div class="wb-dash-section-title">
+      📋 今日待办
+      <a class="wb-more" href="/clients/">查看全部 →</a>
+    </div>
+    <div id="dashTodoList">
+      <div class="wb-dash-task">
+        <div class="wb-task-dot normal"></div>
+        <div class="wb-task-body">
+          <div class="wb-task-name">登录后即可查看待办提醒</div>
+          <div class="wb-task-meta">客户跟进提醒、合同到期等</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 最近客户 -->
+  <div class="wb-dash-section">
+    <div class="wb-dash-section-title">
+      👥 最近客户
+      <a class="wb-more" href="/clients/">管理客户 →</a>
+    </div>
+    <div id="dashRecentClients">
+      <div class="wb-dash-task">
+        <div class="wb-task-body">
+          <div class="wb-task-name">还没有客户数据</div>
+          <div class="wb-task-meta">创建客户档案后，这里会显示最近 5 位客户</div>
+        </div>
+        <a class="wb-task-action" href="/clients/">创建 →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 快捷入口 -->
+  <div class="wb-dash-section">
+    <div class="wb-dash-section-title">
+      🚀 快捷入口
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="cta-btn cta-primary" href="/scene/" style="padding:8px 16px;font-size:12px">🧭 场景导航</a>
+      <a class="cta-btn cta-accent" href="/mentor/" style="padding:8px 16px;font-size:12px">🔥 开单导师</a>
+      <a class="cta-btn cta-secondary" href="/dictionary/" style="padding:8px 16px;font-size:12px">📖 查词典</a>
+      <a class="cta-btn cta-secondary" href="/search/" style="padding:8px 16px;font-size:12px">🔍 搜索</a>
+      <a class="cta-btn cta-secondary" href="/knowledge/" style="padding:8px 16px;font-size:12px">🧰 知识底座</a>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 探索视图（原有内容容器） ====== -->
+<div id="wbExploreView">
 
 <!-- ====== HERO 区 ====== -->
 <div class="hero">
@@ -706,6 +926,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 @media(max-width:640px){.fs-feedback-widget{margin:20px 12px;padding:18px 14px}.fs-fb-stars{font-size:30px;gap:4px}}
 </style>
 
+</div><!-- #wbExploreView -->
+
 </div><!-- .main -->
 
 <!-- 合作意向浮层(路径B) -->
@@ -759,6 +981,162 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 </div>
 
 <script>
+  // ===== 工作台侧边栏 =====
+  function toggleSidebar() {
+    var sidebar = document.getElementById('wbSidebar');
+    var overlay = document.getElementById('wbOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+  }
+
+  // 侧边栏外部点击关闭
+  document.addEventListener('DOMContentLoaded', function() {
+    var overlay = document.getElementById('wbOverlay');
+    if (overlay) {
+      overlay.addEventListener('click', function() {
+        toggleSidebar();
+      });
+    }
+  });
+
+  // ===== 视图切换（工作台 / 探索） =====
+  function switchView(view) {
+    var wb = document.getElementById('wbDashboard');
+    var ex = document.getElementById('wbExploreView');
+    var btnWb = document.getElementById('wbViewWorkbench');
+    var btnEx = document.getElementById('wbViewExplore');
+    if (!wb || !ex) return;
+    if (view === 'workbench') {
+      wb.classList.add('active');
+      ex.style.display = 'none';
+      btnWb.classList.add('active');
+      btnEx.classList.remove('active');
+    } else {
+      wb.classList.remove('active');
+      ex.style.display = 'block';
+      btnEx.classList.add('active');
+      btnWb.classList.remove('active');
+    }
+  }
+
+  // 默认显示工作台视图
+  document.addEventListener('DOMContentLoaded', function() {
+    var ex = document.getElementById('wbExploreView');
+    if (ex) ex.style.display = 'none';
+  });
+
+  // ===== 仪表盘数据加载 =====
+  (function() {
+    function loadDashboardData() {
+      var clients = [];
+      try {
+        var raw = localStorage.getItem('fs_web_clients');
+        if (raw) clients = JSON.parse(raw) || [];
+      } catch(e) {}
+
+      var total = clients.length;
+      var ing = clients.filter(function(c) { return c.status === '跟进中' }).length;
+      var done = clients.filter(function(c) { return c.status === '已成交' }).length;
+
+      document.getElementById('dashClientTotal').textContent = total || 0;
+      document.getElementById('dashClientIng').textContent = ing || 0;
+      document.getElementById('dashClientDone').textContent = done || 0;
+
+      // 侧边栏客户数
+      var sbCount = document.getElementById('sbClientCount');
+      if (sbCount) sbCount.textContent = total || 0;
+
+      // 最近客户
+      var recent = document.getElementById('dashRecentClients');
+      if (recent) {
+        if (clients.length === 0) {
+          recent.innerHTML =
+            '<div class="wb-dash-task"><div class="wb-task-body"><div class="wb-task-name">还没有客户数据</div><div class="wb-task-meta">创建客户档案后，这里会显示最近 5 位客户</div></div><a class="wb-task-action" href="/clients/">创建 →</a></div>';
+        } else {
+          var sorted = clients.slice().sort(function(a, b) {
+            return (b.updatedAt || '').localeCompare(a.updatedAt || '');
+          });
+          var html = '';
+          for (var i = 0; i < Math.min(5, sorted.length); i++) {
+            var c = sorted[i];
+            var statusColor = c.status === '已成交' ? 'var(--health)' : c.status === '已流失' ? 'var(--td)' : 'var(--brand)';
+            html += '<div class="wb-dash-task">' +
+              '<div class="wb-task-dot" style="background:' + statusColor + '"></div>' +
+              '<div class="wb-task-body">' +
+              '<div class="wb-task-name">' + (c.name || '未知') + '</div>' +
+              '<div class="wb-task-meta">' + (c.persona || '') + ' · ' + (c.status || '') + (c.updatedAt ? ' · ' + c.updatedAt : '') + '</div>' +
+              '</div>' +
+              '<a class="wb-task-action" href="/clients/">查看 →</a>' +
+              '</div>';
+          }
+          recent.innerHTML = html;
+        }
+      }
+
+      // 今日待办（基于客户数据生成）
+      var todoList = document.getElementById('dashTodoList');
+      if (todoList) {
+        var todos = [];
+        // 近期更新的客户需要跟进
+        var now = Date.now();
+        var threeDays = 3 * 24 * 60 * 60 * 1000;
+        for (var i = 0; i < clients.length; i++) {
+          var c = clients[i];
+          if (c.status === '跟进中') {
+            var updated = c.updatedAt ? new Date(c.updatedAt).getTime() : 0;
+            if (now - updated > threeDays) {
+              todos.push({ name: c.name + ' — 超过3天未跟进', type: 'urgent', link: '/clients/' });
+            }
+          }
+        }
+        // 已成交客户 -> 售后关怀
+        for (var i = 0; i < clients.length; i++) {
+          var c = clients[i];
+          if (c.status === '已成交' && todos.length < 6) {
+            todos.push({ name: c.name + ' — 售后关怀提醒', type: 'normal', link: '/clients/' });
+          }
+        }
+
+        if (todos.length === 0) {
+          todoList.innerHTML =
+            '<div class="wb-dash-task"><div class="wb-task-dot done"></div><div class="wb-task-body"><div class="wb-task-name">暂无待办，保持好状态</div><div class="wb-task-meta">有客户跟进需求时会在这里提醒</div></div></div>';
+        } else {
+          var html = '';
+          for (var i = 0; i < Math.min(5, todos.length); i++) {
+            var t = todos[i];
+            var dotClass = t.type === 'urgent' ? 'urgent' : 'normal';
+            html += '<div class="wb-dash-task">' +
+              '<div class="wb-task-dot ' + dotClass + '"></div>' +
+              '<div class="wb-task-body">' +
+              '<div class="wb-task-name">' + t.name + '</div>' +
+              '<div class="wb-task-meta">' + (t.type === 'urgent' ? '⚠️ 需要尽快处理' : '💡 建议主动联系') + '</div>' +
+              '</div>' +
+              '<a class="wb-task-action" href="' + t.link + '">处理 →</a>' +
+              '</div>';
+          }
+          todoList.innerHTML = html;
+        }
+      }
+    }
+
+    // 页面加载时加载
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadDashboardData);
+    } else {
+      loadDashboardData();
+    }
+
+    // 页面可见性变化时重新加载（用户可能在其他 tab 修改了数据）
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) loadDashboardData();
+    });
+
+    // 也暴露给全局，方便其他脚本调用
+    window.loadDashboardData = loadDashboardData;
+  })();
+
+  // ===== 原有反馈脚本 =====
   (function() {
     var s = document.querySelectorAll('#fs-fb-stars .fs-star');
     var l = document.getElementById('fs-fb-score-label');
