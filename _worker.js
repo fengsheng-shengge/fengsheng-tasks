@@ -998,20 +998,6 @@ async function handleEvent(request, env) {
       );
       const batch = trackingEvents.map((e) => {
         const ts = e.ts || Date.now();
-        // Enrich data with analytics metadata
-        const enrichedData = Object.assign({}, e.data || {});
-        if (e.session_id) enrichedData._sid = e.session_id;
-        if (e.session_start) enrichedData._ss = e.session_start;
-        if (e.visit_count !== undefined) enrichedData._vc = e.visit_count;
-        if (e.time_on_page_ms !== undefined) enrichedData._top = e.time_on_page_ms;
-        if (e.scroll_depths) enrichedData._sd = e.scroll_depths;
-        // Heartbeat duration
-        if (e.elapsed_ms !== undefined) enrichedData._elapsed = e.elapsed_ms;
-        // Session_end data
-        if (e.session_duration_ms !== undefined) enrichedData._sdur = e.session_duration_ms;
-        if (e.pages_in_session !== undefined) enrichedData._pages = e.pages_in_session;
-        // Feedback rating
-        if (e.rating !== undefined) enrichedData._rating = e.rating;
         return stmt.bind(
           (e.uid || 'anon').slice(0, 64),
           (e.type || e.event_type || 'event').slice(0, 32),
@@ -1029,7 +1015,7 @@ async function handleEvent(request, env) {
           (e.screen || '').slice(0, 32),
           (e.vp || '').slice(0, 32),
           (e.locale || '').slice(0, 16),
-          JSON.stringify(enrichedData).slice(0, 4096),
+          JSON.stringify(e.data || {}).slice(0, 2048),
           ts,
           Math.floor(ts / 1000)
         );
@@ -1261,143 +1247,6 @@ async function handleStatsHealth(request, env) {
   } catch (e) {
     recordD1Failure();
     return jsonResponse({ ...base, status: 'degraded', db: 'error', db_connected: false, error: e.message });
-  }
-}
-
-// ============================================================
-//  Analytics API — user frequency, session duration, feature usage, feedback
-// ============================================================
-async function handleAnalytics(request, env) {
-  const now = new Date().toISOString().split('T')[0];
-  if (!env.DB) {
-    return jsonResponse({ note: 'no database configured', updated: now });
-  }
-  try {
-    const url = new URL(request.url);
-    const days = parseInt(url.searchParams.get('days') || '7');
-    const daysParam = `-${days} days`;
-
-    // 1. Frequency: daily active users, returning rate
-    const freqSql = `SELECT date(created_at, 'unixepoch') as date, COUNT(DISTINCT uid) as dau, COUNT(*) as events FROM events WHERE created_at >= unixepoch('now', ?) AND date(created_at, 'unixepoch') IS NOT NULL GROUP BY date(created_at, 'unixepoch') ORDER BY date`;
-    const freqResult = await env.DB.prepare(freqSql).bind(daysParam).all();
-    const freqData = freqResult?.results || [];
-
-    // 2. Total unique users and returning visitors
-    const totalUsers = await env.DB.prepare("SELECT COUNT(DISTINCT uid) as total FROM events").first();
-    // Users with >1 distinct days of activity = returning visitors
-    const returningSql = `SELECT uid, COUNT(DISTINCT date(created_at, 'unixepoch')) as active_days FROM events WHERE created_at >= unixepoch('now', ?) GROUP BY uid HAVING active_days > 1`;
-    const returningResult = await env.DB.prepare(returningSql).bind(daysParam).all();
-    const returningCount = returningResult?.results?.length || 0;
-    const totalUid = totalUsers?.total || 1;
-
-    // 3. Session duration (from session_end events data field)
-    const durSql = `SELECT data FROM events WHERE event_type = 'session_end' AND created_at >= unixepoch('now', ?) AND data != '' ORDER BY created_at DESC LIMIT 500`;
-    const durResult = await env.DB.prepare(durSql).bind(daysParam).all();
-    let durations = [];
-    if (durResult?.results) {
-      for (const row of durResult.results) {
-        try {
-          const d = JSON.parse(row.data);
-          if (d._sdur) durations.push(d._sdur);
-        } catch (e) {}
-      }
-    }
-    const avgDuration = durations.length ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length) : 0;
-    const maxDuration = durations.length ? Math.max(...durations) : 0;
-    const durationBuckets = { under_30s: 0, under_2m: 0, under_5m: 0, under_10m: 0, over_10m: 0 };
-    for (const d of durations) {
-      if (d < 30000) durationBuckets.under_30s++;
-      else if (d < 120000) durationBuckets.under_2m++;
-      else if (d < 300000) durationBuckets.under_5m++;
-      else if (d < 600000) durationBuckets.under_10m++;
-      else durationBuckets.over_10m++;
-    }
-
-    // 4. Feature usage (event_type breakdown)
-    const featureSql = `SELECT event_type, COUNT(*) as count, COUNT(DISTINCT uid) as unique_users FROM events WHERE created_at >= unixepoch('now', ?) AND event_type NOT IN ('pageview', 'heartbeat', 'visibility_hidden', 'visibility_visible') GROUP BY event_type ORDER BY count DESC LIMIT 30`;
-    const featureResult = await env.DB.prepare(featureSql).bind(daysParam).all();
-    const featureData = featureResult?.results || [];
-
-    // 5. Product usage (pageview by product)
-    const productSql = `SELECT product, COUNT(*) as pageviews, COUNT(DISTINCT uid) as unique_users FROM events WHERE event_type = 'pageview' AND product != '' AND created_at >= unixepoch('now', ?) GROUP BY product ORDER BY pageviews DESC`;
-    const productResult = await env.DB.prepare(productSql).bind(daysParam).all();
-    const productData = productResult?.results || [];
-
-    // 6. Feedback summary (rating + feedback_submit)
-    const feedbackSql = `SELECT data FROM events WHERE event_type = 'feedback_submit' AND created_at >= unixepoch('now', ?) AND data != '' ORDER BY created_at DESC LIMIT 200`;
-    const feedbackResult = await env.DB.prepare(feedbackSql).bind(daysParam).all();
-    let feedbackRatings = [];
-    let feedbackTexts = [];
-    if (feedbackResult?.results) {
-      for (const row of feedbackResult.results) {
-        try {
-          const d = JSON.parse(row.data);
-          if (d._rating) feedbackRatings.push(d._rating);
-          if (d.content) feedbackTexts.push({ content: d.content.slice(0, 200), rating: d._rating });
-        } catch (e) {}
-      }
-    }
-    const avgRating = feedbackRatings.length ? Math.round(feedbackRatings.reduce((a, b) => a + b, 0) / feedbackRatings.length * 10) / 10 : 0;
-    const ratingDist = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    for (const r of feedbackRatings) { if (ratingDist[r] !== undefined) ratingDist[r]++; }
-
-    // 7. Scroll depth distribution
-    const scrollSql = `SELECT data FROM events WHERE event_type = 'scroll_depth' AND created_at >= unixepoch('now', ?) AND data != '' ORDER BY created_at DESC LIMIT 1000`;
-    const scrollResult = await env.DB.prepare(scrollSql).bind(daysParam).all();
-    let scrollCounts = {};
-    if (scrollResult?.results) {
-      for (const row of scrollResult.results) {
-        try {
-          const d = JSON.parse(row.data);
-          if (d.depth) {
-            const key = 'depth_' + d.depth;
-            scrollCounts[key] = (scrollCounts[key] || 0) + 1;
-          }
-        } catch (e) {}
-      }
-    }
-
-    // 8. Top pages by pageview
-    const pageSql = `SELECT url, COUNT(*) as pv, COUNT(DISTINCT uid) as uv FROM events WHERE event_type = 'pageview' AND created_at >= unixepoch('now', ?) AND url != '' GROUP BY url ORDER BY pv DESC LIMIT 20`;
-    const pageResult = await env.DB.prepare(pageSql).bind(daysParam).all();
-    const topPages = (pageResult?.results || []).map(r => ({
-      url: r.url.slice(0, 120),
-      pv: r.pv,
-      uv: r.uv
-    }));
-
-    return jsonResponse({
-      period_days: days,
-      updated: now,
-      frequency: {
-        daily: freqData,
-        total_users: totalUid,
-        returning_users: returningCount,
-        return_rate_pct: Math.round(returningCount / totalUid * 10000) / 100
-      },
-      duration: {
-        avg_ms: avgDuration,
-        avg_sec: Math.round(avgDuration / 1000),
-        max_ms: maxDuration,
-        max_sec: Math.round(maxDuration / 1000),
-        sessions_measured: durations.length,
-        distribution: durationBuckets
-      },
-      features: featureData,
-      products: productData,
-      feedback: {
-        total_ratings: feedbackRatings.length,
-        avg_rating: avgRating,
-        rating_distribution: ratingDist,
-        recent: feedbackTexts.slice(0, 20)
-      },
-      scroll_depth: scrollCounts,
-      top_pages: topPages,
-      source: 'db'
-    });
-  } catch (e) {
-    console.error('analytics: query failed', e.message);
-    return jsonResponse({ error: 'analytics query failed', updated: now }, 500);
   }
 }
 
@@ -3410,7 +3259,6 @@ export default {
     if (path === '/api/stats/summary') return handleStatsSummary(request, env);
     if (path === '/api/stats/daily') return handleStatsDaily(request, env);
     if (path === '/api/stats/health') return handleStatsHealth(request, env);
-    if (path === '/api/stats/analytics') return handleAnalytics(request, env);
 
     // Feedback
     if (path === '/api/feedback') {

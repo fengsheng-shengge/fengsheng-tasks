@@ -250,7 +250,6 @@ body.has-bottom-bar{padding-bottom:70px}
   .nav-inner{padding:10px 16px}
 }
 </style>
-<script src="/tracker.js" async></script>
 </head>
 <body>
 
@@ -311,7 +310,7 @@ body.has-bottom-bar{padding-bottom:70px}
   <a class="bb-btn" href="javascript:history.back()" title="返回上一页">← 返回</a>
   <button class="bb-btn" id="btnFavorite" title="收藏词条">★ 收藏</button>
   <button class="bb-btn" id="btnCopyLink" title="复制链接">🔗 复制链接</button>
-  <a class="bb-btn primary" id="btnGoScene" href="/dictionary/?sceneMode=true" title="查看场景">📋 场景导航</a>
+  <a class="bb-btn primary" id="btnGoScene" href="/scene/" title="查看场景">📋 场景导航</a>
 </div>
 
 <script>
@@ -667,7 +666,7 @@ body.has-bottom-bar{padding-bottom:70px}
       if (btnGoScene && ct && st) {
         const ctVal = Array.isArray(ct) ? ct[0] : ct;
         const stVal = Array.isArray(st) ? st[0] : st;
-        btnGoScene.href = '/dictionary/?sceneMode=true&clientType=' + encodeURIComponent(ctVal) + '&stage=' + encodeURIComponent(stVal);
+        btnGoScene.href = '/scene/?clientType=' + encodeURIComponent(ctVal) + '&stage=' + encodeURIComponent(stVal);
       }
 
     } catch (err) {

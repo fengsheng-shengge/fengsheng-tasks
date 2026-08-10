@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>风声 · 全量词典</title>
-<meta name="description" content="风声知识底座 · 全量词典 · 多维度筛选 · 道法术器 · 6597条词条">
+<meta name="description" content="风声知识底座 · 全量词典 · 多维度筛选 · 道法术器 · 5417条词条">
 <style>
 :root {
   --p: #3d5a3e; --p-light: #5a7d5b; --fire: #c46a3a; --fire-light: #e08a3c;
@@ -136,51 +136,6 @@ tbody tr{cursor:pointer;transition:background .15s}
 footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--line)}
 .footer-inner{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
 
-/* Filter toggle — 折叠筛选器 */
-.filter-toggle{display:flex;align-items:center;gap:10px;padding:10px 16px;background:white;border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:all .2s;margin-bottom:12px;user-select:none}
-.filter-toggle:hover{border-color:var(--p);background:rgba(61,90,62,0.03)}
-.filter-toggle .ft-label{font-size:13px;font-weight:600;color:var(--ink)}
-.filter-toggle .ft-badge{font-size:11px;padding:2px 10px;border-radius:100px;background:var(--p);color:white;font-weight:600;margin-left:4px;display:none}
-.filter-toggle .ft-badge.show{display:inline-block}
-.filter-toggle .ft-arrow{font-size:14px;color:var(--ink-soft);margin-left:auto;transition:transform .25s ease}
-.filter-toggle.open .ft-arrow{transform:rotate(180deg)}
-.filters-wrap.collapsed{display:none}
-
-/* Active filters — 当前筛选条 */
-.active-filters{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px;min-height:0}
-.active-filters:empty{display:none}
-.active-filters .af-label{font-size:11px;font-weight:700;color:var(--ink-soft);margin-right:4px;white-space:nowrap}
-.active-filter-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:4px 10px 4px 14px;border-radius:100px;background:rgba(61,90,62,0.08);color:var(--p);font-weight:500;cursor:pointer;transition:all .15s;border:1px solid transparent}
-.active-filter-chip:hover{background:rgba(61,90,62,0.15);border-color:rgba(61,90,62,0.2)}
-.active-filter-chip .af-remove{font-size:10px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);transition:all .15s}
-.active-filter-chip .af-remove:hover{background:rgba(61,90,62,0.2);color:var(--ink)}
-.active-filter-chip .af-clear-all{font-size:12px;color:var(--fire);font-weight:600;margin-left:4px;padding:4px 12px;border-radius:100px;background:rgba(196,106,58,0.08);cursor:pointer}
-.active-filter-chip .af-clear-all:hover{background:rgba(196,106,58,0.15)}
-
-/* 场景导航模式 */
-.lifecycle-toggle{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;background:white;border:1.5px solid var(--line);cursor:pointer;transition:all .2s;font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:12px;user-select:none}
-.lifecycle-toggle:hover{border-color:var(--p);color:var(--p)}
-.lifecycle-toggle.active{background:rgba(61,90,62,0.06);border-color:var(--p);color:var(--p)}
-.lifecycle-toggle .lt-icon{font-size:16px;margin-right:4px}
-.lifecycle-toggle .lt-arrow{font-size:12px;margin-left:auto;transition:transform .25s}
-.lifecycle-toggle.active .lt-arrow{transform:rotate(180deg)}
-
-.lifecycle-nav{display:none;margin-bottom:16px;padding:16px 20px;background:white;border:1px solid var(--line);border-radius:12px;flex-direction:column;gap:12px}
-.lifecycle-nav.visible{display:flex}
-.lifecycle-nav .ln-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.lifecycle-nav .ln-label{font-size:11px;font-weight:700;color:var(--p);min-width:48px;flex-shrink:0}
-.lifecycle-ct-btn{padding:6px 14px;border-radius:8px;border:1.5px solid var(--line);background:white;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--ink-soft);white-space:nowrap}
-.lifecycle-ct-btn:hover{border-color:var(--p);color:var(--p)}
-.lifecycle-ct-btn.active{background:var(--p);color:white;border-color:var(--p);box-shadow:var(--shadow-sm)}
-.lifecycle-stage-btn{padding:7px 16px;border-radius:100px;border:1.5px solid var(--line);background:white;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--ink-soft);white-space:nowrap;display:flex;align-items:center;gap:5px}
-.lifecycle-stage-btn:hover{border-color:var(--p);color:var(--p);background:rgba(61,90,62,0.03)}
-.lifecycle-stage-btn.active{background:var(--p);color:white;border-color:var(--p);box-shadow:var(--shadow-sm)}
-.lifecycle-stage-btn .ls-icon{font-size:15px}
-.lifecycle-stage-btn .ls-desc{font-size:11px;color:var(--ink-soft);font-weight:400;display:none}
-.lifecycle-stage-btn.active .ls-desc{color:rgba(255,255,255,0.7)}
-.lifecycle-stage-btn:hover .ls-desc{display:inline}
-.lifecycle-nav .ln-badge{font-size:11px;padding:2px 10px;border-radius:100px;background:rgba(61,90,62,0.06);color:var(--ink-soft);font-weight:500}
-
 @media(max-width:768px){
   .nav-links{display:none}
   .hero h1{font-size:24px}
@@ -188,13 +143,10 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
   .filter-row{flex-direction:column;gap:6px}
   .table-wrap{font-size:12px}
   thead th,tbody td{padding:8px 10px}
-  .col-name{max-width:200px}
-  .col-answer{max-width:160px}
-  .lifecycle-nav{padding:12px}
-  .lifecycle-stage-btn{font-size:12px;padding:5px 12px}
+  .col-name{max-width:140px}
+  .col-answer{max-width:180px}
 }
 </style>
-<script src="/tracker.js" async></script>
 </head>
 <body>
 
@@ -207,7 +159,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     <div class="nav-links">
       <a href="/" class="nav-link">首页</a>
       <a href="/knowledge/" class="nav-link">知识底座</a>
-      <a href="/dictionary/?sceneMode=true" class="nav-link">场景导航</a>
+      <a href="/scene/" class="nav-link">场景导航</a>
       <a href="/search/" class="nav-link">搜索</a>
       <a href="/dictionary/" class="nav-link active">全量词典</a>
     </div>
@@ -217,7 +169,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
 <main>
   <div class="hero">
     <h1>全量词典</h1>
-    <p class="hero-sub">6597条词条 · 按业务场景分类 · 多维度筛选定位</p>
+    <p class="hero-sub">5417条词条 · 按业务场景分类 · 多维度筛选定位</p>
   </div>
 
   <!-- 业务场景 Tabs -->
@@ -230,32 +182,6 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     <span class="scene-tab" data-scene="cross">跨域通用</span>
   </div>
 
-  <!-- 场景导航模式切换 -->
-  <div class="lifecycle-toggle" id="lifecycleToggle">
-    <span class="lt-icon">🧭</span>
-    <span>场景导航模式</span>
-    <span class="lt-badge" id="lifecycleBadge" style="font-size:11px;padding:2px 8px;border-radius:100px;background:var(--p);color:white;display:none">已开启</span>
-    <span class="lt-arrow">▼</span>
-  </div>
-
-  <!-- 生命周期阶段选择器 -->
-  <div class="lifecycle-nav" id="lifecycleNav">
-    <div class="ln-row">
-      <span class="ln-label">客户类型</span>
-      <div id="lifecycleClientTypes">
-        <button class="lifecycle-ct-btn active" data-ct="buyer">🏠 买方</button>
-        <button class="lifecycle-ct-btn" data-ct="seller">💰 卖家</button>
-        <button class="lifecycle-ct-btn" data-ct="owner">🔑 业主</button>
-        <button class="lifecycle-ct-btn" data-ct="landlord">🏘️ 房东</button>
-        <button class="lifecycle-ct-btn" data-ct="tenant">🏡 租户</button>
-      </div>
-    </div>
-    <div class="ln-row">
-      <span class="ln-label">业务阶段</span>
-      <div id="lifecycleStages" class="ln-row" style="min-width:0;flex:1"></div>
-    </div>
-  </div>
-
   <!-- Search -->
   <div class="search-row">
     <div class="search-box">
@@ -266,13 +192,6 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     <button class="search-btn" id="searchBtn">搜索</button>
     <button class="search-btn" id="exportBtn" style="background:white;color:var(--p);border:1px solid var(--line)">导出</button>
     <span class="count-badge" id="countBadge"></span>
-  </div>
-
-  <!-- Filter toggle 折叠按钮 -->
-  <div class="filter-toggle" id="filterToggle">
-    <span class="ft-label">筛选条件</span>
-    <span class="ft-badge" id="filterBadge">0</span>
-    <span class="ft-arrow">▼</span>
   </div>
 
   <!-- Filters -->
@@ -321,20 +240,17 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     </div>
   </div>
 
-  <!-- Active filters 当前筛选条 -->
-  <div class="active-filters" id="activeFilters"></div>
-
   <!-- Table -->
   <div class="table-wrap" id="tableWrap">
     <table>
       <thead>
         <tr>
-          <th data-sort="name" style="width:30%">词条名称 <span class="sort-arrow">↕</span></th>
-          <th data-sort="priority" style="width:7%">优先级 <span class="sort-arrow">↕</span></th>
-          <th data-sort="severity" style="width:8%">风险等级 <span class="sort-arrow">↕</span></th>
-          <th style="width:6%">层级</th>
-          <th style="width:8%">类型</th>
-          <th style="width:41%">一句话回答</th>
+          <th data-sort="name" style="width:22%">词条名称 <span class="sort-arrow">↕</span></th>
+          <th data-sort="priority" style="width:8%">优先级 <span class="sort-arrow">↕</span></th>
+          <th data-sort="severity" style="width:9%">风险等级 <span class="sort-arrow">↕</span></th>
+          <th style="width:8%">层级</th>
+          <th style="width:10%">类型</th>
+          <th style="width:44%">一句话回答</th>
         </tr>
       </thead>
       <tbody id="tableBody">
@@ -442,15 +358,6 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
       var v = params.get(k);
       if (v) state.filters[k] = v;
     });
-    // Convert English codes to Chinese values for clientType/stage if needed
-    var ctReverse = { agent: '经纪人', buyer: '买方', landlord: '房东', owner: '业主', seller: '卖家', tenant: '租户', renter: '租户' };
-    var stReverse = { pre: '售前', mid: '售中', post: '售后', holding: '持有中', own: '业主侧', pst: '售后', selling: '出售中', sng: '场景中', all: '全阶段' };
-    if (state.filters.clientType && ctReverse[state.filters.clientType]) {
-      state.filters.clientType = ctReverse[state.filters.clientType];
-    }
-    if (state.filters.stage && stReverse[state.filters.stage]) {
-      state.filters.stage = stReverse[state.filters.stage];
-    }
     state.keyword = params.get('keyword') || '';
 
     // 从URL参数或当前筛选推断业务场景
@@ -464,9 +371,6 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
 
     loadData();
     setupEvents();
-
-    // 初始折叠筛选器（默认收起）
-    $('#filtersWrap').classList.add('collapsed');
   }
 
   // 根据当前筛选推断所在场景
@@ -568,13 +472,6 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
       window.location.href = '/entry/?id=' + encodeURIComponent(tr.dataset.id);
     });
 
-    // Filter toggle
-    $('#filterToggle').addEventListener('click', function() {
-      var wrap = $('#filtersWrap');
-      wrap.classList.toggle('collapsed');
-      this.classList.toggle('open');
-    });
-
     // Export button
     $('#exportBtn').addEventListener('click', function() {
       doExport();
@@ -621,7 +518,6 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
         renderTable();
         renderPagination();
         renderCount();
-        updateActiveFilters();
       })
       .catch(function(err) {
         console.error('Load failed:', err);
@@ -794,80 +690,6 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
     }
   }
 
-  function updateActiveFilters() {
-    var container = $('#activeFilters');
-    var badge = $('#filterBadge');
-    var filterLabels = {
-      clientType: ctLabels, stage: stLabels, domain: domainLabels,
-      layer: layerLabels, entryType: entryTypeLabels,
-      severity: severityLabels, priority: priorityLabels
-    };
-    var filterNames = {
-      clientType: '服务对象', stage: '服务阶段', domain: '知识域',
-      layer: '知识层级', entryType: '词条类型',
-      severity: '风险等级', priority: '优先级', subSceneGroup: '业务场景'
-    };
-
-    var active = [];
-    Object.keys(state.filters).forEach(function(k) {
-      var v = state.filters[k];
-      if (v) {
-        var labelMap = filterLabels[k];
-        var display = labelMap ? (labelMap[v] || v) : v;
-        active.push({ key: k, value: v, display: display, name: filterNames[k] || k });
-      }
-    });
-
-    // 更新 badge
-    if (active.length > 0) {
-      badge.textContent = active.length;
-      badge.classList.add('show');
-    } else {
-      badge.classList.remove('show');
-    }
-
-    if (active.length === 0) {
-      container.innerHTML = '';
-      return;
-    }
-
-    var html = '<span class="af-label">当前筛选</span>';
-    active.forEach(function(a) {
-      html += '<span class="active-filter-chip" data-key="' + a.key + '" data-value="' + escapeHtml(a.value) + '">' +
-        escapeHtml(a.name) + ': ' + escapeHtml(a.display) +
-        ' <span class="af-remove">✕</span></span>';
-    });
-    html += '<span class="active-filter-chip" id="clearAllFilters" style="color:var(--fire);background:rgba(196,106,58,0.08)">清除全部 ✕</span>';
-    container.innerHTML = html;
-
-    // 点击单个筛选标签移除
-    container.querySelectorAll('.active-filter-chip[data-key]').forEach(function(chip) {
-      chip.addEventListener('click', function(e) {
-        if (e.target.closest('.af-remove')) {
-          var key = this.dataset.key;
-          state.filters[key] = '';
-          state.page = 1;
-          loadData();
-          renderFilters();
-        }
-      });
-    });
-
-    // 清除全部
-    var clearBtn = $('#clearAllFilters');
-    if (clearBtn) {
-      clearBtn.addEventListener('click', function() {
-        Object.keys(state.filters).forEach(function(k) { state.filters[k] = ''; });
-        state.keyword = '';
-        $('#keywordInput').value = '';
-        $('#searchClear').classList.remove('visible');
-        state.page = 1;
-        loadData();
-        renderFilters();
-      });
-    }
-  }
-
   function escapeHtml(str) {
     if (!str) return '';
     var div = document.createElement('div');
@@ -919,183 +741,6 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
       alert('导出失败，请重试');
     });
   }
-
-  // ============================================================
-  // 场景导航模式（生命周期阶段选择器）
-  // ============================================================
-  var LIFECYCLE_STAGES = {
-    buyer: [
-      { key: 'first_contact', name: '首次接触', icon: '👋', stage: 'pre', desc: '初次与客户建立联系，了解购房意向' },
-      { key: 'need_discovery', name: '需求深挖', icon: '🔍', stage: 'pre', desc: '深入挖掘客户需求、预算、偏好' },
-      { key: 'viewing', name: '带看房源', icon: '🏠', stage: 'pre', desc: '安排房源带看，现场讲解与答疑' },
-      { key: 'mandate', name: '委托签约', icon: '📝', stage: 'pre', desc: '签订购房委托协议，建立正式委托关系' },
-      { key: 'negotiation', name: '议价谈判', icon: '🤝', stage: 'mid', desc: '与卖家议价、斡旋、谈条件' },
-      { key: 'contract', name: '合同签署', icon: '✍️', stage: 'mid', desc: '签署购房合同、定金协议、补充条款' },
-      { key: 'loan_process', name: '贷款办理', icon: '🏦', stage: 'mid', desc: '协助办理贷款面签、审批、放款' },
-      { key: 'handover', name: '交房过户', icon: '🔑', stage: 'post', desc: '办理过户缴税、物业交割、交房验收' },
-      { key: 'renovation', name: '整装服务', icon: '🎨', stage: 'post', desc: '提供装修整装方案，对接设计师' },
-      { key: 'after_sale', name: '售后关怀', icon: '💝', stage: 'post', desc: '售后回访、节日关怀、长期维护' },
-      { key: 'asset_manage', name: '资产管理', icon: '📊', stage: 'post', desc: '房产价值跟踪、出租置换建议' },
-    ],
-    tenant: [
-      { key: 'first_contact', name: '首次接触', icon: '👋', stage: 'pre', desc: '初次与租客联系，了解租房需求' },
-      { key: 'need_match', name: '需求匹配', icon: '🎯', stage: 'pre', desc: '匹配房源、筛选符合条件的选项' },
-      { key: 'viewing', name: '带看房源', icon: '🏠', stage: 'pre', desc: '安排房源带看，介绍周边环境' },
-      { key: 'mandate', name: '委托签约', icon: '📝', stage: 'pre', desc: '签订租房委托协议' },
-      { key: 'lease_signing', name: '合同签署', icon: '✍️', stage: 'mid', desc: '签署租赁合同、押金条款' },
-      { key: 'move_in', name: '入住交接', icon: '🚚', stage: 'post', desc: '办理入住手续、水电燃气交接' },
-      { key: 'in_lease_service', name: '租期内服务', icon: '🔧', stage: 'post', desc: '维修协调、物业对接、纠纷处理' },
-      { key: 'renewal', name: '续约谈判', icon: '🔄', stage: 'post', desc: '续租谈判、租金调整沟通' },
-      { key: 'move_out', name: '退租续租', icon: '📦', stage: 'post', desc: '退租验收、押金退还、续租方案' },
-      { key: 'sublet', name: '转租换租', icon: '🔄', stage: 'post', desc: '转租合规、新房源匹配' },
-    ],
-    landlord: [
-      { key: 'entrust', name: '委托出租', icon: '🔑', stage: 'pre', desc: '房东委托出租房屋' },
-      { key: 'evaluate', name: '房屋评估', icon: '📏', stage: 'pre', desc: '评估租金合理性、市场行情' },
-      { key: 'renovate', name: '整装翻新', icon: '🎨', stage: 'mid', desc: '出租前翻新装修建议' },
-      { key: 'manage', name: '租赁托管', icon: '🛡️', stage: 'post', desc: '长期资产管理、托管服务' },
-    ],
-    seller: [
-      { key: 'consult', name: '出售咨询', icon: '💬', stage: 'pre', desc: '初步了解卖房资格、时机、价格' },
-      { key: 'evaluate', name: '房源评估', icon: '📏', stage: 'pre', desc: '专业估价、同小区成交对比' },
-      { key: 'entrust', name: '出售委托', icon: '📝', stage: 'pre', desc: '签订委托、挂牌、制定销售策略' },
-      { key: 'staging', name: '房源包装', icon: '✨', stage: 'pre', desc: '保洁维修、软装拍照、VR制作' },
-      { key: 'showing', name: '看房接待', icon: '🚪', stage: 'mid', desc: '安排买家看房、收集反馈' },
-      { key: 'negotiation', name: '议价谈判', icon: '🤝', stage: 'mid', desc: '与买家议价、斡旋、谈条件' },
-      { key: 'contract', name: '合同签署', icon: '✍️', stage: 'mid', desc: '签署居间合同、定金协议' },
-      { key: 'handover', name: '过户交房', icon: '🔑', stage: 'post', desc: '赎楼网签、过户缴税、物业交割' },
-      { key: 'optimize', name: '资产优化', icon: '📊', stage: 'post', desc: '多套房产持有优化、置换建议' },
-    ],
-    owner: [
-      { key: 'after_sale', name: '售后关怀', icon: '💝', stage: 'post', desc: '购房后关怀、节日问候、长期维护' },
-      { key: 'evaluate', name: '房屋评估', icon: '📏', stage: 'mid', desc: '房产价值评估、市场行情跟踪' },
-      { key: 'renovate', name: '整装翻新', icon: '🎨', stage: 'mid', desc: '装修翻新建议、整装方案对接' },
-      { key: 'manage', name: '租赁托管', icon: '🛡️', stage: 'post', desc: '出租管理、委托托管服务' },
-      { key: 'optimize', name: '资产优化', icon: '📊', stage: 'post', desc: '资产配置、置换升级、税筹规划' },
-    ],
-  };
-
-  // Map lifecycle clientType/stage codes to the Chinese values used in data
-  var LC_CT_MAP = { buyer: '买方', seller: '卖家', owner: '业主', landlord: '房东', tenant: '租户' };
-  var LC_STAGE_MAP = { pre: '售前', mid: '售中', post: '售后' };
-
-  var lifecycleState = {
-    enabled: false,
-    clientType: 'buyer',
-    activeLifecycle: null,
-  };
-
-  function initLifecycleMode() {
-    // Check URL param for sceneMode
-    var params = new URLSearchParams(window.location.search);
-    if (params.get('sceneMode') === 'true') {
-      toggleLifecycleMode(true);
-    }
-
-    // Lifecycle toggle click
-    $('#lifecycleToggle').addEventListener('click', function() {
-      toggleLifecycleMode(!lifecycleState.enabled);
-    });
-
-    // Client type selection
-    $('#lifecycleClientTypes').addEventListener('click', function(e) {
-      var btn = e.target.closest('.lifecycle-ct-btn');
-      if (!btn) return;
-      if (!lifecycleState.enabled) toggleLifecycleMode(true);
-      lifecycleState.clientType = btn.dataset.ct;
-      lifecycleState.activeLifecycle = null;
-      $$('#lifecycleClientTypes .lifecycle-ct-btn').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      renderLifecycleStages();
-      // Apply filter
-      applyLifecycleFilter();
-    });
-
-    // Stage selection (delegated)
-    $('#lifecycleStages').addEventListener('click', function(e) {
-      var btn = e.target.closest('.lifecycle-stage-btn');
-      if (!btn) return;
-      var key = btn.dataset.key;
-      lifecycleState.activeLifecycle = (lifecycleState.activeLifecycle === key) ? null : key;
-      renderLifecycleStages();
-      applyLifecycleFilter();
-    });
-  }
-
-  function toggleLifecycleMode(force) {
-    lifecycleState.enabled = (force !== undefined) ? force : !lifecycleState.enabled;
-    var toggle = $('#lifecycleToggle');
-    var nav = $('#lifecycleNav');
-    var badge = $('#lifecycleBadge');
-    toggle.classList.toggle('active', lifecycleState.enabled);
-    nav.classList.toggle('visible', lifecycleState.enabled);
-    badge.style.display = lifecycleState.enabled ? 'inline-block' : 'none';
-
-    if (lifecycleState.enabled) {
-      // Auto collapse the regular filters when in lifecycle mode
-      $('#filtersWrap').classList.add('collapsed');
-      $('#filterToggle').classList.remove('open');
-      renderLifecycleStages();
-    } else {
-      // Clear lifecycle filter when turning off
-      lifecycleState.activeLifecycle = null;
-      // Remove lifecycle-applied filters
-      state.filters.clientType = '';
-      state.filters.stage = '';
-      state.page = 1;
-      loadData();
-      renderFilters();
-    }
-  }
-
-  function renderLifecycleStages() {
-    var ct = lifecycleState.clientType;
-    var stages = LIFECYCLE_STAGES[ct] || LIFECYCLE_STAGES.buyer;
-    var container = $('#lifecycleStages');
-    container.innerHTML = stages.map(function(s) {
-      var active = (s.key === lifecycleState.activeLifecycle) ? ' active' : '';
-      return '<button class="lifecycle-stage-btn' + active + '" data-key="' + s.key + '" data-stage="' + s.stage + '" title="' + s.desc + '">' +
-        '<span class="ls-icon">' + s.icon + '</span>' + s.name +
-        ' <span class="ls-desc">' + s.desc + '</span></button>';
-    }).join('');
-  }
-
-  function applyLifecycleFilter() {
-    if (!lifecycleState.enabled) return;
-
-    // Map clientType code to Chinese filter value matching data tags
-    state.filters.clientType = LC_CT_MAP[lifecycleState.clientType] || '';
-
-    if (lifecycleState.activeLifecycle) {
-      var ct = lifecycleState.clientType;
-      var stages = LIFECYCLE_STAGES[ct] || LIFECYCLE_STAGES.buyer;
-      var current = stages.find(function(s) { return s.key === lifecycleState.activeLifecycle; });
-      state.filters.stage = current ? (LC_STAGE_MAP[current.stage] || current.stage) : '';
-    } else {
-      state.filters.stage = '';
-    }
-
-    state.page = 1;
-    loadData();
-    renderFilters();
-  }
-
-  // Override setScene to handle lifecycle mode conflict
-  var origSetScene = setScene;
-  setScene = function(sceneKey, reload) {
-    // If lifecycle mode is on, turn it off when switching scene tabs
-    if (lifecycleState.enabled) {
-      toggleLifecycleMode(false);
-    }
-    origSetScene(sceneKey, reload);
-  };
-
-  // Hook into init to also init lifecycle mode
-  var origInit = init;
-  init = function() {
-    origInit();
-    initLifecycleMode();
-  };
 
   init();
 })();
