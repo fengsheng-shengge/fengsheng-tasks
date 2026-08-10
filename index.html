@@ -365,7 +365,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   <div class="fs-nav-links">
     <a href="/">首页</a>
     <a href="/mentor/">开单导师</a>
-    <a href="/scene/">场景导航</a>
+    <a href="/dictionary/?sceneMode=true">场景导航</a>
     <a href="/dictionary/">全量词典</a>
     <a href="/search/">搜索</a>
     <a href="/knowledge/">知识底座</a>
@@ -408,7 +408,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
         <span class="wb-sb-ico">👥</span> 客户档案
         <span class="wb-sb-badge" id="sbClientCount">0</span>
       </a>
-      <a class="wb-sb-item" href="/scene/" onclick="toggleSidebar()">
+      <a class="wb-sb-item" href="/dictionary/?sceneMode=true" onclick="toggleSidebar()">
         <span class="wb-sb-ico">🧭</span> 场景导航
       </a>
     </div>
@@ -575,7 +575,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
       🚀 快捷入口
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <a class="cta-btn cta-primary" href="/scene/" style="padding:8px 16px;font-size:12px">🧭 场景导航</a>
+      <a class="cta-btn cta-primary" href="/dictionary/?sceneMode=true" style="padding:8px 16px;font-size:12px">🧭 场景导航</a>
       <a class="cta-btn cta-accent" href="/mentor/" style="padding:8px 16px;font-size:12px">🔥 开单导师</a>
       <a class="cta-btn cta-secondary" href="/dictionary/" style="padding:8px 16px;font-size:12px">📖 查词典</a>
       <a class="cta-btn cta-secondary" href="/search/" style="padding:8px 16px;font-size:12px">🔍 搜索</a>
@@ -614,7 +614,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 <!-- ====== 核心功能按钮区 (2x2 网格) ====== -->
 <div class="core-section">
   <div class="core-grid">
-    <a class="core-card" href="/scene/">
+    <a class="core-card" href="/dictionary/?sceneMode=true">
       <div class="core-icon green">🧭</div>
       <div class="core-name">场景导航</div>
       <div class="core-desc">选客户类型+阶段，自动匹配知识方案</div>
@@ -839,7 +839,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
           <div class="product-stat">3客户类型·3阶段·4层分组</div>
         </div>
       </div>
-      <div class="product-action"><a class="live" href="/scene/" data-track="product:scene">进入场景</a></div>
+      <div class="product-action"><a class="live" href="/dictionary/?sceneMode=true" data-track="product:scene">进入场景</a></div>
     </div>
     <div class="product-card">
       <div class="product-top">
@@ -1539,7 +1539,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
       $result.classList.add('show');
       $count.textContent = '...';
       $miniGrid.innerHTML = '';
-      $link.href = '/scene/?clientType=' + selectedCt + '&lifecycle=' + selectedLc;
+      $link.href = '/dictionary/?sceneMode=true&clientType=' + selectedCt + '&stage=' + (cur ? cur.stage : 'pre');
 
       var stages = HOME_LIFECYCLE[selectedCt] || HOME_LIFECYCLE.buyer;
       var cur = null;
