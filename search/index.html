@@ -705,6 +705,16 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     }
     $resultsList.innerHTML = html;
     $emptyState.style.display = 'none';
+
+    // Click handler for result cards — navigate to entry detail
+    $resultsList.querySelectorAll('.result-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const id = this.dataset.id;
+        if (id) {
+          window.location.href = '/entry/?id=' + encodeURIComponent(id);
+        }
+      });
+    });
   }
 
   function renderPagination() {

@@ -399,7 +399,7 @@ async function sendMessage() {
     }
 
     // API调用成功后才增加计数
-    if (!paid) {
+    if (!getPaidStatus()) {
       incrementMessageCount();
     }
 
