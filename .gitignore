@@ -1,6 +1,49 @@
+# 环境变量和密钥
+.env
+.env.*
+*.secret
+
+# 备份文件
 *.bak
-.DS_Store
+*.backup
+*_backup_*
+_归档标记.txt
+
+# 知识底座备份
+knowledge_backup_*/
+
+# 临时文件
+*.tmp
+*.log
 temp/
 __pycache__/
 *.pyc
-.env
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+.github/secrets/
+
+# 部署产物（部署铁律：禁止从deploy_sync/public目录部署）
+public/
+deploy_sync/
+deploy-result.json
+DEPLOY_TRIGGER.md
+CLOUDFLARE_CREDENTIALS_UPDATE.md
+
+# 运行时状态不入仓
+.agent/
+.github/.last-checked-comment-id
+.github/scripts/last_check.txt
+test-result.txt
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example

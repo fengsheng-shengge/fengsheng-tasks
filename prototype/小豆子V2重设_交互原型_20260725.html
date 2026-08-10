@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>小豆子 V2.0 重设原型 · 经纪人视角（闭环深化版）</title>
+<style>
+  :root{
+    --green:#3d5a3e; --green-2:#4d7350; --green-l:#6f9a72;
+    --orange:#c46a3a; --orange-soft:#e0956b;
+    --cream:#f7f4ef; --cream-2:#efeae1;
+    --white:#fff; --ink:#232b22; --ink-2:#52594c; --sub:#8b9384;
+    --line:#ece7dd; --green-bg:rgba(61,90,62,.07); --orange-bg:rgba(196,106,58,.09);
+    --radius:18px; --shadow:0 10px 30px rgba(61,90,62,.10);
+    --shadow-sm:0 3px 12px rgba(61,90,62,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;}
+  body{background:radial-gradient(120% 80% at 50% 0%,#fbf9f5 0%,#efeae1 100%);
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 12px;}
+  h1{color:var(--green);font-size:19px;font-weight:700;letter-spacing:.5px;margin-bottom:4px;}
+  .hint{color:var(--sub);font-size:12px;margin-bottom:18px;text-align:center;max-width:540px;line-height:1.6;}
+
+  .phone{width:min(380px,calc(100vw - 24px));height:min(800px,calc(100vh - 48px));
+    background:var(--cream);border-radius:42px;
+    box-shadow:0 30px 80px rgba(40,55,42,.28);border:10px solid #243024;
+    position:relative;overflow:hidden;display:flex;flex-direction:column;}
+
+  .statusbar{height:38px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 22px;font-size:13px;color:var(--ink);font-weight:600;flex-shrink:0;}
+  .screen{flex:1;overflow-y:auto;padding:0 18px 14px;scroll-behavior:smooth;}
+  .screen::-webkit-scrollbar{display:none;}
+
+  /* nav */
+  .navbar{background:linear-gradient(100deg,var(--green),var(--green-2));color:#fff;
+    padding:14px 18px;display:flex;justify-content:space-between;align-items:center;
+    box-shadow:0 2px 10px rgba(61,90,62,.25);}
+  .navbar .brand{font-weight:700;font-size:17px;letter-spacing:1px;display:flex;align-items:center;gap:7px;}
+  .navbar .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--orange-soft);box-shadow:0 0 0 4px rgba(196,106,58,.25);}
+  .navbar .setting{opacity:.85;font-size:13px;cursor:pointer;}
+
+  /* hero */
+  .hero{margin:14px 0 6px;border-radius:22px;padding:20px 18px;color:#fff;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,#34503a 0%,#4d7350 60%,#5e8461 100%);
+    box-shadow:0 12px 28px rgba(61,90,62,.30);}
+  .hero::after{content:"";position:absolute;right:-30px;top:-30px;width:140px;height:140px;border-radius:50%;
+    background:radial-gradient(circle,rgba(224,149,107,.35),transparent 70%);}
+  .hero .lv{font-size:11px;opacity:.85;letter-spacing:.5px;}
+  .hero .slogan{font-size:27px;font-weight:800;letter-spacing:2px;margin:8px 0 4px;font-family:"STSong","Songti SC",serif;}
+  .hero .pos{font-size:12px;opacity:.9;line-height:1.5;}
+  .hero .pill{display:inline-flex;align-items:center;gap:5px;margin-top:12px;font-size:11px;
+    background:rgba(255,255,255,.16);padding:5px 11px;border-radius:999px;backdrop-filter:blur(4px);}
+
+  /* section title */
+  .sec-title{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--green);
+    font-weight:700;margin:20px 4px 10px;letter-spacing:.3px;}
+  .sec-title::before{content:"";width:4px;height:14px;border-radius:3px;background:linear-gradient(var(--green),var(--green-l));}
+  .sec-num{display:inline-flex;width:18px;height:18px;border-radius:6px;background:var(--green-bg);
+    color:var(--green);font-size:11px;align-items:center;justify-content:center;font-weight:700;}
+  .sec-tip{margin-left:auto;font-size:11px;color:var(--sub);font-weight:400;}
+
+  /* chips */
+  .chips{display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{padding:9px 15px;border-radius:999px;background:var(--white);border:1px solid var(--line);
+    font-size:13px;color:var(--ink-2);box-shadow:var(--shadow-sm);transition:.18s;cursor:pointer;}
+  .chip.active{background:linear-gradient(135deg,var(--green),var(--green-2));color:#fff;border-color:transparent;
+    box-shadow:0 6px 16px rgba(61,90,62,.30);font-weight:600;}
+  .chip.lock{color:var(--sub);background:#f0ece4;box-shadow:none;cursor:pointer;}
+  .chip.lock::after{content:" · 即将开放";font-size:10px;opacity:.7;}
+
+  /* stage segmented */
+  .stage-row{display:flex;gap:6px;margin-top:12px;background:var(--cream-2);
+    padding:4px;border-radius:14px;}
+  .stage{flex:1;text-align:center;padding:9px 0;border-radius:11px;background:transparent;
+    font-size:13px;color:var(--ink-2);transition:.18s;cursor:pointer;}
+  .stage.active{background:var(--white);color:var(--orange);font-weight:700;box-shadow:var(--shadow-sm);}
+
+  /* scenario card */
+  .scard{background:var(--white);border-radius:var(--radius);padding:15px;margin-top:11px;
+    box-shadow:var(--shadow);border:1px solid var(--line);cursor:pointer;position:relative;overflow:hidden;
+    transition:transform .14s ease, box-shadow .14s ease;}
+  .scard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(var(--green),var(--green-l));}
+  .scard:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(61,90,62,.16);}
+  .scard:active{transform:scale(.985);}
+  .scard.hide{display:none;}
+  .scard .top{display:flex;align-items:center;gap:12px;}
+  .scard .ico{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+    font-size:22px;background:var(--green-bg);}
+  .scard .title{font-size:16px;font-weight:700;color:var(--ink);letter-spacing:.3px;}
+  .scard .desc{font-size:12px;color:var(--sub);margin-top:3px;}
+  .scard .tag{margin-left:auto;font-size:10px;padding:3px 9px;border-radius:7px;background:var(--orange);color:#fff;font-weight:600;letter-spacing:.5px;}
+  .scard .value{font-size:12px;color:var(--green-2);margin-top:11px;background:var(--green-bg);
+    padding:9px 11px;border-radius:11px;line-height:1.55;display:flex;gap:7px;align-items:flex-start;}
+  .scard .value b{color:var(--green);font-weight:700;}
+
+  /* empty state */
+  .empty{margin-top:18px;text-align:center;padding:34px 18px;border-radius:18px;background:var(--white);
+    border:1px dashed var(--line);color:var(--sub);}
+  .empty .e-ico{font-size:34px;margin-bottom:10px;}
+  .empty .e-t{font-size:14px;color:var(--ink-2);font-weight:600;margin-bottom:4px;}
+  .empty .e-s{font-size:12px;line-height:1.6;}
+
+  /* back link */
+  .back{display:inline-flex;align-items:center;gap:6px;color:var(--green);font-size:13px;
+    cursor:pointer;padding:12px 0 4px;font-weight:600;}
+
+  /* 客户在场 banner */
+  .onsite{margin:6px 0 4px;border-radius:16px;padding:13px 15px;display:flex;align-items:center;gap:11px;
+    background:linear-gradient(100deg,rgba(196,106,58,.12),rgba(196,106,58,.04));
+    border:1px solid rgba(196,106,58,.18);}
+  .onsite .live{width:9px;height:9px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 4px rgba(196,106,58,.2);
+    animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .onsite .txt{font-size:13px;color:var(--ink);line-height:1.4;}
+  .onsite .txt b{color:var(--orange);}
+  .onsite .ready{margin-left:auto;font-size:10px;color:#fff;background:var(--orange);padding:4px 9px;border-radius:999px;font-weight:600;}
+
+  /* layer card */
+  .layer{border-radius:var(--radius);background:var(--white);margin-top:13px;border:1px solid var(--line);
+    overflow:hidden;box-shadow:var(--shadow-sm);}
+  .layer .head{padding:13px 15px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);}
+  .layer .badge{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:14px;font-weight:700;font-family:"STSong",serif;}
+  .b-dao{background:linear-gradient(135deg,#6a5896,#7d6aa8);}
+  .b-fa{background:linear-gradient(135deg,var(--green),var(--green-2));}
+  .b-shu{background:linear-gradient(135deg,var(--orange),var(--orange-soft));}
+  .b-qi{background:linear-gradient(135deg,#3a6a7a,#4f8798);}
+  .layer .h-main{font-weight:700;font-size:15px;color:var(--ink);}
+  .layer .h-sub{font-size:11px;color:var(--sub);margin-top:1px;}
+  .layer .body{padding:13px 15px;font-size:13px;color:var(--ink-2);line-height:1.75;}
+  .layer .body ul{list-style:none;}
+  .layer .body li{position:relative;padding-left:18px;margin-bottom:8px;}
+  .layer .body li::before{content:"";position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:2px;
+    background:var(--green-l);}
+  .layer .body .hl{color:var(--green);font-style:italic;font-weight:600;}
+
+  /* 器 deliverable cards */
+  .deliver{display:flex;align-items:center;gap:11px;padding:11px;border-radius:13px;margin-bottom:8px;
+    background:var(--green-bg);border:1px solid rgba(61,90,62,.10);}
+  .deliver .d-ico{width:36px;height:36px;border-radius:10px;background:#fff;display:flex;align-items:center;
+    justify-content:center;font-size:18px;box-shadow:var(--shadow-sm);}
+  .deliver .d-info{flex:1;}
+  .deliver .d-name{font-size:13px;font-weight:700;color:var(--ink);}
+  .deliver .d-desc{font-size:11px;color:var(--sub);margin-top:2px;}
+  .deliver .d-btn{font-size:11px;color:var(--green);background:#fff;border:1px solid var(--green);
+    padding:6px 11px;border-radius:999px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s;}
+  .deliver .d-btn:active{background:var(--green);color:#fff;transform:scale(.96);}
+
+  /* quick lookup pill */
+  .quick{display:inline-flex;align-items:center;gap:5px;margin-top:11px;font-size:12px;color:var(--orange);
+    background:var(--orange-bg);padding:7px 13px;border-radius:999px;cursor:pointer;font-weight:600;transition:.15s;}
+  .quick:active{transform:scale(.96);}
+
+  /* overlay sheet (generic) */
+  .overlay{position:absolute;inset:0;background:rgba(35,43,34,.42);display:none;
+    flex-direction:column;justify-content:flex-end;z-index:30;backdrop-filter:blur(2px);}
+  .overlay.show{display:flex;animation:fade .2s ease;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .sheet{background:var(--white);border-radius:24px 24px 0 0;padding:20px 18px 26px;max-height:74%;
+    overflow-y:auto;animation:slideup .28s cubic-bezier(.2,.8,.2,1);box-shadow:0 -10px 30px rgba(0,0,0,.12);}
+  @keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .sheet .grip{width:38px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 14px;}
+  .sheet h4{color:var(--green);font-size:14px;margin-bottom:6px;font-weight:700;}
+  .sheet .sub{font-size:11px;color:var(--sub);margin-bottom:12px;}
+
+  .entry{display:flex;gap:11px;padding:12px 4px;border-bottom:1px solid var(--line);}
+  .entry:last-child{border-bottom:none;}
+  .entry .e-ico{width:34px;height:34px;border-radius:10px;background:var(--green-bg);
+    display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+  .entry .e-name{font-weight:700;color:var(--ink);font-size:13px;}
+  .entry .e-meta{font-size:10px;color:var(--orange);margin-top:2px;font-weight:600;}
+  .entry .e-line{font-size:12px;color:var(--ink-2);margin-top:3px;line-height:1.5;}
+  .entry .e-star{margin-left:auto;font-size:18px;cursor:pointer;color:var(--line);align-self:center;}
+  .entry .e-star.on{color:var(--orange);}
+
+  /* toast */
+  .toast{position:absolute;left:50%;bottom:88px;transform:translateX(-50%) translateY(10px);
+    background:rgba(35,43,34,.92);color:#fff;font-size:12.5px;padding:10px 18px;border-radius:999px;
+    z-index:60;opacity:0;pointer-events:none;transition:.25s;max-width:80%;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.25);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* preview / detail body */
+  .pv-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+  .pv-desc{font-size:12px;color:var(--sub);margin-bottom:14px;line-height:1.5;}
+  .pvrow{display:flex;align-items:center;gap:10px;margin-bottom:11px;font-size:12px;color:var(--ink-2);}
+  .pvrow .pvk{width:64px;flex-shrink:0;}
+  .pvrow .pvbar{flex:1;height:8px;background:var(--cream-2);border-radius:999px;overflow:hidden;}
+  .pvrow .pvbar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--green-l));border-radius:999px;}
+  .pvrow .pvv{width:30px;text-align:right;color:var(--green);font-weight:700;}
+  .cmp{display:flex;gap:10px;}
+  .cmp .col{flex:1;background:var(--green-bg);border-radius:12px;padding:11px;text-align:center;}
+  .cmp .col .ch{font-size:11px;color:var(--sub);margin-bottom:6px;}
+  .cmp .col .cv{font-size:13px;color:var(--ink);font-weight:600;line-height:1.6;}
+  .pvlist{font-size:13px;color:var(--ink-2);line-height:1.9;padding-left:18px;}
+  .pvlist li{margin-bottom:4px;}
+  .pv-send{margin-top:16px;width:100%;border:none;background:linear-gradient(135deg,var(--green),var(--green-2));
+    color:#fff;font-size:14px;font-weight:700;padding:13px;border-radius:14px;cursor:pointer;box-shadow:var(--shadow-sm);}
+  .pv-send:active{transform:scale(.98);}
+
+  /* 来源 / 可信 */
+  .src{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--green-2);
+    background:var(--green-bg);padding:5px 10px;border-radius:999px;font-weight:600;margin-top:12px;line-height:1.4;}
+  .trust{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+  .trust span{font-size:10px;color:var(--orange);background:var(--orange-bg);padding:3px 9px;border-radius:999px;font-weight:600;}
+
+  /* 微信客户视角 */
+  .wechat{margin-top:14px;background:#e9e9ec;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;}
+  .wc{background:#fff;border-radius:12px;padding:10px 12px;font-size:12px;color:var(--ink);line-height:1.6;max-width:92%;
+    align-self:flex-start;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+  .wc .wlabel{font-size:9px;color:var(--sub);margin-bottom:4px;font-weight:600;}
+  .wb{background:linear-gradient(135deg,var(--green),var(--green-2));color:#fff;border-radius:12px;padding:10px 12px;
+    font-size:12px;line-height:1.6;max-width:92%;align-self:flex-end;box-shadow:0 2px 8px rgba(61,90,62,.2);}
+  .wchat-tip{font-size:9px;color:var(--sub);text-align:center;margin-top:1px;}
+
+  /* 知识分享卡 */
+  .sharecard{background:linear-gradient(160deg,#fff,#f7f4ef);border:1px solid var(--line);border-radius:16px;
+    padding:16px;margin-top:4px;box-shadow:var(--shadow-sm);}
+  .sharecard .sc-tag{font-size:10px;color:#fff;background:var(--orange);padding:3px 9px;border-radius:7px;font-weight:600;display:inline-block;margin-bottom:10px;}
+  .sharecard .sc-title{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:8px;}
+  .sharecard .sc-body{font-size:13px;color:var(--ink-2);line-height:1.8;}
+  .sharecard .sc-foot{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);font-size:10px;color:var(--sub);line-height:1.6;}
+  .sharecard .sc-foot b{color:var(--green-2);}
+  .pv-actions{display:flex;gap:8px;margin-top:14px;}
+  .pv-actions .pv-send{margin-top:0;flex:1;}
+
+  /* search */
+  .search{display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--line);
+    border-radius:14px;padding:10px 14px;margin:12px 0 6px;box-shadow:var(--shadow-sm);}
+  .search input{flex:1;border:none;outline:none;font-size:13px;color:var(--ink);background:transparent;}
+  .search .si{font-size:15px;opacity:.6;}
+
+  /* quiz */
+  .quiz-card{background:var(--white);border-radius:var(--radius);padding:16px;margin-top:14px;box-shadow:var(--shadow);border:1px solid var(--line);}
+  .quiz-card .qk{font-size:11px;color:var(--orange);font-weight:700;letter-spacing:.5px;}
+  .quiz-card .qt{font-size:15px;color:var(--ink);font-weight:700;margin:8px 0 14px;line-height:1.6;}
+  .qopt{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:9px;font-size:13px;color:var(--ink-2);
+    cursor:pointer;transition:.15s;background:var(--white);}
+  .qopt:active{transform:scale(.99);}
+  .qopt.ok{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:700;}
+  .qopt.no{background:rgba(196,106,58,.10);border-color:var(--orange);color:var(--orange);font-weight:700;}
+  .qopt.dim{opacity:.5;}
+  .qwhy{font-size:12px;color:var(--ink-2);background:var(--green-bg);border-radius:12px;padding:12px;margin-top:6px;line-height:1.6;display:none;}
+  .qwhy.show{display:block;}
+  .qnext{margin-top:12px;width:100%;border:none;background:linear-gradient(135deg,var(--green),var(--green-2));
+    color:#fff;font-size:13px;font-weight:700;padding:11px;border-radius:12px;cursor:pointer;display:none;}
+  .qnext.show{display:block;}
+  .qretry{margin-top:9px;width:100%;border:1px solid var(--line);background:var(--white);color:var(--ink-2);
+    font-size:13px;font-weight:600;padding:11px;border-radius:12px;cursor:pointer;display:none;}
+  .qretry.show{display:block;}
+
+  .qscore{display:flex;align-items:center;gap:10px;background:var(--white);border-radius:14px;padding:11px 14px;margin-top:12px;
+    box-shadow:var(--shadow-sm);border:1px solid var(--line);}
+  .qscore .qs-pt{font-size:14px;font-weight:800;color:var(--orange);}
+  .qscore .qs-st{font-size:12px;color:var(--green);font-weight:700;}
+  .qscore .qs-rd{margin-left:auto;font-size:11px;color:var(--sub);cursor:pointer;background:var(--cream-2);padding:5px 11px;border-radius:999px;}
+  .qbadge{display:inline-block;font-size:11px;background:var(--orange-bg);color:var(--orange);padding:4px 10px;border-radius:999px;font-weight:700;margin-top:10px;}
+  .qencourage{font-size:13px;color:var(--green);font-weight:700;background:var(--green-bg);border-radius:12px;padding:11px;margin-top:10px;line-height:1.6;display:none;}
+  .qencourage.show{display:block;}
+
+  /* mine */
+  .profile{margin:16px 0 8px;display:flex;align-items:center;gap:14px;}
+  .profile .av{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--green),var(--green-2));
+    display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;box-shadow:var(--shadow-sm);}
+  .profile .pn{font-size:17px;font-weight:700;color:var(--ink);}
+  .profile .pl{font-size:12px;color:var(--orange);margin-top:3px;font-weight:600;}
+  .stats{display:flex;background:var(--white);border-radius:16px;padding:14px 0;box-shadow:var(--shadow-sm);border:1px solid var(--line);}
+  .stats .st{flex:1;text-align:center;border-right:1px solid var(--line);}
+  .stats .st:last-child{border-right:none;}
+  .stats .st .sv{font-size:18px;font-weight:800;color:var(--green);}
+  .stats .st .sl{font-size:11px;color:var(--sub);margin-top:2px;}
+  .mlist{margin-top:14px;}
+  .mitem{display:flex;align-items:center;gap:12px;background:var(--white);border:1px solid var(--line);
+    border-radius:14px;padding:14px;margin-bottom:9px;box-shadow:var(--shadow-sm);cursor:pointer;}
+  .mitem .mi{width:34px;height:34px;border-radius:10px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:17px;}
+  .mitem .mt{font-size:13px;font-weight:600;color:var(--ink);}
+  .mitem .ma{margin-left:auto;color:var(--sub);font-size:14px;}
+
+  /* 积分规则 / 贡献 */
+  .rules{margin-top:4px;}
+  .rule{display:flex;align-items:center;gap:11px;padding:11px 4px;border-bottom:1px solid var(--line);}
+  .rule:last-child{border-bottom:none;}
+  .rule .r-ico{width:32px;height:32px;border-radius:9px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  .rule .r-t{font-size:12.5px;color:var(--ink);font-weight:600;flex:1;line-height:1.5;}
+  .rule .r-pt{font-size:13px;color:var(--orange);font-weight:800;white-space:nowrap;}
+  .contrib-list .citem{display:flex;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line);}
+  .contrib-list .citem:last-child{border-bottom:none;}
+  .citem .c-ico{width:30px;height:30px;border-radius:9px;background:var(--orange-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+  .citem .c-main{flex:1;}
+  .citem .c-t{font-size:12.5px;color:var(--ink);font-weight:600;}
+  .citem .c-d{font-size:11px;color:var(--sub);margin-top:2px;line-height:1.5;}
+  .citem .c-pt{font-size:12px;color:var(--orange);font-weight:800;align-self:center;white-space:nowrap;}
+  .cstatus{font-size:9px;padding:2px 7px;border-radius:999px;font-weight:700;margin-left:6px;}
+  .cstatus.pending{background:var(--cream-2);color:var(--sub);}
+  .cstatus.ok{background:var(--green-bg);color:var(--green);}
+
+  /* 表单 */
+  .field{margin-top:12px;}
+  .field label{font-size:11px;color:var(--sub);font-weight:600;display:block;margin-bottom:6px;}
+  .field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px;font-size:13px;
+    color:var(--ink);outline:none;font-family:inherit;background:var(--cream);}
+  .field textarea{resize:vertical;min-height:70px;}
+  .chips-pick{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px;}
+  .chips-pick .cp{font-size:12px;padding:7px 12px;border-radius:999px;background:var(--white);border:1px solid var(--line);color:var(--ink-2);cursor:pointer;}
+  .chips-pick .cp.on{background:var(--orange);color:#fff;border-color:transparent;font-weight:600;}
+  /* severity 视觉权重（字段对齐 entries.severity） */
+  .entry.sev-hard{box-shadow:-3px 0 0 #c0392b inset, var(--shadow-sm);background:#fff5f5;}
+  .entry.sev-hard .e-name{font-weight:700;color:#b3261e;}
+  .entry.sev-medium{box-shadow:-3px 0 0 #e0a93b inset, var(--shadow-sm);}
+  .entry.sev-soft{opacity:.82;}
+  .entry.sev-soft .e-name{font-weight:500;color:var(--ink-2);}
+  .sev-bar{height:4px;border-radius:3px;margin-bottom:10px;}
+  .sev-bar.sev-hard{background:#c0392b;}
+  .sev-bar.sev-medium{background:#e0a93b;}
+  .sev-bar.sev-soft{background:var(--line);}
+  .e-main{flex:1;min-width:0;}
+  .e-q{font-size:11px;color:var(--green);margin-top:3px;font-style:italic;}
+  .ly-head{font-size:11px;font-weight:700;color:var(--ink-3);letter-spacing:.5px;margin:14px 0 6px;}
+  /* 双视角切换（consumerQ / ownerQ） */
+  .view-switch{display:flex;gap:8px;margin:6px 0 12px;}
+  .view-switch .vs{font-size:12px;padding:6px 14px;border-radius:999px;background:#fff;border:1px solid var(--line);color:var(--ink-2);cursor:pointer;}
+  .view-switch .vs.on{background:var(--green);color:#fff;border-color:transparent;font-weight:600;}
+  /* corePoint 折叠 + 法条溯源 */
+  .cp-title{font-size:12px;font-weight:700;color:var(--ink-2);margin:14px 0 7px;display:flex;justify-content:space-between;align-items:center;}
+  .cp-hint{font-size:10px;font-weight:400;color:var(--orange);}
+  .cp-list{display:flex;flex-direction:column;gap:6px;}
+  .cp-item{font-size:13px;color:var(--ink);background:var(--white);border:1px solid var(--line);border-radius:10px;padding:9px 11px;line-height:1.5;}
+  .cp-item.cp-locked{color:var(--ink-3);background:#faf8f4;border-style:dashed;}
+  .legal{margin-top:12px;background:#f3f6f3;border:1px solid #d9e3d9;border-radius:10px;padding:9px 11px;font-size:12px;color:#2c4430;}
+  .legal-tag{float:right;font-size:10px;background:var(--green);color:#fff;padding:2px 7px;border-radius:999px;}
+  .legal-sub{margin-top:4px;font-size:12px;color:var(--ink-2);}
+  /* 客户定制水印 */
+  .custom-bar{background:var(--green-bg);color:var(--green);font-size:12px;font-weight:600;padding:9px 12px;border-radius:12px;margin-bottom:12px;}
+  .custom-bar.cb-empty{background:#fff7ed;color:var(--orange);cursor:pointer;border:1px dashed var(--orange);}
+  /* 客户列表 */
+  .clist .citem{display:flex;gap:10px;align-items:center;padding:11px 6px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .clist .citem:last-child{border-bottom:none;}
+  .clist .c-main{flex:1;min-width:0;}
+  .clist .c-t{font-size:13px;font-weight:700;color:var(--ink);}
+  .clist .c-d{font-size:11px;color:var(--sub);margin-top:2px;}
+  .clist .c-ico{font-size:20px;}
+  .clist .c-edit{color:var(--sub);font-size:15px;padding:4px 8px;cursor:pointer;}
+  .clist .citem.cur{background:var(--green-bg);border-radius:12px;}
+  /* 定制方案 */
+  .plan{margin-top:14px;}
+  .plan-portrait{background:var(--green-bg);color:var(--ink);font-size:13px;font-weight:600;padding:11px 13px;border-radius:12px;line-height:1.6;}
+  .plan-recos{margin-top:12px;display:flex;flex-direction:column;gap:9px;}
+  .preco{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:11px 13px;}
+  .preco .pr-t{font-size:13px;font-weight:700;color:var(--green);margin-bottom:3px;}
+  .preco .pr-d{font-size:12px;color:var(--ink-2);line-height:1.5;}
+  .plan-recs{margin-top:12px;background:#f6f8f4;border-radius:12px;padding:10px 12px;}
+  .plan-recs .pr-h{font-size:12px;font-weight:700;color:var(--green);margin-bottom:5px;}
+  .plan-recs .pr-line{font-size:12px;color:var(--ink-2);line-height:1.6;}
+  .form-send{margin-top:16px;width:100%;border:none;background:linear-gradient(135deg,var(--green),var(--green-2));color:#fff;
+    font-size:14px;font-weight:700;padding:13px;border-radius:14px;cursor:pointer;}
+
+  /* tabbar */
+  .tabbar{display:flex;background:var(--white);border-top:1px solid var(--line);padding:6px 0;
+    box-shadow:0 -4px 16px rgba(61,90,62,.06);flex-shrink:0;}
+  .tab{flex:1;text-align:center;font-size:10px;color:var(--sub);cursor:pointer;transition:.15s;padding:2px 0;}
+  .tab .ti{font-size:19px;display:block;margin-bottom:3px;filter:grayscale(.4);}
+  .tab.active{color:var(--green);font-weight:700;}
+  .tab.active .ti{filter:none;transform:translateY(-1px);}
+  .hidden{display:none!important;}
+  /* 登录 / 账号独立性 / 专业版 */
+  .login-bg{background:linear-gradient(160deg,#2b3a2c 0%,#3d5a3e 60%,#4d7350 100%);}
+  .login-card{width:88%;max-width:320px;background:var(--white);border-radius:24px;padding:30px 24px 22px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3);}
+  .lc-logo{font-size:26px;font-weight:800;color:var(--green);letter-spacing:1px;}
+  .lc-sub{font-size:12px;color:var(--sub);margin:4px 0 18px;}
+  .lc-tip{font-size:12px;color:var(--ink-2);line-height:1.7;background:var(--green-bg);border-radius:12px;padding:12px;margin-bottom:18px;}
+  .lc-btn{width:100%;border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:700;color:#fff;background:linear-gradient(100deg,#3d5a3e,#4d7350);box-shadow:var(--shadow-sm);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+  .lc-switch{margin-top:16px;}
+  .lc-switch-t{font-size:11px;color:var(--sub);margin-bottom:8px;}
+  .lc-acc{display:block;width:100%;margin-top:8px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:13px;color:var(--ink);cursor:pointer;}
+  .lc-note{font-size:10px;color:var(--sub);margin-top:16px;}
+  .lc-city{margin-top:14px;font-size:12px;color:var(--sub);text-align:center;cursor:pointer;opacity:.9;}
+  .lc-city span{color:var(--green);font-weight:600;}
+  .lc-demo{margin-top:12px;font-size:11px;color:var(--sub);text-align:center;cursor:pointer;opacity:.75;}
+  .vip-badge{display:inline-block;margin-left:6px;font-size:10px;font-weight:700;color:#fff;background:linear-gradient(100deg,var(--orange),var(--orange-soft));padding:2px 8px;border-radius:8px;vertical-align:middle;}
+  .agency{font-size:11px;color:var(--sub);margin-top:2px;}
+  .vip-row{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(100deg,#3d5a3e,#4d7350);border-radius:14px;padding:12px 14px;margin-top:12px;color:#fff;}
+  .vip-t{font-size:13px;font-weight:700;}
+  .vip-s{font-size:10px;opacity:.85;margin-top:2px;line-height:1.4;}
+  .vip-btn{border:none;background:#fff;color:var(--green);font-weight:700;font-size:13px;padding:8px 16px;border-radius:10px;cursor:pointer;flex-shrink:0;}
+  .acc-actions{display:flex;gap:10px;margin-top:18px;}
+  .acc-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px;font-size:13px;color:var(--ink-2);cursor:pointer;}
+  .dash .cmp{margin-top:10px;}
+/* 反馈纠错列表 */
+.fblist{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.fbitem{border:1px solid var(--cream-2);border-radius:14px;padding:12px 14px;background:var(--white)}
+.fbitem.status-adopted{border-color:var(--green);background:#f3f8f3}
+.fbitem.status-rejected{border-color:#e0c9c0;background:#fbf6f4}
+.fb-top{display:flex;align-items:flex-start;gap:10px}
+.fb-ico{font-size:18px;line-height:1.2}
+.fb-main{flex:1;min-width:0}
+.fb-t{font-size:13px;font-weight:800;color:var(--ink)}
+.fb-d{font-size:11px;color:var(--sub);margin-top:3px;line-height:1.5}
+.fbstatus{font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.fbstatus.pending{background:#fff4e6;color:var(--orange)}
+.fbstatus.adopted{background:var(--green);color:#fff}
+.fbstatus.rejected{background:#f0e4df;color:#9a6a55}
+.fb-pt{font-size:11px;color:var(--sub);margin-top:8px}
+.fb-pt b{color:var(--orange)}
+.fb-reason{font-size:11px;color:var(--sub);margin-top:6px;padding:7px 10px;background:var(--cream-2);border-radius:8px}
+.fb-acts{display:flex;gap:8px;margin-top:10px}
+.fb-btn{flex:1;border:none;border-radius:10px;padding:8px;font-size:12px;font-weight:800;cursor:pointer}
+.fb-btn.adopt{background:var(--green);color:#fff}
+.fb-btn.reject{background:var(--cream-2);color:var(--sub)}
+.field .req{color:var(--orange);font-size:10px;font-weight:800;margin-left:4px}
+#fx-type{margin-top:6px}
+</style>
+<script src="entries_data.js"></script>
+</head>
+<body>
+<h1>小豆子 V2.0 重设原型 · 经纪人视角</h1>
+<div class="hint">闭环深化版：器层可看「客户视角+可信来源」、词典可生成客户知识卡/朋友圈文案、测评答对加分+连续成就、积分规则与贡献闭环全通。点任意交互都有真实响应。</div>
+
+<div class="phone">
+  <div class="statusbar"><span>9:41</span><span>风声 · 专业经纪</span></div>
+
+  <!-- ===== 首页 场景入口 ===== -->
+  <div class="screen" id="home">
+    <div class="navbar">
+      <span class="brand"><span class="dot"></span>风声</span>
+      <span class="setting" onclick="go('mine')">⚙</span>
+    </div>
+    <div class="hero">
+      <div class="lv">Lv2 · <span class="pts">680</span> 积分 · 专业经纪</div>
+      <div class="slogan">获得尊重</div>
+      <div class="pos">居住服务者的专业基础设施</div>
+      <div class="pill">📱 在客户面前，掏出手机就能用</div>
+    </div>
+
+    <div class="sec-title"><span class="sec-num">1</span> 你在服务谁 <span class="sec-tip">仅买房客户开放</span></div>
+    <div class="chips">
+      <div class="chip active" onclick="pickCustomer(this)">买房客户</div>
+      <div class="chip lock" onclick="toast('该客户类型即将开放')">出售业主</div>
+      <div class="chip lock" onclick="toast('该客户类型即将开放')">租房客户</div>
+      <div class="chip lock" onclick="toast('该客户类型即将开放')">出租业主</div>
+    </div>
+
+    <div class="sec-title"><span class="sec-num">2</span> 到哪一步 <span class="sec-tip">点选切换场景</span></div>
+    <div class="stage-row">
+      <div class="stage" onclick="pickStage(this,'售前')">售前</div>
+      <div class="stage" onclick="pickStage(this,'售中')">售中</div>
+      <div class="stage" onclick="pickStage(this,'售后')">售后</div>
+    </div>
+
+    <div class="sec-title"><span class="sec-num">3</span> 进工具（道法术器）</div>
+
+    <div class="scard" data-stage="售前" onclick="go('tool-decoder')">
+      <div class="top">
+        <div class="ico">🧠</div>
+        <div><div class="title">客户解码</div><div class="desc">买房客户 · 售前</div></div>
+        <div class="tag">P0</div>
+      </div>
+      <div class="value"><span>🎯</span><span><b>拿到手能用：</b>3 分钟生成客户画像卡，用六维测评卡回应「再看看」</span></div>
+    </div>
+
+    <div class="scard" data-stage="售中" onclick="go('tool-see')">
+      <div class="top">
+        <div class="ico">🏠</div>
+        <div><div class="title">带看服务</div><div class="desc">买房客户 · 售中</div></div>
+        <div class="tag">P0</div>
+      </div>
+      <div class="value"><span>🎯</span><span><b>拿到手能用：</b>带看清单+动线脚本照着走，带后发房源对比表</span></div>
+    </div>
+
+    <div class="scard" data-stage="售中" onclick="go('tool-nego')">
+      <div class="top">
+        <div class="ico">🤝</div>
+        <div><div class="title">谈判斡旋</div><div class="desc">买房客户 · 售中</div></div>
+        <div class="tag">P0</div>
+      </div>
+      <div class="value"><span>🎯</span><span><b>拿到手能用：</b>掏 90 天成交锚定卡，把分歧拆成可交换条件清单</span></div>
+    </div>
+
+    <div class="empty hidden" id="home-empty">
+      <div class="e-ico">🚧</div>
+      <div class="e-t">该阶段场景即将开放</div>
+      <div class="e-s">买房客户 · 售后 场景正在打磨中<br>先用「售前 / 售中」的 P0 工具服务客户</div>
+    </div>
+  </div>
+
+  <!-- ===== 工具页：客户解码 ===== -->
+  <div class="screen hidden" id="tool-decoder">
+    <div class="navbar"><span style="cursor:pointer" onclick="go('home')">← 客户解码</span></div>
+    <div class="onsite"><span class="live"></span><div class="txt">此刻：客户说 <b>「再看看」</b></div><span class="ready">直接可用</span></div>
+    <div class="back" onclick="go('home')">← 返回场景入口</div>
+
+    <div class="layer"><div class="head"><span class="badge b-dao">道</span><div><div class="h-main">先懂，不慌</div><div class="h-sub">他到底什么意思</div></div></div>
+      <div class="body"><ul>
+        <li>客户说「再看看」通常不是真看，是三大顾虑：<span class="hl">怕买贵 / 怕踩坑 / 怕后悔</span></li>
+        <li>决策是情绪曲线，不是理性打分；先处理情绪再处理事情</li>
+      </ul><span class="quick" onclick="openSheet('decoder')">🔍 查依据</span></div></div>
+
+    <div class="layer"><div class="head"><span class="badge b-fa">法</span><div><div class="h-main">当场怎么走</div><div class="h-sub">照着做</div></div></div>
+      <div class="body"><ul>
+        <li>听原话 —— 记录客户原话，不替他概括</li>
+        <li>拆顾虑 —— 归类 价格 / 风险 / 决策</li>
+        <li>对画像 —— 预算·家庭·时间窗 校准需求</li>
+        <li>给标准 —— 用可验证标准替代主观说服</li>
+      </ul><span class="quick" onclick="openSheet('decoder')">🔍 查依据</span></div></div>
+
+    <div class="layer"><div class="head"><span class="badge b-shu">术</span><div><div class="h-main">嘴上怎么说</div><div class="h-sub">直接说</div></div></div>
+      <div class="body"><ul>
+        <li>说「再看看」→「理解，这房我帮您做了六维测评，关键项不错，您先看数据」</li>
+        <li>说「有点贵」→ 先确认超预算还是觉得不值，再拆持有成本</li>
+        <li>说「要商量」→ 把决策变成可带走的「家庭版对比卡」</li>
+      </ul><span class="quick" onclick="openSheet('decoder')">🔍 查依据</span></div></div>
+
+    <div class="layer"><div class="head"><span class="badge b-qi">器</span><div><div class="h-main">递给客户什么</div><div class="h-sub">可带走 / 可分享</div></div></div>
+      <div class="body">
+        <div class="deliver"><div class="d-ico">📋</div><div class="d-info"><div class="d-name">需求挖掘七问</div><div class="d-desc">分享客户填 / 经纪人自用</div></div><div class="d-btn" data-act="send" data-name="需求挖掘七问">发客户</div></div>
+        <div class="deliver"><div class="d-ico">🗂️</div><div class="d-info"><div class="d-name">客户画像卡</div><div class="d-desc">预算/家庭/时间窗·当场生成</div></div><div class="d-btn" data-act="send" data-name="客户画像卡">发客户</div></div>
+        <div class="deliver"><div class="d-ico">📊</div><div class="d-info"><div class="d-name">六维测评卡</div><div class="d-desc">把"再看看"变成可看的数据</div></div><div class="d-btn" data-act="preview" data-name="六维测评卡">看预览</div></div>
+        <span class="quick" onclick="openSheet('decoder')">🔍 查依据</span>
+      </div></div>
+  </div>
+
+  <!-- ===== 工具页：带看服务 ===== -->
+  <div class="screen hidden" id="tool-see">
+    <div class="navbar"><span style="cursor:pointer" onclick="go('home')">← 带看服务</span></div>
+    <div class="onsite"><span class="live"></span><div class="txt">此刻：<b>带看中</b>，客户记不住参数</div><span class="ready">直接可用</span></div>
+    <div class="back" onclick="go('home')">← 返回场景入口</div>
+
+    <div class="layer"><div class="head"><span class="badge b-dao">道</span><div><div class="h-main">先懂，不慌</div><div class="h-sub">他到底什么意思</div></div></div>
+      <div class="body"><ul>
+        <li>带看不是展示房子，是管理客户决策体验；首看重定调，复看重定心</li>
+        <li>客户记不住参数，只记得<span class="hl">「感觉被懂」</span></li>
+      </ul><span class="quick" onclick="openSheet('see')">🔍 查依据</span></div></div>
+
+    <div class="layer"><div class="head"><span class="badge b-fa">法</span><div><div class="h-main">当场怎么走</div><div class="h-sub">照着做</div></div></div>
+      <div class="body"><ul>
+        <li>前：房源匹配 + 动线设计 + 痛点预设</li>
+        <li>中：动线引导 / 价值点植入 / 竞品对比</li>
+        <li>后：24h 内跟进 + 决策窗口管理</li>
+      </ul><span class="quick" onclick="openSheet('see')">🔍 查依据</span></div></div>
+
+    <div class="layer"><div class="head"><span class="badge b-shu">术</span><div><div class="h-main">嘴上怎么说</div><div class="h-sub">直接说</div></div></div>
+      <div class="body"><ul>
+        <li>动线：「先看采光和动线，这是这套房最值的地方」</li>
+        <li>价值点：把客户顾虑对应到房间具体点</li>
+        <li>竞品对比：客观维度对比，不贬低竞品</li>
+      </ul><span class="quick" onclick="openSheet('see')">🔍 查依据</span></div></div>
+
+    <div class="layer"><div class="head"><span class="badge b-qi">器</span><div><div class="h-main">递给客户什么</div><div class="h-sub">可带走 / 可分享</div></div></div>
+      <div class="body">
+        <div class="deliver"><div class="d-ico">✅</div><div class="d-info"><div class="d-name">带看 Checklist</div><div class="d-desc">前/中/后三段·经纪人照走</div></div><div class="d-btn" data-act="copy" data-name="带看 Checklist">复制</div></div>
+        <div class="deliver"><div class="d-ico">🏡</div><div class="d-info"><div class="d-name">房源对比表</div><div class="d-desc">客户可带走，记住"被懂"</div></div><div class="d-btn" data-act="send" data-name="房源对比表">发客户</div></div>
+        <div class="deliver"><div class="d-ico">🎬</div><div class="d-info"><div class="d-name">动线脚本</div><div class="d-desc">首看/复看 各一版</div></div><div class="d-btn" data-act="preview" data-name="动线脚本">看预览</div></div>
+        <span class="quick" onclick="openSheet('see')">🔍 查依据</span>
+      </div></div>
+  </div>
+
+  <!-- ===== 工具页：谈判斡旋 ===== -->
+  <div class="screen hidden" id="tool-nego">
+    <div class="navbar"><span style="cursor:pointer" onclick="go('home')">← 谈判斡旋</span></div>
+    <div class="onsite"><span class="live"></span><div class="txt">此刻：客户 <b>压价</b>，双方拉锯</div><span class="ready">直接可用</span></div>
+    <div class="back" onclick="go('home')">← 返回场景入口</div>
+
+    <div class="layer"><div class="head"><span class="badge b-dao">道</span><div><div class="h-main">先懂，不慌</div><div class="h-sub">他到底什么意思</div></div></div>
+      <div class="body"><ul>
+        <li>谈判不是压价，是让双方都觉得赢；价格背后是<span class="hl">心理账户</span></li>
+        <li>僵局多因信息不对等，不是脾气</li>
+      </ul><span class="quick" onclick="openSheet('nego')">🔍 查依据</span></div></div>
+
+    <div class="layer"><div class="head"><span class="badge b-fa">法</span><div><div class="h-main">当场怎么走</div><div class="h-sub">照着做</div></div></div>
+      <div class="body"><ul>
+        <li>锚定：先给合理参照系（成交数据 / 评估）</li>
+        <li>条件交换：价格换周期 / 家具 / 维修</li>
+        <li>情绪管理：暂停 / 换话题 / 给台阶</li>
+        <li>僵局破局：引入第三方标准</li>
+      </ul><span class="quick" onclick="openSheet('nego')">🔍 查依据</span></div></div>
+
+    <div class="layer"><div class="head"><span class="badge b-shu">术</span><div><div class="h-main">嘴上怎么说</div><div class="h-sub">直接说</div></div></div>
+      <div class="body"><ul>
+        <li>客户压价→「拿 90 天成交数据说话，家具/周期可谈」</li>
+        <li>业主不让步→帮算「空置成本 vs 让价」</li>
+        <li>双方拉锯→把分歧拆成可交换条件清单</li>
+      </ul><span class="quick" onclick="openSheet('nego')">🔍 查依据</span></div></div>
+
+    <div class="layer"><div class="head"><span class="badge b-qi">器</span><div><div class="h-main">递给客户什么</div><div class="h-sub">可带走 / 可分享</div></div></div>
+      <div class="body">
+        <div class="deliver"><div class="d-ico">🎯</div><div class="d-info"><div class="d-name">谈判筹码表</div><div class="d-desc">可交换条件库</div></div><div class="d-btn" data-act="copy" data-name="谈判筹码表">复制</div></div>
+        <div class="deliver"><div class="d-ico">🔁</div><div class="d-info"><div class="d-name">条件交换清单</div><div class="d-desc">客户/业主各版·发双方</div></div><div class="d-btn" data-act="send" data-name="条件交换清单">发客户</div></div>
+        <div class="deliver"><div class="d-ico">⚓</div><div class="d-info"><div class="d-name">价格锚定卡</div><div class="d-desc">90 天成交参照·当场给看</div></div><div class="d-btn" data-act="preview" data-name="价格锚定卡">看预览</div></div>
+        <span class="quick" onclick="openSheet('nego')">🔍 查依据</span>
+      </div></div>
+  </div>
+
+  <!-- ===== 词典 Tab ===== -->
+  <div class="screen hidden" id="dict">
+    <div class="navbar"><span class="brand"><span class="dot"></span>词典</span><span class="setting" onclick="go('home')">✕</span></div>
+    <div class="search"><span class="si">🔍</span><input id="dict-search" placeholder="搜词条 / 方法 / 话术…" oninput="renderDict()"></div>
+    <div class="pv-desc" style="margin:0 0 4px;font-size:11px;">词条可生成「客户知识卡 / 朋友圈文案」直接发给客户，权威来源标注，可信可用。</div>
+    <div id="dict-list"></div>
+  </div>
+
+  <!-- ===== 导师 Tab ===== -->
+  <div class="screen hidden" id="mentor">
+    <div class="navbar"><span class="brand"><span class="dot"></span>导师</span><span class="setting" onclick="go('home')">✕</span></div>
+    <div class="empty" style="margin-top:60px;">
+      <div class="e-ico">🤖</div>
+      <div class="e-t">专业导师即将开放</div>
+      <div class="e-s">导师将按「对话流」驱动，<br>在你服务客户时主动给建议。<br>当前先用场景工具 + 词典。</div>
+    </div>
+  </div>
+
+  <!-- ===== 测评 Tab ===== -->
+  <div class="screen hidden" id="quiz">
+    <div class="navbar"><span class="brand"><span class="dot"></span>每日一题</span><span class="setting" onclick="go('home')">✕</span></div>
+    <div class="qscore" id="qscore"></div>
+    <div class="quiz-card" id="quiz-card"></div>
+  </div>
+
+  <!-- ===== 我的 Tab ===== -->
+  <div class="screen hidden" id="mine">
+    <div class="navbar"><span class="brand"><span class="dot"></span>我的</span><span class="setting" onclick="go('home')">✕</span></div>
+    <div class="profile">
+      <div class="av">🧑‍💼</div>
+      <div><div class="pn" id="pn">专业经纪</div><div class="pl">Lv2 · <span class="pts">680</span> 积分 <span class="vip-badge" id="vipBadge" style="display:none">专业版</span></div><div class="agency" id="agency"></div></div>
+    </div>
+    <div class="vip-row" id="vipRow">
+      <div><div class="vip-t">专业版</div><div class="vip-s">全部 5800 词条 · 去署名高级卡片 · 信任数据看板</div></div>
+      <button class="vip-btn" id="vipBtn" onclick="openVip()">开通</button>
+    </div>
+    <div class="stats">
+      <div class="st"><div class="sv" id="st-cli">0</div><div class="sl">我的客户</div></div>
+      <div class="st"><div class="sv" id="st-fav">0</div><div class="sl">收藏</div></div>
+      <div class="st"><div class="sv" id="st-con">0</div><div class="sl">贡献</div></div>
+      <div class="st"><div class="sv" id="st-day">1</div><div class="sl">连续天数</div></div>
+    </div>
+    <div class="mlist">
+      <div class="mitem" onclick="openClients()"><span class="mi">👥</span><span class="mt">我的客户</span><span class="ma">›</span></div>
+      <div class="mitem" onclick="openDash()"><span class="mi">📊</span><span class="mt">专业版 · 信任数据看板</span><span class="ma">›</span></div>
+      <div class="mitem" onclick="openRules()"><span class="mi">📖</span><span class="mt">积分规则</span><span class="ma">›</span></div>
+      <div class="mitem" onclick="openContrib('list')"><span class="mi">📝</span><span class="mt">我的贡献</span><span class="ma">›</span></div>
+      <div class="mitem" onclick="openContrib('feedbacks')"><span class="mi">🔍</span><span class="mt">我的反馈 / 纠错</span><span class="ma">›</span></div>
+      <div class="mitem" onclick="openFav()"><span class="mi">⭐</span><span class="mt">我的收藏</span><span class="ma">›</span></div>
+      <div class="mitem" onclick="go('quiz')"><span class="mi">🎯</span><span class="mt">每日一题</span><span class="ma">›</span></div>
+      <div class="mitem" onclick="switchAccount()"><span class="mi">🔄</span><span class="mt">切换账号</span><span class="ma">›</span></div>
+      <div class="mitem" onclick="logout()"><span class="mi">🚪</span><span class="mt">退出登录</span><span class="ma">›</span></div>
+    </div>
+  </div>
+
+  <!-- ===== 登录（账号独立性的入口）===== -->
+  <div class="overlay login-bg" id="loginOverlay">
+    <div class="login-card">
+      <div class="lc-logo">小豆子</div>
+      <div class="lc-sub">居住服务者的专业基础设施</div>
+      <div class="lc-tip">微信一键登录，自动注册 / 复用你的独立账号<br>积分 / 收藏 / 贡献 全部自动保存，不丢失</div>
+      <button class="lc-btn" onclick="wxPhoneLogin()">💬 微信一键登录</button>
+      <div class="lc-city" onclick="cycleCity()">📍 自动定位：<span id="lcCity">上海</span>（点击切换）</div>
+      <div class="lc-switch" id="lc-switch"></div>
+      <div class="lc-demo" onclick="demoOtherAccount()">🔄 演示：切换到另一个微信账号（查看账号独立性）</div>
+      <div class="lc-note">登录即同意《用户协议》《隐私政策》。我们不收集门店信息，仅用于定位城市服务。</div>
+    </div>
+  </div>
+
+  <!-- ===== 专业版付费墙 ===== -->
+  <div class="overlay" id="vipOverlay">
+    <div class="sheet">
+      <div class="grip"></div>
+      <h4>开通专业版</h4>
+      <div class="sub">专业经纪的付费基础设施</div>
+      <div class="rules">
+        <div class="rule"><div class="r-ico">📚</div><div class="r-t">全部 5800 条专业词条</div><div class="r-pt">解锁</div></div>
+        <div class="rule"><div class="r-ico">🪪</div><div class="r-t">去署名高级客户卡片</div><div class="r-pt">解锁</div></div>
+        <div class="rule"><div class="r-ico">📊</div><div class="r-t">客户信任数据看板</div><div class="r-pt">解锁</div></div>
+        <div class="rule"><div class="r-ico">⚡</div><div class="r-t">优先体验新工具</div><div class="r-pt">解锁</div></div>
+      </div>
+      <div class="pv-desc" style="margin:10px 0;font-size:11px;color:var(--sub)">每个账号独立订阅，扣费与权益均绑定本微信，不串号。</div>
+      <div class="pv-actions">
+        <button class="pv-send" onclick="buyVip()">立即开通 · ¥199/年（微信支付）</button>
+        <button class="pv-send" style="background:#fff;color:var(--ink-2);border:1px solid var(--line)" onclick="closeOverlay('vipOverlay')">先看看</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 知识速查浮层 ===== -->
+  <div class="overlay" id="overlay" onclick="closeOverlay('overlay')">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="grip"></div>
+      <h4 id="sheet-title">知识速查</h4>
+      <div class="sub" id="sheet-sub">当前场景自动调用的词条</div>
+      <div id="sheet-body"></div>
+    </div>
+  </div>
+
+  <!-- ===== 通用浮层：预览/词条详情/规则 ===== -->
+  <div class="overlay" id="genModal" onclick="closeOverlay('genModal')">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="grip"></div>
+      <h4 id="gen-title">预览</h4>
+      <div class="sub" id="gen-sub"></div>
+      <div id="gen-body"></div>
+    </div>
+  </div>
+
+  <!-- ===== 知识分享卡浮层 ===== -->
+  <div class="overlay" id="shareOverlay" onclick="closeOverlay('shareOverlay')">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="grip"></div>
+      <h4 id="share-title">分享卡</h4>
+      <div class="sub" id="share-sub"></div>
+      <div id="share-body"></div>
+    </div>
+  </div>
+
+  <!-- ===== 贡献闭环浮层 ===== -->
+  <div class="overlay" id="contribOverlay" onclick="closeOverlay('contribOverlay')">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="grip"></div>
+      <h4 id="contrib-title">贡献</h4>
+      <div class="sub" id="contrib-sub"></div>
+      <div id="contrib-body"></div>
+    </div>
+  </div>
+
+  <!-- ===== 发客户后：客户进展轻量反馈卡（不强制，可跳过） ===== -->
+  <div class="overlay" id="afterSendSheet" onclick="closeOverlay('afterSendSheet')">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="grip"></div>
+      <h4>客户后续有进展吗？</h4>
+      <div class="sub" id="afterSendSub">「<span id="afterSendName"></span>」已发 · 印象最深的这一刻最准</div>
+      <div class="pv-desc" style="margin-top:8px">随手点一下，帮平台验证「专业动作」是否真的换来「信任与成交」</div>
+      <div class="chips-pick" id="progress-pick">
+        <div class="cp cp-progress" data-pt="50" data-tag="deal" onclick="pickProgress(this)">🤝 成交了</div>
+        <div class="cp cp-progress" data-pt="20" data-tag="advance" onclick="pickProgress(this)">📅 推进到带看/谈判</div>
+        <div class="cp cp-progress" data-pt="10" data-tag="trust" onclick="pickProgress(this)">💚 客户更信任我了</div>
+        <div class="cp cp-progress" data-pt="0" data-tag="none" onclick="pickProgress(this)">🤷 暂未明显变化</div>
+      </div>
+      <button class="form-send" id="progressSubmitBtn" onclick="submitProgress()">提交反馈</button>
+      <div class="pv-desc" style="margin-top:10px;font-size:11px;text-align:center">
+        <span style="color:var(--text-3);cursor:pointer;text-decoration:underline" onclick="closeOverlay('afterSendSheet')">稍后再说</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 我的客户（MVP：上传/描述 → AI 模拟定制）===== -->
+  <div class="overlay" id="clientOverlay" onclick="closeOverlay('clientOverlay')">
+    <div class="sheet" onclick="event.stopPropagation()" style="max-height:82%">
+      <div class="grip"></div>
+      <h4>我的客户</h4>
+      <div class="sub">把客户情况告诉小豆子，AI 帮你定制工具与方案</div>
+      <div id="clientList"></div>
+      <div class="pv-desc" style="margin-top:6px;font-size:11px;color:var(--text-3)">
+        💡 线上方案仅供参考；深度谈单建议预约「线下赋能顾问」一对一陪谈。
+      </div>
+      <button class="pv-send" style="margin-top:12px;background:var(--green)" onclick="openNewClient()">+ 新建客户档案</button>
+    </div>
+  </div>
+
+  <!-- ===== 新建客户 + AI 生成方案 ===== -->
+  <div class="overlay" id="newClientOverlay" onclick="closeOverlay('newClientOverlay')">
+    <div class="sheet" onclick="event.stopPropagation()" style="max-height:86%">
+      <div class="grip"></div>
+      <h4>新建客户档案</h4>
+      <div class="sub">自由描述，越具体越准（也可勾选标签）</div>
+      <div class="field"><label>客户称呼</label><input id="cl-name" placeholder="如：张姐 / 85后夫妻"></div>
+      <div class="field"><label>客户情况（自由描述）</label><textarea id="cl-desc" placeholder="如：85后夫妻，预算550，老婆盯学区，老公盯通勤，纠结老破小 vs 远郊新盘"></textarea></div>
+      <div class="pv-desc" style="margin:4px 0">快捷标签：</div>
+      <div class="chips-pick" id="cl-tags">
+        <div class="cp" onclick="pickCp(this)">学区</div>
+        <div class="cp" onclick="pickCp(this)">通勤</div>
+        <div class="cp" onclick="pickCp(this)">预算</div>
+        <div class="cp" onclick="pickCp(this)">改善</div>
+        <div class="cp" onclick="pickCp(this)">投资</div>
+        <div class="cp" onclick="pickCp(this)">决策对比</div>
+        <div class="cp" onclick="pickCp(this)">家庭</div>
+      </div>
+      <button class="form-send" style="margin-top:12px" onclick="genClientPlan()">🤖 AI 生成定制方案</button>
+      <div id="planBox"></div>
+    </div>
+  </div>
+
+  <!-- ===== TabBar ===== -->
+  <div class="tabbar">
+    <div class="tab active" data-screen="home"><span class="ti">🏠</span>首页</div>
+    <div class="tab" data-screen="dict"><span class="ti">📚</span>词典</div>
+    <div class="tab" data-screen="mentor"><span class="ti">🤖</span>导师</div>
+    <div class="tab" data-screen="quiz"><span class="ti">🎯</span>测评</div>
+    <div class="tab" data-screen="mine"><span class="ti">👤</span>我的</div>
+  </div>
+
+  <!-- ===== Toast ===== -->
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.getElementById(id).scrollTop=0;
+  const map={home:'home',dict:'dict',mentor:'mentor',quiz:'quiz',mine:'mine',
+    'tool-decoder':'home','tool-see':'home','tool-nego':'home'};
+  document.querySelectorAll('.tabbar .tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.screen===map[id]);
+  });
+  if(id==='mine') renderMine();
+  if(id==='quiz'){ renderQScore(); }
+  if(id==='dict'){ renderDict(); }
+}
+document.querySelectorAll('.tabbar .tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    if(t.dataset.screen==='dict') favOnly=false;
+    go(t.dataset.screen);
+  });
+});
+
+// ===== 全局状态（按账号独立持久化）=====
+let POINTS=680, STREAK=0;
+let favOnly=false;
+let contribs=[];
+let fav=new Set();
+let scored=new Set();
+let loginDays=new Set();
+let user=null, UID=null;
+let FEEDBACKS=[];          // 纠错反馈列表（独立状态追踪：待审核/已采纳/已驳回）
+let ACCOUNTS = JSON.parse(localStorage.getItem('xdz_accounts')||'[]');
+// ===== 客户档案（MVP：经纪人上传/描述 → AI 模拟定制）=====
+let CLIENTS=[];           // 客户列表 [{id,name,desc,tags,need,stage,records,plan,createdAt}]
+let curClientId=null;     // 当前服务客户 id
+const KEY = uid => 'xdz_'+uid;
+function saveAccounts(){ localStorage.setItem('xdz_accounts', JSON.stringify(ACCOUNTS)); }
+function loadState(uid){
+  const raw = localStorage.getItem(KEY(uid));
+  if(raw){
+    const d = JSON.parse(raw);
+    POINTS = d.points ?? 680; STREAK = d.streak ?? 0;
+    fav = new Set(d.fav||[]); contribs = d.contribs||[]; scored = new Set(d.scored||[]);
+    loginDays = new Set(d.days||[]);
+    FEEDBACKS = d.feedbacks||[];
+    CLIENTS = d.clients||[]; curClientId = d.curClientId||null;
+    if(user) user.vip = !!d.vip;
+  } else {
+    POINTS = 680; STREAK = 0; fav = new Set(); contribs = []; scored = new Set(); loginDays = new Set();
+    CLIENTS = []; curClientId = null;
+    if(user) user.vip = false;
+  }
+}
+function saveState(){
+  if(!UID) return;
+  localStorage.setItem(KEY(UID), JSON.stringify({
+    points:POINTS, streak:STREAK, fav:[...fav], contribs, scored:[...scored], days:[...loginDays],
+    clients:CLIENTS, curClientId, vip: user?.vip||false, feedbacks:FEEDBACKS
+  }));
+}
+function updatePoints(d, reason){
+  POINTS+=d;
+  document.querySelectorAll('.pts').forEach(e=>e.textContent=POINTS);
+  if(!document.getElementById('mine').classList.contains('hidden')) renderMine();
+  saveState();
+  if(reason) toast(reason);
+}
+
+// ===== AI 模拟定制（原型：关键词规则；生产接真 LLM + RAG）=====
+// 经纪人输入客户描述/标签 → 提炼核心诉求 + 阶段 + 推荐工具 + 定制画像
+function aiPlan(desc, tagList){
+  const t = ((desc||'')+' '+(tagList||[]).join(' ')).toLowerCase();
+  const has = kws => kws.some(k=>t.includes(k.toLowerCase()));
+  const needs=[];
+  if(has(['学区','学校','上学','孩子','娃','学位','教育','书包'])) needs.push('学区');
+  if(has(['通勤','上班','地铁','路程','车程','公司','交通','通勤'])) needs.push('通勤');
+  if(has(['预算','总价','月供','便宜','钱','贷款','首付','价位'])) needs.push('预算');
+  if(has(['改善','换大','二胎','老人','三居','四居','人口'])) needs.push('改善');
+  if(has(['投资','租金','保值','升值','租','回报'])) needs.push('投资');
+  if(has(['老破小','远郊','新房','二手','期房','新盘','拆迁'])) needs.push('决策对比');
+  if(needs.length===0) needs.push('综合匹配');
+  let stage='了解';
+  if(has(['对比','纠结','拿不准','选哪','哪套','挑'])) stage='对比';
+  else if(has(['月供','价格','多少钱','成交','价位','贵'])) stage='预期';
+  else if(has(['犹豫','再想想','再考虑','等等','观望','纠结'])) stage='犹豫';
+  else if(has(['谈','签约','下定','砍价','条件','拍板'])) stage='决策';
+  else if(has(['已买','买了','复盘','经验'])) stage='判断';
+  const recoMap={
+    学区:[['学区配套对比卡','针对学区刚需，把对口学校/通勤/溢价一次比清'],['月供测算卡','算清学区房月供安全垫']],
+    通勤:[['通勤实测清单','按客户上班点实测，避免"图上近实际远"'],['月供测算卡','通勤与预算双约束下算清']],
+    预算:[['价格锚定卡','给真实成交坐标，谈判不空谈'],['月供测算卡','月供≤收入1/3 才叫买得起']],
+    改善:[['客户画像卡','家庭结构变化，需求重排'],['房源对比表','改善型重点比户型/物业']],
+    投资:[['价格锚定卡','租金回报与保值锚点'],['条件交换清单','投资客谈价筹码']],
+    决策对比:[['房源对比表','把"老破小 vs 远郊"拆成可量化维度'],['条件交换清单','对比后进入谈价阶段']],
+    综合匹配:[['客户画像卡','先理清需求三轴'],['价格锚定卡','建立价格预期']]
+  };
+  let recos=[];
+  needs.forEach(n=>{ (recoMap[n]||[]).forEach(r=>{ if(!recos.find(x=>x[0]===r[0])) recos.push(r); }); });
+  if(recos.length>4) recos=recos.slice(0,4);
+  const portrait = '核心诉求：'+needs.join(' › ')+'　|　当前阶段：'+stage+'。';
+  return {needs, stage, recos, portrait};
+}
+
+// ===== Toast =====
+let toastTimer;
+function toast(msg){
+  const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),1600);
+}
+
+// ===== 知识速查（场景自动调用词条）=====
+// 词条数据结构对齐 entries_5000.json（生哥 7.22 同步）：
+// id / domain / subScene / name / alias / consumerQ / ownerQ / oneLineAnswer(ola)
+// / corePoint(cp) / severity(sev) / legalRef / entryType(etype) / tags{clientType,stage,layer}
+const ENTRIES = window.__FENGSHENG_ENTRIES__ || {
+  decoder:[
+    {id:'PRE-NEED-001', domain:'签约前', subScene:'需求解码', ico:'📋', name:'需求挖掘话术', alias:['需求挖掘','七问模板','客户要什么房'],
+     cq:'客户到底想要什么样的房？', oq:'',
+     ola:'七问拆出真实顾虑，先动机再条件', sev:'medium', etype:'shu',
+     tags:{clientType:'buyer',stage:'pre',layer:'shu'},
+     cp:['用「为什么换房/谁住/住多久/预算上限/付款方式/决策人/最怕什么」七问','把模糊诉求变成可服务的画像','先问动机再问条件，客户不抵触'],
+     detail:'用七问模板，把模糊诉求变成可服务的画像。先问动机再问条件，客户不抵触。',
+     source:'风声内部分享 · 基于 200+ 带看复盘', use:['客户','自用'], scene:'首次接触、需求不清时发给客户填',
+     cardClient:'哥/姐，帮您精准匹配，先花 1 分钟填这 7 个小问题？我按您的真实需求找房，不多推不乱推。'},
+    {id:'PRE-NEED-002', domain:'签约前', subScene:'需求解码', ico:'📊', name:'客户画像维度', alias:['画像','三轴','怎么判断客户'],
+     cq:'怎么快速判断客户画像准不准？', oq:'',
+     ola:'预算/家庭/时间窗三轴交叉才准', sev:'soft', etype:'fa',
+     tags:{clientType:'buyer',stage:'pre',layer:'fa'},
+     cp:['预算看月供安全垫（月供≤家庭月收入 1/3）','家庭看人口结构定户型','时间窗看决策周期定跟进节奏'],
+     detail:'预算看月供安全垫（月供≤家庭月收入 1/3）；家庭看人口结构定户型；时间窗看决策周期定跟进节奏。三轴交叉才准。',
+     source:'风声方法论 · 客户画像三轴模型', use:['自用'], scene:'接待后内部校准客户画像',
+     cardMoment:'专业经纪怎么读懂客户？不是凭感觉，而是三轴：预算安全垫、家庭人口结构、决策时间窗。三轴交叉，推荐才准。'},
+    {id:'PRE-QUAL-001', domain:'签约前', subScene:'资格与预算', ico:'💰', name:'预算判断方法', alias:['月供','预算够不够','持有成本'],
+     cq:'客户说预算够，怎么判断真买得起？', oq:'业主问：客户贷款资格怎么快速核？',
+     ola:'月供≤收入1/3+8%持有成本才叫买得起', sev:'hard', etype:'fa',
+     tags:{clientType:'buyer',stage:'pre',layer:'fa'},
+     cp:['月供不超过家庭月可支配 1/3','预留契税/中介/装修/搬家等持有成本≈房价 8%','留 6 个月月供应急垫'],
+     detail:'月供不超过家庭月可支配 1/3；预留契税/中介/装修/搬家等持有成本≈房价 8%；留 6 个月月供应急垫，才叫买得起。',
+     source:'风声财务安全模型', use:['客户','朋友圈'], scene:'客户说"预算够"时帮其算清',
+     legalRef:'《契税暂行条例》：契税税率 1%-3%，由买方承担',
+     cardClient:'买房别只看首付。月供≤家庭月收入 1/3，再预留约 8% 持有成本 + 6 个月应急垫，才叫真买得起。我帮您算一笔账。',
+     cardMoment:'买房别只看首付！月供≤家庭月收入 1/3 + 预留约 8% 持有成本 + 6 个月应急垫，才叫真买得起。专业经纪帮您算清这笔账。'},
+    {id:'PRE-NEED-003', domain:'签约前', subScene:'需求解码', ico:'🧠', name:'决策情绪规律', alias:['再看看','客户犹豫','怕买错'],
+     cq:'客户说再看看，是真的还要看吗？', oq:'',
+     ola:'"再看看"多是怕买错的情绪不是真看', sev:'soft', etype:'dao',
+     tags:{clientType:'buyer',stage:'pre',layer:'dao'},
+     cp:['客户「再看看」多是怕买错的情绪，不是真看','先共情确认顾虑，再上数据','信任建立后才谈推进'],
+     detail:'客户「再看看」多是怕买错的情绪，不是真看。先共情确认顾虑，再上数据，信任才建立。',
+     source:'行为经济学 · 损失厌恶原理', use:['自用'], scene:'客户犹豫、说再看看时',
+     cardMoment:'客户说"再看看"不是真看，是怕买错的情绪。先共情再上数据，信任才建立。做经纪，先懂人再懂房。'},
+  ],
+  see:[
+    {id:'PRE-MATCH-001', domain:'签约前', subScene:'匹配带看', ico:'🎯', name:'动线设计方法', alias:['动线','带看路线','首看重调'],
+     cq:'带看怎么走线客户体验最好？', oq:'',
+     ola:'首看定调·复看重心的体验剧本', sev:'soft', etype:'fa',
+     tags:{clientType:'buyer',stage:'mid',layer:'fa'},
+     cp:['首看先讲最值的点（采光/动线）定调','复看针对家庭角色各给一个点定心','动线=客户体验剧本'],
+     detail:'首看先讲最值的点（采光/动线）定调；复看针对家庭角色各给一个点定心。动线=客户体验剧本。',
+     source:'风声带看 SOP', use:['自用'], scene:'带看前设计路线',
+     cardMoment:'带看不是逛房子，是设计体验。首看重定调、复看重定心——先讲最值的点，客户才记得"被懂"。'},
+    {id:'PRE-MATCH-002', domain:'签约前', subScene:'匹配带看', ico:'💬', name:'价值点植入话术', alias:['顾虑','采光不好','不够住'],
+     cq:'客户说采光不好怎么接？', oq:'',
+     ola:'每个顾虑落到具体空间点', sev:'medium', etype:'shu',
+     tags:{clientType:'buyer',stage:'mid',layer:'shu'},
+     cp:['客户说「采光不好」→带去阳台看早 8 点光照','说「不够住」→演示可变空间','每个顾虑落到具体空间'],
+     detail:'客户说「采光不好」→带去阳台看早 8 点光照；说「不够住」→演示可变空间。每个顾虑落到具体空间。',
+     source:'风声话术库', use:['客户'], scene:'带看中回应客户顾虑',
+     cardClient:'您刚才说担心采光，我特意选了早 8 点的时段带您看阳台——这是这套房采光最好的角度，您感受下。'},
+    {id:'PRE-PRICE-001', domain:'签约前', subScene:'价格认知', ico:'⚖️', name:'竞品对比话术', alias:['对比','不贬低','客观维度'],
+     cq:'客户拿别家房比怎么回？', oq:'',
+     ola:'客观维度不贬低竞品才可信', sev:'medium', etype:'shu',
+     tags:{clientType:'buyer',stage:'mid',layer:'shu'},
+     cp:['用通勤/学区/得房率/物业费等客观维度','指出各自适合人群','不贬低竞品，客观=可信'],
+     detail:'用通勤/学区/得房率/物业费等客观维度对比，指出各自适合人群，不贬低竞品。客观=可信。',
+     source:'风声话术库', use:['客户','朋友圈'], scene:'客户对比多套房时',
+     cardClient:'这两套各有适合人群：A 通勤短、得房率高；B 学区好、物业新。按您每天通勤和娃的上学距离，我更推荐 A。',
+     cardMoment:'专业对比不踩同行：用通勤/学区/得房率/物业费客观维度，指出各自适合人群。客观，才让人信。'},
+    {id:'PRE-MATCH-003', domain:'签约前', subScene:'匹配带看', ico:'✅', name:'带看 Checklist', alias:['清单','带看前中后','自查'],
+     cq:'带看前后我该查什么不翻车？', oq:'',
+     ola:'前中后三段清单照走不漏点', sev:'soft', etype:'qi',
+     tags:{clientType:'buyer',stage:'mid',layer:'qi'},
+     cp:['前：匹配+动线+痛点预设','中：引导+植入+对比','后：24h 跟进+决策窗口'],
+     detail:'前（匹配+动线+痛点预设）/ 中（引导+植入+对比）/ 后（24h 跟进+决策窗口）。照走不漏点。',
+     source:'风声带看 SOP', use:['自用'], scene:'带看前后自查',
+     cardMoment:'一套不翻车的带看，靠清单：前(匹配+动线+痛点预设) / 中(引导+植入+对比) / 后(24h跟进+决策窗口)。'},
+  ],
+  nego:[
+    {id:'SNG-CONT-001', domain:'签约中', subScene:'价格谈判', ico:'⚓', name:'锚定方法', alias:['锚定','成交中位','压价'],
+     cq:'客户压价怎么给坐标？', oq:'业主问：客户压太狠怎么接？',
+     ola:'用近90天成交中位做锚不空谈', sev:'hard', etype:'fa',
+     tags:{clientType:'buyer',stage:'mid',layer:'fa'},
+     cp:['用本小区近 90 天成交中位数做锚','让价格有坐标，谈判不空谈','区间偏上 1-2% 属正常，可谈家具/周期'],
+     detail:'用本小区近 90 天成交中位数做锚（数据源：贝壳/链家成交），让价格有坐标，谈判不空谈。',
+     source:'贝壳/链家 成交数据（近 90 天）', use:['客户','朋友圈'], scene:'客户压价时给坐标',
+     legalRef:'参考：同小区近 90 天成交中位数（需接真实数据源）',
+     cardClient:'这是本小区近 90 天成交中位 ¥605 万，您看的房源 ¥612 万，区间内偏上 1.2%，家具/周期可谈。数据说话，您心里有底。',
+     cardMoment:'买房谈判别空谈。先给合理参照系：本小区近 90 天成交中位，让价格有坐标。数据，才是最硬的底气。'},
+    {id:'SNG-CONT-002', domain:'签约中', subScene:'价格谈判', ico:'🗣️', name:'压价应对话术', alias:['压价','谈判','应对'],
+     cq:'客户一直压价怎么接？', oq:'',
+     ola:'先给锚定数据再开条件交换', sev:'medium', etype:'shu',
+     tags:{clientType:'buyer',stage:'mid',layer:'shu'},
+     cp:['客户压价先给锚定数据','再开条件交换（价换周期/家具/维修）','不硬扛不秒降'],
+     detail:'客户压价先给锚定数据，再开条件交换（价换周期/家具/维修）。不硬扛不秒降。',
+     source:'风声话术库', use:['客户'], scene:'谈判桌应对压价',
+     cardClient:'您的心理价我理解。先拿 90 天成交数据说话，价格上我帮您谈，家具和交房周期也能一起谈，争取都满意。'},
+    {id:'SNG-DEPO-001', domain:'签约中', subScene:'定金订金', ico:'🔁', name:'条件交换清单', alias:['交换','拉锯','条件'],
+     cq:'双方卡在价格怎么破？', oq:'',
+     ola:'把"便宜点"翻译成可交换清单', sev:'soft', etype:'qi',
+     tags:{clientType:'buyer',stage:'mid',layer:'qi'},
+     cp:['把「便宜点」翻译成可交换清单','价格↔付款周期↔家具家电↔维修责任↔腾房时间','双方各取所需'],
+     detail:'把「便宜点」翻译成可交换清单：价格↔付款周期↔家具家电↔维修责任↔腾房时间。双方各取所需。',
+     source:'风声谈判 SOP', use:['客户'], scene:'双方拉锯时发给买卖双方',
+     cardClient:'把能谈的条件列成清单：价格 ↔ 周期 ↔ 家具 ↔ 维修。您挑能接受的，我帮您去谈，不卡在单价上。'},
+    {id:'SNG-PAY-001', domain:'签约中', subScene:'付款方式', ico:'🧩', name:'心理账户规律', alias:['心理账户','总价敏感','月供'],
+     cq:'客户纠结总价怎么解？', oq:'',
+     ola:'拆一次性支出进心理账户降阻力', sev:'soft', etype:'dao',
+     tags:{clientType:'buyer',stage:'mid',layer:'dao'},
+     cp:['客户对「总价」敏感，对「每月多 500」不敏感','把一次性支出拆成心理账户','成交阻力立刻降'],
+     detail:'客户对「总价」敏感，但对「每月多 500」不敏感。把一次性支出拆成心理账户，成交阻力降。',
+     source:'行为经济学 · 心理账户理论', use:['自用'], scene:'客户纠结总价时',
+     cardMoment:'客户对总价敏感，对"每月多 500"不敏感。把一次性支出拆进心理账户，成交阻力立刻降。谈判，是懂人心。'},
+  ]
+};
+function openSheet(key){
+  const map={decoder:'客户解码',see:'带看服务',nego:'谈判斡旋'};
+  const stageTxt = key==='decoder'?'售前':'售中';
+  document.getElementById('sheet-title').textContent='知识速查 · '+map[key];
+  document.getElementById('sheet-sub').textContent='按「买房·'+stageTxt+'」tags 自动调用（场景驱动·不堆数据）';
+  const layers=[['dao','道 · 为什么这样'],['fa','法 · 怎么做'],['shu','术 · 注意什么'],['qi','器 · 有人这样过']];
+  let html='';
+  layers.forEach(([ly,lyt])=>{
+    const items=ENTRIES[key].filter(e=>e.etype===ly);
+    if(!items.length) return;
+    html+=`<div class="ly-head">${lyt}</div>`;
+    html+=items.map(e=>`
+      <div class="entry sev-${e.sev}" style="cursor:pointer" onclick="openEntry('${e.name}')">
+        <div class="e-ico">${e.ico}</div><div class="e-main">
+          <div class="e-name">${e.name}</div>
+          <div class="e-line">${e.ola}</div>
+          <div class="e-q">${e.cq}</div>
+        </div>
+        <div class="e-star ${fav.has(e.name)?'on':''}" onclick="event.stopPropagation();toggleFav('${e.name}',this)">${fav.has(e.name)?'★':'☆'}</div>
+      </div>`).join('');
+  });
+  document.getElementById('sheet-body').innerHTML=html;
+  document.getElementById('overlay').classList.add('show');
+}
+function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
+
+// ===== 收藏 =====
+function toggleFav(name,el){
+  if(fav.has(name)){fav.delete(name); el.classList.remove('on'); el.textContent='☆'; toast('已取消收藏');}
+  else{fav.add(name); el.classList.add('on'); el.textContent='★'; toast('已收藏「'+name+'」'); updatePoints(2,'');}
+  if(!document.getElementById('dict').classList.contains('hidden')) renderDict();
+  if(!document.getElementById('mine').classList.contains('hidden')) renderMine();
+  saveState();
+}
+
+// ===== 器层按钮：发客户 / 复制 / 看预览 =====
+document.querySelectorAll('.d-btn').forEach(b=>{
+  b.addEventListener('click',e=>{
+    e.stopPropagation();
+    const act=b.dataset.act, name=b.dataset.name;
+    if(act==='send'){ openPreview(name); }
+    else if(act==='copy'){ copyText(name+' — 风声 · 专业经纪'); toast('已复制「'+name+'」'); }
+    else if(act==='preview'){ openPreview(name); }
+  });
+});
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select();
+    try{document.execCommand('copy');}catch(_){} document.body.removeChild(ta); }
+}
+
+// ===== 预览浮层（器层交付物，含客户视角+可信）=====
+const PREVIEW = {
+  '需求挖掘七问':{sub:'邀请客户填写，1 分钟摸清真实需求',
+    source:'风声需求挖掘七问模板 · 200+ 带看复盘提炼',
+    customerMsg:'哥/姐，帮您精准匹配，先花 1 分钟填这 7 个小问题？我按您的真实需求找房，不多推、不乱推。',
+    trust:['专业','省心','透明'],
+    body:`<div class="pv-title">需求挖掘七问</div>
+    <div class="pv-desc">客户填 / 经纪人自用，把模糊诉求变画像</div>
+    <ul class="pvlist"><li>① 您为什么考虑换房？</li><li>② 新房主要谁住？几口人？</li><li>③ 计划住多久？</li>
+    <li>④ 预算上限是多少？付款方式？</li><li>⑤ 谁是最终决策人？</li><li>⑥ 您最在意的 3 个因素？</li><li>⑦ 您最怕买什么房？</li></ul>`},
+  '客户画像卡':{sub:'预算/家庭/时间窗·当场生成',
+    source:'风声客户画像三轴模型',
+    customerMsg:'帮您梳理了画像：预算安全垫月供≤家庭月收入 1/3；家庭 3 口刚需改善；时间窗 3 个月内。按这三点给您挑房，不绕路。',
+    trust:['有用','专业','安心'],
+    body:`<div class="pv-title">客户画像卡</div>
+    <div class="pv-desc">三轴交叉，推荐才准</div>
+    <div class="cmp"><div class="col"><div class="ch">预算轴</div><div class="cv">月供≤收入 1/3<br>预留 8% 持有成本</div></div>
+    <div class="col"><div class="ch">家庭轴</div><div class="cv">3 口刚需改善<br>2 卫 / 好学段</div></div></div>
+    <div class="cmp" style="margin-top:10px"><div class="col"><div class="ch">时间窗</div><div class="cv">3 个月内决策<br>每周可看房</div></div>
+    <div class="col"><div class="ch">核心诉求</div><div class="cv">通勤+学区<br>不绕远</div></div></div>`},
+  '六维测评卡':{sub:'把「再看看」变成可看的数据',
+    source:'风声六维模型 · 基于 12 项提问生成',
+    customerMsg:'这是按您的在意程度做的六维测评：安全 82 / 健康 76 / 便利 90 / 经济 68 / 舒适 85 / 美观 79。您最在意的「便利」确实满分，这房挺对您胃口。',
+    trust:['有用','专业','安心'],
+    body:`<div class="pv-title">客户六维测评卡</div>
+    <div class="pv-desc">基于 12 项提问生成，客户当场看到自己在意什么</div>
+    ${bars([['安全',82],['健康',76],['便利',90],['经济',68],['舒适',85],['美观',79]])}`},
+  '房源对比表':{sub:'客户可带走，记住"被懂"',
+    source:'风声带看 SOP · 客观维度对比',
+    customerMsg:'把您看的两套做了客观对比：通勤 A 近 8min / B 远 20min；得房率 A 81% / B 78%；学区 A 一般 / B 优质。按您每天通勤和娃上学，我标了推荐。',
+    trust:['透明','客观','安心'],
+    body:`<div class="pv-title">房源对比表</div>
+    <div class="pv-desc">客观维度，不贬低竞品</div>
+    <div class="cmp"><div class="col"><div class="ch">房源 A</div><div class="cv">通勤近 8min<br>得房率 81%<br>学区一般<br><span style="color:var(--green)">★ 适合您</span></div></div>
+    <div class="col"><div class="ch">房源 B</div><div class="cv">通勤远 20min<br>得房率 78%<br>学区优质</div></div></div>`},
+  '条件交换清单':{sub:'可交换条件库·发买卖双方',
+    source:'风声谈判 SOP',
+    customerMsg:'咱把能谈的条件列清楚：价格 ↔ 周期 ↔ 家具 ↔ 维修。您挑能接受的，我帮您去谈，不卡在单价上。',
+    trust:['透明','专业'],
+    body:`<div class="pv-title">条件交换清单</div>
+    <div class="pv-desc">把「便宜点」翻译成可交换项</div>
+    <ul class="pvlist"><li>① 价格 ↔ 付款周期（全款/按揭）</li><li>② 价格 ↔ 家具家电是否保留</li>
+    <li>③ 价格 ↔ 维修责任归属</li><li>④ 价格 ↔ 腾房 / 交房时间</li></ul>`},
+  '带看 Checklist':{sub:'经纪人自用三段清单',
+    source:'风声带看 SOP',
+    customerMsg:null,
+    trust:['专业'],
+    body:`<div class="pv-title">带看 Checklist</div>
+    <div class="pv-desc">前 / 中 / 后 照走不漏点</div>
+    <ul class="pvlist"><li>前：房源匹配 + 动线设计 + 痛点预设</li><li>中：动线引导 + 价值点植入 + 竞品对比</li><li>后：24h 跟进 + 决策窗口管理</li></ul>`},
+  '谈判筹码表':{sub:'经纪人自用可交换条件库',
+    source:'风声谈判 SOP',
+    customerMsg:null,
+    trust:['专业'],
+    body:`<div class="pv-title">谈判筹码表</div>
+    <div class="pv-desc">提前列筹码，谈判不慌</div>
+    <ul class="pvlist"><li>己方筹码：付款方式 / 签约周期 / 首付速度</li><li>对方筹码：家具 / 维修 / 腾房 / 价格</li><li>交换原则：价格换非价格，双方各取所需</li></ul>`},
+  '动线脚本':{sub:'首看 / 复看 各一版',
+    source:'风声带看 SOP',
+    customerMsg:'今天带看路线我帮您设计好了：先看采光和动线（这套最值的地方）→ 厨房讲收纳 → 主卧讲安静 → 阳台讲视野。每处都讲您关心的点。',
+    trust:['专业','省心'],
+    body:`<div class="pv-title">带看动线脚本</div>
+    <div class="pv-desc">照着走，不漏点、不冷场</div>
+    <ul class="pvlist"><li>① 先看采光与动线（最值的地方先讲）</li><li>② 厨房讲「烟火气」与收纳</li>
+    <li>③ 主卧讲私密与安静</li><li>④ 阳台讲视野与改造空间</li><li>⑤ 离场前留一句钩子</li></ul>`},
+  '价格锚定卡':{sub:'90 天成交参照，当场给客户看',
+    source:'贝壳/链家 成交数据（近 90 天）',
+    customerMsg:'本小区近 90 天成交中位 ¥605 万，您看的房源 ¥612 万，区间内偏上 1.2%，家具/周期可谈。数据说话，您心里有底。',
+    trust:['权威','透明','安心'],
+    body:`<div class="pv-title">90 天成交锚定卡</div>
+    <div class="pv-desc">本小区近 90 天成交中位数</div>
+    <div class="cmp"><div class="col"><div class="ch">本房源</div><div class="cv">¥ 612万</div></div>
+    <div class="col"><div class="ch">成交中位</div><div class="cv">¥ 605万</div></div></div>
+    <div class="pv-desc" style="margin-top:10px">区间内偏上 1.2%，家具/周期可谈</div>`},
+};
+function bars(arr){return '<div>'+arr.map(d=>`<div class="pvrow"><span class="pvk">${d[0]}</span><span class="pvbar"><i style="width:${d[1]}%"></i></span><span class="pvv">${d[1]}</span></div>`).join('')+'</div>';}
+function openPreview(name){
+  const p=PREVIEW[name]||{sub:'可带走的交付物',source:'风声 · 专业经纪 内部方法论',customerMsg:null,trust:['专业','有用'],
+    body:`<div class="pv-title">${name}</div><div class="pv-desc">这是可当场发给客户 / 给客户看的交付物（示意）。开发阶段接入真实生成逻辑。</div>`};
+  document.getElementById('gen-title').textContent=name;
+  document.getElementById('gen-sub').textContent=p.sub;
+  // 客户定制水印：有当前客户→显示定制；无→引导建档（T4）
+  const cc=curClient();
+  const customBar = cc
+    ? `<div class="custom-bar">🎯 基于「${cc.name}」的「${cc.need||'综合匹配'}」诉求定制</div>`
+    : `<div class="custom-bar cb-empty" onclick="openClients()">⚠ 还没建客户档案？建一份，工具按 TA 的诉求定制 ›</div>`;
+  let html=customBar+p.body;
+  html+=`<div class="src">📌 来源 / 依据：${p.source}</div>`;
+  if(p.customerMsg){
+    html+=`<div class="wechat"><div class="wc"><div class="wlabel">客户在微信里看到</div>${p.customerMsg}</div>
+      <div class="wchat-tip">— 客户视角预览 · 发出后客户收到的样子 —</div></div>`;
+  } else {
+    html+=`<div class="pv-desc" style="margin-top:12px">🛠 这是经纪人自用工具，帮您更专业地服务客户（不直接发客户）。</div>`;
+  }
+  html+=`<div class="trust">${p.trust.map(t=>`<span>${t}</span>`).join('')}</div>`;
+  html+=`<div class="pv-actions">
+    <button class="pv-send" onclick="closeOverlay('genModal');afterSendToClient('${name}')">发给客户</button>
+    <button class="pv-send" style="background:var(--orange)" onclick="closeOverlay('genModal');openContrib('feedback','${name}')">采集客户反馈 +15</button>
+    <button class="pv-send" style="background:#fff;color:var(--green);border:1px solid var(--green)" onclick="closeOverlay('genModal');openContrib('fix','${name}')">纠错 / 补充</button>
+  </div>`;
+  document.getElementById('gen-body').innerHTML=html;
+  document.getElementById('genModal').classList.add('show');
+}
+
+// ===== 首页两级选择 =====
+function pickCustomer(el){
+  if(el.classList.contains('lock')){ toast('该客户类型即将开放'); return; }
+  document.querySelectorAll('.chips .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+function pickStage(el,stage){
+  if(el.classList.contains('active')){
+    // 再次点击当前阶段 → 恢复全部 P0 场景
+    el.classList.remove('active');
+    document.querySelectorAll('.scard').forEach(c=>c.classList.remove('hide'));
+    document.getElementById('home-empty').classList.add('hidden');
+    return;
+  }
+  document.querySelectorAll('.stage-row .stage').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  let shown=0;
+  document.querySelectorAll('.scard').forEach(c=>{
+    const ok = c.dataset.stage===stage;
+    c.classList.toggle('hide',!ok);
+    if(ok) shown++;
+  });
+  document.getElementById('home-empty').classList.toggle('hidden', shown>0);
+}
+
+// ===== 词典渲染 =====
+function allEntries(){ const out=[]; Object.keys(ENTRIES).forEach(k=>ENTRIES[k].forEach(e=>out.push(e))); return out; }
+function renderDict(){
+  const q=(document.getElementById('dict-search').value||'').trim().toLowerCase();
+  let list=allEntries();
+  if(q) list=list.filter(e=>(e.name+' '+e.alias.join(' ')+' '+e.cq+' '+e.ola).toLowerCase().includes(q));
+  if(favOnly) list=list.filter(e=>fav.has(e.name));
+  const ord={'hard':0,'medium':1,'soft':2};
+  list.sort((a,b)=>(ord[a.sev]??3)-(ord[b.sev]??3));
+  const el=document.getElementById('dict-list');
+  if(favOnly && !list.length){ el.innerHTML='<div class="empty"><div class="e-ico">⭐</div><div class="e-t">还没有收藏</div><div class="e-s">在词条右上角点☆收藏，<br>这里只显示你收藏的内容</div><div style="margin-top:14px"><button class="pv-send" style="width:auto;padding:10px 20px" onclick="exitFav()">浏览全部词条</button></div></div>'; return; }
+  if(!list.length){ el.innerHTML='<div class="empty"><div class="e-ico">🔍</div><div class="e-t">没找到相关词条</div><div class="e-s">换个关键词试试</div></div>'; return; }
+  const head=favOnly?`<div class="pv-desc" style="margin:0 0 10px;font-size:11px;color:var(--orange);font-weight:600;">⭐ 仅看收藏（${list.length}）· <span style="cursor:pointer;text-decoration:underline" onclick="exitFav()">查看全部</span></div>`:'';
+  el.innerHTML=head+list.map(e=>`
+    <div class="entry sev-${e.sev}" style="background:#fff;border:1px solid var(--line);border-radius:14px;margin-top:9px;box-shadow:var(--shadow-sm);cursor:pointer"
+      onclick="openEntry('${e.name}')">
+      <div class="e-ico">${e.ico}</div><div class="e-main">
+      <div class="e-name">${e.name}</div>
+      <div class="e-meta">${e.domain}·${e.subScene}</div>
+      <div class="e-line">${e.ola}</div></div>
+      <div class="e-star ${fav.has(e.name)?'on':''}" onclick="event.stopPropagation();toggleFav('${e.name}',this)">${fav.has(e.name)?'★':'☆'}</div>
+    </div>`).join('');
+}
+function openFav(){ favOnly=true; go('dict'); renderDict(); }
+function exitFav(){ favOnly=false; renderDict(); }
+function useLabel(u){ return u==='客户'?'可发客户看':u==='朋友圈'?'可发朋友圈':'经纪人自用'; }
+function openEntry(name){
+  const e=allEntries().find(x=>x.name===name);
+  const hasOwn=!!e.oq;
+  const layerTxt={dao:'道',fa:'法',shu:'术',qi:'器'}[e.etype]||'';
+  document.getElementById('gen-title').textContent=e.cq||e.name;
+  document.getElementById('gen-sub').textContent=e.domain+'·'+e.subScene+' · '+layerTxt+'层';
+  let html=`<div class="sev-bar sev-${e.sev}"></div>`;
+  if(hasOwn){
+    html+=`<div class="view-switch"><span class="vs on" id="vs-c" onclick="switchView('${name}','c',this)">客户视角</span><span class="vs" id="vs-o" onclick="switchView('${name}','o',this)">业主视角</span></div>`;
+  }
+  html+=`<div class="pv-desc">${e.detail}</div>`;
+  html+=`<div class="cp-title">🔑 关键要点<span class="cp-hint">免费看首条 · VIP 解锁全部</span></div><div class="cp-list">${e.cp.map((p,i)=>`<div class="cp-item${i>0?' cp-locked':''}">${i>0?'🔒 ':''}${p}</div>`).join('')}</div>`;
+  if(e.legalRef) html+=`<div class="legal">⚖️ 法条依据<span class="legal-tag">VIP 解锁全文</span><div class="legal-sub">${e.legalRef}</div></div>`;
+  html+=`<div class="src">📌 来源 / 权威：${e.source}</div>`;
+  html+=`<div class="trust">${e.use.map(u=>`<span>${useLabel(u)}</span>`).join('')}</div>`;
+  html+=`<div class="pv-desc" style="margin-top:10px">🎯 应用场景：${e.scene}</div>`;
+  let acts=`<div class="pv-actions">`;
+  if(e.use.includes('客户')) acts+=`<button class="pv-send" onclick="openShare('client','${name}')">生成客户知识卡</button>`;
+  if(e.use.includes('朋友圈')) acts+=`<button class="pv-send" style="background:var(--orange)" onclick="openShare('moment','${name}')">生成朋友圈文案</button>`;
+  acts+=`<button class="pv-send" style="background:#fff;color:var(--orange);border:1px solid var(--orange)" onclick="closeOverlay('genModal');openContrib('fix','${name}')">纠错 / 补充</button>`;
+  acts+=`</div>`;
+  html+=acts;
+  document.getElementById('gen-body').innerHTML=html;
+  document.getElementById('genModal').classList.add('show');
+}
+function switchView(name,view,el){
+  const e=allEntries().find(x=>x.name===name);
+  document.getElementById('gen-title').textContent = view==='o' ? (e.oq||e.cq) : e.cq;
+  document.querySelectorAll('.vs').forEach(s=>s.classList.remove('on'));
+  el.classList.add('on');
+}
+function openShare(type,name){
+  closeOverlay('genModal');
+  const e=allEntries().find(x=>x.name===name);
+  const isClient=type==='client';
+  const body = isClient ? (e.cardClient||`${e.detail}（可发给客户看）`) : (e.cardMoment||`${e.detail} #风声专业经纪`);
+  document.getElementById('share-title').textContent=isClient?'客户知识卡':'朋友圈文案';
+  document.getElementById('share-sub').textContent=e.name;
+  document.getElementById('share-body').innerHTML=`
+    <div class="sharecard">
+      <div class="sc-tag">${isClient?'发给客户看':'朋友圈 · 专业科普'}</div>
+      <div class="sc-title">${e.name}</div>
+      <div class="sc-body">${body}</div>
+      <div class="sc-foot">署名：<b>风声 · 专业经纪</b><br>来源：${e.source} · 仅供参考，具体以实际为准</div>
+    </div>
+    <div class="pv-actions">
+      <button class="pv-send" onclick="copyShare('${type}','${name}')">复制文案</button>
+      <button class="pv-send" style="background:var(--orange)" onclick="closeOverlay('shareOverlay');afterSendToClient('${name}')">发客户</button>
+    </div>`;
+  document.getElementById('shareOverlay').classList.add('show');
+}
+function copyShare(type,name){
+  const e=allEntries().find(x=>x.name===name);
+  const body = type==='client' ? (e.cardClient||e.detail) : (e.cardMoment||e.detail);
+  copyText(body); toast('已复制文案，去微信粘贴吧');
+}
+
+// ===== 发客户后即时反馈：嵌进业务链路的"开单/信任"记录 =====
+let _progressPicked=null;
+function afterSendToClient(name){
+  // 1) 发客户基础分（保留原有激励）
+  updatePoints(2,'发客户');
+  toast('「'+name+'」知识卡已发送给客户 ✓');
+  // 2) 弹轻量反馈卡（不强制，可跳过）
+  document.getElementById('afterSendName').textContent=name;
+  _progressPicked=null;
+  document.querySelectorAll('#progress-pick .cp').forEach(c=>c.classList.remove('on'));
+  document.getElementById('progressSubmitBtn').textContent='提交反馈';
+  document.getElementById('afterSendSheet').classList.add('show');
+}
+function pickProgress(el){
+  document.querySelectorAll('#progress-pick .cp').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  _progressPicked={tag:el.dataset.tag, pt:parseInt(el.dataset.pt,10), t:el.textContent.trim()};
+  document.getElementById('progressSubmitBtn').textContent=_progressPicked.pt>0?('提交反馈（+'+_progressPicked.pt+'）'):'提交反馈';
+}
+function submitProgress(){
+  if(!_progressPicked){ toast('点一个选项再提交，或稍后再说'); return; }
+  const name=document.getElementById('afterSendName').textContent;
+  const tagMap={
+    deal:{ico:'🤝',t:'成交转化 · '+name,status:'ok'},
+    advance:{ico:'📅',t:'推进带看/谈判 · '+name,status:'ok'},
+    trust:{ico:'💚',t:'客户更信任 · '+name,status:'ok'},
+    none:{ico:'🤷',t:'暂无明显变化 · '+name,status:'ok'},
+  };
+  const m=tagMap[_progressPicked.tag];
+  contribs.unshift({ico:m.ico, t:m.t, d:'通过「'+name+'」用后反馈', pt:_progressPicked.pt, status:m.status});
+  if(_progressPicked.pt>0) updatePoints(_progressPicked.pt,'客户进展反馈');
+  saveState();
+  closeOverlay('afterSendSheet');
+  const tipMap={deal:'成交 +50 🎉 专业有回报',advance:'推进 +20 · 真实进展',trust:'信任 +10 · 情感推进',none:'已记下，下次有进展再点'};
+  toast(tipMap[_progressPicked.tag]||'已记录');
+  renderMine();
+}
+
+// ===== 每日一题（反馈 / 积分 / 随机 / 连续成就）=====
+const QUIZ=[
+  {k:'每日一题',q:'客户说「再看看」，最该先做的动作是？',
+   opts:[{t:'再报一套更便宜的房',ok:false},{t:'拆出他真正的顾虑（怕贵/怕坑/怕后悔）',ok:true},{t:'强调房源很抢手催促下单',ok:false},{t:'直接给折扣',ok:false}],
+   why:'「再看看」多是情绪顾虑，不是真看。先懂再应对，用六维测评卡把情绪变数据。',
+   case:'客户离店前说"再看看"，你没推新房，而是发了张六维测评卡，3 天后他主动回来："你那张卡，把我心思说中了。"'},
+  {k:'每日一题',q:'带看的核心目标是什么？',
+   opts:[{t:'把房子每个参数讲清楚',ok:false},{t:'管理客户的决策体验，让他「感觉被懂」',ok:true},{t:'尽快走到签约',ok:false},{t:'多带几套显得专业',ok:false}],
+   why:'客户记不住参数，只记得被懂的感觉。首看重定调，复看重定心。',
+   case:'同样两套带看，A 经纪背参数，B 经纪按客户在意点讲。一周后客户只记得 B："他懂我要什么。"'},
+  {k:'每日一题',q:'谈判中客户压价，正确的是？',
+   opts:[{t:'立刻找业主砍价',ok:false},{t:'用 90 天成交数据锚定，家具/周期可谈',ok:true},{t:'坚持一口价不退让',ok:false},{t:'假装没听见',ok:false}],
+   why:'谈判不是压价，是让双方都觉得赢。先给合理参照系，再做条件交换。',
+   case:'客户砍 20 万，你没硬扛也没秒降，而是打开锚定卡："中位 605，您看这套 612，差的不多，家具我帮您谈。"客户点了头。'},
+  {k:'每日一题',q:'客户说「有点贵」，第一步该做的是？',
+   opts:[{t:'马上申请降价',ok:false},{t:'先确认是超预算还是觉得不值，再拆持有成本',ok:true},{t:'说"这已经很便宜了"',ok:false},{t:'转移话题',ok:false}],
+   why:'"贵"有两种：真超预算 vs 觉得不值。先分清，再对症下药，别急着降价。',
+   case:'客户说贵，你问："是月供压力大，还是觉得不值？"他说"主要是月供"。你重算持有成本，把一次性支出摊进月供，他松了口。'},
+];
+let qi=Math.floor(Math.random()*QUIZ.length), qDone=false;
+function renderQScore(){
+  document.getElementById('qscore').innerHTML=
+    `<span class="qs-pt">⭐ ${POINTS}</span><span class="qs-st">连续答对 ${STREAK}</span>
+     <span class="qs-rd" onclick="shuffleQuiz()">换一题 ⟳</span>`;
+}
+function renderQuiz(){
+  qDone=false;
+  const Q=QUIZ[qi%QUIZ.length];
+  const card=document.getElementById('quiz-card');
+  card.innerHTML=`<div class="qk">${Q.k} · 第 ${(qi%QUIZ.length)+1}/${QUIZ.length} 题</div>
+    <div class="qt">${Q.q}</div>
+    ${Q.opts.map((o,i)=>`<div class="qopt" data-i="${i}" onclick="answerQuiz(${i})">${o.t}</div>`).join('')}
+    <div class="qwhy" id="qwhy"></div>
+    <div class="qencourage" id="qenc"></div>
+    <button class="qnext" id="qnext" onclick="nextQuiz()">下一题 ›</button>
+    <button class="qretry" id="qretry" onclick="renderQuiz()">再答一次</button>`;
+  renderQScore();
+}
+function answerQuiz(i){
+  if(qDone) return; qDone=true;
+  const Q=QUIZ[qi%QUIZ.length];
+  const opts=document.querySelectorAll('#quiz-card .qopt');
+  opts.forEach((el,idx)=>{
+    const o=Q.opts[idx];
+    if(o.ok) el.classList.add('ok');
+    else if(idx===i) el.classList.add('no');
+    else el.classList.add('dim');
+  });
+  const why=document.getElementById('qwhy');
+  why.innerHTML='<b>解析：</b>'+Q.why+'<br><br>📍 情景案例：'+Q.case; why.classList.add('show');
+  const enc=document.getElementById('qenc');
+  if(Q.opts[i].ok){
+    let bonus='';
+    const idx=qi%QUIZ.length;
+    if(!scored.has(idx)){
+      scored.add(idx);
+      saveState();
+      updatePoints(10,'');
+      STREAK++;
+      if(STREAK>0 && STREAK%7===0){ updatePoints(30,''); bonus=' 🏆 连续答对 7 题 · 周成就 +30'; }
+      enc.innerHTML='✅ 答对了！+10 积分 🎉 这个知识点你拿捏了'+(STREAK>1?`<br>🔥 连续答对 ${STREAK} 题`:'')+(bonus?bonus:'');
+      toast('答对 +10 积分 🎉');
+    } else {
+      enc.innerHTML='✅ 已得分，巩固一下 💡 去「换一题」测别的知识点吧';
+      toast('本题已得分，换一题继续');
+    }
+    enc.className='qencourage show';
+  } else {
+    STREAK=0;
+    enc.innerHTML='💪 差一点点，记住它就赚到了！不扣分，看解析巩固一下～';
+    enc.className='qencourage show';
+    toast('答错了，看解析巩固');
+  }
+  document.getElementById('qnext').classList.add('show');
+  document.getElementById('qretry').classList.add('show');
+  renderQScore();
+}
+function nextQuiz(){ qi++; renderQuiz(); }
+function shuffleQuiz(){ let n; do{ n=Math.floor(Math.random()*QUIZ.length); }while(n===qi%QUIZ.length && QUIZ.length>1); qi=n; renderQuiz(); }
+
+// ===== 账号独立性：微信静默登录 + 持久化 + 切换 + 专业版 =====
+function renderSwitch(){
+  const el=document.getElementById('lc-switch');
+  if(!el) return;
+  if(ACCOUNTS.length<=1){ el.innerHTML=''; return; }
+  el.innerHTML='<div class="lc-switch-t">切换已有账号（演示数据独立性）</div>'+
+    ACCOUNTS.map(a=>`<button class="lc-acc" onclick="loginAs('${a.uid}')">${a.name}</button>`).join('');
+}
+function wxPhoneLogin(){
+  // 微信一键登录 = 自动注册/复用「本人账号」：同一浏览器永远是同一个 openid，登出再登回仍是本人，记录不丢
+  let mine = localStorage.getItem('xdz_my_account');
+  if(mine && ACCOUNTS.find(a=>a.uid===mine)){ loginAs(mine); return; }
+  const oid = 'wx_'+Math.random().toString(36).slice(2,11);
+  const phone='1'+['3','5','7','8'][Math.floor(Math.random()*4)]+String(Math.floor(100000000+Math.random()*900000000));
+  const masked=phone.slice(0,3)+'****'+phone.slice(7);
+  ACCOUNTS.push({uid:oid,phone,name:masked,agency:''}); saveAccounts();
+  localStorage.setItem('xdz_my_account', oid);
+  loginAs(oid);
+}
+function demoOtherAccount(){
+  // 演示：以另一个微信身份登录，验证账号独立、互不串号（真实场景为不同微信号）；不影响「本人账号」
+  const oid='wx_'+Math.random().toString(36).slice(2,11);
+  const phone='1'+['3','5','7','8'][Math.floor(Math.random()*4)]+String(Math.floor(100000000+Math.random()*900000000));
+  const masked=phone.slice(0,3)+'****'+phone.slice(7);
+  ACCOUNTS.push({uid:oid,phone,name:masked,agency:''}); saveAccounts();
+  localStorage.setItem('xdz_openid', oid);
+  loginAs(oid);
+}
+const CITIES=['上海','北京','深圳','广州','杭州','成都','南京','武汉'];
+let CITY='上海';
+function cycleCity(){
+  let i=CITIES.indexOf(CITY); CITY=CITIES[(i+1)%CITIES.length];
+  document.getElementById('lcCity').textContent=CITY;
+}
+function afterLogin(){
+  updatePoints(0); renderMine(); renderDict();
+  const today=new Date().toDateString();
+  loginDays.add(today); saveState();
+  const lk='xdz_login_'+UID;
+  if(localStorage.getItem(lk)!==today){ localStorage.setItem(lk,today); updatePoints(5,'每日登录打卡 +5'); }
+}
+function loginAs(uid){
+  const rec=ACCOUNTS.find(x=>x.uid===uid)||{uid,name:'微信用户',agency:''};
+  user={uid,name:rec.name,agency:rec.agency||'',vip:false}; UID=uid;
+  sessionStorage.setItem('xdz_uid',uid);
+  localStorage.setItem('xdz_openid',uid); // 当前身份持久化，重开直接是本人
+  loadState(uid);
+  closeOverlay('loginOverlay'); afterLogin();
+}
+function logout(){ UID=null; user=null; sessionStorage.removeItem('xdz_uid'); localStorage.removeItem('xdz_openid'); document.getElementById('loginOverlay').classList.add('show'); renderSwitch(); }
+function switchAccount(){ if(ACCOUNTS.length<=1){ toast('还没有其他账号，登录后会自动生成独立账号'); return; } document.getElementById('loginOverlay').classList.add('show'); renderSwitch(); }
+function openVip(){ document.getElementById('vipOverlay').classList.add('show'); }
+function buyVip(){
+  toast('正在唤起微信支付…');
+  setTimeout(()=>{
+    user.vip=true; saveState(); closeOverlay('vipOverlay');
+    renderMine(); toast('专业版开通成功 🎉 全部词条已解锁');
+  },900);
+}
+function openDash(){
+  if(!user || !user.vip){ openVip(); return; }
+  document.getElementById('gen-title').textContent='专业版 · 信任数据看板';
+  document.getElementById('gen-sub').textContent='你的专业动作带来的客户信任变化（示意）';
+  document.getElementById('gen-body').innerHTML=`
+    <div class="pv-title">本周信任数据</div>
+    <div class="cmp"><div class="col"><div class="ch">发出交付物</div><div class="cv">23 次</div></div>
+    <div class="col"><div class="ch">客户反馈"专业"</div><div class="cv">17 次</div></div></div>
+    <div class="cmp" style="margin-top:10px"><div class="col"><div class="ch">推进决策</div><div class="cv">9 次</div></div>
+    <div class="col"><div class="ch">开单转化</div><div class="cv">2 单</div></div></div>
+    <div class="pv-desc" style="margin-top:12px">专业版可看完整客户信任曲线与团队对比，帮你看清「专业」是否真换来了信任与开单。</div>
+    <button class="pv-send" onclick="closeOverlay('genModal')">关闭</button>`;
+  document.getElementById('genModal').classList.add('show');
+}
+
+// ===== 积分规则 =====
+const RULES=[
+  {ico:'🎯',t:'每日一题 答对',pt:'+10'},
+  {ico:'🔥',t:'连续答对 7 题（周成就）',pt:'+30'},
+  {ico:'⭐',t:'收藏有用词条',pt:'+2'},
+  {ico:'🤝',t:'发客户后反馈「成交了」（顶级奖励）',pt:'+50'},
+  {ico:'📅',t:'发客户后反馈「推进到带看/谈判」',pt:'+20'},
+  {ico:'💚',t:'发客户后反馈「客户更信任我了」',pt:'+10'},
+  {ico:'📝',t:'提交纠错 / 补充（基础 +5，采纳再 +20）',pt:'+5~+25'},
+  {ico:'💬',t:'采集客户体验反馈（按交付物）',pt:'+15'},
+  {ico:'📅',t:'每日登录打卡',pt:'+5'},
+];
+function openRules(){
+  document.getElementById('gen-title').textContent='积分规则';
+  document.getElementById('gen-sub').textContent='做专业的事，攒专业的分 · 可随时来测，不限于每日';
+  document.getElementById('gen-body').innerHTML=
+    `<div class="rules">${RULES.map(r=>`<div class="rule"><div class="r-ico">${r.ico}</div><div class="r-t">${r.t}</div><div class="r-pt">${r.pt}</div></div>`).join('')}</div>
+     <div class="pv-desc" style="margin-top:12px;font-size:11px;">积分越高，经纪人等级越高，客户越信你。贡献越多（纠错/体验/开单），平台越准，你越专业。</div>
+     <button class="pv-send" onclick="closeOverlay('genModal')">知道了</button>`;
+  document.getElementById('genModal').classList.add('show');
+}
+
+// ===== 纠错类型定义 =====
+const FIX_TYPES=[
+  {k:'error',     ico:'❌', t:'内容错误',     d:'事实/数据/法规引用错'},
+  {k:'outdated',  ico:'⏰', t:'信息过时',     d:'政策已更新'},
+  {k:'incomplete',ico:'➕', t:'不完整',       d:'缺关键要点'},
+  {k:'unclear',   ico:'🔄', t:'表述不清',     d:'看不懂/有歧义'},
+  {k:'best',      ico:'💡', t:'补充最佳实践', d:'更好的话术/案例'},
+];
+const FIX_ICON=k=>{const o=FIX_TYPES.find(x=>x.k===k);return o?o.ico:'📝';};
+const FIX_TXT =k=>{const o=FIX_TYPES.find(x=>x.k===k);return o?o.t:'纠错';};
+
+// ===== 贡献闭环 =====
+function openContrib(mode, ref){
+  const t=document.getElementById('contrib-title'), s=document.getElementById('contrib-sub'), b=document.getElementById('contrib-body');
+  if(mode==='list'){
+    t.textContent='我的贡献'; s.textContent='你帮平台更准，平台让你更专业';
+    if(!contribs.length){
+      b.innerHTML='<div class="empty"><div class="e-ico">📝</div><div class="e-t">还没有贡献记录</div><div class="e-s">纠错词条、采集客户体验、给客户发工具后随手记进展<br>都能攒积分，去工具里试试吧</div></div>';
+    } else {
+      b.innerHTML=`<div class="contrib-list">${contribs.map(c=>`
+        <div class="citem"><div class="c-ico">${c.ico}</div><div class="c-main">
+          <div class="c-t">${c.t}<span class="cstatus ${c.status}">${c.status==='ok'?'已通过':'待审核'}</span></div>
+          <div class="c-d">${c.d}</div></div><div class="c-pt">+${c.pt}</div></div>`).join('')}</div>`;
+    }
+    b.innerHTML+='<div style="display:flex;gap:10px;margin-top:16px"><button class="pv-send" style="flex:1" onclick="openContrib(\'feedbacks\')">📋 我的反馈</button><button class="pv-send" style="flex:1;background:var(--orange)" onclick="openContrib(\'fix\')">+ 纠错 / 补充</button></div>';
+    document.getElementById('contribOverlay').classList.add('show'); return;
+  }
+  if(mode==='fix'){
+    t.textContent='纠错 / 补充词条'; s.textContent=ref?('词条：'+ref):'帮我们修正或补充一条词条';
+    b.innerHTML=`
+      <div class="field"><label>词条 / 对象</label><input id="fx-name" value="${ref||''}" placeholder="如：锚定方法"></div>
+      <div class="field"><label>纠错类型（默认"内容错误"）</label><div class="chips-pick" id="fx-type">${FIX_TYPES.map((x,i)=>`<div class="cp${i===0?' on':''}" data-k="${x.k}" onclick="pickCp(this)">${x.ico} ${x.t}</div>`).join('')}</div></div>
+      <div class="field"><label>我的修正 / 补充 <span class="req">必填</span></label><textarea id="fx-text" placeholder="哪句不对，或要补充什么（越具体越易被采纳）"></textarea></div>
+      <div class="field"><label>建议修正（可选）</label><textarea id="fx-fix" placeholder="你建议改成什么"></textarea></div>
+      <div class="field"><label>依据 / 来源（可选，提高通过率）</label><input id="fx-evi" placeholder="如：某成交数据 / 实操案例 / 条文"></div>
+      <button class="form-send" onclick="submitFix()">提交纠错（基础 +5，采纳再奖 +20）</button>`;
+    document.getElementById('contribOverlay').classList.add('show'); return;
+  }
+  if(mode==='feedback'){
+    t.textContent='采集客户反馈'; s.textContent=ref?('交付物：'+ref):'客户收到后的真实反应';
+    b.innerHTML=`
+      <div class="pv-desc">客户看完你发的交付物，反馈如何？（随手记，帮平台验证"是否真增加信任"）</div>
+      <div class="chips-pick" id="fb-pick">
+        <div class="cp" onclick="pickCp(this)">觉得专业有用</div>
+        <div class="cp" onclick="pickCp(this)">更信任我了</div>
+        <div class="cp" onclick="pickCp(this)">推进了决策</div>
+        <div class="cp" onclick="pickCp(this)">暂无明显变化</div>
+      </div>
+      <div class="field"><label>一句话备注（可选）</label><textarea id="fb-note" placeholder="如：客户看完锚定卡，主动问能不能谈家具"></textarea></div>
+      <button class="form-send" onclick="submitFeedback('${ref}')">提交反馈（+15）</button>`;
+    document.getElementById('contribOverlay').classList.add('show'); return;
+  }
+  if(mode==='feedbacks'){
+    t.textContent='我的反馈'; s.textContent='你提的每条纠错，状态与积分都在这里';
+    if(!FEEDBACKS.length){
+      b.innerHTML='<div class="empty"><div class="e-ico">📝</div><div class="e-t">还没有纠错反馈</div><div class="e-s">在词条 / 方案页点「纠错」提交<br>提交 +5，被采纳再 +20，积分实时到账</div></div>';
+    } else {
+      b.innerHTML=`<div class="fblist">${FEEDBACKS.map(f=>`
+        <div class="fbitem status-${f.status}">
+          <div class="fb-top"><span class="fb-ico">${FIX_ICON(f.ftype)}</span>
+            <div class="fb-main"><div class="fb-t">${f.ftypeTxt} · ${f.target.name}</div><div class="fb-d">${f.desc}</div></div>
+            <span class="fbstatus ${f.status}">${f.status==='pending'?'待审核':f.status==='adopted'?'已采纳':'已驳回'}</span></div>
+          <div class="fb-pt">基础 +${f.basePt}${f.bonusPt?(' · 采纳 +'+f.bonusPt):''} = <b>+${f.basePt+f.bonusPt}</b></div>
+          ${f.reason?`<div class="fb-reason">审核说明：${f.reason}</div>`:''}
+          ${f.status==='pending'?`<div class="fb-acts"><button class="fb-btn adopt" onclick="simReview('${f.id}','adopt')">模拟审核通过</button><button class="fb-btn reject" onclick="simReview('${f.id}','reject')">模拟驳回</button></div>`:''}
+        </div>`).join('')}</div>`;
+    }
+    b.innerHTML+='<button class="pv-send" style="margin-top:14px" onclick="openContrib(\'fix\')">+ 新纠错 / 补充</button>';
+    document.getElementById('contribOverlay').classList.add('show'); return;
+  }
+  // mode==='deal' 已被"发客户后即时反馈"流程替代：openContrib('deal') 不再单独提供入口
+}
+function pickCp(el){ el.parentElement.querySelectorAll('.cp').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
+function submitFix(){
+  const name=document.getElementById('fx-name').value.trim()||'未命名词条';
+  const txt=document.getElementById('fx-text').value.trim();
+  if(!txt){ toast('请填写修正 / 补充内容'); return; }
+  const typeEl=document.querySelector('#fx-type .cp.on');
+  const type=typeEl?typeEl.dataset.k:'error';
+  const fix=document.getElementById('fx-fix').value.trim();
+  const evi=document.getElementById('fx-evi').value.trim();
+  const tObj=FIX_TYPES.find(x=>x.k===type)||FIX_TYPES[0];
+  const id='fb_'+Date.now();
+  FEEDBACKS.unshift({id, target:{type:'entry',name}, ftype:type, ftypeTxt:tObj.t,
+    desc:txt, fix, evi, status:'pending', basePt:5, bonusPt:0, reason:'', ts:Date.now()});
+  contribs.unshift({ico:'📝', t:'纠错/补充：'+name, d:(tObj.t+' · '+txt)+(evi?(' · 依据：'+evi):''), pt:5, status:'pending'});
+  updatePoints(5,'提交纠错 +5（待审核）');
+  closeOverlay('contribOverlay'); saveState();
+  toast('已提交纠错 +5（待审核），采纳再奖 +20 🎉');
+}
+function submitFeedback(ref){
+  const sel=document.querySelector('#fb-pick .cp.on');
+  const note=document.getElementById('fb-note').value.trim();
+  const d=(sel?sel.textContent:'未选')+(note?('：'+note):'')+(ref?(' · '+ref):'');
+  contribs.unshift({ico:'💬',t:'客户体验反馈', d, pt:15, status:'ok'});
+  updatePoints(15,''); closeOverlay('contribOverlay'); saveState(); toast('已采集客户反馈 +15 💡');
+}
+// ===== 我的反馈：独立状态追踪 + 模拟审核闭环 =====
+function openFeedbacks(){ openContrib('feedbacks'); }
+function simReview(id, act){
+  const f=FEEDBACKS.find(x=>x.id===id); if(!f) return;
+  if(act==='adopt'){
+    f.status='adopted'; f.bonusPt=20; f.reason='感谢！已采纳并优化该词条';
+    const c=contribs.find(c=>c.t.includes(f.target.name)&&c.status==='pending');
+    if(c){ c.pt=25; c.status='ok'; }
+    updatePoints(20,'纠错被采纳 +20 🎉');
+    toast('🎉 纠错已采纳！+20 积分，词条已优化');
+  } else {
+    f.status='rejected'; f.reason='经核实暂未采纳（与现行口径一致）';
+    toast('已记录驳回，提交基础分 +5 保留');
+  }
+  saveState(); openContrib('feedbacks');
+}
+// submitDeal 已被"发客户后即时反馈"流程替代：
+//  成交 → afterSendToClient → 选"成交了" → 自动 +50 → 写贡献
+//  推进 → 选"推进到带看/谈判" → +20
+//  信任 → 选"客户更信任我了" → +10
+//  暂无 → 0 积分（可跳过）
+
+// ===== 我的客户（MVP：上传/描述 → AI 模拟定制）=====
+function curClient(){ return CLIENTS.find(c=>c.id===curClientId)||null; }
+function openClients(){
+  renderClientList();
+  document.getElementById('clientOverlay').classList.add('show');
+}
+function renderClientList(){
+  const box=document.getElementById('clientList');
+  if(!CLIENTS.length){
+    box.innerHTML='<div class="empty"><div class="e-ico">👥</div><div class="e-t">还没有客户档案</div><div class="e-s">新建一个，AI 帮你定制工具与方案</div></div>';
+    return;
+  }
+  box.innerHTML=`<div class="clist">${CLIENTS.map(c=>`
+    <div class="citem ${c.id===curClientId?'cur':''}" onclick="setCurClient('${c.id}')">
+      <div class="c-ico">👤</div>
+      <div class="c-main">
+        <div class="c-t">${c.name||'未命名客户'}${c.id===curClientId?' <span class="cstatus ok">服务中</span>':''}</div>
+        <div class="c-d">${(c.need||'待生成方案')}${c.stage?(' · '+c.stage):''}</div>
+      </div>
+      <div class="c-edit" onclick="event.stopPropagation();openNewClient('${c.id}')">✎</div>
+    </div>`).join('')}</div>`;
+}
+function openNewClient(id){
+  document.getElementById('planBox').innerHTML='';
+  document.querySelectorAll('#cl-tags .cp').forEach(c=>c.classList.remove('on'));
+  if(id){
+    const c=CLIENTS.find(x=>x.id===id);
+    document.getElementById('cl-name').value=c.name||'';
+    document.getElementById('cl-desc').value=c.desc||'';
+    (c.tags||[]).forEach(t=>{ const el=[...document.querySelectorAll('#cl-tags .cp')].find(e=>e.textContent.trim()===t); if(el) el.classList.add('on'); });
+    if(c.plan) renderPlan(c.plan, c);
+  } else {
+    document.getElementById('cl-name').value='';
+    document.getElementById('cl-desc').value='';
+  }
+  closeOverlay('clientOverlay');
+  document.getElementById('newClientOverlay').classList.add('show');
+}
+function genClientPlan(){
+  const name=document.getElementById('cl-name').value.trim()||'未命名客户';
+  const desc=document.getElementById('cl-desc').value.trim();
+  const tags=[...document.querySelectorAll('#cl-tags .cp.on')].map(e=>e.textContent.trim());
+  if(!desc && !tags.length){ toast('请填写客户情况或勾选标签'); return; }
+  const plan=aiPlan(desc, tags);
+  let client=CLIENTS.find(c=>c.name===name && c.desc===desc);
+  if(!client){ client={id:'c_'+Date.now(), name, desc, tags, records:[], createdAt:Date.now()}; CLIENTS.unshift(client); }
+  client.name=name; client.desc=desc; client.tags=tags;
+  client.need=plan.needs.join(' › '); client.stage=plan.stage; client.plan=plan;
+  if(!curClientId) curClientId=client.id;
+  saveState(); renderMine(); renderPlan(plan, client);
+  toast('🤖 已生成定制方案');
+}
+function renderPlan(plan, client){
+  const box=document.getElementById('planBox');
+  const recHtml=(client.records&&client.records.length)?`<div class="plan-recs"><div class="pr-h">📎 过程记录（${client.records.length}）</div>${client.records.map(r=>`<div class="pr-line">· ${r.t}</div>`).join('')}</div>`:'';
+  box.innerHTML=`
+    <div class="plan">
+      <div class="plan-portrait">${plan.portrait}</div>
+      <div class="plan-recos">
+        ${plan.recos.map(r=>`<div class="preco"><div class="pr-t">📌 ${r[0]}</div><div class="pr-d">${r[1]}</div></div>`).join('')}
+      </div>
+      ${recHtml}
+      <div class="pv-desc" style="font-size:11px;color:var(--text-3)">🔧 线上方案由 AI 模拟生成（原型演示），生产将接入真实大模型与小区数据。深度谈单建议预约线下赋能顾问。</div>
+      <button class="pv-send" style="margin-top:10px" onclick="setCurClient('${client.id}');closeOverlay('newClientOverlay')">设为当前服务客户</button>
+      <button class="pv-send" style="margin-top:8px;background:#fff;color:var(--orange);border:1px solid var(--orange)" onclick="addRecord('${client.id}')">+ 追加过程记录</button>
+      <button class="pv-send" style="margin-top:8px;background:var(--green);color:#fff" onclick="toast('📞 线下赋能顾问预约已提交（演示）· 顾问将联系您陪谈')">📞 预约线下赋能顾问陪谈</button>
+    </div>`;
+}
+function setCurClient(id){
+  curClientId=id; saveState(); renderClientList(); renderMine();
+  const c=CLIENTS.find(x=>x.id===id);
+  toast('已切换「'+(c?c.name:'')+'」· 交付物将按 TA 的诉求定制');
+}
+function addRecord(id){
+  const note=prompt('记录这次服务的过程 / 客户反馈（如：已带看 2 次，卡在学区 vs 通勤）：');
+  if(!note) return;
+  const c=CLIENTS.find(x=>x.id===id);
+  c.records=c.records||[]; c.records.unshift({t:note, at:Date.now()});
+  const plan=aiPlan((c.desc||'')+'\n'+c.records.map(r=>r.t).join('\n'), c.tags||[]);
+  c.plan=plan; c.need=plan.needs.join(' › '); c.stage=plan.stage;
+  saveState(); renderPlan(plan, c);
+  toast('已记录，方案已更新');
+}
+
+// ===== 我的页渲染 =====
+function renderMine(){
+  document.getElementById('st-cli').textContent=CLIENTS.length;
+  document.getElementById('st-fav').textContent=fav.size;
+  document.getElementById('st-con').textContent=contribs.length;
+  document.getElementById('st-day').textContent=loginDays.size;
+  if(user){
+    document.getElementById('pn').textContent=user.name;
+    document.getElementById('agency').textContent='📍 '+CITY;
+    document.getElementById('vipBadge').style.display=user.vip?'inline-block':'none';
+    const vr=document.getElementById('vipRow');
+    if(user.vip){
+      vr.querySelector('.vip-t').textContent='已开通专业版';
+      vr.querySelector('.vip-s').textContent='全部词条 / 去署名卡片 / 信任数据看板 已解锁';
+      document.getElementById('vipBtn').textContent='管理';
+    } else {
+      vr.querySelector('.vip-t').textContent='专业版';
+      vr.querySelector('.vip-s').textContent='全部 5800 词条 · 去署名高级卡片 · 信任数据看板';
+      document.getElementById('vipBtn').textContent='开通';
+    }
+  }
+}
+
+// ===== 初始化 =====
+renderQuiz();
+renderDict();
+(function initSession(){
+  // 微信式静默登录：优先会话，其次本地 openid，最后回本人账号（关掉标签页再打开也直接是本人，记录不丢）
+  let s = sessionStorage.getItem('xdz_uid');
+  if(s && ACCOUNTS.find(a=>a.uid===s)){ loginAs(s); return; }
+  const oid = localStorage.getItem('xdz_openid') || localStorage.getItem('xdz_my_account');
+  if(oid && ACCOUNTS.find(a=>a.uid===oid)){ loginAs(oid); return; }
+  document.getElementById('loginOverlay').classList.add('show');
+  renderSwitch();
+})();
+</script>
+</body>
+</html>

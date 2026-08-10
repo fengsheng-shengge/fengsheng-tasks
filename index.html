@@ -1,0 +1,1854 @@
+<!-- v20260608-1200 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>风声 · 通过独立价值获得尊重</title>
+<meta name="description" content="风声 · 通过独立价值获得尊重。六维标准定义品质，四维关怀守护服务者，三条路径实现商业闭环。">
+<meta name="keywords" content="风声,居住服务,品质居住,六维标准,四维关怀,服务者关怀,居住品质,数字工具,经纪人赋能,质量管理">
+<meta property="og:title" content="风声 · 通过独立价值获得尊重">
+<meta property="og:description" content="六维标准定义品质，四维关怀守护服务者，三条路径实现商业闭环。">
+<meta property="og:image" content="https://fengsheng.tech/og-image.png">
+<meta property="og:url" content="https://fengsheng.tech/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+/* ===== 品牌变量 ===== */
+:root{
+  --bg:#f7f4ef;--bg2:#e8e4d9;--card:#f7f4ef;--card-h:#f5f1ec;
+  --border:rgba(80,90,70,.09);--border-h:rgba(60,80,50,.2);
+  --p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--p-bg:rgba(61,90,62,.05);
+  --fire:#c46a3a;--fire-l:#d89060;--charcoal:#3a3a38;
+  --dk:#1a1a1a;--tx:#555555;--ts:#7a8478;--td:#a8b0a6;
+  --safe:#5e7e5c;--health:#6d8f55;--neat:#3d5a3e;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e;
+  --sc-body:#5e7e5c;--sc-mind:#6d8f55;--sc-dignity:#7e6a90;--sc-life:#4e7e8e;
+  --pathA:#c46a3a;--pathB:#4e7e8e;--pathC:#7e6a90;
+  --brand:#2C5F3A;--brand-light:#4a8a5c;--accent:#E8742C;
+  --wood:#c8956d;
+  --r:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+.main{position:relative;z-index:1;max-width:1200px;margin:0 auto}
+
+/* ===== HERO 区 ===== */
+.hero{padding:80px 8% 40px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:
+  linear-gradient(180deg,rgba(247,244,239,0) 0%,rgba(247,244,239,.5) 55%,rgba(247,244,239,1) 100%),
+  url('assets/images/hero-living-dimension.jpg') center/cover no-repeat;
+  z-index:0;opacity:.35}
+.hero > *{position:relative;z-index:2}
+.hero-brand{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--brand);background:rgba(44,95,58,.06);border:1px solid rgba(44,95,58,.12);border-radius:20px;padding:6px 16px;margin-bottom:20px;letter-spacing:1px}
+.hero h1{font-size:44px;font-weight:800;color:var(--dk);letter-spacing:1px;line-height:1.2}
+.hero h1 .highlight{color:var(--brand)}
+.hero-sub{font-size:18px;color:var(--tx);margin-top:10px;font-weight:500;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.5}
+.hero-cta{display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap}
+.cta-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 32px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .25s;text-decoration:none}
+.cta-btn:active{transform:scale(.96)}
+.cta-primary{background:var(--brand);color:#fff}
+.cta-primary:hover{background:var(--brand-light)}
+.cta-secondary{background:var(--card);color:var(--p-d);border:1px solid var(--border)}
+.cta-accent{background:var(--accent);color:#fff}
+.cta-accent:hover{background:#d06020}
+
+/* 验证线 */
+.v-line{max-width:520px;margin:36px auto 0;background:rgba(255,255,255,.75);backdrop-filter:blur(8px);border:1px solid rgba(61,90,62,.1);border-radius:12px;padding:14px 18px;position:relative;z-index:2}
+.v-line-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+.v-line-label{font-size:13px;font-weight:700;color:var(--p);letter-spacing:.5px}
+.v-line-num{font-size:12px;color:var(--ts)}
+.v-line-bar{height:6px;background:rgba(61,90,62,.1);border-radius:999px;overflow:hidden;margin-bottom:6px}
+.v-line-fill{height:100%;width:0;background:linear-gradient(90deg,var(--brand) 0%,var(--accent) 100%);border-radius:999px;animation:vprogress 2.5s ease-out forwards}
+@keyframes vprogress{from{width:0}to{width:var(--v-pct,67%)}}
+.v-line-foot{font-size:11px;color:var(--ts);text-align:center}
+
+/* ===== 核心功能按钮 2x2 网格 ===== */
+.core-section{padding:20px 8% 10px}
+.core-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:700px;margin:0 auto}
+.core-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px 20px;text-align:center;text-decoration:none;color:inherit;transition:all .25s;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
+.core-card:hover{transform:translateY(-3px);box-shadow:0 6px 24px rgba(60,50,40,.10);border-color:var(--border-h)}
+.core-card:active{transform:scale(.97)}
+.core-card .core-icon{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:26px;margin-bottom:2px}
+.core-card .core-icon.green{background:rgba(44,95,58,.10)}
+.core-card .core-icon.orange{background:rgba(232,116,44,.10)}
+.core-card .core-icon.purple{background:rgba(126,106,144,.10)}
+.core-card .core-icon.teal{background:rgba(78,126,142,.10)}
+.core-card .core-name{font-size:17px;font-weight:800;color:var(--dk)}
+.core-card .core-desc{font-size:12px;color:var(--ts);line-height:1.4;max-width:180px}
+
+/* ===== 快速场景选择器 ===== */
+.scene-inline-section{padding:16px 8% 10px}
+.scene-inline-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;max-width:700px;margin:0 auto}
+.scene-inline-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.scene-inline-icon{font-size:20px}
+.scene-inline-title{font-size:15px;font-weight:800;color:var(--dk)}
+.scene-inline-label{font-size:11px;font-weight:700;color:var(--ts);margin-bottom:6px;letter-spacing:.5px}
+.scene-inline-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.scene-inline-chip{flex:1;min-width:70px;padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center;color:var(--ts);user-select:none;-webkit-tap-highlight-color:transparent}
+.scene-inline-chip:hover{border-color:var(--brand);color:var(--brand);background:rgba(44,95,58,.04)}
+.scene-inline-chip.active{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 8px rgba(44,95,58,.15)}
+.scene-inline-chip .chip-sub{font-size:10px;font-weight:400;display:block;margin-top:1px;color:var(--td)}
+.scene-inline-chip.active .chip-sub{color:rgba(255,255,255,.8)}
+.scene-inline-stages{margin-bottom:0}
+.scene-inline-result{display:none;margin-top:14px;padding:14px 18px;background:rgba(44,95,58,.04);border-radius:10px;border:1px solid rgba(44,95,58,.08)}
+.scene-inline-result.show{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.scene-inline-result .result-info{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.scene-inline-result .result-count{font-size:24px;font-weight:900;color:var(--brand)}
+.scene-inline-result .result-label{font-size:13px;color:var(--ts)}
+.scene-inline-result .result-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border-radius:8px;background:var(--brand);color:#fff;font-size:13px;font-weight:700;text-decoration:none;transition:all .2s;white-space:nowrap}
+.scene-inline-result .result-btn:hover{background:var(--brand-light);transform:translateY(-1px)}
+.scene-inline-result .result-btn:active{transform:scale(.96)}
+.scene-nav-mini-grid{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.scene-nav-mini-tag{font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;background:rgba(44,95,58,.08);color:var(--brand);white-space:nowrap}
+
+/* ===== 数据概览 ===== */
+.stats-section{padding:10px 8% 10px}
+.stats-row{display:flex;justify-content:center;gap:32px;max-width:700px;margin:0 auto;flex-wrap:wrap}
+.stat-item{text-align:center;padding:14px 20px;background:var(--card);border:1px solid var(--border);border-radius:12px;flex:1;min-width:100px;max-width:160px}
+.stat-num{font-size:28px;font-weight:900;color:var(--brand);line-height:1.1}
+.stat-label{font-size:11px;color:var(--ts);margin-top:2px;font-weight:500}
+
+/* ===== SECTION通用 ===== */
+.section{padding:40px 8% 10px}
+.section-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:0 4px}
+.section-dot{width:6px;height:6px;border-radius:50%}
+.section-title{font-size:20px;font-weight:800;color:var(--dk);letter-spacing:.5px}
+.section-desc{font-size:10px;color:var(--td);margin-left:8px;font-weight:500}
+
+/* ===== 产品工具（精简版） ===== */
+.product-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.product-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 16px;cursor:default;transition:all .3s;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;border-top:3px solid transparent}
+.product-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(60,50,40,.12);border-color:rgba(60,80,50,.15)}
+.product-card:active{transform:scale(.98)}
+.product-top{display:flex;align-items:center;gap:10px}
+.product-ico{font-size:22px;flex-shrink:0}
+.product-info{flex:1;min-width:0}
+.product-name{font-size:13px;font-weight:800;color:var(--dk);line-height:1.3}
+.product-value{font-size:10px;color:var(--p);margin-top:2px;font-weight:600;line-height:1.4}
+.product-stat{font-size:9px;color:var(--td);margin-top:2px}
+.product-action{margin-top:10px;padding-top:0}
+.product-action a{display:inline-block;padding:4px 10px;border-radius:8px;font-size:9px;font-weight:700;text-decoration:none;background:rgba(61,90,62,.06);color:var(--p)}
+.product-action a.live{background:rgba(94,126,92,.1);color:var(--safe)}
+.product-category{display:flex;align-items:center;gap:8px;margin:20px 0 10px;padding:0 4px}
+.product-category:first-child{margin-top:0}
+.cat-dot{width:6px;height:6px;border-radius:50%}
+.cat-name{font-size:13px;font-weight:800;color:var(--dk);letter-spacing:.5px}
+.cat-badge{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700}
+.cat-badge.live{background:rgba(94,126,92,.1);color:var(--safe)}
+.cat-badge.soon{background:var(--bg2);color:var(--td)}
+.soon-tag{display:inline-block;padding:4px 10px;border-radius:8px;font-size:9px;font-weight:700;background:rgba(180,150,100,.12);color:#8a7856;cursor:default;user-select:none}
+
+/* ===== 今日知识模块 ===== */
+.daily-section{padding:40px 8% 10px}
+.daily-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;border-top:3px solid var(--p)}
+.daily-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.daily-icon{font-size:24px}
+.daily-title{font-size:17px;font-weight:800;color:var(--dk);letter-spacing:.5px}
+.daily-subtitle{font-size:12px;color:var(--ts);margin-bottom:16px;margin-left:36px}
+.daily-date{font-size:11px;color:var(--td);margin-left:auto}
+.daily-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.daily-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;transition:all .2s;cursor:pointer;text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent}
+.daily-item:hover{background:#fff;border-color:var(--p);transform:translateY(-1px);box-shadow:0 2px 8px rgba(61,90,62,.06)}
+.daily-item .di-reason{font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.daily-item .di-reason.hard{background:rgba(196,106,58,.12);color:var(--fire)}
+.daily-item .di-reason.core{background:rgba(61,90,62,.1);color:var(--p)}
+.daily-item .di-reason.qi{background:rgba(200,149,109,.12);color:var(--wood)}
+.daily-item .di-reason.law{background:rgba(107,95,168,.1);color:#7e6a90}
+.daily-item .di-body{flex:1;min-width:0}
+.daily-item .di-name{font-size:14px;font-weight:700;color:var(--dk);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px}
+.daily-item .di-answer{font-size:12px;color:var(--ts);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.daily-item .di-layer{font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;margin-top:4px;display:inline-block}
+.daily-item .di-layer.dao{background:rgba(61,90,62,.08);color:var(--p)}
+.daily-item .di-layer.fa{background:rgba(196,106,58,.08);color:var(--fire)}
+.daily-item .di-layer.shu{background:rgba(107,95,168,.08);color:#7e6a90}
+.daily-item .di-layer.qi{background:rgba(200,149,109,.08);color:var(--wood)}
+.daily-loading{text-align:center;padding:20px;color:var(--td);font-size:13px}
+.daily-empty{text-align:center;padding:16px;color:var(--td);font-size:13px}
+.daily-config{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.daily-config-label{font-size:11px;font-weight:700;color:var(--ts)}
+.daily-config-select{font-size:12px;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--tx);outline:none;cursor:pointer}
+.daily-config-select:focus{border-color:var(--p)}
+.daily-more{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px dashed var(--border)}
+.daily-more a{font-size:12px;font-weight:600;color:var(--p);text-decoration:none}
+.daily-more a:hover{text-decoration:underline}
+.daily-more .daily-source{font-size:11px;color:var(--td)}
+.daily-more .daily-source strong{color:var(--p)}
+
+/* ===== 浮动聊天按钮 ===== */
+.chat-fab{position:fixed;bottom:28px;right:28px;z-index:9999;width:56px;height:56px;border-radius:50%;background:var(--p);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(61,90,62,.25);transition:all .3s;display:flex;align-items:center;justify-content:center;font-size:24px;-webkit-tap-highlight-color:transparent}
+.chat-fab:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(61,90,62,.35)}
+.chat-fab:active{transform:scale(.94)}
+.chat-fab-dot{position:absolute;top:0;right:0;width:12px;height:12px;background:var(--fire);border:2px solid #fff;border-radius:50%;animation:pulse 2s infinite}
+.chat-dialog{position:fixed;bottom:96px;right:28px;z-index:9998;width:360px;max-height:520px;background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.12);display:none;flex-direction:column;overflow:hidden;animation:chatIn .25s ease-out}
+@keyframes chatIn{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.chat-dialog.open{display:flex}
+.chat-head{padding:14px 18px;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700}
+.chat-close{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;opacity:.7;padding:0 4px}
+.chat-close:hover{opacity:1}
+.chat-body{flex:1;overflow-y:auto;padding:14px 16px;min-height:200px;max-height:360px}
+.chat-msg{margin-bottom:12px;max-width:85%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.5;word-wrap:break-word}
+.chat-msg.user{margin-left:auto;background:var(--p);color:#fff;border-bottom-right-radius:4px}
+.chat-msg.bot{margin-right:auto;background:var(--bg);border:1px solid var(--border);color:var(--tx);border-bottom-left-radius:4px}
+.chat-msg.bot.loading{opacity:.6}
+.chat-foot{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center}
+.chat-input{flex:1;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:14px;outline:none;background:var(--bg);color:var(--tx);font-family:inherit}
+.chat-input:focus{border-color:var(--p)}
+.chat-send{background:var(--p);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+.chat-send:hover{background:var(--p-d)}
+.chat-send:disabled{opacity:.4;cursor:default}
+.chat-welcome{text-align:center;padding:24px 8px;color:var(--ts);font-size:13px;line-height:1.6}
+.chat-welcome strong{color:var(--p);font-size:15px}
+
+/* ===== 版权+反馈 ===== */
+.page-footer{text-align:center;padding:24px 16px;margin-top:32px;border-top:1px solid var(--border,rgba(80,90,70,.09));font-size:11px;color:var(--ts,#7a8478);line-height:1.8}
+.page-footer .footer-brand{font-size:14px;font-weight:700;color:var(--dk);margin-bottom:4px;letter-spacing:.5px}
+.page-footer .copyright{margin-bottom:8px}
+.feedback-bar{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:12px;padding:12px;background:var(--card,#fff);border-radius:8px;border:1px solid var(--border,rgba(80,90,70,.09))}
+.feedback-bar span{font-size:13px;color:var(--tx,#555)}
+.feedback-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg,#f7f4ef);cursor:pointer;font-size:13px;color:var(--tx,#555);transition:all .15s}
+.feedback-btn:hover{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
+.feedback-btn.active{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
+
+/* ===== 客户概览 ===== */
+.client-overview{padding:16px 8% 10px}
+.client-overview-inner{max-width:700px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px}
+.client-ov-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.client-ov-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:var(--dk)}
+.client-ov-link{font-size:12px;font-weight:700;color:var(--brand);text-decoration:none;display:flex;align-items:center;gap:4px;padding:6px 14px;border-radius:8px;border:1.5px solid var(--brand);transition:all .2s}
+.client-ov-link:hover{background:var(--brand);color:#fff}
+.client-ov-stats{display:flex;gap:16px;flex-wrap:wrap}
+.client-ov-stat{flex:1;min-width:80px;text-align:center;padding:12px 8px;background:var(--bg);border-radius:10px;border:1px solid var(--border)}
+.client-ov-num{font-size:22px;font-weight:900;color:var(--dk);line-height:1.2}
+.client-ov-num.ing{color:var(--brand)}
+.client-ov-num.done{color:#6d8f55}
+.client-ov-num.lost{color:var(--td)}
+.client-ov-label{font-size:11px;color:var(--ts);margin-top:2px}
+.client-ov-empty{font-size:13px;color:var(--ts);padding:14px 0;text-align:center;line-height:1.6}
+.client-ov-empty a{color:var(--brand);font-weight:700;text-decoration:none}
+.client-ov-empty a:hover{text-decoration:underline}
+.client-ov-progress{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.client-ov-bar{flex:1;height:6px;background:var(--bg2);border-radius:999px;overflow:hidden}
+.client-ov-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .6s ease}
+.client-ov-pct{font-size:11px;font-weight:700;color:var(--ts);white-space:nowrap}
+
+/* ===== 合作意向浮层(路径B) ===== */
+.partner-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.partner-overlay.show{display:flex}
+.partner-sheet{background:var(--bg);width:100%;max-width:480px;max-height:85vh;border-radius:18px 18px 0 0;padding:24px 20px 28px;overflow-y:auto;animation:slideUp .25s ease}
+.partner-sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.partner-sheet-title{font-size:18px;font-weight:700;color:var(--dk)}
+.partner-sheet-close{width:30px;height:30px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;color:var(--ts);font-size:20px;cursor:pointer;line-height:1}
+.partner-sheet-sub{font-size:12px;color:var(--ts);margin-bottom:16px}
+.partner-form-group{margin-bottom:12px}
+.partner-form-label{display:block;font-size:12px;font-weight:600;color:var(--ts);margin-bottom:5px}
+.partner-form-input,.partner-form-textarea{width:100%;padding:10px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;font:inherit;color:var(--dk);outline:none}
+.partner-form-input:focus,.partner-form-textarea:focus{border-color:var(--brand)}
+.partner-form-textarea{resize:vertical;min-height:60px}
+.partner-form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.partner-form-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.partner-form-chip{padding:6px 12px;background:var(--bg);border:1px solid var(--border);border-radius:99px;font-size:12px;color:var(--ts);cursor:pointer;transition:all .15s}
+.partner-form-chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.partner-form-submit{width:100%;padding:14px;background:var(--brand);color:#fff;border-radius:10px;font-weight:600;font-size:15px;margin-top:8px;cursor:pointer;transition:background .15s;border:none}
+.partner-form-submit:hover{background:var(--brand-light)}
+.partner-form-submit:disabled{background:var(--td);cursor:not-allowed}
+.partner-form-tip{font-size:11px;color:var(--td);margin-top:10px;text-align:center}
+.partner-form-success{padding:30px 20px;text-align:center}
+.partner-form-success .ico{font-size:48px;margin-bottom:12px}
+.partner-form-success .t{font-size:18px;font-weight:700;color:var(--brand);margin-bottom:6px}
+.partner-form-success .s{font-size:13px;color:var(--ts);line-height:1.7}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+/* ===== 响应式 ===== */
+@media (max-width: 767px) {
+  :root { --r: 8px; }
+  .hero { padding: 60px 5% 24px !important; }
+  .hero h1 { font-size: 28px !important; line-height: 1.3 !important; }
+  .hero-sub { font-size: 15px !important; }
+  .hero-cta { flex-direction: column; align-items: stretch; gap: 8px !important; }
+  .cta-btn { width: 100%; justify-content: center; }
+  .core-grid { grid-template-columns: 1fr !important; gap: 12px !important; max-width: 360px !important; }
+  .core-card { padding: 20px 16px !important; }
+  .section { padding: 30px 5% 8px !important; }
+  .product-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .daily-section { padding: 30px 5% 8px !important; }
+  .daily-grid { grid-template-columns: 1fr !important; }
+  .daily-item { padding: 10px 12px !important; }
+  .daily-item .di-name { font-size: 13px !important; }
+  .daily-subtitle { margin-left: 0 !important; }
+  .stats-row { gap: 12px !important; }
+  .stat-item { min-width: 80px !important; max-width: 120px !important; padding: 10px 14px !important; }
+  .stat-num { font-size: 22px !important; }
+  .client-overview-inner { padding: 16px !important; }
+  .client-ov-stats { gap: 8px !important; }
+  .client-ov-stat { min-width: 60px !important; padding: 8px 4px !important; }
+  .client-ov-num { font-size: 18px !important; }
+  .scene-inline-card { padding: 16px !important; }
+  .scene-inline-chip { min-width: 60px !important; padding: 6px 10px !important; font-size: 11px !important; }
+  .scene-inline-result.show { flex-direction: column; align-items: flex-start !important; }
+  .chat-dialog { width: calc(100vw - 32px); right: 16px; bottom: 88px; max-height: 60vh; }
+  .chat-fab { bottom: 20px; right: 20px; width: 48px; height: 48px; font-size: 20px; }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .hero h1 { font-size: 36px !important; }
+  .section { padding: 32px 6% 8px !important; }
+}
+
+/* ====== 工作台侧边栏 ====== */
+.wb-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.35);display:none;opacity:0;transition:opacity .25s}
+.wb-overlay.show{display:block;opacity:1}
+.wb-sidebar{position:fixed;top:0;left:0;bottom:0;z-index:201;width:280px;background:#fff;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:4px 0 20px rgba(0,0,0,.08)}
+.wb-sidebar.open{transform:translateX(0)}
+.wb-sb-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(80,90,70,.08);flex-shrink:0}
+.wb-sb-brand{font-size:17px;font-weight:800;color:var(--brand);display:flex;align-items:center;gap:6px}
+.wb-sb-close{font-size:20px;color:var(--ts);background:none;border:none;cursor:pointer;padding:4px;line-height:1}
+.wb-sb-close:hover{color:var(--dk)}
+.wb-sb-user{padding:14px 20px;border-bottom:1px solid rgba(80,90,70,.06);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.wb-sb-avatar{width:36px;height:36px;border-radius:50%;background:var(--p-bg);color:var(--brand);display:grid;place-items:center;font-size:15px;font-weight:800}
+.wb-sb-name{font-size:14px;font-weight:700;color:var(--dk)}
+.wb-sb-role{font-size:11px;color:var(--ts)}
+.wb-sb-nav{flex:1;overflow-y:auto;padding:12px 0}
+.wb-sb-group{padding:0 12px;margin-bottom:8px}
+.wb-sb-group-title{font-size:10px;font-weight:700;color:var(--td);text-transform:uppercase;letter-spacing:1px;padding:8px 8px 4px}
+.wb-sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--tx);text-decoration:none;transition:all .15s;cursor:pointer}
+.wb-sb-item:hover{background:var(--p-bg);color:var(--brand)}
+.wb-sb-item.active{background:var(--p-bg);color:var(--brand);font-weight:700}
+.wb-sb-item .wb-sb-ico{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.wb-sb-item .wb-sb-badge{margin-left:auto;font-size:10px;padding:1px 8px;border-radius:10px;background:var(--p-bg);color:var(--brand);font-weight:700}
+.wb-sb-foot{padding:12px 20px;border-top:1px solid rgba(80,90,70,.06);font-size:11px;color:var(--td);flex-shrink:0;text-align:center}
+
+/* ====== 工作台仪表盘 ====== */
+.wb-dashboard{display:none}
+.wb-dashboard.active{display:block}
+.wb-dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:700px;margin:0 auto 16px}
+.wb-dash-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 14px;text-align:center}
+.wb-dash-num{font-size:26px;font-weight:900;color:var(--brand);line-height:1.1}
+.wb-dash-label{font-size:11px;color:var(--ts);margin-top:4px;font-weight:500}
+.wb-dash-trend{font-size:10px;font-weight:700;margin-top:2px}
+.wb-dash-trend.up{color:#6d8f55}
+.wb-dash-trend.down{color:var(--fire)}
+.wb-dash-section{max-width:700px;margin:0 auto 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px}
+.wb-dash-section-title{font-size:14px;font-weight:800;color:var(--dk);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.wb-dash-section-title .wb-more{font-size:11px;font-weight:600;color:var(--brand);margin-left:auto;text-decoration:none}
+.wb-dash-task{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(80,90,70,.05)}
+.wb-dash-task:last-child{border-bottom:none}
+.wb-dash-task .wb-task-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.wb-dash-task .wb-task-dot.urgent{background:var(--fire)}
+.wb-dash-task .wb-task-dot.normal{background:var(--brand)}
+.wb-dash-task .wb-task-dot.done{background:var(--td)}
+.wb-dash-task .wb-task-body{flex:1;min-width:0}
+.wb-dash-task .wb-task-name{font-size:13px;font-weight:600;color:var(--dk)}
+.wb-dash-task .wb-task-meta{font-size:11px;color:var(--ts);margin-top:1px}
+.wb-dash-task .wb-task-action{font-size:11px;color:var(--brand);font-weight:600;text-decoration:none;white-space:nowrap}
+
+/* ====== 视图切换 ====== */
+.wb-view-toggle{display:flex;gap:4px;background:var(--bg2);border-radius:8px;padding:3px;margin:0 auto 20px;max-width:700px}
+#wbExploreView{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.wb-view-btn{flex:1;text-align:center;padding:8px 12px;border-radius:6px;font-size:13px;font-weight:700;color:var(--ts);border:none;background:none;cursor:pointer;transition:all .2s}
+.wb-view-btn.active{background:#fff;color:var(--dk);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.wb-view-btn:hover:not(.active){color:var(--dk)}
+
+/* ====== 侧边栏触发按钮（导航栏内） ====== */
+.wb-menu-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--brand);padding:4px;display:flex;align-items:center;gap:4px;font-weight:700;line-height:1;margin-right:2px}
+
+/* ====== 响应式 ====== */
+@media (min-width: 1024px) {
+  .wb-sidebar{width:260px}
+  .wb-overlay{display:none!important}
+}
+</style>
+<!-- 全站数据追踪器 v1.0 -->
+<script src="/tracker.js" async></script>
+<link rel="canonical" href="https://fengsheng.tech/">
+</head>
+<body>
+
+<!-- ============================================================
+  Honeypot traps — hidden links for bot detection
+  Real users never see these; bots following all links get banned
+  ============================================================ -->
+<div style="display:none;position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+  <a href="/admin/login">管理员登录</a>
+  <a href="/wp-admin">后台管理</a>
+  <a href="/backend">系统后台</a>
+  <a href="/hidden-link">内部链接</a>
+  <!-- admin link removed for security -->
+  <a href="/cms">内容管理</a>
+</div>
+
+<!-- 风声统一导航栏 -->
+<nav class="fs-nav">
+  <button class="wb-menu-btn" id="wbMenuBtn" onclick="toggleSidebar()" aria-label="打开菜单">☰</button>
+  <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
+  <div class="fs-nav-links">
+    <a href="/">首页</a>
+    <a href="/mentor/">开单导师</a>
+    <a href="/scene/">场景导航</a>
+    <a href="/dictionary/">全量词典</a>
+    <a href="/search/">搜索</a>
+    <a href="/knowledge/">知识底座</a>
+    <a href="/quality-test/">品质测评</a>
+    <a href="/care-test/">关怀测评</a>
+    <a href="/reply/">客户解码</a>
+    <a href="/ip-design/">IP设计</a>
+    <a href="/clients/">客户档案</a>
+    <a href="/favorites/">收藏</a>
+    <a href="/history/">历史</a>
+    <a href="/dashboard/">管理看板</a>
+  </div>
+  <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
+</nav>
+
+<!-- ====== 工作台侧边栏 ====== -->
+<div class="wb-overlay" id="wbOverlay" onclick="toggleSidebar()"></div>
+<div class="wb-sidebar" id="wbSidebar">
+  <div class="wb-sb-header">
+    <div class="wb-sb-brand">🌬️ 风声工作台</div>
+    <button class="wb-sb-close" onclick="toggleSidebar()">✕</button>
+  </div>
+  <div class="wb-sb-user">
+    <div class="wb-sb-avatar">经</div>
+    <div>
+      <div class="wb-sb-name">经纪人</div>
+      <div class="wb-sb-role">居住服务者 · 风声</div>
+    </div>
+  </div>
+  <div class="wb-sb-nav">
+    <div class="wb-sb-group">
+      <div class="wb-sb-group-title">工作台</div>
+      <a class="wb-sb-item active" href="/" onclick="event.preventDefault();switchView('workbench');toggleSidebar()">
+        <span class="wb-sb-ico">📊</span> 工作台仪表盘
+      </a>
+      <a class="wb-sb-item" href="/" onclick="event.preventDefault();switchView('explore');toggleSidebar()">
+        <span class="wb-sb-ico">🔍</span> 探索发现
+      </a>
+      <a class="wb-sb-item" href="/clients/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">👥</span> 客户档案
+        <span class="wb-sb-badge" id="sbClientCount">0</span>
+      </a>
+      <a class="wb-sb-item" href="/scene/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🧭</span> 场景导航
+      </a>
+    </div>
+    <div class="wb-sb-group">
+      <div class="wb-sb-group-title">知识工具</div>
+      <a class="wb-sb-item" href="/dictionary/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">📖</span> 知识词典
+      </a>
+      <a class="wb-sb-item" href="/search/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🔍</span> 搜索
+      </a>
+      <a class="wb-sb-item" href="/knowledge/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🧰</span> 知识底座
+      </a>
+      <a class="wb-sb-item" href="/mentor/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🔥</span> 开单导师
+      </a>
+    </div>
+    <div class="wb-sb-group">
+      <div class="wb-sb-group-title">客户服务</div>
+      <a class="wb-sb-item" href="/reply/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">💬</span> 客户解码器
+      </a>
+      <a class="wb-sb-item" href="/quality-test/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🏠</span> 品质测评
+      </a>
+      <a class="wb-sb-item" href="/care-test/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">💚</span> 关怀测评
+      </a>
+    </div>
+    <div class="wb-sb-group">
+      <div class="wb-sb-group-title">个人成长</div>
+      <a class="wb-sb-item" href="/assessment/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🎯</span> 能力测评
+      </a>
+      <a class="wb-sb-item" href="/breeder/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🤖</span> Agent培养师
+      </a>
+      <a class="wb-sb-item" href="/ip-design/" onclick="toggleSidebar()">
+        <span class="wb-sb-ico">🎨</span> IP角色设计
+      </a>
+    </div>
+  </div>
+  <div class="wb-sb-foot">风声 · 通过独立价值获得尊重 v3.0</div>
+</div>
+<style>
+.fs-nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:#fff;border-bottom:1px solid rgba(80,90,70,.09);position:sticky;top:0;z-index:100}
+.fs-nav-brand{font-size:16px;font-weight:700;color:#3d5a3e;text-decoration:none;display:flex;align-items:center;gap:4px}
+.fs-nav-links{display:flex;gap:6px}
+.fs-nav-links a{padding:5px 10px;font-size:12px;color:#555;text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
+.fs-nav-links a:hover{background:rgba(61,90,62,.06);color:#3d5a3e}
+.fs-nav-menu{display:none;background:none;border:none;font-size:20px;cursor:pointer;color:#3d5a3e;padding:8px}
+@media (max-width:767px){
+  .fs-nav-links{display:none;position:absolute;top:52px;left:0;right:0;background:#fff;flex-direction:column;padding:10px;border-bottom:1px solid rgba(80,90,70,.09);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+  .fs-nav.open .fs-nav-links{display:flex}
+  .fs-nav-menu{display:block}
+}
+</style>
+
+<div class="main">
+
+<!-- ====== 视图切换 ====== -->
+<div class="wb-view-toggle">
+  <button class="wb-view-btn active" id="wbViewWorkbench" onclick="switchView('workbench')">📊 工作台</button>
+  <button class="wb-view-btn" id="wbViewExplore" onclick="switchView('explore')">🔍 探索</button>
+</div>
+
+<!-- ====== 工作台仪表盘视图 ====== -->
+<div class="wb-dashboard active" id="wbDashboard">
+  <!-- 核心指标 -->
+  <div class="wb-dash-grid">
+    <div class="wb-dash-card">
+      <div class="wb-dash-num" id="dashClientTotal">-</div>
+      <div class="wb-dash-label">客户总数</div>
+      <div class="wb-dash-trend up" id="dashClientTrend"></div>
+    </div>
+    <div class="wb-dash-card">
+      <div class="wb-dash-num" id="dashClientIng">-</div>
+      <div class="wb-dash-label">跟进中</div>
+    </div>
+    <div class="wb-dash-card">
+      <div class="wb-dash-num" id="dashClientDone">-</div>
+      <div class="wb-dash-label">已成交</div>
+    </div>
+    <div class="wb-dash-card">
+      <div class="wb-dash-num" id="dashEntryTotal">5942</div>
+      <div class="wb-dash-label">知识词条</div>
+    </div>
+  </div>
+
+  <!-- 今日待办 -->
+  <div class="wb-dash-section">
+    <div class="wb-dash-section-title">
+      📋 今日待办
+      <a class="wb-more" href="/clients/">查看全部 →</a>
+    </div>
+    <div id="dashTodoList">
+      <div class="wb-dash-task">
+        <div class="wb-task-dot normal"></div>
+        <div class="wb-task-body">
+          <div class="wb-task-name">登录后即可查看待办提醒</div>
+          <div class="wb-task-meta">客户跟进提醒、合同到期等</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 最近客户 -->
+  <div class="wb-dash-section">
+    <div class="wb-dash-section-title">
+      👥 最近客户
+      <a class="wb-more" href="/clients/">管理客户 →</a>
+    </div>
+    <div id="dashRecentClients">
+      <div class="wb-dash-task">
+        <div class="wb-task-body">
+          <div class="wb-task-name">还没有客户数据</div>
+          <div class="wb-task-meta">创建客户档案后，这里会显示最近 5 位客户</div>
+        </div>
+        <a class="wb-task-action" href="/clients/">创建 →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 客户分布（分层+状态） -->
+  <div class="wb-dash-section">
+    <div class="wb-dash-section-title">
+      📊 客户分布
+    </div>
+    <div id="dashClientDist" style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="text-align:center;padding:10px 0;color:var(--td);font-size:13px;width:100%">暂无数据</div>
+    </div>
+  </div>
+
+  <!-- LTRUST 温度分布 -->
+  <div class="wb-dash-section">
+    <div class="wb-dash-section-title">
+      🌡️ LTRUST 温度分布
+    </div>
+    <div id="dashLtrustDist" style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="text-align:center;padding:10px 0;color:var(--td);font-size:13px;width:100%">暂无数据</div>
+    </div>
+  </div>
+
+  <!-- 备忘提醒 -->
+  <div class="wb-dash-section">
+    <div class="wb-dash-section-title">
+      📌 备忘提醒
+      <a class="wb-more" href="/clients/">管理客户 →</a>
+    </div>
+    <div id="dashPrepNotes">
+      <div class="wb-dash-task">
+        <div class="wb-task-body">
+          <div class="wb-task-name">暂无备忘</div>
+          <div class="wb-task-meta">在客户详情页使用"见面参谋"功能，保存备忘后会在这里显示</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 快捷入口 -->
+  <div class="wb-dash-section">
+    <div class="wb-dash-section-title">
+      🚀 快捷入口
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="cta-btn cta-primary" href="/scene/" style="padding:8px 16px;font-size:12px">🧭 场景导航</a>
+      <a class="cta-btn cta-accent" href="/mentor/" style="padding:8px 16px;font-size:12px">🔥 开单导师</a>
+      <a class="cta-btn cta-secondary" href="/dictionary/" style="padding:8px 16px;font-size:12px">📖 查词典</a>
+      <a class="cta-btn cta-secondary" href="/search/" style="padding:8px 16px;font-size:12px">🔍 搜索</a>
+      <a class="cta-btn cta-secondary" href="/knowledge/" style="padding:8px 16px;font-size:12px">🧰 知识底座</a>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 探索视图（原有内容容器） ====== -->
+<div id="wbExploreView">
+
+<!-- ====== HERO 区 ====== -->
+<div class="hero">
+  <div class="hero-brand">🌬️ 风声</div>
+  <h1>居住服务者的<br><span class="highlight">专业基础设施</span></h1>
+  <div class="hero-sub">知识底座 + 数字工具，帮你把效率活干了，腾出手做更重要的判断和担当</div>
+  <div class="hero-cta">
+    <a class="cta-btn cta-accent" href="/mentor/">🔥 开单导师</a>
+    <a class="cta-btn cta-primary" href="/quality-test/">🏠 品质测评</a>
+    <a class="cta-btn cta-secondary" href="/care-test/">💚 关怀测评</a>
+  </div>
+
+  <!-- 300人验证线 -->
+  <div class="v-line">
+    <div class="v-line-top">
+      <span class="v-line-label">🎯 300人验证线</span>
+      <span class="v-line-num">需要你 · 2分钟即可贡献 1 份有效样本</span>
+    </div>
+    <div class="v-line-bar"><div class="v-line-fill"></div></div>
+    <div class="v-line-foot">
+      <span>💡 不知道从哪开始？先做关怀测评，2分钟看见自己 → 再定位能力段位</span>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 核心功能按钮区 (2x2 网格) ====== -->
+<div class="core-section">
+  <div class="core-grid">
+    <a class="core-card" href="/scene/">
+      <div class="core-icon green">🧭</div>
+      <div class="core-name">场景导航</div>
+      <div class="core-desc">选客户类型+阶段，自动匹配知识方案</div>
+    </a>
+    <a class="core-card" href="/dictionary/">
+      <div class="core-icon orange">📖</div>
+      <div class="core-name">知识词典</div>
+      <div class="core-desc">5942 条专业词条·8 大知识域</div>
+    </a>
+    <a class="core-card" href="#" id="coreChatBtn">
+      <div class="core-icon purple">💬</div>
+      <div class="core-name">AI 助手</div>
+      <div class="core-desc">随时随地提问，即时获取专业解答</div>
+    </a>
+    <a class="core-card" href="/knowledge/">
+      <div class="core-icon teal">🧰</div>
+      <div class="core-name">工具包</div>
+      <div class="core-desc">策展引擎 + 工具卡片 + 案例参考</div>
+    </a>
+  </div>
+</div>
+
+<!-- ====== 快速场景选择器 ====== -->
+<div class="scene-inline-section">
+  <div class="scene-inline-card">
+    <div class="scene-inline-header">
+      <span class="scene-inline-icon">🔍</span>
+      <span class="scene-inline-title">快速场景选择</span>
+    </div>
+    <div class="scene-inline-label">客户类型</div>
+    <div class="scene-inline-row" id="sceneNavClientType">
+      <div class="scene-inline-chip" data-ct="buyer"><span class="chip-sub">买房</span></div>
+      <div class="scene-inline-chip" data-ct="tenant"><span class="chip-sub">租房</span></div>
+      <div class="scene-inline-chip" data-ct="seller"><span class="chip-sub">卖家</span></div>
+      <div class="scene-inline-chip" data-ct="owner"><span class="chip-sub">业主</span></div>
+      <div class="scene-inline-chip" data-ct="landlord"><span class="chip-sub">房东</span></div>
+    </div>
+    <div class="scene-inline-label">业务阶段</div>
+    <div class="scene-inline-row scene-inline-stages" id="sceneNavStage">
+      <!-- 根据客户类型动态渲染 -->
+    </div>
+    <div class="scene-inline-result" id="sceneNavResult">
+      <div class="result-info">
+        <span class="result-count" id="sceneNavCount">-</span>
+        <span class="result-label">条匹配词条</span>
+        <div class="scene-nav-mini-grid" id="sceneNavMiniGrid"></div>
+      </div>
+      <a class="result-btn" id="sceneNavLink" href="#">进入场景 <span style="font-size:14px">→</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 数据概览 ====== -->
+<div class="stats-section">
+  <div class="stats-row">
+    <div class="stat-item">
+      <div class="stat-num">5942</div>
+      <div class="stat-label">专业词条</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">34</div>
+      <div class="stat-label">业务场景</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">8</div>
+      <div class="stat-label">知识域</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 客户概览 ====== -->
+<div class="client-overview" id="clientOverview">
+  <div class="client-overview-inner">
+    <div class="client-ov-header">
+      <div class="client-ov-title">👥 客户档案</div>
+      <a class="client-ov-link" href="/clients/">管理客户 →</a>
+    </div>
+    <div id="clientOvContent">
+      <div class="client-ov-empty">加载中...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 产品工具区（精简版） ====== -->
+<div class="section" id="products">
+  <div class="section-header"><div class="section-dot" style="background:var(--pathA)"></div><div class="section-title">产品工具</div></div>
+
+  <!-- 场景一：面对客户 -->
+  <div class="product-category">
+    <div class="cat-dot" style="background:var(--p)"></div>
+    <div class="cat-name">面对客户</div>
+    <span class="cat-badge live">5个工具</span>
+  </div>
+  <div class="product-grid">
+    <div class="product-card" style="border-left:4px solid var(--fire)">
+      <div class="product-top">
+        <div class="product-ico">🔥</div>
+        <div class="product-info">
+          <div class="product-name">开单导师</div>
+          <div class="product-value">拆解客户真需求，23年行业老兵Knowhow</div>
+          <div class="product-stat">客户解码·场景话术·开单策略</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/mentor/" style="background:var(--fire);color:#fff;" data-track="product:mentor">开始对话</a></div>
+    </div>
+    <div class="product-card" style="border-left:4px solid var(--fire)">
+      <div class="product-top">
+        <div class="product-ico">🔧</div>
+        <div class="product-info">
+          <div class="product-name">客户解码器</div>
+          <div class="product-value">"客户说不急"背后是什么？30秒看透</div>
+          <div class="product-stat">四域26场景·道法术三层</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/reply/" style="background:var(--fire);color:#fff;" data-track="product:kuaihui">立即使用</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">🏠</div>
+        <div class="product-info">
+          <div class="product-name">六维品质测评</div>
+          <div class="product-value">帮客户看见自己真正在意什么</div>
+          <div class="product-stat">2分钟出报告·六维雷达图</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/quality-test/" data-track="product:liuceping">免费使用</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">📋</div>
+        <div class="product-info">
+          <div class="product-name">带看报告 S1</div>
+          <div class="product-value">一份报告=一次信任建立</div>
+          <div class="product-stat">六维评估·现场生成·PDF</div>
+        </div>
+      </div>
+      <div class="product-action"><span class="live" style="opacity:.5;cursor:not-allowed">建设中</span></div>
+    </div>
+  </div>
+
+  <!-- 场景二：面对自己 -->
+  <div class="product-category">
+    <div class="cat-dot" style="background:var(--fire)"></div>
+    <div class="cat-name">面对自己</div>
+    <span class="cat-badge live">3个工具</span>
+  </div>
+  <div class="product-grid">
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">💚</div>
+        <div class="product-info">
+          <div class="product-name">四维关怀测评</div>
+          <div class="product-value">自己先活好，才能帮别人活好</div>
+          <div class="product-stat">身体·心理·尊严·质感</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/care-test/" data-track="product:care-test">免费使用</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">🎯</div>
+        <div class="product-info">
+          <div class="product-name">能力测评</div>
+          <div class="product-value">测完就知道下一步该练什么</div>
+          <div class="product-stat">五级成熟度·精准定位</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/assessment/" data-track="product:assessment">免费使用</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">🤖</div>
+        <div class="product-info">
+          <div class="product-name">Agent 培养师</div>
+          <div class="product-value">越用越懂你业务的专属助手</div>
+          <div class="product-stat">养成·测学练考评</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/breeder/" data-track="product:breeder">免费使用</a></div>
+    </div>
+  </div>
+
+  <!-- 品牌打造 -->
+  <div class="product-category">
+    <div class="cat-dot" style="background:var(--beauty)"></div>
+    <div class="cat-name">品牌打造</div>
+    <span class="cat-badge live">1个工具</span>
+  </div>
+  <div class="product-grid">
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">🎨</div>
+        <div class="product-info">
+          <div class="product-name">IP角色设计</div>
+          <div class="product-value">输入描述，即时生成专属IP角色</div>
+          <div class="product-stat">半写实·多风格·照片参考</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/ip-design/" data-track="product:ip-design">免费使用</a></div>
+    </div>
+  </div>
+
+  <!-- 知识底座 -->
+  <div class="product-category" style="margin-top:4px">
+    <div class="cat-dot" style="background:var(--pathC)"></div>
+    <div class="cat-name">知识底座</div>
+    <span class="cat-badge live">已上线</span>
+  </div>
+  <div class="product-grid">
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">📚</div>
+        <div class="product-info">
+          <div class="product-name">居住服务业务字典</div>
+          <div class="product-value">定义权=话语权，先统一语言</div>
+          <div class="product-stat">8大域·5942词条</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/knowledge/" data-track="product:knowledge">体验查询</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">🔍</div>
+        <div class="product-info">
+          <div class="product-name">场景导航</div>
+          <div class="product-value">买家/业主/租户 × 售前/售中/售后</div>
+          <div class="product-stat">3客户类型·3阶段·4层分组</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/scene/" data-track="product:scene">进入场景</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-top">
+        <div class="product-ico">🔎</div>
+        <div class="product-info">
+          <div class="product-name">全站搜索</div>
+          <div class="product-value">10字段加权搜索，精准定位</div>
+          <div class="product-stat">加权排序·智能联想</div>
+        </div>
+      </div>
+      <div class="product-action"><a class="live" href="/search/" data-track="product:search">搜索词条</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 今日知识 ====== -->
+<div class="daily-section" id="dailySection">
+  <div class="daily-card">
+    <div class="daily-header">
+      <div class="daily-icon">📖</div>
+      <div class="daily-title">今日知识</div>
+      <div class="daily-date" id="dailyDate"></div>
+    </div>
+    <div class="daily-subtitle">从风声知识底座 5942 条词条中，每天精选 6 条核心知识</div>
+    <div class="daily-config">
+      <span class="daily-config-label">场景：</span>
+      <select class="daily-config-select" id="dailyClientType">
+        <option value="buyer">买方</option>
+        <option value="owner">业主</option>
+        <option value="tenant">租户</option>
+      </select>
+      <select class="daily-config-select" id="dailyStage">
+        <option value="">全部阶段</option>
+        <option value="pre">售前</option>
+        <option value="mid">售中</option>
+        <option value="post">售后</option>
+      </select>
+    </div>
+    <div class="daily-grid" id="dailyGrid">
+      <div class="daily-loading">加载中...</div>
+    </div>
+    <div class="daily-more">
+      <span class="daily-source">📚 内容来源：<strong>风声知识底座</strong></span>
+      <a href="/dictionary/">查看全量词典 →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Footer + 反馈组件 ====== -->
+<div class="page-footer">
+  <div class="footer-brand">🌬️ 风声 · 通过独立价值获得尊重</div>
+  <div class="copyright">fengsheng.tech © 2026 · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:inherit">京ICP备2026044043号</a></div>
+
+  <!-- 反馈组件 v3：1-5星评分 -->
+  <div class="fs-feedback-widget" id="fs-feedback">
+    <div class="fs-fb-title">📣 你的反馈，决定产品方向</div>
+    <div class="fs-fb-subtitle">评分 + 建议，帮我们把产品做对</div>
+    <div class="fs-fb-stars" id="fs-fb-stars">
+      <span class="fs-star" data-score="1">☆</span>
+      <span class="fs-star" data-score="2">☆</span>
+      <span class="fs-star" data-score="3">☆</span>
+      <span class="fs-star" data-score="4">☆</span>
+      <span class="fs-star" data-score="5">☆</span>
+    </div>
+    <div class="fs-fb-score-label" id="fs-fb-score-label">点击星星评分</div>
+    <textarea class="fs-fb-text" id="fs-fb-text" placeholder="有什么建议或想法？（选填，50字以上更容易被采纳）"></textarea>
+    <input class="fs-fb-contact" id="fs-fb-contact" type="text" placeholder="手机号/微信（选填，方便我们联系你）" />
+    <button class="fs-fb-submit" id="fs-fb-submit" disabled>提交反馈</button>
+    <div class="fs-fb-result" id="fs-fb-result"></div>
+  </div>
+</div>
+
+<!-- 反馈组件 v3 样式 -->
+<style>
+.fs-feedback-widget{max-width:640px;margin:32px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(44,95,58,0.10);text-align:center;font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif}
+.fs-fb-title{font-size:17px;font-weight:700;color:#2C5F3A;margin-bottom:4px}
+.fs-fb-subtitle{font-size:13px;color:#888;margin-bottom:16px}
+.fs-fb-stars{font-size:36px;margin-bottom:8px;user-select:none;display:flex;justify-content:center;gap:6px}
+.fs-star{cursor:pointer;color:#ddd;transition:color 0.2s,transform 0.15s;display:inline-block}
+.fs-star:hover,.fs-star.active{color:#E8742C;transform:scale(1.18)}
+.fs-fb-score-label{font-size:13px;color:#888;margin-bottom:16px;min-height:20px}
+.fs-fb-text{width:100%;min-height:64px;padding:10px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f4ef;resize:vertical;outline:none;box-sizing:border-box;margin-bottom:10px;font-family:inherit}
+.fs-fb-text:focus{border-color:#2C5F3A}
+.fs-fb-contact{width:100%;padding:9px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f4ef;outline:none;box-sizing:border-box;margin-bottom:14px;font-family:inherit}
+.fs-fb-contact:focus{border-color:#2C5F3A}
+.fs-fb-submit{width:100%;padding:12px 0;background:#2C5F3A;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:background 0.2s;font-family:inherit}
+.fs-fb-submit:disabled{background:#b5a89a;cursor:not-allowed}
+.fs-fb-submit:not(:disabled):hover{background:#1e3d26}
+.fs-fb-result{margin-top:12px;font-size:14px;min-height:22px}
+.fs-fb-result.success{color:#2C5F3A}
+.fs-fb-result.error{color:#c0392b}
+@media(max-width:640px){.fs-feedback-widget{margin:20px 12px;padding:18px 14px}.fs-fb-stars{font-size:30px;gap:4px}}
+</style>
+
+</div><!-- #wbExploreView -->
+
+</div><!-- .main -->
+
+<!-- 合作意向浮层(路径B) -->
+<div class="partner-overlay" id="partnerOverlay">
+  <div class="partner-sheet">
+    <div class="partner-sheet-head">
+      <div class="partner-sheet-title" id="partnerSheetTitle">合作意向</div>
+      <div class="partner-sheet-close" id="partnerSheetClose">×</div>
+    </div>
+    <div class="partner-sheet-sub" id="partnerSheetSub">填写后,小豆子会在 24 小时内联系您</div>
+    <div id="partnerSheetBody">
+      <div class="partner-form-group">
+        <label class="partner-form-label">姓名 *</label>
+        <input class="partner-form-input" id="pfName" placeholder="您的称呼">
+      </div>
+      <div class="partner-form-row">
+        <div class="partner-form-group">
+          <label class="partner-form-label">机构/学校 *</label>
+          <input class="partner-form-input" id="pfOrg" placeholder="例:北京建筑大学">
+        </div>
+        <div class="partner-form-group">
+          <label class="partner-form-label">职务/角色</label>
+          <input class="partner-form-input" id="pfRole" placeholder="例:房地产系主任">
+        </div>
+      </div>
+      <div class="partner-form-group">
+        <label class="partner-form-label">联系方式(手机/微信/邮箱) *</label>
+        <input class="partner-form-input" id="pfContact" placeholder="便于我们联系您">
+      </div>
+      <div class="partner-form-group">
+        <label class="partner-form-label">合作方向(可多选)</label>
+        <div class="partner-form-chips" id="pfChips">
+          <span class="partner-form-chip" data-v="产教融合">产教融合</span>
+          <span class="partner-form-chip" data-v="课程共建">课程共建</span>
+          <span class="partner-form-chip" data-v="实习基地">实习基地</span>
+          <span class="partner-form-chip" data-v="就业对接">就业对接</span>
+          <span class="partner-form-chip" data-v="行业标准">行业标准</span>
+          <span class="partner-form-chip" data-v="政策研究">政策研究</span>
+          <span class="partner-form-chip" data-v="数字化治理">数字化治理</span>
+          <span class="partner-form-chip" data-v="其他">其他</span>
+        </div>
+      </div>
+      <div class="partner-form-group">
+        <label class="partner-form-label">具体诉求(选填)</label>
+        <textarea class="partner-form-textarea" id="pfNote" placeholder="例:我们学校 2027 春季想开 1 门居住服务选修课,希望对接课程内容+实习机会。"></textarea>
+      </div>
+      <button class="partner-form-submit" id="pfSubmit">提交合作意向</button>
+      <div class="partner-form-tip">提交即同意风声团队基于本次合作意向联系您。信息仅用于合作沟通。</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== 工作台侧边栏 =====
+  function toggleSidebar() {
+    var sidebar = document.getElementById('wbSidebar');
+    var overlay = document.getElementById('wbOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+  }
+
+  // 侧边栏外部点击关闭
+  document.addEventListener('DOMContentLoaded', function() {
+    var overlay = document.getElementById('wbOverlay');
+    if (overlay) {
+      overlay.addEventListener('click', function() {
+        toggleSidebar();
+      });
+    }
+  });
+
+  // ===== 视图切换（工作台 / 探索） =====
+  function switchView(view) {
+    var wb = document.getElementById('wbDashboard');
+    var ex = document.getElementById('wbExploreView');
+    var btnWb = document.getElementById('wbViewWorkbench');
+    var btnEx = document.getElementById('wbViewExplore');
+    if (!wb || !ex) return;
+    if (view === 'workbench') {
+      wb.classList.add('active');
+      ex.style.display = 'none';
+      btnWb.classList.add('active');
+      btnEx.classList.remove('active');
+    } else {
+      wb.classList.remove('active');
+      ex.style.display = 'block';
+      btnEx.classList.add('active');
+      btnWb.classList.remove('active');
+    }
+  }
+
+  // 默认显示工作台视图
+  document.addEventListener('DOMContentLoaded', function() {
+    var ex = document.getElementById('wbExploreView');
+    if (ex) ex.style.display = 'none';
+  });
+
+  // ===== 仪表盘数据加载 =====
+  (function() {
+    function loadDashboardData() {
+      var clients = [];
+      try {
+        var raw = localStorage.getItem('fs_web_clients');
+        if (raw) clients = JSON.parse(raw) || [];
+      } catch(e) {}
+
+      var total = clients.length;
+      var ing = clients.filter(function(c) { return c.status === '跟进中' }).length;
+      var done = clients.filter(function(c) { return c.status === '已成交' }).length;
+
+      document.getElementById('dashClientTotal').textContent = total || 0;
+      document.getElementById('dashClientIng').textContent = ing || 0;
+      document.getElementById('dashClientDone').textContent = done || 0;
+
+      // 侧边栏客户数
+      var sbCount = document.getElementById('sbClientCount');
+      if (sbCount) sbCount.textContent = total || 0;
+
+      // 最近客户
+      var recent = document.getElementById('dashRecentClients');
+      if (recent) {
+        if (clients.length === 0) {
+          recent.innerHTML =
+            '<div class="wb-dash-task"><div class="wb-task-body"><div class="wb-task-name">还没有客户数据</div><div class="wb-task-meta">创建客户档案后，这里会显示最近 5 位客户</div></div><a class="wb-task-action" href="/clients/">创建 →</a></div>';
+        } else {
+          var sorted = clients.slice().sort(function(a, b) {
+            return (b.updatedAt || '').localeCompare(a.updatedAt || '');
+          });
+          var html = '';
+          for (var i = 0; i < Math.min(5, sorted.length); i++) {
+            var c = sorted[i];
+            var statusColor = c.status === '已成交' ? 'var(--health)' : c.status === '已流失' ? 'var(--td)' : 'var(--brand)';
+            html += '<div class="wb-dash-task">' +
+              '<div class="wb-task-dot" style="background:' + statusColor + '"></div>' +
+              '<div class="wb-task-body">' +
+              '<div class="wb-task-name">' + (c.name || '未知') + '</div>' +
+              '<div class="wb-task-meta">' + (c.persona || '') + ' · ' + (c.status || '') + (c.updatedAt ? ' · ' + c.updatedAt : '') + '</div>' +
+              '</div>' +
+              '<a class="wb-task-action" href="/clients/">查看 →</a>' +
+              '</div>';
+          }
+          recent.innerHTML = html;
+        }
+      }
+
+      // 今日待办（基于客户数据生成 + 跟进待办）
+      var todoList = document.getElementById('dashTodoList');
+      if (todoList) {
+        var todos = [];
+        var now = Date.now();
+        var threeDays = 3 * 24 * 60 * 60 * 1000;
+
+        // 1. 客户未完成的跟进待办（优先级最高）
+        for (var i = 0; i < clients.length; i++) {
+          var c = clients[i];
+          var followups = c.followups || [];
+          for (var j = 0; j < followups.length; j++) {
+            var f = followups[j];
+            if (!f.done && todos.length < 8) {
+              todos.push({
+                name: c.name + ' — ' + (f.theme || '跟进待办'),
+                type: 'urgent',
+                link: '/clients/',
+                detail: f.text || ''
+              });
+            }
+          }
+        }
+
+        // 2. 跟进中客户超过3天未跟进
+        if (todos.length < 5) {
+          for (var i = 0; i < clients.length; i++) {
+            var c = clients[i];
+            if (c.status === '跟进中') {
+              // 检查是否有时间线记录
+              var tl = c.timeline || [];
+              var lastContact = tl.length > 0 ? tl[0].at : null;
+              if (lastContact && now - lastContact > threeDays) {
+                todos.push({
+                  name: c.name + ' — 超过3天未跟进',
+                  type: 'urgent',
+                  link: '/clients/',
+                  detail: '建议主动联系，了解近况'
+                });
+              } else if (!lastContact) {
+                todos.push({
+                  name: c.name + ' — 尚未建立首次接触',
+                  type: 'normal',
+                  link: '/clients/',
+                  detail: '建议安排首次见面或电话'
+                });
+              }
+            }
+          }
+        }
+
+        // 3. 已成交客户 -> 售后关怀
+        if (todos.length < 5) {
+          for (var i = 0; i < clients.length; i++) {
+            var c = clients[i];
+            if (c.status === '已成交' && todos.length < 6) {
+              todos.push({
+                name: c.name + ' — 售后关怀提醒',
+                type: 'normal',
+                link: '/clients/',
+                detail: '定期维护客户关系，获取转介绍'
+              });
+            }
+          }
+        }
+
+        if (todos.length === 0) {
+          todoList.innerHTML =
+            '<div class="wb-dash-task"><div class="wb-task-dot done"></div><div class="wb-task-body"><div class="wb-task-name">暂无待办，保持好状态</div><div class="wb-task-meta">有客户跟进需求时会在这里提醒</div></div></div>';
+        } else {
+          var html = '';
+          var maxShow = Math.min(6, todos.length);
+          for (var i = 0; i < maxShow; i++) {
+            var t = todos[i];
+            var dotClass = t.type === 'urgent' ? 'urgent' : 'normal';
+            html += '<div class="wb-dash-task">' +
+              '<div class="wb-task-dot ' + dotClass + '"></div>' +
+              '<div class="wb-task-body">' +
+              '<div class="wb-task-name">' + t.name + '</div>' +
+              '<div class="wb-task-meta">' + (t.detail ? t.detail : (t.type === 'urgent' ? '⚠️ 需要尽快处理' : '💡 建议主动联系')) + '</div>' +
+              '</div>' +
+              '<a class="wb-task-action" href="' + t.link + '">处理 →</a>' +
+              '</div>';
+          }
+          // 如果还有更多
+          if (todos.length > maxShow) {
+            html += '<div class="wb-dash-task"><div class="wb-task-body"><div class="wb-task-name" style="color:var(--ts);text-align:center">还有 ' + (todos.length - maxShow) + ' 项待办</div></div><a class="wb-task-action" href="/clients/">查看全部 →</a></div>';
+          }
+          todoList.innerHTML = html;
+        }
+      }
+
+      // ===== 客户分布（分层+状态） =====
+      var distEl = document.getElementById('dashClientDist');
+      if (distEl) {
+        var levelCounts = { A: 0, B: 0, C: 0 };
+        var statusCounts = { '跟进中': 0, '已成交': 0, '已流失': 0 };
+        for (var i = 0; i < clients.length; i++) {
+          var c = clients[i];
+          if (c.level && levelCounts[c.level] !== undefined) levelCounts[c.level]++;
+          if (c.status && statusCounts[c.status] !== undefined) statusCounts[c.status]++;
+        }
+        var lColors = { A: 'var(--accent)', B: 'var(--brand)', C: 'var(--td)' };
+        var distHtml = '';
+        var hasLevel = false, hasStatus = false;
+        for (var lv in levelCounts) {
+          if (levelCounts[lv] > 0) {
+            hasLevel = true;
+            distHtml += '<div style="flex:1;min-width:60px;text-align:center;padding:8px 4px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">' +
+              '<div style="font-size:18px;font-weight:900;color:' + lColors[lv] + '">' + levelCounts[lv] + '</div>' +
+              '<div style="font-size:10px;color:var(--ts);margin-top:2px">' + lv + '类客户</div></div>';
+          }
+        }
+        // 先计算状态，再判断是否加分隔线
+        for (var st in statusCounts) {
+          if (statusCounts[st] > 0) {
+            hasStatus = true;
+          }
+        }
+        if (hasLevel && hasStatus) distHtml += '<div style="width:1px;background:var(--border);margin:4px 0"></div>';
+        for (var st in statusCounts) {
+          if (statusCounts[st] > 0) {
+            var stColor = st === '跟进中' ? 'var(--brand)' : st === '已成交' ? 'var(--health)' : 'var(--td)';
+            distHtml += '<div style="flex:1;min-width:60px;text-align:center;padding:8px 4px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">' +
+              '<div style="font-size:18px;font-weight:900;color:' + stColor + '">' + statusCounts[st] + '</div>' +
+              '<div style="font-size:10px;color:var(--ts);margin-top:2px">' + st + '</div></div>';
+          }
+        }
+        if (hasLevel || hasStatus) {
+          distEl.innerHTML = distHtml;
+        } else {
+          distEl.innerHTML = '<div style="text-align:center;padding:10px 0;color:var(--td);font-size:13px;width:100%">暂无数据</div>';
+        }
+      }
+
+      // ===== LTRUST 温度分布 =====
+      var ltrustEl = document.getElementById('dashLtrustDist');
+      if (ltrustEl) {
+        var ltrustCounts = { '带新价值': 0, '回应关切': 0, '关心人': 0 };
+        for (var i = 0; i < clients.length; i++) {
+          var c = clients[i];
+          var followups = c.followups || [];
+          for (var j = 0; j < followups.length; j++) {
+            var f = followups[j];
+            if (!f.done && f.ltrust && ltrustCounts[f.ltrust] !== undefined) {
+              ltrustCounts[f.ltrust]++;
+            }
+          }
+        }
+        var totalLtrust = ltrustCounts['带新价值'] + ltrustCounts['回应关切'] + ltrustCounts['关心人'];
+        if (totalLtrust > 0) {
+          var ltColors = { '带新价值': 'var(--accent)', '回应关切': 'var(--brand)', '关心人': '#4e7e8e' };
+          var ltEmojis = { '带新价值': '🔥', '回应关切': '💚', '关心人': '🤗' };
+          var ltHtml = '';
+          for (var lt in ltrustCounts) {
+            if (ltrustCounts[lt] > 0) {
+              var pct = Math.round(ltrustCounts[lt] / totalLtrust * 100);
+              ltHtml += '<div style="flex:1;min-width:70px;text-align:center;padding:8px 4px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">' +
+                '<div style="font-size:16px;font-weight:900;color:' + ltColors[lt] + '">' + ltEmojis[lt] + ' ' + ltrustCounts[lt] + '</div>' +
+                '<div style="font-size:10px;color:var(--ts);margin-top:2px">' + lt + '</div>' +
+                '<div style="height:4px;background:var(--bg2);border-radius:4px;margin-top:4px;overflow:hidden">' +
+                '<div style="height:100%;width:' + pct + '%;background:' + ltColors[lt] + ';border-radius:4px"></div></div></div>';
+            }
+          }
+          ltrustEl.innerHTML = ltHtml;
+        } else {
+          ltrustEl.innerHTML = '<div style="text-align:center;padding:10px 0;color:var(--td);font-size:13px;width:100%">暂无待办温度数据</div>';
+        }
+      }
+
+      // ===== 备忘提醒 =====
+      var prepEl = document.getElementById('dashPrepNotes');
+      if (prepEl) {
+        var prepNotes = {};
+        try {
+          var raw = localStorage.getItem('fs_prep_notes');
+          if (raw) prepNotes = JSON.parse(raw);
+        } catch(e) {}
+        var keys = Object.keys(prepNotes);
+        if (keys.length > 0) {
+          var sorted = keys.sort(function(a, b) { return (prepNotes[b].updatedAt || 0) - (prepNotes[a].updatedAt || 0) });
+          var prepHtml = '';
+          var maxPrep = Math.min(4, sorted.length);
+          for (var i = 0; i < maxPrep; i++) {
+            var note = prepNotes[sorted[i]];
+            var goalText = note.goal || '（未填写目标）';
+            var agendaText = (note.agenda || []).length > 0 ? '议程：' + note.agenda.join(' · ') : '';
+            prepHtml += '<div class="wb-dash-task">' +
+              '<div class="wb-task-dot urgent"></div>' +
+              '<div class="wb-task-body">' +
+              '<div class="wb-task-name">' + (note.clientName || '客户') + '</div>' +
+              '<div class="wb-task-meta">🎯 ' + goalText + (agendaText ? ' · ' + agendaText : '') + '</div>' +
+              '</div>' +
+              '<a class="wb-task-action" href="/clients/">查看 →</a>' +
+              '</div>';
+          }
+          prepEl.innerHTML = prepHtml;
+        }
+      }
+    }
+
+    // 页面加载时加载
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadDashboardData);
+    } else {
+      loadDashboardData();
+    }
+
+    // 页面可见性变化时重新加载（用户可能在其他 tab 修改了数据）
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) loadDashboardData();
+    });
+
+    // 也暴露给全局，方便其他脚本调用
+    window.loadDashboardData = loadDashboardData;
+  })();
+
+  // ===== 原有反馈脚本 =====
+  (function() {
+    var s = document.querySelectorAll('#fs-fb-stars .fs-star');
+    var l = document.getElementById('fs-fb-score-label');
+    var b = document.getElementById('fs-fb-submit');
+    var t = document.getElementById('fs-fb-text');
+    var c = document.getElementById('fs-fb-contact');
+    var r = document.getElementById('fs-fb-result');
+    var n = 0;
+    var labels = ['',
+      '☆ 1分 · 不可用', '☆ 2分 · 需大幅改进',
+      '☆ 3分 · 一般', '☆ 4分 · 好用', '★ 5分 · 超预期'];
+
+    s.forEach(function(star) {
+      star.addEventListener('mouseenter', function() {
+        var i = parseInt(star.dataset.score);
+        h(i); l.textContent = labels[i];
+      });
+      star.addEventListener('mouseleave', function() {
+        h(n); l.textContent = n > 0 ? labels[n] : '点击星星评分';
+      });
+      star.addEventListener('click', function() {
+        n = parseInt(star.dataset.score);
+        h(n); l.textContent = labels[n]; b.disabled = false;
+      });
+    });
+
+    function h(i) {
+      s.forEach(function(star) {
+        var j = parseInt(star.dataset.score);
+        star.textContent = j <= i ? '★' : '☆';
+        star.classList.toggle('active', j <= i);
+      });
+    }
+
+    b.addEventListener('click', function() {
+      if (n === 0) { r.textContent = '请先点击星星评分';
+        r.className = 'fs-fb-result error'; return; }
+      b.disabled = true; b.textContent = '提交中...';
+      var path = window.location.pathname;
+      var moduleName = b.dataset.module
+        || (path.charAt(0) === '/' ? path.slice(1) : path).replace(/\//g, '-')
+        || 'home';
+      fetch('/api/feedback', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          module: moduleName, score: n,
+          content: t.value.trim() || null,
+          contact: c.value.trim() || null,
+          source: 'web'
+        })
+      }).then(function(x) { return x.json(); })
+      .then(function(d) {
+        if (d.ok) {
+          r.textContent = '✓ 反馈已收到，谢谢你的贡献！';
+          r.className = 'fs-fb-result success';
+          t.value = ''; c.value = ''; n = 0; h(0);
+          l.textContent = '点击星星评分';
+          b.disabled = true; b.textContent = '提交反馈';
+        } else throw new Error(d.error || '提交失败');
+      }).catch(function(e) {
+        r.textContent = '提交失败，请稍后重试：' + e.message;
+        r.className = 'fs-fb-result error';
+        b.disabled = false; b.textContent = '重新提交';
+      });
+    });
+
+    var p = window.location.pathname;
+    var m = 'home';
+    if (p.indexOf('/quality-test') >= 0) m = 'quality-test';
+    else if (p.indexOf('/care-test') >= 0) m = 'care-test';
+    
+    else if (p.indexOf('/reply') >= 0) m = 'reply';
+    else if (p.indexOf('/knowledge') >= 0) m = 'knowledge';
+    else if (p.indexOf('/dashboard') >= 0) m = 'dashboard';
+    b.dataset.module = m;
+  })();
+
+  // 验证线动态更新（fetch UV → 更新进度条）
+  (function() {
+    var VERIFY_TARGET = 300;
+    var vLabel = document.querySelector('.v-line-label');
+    var vFill = document.querySelector('.v-line-fill');
+    var vNum = document.querySelector('.v-line-num');
+    if (!vFill) return;
+
+    fetch('/api/stats?key=fs-admin-2026')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var users = data.total_users || 0;
+        var pct = Math.min(100, Math.round(users / VERIFY_TARGET * 100));
+        vFill.style.setProperty('--v-pct', pct + '%');
+        vFill.style.animation = 'none';
+        vFill.style.width = pct + '%';
+        if (users >= VERIFY_TARGET) {
+          vLabel.textContent = '🎯 ' + users + '人已达成目标！';
+        }
+      })
+      .catch(function() {
+        // 静默失败
+      });
+  })();
+
+  // ===== 合作意向(路径B) 移至外部 partner.js =====
+
+  // ===== 场景导航交互（全生命周期版） =====
+  (function() {
+    // 全生命周期阶段定义（精简版，与场景导航页保持一致）
+    var HOME_LIFECYCLE = {
+      buyer: [
+        { key: 'viewing', name: '带看房源', icon: '🏠', stage: 'pre' },
+        { key: 'contract', name: '合同签署', icon: '✍️', stage: 'mid' },
+        { key: 'handover', name: '交房过户', icon: '🔑', stage: 'post' },
+        { key: 'after_sale', name: '售后关怀', icon: '💝', stage: 'post' },
+      ],
+      tenant: [
+        { key: 'viewing', name: '带看房源', icon: '🏠', stage: 'pre' },
+        { key: 'lease_signing', name: '合同签署', icon: '✍️', stage: 'mid' },
+        { key: 'move_in', name: '入住交接', icon: '🚚', stage: 'post' },
+        { key: 'move_out', name: '退租续租', icon: '📦', stage: 'post' },
+      ],
+      owner: [
+        { key: 'after_sale', name: '售后关怀', icon: '💝', stage: 'post' },
+        { key: 'evaluate', name: '房屋评估', icon: '📏', stage: 'mid' },
+        { key: 'manage', name: '租赁托管', icon: '🛡️', stage: 'post' },
+        { key: 'optimize', name: '资产优化', icon: '📊', stage: 'post' },
+      ],
+      seller: [
+        { key: 'entrust', name: '出售委托', icon: '📝', stage: 'pre' },
+        { key: 'showing', name: '看房接待', icon: '🚪', stage: 'mid' },
+        { key: 'contract', name: '合同签署', icon: '✍️', stage: 'mid' },
+        { key: 'handover', name: '过户交房', icon: '🔑', stage: 'post' },
+      ],
+      landlord: [
+        { key: 'entrust', name: '委托出租', icon: '🔑', stage: 'pre' },
+        { key: 'evaluate', name: '房屋评估', icon: '📏', stage: 'pre' },
+        { key: 'manage', name: '租赁托管', icon: '🛡️', stage: 'post' },
+      ],
+    };
+
+    var selectedCt = null;
+    var selectedLc = null;
+    var $ctChips = document.getElementById('sceneNavClientType');
+    var $stChips = document.getElementById('sceneNavStage');
+    var $result = document.getElementById('sceneNavResult');
+    var $count = document.getElementById('sceneNavCount');
+    var $miniGrid = document.getElementById('sceneNavMiniGrid');
+    var $link = document.getElementById('sceneNavLink');
+
+    if (!$ctChips || !$stChips) return;
+
+    // 渲染阶段选项
+    function renderStages(clientType) {
+      var stages = HOME_LIFECYCLE[clientType] || HOME_LIFECYCLE.buyer;
+      $stChips.innerHTML = stages.map(function(s) {
+        return '<div class="scene-inline-chip" data-lifecycle="' + s.key + '" data-stage="' + s.stage + '"><span class="chip-sub">' + s.icon + ' ' + s.name + '</span></div>';
+      }).join('');
+      selectedLc = null;
+    }
+
+    $ctChips.addEventListener('click', function(e) {
+      var chip = e.target.closest('.scene-inline-chip');
+      if (!chip) return;
+      selectedCt = chip.dataset.ct;
+      $ctChips.querySelectorAll('.scene-inline-chip').forEach(function(c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      renderStages(selectedCt);
+      $result.classList.remove('show');
+    });
+
+    $stChips.addEventListener('click', function(e) {
+      var chip = e.target.closest('.scene-inline-chip');
+      if (!chip) return;
+      selectedLc = chip.dataset.lifecycle;
+      $stChips.querySelectorAll('.scene-inline-chip').forEach(function(c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      updateResult();
+    });
+
+    function updateResult() {
+      if (!selectedCt || !selectedLc) {
+        $result.classList.remove('show');
+        return;
+      }
+
+      $result.classList.add('show');
+      $count.textContent = '...';
+      $miniGrid.innerHTML = '';
+      $link.href = '/scene/?clientType=' + selectedCt + '&lifecycle=' + selectedLc;
+
+      var stages = HOME_LIFECYCLE[selectedCt] || HOME_LIFECYCLE.buyer;
+      var cur = null;
+      for (var i = 0; i < stages.length; i++) {
+        if (stages[i].key === selectedLc) { cur = stages[i]; break; }
+      }
+      var stageVal = cur ? cur.stage : 'pre';
+
+      fetch('/api/scene/detail?clientType=' + selectedCt + '&stage=' + stageVal)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var total = data.total || 0;
+          $count.textContent = total;
+          var byLayer = data.byLayer || {};
+          var layerOrder = ['dao', 'fa', 'shu', 'qi'];
+          var layerLabels = { dao: '道', fa: '法', shu: '术', qi: '器' };
+          var tags = '';
+          layerOrder.forEach(function(l) {
+            if (byLayer[l]) {
+              tags += '<span class="scene-nav-mini-tag">' + layerLabels[l] + '：' + byLayer[l] + '</span>';
+            }
+          });
+          $miniGrid.innerHTML = tags;
+        })
+        .catch(function() {
+          $count.textContent = '?';
+        });
+    }
+  })();
+
+  // ===== 客户概览加载 =====
+  (function() {
+    var container = document.getElementById('clientOvContent');
+    if (!container) return;
+
+    function loadClientOverview() {
+      var clients = [];
+      try {
+        var raw = localStorage.getItem('fs_web_clients');
+        if (raw) clients = JSON.parse(raw) || [];
+      } catch(e) {}
+
+      if (clients.length === 0) {
+        container.innerHTML = '<div class="client-ov-empty">还没有客户档案 · <a href="/clients/">立即创建第一个</a></div>';
+        return;
+      }
+
+      var total = clients.length;
+      var ing = clients.filter(function(c) { return c.status === '跟进中' }).length;
+      var done = clients.filter(function(c) { return c.status === '已成交' }).length;
+      var lost = clients.filter(function(c) { return c.status === '已流失' }).length;
+      var real = clients.filter(function(c) { return !c.seed }).length;
+      var pct = real > 0 ? Math.min(100, Math.round(real / total * 100)) : 0;
+
+      // 分层统计
+      var levelCounts = { A: 0, B: 0, C: 0 };
+      for (var i = 0; i < clients.length; i++) {
+        var c = clients[i];
+        if (c.level && levelCounts[c.level] !== undefined) levelCounts[c.level]++;
+      }
+
+      // 超期未跟进提醒
+      var now = Date.now();
+      var threeDays = 3 * 24 * 60 * 60 * 1000;
+      var overdueAlerts = [];
+      for (var i = 0; i < clients.length; i++) {
+        var c = clients[i];
+        if (c.status === '跟进中') {
+          var tl = c.timeline || [];
+          var lastContact = tl.length > 0 ? tl[0].at : null;
+          if (lastContact && now - lastContact > threeDays) {
+            overdueAlerts.push(c.name);
+          } else if (!lastContact) {
+            overdueAlerts.push(c.name + '（未接触）');
+          }
+        }
+      }
+
+      var html =
+        '<div class="client-ov-stats">' +
+          '<div class="client-ov-stat"><div class="client-ov-num ing">' + ing + '</div><div class="client-ov-label">跟进中</div></div>' +
+          '<div class="client-ov-stat"><div class="client-ov-num done">' + done + '</div><div class="client-ov-label">已成交</div></div>' +
+          '<div class="client-ov-stat"><div class="client-ov-num lost">' + lost + '</div><div class="client-ov-label">已流失</div></div>' +
+          '<div class="client-ov-stat"><div class="client-ov-num">' + total + '</div><div class="client-ov-label">全部客户</div></div>' +
+        '</div>' +
+        '<div class="client-ov-progress">' +
+          '<span style="font-size:11px;color:var(--ts)">真实客户占比</span>' +
+          '<div class="client-ov-bar"><div class="client-ov-fill" style="width:' + pct + '%"></div></div>' +
+          '<span class="client-ov-pct">' + pct + '%</span>' +
+        '</div>';
+
+      // 分层分布
+      html += '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">';
+      var lColors = { A: 'var(--accent)', B: 'var(--brand)', C: 'var(--td)' };
+      for (var lv in levelCounts) {
+        if (levelCounts[lv] > 0) {
+          html += '<div style="flex:1;min-width:50px;text-align:center;padding:6px 4px;background:rgba(44,95,58,.03);border-radius:6px;border:1px solid rgba(44,95,58,.06)">' +
+            '<div style="font-size:15px;font-weight:900;color:' + lColors[lv] + '">' + levelCounts[lv] + '</div>' +
+            '<div style="font-size:10px;color:var(--ts)">' + lv + '类</div></div>';
+        }
+      }
+      html += '</div>';
+
+      // 超期提醒
+      if (overdueAlerts.length > 0) {
+        var maxShow = Math.min(3, overdueAlerts.length);
+        html += '<div style="margin-top:10px;padding:8px 10px;background:rgba(232,116,44,.06);border:1px solid rgba(232,116,44,.12);border-radius:6px">' +
+          '<div style="font-size:11px;font-weight:700;color:var(--fire);margin-bottom:4px">⚠️ 跟进超期提醒</div>';
+        for (var i = 0; i < maxShow; i++) {
+          html += '<div style="font-size:11px;color:var(--tx);padding:2px 0">· ' + overdueAlerts[i] + '</div>';
+        }
+        if (overdueAlerts.length > maxShow) {
+          html += '<div style="font-size:10px;color:var(--td);margin-top:2px">还有 ' + (overdueAlerts.length - maxShow) + ' 位客户</div>';
+        }
+        html += '</div>';
+      }
+
+      // 快捷操作
+      html += '<div style="display:flex;gap:8px;margin-top:10px">' +
+        '<a href="/clients/" style="flex:1;text-align:center;padding:8px;border-radius:8px;background:var(--brand);color:#fff;font-size:12px;font-weight:700;text-decoration:none">管理客户</a>' +
+        '<a href="/clients/" style="flex:1;text-align:center;padding:8px;border-radius:8px;border:1px solid var(--border);color:var(--tx);font-size:12px;font-weight:700;text-decoration:none" onclick="event.preventDefault();openNewClientTab()">+ 新建客户</a>' +
+        '</div>';
+
+      container.innerHTML = html;
+    }
+
+    // 暴露新建客户函数
+    window.openNewClientTab = function() {
+      window.location.href = '/clients/';
+    }
+
+    loadClientOverview();
+    // 每次页面显示时重新加载（用户可能在其他 tab 修改了客户数据）
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) loadClientOverview();
+    });
+  })();
+
+  // ===== 每日速递模块 =====
+  (function() {
+    var $grid = document.getElementById('dailyGrid');
+    var $date = document.getElementById('dailyDate');
+    var $ct = document.getElementById('dailyClientType');
+    var $st = document.getElementById('dailyStage');
+
+    if (!$grid || !$ct) return;
+
+    var today = new Date();
+    $date.textContent = today.getFullYear() + '-' +
+      ('0' + (today.getMonth() + 1)).slice(-2) + '-' +
+      ('0' + today.getDate()).slice(-2);
+
+    var reasonClass = {
+      '高风险必知': 'hard',
+      '核心知识': 'core',
+      '可带走交付物': 'qi',
+      '法律依据': 'law',
+      '每日推荐': 'core'
+    };
+    var layerLabels = { dao: '道', fa: '法', shu: '术', qi: '器' };
+
+    function loadDaily() {
+      $grid.innerHTML = '<div class="daily-loading">加载中...</div>';
+
+      var ct = $ct.value;
+      var st = $st.value;
+      var url = '/api/daily/v2?clientType=' + ct + '&count=6';
+      if (st) url += '&stage=' + st;
+
+      fetch(url)
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+          if (!data || !data.entries || data.entries.length === 0) {
+            $grid.innerHTML = '<div class="daily-empty">今日暂无推荐词条</div>';
+            return;
+          }
+
+          var html = data.entries.map(function(e) {
+            var reason = e.pushReason || '每日推荐';
+            var rc = reasonClass[reason] || 'core';
+            var layer = e.layer || '';
+            return '<a class="daily-item" href="/entry/?id=' + encodeURIComponent(e.id) + '">' +
+              '<span class="di-reason ' + rc + '">' + escHtml(reason) + '</span>' +
+              '<div class="di-body">' +
+                '<div class="di-name">' + escHtml(e.name) + '</div>' +
+                '<div class="di-answer">' + escHtml(e.oneLineAnswer || '') + '</div>' +
+                (layer ? '<span class="di-layer ' + escHtml(layer) + '">' + escHtml(layerLabels[layer] || layer) + '</span>' : '') +
+              '</div>' +
+            '</a>';
+          }).join('');
+
+          $grid.innerHTML = html;
+        })
+        .catch(function() {
+          $grid.innerHTML = '<div class="daily-empty">加载失败，请稍后重试</div>';
+        });
+    }
+
+    function escHtml(s) {
+      if (!s) return '';
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    $ct.addEventListener('change', loadDaily);
+    $st.addEventListener('change', loadDaily);
+
+    loadDaily();
+  })();
+</script>
+<script src="/partner.js" async></script>
+
+<!-- 浮动聊天 v2 -->
+<button class="chat-fab" id="chatFab" aria-label="咨询数字助手"><span>💬</span><span class="chat-fab-dot"></span></button>
+<div class="chat-dialog" id="chatDialog">
+  <div class="chat-head"><span>💬 风声数字助手</span><button class="chat-close" id="chatClose">✕</button></div>
+  <div class="chat-body" id="chatBody">
+    <div class="chat-welcome" id="chatWelcome">
+      <strong>👋 你好！</strong><br>
+      我是风声数字助手，可以帮你查知识、看案例、找政策。试试下面这些：
+    </div>
+    <div class="chat-quick" id="chatQuick">
+      <button class="chat-q-btn" data-q="什么是品质六维？">🏠 品质六维</button>
+      <button class="chat-q-btn" data-q="介绍一下四维关怀">💚 四维关怀</button>
+      <button class="chat-q-btn" data-q="首套房客户怎么服务？">📋 首套服务</button>
+      <button class="chat-q-btn" data-q="学区房政策">🎓 学区政策</button>
+    </div>
+  </div>
+  <div class="chat-foot">
+    <input class="chat-input" id="chatInput" placeholder="输入问题..." maxlength="500">
+    <button class="chat-send" id="chatSend">发送</button>
+  </div>
+</div>
+<style>
+.chat-quick{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 12px}
+.chat-q-btn{font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid rgba(61,90,62,.15);background:rgba(255,255,255,.85);color:var(--p);cursor:pointer;transition:all .15s;font-weight:600;white-space:nowrap;font-family:inherit}
+.chat-q-btn:hover{background:var(--p);color:#fff;border-color:var(--p)}
+</style>
+<script>
+(function(){
+  var fab=document.getElementById('chatFab'), dialog=document.getElementById('chatDialog'), close=document.getElementById('chatClose'), body=document.getElementById('chatBody'), input=document.getElementById('chatInput'), send=document.getElementById('chatSend'), welcome=document.getElementById('chatWelcome'), quick=document.getElementById('chatQuick');
+  if(!fab||!dialog)return;
+  var conversationId=null, streaming=false, localMode=false;
+  fab.addEventListener('click',function(){dialog.classList.toggle('open');fab.style.display='none';if(dialog.classList.contains('open'))setTimeout(function(){input.focus()},300)});
+  close.addEventListener('click',function(){dialog.classList.remove('open');fab.style.display='flex'});
+  function addMsg(text,role){
+    var d=document.createElement('div');d.className='chat-msg '+role;d.textContent=text;body.appendChild(d);body.scrollTop=body.scrollHeight;
+    return d;
+  }
+  // 本地知识兜底
+  var localKB = {
+    '品质六维': '品质六维是风声定义的居住服务品质标准：\n🏠 安全（交易安全、资金安全）\n🔍 透明（信息对称、流程透明）\n💎 专业（知识储备、服务能力）\n❤️ 关怀（理解客户、超越期望）\n🎯 效率（响应速度、问题解决）\n📈 价值（为客户创造长期价值）',
+    '四维关怀': '四维关怀是风声对服务者本人的关怀体系：\n💪 身体（健康管理、精力分配）\n🧠 心理（情绪调节、压力管理）\n👔 尊严（职业尊严、社会认同）\n🏡 质感（生活品质、工作环境）',
+    '首套': '首套房客户服务要点：\n1️⃣ 理解焦虑：首次购房压力大，多给选择少给压力\n2️⃣ 教育前置：提前解释流程、费用、时间线\n3️⃣ 匹配精准：严格按照预算筛选，避免超支\n4️⃣ 陪伴决策：陪看、陪聊、陪纠结，不催单',
+    '学区': '学区房相关信息：\n1️⃣ 关注学区划片政策年度调整\n2️⃣ 落户年限要求因区而异\n3️⃣ 学位占用情况需核实\n4️⃣ 建议关注教育资源均衡化趋势',
+    '默认': '风声知识底座涵盖 5942 条专业词条，覆盖 8 大知识域。你可以：\n• 问具体知识点（如"什么是品质六维？"）\n• 描述客户场景（如"首套房客户怎么服务？"）\n• 查政策法规（如"学区房政策"）'
+  };
+  function localReply(msg){
+    var lower = msg.toLowerCase();
+    if(lower.indexOf('品质')>=0||lower.indexOf('六维')>=0) return localKB['品质六维'];
+    if(lower.indexOf('四维')>=0||lower.indexOf('关怀')>=0) return localKB['四维关怀'];
+    if(lower.indexOf('首套')>=0||lower.indexOf('首次')>=0) return localKB['首套'];
+    if(lower.indexOf('学区')>=0||lower.indexOf('教育')>=0) return localKB['学区'];
+    return localKB['默认'];
+  }
+  function sendMsg(){
+    var msg=input.value.trim();if(!msg||streaming)return;
+    input.value='';send.disabled=true;streaming=true;
+    // 隐藏欢迎引导
+    if(welcome)welcome.style.display='none';
+    if(quick)quick.style.display='none';
+    addMsg(msg,'user');
+    var loading=addMsg('思考中...','bot loading');
+    // 先尝试API
+    fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,conversation_id:conversationId})})
+    .then(function(r){
+      if(!r.ok)throw new Error('API不可用');
+      var reader=r.body.getReader(),decoder=new TextDecoder(),buffer='';
+      loading.className='chat-msg bot';loading.textContent='';
+      function read(){
+        reader.read().then(function(r2){
+          if(r2.done){streaming=false;send.disabled=false;return}
+          var text=decoder.decode(r2.value,{stream:true});buffer+=text;
+          var parts=buffer.split('\n');buffer=parts.pop();
+          for(var i=0;i<parts.length;i++){
+            var line=parts[i].trim();
+            if(line.startsWith('data:')){
+              var data=line.slice(5).trim();
+              if(data==='[DONE]'){streaming=false;send.disabled=false;return}
+              try{var j=JSON.parse(data);if(j.content){loading.textContent+=j.content;body.scrollTop=body.scrollHeight}if(j.conversation_id)conversationId=j.conversation_id}catch(e){}
+            }
+          }
+        }).catch(function(e){
+          // 流式读取失败，回退到本地
+          loading.textContent='';loading.className='chat-msg bot';
+          loading.textContent=localReply(msg);
+          body.scrollTop=body.scrollHeight;
+          streaming=false;send.disabled=false;
+        });
+      }read()
+    })
+    .catch(function(e){
+      // API不可用，使用本地知识库
+      loading.textContent='';loading.className='chat-msg bot';
+      loading.textContent=localReply(msg) + '\n\n（当前为离线模式，部分功能受限）';
+      body.scrollTop=body.scrollHeight;
+      streaming=false;send.disabled=false;
+    });
+  }
+  send.addEventListener('click',sendMsg);
+  input.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}});
+  // 快速问题按钮
+  body.addEventListener('click',function(e){
+    var btn=e.target.closest('.chat-q-btn');
+    if(btn&&btn.dataset.q){input.value=btn.dataset.q;sendMsg()}
+  });
+})();
+</script>
+
+<!-- 核心功能按钮 - AI助手打开聊天 -->
+<script>
+(function(){
+  var coreBtn = document.getElementById('coreChatBtn');
+  var fab = document.getElementById('chatFab');
+  if (coreBtn && fab) {
+    coreBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      fab.click();
+    });
+  }
+})();
+</script>
+</body>
+</html>

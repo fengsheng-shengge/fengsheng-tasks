@@ -1,0 +1,65 @@
+# 风声项目 · GitHub Actions CI 检查配置
+# 此文件用于 GitHub Actions 自动设置 Labels
+# 使用方法：在 GitHub Actions 中运行此配置，或手动导入 labels
+
+labels:
+  # 类型标签
+  - name: bug
+    color: d73a4a
+    description: Something isn't working
+  - name: enhancement
+    color: a2eeef
+    description: New feature or request
+  - name: task
+    color: 3d4db5
+    description: Development task
+  - name: documentation
+    color: 0075ca
+    description: Improvements to documentation
+
+  # 优先级标签
+  - name: P0
+    color: b60205
+    description: 🚨 线上紧急，24h内处理
+  - name: P1
+    color: d93f0b
+    description: ⚡ 本周内修复
+  - name: P2
+    color: e3d6b2
+    description: 📋 计划迭代
+
+  # 领域标签
+  - name: security
+    color: d73a4a
+    description: 🔐 安全相关，优先处理
+  - name: accessibility
+    color: 8b5cf6
+    description: ♿ 无障碍问题
+  - name: performance
+    color: f4c430
+    description: ⚙️ 性能优化
+  - name: seo
+    color: 238636
+    description: 🔍 SEO 相关
+
+  # 状态标签
+  - name: in-progress
+    color: f4c430
+    description: 🔄 正在处理中
+  - name: needs-review
+    color: 3d4db5
+    description: 👀 需要生哥确认
+  - name: wontfix
+    color: 1f2328
+    description: ❌ 暂不处理
+  - name: duplicate
+    color: 1f2328
+    description: 🔁 重复 Issue
+
+  # 部署标签
+  - name: cloudflare
+    color: f9826c
+    description: ☁️ Cloudflare 相关
+  - name: deploy
+    color: 238636
+    description: 🚀 包含部署变更

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>风声 · 我的收藏</title>
+<meta name="description" content="风声知识底座 · 收藏词条 · 快速回顾">
+<style>
+:root {
+  --p: #3d5a3e; --p-light: #5a7d5b; --fire: #c46a3a; --fire-light: #e08a3c;
+  --cream: #f7f4ef; --cream-deep: #ede7dc; --ink: #1a2b26; --ink-soft: #5a6b65;
+  --wood: #c8956d; --line: rgba(61,90,62,0.12);
+  --shadow-sm: 0 2px 8px rgba(61,90,62,0.06);
+  --shadow-md: 0 8px 24px rgba(61,90,62,0.10);
+  --layer-dao: #3d5a3e; --layer-fa: #c46a3a; --layer-shu: #6b5fa8; --layer-qi: #c8956d;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+
+/* Nav */
+.nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.88);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1240px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:32px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;flex-shrink:0}
+.brand-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--p),var(--p-light));display:grid;place-items:center;color:white;font-weight:800}
+.nav-links{display:flex;gap:4px;flex:1;flex-wrap:wrap}
+.nav-link{padding:8px 16px;border-radius:8px;font-size:14px;color:var(--ink-soft);transition:all .2s;white-space:nowrap}
+.nav-link:hover{background:rgba(61,90,62,0.06);color:var(--p)}
+.nav-link.active{color:var(--p);font-weight:600;background:rgba(61,90,62,0.08)}
+
+/* Main */
+main{flex:1;max-width:1240px;width:100%;margin:0 auto;padding:32px 32px 60px}
+
+/* Hero */
+.hero{margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.hero-left h1{font-size:32px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px}
+.hero-sub{font-size:14px;color:var(--ink-soft)}
+.hero-actions{display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;border:none;white-space:nowrap}
+.btn-outline{background:white;border:1px solid var(--line);color:var(--ink-soft)}
+.btn-outline:hover{background:rgba(61,90,62,0.06);border-color:var(--p);color:var(--p)}
+.btn-danger{background:rgba(196,106,58,0.08);border:1px solid rgba(196,106,58,0.2);color:var(--fire)}
+.btn-danger:hover{background:rgba(196,106,58,0.15)}
+
+/* Card list */
+.card-list{display:flex;flex-direction:column;gap:0}
+.card-item{background:white;border:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:16px 20px;transition:all .2s;cursor:pointer}
+.card-item:first-child{border-radius:14px 14px 0 0}
+.card-item:last-child{border-radius:0 0 14px 14px}
+.card-item:only-child{border-radius:14px}
+.card-item+.card-item{border-top:none}
+.card-item:hover{background:rgba(247,244,239,0.5);border-color:rgba(61,90,62,0.2)}
+.card-item:hover+.card-item{border-top-color:rgba(61,90,62,0.2)}
+.card-body{flex:1;min-width:0}
+.card-name{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-answer{font-size:13px;color:var(--ink-soft);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.card-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.card-tag.type{background:rgba(61,90,62,0.08);color:var(--p)}
+.card-tag.sev{background:rgba(196,106,58,0.08);color:var(--fire)}
+.card-tag.pri{background:rgba(61,90,62,0.06);color:var(--ink-soft)}
+.card-tag.pri.P0{color:var(--fire);font-weight:700}
+.card-tag.layer{font-size:10px;padding:2px 6px}
+.card-tag.layer.dao{background:rgba(61,90,62,0.08);color:var(--layer-dao)}
+.card-tag.layer.fa{background:rgba(196,106,58,0.08);color:var(--layer-fa)}
+.card-tag.layer.shu{background:rgba(107,95,168,0.08);color:var(--layer-shu)}
+.card-tag.layer.qi{background:rgba(200,149,109,0.08);color:var(--layer-qi)}
+.card-remove{width:32px;height:32px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--ink-soft);flex-shrink:0;transition:all .15s}
+.card-remove:hover{background:rgba(196,106,58,0.1);color:var(--fire)}
+
+/* Empty */
+.empty{text-align:center;padding:80px 20px;color:var(--ink-soft)}
+.empty-icon{font-size:64px;margin-bottom:16px;opacity:0.3}
+.empty-title{font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.empty-desc{font-size:14px;max-width:360px;margin:0 auto 20px}
+.empty-link{display:inline-block;padding:10px 24px;border-radius:8px;background:var(--p);color:white;font-weight:600;font-size:14px;transition:all .2s}
+.empty-link:hover{background:var(--p-light)}
+
+/* Loading */
+.loading-row{text-align:center;padding:40px;color:var(--ink-soft)}
+.spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--line);border-top-color:var(--p);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Toast */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);padding:10px 24px;border-radius:10px;background:var(--ink);color:white;font-size:13px;font-weight:600;z-index:200;opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-8px)}
+
+/* Footer */
+footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--line)}
+.footer-inner{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hero h1{font-size:24px}
+  main{padding:20px 16px}
+  .card-item{padding:12px 14px}
+  .card-name{font-size:14px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="brand">
+      <div class="brand-mark">风</div><span>风声</span>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">首页</a>
+      <a href="/knowledge/" class="nav-link">知识底座</a>
+      <a href="/scene/" class="nav-link">场景导航</a>
+      <a href="/search/" class="nav-link">搜索</a>
+      <a href="/dictionary/" class="nav-link">全量词典</a>
+      <a href="/favorites/" class="nav-link active">收藏</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="hero">
+    <div class="hero-left">
+      <h1>我的收藏</h1>
+      <p class="hero-sub" id="countLabel">已收藏 0 条词条</p>
+    </div>
+    <div class="hero-actions">
+      <button class="btn btn-danger" id="btnClearAll" style="display:none">清空收藏</button>
+    </div>
+  </div>
+
+  <div class="card-list" id="cardList">
+    <div class="loading-row"><div class="spinner"></div><div>加载中...</div></div>
+  </div>
+
+  <div class="empty" id="emptyState" style="display:none">
+    <div class="empty-icon">&#9733;</div>
+    <div class="empty-title">还没有收藏任何词条</div>
+    <div class="empty-desc">在词条详情页点击收藏按钮，即可将重要词条加入收藏夹，方便快速回顾</div>
+    <a href="/dictionary/" class="empty-link">去全量词典看看</a>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span>风声 · 居住服务者专业基础设施</span>
+    <span>通过独立价值获得尊重</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function() {
+  'use strict';
+
+  var $ = function(s) { return document.querySelector(s); };
+  var STORAGE_KEY = 'fengsheng_favorites';
+  var layerLabels = { dao: '道', fa: '法', shu: '术', qi: '器' };
+  var severityLabels = { hard: '红线', medium: '提醒', soft: '建议' };
+
+  function getFavorites() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    } catch(e) {
+      return [];
+    }
+  }
+
+  function saveFavorites(ids) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+  }
+
+  function removeFavorite(id) {
+    var ids = getFavorites().filter(function(i) { return i !== id; });
+    saveFavorites(ids);
+    return ids;
+  }
+
+  function clearAll() {
+    saveFavorites([]);
+    render();
+  }
+
+  function showToast(msg) {
+    var t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2000);
+  }
+
+  async function loadEntryDetails(ids) {
+    if (ids.length === 0) return [];
+    // Batch fetch entry details (max 50 at a time)
+    var results = [];
+    var batchSize = 50;
+    for (var i = 0; i < ids.length; i += batchSize) {
+      var batch = ids.slice(i, i + batchSize);
+      var promises = batch.map(function(id) {
+        return fetch('/api/entry?id=' + encodeURIComponent(id))
+          .then(function(r) { return r.ok ? r.json() : null; })
+          .catch(function() { return null; });
+      });
+      var batchResults = await Promise.all(promises);
+      results = results.concat(batchResults.filter(Boolean));
+    }
+    return results;
+  }
+
+  async function render() {
+    var ids = getFavorites();
+    $('#countLabel').textContent = '已收藏 ' + ids.length + ' 条词条';
+    $('#btnClearAll').style.display = ids.length > 0 ? '' : 'none';
+
+    if (ids.length === 0) {
+      $('#cardList').innerHTML = '';
+      $('#emptyState').style.display = '';
+      return;
+    }
+
+    $('#emptyState').style.display = 'none';
+    $('#cardList').innerHTML = '<div class="loading-row"><div class="spinner"></div><div>加载词条详情...</div></div>';
+
+    var entries = await loadEntryDetails(ids);
+
+    if (entries.length === 0) {
+      $('#cardList').innerHTML = '';
+      $('#emptyState').style.display = '';
+      return;
+    }
+
+    // Sort by original order (most recent first)
+    var entryMap = {};
+    entries.forEach(function(e) { entryMap[e.id] = e; });
+    var ordered = ids.map(function(id) { return entryMap[id]; }).filter(Boolean);
+
+    var html = ordered.map(function(e) {
+      var layer = (e.tags || {}).layer || '';
+      var layerName = layerLabels[layer] || layer;
+      return '<div class="card-item" data-id="' + escapeHtml(e.id) + '" onclick="window.location.href=\'/entry/?id=' + encodeURIComponent(e.id) + '\'">' +
+        '<div class="card-body">' +
+          '<div class="card-name">' + escapeHtml(e.name) + '</div>' +
+          '<div class="card-answer">' + escapeHtml(e.oneLineAnswer || '暂无摘要') + '</div>' +
+          '<div class="card-meta">' +
+            (e.entryType ? '<span class="card-tag type">' + escapeHtml(e.entryType) + '</span>' : '') +
+            (e.severity ? '<span class="card-tag sev">' + escapeHtml(severityLabels[e.severity] || e.severity) + '</span>' : '') +
+            (e.priority ? '<span class="card-tag pri ' + escapeHtml(e.priority) + '">' + escapeHtml(e.priority) + '</span>' : '') +
+            (layer ? '<span class="card-tag layer ' + escapeHtml(layer) + '">' + escapeHtml(layerName) + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<button class="card-remove" onclick="event.stopPropagation();removeFavoriteById(\'' + escapeHtml(e.id) + '\')" title="取消收藏">&times;</button>' +
+      '</div>';
+    }).join('');
+
+    $('#cardList').innerHTML = html;
+  }
+
+  function escapeHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  window.removeFavoriteById = function(id) {
+    removeFavorite(id);
+    showToast('已取消收藏');
+    render();
+  };
+
+  $('#btnClearAll').addEventListener('click', function() {
+    if (confirm('确定要清空所有收藏吗？此操作不可恢复。')) {
+      clearAll();
+      showToast('已清空所有收藏');
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

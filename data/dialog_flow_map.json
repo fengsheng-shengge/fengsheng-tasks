@@ -1,0 +1,1890 @@
+{
+  "version": "1.0",
+  "generated": "2026-08-02",
+  "description": "风声对话流索引 — 8个场景域各3-5条典型对话路径，节点含触发条件+推送记忆+后续节点",
+  "totalDomains": 8,
+  "totalPaths": 24,
+  "totalNodes": 120,
+  "dialogFlows": {
+    "居住中": {
+      "domain": "居住中",
+      "category": "rental",
+      "pathCount": 3,
+      "paths": [
+        {
+          "pathId": "居住中-P1",
+          "pathName": "装修对话流",
+          "subScene": "装修",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "居住中-装修-0",
+              "stage": "客户开口",
+              "trigger": "我家要装修，物业说要登记，不登行不行？",
+              "pushMemory": {
+                "entryId": "LIV-DEC-001",
+                "name": "装修前要办什么手续",
+                "oneLineAnswer": "装修前必须向物业申报登记并签管理协议"
+              },
+              "nextNodes": [
+                "居住中-装修-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "居住中-装修-1",
+              "stage": "风险识别",
+              "trigger": "涉及装修的法律风险",
+              "pushMemory": {
+                "entryId": "LIV-DEC-001",
+                "name": "装修前要办什么手续",
+                "oneLineAnswer": "装修前必须向物业申报登记并签管理协议"
+              },
+              "nextNodes": [
+                "居住中-装修-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "居住中-装修-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "LIV-DEC-005",
+                "name": "装修施工顺序怎么排",
+                "oneLineAnswer": "拆改→水电→防水→瓦→木→油→安装→验收"
+              },
+              "nextNodes": [
+                "居住中-装修-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "居住中-装修-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "LIV-DEC-CASE-083",
+                "name": "装修公司跑路法院判股东承担连带责任吗（LIV-DEC）",
+                "oneLineAnswer": "若证实财产混同或未依法清算，可判股东连带赔偿。"
+              },
+              "nextNodes": [
+                "居住中-装修-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "居住中-装修-4",
+              "stage": "见后跟进",
+              "trigger": "银行说装修贷款零利息，只收一点点手续费，这到底划不划算？",
+              "pushMemory": {
+                "entryId": "LIV-DEC-093",
+                "name": "装修贷款说的零利息其实有什么隐藏费用（LIV-DEC）",
+                "oneLineAnswer": "零利息多收手续费，需计算IRR确认真实年化利率。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "居住中-P2",
+          "pathName": "家居家电对话流",
+          "subScene": "家居家电",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "居住中-家居家电-0",
+              "stage": "客户开口",
+              "trigger": "家里水管爆了把楼下淹了，我要赔多少钱？",
+              "pushMemory": {
+                "entryId": "LIV-HOM-052",
+                "name": "家里水管爆了淹了楼下怎么赔",
+                "oneLineAnswer": "业主需担责赔偿，关阀留证后协商或诉讼。"
+              },
+              "nextNodes": [
+                "居住中-家居家电-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "居住中-家居家电-1",
+              "stage": "风险识别",
+              "trigger": "涉及家居家电的法律风险",
+              "pushMemory": {
+                "entryId": "LIV-HOM-052",
+                "name": "家里水管爆了淹了楼下怎么赔",
+                "oneLineAnswer": "业主需担责赔偿，关阀留证后协商或诉讼。"
+              },
+              "nextNodes": [
+                "居住中-家居家电-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "居住中-家居家电-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "LIV-HOM-054",
+                "name": "装修水电改造完工怎么验收不踩坑",
+                "oneLineAnswer": "重点做水管打压与电路绝缘测试并留存图纸。"
+              },
+              "nextNodes": [
+                "居住中-家居家电-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "居住中-家居家电-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "LIV-HOM-060",
+                "name": "全屋定制家具甲醛超标怎么判",
+                "oneLineAnswer": "凭CMA报告胜诉率高，商家需退款并赔偿。"
+              },
+              "nextNodes": [
+                "居住中-家居家电-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "居住中-家居家电-4",
+              "stage": "见后跟进",
+              "trigger": "家里电器怎么保养才能用得久不容易坏？",
+              "pushMemory": {
+                "entryId": "LIV-HOM-056",
+                "name": "日常家电怎么保养能延长使用寿命",
+                "oneLineAnswer": "定期断电清洁滤网与除垢，忌用强酸碱。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "居住中-P3",
+          "pathName": "邻里关系对话流",
+          "subScene": "邻里关系",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "居住中-邻里关系-0",
+              "stage": "客户开口",
+              "trigger": "楼上空调滴水噪音大我该怎么维权？",
+              "pushMemory": {
+                "entryId": "LIV-NBR-CASE-021",
+                "name": "邻居空调外机滴水噪音大怎么解决",
+                "oneLineAnswer": "要求邻居整改空调外机并赔偿损失。"
+              },
+              "nextNodes": [
+                "居住中-邻里关系-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "居住中-邻里关系-1",
+              "stage": "风险识别",
+              "trigger": "涉及邻里关系的法律风险",
+              "pushMemory": {
+                "entryId": "LIV-NBR-021",
+                "name": "邻居在楼道养宠物有异味怎么办",
+                "oneLineAnswer": "先协商再向物业投诉，物业有义务制止"
+              },
+              "nextNodes": [
+                "居住中-邻里关系-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "居住中-邻里关系-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "LIV-NBR-026",
+                "name": "楼下说我家漏水但我查不出原因",
+                "oneLineAnswer": "可能暗管渗漏，请专业检测公司定位漏点"
+              },
+              "nextNodes": [
+                "居住中-邻里关系-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "居住中-邻里关系-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "LIV-NBR-CASE-021",
+                "name": "邻居空调外机滴水噪音大怎么解决",
+                "oneLineAnswer": "要求邻居整改空调外机并赔偿损失。"
+              },
+              "nextNodes": [
+                "居住中-邻里关系-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "居住中-邻里关系-4",
+              "stage": "见后跟进",
+              "trigger": "邻居装了很亮的灯照到我家",
+              "pushMemory": {
+                "entryId": "LIV-NBR-281",
+                "name": "邻居装了很亮的灯照到我家",
+                "oneLineAnswer": "过强灯光直射可要求调整"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        }
+      ]
+    },
+    "退租出售": {
+      "domain": "退租出售",
+      "category": "rental",
+      "pathCount": 3,
+      "paths": [
+        {
+          "pathId": "退租出售-P1",
+          "pathName": "继承赠与对话流",
+          "subScene": "继承赠与",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "退租出售-继承赠与-0",
+              "stage": "客户开口",
+              "trigger": "父亲过世了，房产怎么继承到我名下？",
+              "pushMemory": {
+                "entryId": "EXT-INH-001",
+                "name": "房产继承要办什么手续",
+                "oneLineAnswer": "先办继承公证，再办不动产转移登记"
+              },
+              "nextNodes": [
+                "退租出售-继承赠与-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "退租出售-继承赠与-1",
+              "stage": "风险识别",
+              "trigger": "涉及继承赠与的法律风险",
+              "pushMemory": {
+                "entryId": "EXT-INH-001",
+                "name": "房产继承要办什么手续",
+                "oneLineAnswer": "先办继承公证，再办不动产转移登记"
+              },
+              "nextNodes": [
+                "退租出售-继承赠与-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "退租出售-继承赠与-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "EXT-INH-012",
+                "name": "继承公证怎么办",
+                "oneLineAnswer": "所有继承人到场，带死亡证明和产权证"
+              },
+              "nextNodes": [
+                "退租出售-继承赠与-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "退租出售-继承赠与-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "EXT-INH-291",
+                "name": "隐瞒遗产私吞房产被判少分案",
+                "oneLineAnswer": "故意隐匿侵吞遗产的继承人，法院可判决其少分或不分。"
+              },
+              "nextNodes": [
+                "退租出售-继承赠与-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "退租出售-继承赠与-4",
+              "stage": "见后跟进",
+              "trigger": "我二哥之前公证放弃了继承，现在看房价涨了想反悔，还能分吗？",
+              "pushMemory": {
+                "entryId": "EXT-INH-299",
+                "name": "继承人签了放弃继承声明后反悔还能分房吗（EXT-INH）",
+                "oneLineAnswer": "经公证或遗产已处理的放弃声明不可撤销。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "退租出售-P2",
+          "pathName": "抵押贷款对话流",
+          "subScene": "抵押贷款",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "退租出售-抵押贷款-0",
+              "stage": "客户开口",
+              "trigger": "我的房子还有贷款没还完，能挂牌卖吗？",
+              "pushMemory": {
+                "entryId": "EXT-MTG-001",
+                "name": "房子有抵押能卖吗",
+                "oneLineAnswer": "能卖，但须先解押或走带押过户"
+              },
+              "nextNodes": [
+                "退租出售-抵押贷款-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "退租出售-抵押贷款-1",
+              "stage": "风险识别",
+              "trigger": "涉及抵押贷款的法律风险",
+              "pushMemory": {
+                "entryId": "EXT-MTG-001",
+                "name": "房子有抵押能卖吗",
+                "oneLineAnswer": "能卖，但须先解押或走带押过户"
+              },
+              "nextNodes": [
+                "退租出售-抵押贷款-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "退租出售-抵押贷款-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "EXT-MTG-002",
+                "name": "卖房前怎么解抵押",
+                "oneLineAnswer": "申请提前还贷→还清→银行出证明→注销抵押"
+              },
+              "nextNodes": [
+                "退租出售-抵押贷款-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "退租出售-抵押贷款-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "EXT-MTG-270",
+                "name": "房贷断供被银行法拍了怎么算",
+                "oneLineAnswer": "房子被低价法拍，资不抵债部分仍需继续偿还。"
+              },
+              "nextNodes": [
+                "退租出售-抵押贷款-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "退租出售-抵押贷款-4",
+              "stage": "见后跟进",
+              "trigger": "房贷终于还清了，怎么把房产证上的抵押去掉？",
+              "pushMemory": {
+                "entryId": "EXT-MTG-266",
+                "name": "房贷还清后解押手续怎么办",
+                "oneLineAnswer": "需向银行领结清证明，再到不动产中心办理解押登记。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "退租出售-P3",
+          "pathName": "出售对话流",
+          "subScene": "出售",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "退租出售-出售-0",
+              "stage": "客户开口",
+              "trigger": "我的房子想挂牌卖，需要准备什么？",
+              "pushMemory": {
+                "entryId": "EXT-SEL-001",
+                "name": "房子挂牌出售要什么条件",
+                "oneLineAnswer": "房本、身份证、签委托协议，无查封等限制"
+              },
+              "nextNodes": [
+                "退租出售-出售-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "退租出售-出售-1",
+              "stage": "风险识别",
+              "trigger": "涉及出售的法律风险",
+              "pushMemory": {
+                "entryId": "EXT-SEL-001",
+                "name": "房子挂牌出售要什么条件",
+                "oneLineAnswer": "房本、身份证、签委托协议，无查封等限制"
+              },
+              "nextNodes": [
+                "退租出售-出售-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "退租出售-出售-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "EXT-SEL-003",
+                "name": "出售委托协议什么时候失效",
+                "oneLineAnswer": "到期需重新签署，提前可申请延期"
+              },
+              "nextNodes": [
+                "退租出售-出售-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "退租出售-出售-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "EXT-SEL-250",
+                "name": "隐瞒房屋漏水被告欺诈案",
+                "oneLineAnswer": "隐瞒漏水构成违约或欺诈，卖方需承担维修费用或支持退房。"
+              },
+              "nextNodes": [
+                "退租出售-出售-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "退租出售-出售-4",
+              "stage": "见后跟进",
+              "trigger": "买房时中介一直说房东急售，我怎么判断是不是真的？",
+              "pushMemory": {
+                "entryId": "EXT-SEL-246",
+                "name": "卖房议价谈判有哪些技巧",
+                "oneLineAnswer": "设定底价阶梯，用成交数据支撑，用非价格条件置换让步。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        }
+      ]
+    },
+    "资产持有与运营": {
+      "domain": "资产持有与运营",
+      "category": "rental",
+      "pathCount": 3,
+      "paths": [
+        {
+          "pathId": "资产持有与运营-P1",
+          "pathName": "权属维护对话流",
+          "subScene": "权属维护",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "资产持有与运营-权属维护-0",
+              "stage": "客户开口",
+              "trigger": "我买的房子被查封了还能继续过户吗？",
+              "pushMemory": {
+                "entryId": "OWN-OWN-CASE-001",
+                "name": "房子被法院查封了还能卖吗",
+                "oneLineAnswer": "查封期间禁止处分，需先解封才能过户。"
+              },
+              "nextNodes": [
+                "资产持有与运营-权属维护-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "资产持有与运营-权属维护-1",
+              "stage": "风险识别",
+              "trigger": "涉及权属维护的法律风险",
+              "pushMemory": {
+                "entryId": "OWN-PRP-001",
+                "name": "不动产权证怎么看",
+                "oneLineAnswer": "核验权利人、面积、用途、抵押查封附记栏"
+              },
+              "nextNodes": [
+                "资产持有与运营-权属维护-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "资产持有与运营-权属维护-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "OWN-PRP-005",
+                "name": "继承房产过户要交哪些税费",
+                "oneLineAnswer": "法定继承免契税增值税个税，最省钱"
+              },
+              "nextNodes": [
+                "资产持有与运营-权属维护-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "资产持有与运营-权属维护-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "OWN-OWN-CASE-001",
+                "name": "房子被法院查封了还能卖吗",
+                "oneLineAnswer": "查封期间禁止处分，需先解封才能过户。"
+              },
+              "nextNodes": [
+                "资产持有与运营-权属维护-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "资产持有与运营-权属维护-4",
+              "stage": "见后跟进",
+              "trigger": "老人去世了，留下的房子继承人怎么去房管局办理过户？",
+              "pushMemory": {
+                "entryId": "OWN-PRP-056",
+                "name": "继承人怎么办理过户",
+                "oneLineAnswer": "凭继承公证书或法院判决，或全体继承人到场查验后单方申请过户。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "资产持有与运营-P2",
+          "pathName": "出售决策对话流",
+          "subScene": "出售决策",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "资产持有与运营-出售决策-0",
+              "stage": "客户开口",
+              "trigger": "我想买的房子挂牌价比成交价高多少合理？",
+              "pushMemory": {
+                "entryId": "OWN-SEL-001",
+                "name": "卖房挂牌价怎么定才合理",
+                "oneLineAnswer": "参考近6月成交价，留5%-10%议价空间"
+              },
+              "nextNodes": [
+                "资产持有与运营-出售决策-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "资产持有与运营-出售决策-1",
+              "stage": "风险识别",
+              "trigger": "涉及出售决策的法律风险",
+              "pushMemory": {
+                "entryId": "OWN-SEL-004",
+                "name": "满五唯一个税怎么免",
+                "oneLineAnswer": "满五唯一免个税，否则交1%或差额20%"
+              },
+              "nextNodes": [
+                "资产持有与运营-出售决策-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "资产持有与运营-出售决策-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "OWN-SEL-001",
+                "name": "卖房挂牌价怎么定才合理",
+                "oneLineAnswer": "参考近6月成交价，留5%-10%议价空间"
+              },
+              "nextNodes": [
+                "资产持有与运营-出售决策-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "资产持有与运营-出售决策-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "OWN-SEL-021",
+                "name": "急售降价能成交吗",
+                "oneLineAnswer": "急售一般8%-15%折价，一步到位最有效"
+              },
+              "nextNodes": [
+                "资产持有与运营-出售决策-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "资产持有与运营-出售决策-4",
+              "stage": "见后跟进",
+              "trigger": "我卖房时没提以前漏过水，现在买家找麻烦算欺诈吗？",
+              "pushMemory": {
+                "entryId": "OWN-SEL-061",
+                "name": "卖房时没告诉买家房子漏过水，算欺诈吗？（OWN-SEL）",
+                "oneLineAnswer": "隐瞒重大瑕疵需担责，凶宅隐瞒买家可撤销合同。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "资产持有与运营-P3",
+          "pathName": "租客纠纷应对对话流",
+          "subScene": "租客纠纷应对",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "资产持有与运营-租客纠纷-0",
+              "stage": "客户开口",
+              "trigger": "退租时房东能扣我押金吗？标准是什么？",
+              "pushMemory": {
+                "entryId": "OWN-DSP-001",
+                "name": "押金扣除标准是什么",
+                "oneLineAnswer": "仅扣欠费和人为损坏，自然老化不可扣"
+              },
+              "nextNodes": [
+                "资产持有与运营-租客纠纷-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "资产持有与运营-租客纠纷-1",
+              "stage": "风险识别",
+              "trigger": "涉及租客纠纷应对的法律风险",
+              "pushMemory": {
+                "entryId": "OWN-DSP-001",
+                "name": "押金扣除标准是什么",
+                "oneLineAnswer": "仅扣欠费和人为损坏，自然老化不可扣"
+              },
+              "nextNodes": [
+                "资产持有与运营-租客纠纷-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "资产持有与运营-租客纠纷-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "OWN-DSP-002",
+                "name": "自然损耗和人为损坏怎么界定",
+                "oneLineAnswer": "对照入住照片，正常磨损房东承担，人为损坏租客赔"
+              },
+              "nextNodes": [
+                "资产持有与运营-租客纠纷-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "资产持有与运营-租客纠纷-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "OWN-DSP-013",
+                "name": "欠租驱赶要走多久流程",
+                "oneLineAnswer": "催告后15日未付可解约，诉讼全流程3-6个月"
+              },
+              "nextNodes": [
+                "资产持有与运营-租客纠纷-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "资产持有与运营-租客纠纷-4",
+              "stage": "见后跟进",
+              "trigger": "房东说家电是我弄坏的，但他拿不出证据，法院会支持他吗？",
+              "pushMemory": {
+                "entryId": "OWN-DSP-043",
+                "name": "房东索赔房屋损坏证据不足怎么办",
+                "oneLineAnswer": "房东需承担举证责任，若无法证明损坏发生在租赁期内"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        }
+      ]
+    },
+    "业主": {
+      "domain": "业主",
+      "category": "rental",
+      "pathCount": 3,
+      "paths": [
+        {
+          "pathId": "业主-P1",
+          "pathName": "租赁管理对话流",
+          "subScene": "租赁管理",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "业主-租赁管理-0",
+              "stage": "客户开口",
+              "trigger": "租客欠了两个月房租，我直接去换锁行不行？",
+              "pushMemory": {
+                "entryId": "OWN-RET-071",
+                "name": "租客拖欠几个月租金我才能直接赶人？（OWN-RET）",
+                "oneLineAnswer": "需先书面催告给宽限期，逾期不改方可解约。"
+              },
+              "nextNodes": [
+                "业主-租赁管理-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "业主-租赁管理-1",
+              "stage": "风险识别",
+              "trigger": "涉及租赁管理的法律风险",
+              "pushMemory": {
+                "entryId": "OWN-RET-071",
+                "name": "租客拖欠几个月租金我才能直接赶人？（OWN-RET）",
+                "oneLineAnswer": "需先书面催告给宽限期，逾期不改方可解约。"
+              },
+              "nextNodes": [
+                "业主-租赁管理-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "业主-租赁管理-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "OWN-RET-072",
+                "name": "租期到了租客赖着不走，合法清退流程是什么？（OWN-RET）",
+                "oneLineAnswer": "发书面通知限期搬离，逾期不搬则起诉腾退。"
+              },
+              "nextNodes": [
+                "业主-租赁管理-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "业主-租赁管理-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "OWN-RET-CASE-074",
+                "name": "租客偷偷把房子转租给二房东，我能直接解约吗？有判例吗？（OWN-RET）",
+                "oneLineAnswer": "发现擅自转租可解约，但须在6个月内提出异议。"
+              },
+              "nextNodes": [
+                "业主-租赁管理-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "业主-租赁管理-4",
+              "stage": "见后跟进",
+              "trigger": "我因为工作变动要提前退租，房东要把我押金全扣了合法吗？",
+              "pushMemory": {
+                "entryId": "OWN-RET-070",
+                "name": "租客没到期提前退租押金应该怎么扣",
+                "oneLineAnswer": "提前退租属违约，按合同约定扣除合理违约金。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "业主-P2",
+          "pathName": "纠纷对话流",
+          "subScene": "纠纷",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "业主-纠纷-0",
+              "stage": "客户开口",
+              "trigger": "租客不交租也不搬走，我能自己把锁换了吗？",
+              "pushMemory": {
+                "entryId": "OWN-DISPUTE-013",
+                "name": "自行清场驱逐租客有什么法律风险",
+                "oneLineAnswer": "不能自行清场，须走法律程序"
+              },
+              "nextNodes": [
+                "业主-纠纷-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "业主-纠纷-1",
+              "stage": "风险识别",
+              "trigger": "涉及纠纷的法律风险",
+              "pushMemory": {
+                "entryId": "OWN-DISPUTE-013",
+                "name": "自行清场驱逐租客有什么法律风险",
+                "oneLineAnswer": "不能自行清场，须走法律程序"
+              },
+              "nextNodes": [
+                "业主-纠纷-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "业主-纠纷-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "OWN-DISPUTE-021",
+                "name": "租客押金纠纷怎么处理",
+                "oneLineAnswer": "先看合同条款，自然损耗不扣，人为损坏扣修护费"
+              },
+              "nextNodes": [
+                "业主-纠纷-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "业主-纠纷-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "OWN-DISPUTE-037",
+                "name": "精装修缩水业主维权胜诉案例",
+                "oneLineAnswer": "合同+检测+投诉三证齐全，法院支持赔偿"
+              },
+              "nextNodes": [
+                "业主-纠纷-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "业主-纠纷-4",
+              "stage": "见后跟进",
+              "trigger": "业委会没有营业执照，法院能受理以业委会名义打的官司吗？",
+              "pushMemory": {
+                "entryId": "OWN-DISPUTE-083",
+                "name": "业委会的法律地位和诉讼主体资格是怎么认定的？（OWN-DISPUTE）",
+                "oneLineAnswer": "业委会属其他组织，经业主大会授权可参与诉讼。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "业主-P3",
+          "pathName": "房产改造对话流",
+          "subScene": "房产改造",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "业主-房产改造-0",
+              "stage": "客户开口",
+              "trigger": "砸墙前怎么100%确认不是承重墙？",
+              "pushMemory": {
+                "entryId": "OWN-REF-080",
+                "name": "装修想砸墙怎么判断是不是承重墙？（OWN-REF）",
+                "oneLineAnswer": "必须查阅原始结构图纸并由专业机构鉴定。"
+              },
+              "nextNodes": [
+                "业主-房产改造-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "业主-房产改造-1",
+              "stage": "风险识别",
+              "trigger": "涉及房产改造的法律风险",
+              "pushMemory": {
+                "entryId": "OWN-REF-080",
+                "name": "装修想砸墙怎么判断是不是承重墙？（OWN-REF）",
+                "oneLineAnswer": "必须查阅原始结构图纸并由专业机构鉴定。"
+              },
+              "nextNodes": [
+                "业主-房产改造-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "业主-房产改造-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "OWN-REF-081",
+                "name": "物业以保护承重墙为由不让砸墙怎么办？（OWN-REF）",
+                "oneLineAnswer": "提供原设计单位出具的变更图纸给物业审批。"
+              },
+              "nextNodes": [
+                "业主-房产改造-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "业主-房产改造-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "OWN-REF-CASE-082",
+                "name": "楼上邻居砸了承重墙导致我家墙体开裂怎么索赔？（OWN-REF）",
+                "oneLineAnswer": "举报停工并做安全鉴定，起诉要求赔偿修复。"
+              },
+              "nextNodes": [
+                "业主-房产改造-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "业主-房产改造-4",
+              "stage": "见后跟进",
+              "trigger": "装修完发现漏水或者开裂保修期是多久",
+              "pushMemory": {
+                "entryId": "OWN-REF-059",
+                "name": "装修完发现漏水或者开裂保修期是多久",
+                "oneLineAnswer": "普通工程保修2年，防水防渗漏工程保修5年。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        }
+      ]
+    },
+    "签约前": {
+      "domain": "签约前",
+      "category": "trade",
+      "pathCount": 3,
+      "paths": [
+        {
+          "pathId": "签约前-P1",
+          "pathName": "需求确认对话流",
+          "subScene": "需求确认",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "签约前-需求确认-0",
+              "stage": "客户开口",
+              "trigger": "我第一次买房，有什么必须注意的？",
+              "pushMemory": {
+                "entryId": "PRE-NEED-017",
+                "name": "第一次买房要注意什么",
+                "oneLineAnswer": "先查资格再锁定预算，别被隐性成本打乱计划"
+              },
+              "nextNodes": [
+                "签约前-需求确认-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "签约前-需求确认-1",
+              "stage": "风险识别",
+              "trigger": "涉及需求确认的法律风险",
+              "pushMemory": {
+                "entryId": "PRE-NEED-019",
+                "name": "婚房什么时候买最合适",
+                "oneLineAnswer": "提前半年启动，婚前买属个人婚后买属共有"
+              },
+              "nextNodes": [
+                "签约前-需求确认-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "签约前-需求确认-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "PRE-NEED-018",
+                "name": "换房改善怎么规划最划算",
+                "oneLineAnswer": "看首付充裕度和旧房好不好卖，同城市可退个税"
+              },
+              "nextNodes": [
+                "签约前-需求确认-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "签约前-需求确认-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "PRE-NEED-043",
+                "name": "预算超了硬买的后果有多严重",
+                "oneLineAnswer": "断供后房子法拍7折贱卖，差价还要你补，征信黑5年"
+              },
+              "nextNodes": [
+                "签约前-需求确认-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "签约前-需求确认-4",
+              "stage": "见后跟进",
+              "trigger": "交房时要不要请人验房？",
+              "pushMemory": {
+                "entryId": "PRE-NEED-136",
+                "name": "买房子有没有必要找人验房",
+                "oneLineAnswer": "一定要，几百块钱查出大问题值得"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "签约前-P2",
+          "pathName": "房源匹配对话流",
+          "subScene": "房源匹配",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "签约前-房源匹配-0",
+              "stage": "客户开口",
+              "trigger": "网上看到的低价房源是真的吗？怎么辨别？",
+              "pushMemory": {
+                "entryId": "PRE-MATCH-005",
+                "name": "怎么判断房源信息是真是假",
+                "oneLineAnswer": "低于均价10%+多假房源，用产证编号七步核验"
+              },
+              "nextNodes": [
+                "签约前-房源匹配-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "签约前-房源匹配-1",
+              "stage": "风险识别",
+              "trigger": "涉及房源匹配的法律风险",
+              "pushMemory": {
+                "entryId": "PRE-MATCH-005",
+                "name": "怎么判断房源信息是真是假",
+                "oneLineAnswer": "低于均价10%+多假房源，用产证编号七步核验"
+              },
+              "nextNodes": [
+                "签约前-房源匹配-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "签约前-房源匹配-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "PRE-MATCH-010",
+                "name": "南北通透的房子怎么判断真假",
+                "oneLineAnswer": "看南北窗户是否对齐无遮挡，实地开窗感受穿堂风"
+              },
+              "nextNodes": [
+                "签约前-房源匹配-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "签约前-房源匹配-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "PRE-MATCH-033",
+                "name": "面积缩水了怎么办",
+                "oneLineAnswer": "3%以内多退少补，超3%可退房或要求双倍返还"
+              },
+              "nextNodes": [
+                "签约前-房源匹配-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "签约前-房源匹配-4",
+              "stage": "见后跟进",
+              "trigger": "卖家为什么卖房要不要问？",
+              "pushMemory": {
+                "entryId": "PRE-MATCH-104",
+                "name": "买二手房要不要问卖家为什么卖",
+                "oneLineAnswer": "要问，议价空间和风险都在原因里"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "签约前-P3",
+          "pathName": "资格审查对话流",
+          "subScene": "资格审查",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "签约前-资格审查-0",
+              "stage": "客户开口",
+              "trigger": "我不是北京户口，在北京买房要什么条件？",
+              "pushMemory": {
+                "entryId": "PRE-QUAL-001",
+                "name": "北京限购政策具体怎么规定",
+                "oneLineAnswer": "非京籍需60个月社保，五环外可购1套，离婚1年内按原家庭算"
+              },
+              "nextNodes": [
+                "签约前-资格审查-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "签约前-资格审查-1",
+              "stage": "风险识别",
+              "trigger": "涉及资格审查的法律风险",
+              "pushMemory": {
+                "entryId": "PRE-QUAL-001",
+                "name": "北京限购政策具体怎么规定",
+                "oneLineAnswer": "非京籍需60个月社保，五环外可购1套，离婚1年内按原家庭算"
+              },
+              "nextNodes": [
+                "签约前-资格审查-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "签约前-资格审查-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "PRE-QUAL-010",
+                "name": "提前还房贷有什么限制",
+                "oneLineAnswer": "满1年免违约金，排队1-3月，还款过1/3提前还不划算"
+              },
+              "nextNodes": [
+                "签约前-资格审查-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "签约前-资格审查-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "PRE-QUAL-023",
+                "name": "借名买房纠纷怎么维权",
+                "oneLineAnswer": "可起诉配合过户，但若已卖给善意第三人只能索赔不能追房"
+              },
+              "nextNodes": [
+                "签约前-资格审查-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "签约前-资格审查-4",
+              "stage": "见后跟进",
+              "trigger": "买房前要自查哪些东西？",
+              "pushMemory": {
+                "entryId": "PRE-QUAL-100",
+                "name": "购房资格自查清单有哪些",
+                "oneLineAnswer": "资格征信公积金贷款首付7项全过再签约"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        }
+      ]
+    },
+    "签约中": {
+      "domain": "签约中",
+      "category": "trade",
+      "pathCount": 3,
+      "paths": [
+        {
+          "pathId": "签约中-P1",
+          "pathName": "合同条款对话流",
+          "subScene": "合同条款",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "签约中-合同条款-0",
+              "stage": "客户开口",
+              "trigger": "购房合同签了以后还能反悔吗？",
+              "pushMemory": {
+                "entryId": "SNG-CONT-001",
+                "name": "购房合同签了还能反悔吗",
+                "oneLineAnswer": "签了就生效，单方反悔要赔违约金或定金"
+              },
+              "nextNodes": [
+                "签约中-合同条款-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "签约中-合同条款-1",
+              "stage": "风险识别",
+              "trigger": "涉及合同条款的法律风险",
+              "pushMemory": {
+                "entryId": "SNG-CONT-001",
+                "name": "购房合同签了还能反悔吗",
+                "oneLineAnswer": "签了就生效，单方反悔要赔违约金或定金"
+              },
+              "nextNodes": [
+                "签约中-合同条款-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "签约中-合同条款-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "SNG-CONT-017",
+                "name": "签购房合同要带什么材料",
+                "oneLineAnswer": "身份证户口本婚姻证明必带，卖方还需带房产证"
+              },
+              "nextNodes": [
+                "签约中-合同条款-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "签约中-合同条款-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "SNG-CONT-034",
+                "name": "一房多卖法院怎么判",
+                "oneLineAnswer": "过户的优先，没过户的按占有、付款排序"
+              },
+              "nextNodes": [
+                "签约中-合同条款-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "签约中-合同条款-4",
+              "stage": "见后跟进",
+              "trigger": "签了两份内容不一样的合同以哪份为准？",
+              "pushMemory": {
+                "entryId": "SNG-CONT-060",
+                "name": "合同签了两份内容不一样以哪份为准",
+                "oneLineAnswer": "后签的优先以真实意思表示为准"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "签约中-P2",
+          "pathName": "定金订金对话流",
+          "subScene": "定金订金",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "签约中-定金订金-0",
+              "stage": "客户开口",
+              "trigger": "交了定金后不想买房了，定金能退吗？",
+              "pushMemory": {
+                "entryId": "SNG-DEPO-001",
+                "name": "交了定金不想买了能退吗",
+                "oneLineAnswer": "买方反悔定金不退，除非双方都没过错"
+              },
+              "nextNodes": [
+                "签约中-定金订金-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "签约中-定金订金-1",
+              "stage": "风险识别",
+              "trigger": "涉及定金订金的法律风险",
+              "pushMemory": {
+                "entryId": "SNG-DEPO-001",
+                "name": "交了定金不想买了能退吗",
+                "oneLineAnswer": "买方反悔定金不退，除非双方都没过错"
+              },
+              "nextNodes": [
+                "签约中-定金订金-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "签约中-定金订金-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "SNG-DEPO-005",
+                "name": "交定金要走什么流程",
+                "oneLineAnswer": "先签认购书再转账，收据写定金，保留凭证"
+              },
+              "nextNodes": [
+                "签约中-定金订金-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "签约中-定金订金-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "SNG-DEPO-010",
+                "name": "不可归责双方的定金退还案例",
+                "oneLineAnswer": "不可归责双方的定金应退还，有法院判例支持"
+              },
+              "nextNodes": [
+                "签约中-定金订金-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "签约中-定金订金-4",
+              "stage": "见后跟进",
+              "trigger": "定金协议里没写过过户时间，卖方一直拖着不过户，我能要求退定金吗？",
+              "pushMemory": {
+                "entryId": "SNG-DEPO-056",
+                "name": "定金协议没写过户时间怎么退",
+                "oneLineAnswer": "未约定过户时间可补充协议"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "签约中-P3",
+          "pathName": "资金监管对话流",
+          "subScene": "资金监管",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "签约中-资金监管-0",
+              "stage": "客户开口",
+              "trigger": "买房走资金监管是法律要求的吗？不走行不行？",
+              "pushMemory": {
+                "entryId": "SNG-FUND-001",
+                "name": "资金监管是法律强制要求的吗",
+                "oneLineAnswer": "商品房强制监管，二手房非强制但强烈建议走"
+              },
+              "nextNodes": [
+                "签约中-资金监管-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "签约中-资金监管-1",
+              "stage": "风险识别",
+              "trigger": "涉及资金监管的法律风险",
+              "pushMemory": {
+                "entryId": "SNG-FUND-001",
+                "name": "资金监管是法律强制要求的吗",
+                "oneLineAnswer": "商品房强制监管，二手房非强制但强烈建议走"
+              },
+              "nextNodes": [
+                "签约中-资金监管-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "签约中-资金监管-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "SNG-FUND-003",
+                "name": "资金监管怎么办理要走什么流程",
+                "oneLineAnswer": "签协议→开户→存入→过户→解冻→划转卖方"
+              },
+              "nextNodes": [
+                "签约中-资金监管-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "签约中-资金监管-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "SNG-FUND-007",
+                "name": "没有资金监管被卷款跑路的案例",
+                "oneLineAnswer": "有，200万直接转卖方后对方失联，钱追不回"
+              },
+              "nextNodes": [
+                "签约中-资金监管-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "签约中-资金监管-4",
+              "stage": "见后跟进",
+              "trigger": "我怎么确认监管账户里的首付金额和合同里写的一模一样？",
+              "pushMemory": {
+                "entryId": "SNG-FUND-056",
+                "name": "怎么核对监管账户里的余额对不对",
+                "oneLineAnswer": "通过官方渠道查询并打印余额确认单签字留存。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        }
+      ]
+    },
+    "签约后": {
+      "domain": "签约后",
+      "category": "trade",
+      "pathCount": 3,
+      "paths": [
+        {
+          "pathId": "签约后-P1",
+          "pathName": "纠纷处理对话流",
+          "subScene": "纠纷处理",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "签约后-纠纷处理-0",
+              "stage": "客户开口",
+              "trigger": "房子漏水三年了现在还能找开发商赔吗？",
+              "pushMemory": {
+                "entryId": "PST-DIS-052",
+                "name": "房产纠纷过了诉讼时效咋办",
+                "oneLineAnswer": "超过三年诉讼时效且对方抗辩，将丧失胜诉权。"
+              },
+              "nextNodes": [
+                "签约后-纠纷处理-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "签约后-纠纷处理-1",
+              "stage": "风险识别",
+              "trigger": "涉及纠纷处理的法律风险",
+              "pushMemory": {
+                "entryId": "PST-DIS-052",
+                "name": "房产纠纷过了诉讼时效咋办",
+                "oneLineAnswer": "超过三年诉讼时效且对方抗辩，将丧失胜诉权。"
+              },
+              "nextNodes": [
+                "签约后-纠纷处理-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "签约后-纠纷处理-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "PST-DIS-054",
+                "name": "房产纠纷怎么做证据保全",
+                "oneLineAnswer": "通过公证或向法院申请保全，及时固定易灭失证据。"
+              },
+              "nextNodes": [
+                "签约后-纠纷处理-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "签约后-纠纷处理-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "PST-DIS-060",
+                "name": "小区集体维权怎么合并审理",
+                "oneLineAnswer": "诉求一致的群体性纠纷可推选代表人合并审理。"
+              },
+              "nextNodes": [
+                "签约后-纠纷处理-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "签约后-纠纷处理-4",
+              "stage": "见后跟进",
+              "trigger": "打房产官司要是输了，我得掏哪些钱啊？",
+              "pushMemory": {
+                "entryId": "PST-DIS-046",
+                "name": "房产纠纷败诉要承担什么费用",
+                "oneLineAnswer": "需承担诉讼费、保全鉴定费，依约承担律师费及迟延履行利息。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "签约后-P2",
+          "pathName": "产权登记对话流",
+          "subScene": "产权登记",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "签约后-产权登记-0",
+              "stage": "客户开口",
+              "trigger": "买了房不动产权证怎么办理？大概多久能拿到？",
+              "pushMemory": {
+                "entryId": "PST-TITL-001",
+                "name": "不动产权证怎么办要多久",
+                "oneLineAnswer": "提交材料30个工作日内办结，登记费80元"
+              },
+              "nextNodes": [
+                "签约后-产权登记-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "签约后-产权登记-1",
+              "stage": "风险识别",
+              "trigger": "涉及产权登记的法律风险",
+              "pushMemory": {
+                "entryId": "PST-TITL-001",
+                "name": "不动产权证怎么办要多久",
+                "oneLineAnswer": "提交材料30个工作日内办结，登记费80元"
+              },
+              "nextNodes": [
+                "签约后-产权登记-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "签约后-产权登记-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "PST-TITL-004",
+                "name": "共有产权怎么登记份额",
+                "oneLineAnswer": "按份共有约好份额，共同共有不分份额平等"
+              },
+              "nextNodes": [
+                "签约后-产权登记-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "签约后-产权登记-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "PST-TITL-016",
+                "name": "二手房过户登记标准流程",
+                "oneLineAnswer": "网签→缴税→申请登记→审核→发证，约15-30日"
+              },
+              "nextNodes": [
+                "签约后-产权登记-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "签约后-产权登记-4",
+              "stage": "见后跟进",
+              "trigger": "我的房贷终于还清了，接下来怎么去房管局解除抵押？",
+              "pushMemory": {
+                "entryId": "PST-TITL-056",
+                "name": "房贷还清后怎么解除抵押登记",
+                "oneLineAnswer": "需向银行索要结清证明，到登记中心办理抵押注销。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "签约后-P3",
+          "pathName": "装修装饰对话流",
+          "subScene": "装修装饰",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "签约后-装修装饰-0",
+              "stage": "客户开口",
+              "trigger": "装修公司说这面墙能砸，真的是承重墙吗？",
+              "pushMemory": {
+                "entryId": "PST-DEC-052",
+                "name": "装修拆承重墙有什么后果",
+                "oneLineAnswer": "属严重违法，面临巨额罚款及刑责。"
+              },
+              "nextNodes": [
+                "签约后-装修装饰-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "签约后-装修装饰-1",
+              "stage": "风险识别",
+              "trigger": "涉及装修装饰的法律风险",
+              "pushMemory": {
+                "entryId": "PST-DEC-052",
+                "name": "装修拆承重墙有什么后果",
+                "oneLineAnswer": "属严重违法，面临巨额罚款及刑责。"
+              },
+              "nextNodes": [
+                "签约后-装修装饰-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "签约后-装修装饰-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "PST-DEC-054",
+                "name": "装修款分几次付最合理",
+                "oneLineAnswer": "按工程进度分四期支付最合理。"
+              },
+              "nextNodes": [
+                "签约后-装修装饰-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "签约后-装修装饰-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "PST-DEC-060",
+                "name": "砸承重墙判刑案例",
+                "oneLineAnswer": "涉嫌危害公共安全，面临刑责及巨赔。"
+              },
+              "nextNodes": [
+                "签约后-装修装饰-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "签约后-装修装饰-4",
+              "stage": "见后跟进",
+              "trigger": "我家装修时工人不小心从梯子上摔下来了，这医药费该我出还是包工头出啊？",
+              "pushMemory": {
+                "entryId": "PST-DEC-046",
+                "name": "装修时工人受伤谁赔",
+                "oneLineAnswer": "包给正规公司由他们赔，房东瞎指挥或选任无资质者需担责。"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        }
+      ]
+    },
+    "trade": {
+      "domain": "trade",
+      "category": "trade",
+      "pathCount": 3,
+      "paths": [
+        {
+          "pathId": "trade-P1",
+          "pathName": "谈判斡旋对话流",
+          "subScene": "谈判斡旋",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "trade-谈判斡旋-0",
+              "stage": "客户开口",
+              "trigger": "我交了定金后不想买了，这钱还能要回来吗？",
+              "pushMemory": {
+                "entryId": "P0-NEG-CASE-001",
+                "name": "定金交了想反悔能退吗",
+                "oneLineAnswer": "买方因自身原因违约，定金依法不予退还。"
+              },
+              "nextNodes": [
+                "trade-谈判斡旋-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "trade-谈判斡旋-1",
+              "stage": "风险识别",
+              "trigger": "涉及谈判斡旋的法律风险",
+              "pushMemory": {
+                "entryId": "P0-NEGO-016",
+                "name": "买家口头承诺加价后反悔，定金能退吗？",
+                "oneLineAnswer": "无书面签字且无确凿证据，定金通常需退还。"
+              },
+              "nextNodes": [
+                "trade-谈判斡旋-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "trade-谈判斡旋-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "P0-NEGO-024",
+                "name": "口头达成的降价协议，没有书面确认有效吗？",
+                "oneLineAnswer": "纯口头无效，微信或短信等电子确认有效。"
+              },
+              "nextNodes": [
+                "trade-谈判斡旋-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "trade-谈判斡旋-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "P0-NEG-CASE-001",
+                "name": "定金交了想反悔能退吗",
+                "oneLineAnswer": "买方因自身原因违约，定金依法不予退还。"
+              },
+              "nextNodes": [
+                "trade-谈判斡旋-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "trade-谈判斡旋-4",
+              "stage": "见后跟进",
+              "trigger": "谈判除了价格还能谈什么？",
+              "pushMemory": {
+                "entryId": "P0-NEGO-004",
+                "name": "筹码管理决定谈判主动权",
+                "oneLineAnswer": "7类筹码：付款/交房/装修/家具/户口/税费/维修"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "trade-P2",
+          "pathName": "客户解码对话流",
+          "subScene": "客户解码",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "trade-客户解码-0",
+              "stage": "客户开口",
+              "trigger": "中介说我贷得起结果批不下来，算谁违约？",
+              "pushMemory": {
+                "entryId": "P0-DEC-022",
+                "name": "客户预算评估偏差导致后期违约怎么算",
+                "oneLineAnswer": "需精准核算隐性成本，偏差致违约需担责。"
+              },
+              "nextNodes": [
+                "trade-客户解码-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "trade-客户解码-1",
+              "stage": "风险识别",
+              "trigger": "涉及客户解码的法律风险",
+              "pushMemory": {
+                "entryId": "P0-DEC-022",
+                "name": "客户预算评估偏差导致后期违约怎么算",
+                "oneLineAnswer": "需精准核算隐性成本，偏差致违约需担责。"
+              },
+              "nextNodes": [
+                "trade-客户解码-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "trade-客户解码-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "P0-DEC-024",
+                "name": "挖掘客户真实需求的标准话术流程",
+                "oneLineAnswer": "用结构化提问引导，确保需求真实准确。"
+              },
+              "nextNodes": [
+                "trade-客户解码-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "trade-客户解码-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "P0-DEC-CASE-001",
+                "name": "交了定金才发现没购房资格能退吗",
+                "oneLineAnswer": "买方自身原因无购房资格导致违约，定金不予退还。"
+              },
+              "nextNodes": [
+                "trade-客户解码-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "trade-客户解码-4",
+              "stage": "见后跟进",
+              "trigger": "客户情绪怎么判断和应对？",
+              "pushMemory": {
+                "entryId": "P0-DEC-005",
+                "name": "情绪识别是成交前置关卡",
+                "oneLineAnswer": "焦虑给确定性，犹豫给安全感"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        },
+        {
+          "pathId": "trade-P3",
+          "pathName": "带看服务对话流",
+          "subScene": "带看服务",
+          "nodeCount": 5,
+          "nodes": [
+            {
+              "nodeId": "trade-带看服务-0",
+              "stage": "客户开口",
+              "trigger": "中介带看时没告诉我房子漏水，我交了定金还能退吗？",
+              "pushMemory": {
+                "entryId": "P0-SEE-CASE-001",
+                "name": "中介带看没告知房屋漏水能退定金吗",
+                "oneLineAnswer": "中介隐瞒房屋漏水瑕疵，买方有权要求退还定金及中介费。"
+              },
+              "nextNodes": [
+                "trade-带看服务-1"
+              ],
+              "questionType": "问题识别"
+            },
+            {
+              "nodeId": "trade-带看服务-1",
+              "stage": "风险识别",
+              "trigger": "涉及带看服务的法律风险",
+              "pushMemory": {
+                "entryId": "P0-SEE-016",
+                "name": "带看时发现房子有暗病要不要告诉客户（P0-SEE）",
+                "oneLineAnswer": "必须如实告知，隐瞒涉嫌欺诈需担责。"
+              },
+              "nextNodes": [
+                "trade-带看服务-2"
+              ],
+              "questionType": "风险预警"
+            },
+            {
+              "nodeId": "trade-带看服务-2",
+              "stage": "方案建议",
+              "trigger": "经纪人提供专业建议",
+              "pushMemory": {
+                "entryId": "P0-SEE-017",
+                "name": "看了好几套房都拿不定主意怎么推（P0-SEE）",
+                "oneLineAnswer": "梳理核心需求排序，客观对比优劣势。"
+              },
+              "nextNodes": [
+                "trade-带看服务-3"
+              ],
+              "questionType": "行动指引"
+            },
+            {
+              "nodeId": "trade-带看服务-3",
+              "stage": "案例佐证",
+              "trigger": "有类似案例可以参考吗",
+              "pushMemory": {
+                "entryId": "P0-SEE-CASE-001",
+                "name": "中介带看没告知房屋漏水能退定金吗",
+                "oneLineAnswer": "中介隐瞒房屋漏水瑕疵，买方有权要求退还定金及中介费。"
+              },
+              "nextNodes": [
+                "trade-带看服务-4"
+              ],
+              "questionType": "案例参考"
+            },
+            {
+              "nodeId": "trade-带看服务-4",
+              "stage": "见后跟进",
+              "trigger": "两套房怎么帮客户客观对比？",
+              "pushMemory": {
+                "entryId": "P0-SEE-004",
+                "name": "竞品对比要主动比缺点",
+                "oneLineAnswer": "三优一缺，让客户自己做选择题"
+              },
+              "nextNodes": [],
+              "questionType": "持续关怀"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

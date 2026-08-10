@@ -1,0 +1,82 @@
+name: 🔍 每日巡检 · CTO小扣子
+
+on:
+  schedule:
+    # 北京时间 09:00 / 14:00 / 22:00（UTC 1:00 / 6:00 / 14:00）
+    - cron: "0 1,6,14 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  daily-check:
+    name: 全站健康巡检
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 运行 Python 巡检脚本
+        id: check
+        run: |
+          echo "=== 🚀 开始巡检 · $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S') ==="
+          echo ""
+          python3 scripts/daily_check.py --json || true
+          echo ""
+          echo "=== 巡检结束 ==="
+        env:
+          CHECK_URL: https://fengsheng.tech
+
+      - name: 读取巡检报告
+        if: always()
+        id: report
+        run: |
+          REPORT=""
+          if [ -f scripts/report.json ]; then
+            REPORT=$(cat scripts/report.json)
+          fi
+          echo "report<<EOF" >> $GITHUB_OUTPUT
+          echo "$REPORT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 🔴 异常时自动开 Issue
+        if: steps.check.outcome == 'failure' || failure()
+        run: |
+          echo "## 🔴 发现异常，自动开单"
+          REPORT=""
+          if [ -f scripts/report.json ]; then
+            REPORT=$(cat scripts/report.json)
+          fi
+
+          ISSUE_BODY="### 🔴 巡检异常报告
+**时间**: $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S') 北京时间
+**触发**: GitHub Actions 定时巡检
+**建议**:
+1. 打开 Cloudflare Dashboard → Pages → 查看部署日志
+2. 检查最新 commit 是否引入问题
+3. 必要时一键回滚到前一版本
+4. 通知小扣子/生哥
+
+---
+
+<details><summary>📄 详细巡检报告</summary>
+<pre>
+$(cat scripts/report.json 2>/dev/null || echo "无报告")
+</pre>
+</details>
+
+---
+*由风声CTO巡检系统自动创建*"
+
+          echo "$ISSUE_BODY" > /tmp/issue_body.md
+          echo "Issue内容已生成"
+
+      - name: 创建 Issue
+        if: failure()
+        run: |
+          curl -s -X POST https://api.github.com/repos/${GITHUB_REPOSITORY}/issues \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -d '{"title":"🔴 [P0] 网站巡检发现异常 · '"$(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M')"'","body":"### 🔴 巡检异常报告\n**时间**: '"$(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S')"' 北京时间\n\n**触发**: GitHub Actions 自动巡检\n\n**建议**:\n1. 打开 Cloudflare Dashboard → Pages 检查部署状态\n2. 查看 Git log 确认最近变更\n3. 必要时一键回滚\n4. 通知生哥/小扣子\n\n---\n*由风声CTO巡检系统自动创建*","labels":["P0","小扣子","运维告警"]}'

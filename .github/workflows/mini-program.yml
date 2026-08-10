@@ -1,0 +1,117 @@
+name: 小程序构建
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号 (如 v1.0.0)'
+        required: false
+        default: 'v1.0.0'
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - 'fs-mini-program/**'
+      - '.github/workflows/mini-program.yml'
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build:
+    name: 构建微信小程序
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'fengsheng-shengge/fengsheng-tasks' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: fs-mini-program/package-lock.json
+
+      - name: Install dependencies
+        working-directory: fs-mini-program
+        run: npm ci
+
+      # ============================================================
+      # Step 1: Build uni-app → 微信小程序
+      # ============================================================
+      - name: Build uni-app for WeChat Mini Program
+        working-directory: fs-mini-program
+        run: npm run build:mp-weixin
+        env:
+          BASE_API_URL: https://fengsheng.tech
+
+      # ============================================================
+      # Step 2: 验证构建产物
+      # ============================================================
+      - name: Verify build output
+        working-directory: fs-mini-program
+        run: |
+          echo "=== 检查构建产物 ==="
+          if [ -d "dist/build/mp-weixin" ]; then
+            echo "✓ 构建产物目录存在: dist/build/mp-weixin"
+            echo "  文件数: $(find dist/build/mp-weixin -type f | wc -l)"
+            echo "  app.js: $(ls dist/build/mp-weixin/app.js 2>/dev/null && echo '存在' || echo '缺失')"
+            echo "  app.json: $(ls dist/build/mp-weixin/app.json 2>/dev/null && echo '存在' || echo '缺失')"
+            echo "  pages/: $(find dist/build/mp-weixin/pages -type f 2>/dev/null | wc -l) 个文件"
+          else
+            echo "✗ 构建产物目录不存在！"
+            exit 1
+          fi
+
+      # ============================================================
+      # Step 3: 打包构建产物
+      # ============================================================
+      - name: Package build output
+        working-directory: fs-mini-program
+        run: |
+          VERSION="${{ inputs.version || 'v1.0.0' }}"
+          cd dist/build/mp-weixin
+          zip -r "../../../../mp-weixin-${VERSION}.zip" . -x "node_modules/*"
+          cd -
+          echo "✓ 打包完成: mp-weixin-${VERSION}.zip"
+          ls -lh "../mp-weixin-${VERSION}.zip" || ls -lh "mp-weixin-${VERSION}.zip"
+
+      # ============================================================
+      # Step 4: 上传为GitHub Artifact（供下载）
+      # ============================================================
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mp-weixin-${{ inputs.version || 'v1.0.0' }}
+          path: fs-mini-program/dist/build/mp-weixin/
+          retention-days: 30
+
+      # ============================================================
+      # Step 5: 构建完成通知
+      # ============================================================
+      - name: 构建完成通知
+        run: |
+          VERSION="${{ inputs.version || 'v1.0.0' }}"
+          echo "=========================================="
+          echo "✅ 微信小程序构建成功！"
+          echo "🔢 版本: ${VERSION}"
+          echo ""
+          echo "📥 下载构建产物:"
+          echo "   GitHub Actions → 本次运行 → Artifacts → mp-weixin-${VERSION}"
+          echo ""
+          echo "📋 上传到微信(二选一):"
+          echo ""
+          echo "   方案A: 微信开发者工具（推荐，无需IP白名单）"
+          echo "   1. 下载并解压构建产物"
+          echo "   2. 打开微信开发者工具 → 导入项目"
+          echo "   3. 目录选择解压后的文件夹"
+          echo "   4. AppID填: wxb87aa256991cc9c6"
+          echo "   5. 点击上传按钮，填写版本号 ${VERSION}"
+          echo ""
+          echo "   方案B: miniprogram-ci 本地上传"
+          echo "   1. 下载并解压构建产物"
+          echo "   2. 确保本机IP已在白名单中"
+          echo "   3. 运行: npx miniprogram-ci --appid wxb87aa256991cc9c6 ..."
+          echo "=========================================="
