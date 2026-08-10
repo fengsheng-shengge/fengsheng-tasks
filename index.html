@@ -888,6 +888,57 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
   </div>
 </div>
 
+<!-- ====== 使用概览 ====== -->
+<div class="usage-overview" id="usageOverview">
+  <div class="usage-title">📊 使用概览</div>
+  <div class="usage-metrics" id="usageMetrics">
+    <div class="usage-metric"><span class="usage-number" id="usageUsers">—</span><span class="usage-label">累计用户</span></div>
+    <div class="usage-metric"><span class="usage-number" id="usagePageviews">—</span><span class="usage-label">页面浏览</span></div>
+    <div class="usage-metric"><span class="usage-number" id="usageFeedback">—</span><span class="usage-label">反馈</span></div>
+    <div class="usage-metric"><span class="usage-number" id="usageReturn">—</span><span class="usage-label">回访率</span></div>
+  </div>
+  <div class="usage-foot">
+    <a href="/dashboard/" class="usage-link">查看完整分析看板 →</a>
+  </div>
+</div>
+
+<style>
+.usage-overview{max-width:640px;margin:32px auto 0;padding:16px 20px;background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(44,95,58,0.08);text-align:center;font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif}
+.usage-title{font-size:15px;font-weight:700;color:#2C5F3A;margin-bottom:12px;letter-spacing:.5px}
+.usage-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px}
+.usage-metric{display:flex;flex-direction:column;align-items:center;gap:2px}
+.usage-number{font-size:22px;font-weight:800;color:#1a1a1a}
+.usage-label{font-size:11px;color:#7a8478}
+.usage-foot{padding-top:8px;border-top:1px solid rgba(80,90,70,.09)}
+.usage-link{font-size:12px;color:#3d5a3e;font-weight:600;text-decoration:none}
+.usage-link:hover{text-decoration:underline}
+@media(max-width:480px){.usage-metrics{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<script>
+(function(){
+  var el = document.getElementById('usageOverview');
+  if (!el) return;
+  try {
+    fetch('/api/stats/analytics?days=30').then(function(r){ return r.json(); }).then(function(data){
+      if (data && data.frequency) {
+        var f = data.frequency;
+        document.getElementById('usageUsers').textContent = f.total_users || '—';
+        document.getElementById('usageReturn').textContent = (f.return_rate_pct || 0) + '%';
+        if (data.feedback) {
+          document.getElementById('usageFeedback').textContent = data.feedback.total_ratings || '—';
+        }
+      }
+    }).catch(function(){});
+    fetch('/api/stats').then(function(r){ return r.json(); }).then(function(data){
+      if (data && data.pv !== null) {
+        document.getElementById('usagePageviews').textContent = data.pv || '—';
+      }
+    }).catch(function(){});
+  } catch(e) {}
+})();
+</script>
+
 <!-- ====== Footer + 反馈组件 ====== -->
 <div class="page-footer">
   <div class="footer-brand">🌬️ 风声 · 通过独立价值获得尊重</div>

@@ -247,6 +247,32 @@ a{color:#60a5fa;text-decoration:none}
   <div class="section-title" style="margin-top:24px"><h2>🤖 六Agent 作战状态</h2><span class="tag tag-m2">8.7 22:24晚间更新</span></div>
   <div class="agents" id="agents-grid"></div>
 
+  <!-- 使用分析 -->
+  <div class="section-title" style="margin-top:24px"><h2>📊 使用分析</h2><span class="tag tag-m3">用户频次 · 时长 · 特征 · 反馈</span></div>
+
+  <div id="analytics-section" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px">
+    <!-- 频次 -->
+    <div class="chart-area" style="margin-bottom:0">
+      <div class="chart-header"><h2>📅 访问频次 (DAU)</h2><span id="analytics-freq-note" style="font-size:11px;color:#64748b"></span></div>
+      <div id="analytics-freq" style="font-size:13px;color:#94a3b8">加载中…</div>
+    </div>
+    <!-- 时长 -->
+    <div class="chart-area" style="margin-bottom:0">
+      <div class="chart-header"><h2>⏱️ 会话时长分布</h2><span id="analytics-dur-note" style="font-size:11px;color:#64748b"></span></div>
+      <div id="analytics-duration" style="font-size:13px;color:#94a3b8">加载中…</div>
+    </div>
+    <!-- 特征使用 -->
+    <div class="chart-area" style="margin-bottom:0">
+      <div class="chart-header"><h2>🎯 功能使用排行</h2><span id="analytics-feat-note" style="font-size:11px;color:#64748b"></span></div>
+      <div id="analytics-features" style="font-size:13px;color:#94a3b8">加载中…</div>
+    </div>
+    <!-- 反馈 -->
+    <div class="chart-area" style="margin-bottom:0">
+      <div class="chart-header"><h2>💬 用户反馈</h2><span id="analytics-fb-note" style="font-size:11px;color:#64748b"></span></div>
+      <div id="analytics-feedback" style="font-size:13px;color:#94a3b8">加载中…</div>
+    </div>
+  </div>
+
   <!-- Health -->
   <div class="section-title" style="margin-top:24px"><h2>🔧 基础设施</h2></div>
   <div class="health-row" id="health-row"></div>
@@ -479,14 +505,183 @@ a{color:#60a5fa;text-decoration:none}
       '<div class="health-card"><div class="health-dot '+(ok?'ok':'degraded')+'"></div><div><div class="health-label">API 服务</div><div class="health-value">'+(ok?'正常':'异常')+'</div></div></div>';
   }
 
+  // ===== Analytics Rendering =====
+  function renderAnalytics(data) {
+    if (!data) {
+      document.querySelectorAll('#analytics-section > div').forEach(el => {
+        el.innerHTML = '<div style="color:#64748b;font-size:13px;padding:20px;text-align:center">暂无数据</div>';
+      });
+      return;
+    }
+
+    // 1. Frequency
+    renderAnalyticsFreq(data);
+    // 2. Duration
+    renderAnalyticsDuration(data);
+    // 3. Features
+    renderAnalyticsFeatures(data);
+    // 4. Feedback
+    renderAnalyticsFeedback(data);
+  }
+
+  function renderAnalyticsFreq(data) {
+    const el = document.getElementById('analytics-freq');
+    const note = document.getElementById('analytics-freq-note');
+    if (!data.frequency) { el.innerHTML = '<div style="color:#64748b">暂无频次数据</div>'; return; }
+    const f = data.frequency;
+    note.textContent = '总用户 ' + f.total_users + ' · 回访 ' + f.returning_users + ' (' + f.return_rate_pct + '%)';
+    if (!f.daily || f.daily.length === 0) {
+      el.innerHTML = '<div style="color:#64748b">暂无日活数据</div>';
+      return;
+    }
+    // Bar chart for DAU
+    const maxDau = Math.max(1, ...f.daily.map(d => d.dau || 0));
+    let html = '<div style="display:flex;gap:6px;align-items:flex-end;height:120px;padding:8px 0">';
+    for (const d of f.daily) {
+      const h = Math.max(4, ((d.dau || 0) / maxDau) * 100);
+      html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">' +
+        '<span style="font-size:11px;font-weight:700;color:#e2e8f0">' + (d.dau || 0) + '</span>' +
+        '<div style="width:100%;height:' + h.toFixed(0) + 'px;background:linear-gradient(180deg,#3b82f6,#1d4ed8);border-radius:4px 4px 0 0;min-height:4px;transition:height .5s"></div>' +
+        '<span style="font-size:9px;color:#64748b">' + (d.date ? d.date.slice(5) : '') + '</span>' +
+        '</div>';
+    }
+    html += '</div>';
+    // Event count trend
+    html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #1e293b">';
+    html += '<div style="font-size:11px;color:#64748b;margin-bottom:4px">事件量趋势</div>';
+    const maxEvt = Math.max(1, ...f.daily.map(d => d.events || 0));
+    html += '<div style="display:flex;gap:6px;align-items:flex-end;height:60px">';
+    for (const d of f.daily) {
+      const h = Math.max(3, ((d.events || 0) / maxEvt) * 50);
+      html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">' +
+        '<div style="width:100%;height:' + h.toFixed(0) + 'px;background:linear-gradient(180deg,#22c55e,#15803d);border-radius:3px 3px 0 0;min-height:3px"></div>' +
+        '<span style="font-size:8px;color:#64748b">' + (d.events || 0) + '</span>' +
+        '</div>';
+    }
+    html += '</div></div>';
+    el.innerHTML = html;
+  }
+
+  function renderAnalyticsDuration(data) {
+    const el = document.getElementById('analytics-duration');
+    const note = document.getElementById('analytics-dur-note');
+    if (!data.duration || data.duration.sessions_measured === 0) {
+      el.innerHTML = '<div style="color:#64748b;padding:20px;text-align:center">暂无时长数据<br><span style="font-size:11px">需启用新版 tracker.js 后产生 session_end 事件</span></div>';
+      return;
+    }
+    const d = data.duration;
+    note.textContent = '平均 ' + d.avg_sec + 's · 最长 ' + d.max_sec + 's · 测量 ' + d.sessions_measured + ' 次会话';
+    const dist = d.distribution;
+    const labels = ['<30s', '30s-2m', '2-5m', '5-10m', '>10m'];
+    const vals = [dist.under_30s, dist.under_2m, dist.under_5m, dist.under_10m, dist.over_10m];
+    const maxVal = Math.max(1, ...vals);
+    const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#22c55e', '#a855f7'];
+    let html = '<div style="padding:8px 0">';
+    for (let i = 0; i < labels.length; i++) {
+      const pct = Math.round((vals[i] / d.sessions_measured) * 100);
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+        '<span style="font-size:11px;color:#94a3b8;min-width:50px;text-align:right">' + labels[i] + '</span>' +
+        '<div style="flex:1;height:18px;background:#334155;border-radius:4px;overflow:hidden">' +
+        '<div style="height:100%;width:' + pct + '%;background:' + colors[i] + ';border-radius:4px;transition:width .8s;min-width:4px"></div></div>' +
+        '<span style="font-size:11px;color:#e2e8f0;min-width:30px">' + pct + '%</span>' +
+        '</div>';
+    }
+    html += '<div style="margin-top:6px;font-size:11px;color:#64748b;text-align:center">' +
+      '平均 ' + d.avg_sec + 's · 最长 ' + d.max_sec + 's</div></div>';
+    el.innerHTML = html;
+  }
+
+  function renderAnalyticsFeatures(data) {
+    const el = document.getElementById('analytics-features');
+    const note = document.getElementById('analytics-feat-note');
+    if (!data.features || data.features.length === 0) {
+      el.innerHTML = '<div style="color:#64748b;padding:20px;text-align:center">暂无功能使用数据</div>';
+      return;
+    }
+    const features = data.features.slice(0, 12);
+    const maxCount = Math.max(1, ...features.map(f => f.count || 0));
+    note.textContent = features.length + ' 种功能类型';
+    let html = '<div style="padding:4px 0">';
+    const featLabels = {
+      click: '点击', search: '搜索', scroll_depth: '滚动深度',
+      filter_select: '筛选选择', filter_toggle: '筛选切换',
+      scene_tab: '场景切换', pagination: '翻页', export: '导出',
+      reply_submit: '回复提交', feedback_submit: '反馈提交',
+      feedback_panel_open: '反馈面板', session_end: '会话结束',
+      page_leave: '页面离开', heartbeat: '心跳', pageview: '页面浏览',
+      filter_remove: '筛选移除', coze_chat_open: 'AI对话'
+    };
+    for (const f of features) {
+      const label = featLabels[f.event_type] || f.event_type;
+      const pct = Math.round((f.count / maxCount) * 100);
+      const uniquePct = Math.round((f.unique_users / Math.max(1, data.frequency.total_users)) * 100);
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">' +
+        '<span style="font-size:11px;color:#94a3b8;min-width:72px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + label + '</span>' +
+        '<div style="flex:1;height:16px;background:#334155;border-radius:4px;overflow:hidden">' +
+        '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#3b82f6,#60a5fa);border-radius:4px;min-width:4px;transition:width .8s"></div></div>' +
+        '<span style="font-size:10px;color:#e2e8f0;min-width:40px;text-align:right">' + f.count + '</span>' +
+        '<span style="font-size:9px;color:#64748b;min-width:30px">' + f.unique_users + '人</span>' +
+        '</div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  function renderAnalyticsFeedback(data) {
+    const el = document.getElementById('analytics-feedback');
+    const note = document.getElementById('analytics-fb-note');
+    if (!data.feedback) {
+      el.innerHTML = '<div style="color:#64748b;padding:20px;text-align:center">暂无反馈数据</div>';
+      return;
+    }
+    const fb = data.feedback;
+    note.textContent = '共 ' + fb.total_ratings + ' 条评分 · 平均 ' + (fb.avg_rating || '—') + '/5';
+    let html = '';
+    // Rating distribution
+    if (fb.rating_distribution) {
+      html += '<div style="margin-bottom:10px">';
+      const maxR = Math.max(1, ...Object.values(fb.rating_distribution));
+      for (let i = 5; i >= 1; i--) {
+        const cnt = fb.rating_distribution[i] || 0;
+        const pct = Math.round((cnt / maxR) * 100);
+        html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">' +
+          '<span style="font-size:10px;color:#94a3b8;min-width:12px;text-align:right">' + i + '</span>' +
+          '<span style="font-size:10px;color:#f59e0b">★</span>' +
+          '<div style="flex:1;height:12px;background:#334155;border-radius:3px;overflow:hidden">' +
+          '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:3px;min-width:4px"></div></div>' +
+          '<span style="font-size:10px;color:#e2e8f0;min-width:20px">' + cnt + '</span>' +
+          '</div>';
+      }
+      html += '</div>';
+    }
+    // Recent feedback texts
+    if (fb.recent && fb.recent.length > 0) {
+      html += '<div style="font-size:11px;color:#64748b;margin-bottom:6px">最近反馈</div>';
+      html += '<div class="feedback-stream" style="max-height:140px;overflow-y:auto">';
+      for (const r of fb.recent) {
+        if (!r.content) continue;
+        const stars = r.rating ? '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating) : '';
+        html += '<div class="fb-item" style="padding:6px 0">' +
+          '<span style="color:#f59e0b;font-size:10px;min-width:40px">' + stars + '</span>' +
+          '<span style="color:#94a3b8;flex:1;font-size:11px">' + r.content.slice(0, 120) + '</span>' +
+          '</div>';
+      }
+      html += '</div>';
+    } else {
+      html += '<div style="color:#64748b;font-size:12px;text-align:center;padding:12px">暂无文字反馈</div>';
+    }
+    el.innerHTML = html;
+  }
+
   async function refreshAll() {
     document.getElementById('status-badge').textContent = '⟳ 刷新中…';
     const ts = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
 
-    const [summary, daily, health] = await Promise.all([
+    const [summary, daily, health, analytics] = await Promise.all([
       safeFetch(API_BASE + '/summary'),
       safeFetch(API_BASE + '/daily?days=7'),
-      safeFetch(API_BASE + '/health')
+      safeFetch(API_BASE + '/health'),
+      safeFetch(API_BASE + '/analytics?days=14')
     ]);
 
     if (summary) {
@@ -504,6 +699,7 @@ a{color:#60a5fa;text-decoration:none}
     renderChart(daily || {daily:[]});
     renderHealth(health || {status:'degraded', events_count:-1, feedback_count:-1, db_connected:false});
     renderAgents();
+    renderAnalytics(analytics);
     document.getElementById('last-update').textContent = '更新：' + ts;
   }
 
