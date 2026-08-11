@@ -7,7 +7,7 @@
 /care-test.html /care-test/ 301
 /quality-test.html /quality-test/ 301
 /knowledge.html /knowledge/ 301
-# 8.2 13:52 #11 dashboard 双路径 CSS 缺 13 行修复：/dashboard/ 走的是 dashboard/index.html(v3.3 旧版) 而 /dashboard 走 dashboard.html(v5.0 新版含 .agents CSS)，301 跳到新版
-/dashboard/ /dashboard 301
+# 8.9 22:24 修复 308 循环：/dashboard 内部改写为 /dashboard/，走 dashboard/index.html 新版
+/dashboard /dashboard/ 200
 # 微信域名校验文件 — 直接返回，不走 SPA fallback（#188 修复·PR#198 等价）
 /MP_verify_*  /MP_verify_*  200

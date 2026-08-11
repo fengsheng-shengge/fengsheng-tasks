@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>风声 · 知识底座</title>
-<meta name="description" content="风声知识底座 · 文化/使命/愿景/价值观 · 美好居住三层 · 6597词条 · 68业务域 · 9岗位45能力点 · 单文件零依赖">
+<meta name="description" content="风声知识底座 · 文化/使命/愿景/价值观 · 美好居住三层 · 5067词条 · 13业务域 · 9岗位45能力点 · 单文件零依赖">
 <style>
 :root {
   --p: #3d5a3e;
@@ -307,12 +307,12 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
   <div class="nav-inner">
     <div class="brand"><div class="brand-mark">风</div><span>风声</span></div>
     <div class="nav-links">
-      <a class="nav-link" href="/">首页</a>
-      <a class="nav-link" href="/assessment/">六维测评</a>
-      <a class="nav-link" href="/breeder/">培养师</a>
-      <a class="nav-link" href="/quality-test/">品质测评</a>
+      <a class="nav-link" href="#">首页</a>
+      <a class="nav-link" href="#">六维测评</a>
+      <a class="nav-link" href="#">培养师</a>
+      <a class="nav-link" href="#">品质测评</a>
       <a class="nav-link active" href="#pillars">知识底座<span class="dot"></span></a>
-      <a class="nav-link" href="/dashboard/">数据看板</a>
+      <a class="nav-link" href="#">数据看板</a>
     </div>
   </div>
 </nav>
@@ -711,7 +711,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
     <div>
       <div class="section-tag" id="dictSectionTag">📖 业务字典 · 8域词条</div>
       <h2 class="section-title">全量词条索引</h2>
-      <p class="section-sub" id="dictSectionSub">68大业务域 · 6597 词条逐步补全中 · 每条词条含定义+正反话术+消费者问题+服务者回答</p>
+      <p class="section-sub" id="dictSectionSub">13大业务域 · 5067 词条逐步补全中 · 每条词条含定义+正反话术+消费者问题+服务者回答</p>
     </div>
     <a href="/dictionary/" class="section-more-btn">查看全部 →</a>
     <div id="dictVerifyBadge" style="font-size:11px;padding:4px 10px;border-radius:4px;background:var(--fire);color:white;font-weight:600"></div>
@@ -745,7 +745,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
       <a href="/dictionary/" class="guide-card" style="border-top:3px solid var(--wood)">
         <div class="guide-icon">📚</div>
         <div class="guide-name">全量词典 · FABE卡片</div>
-        <div class="guide-desc">核心资产 · 七维筛选 · 6597条词条 · FABE知识卡片格式。所有产品从这里长出来。</div>
+        <div class="guide-desc">核心资产 · 七维筛选 · 5067条词条 · FABE知识卡片格式。所有产品从这里长出来。</div>
       </a>
     </div>
   </div>
@@ -755,10 +755,10 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
   <div class="footer-inner">
     <div>© 2026 风声 · 通过独立价值获得尊重</div>
     <div class="footer-links">
-      <a href="/knowledge/">知识底座</a>
-      <a href="/quality-test/">品质测评</a>
-      <a href="/reply/">客户解码器</a>
-      <a href="/about/">关于风声</a>
+      <a href="#">知识底座</a>
+      <a href="#">品质测评</a>
+      <a href="#">客户解码器</a>
+      <a href="#">关于风声</a>
     </div>
   </div>
 </footer>
@@ -812,49 +812,14 @@ const DOMAIN_CONFIG = {
   '签约后':  { icon:'✅', title:'签约后',      desc:'交房验收、售后跟进、关系维护' },
   '居住中':  { icon:'🏠', title:'居住中',      desc:'居住品质、日常服务、社区生活' },
   '退租出售': { icon:'🚪', title:'退租出售',    desc:'退租交接、房源出售、资产处置' },
-  '业主侧':  { icon:'👤', title:'业主服务',    desc:'业主委托、资产管理、收益优化' },
+  '业主':    { icon:'👤', title:'业主服务',    desc:'业主委托、资产管理、收益优化' },
   '资产持有与运营': { icon:'📊', title:'资产持有与运营', desc:'资产配置、运营管理、价值提升' },
-  '资产持有与运营·业主侧': { icon:'🏢', title:'资产持有与运营·业主侧', desc:'业主侧资产配置、运营管理' },
   '职业成长': { icon:'📈', title:'职业成长',    desc:'能力提升、职业规划、行业认知' },
   '跨域通用': { icon:'🔗', title:'跨域通用',    desc:'跨场景通用知识、基础能力' },
+  'SNG':     { icon:'🎵', title:'SNG · 场景词条', desc:'特定场景专项词条' },
   'OWN':     { icon:'🏢', title:'OWN · 业主专域', desc:'业主侧专项词条' },
-  'CRO':     { icon:'🔄', title:'CRO · 跨域',   desc:'跨域通用词条' },
-  '社区服务与运营': { icon:'🏘️', title:'社区服务与运营', desc:'社区服务、运营管理、邻里关系' },
-  '房产交易': { icon:'🏠', title:'房产交易',    desc:'房产交易全流程知识' },
-  '谈判斡旋': { icon:'🤝', title:'谈判斡旋',    desc:'谈判技巧、斡旋策略' },
-  '客户解码': { icon:'🔎', title:'客户解码',    desc:'客户需求分析、行为解码' },
-  '带看服务': { icon:'👣', title:'带看服务',    desc:'带看流程、服务规范' },
-  '法规政策': { icon:'⚖️', title:'法规政策',    desc:'法律法规、政策解读' },
-  '学区教育': { icon:'🎓', title:'学区教育',    desc:'学区政策、教育资源' },
-  '业主出售': { icon:'💰', title:'业主出售',    desc:'业主卖房、资产处置' },
-  '资产托管服务': { icon:'📋', title:'资产托管服务', desc:'资产托管、运营管理' },
-  '社区生活·物业': { icon:'🏢', title:'社区生活·物业', desc:'物业管理、社区服务' },
-  '社区生活·邻里': { icon:'👥', title:'社区生活·邻里', desc:'邻里关系、社区生活' },
-  '社区生活·继承': { icon:'📜', title:'社区生活·继承', desc:'继承相关、产权转移' },
-  '购房':    { icon:'🏡', title:'购房指南',    desc:'购房流程、选房策略' },
-  '市场分析': { icon:'📊', title:'市场分析',    desc:'房产市场分析、趋势' },
-  '搬家服务': { icon:'📦', title:'搬家服务',    desc:'搬家流程、服务规范' },
-  '保洁服务': { icon:'🧹', title:'保洁服务',    desc:'保洁标准、服务规范' },
-  '房东出租': { icon:'🔑', title:'房东出租',    desc:'出租管理、租客服务' },
-  '交房售后': { icon:'✅', title:'交房售后',    desc:'交房验收、售后服务' },
-  '租住':    { icon:'🏠', title:'租住指南',    desc:'租住常识、权益保障' },
-  '物业管理': { icon:'🏛️', title:'物业管理',    desc:'物业管理法规、服务' },
-  '房屋租赁': { icon:'📄', title:'房屋租赁',    desc:'租赁法规、合同规范' },
-  '房屋质量': { icon:'🔨', title:'房屋质量',    desc:'房屋质量检测、标准' },
-  '邻里关系': { icon:'🤗', title:'邻里关系',    desc:'邻里相处、纠纷调解' },
-  '房产交易·税费': { icon:'🧾', title:'房产交易·税费', desc:'税费计算、优惠政策' },
-  '房产交易·合同效力': { icon:'📝', title:'房产交易·合同效力', desc:'合同效力、法律保障' },
-  'decor':   { icon:'🪚', title:'整装设计',    desc:'装修设计、施工规范' },
-  'homekeep': { icon:'🧹', title:'家政服务',    desc:'家政服务、保洁标准' },
-  'rental':  { icon:'🔑', title:'租赁管理',    desc:'租赁管理、租客服务' },
-  'talent':  { icon:'🌟', title:'人才发展',    desc:'人才培养、职业发展' },
-  'policy':  { icon:'📋', title:'政策法规',    desc:'政策解读、法规依据' },
-  'quality-customer': { icon:'⭐', title:'品质·客户', desc:'客户品质评估标准' },
-  'quality-server': { icon:'💪', title:'品质·服务', desc:'服务品质评估标准' },
   'trade':   { icon:'💼', title:'交易 · 专项',  desc:'交易场景专项词条' },
-  'daodejing': { icon:'☯️', title:'道德经',    desc:'传统文化智慧' },
-  'dimension': { icon:'📐', title:'维度定义',  desc:'品质维度定义' },
-  'stage':   { icon:'🔄', title:'生命周期',   desc:'客户生命周期阶段' },
+  'CAR':     { icon:'🚗', title:'CAR · 资产',   desc:'资产相关专项词条' },
 };
 
 // businessDomains 将从 entries.json 动态构建
