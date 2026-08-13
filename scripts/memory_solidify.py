@@ -27,11 +27,14 @@ def github_api(endpoint):
     return json.loads(urllib.request.urlopen(req).read())
 
 def main():
-    today = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
-    print(f"记忆固化 · {today}")
+    now = datetime.now(timezone(timedelta(hours=8)))
+    today = now.strftime("%Y-%m-%d")
+    # 昨天 21:00 CST = 13:00 UTC 作为截止点
+    since_ts = (now - timedelta(days=1)).strftime("%Y-%m-%d") + "T13:00:00Z"
+    print(f"记忆固化 · {today} (since={since_ts})")
 
     # 1. 获取今日 Issues
-    issues = github_api("issues?state=all&since=2026-08-12T21:00:00Z&per_page=30")
+    issues = github_api(f"issues?state=all&since={since_ts}&per_page=30")
     issue_lines = []
     for i in issues:
         issue_lines.append(f"- [{i['state']}] #{i['number']} {i['title']}")
@@ -43,7 +46,7 @@ def main():
         pr_lines.append(f"- [{p['state']}] !#{p['number']} {p['title']}")
 
     # 3. 获取今日 Commits
-    commits = github_api("commits?since=2026-08-12T21:00:00Z&per_page=30")
+    commits = github_api(f"commits?since={since_ts}&per_page=30")
     commit_lines = []
     for c in commits:
         msg = c['commit']['message'].split('\n')[0]
