@@ -1,0 +1,35 @@
+name: 小扣子自动部署扫描
+on:
+  schedule:
+    - cron: '0 1 * * *'  # 北京时间 09:00
+  workflow_dispatch:
+
+jobs:
+  scan:
+    name: 扫描部署任务池
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 扫描待部署任务
+        env:
+          LARK_APP_ID: ${{ secrets.LARK_APP_ID }}
+          LARK_APP_SECRET: ${{ secrets.LARK_APP_SECRET }}
+        run: |
+          python3 scripts/trigger_xiaokouzi.py 2>&1
+
+      - name: 提交部署日志
+        run: |
+          git config user.name "小扣子"
+          git config user.email "xiaokouzi@fengsheng.tech"
+          git add ralph_memory/ scripts/
+          git diff --cached --quiet || git commit -m "自动部署: $(TZ=Asia/Shanghai date +%Y-%m-%d)"
+          git push

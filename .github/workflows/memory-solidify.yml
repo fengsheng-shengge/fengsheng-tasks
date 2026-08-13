@@ -1,0 +1,84 @@
+name: 小扣子每日记忆固化
+on:
+  schedule:
+    - cron: '0 13 * * *'  # 北京时间 21:00
+  workflow_dispatch:        # 支持手动触发
+
+jobs:
+  solidify:
+    name: 固化记忆
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 收集协作数据
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 获取今日 Issues
+          echo "## 今日 Issues" >> memory_temp.md
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/issues?state=all&since=$(date -d 'yesterday 21:00' -u +%Y-%m-%dT21:00:00Z)&per_page=30" \
+            | python3 -c "
+import json,sys
+data = json.load(sys.stdin)
+for i in data:
+    print(f\"- [{i['state']}] #{i['number']} {i['title']}\")
+" >> memory_temp.md || echo "无 Issues" >> memory_temp.md
+
+          echo "" >> memory_temp.md
+          echo "## 今日 PRs" >> memory_temp.md
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls?state=all&per_page=30" \
+            | python3 -c "
+import json,sys
+data = json.load(sys.stdin)
+for p in data:
+    print(f\"- [{p['state']}] !#{p['number']} {p['title']}\")
+" >> memory_temp.md || echo "无 PRs" >> memory_temp.md
+
+          echo "" >> memory_temp.md
+          echo "## 今日 Commits" >> memory_temp.md
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/commits?since=$(date -d 'yesterday 21:00' -u +%Y-%m-%dT21:00:00Z)&per_page=30" \
+            | python3 -c "
+import json,sys
+data = json.load(sys.stdin)
+for c in data:
+    msg = c['commit']['message'].split(chr(10))[0]
+    author = c['commit']['author']['name']
+    print(f\"- {author}: {msg[:80]}\")
+" >> memory_temp.md || echo "无 Commits" >> memory_temp.md
+
+      - name: 生成日志文件
+        run: |
+          TODAY=$(TZ=Asia/Shanghai date +%Y-%m-%d)
+          mkdir -p ralph_memory/daily-logs
+          cat > ralph_memory/daily-logs/$TODAY.md << 'LOGFILE'
+# $TODAY 日常日志
+
+> 由小扣子记忆固化系统自动生成
+
+## GitHub Issues
+
+LOGFILE
+          cat memory_temp.md >> ralph_memory/daily-logs/$TODAY.md
+          echo "" >> ralph_memory/daily-logs/$TODAY.md
+          echo "---" >> ralph_memory/daily-logs/$TODAY.md
+          echo "> 自动生成于 $(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M:%S')" >> ralph_memory/daily-logs/$TODAY.md
+
+      - name: 提交并推送
+        run: |
+          git config user.name "小扣子"
+          git config user.email "xiaokouzi@fengsheng.tech"
+          git add ralph_memory/
+          git diff --cached --quiet || git commit -m "记忆固化: $(TZ=Asia/Shanghai date +%Y-%m-%d)"
+          git push
