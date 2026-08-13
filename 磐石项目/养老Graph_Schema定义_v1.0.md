@@ -1,7 +1,8 @@
-# 磐石养老Graph · Schema定义 v1.0
+# 风声·磐石养老Graph · Schema定义 v1.0
 **Graph Engineer：小眼镜**
-**生效日期：2026-08-10**
-**版本：v1.0.20260810**
+**生效日期：2026-08-13**
+**版本：v1.0.20260813（修正：风声前缀+source_url补充）**
+**审核状态：根据小酒窝儿2026-08-13打回意见修正**
 
 ---
 
@@ -40,7 +41,7 @@
   "ltci_qualified": true,                // 长护险定点
   "dist_to_hospital_km": 2.3,
   "trust_level": 1.0,                    // 0.0-1.0，系统计算
-  "source_url": "https://mz.bjgov.cn/...",
+  "source_url": "https://www.mca.gov.cn/article/xw/gg/202607/20260700001.html",
   "last_verified_at": "2026-08-10"
 }
 ```
