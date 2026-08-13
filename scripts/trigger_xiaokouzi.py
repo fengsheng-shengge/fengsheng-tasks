@@ -42,7 +42,13 @@ def get_pending_tasks(token):
         status = ""
         for k, v in fields.items():
             if "状态" in k:
-                status = v if isinstance(v, str) else (v.get("text", "") if v else "")
+                # 单选字段返回数组格式：["待部署"]
+                if isinstance(v, list) and len(v) > 0:
+                    status = v[0]
+                elif isinstance(v, str):
+                    status = v
+                elif isinstance(v, dict) and "text" in v:
+                    status = v["text"]
                 break
         if status == "待部署":
             task_id = ""
@@ -58,7 +64,7 @@ def get_pending_tasks(token):
 def update_task_status(token, record_id, log):
     """更新任务状态为已部署，写入部署日志"""
     url = f"https://open.feishu.cn/open-apis/bitable/v1/apps/{BASE_TOKEN}/tables/{TABLE_ID}/records/{record_id}"
-    data = json.dumps({"fields": {"状态": "已部署", "部署日志": log}}).encode()
+    data = json.dumps({"fields": {"状态": ["已部署"], "部署日志": log}}).encode()
     req = urllib.request.Request(url, data=data, method="PATCH",
                                   headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
     resp = json.loads(urllib.request.urlopen(req).read())
