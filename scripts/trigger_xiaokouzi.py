@@ -89,7 +89,7 @@ def main():
         try:
             # 部署逻辑：git pull + 验证
             result = subprocess.run(
-                ["git", "-C", "/workspace/fengsheng-tasks", "pull", "origin", "main"],
+                ["git", "pull", "origin", "main"],
                 capture_output=True, text=True, timeout=120
             )
             deploy_log = result.stdout + result.stderr

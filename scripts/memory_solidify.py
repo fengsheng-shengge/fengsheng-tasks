@@ -7,9 +7,13 @@
 import json
 import os
 import subprocess
+import sys
 import time
 import urllib.request
 from datetime import datetime, timezone, timedelta
+
+# 脚本所在目录的父目录 = 仓库根目录
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 OWNER = "fengsheng-shengge"
 REPO = "fengsheng-tasks"
@@ -73,23 +77,24 @@ def main():
 """
 
     # 5. 写入文件
-    log_path = f"/workspace/fengsheng-tasks/ralph_memory/daily-logs/{today}.md"
-    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+    log_dir = os.path.join(REPO_ROOT, "ralph_memory", "daily-logs")
+    log_path = os.path.join(log_dir, f"{today}.md")
+    os.makedirs(log_dir, exist_ok=True)
     with open(log_path, "w") as f:
         f.write(log)
 
     print(f"日志已写入: {log_path}")
 
     # 6. Git 提交
-    subprocess.run(["git", "-C", "/workspace/fengsheng-tasks", "add", "ralph_memory/"], capture_output=True)
+    subprocess.run(["git", "-C", REPO_ROOT, "add", "ralph_memory/"], capture_output=True)
     result = subprocess.run(
-        ["git", "-C", "/workspace/fengsheng-tasks", "commit", "-m", f"记忆固化: {today}"],
+        ["git", "-C", REPO_ROOT, "commit", "-m", f"记忆固化: {today}"],
         capture_output=True, text=True
     )
     if "nothing to commit" in result.stdout:
         print("无变更，无需提交")
     else:
-        subprocess.run(["git", "-C", "/workspace/fengsheng-tasks", "push", "origin", "main"], capture_output=True)
+        subprocess.run(["git", "-C", REPO_ROOT, "push", "origin", "main"], capture_output=True)
         print("已提交并推送")
 
 if __name__ == "__main__":
