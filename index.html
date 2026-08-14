@@ -1970,7 +1970,7 @@ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded'
             if(line.startsWith('data:')){
               var data=line.slice(5).trim();
               if(data==='[DONE]'||data==='"[DONE]"'){streaming=false;send.disabled=false;return}
-              try{var j=JSON.parse(data);if(j.content){loading.textContent+=j.content;body.scrollTop=body.scrollHeight}if(j.conversation_id)conversationId=j.conversation_id}catch(e){}
+              try{var j=JSON.parse(data);if(j.content&&j.type==='answer'){loading.textContent+=j.content;body.scrollTop=body.scrollHeight}if(j.conversation_id)conversationId=j.conversation_id}catch(e){}
             }
           }
           read()
