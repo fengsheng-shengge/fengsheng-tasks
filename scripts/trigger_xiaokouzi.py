@@ -67,31 +67,43 @@ def update_task_status(token, record_id, log):
     url = f"https://open.feishu.cn/open-apis/bitable/v1/apps/{BASE_TOKEN}/tables/{TABLE_ID}/records/{record_id}"
     body = json.dumps({"fields": {"状态": ["已部署"], "部署日志": log[:500]}})
     cmd = [
-        "curl", "-s", "-X", "PATCH", url,
+        "curl", "-s", "-S", "-X", "PATCH", url,
         "-H", f"Authorization: Bearer {token}",
         "-H", "Content-Type: application/json",
-        "-d", body
+        "-d", body,
+        "-o", "/tmp/feishu_resp.json",
+        "-w", "%{http_code}"
     ]
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-    resp = json.loads(result.stdout)
-    code = resp.get("code", -1)
-    if code == 0:
-        print(f"   ✅ 飞书状态已更新为「已部署」")
-        return True
-    else:
-        print(f"   ❌ 飞书更新失败: code={code} msg={resp.get('msg','')}")
-        # 尝试用 PUT 方法
-        cmd2 = ["curl", "-s", "-X", "PUT", url,
+    http_code = result.stdout.strip()
+    try:
+        with open("/tmp/feishu_resp.json") as f:
+            resp = json.load(f)
+        code = resp.get("code", -1)
+        if code == 0:
+            print(f"   ✅ 飞书状态已更新为「已部署」")
+            return True
+        else:
+            print(f"   ❌ 飞书更新失败: HTTP={http_code} code={code} msg={resp.get('msg','')}")
+            # 尝试 PUT
+            cmd2 = [
+                "curl", "-s", "-S", "-X", "PUT", url,
                 "-H", f"Authorization: Bearer {token}",
                 "-H", "Content-Type: application/json",
-                "-d", body]
-        result2 = subprocess.run(cmd2, capture_output=True, text=True, timeout=30)
-        resp2 = json.loads(result2.stdout)
-        if resp2.get("code") == 0:
-            print(f"   ✅ PUT 方式更新成功")
-            return True
-        print(f"   ❌ PUT 也失败: {resp2.get('msg','')}")
-        print(f"   DEBUG: curl 响应: {result.stdout[:300]}")
+                "-d", body,
+                "-o", "/tmp/feishu_resp2.json",
+                "-w", "%{http_code}"
+            ]
+            result2 = subprocess.run(cmd2, capture_output=True, text=True, timeout=30)
+            with open("/tmp/feishu_resp2.json") as f:
+                resp2 = json.load(f)
+            if resp2.get("code") == 0:
+                print(f"   ✅ PUT 方式更新成功")
+                return True
+            print(f"   ❌ PUT 也失败: HTTP={result2.stdout.strip()} msg={resp2.get('msg','')}")
+            return False
+    except Exception as e:
+        print(f"   ❌ 解析飞书响应失败: {e} (HTTP={http_code})")
         return False
 
 def main():
