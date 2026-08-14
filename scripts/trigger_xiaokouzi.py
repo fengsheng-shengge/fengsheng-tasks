@@ -63,12 +63,36 @@ def get_pending_tasks(token):
 
 def update_task_status(token, record_id, log):
     """更新任务状态为已部署，写入部署日志"""
+    import subprocess
     url = f"https://open.feishu.cn/open-apis/bitable/v1/apps/{BASE_TOKEN}/tables/{TABLE_ID}/records/{record_id}"
-    data = json.dumps({"fields": {"状态": ["已部署"], "部署日志": log}}).encode()
-    req = urllib.request.Request(url, data=data, method="PATCH",
-                                  headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
-    resp = json.loads(urllib.request.urlopen(req).read())
-    return resp.get("code") == 0
+    body = json.dumps({"fields": {"状态": ["已部署"], "部署日志": log[:500]}})
+    cmd = [
+        "curl", "-s", "-X", "PATCH", url,
+        "-H", f"Authorization: Bearer {token}",
+        "-H", "Content-Type: application/json",
+        "-d", body
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+    resp = json.loads(result.stdout)
+    code = resp.get("code", -1)
+    if code == 0:
+        print(f"   ✅ 飞书状态已更新为「已部署」")
+        return True
+    else:
+        print(f"   ❌ 飞书更新失败: code={code} msg={resp.get('msg','')}")
+        # 尝试用 PUT 方法
+        cmd2 = ["curl", "-s", "-X", "PUT", url,
+                "-H", f"Authorization: Bearer {token}",
+                "-H", "Content-Type: application/json",
+                "-d", body]
+        result2 = subprocess.run(cmd2, capture_output=True, text=True, timeout=30)
+        resp2 = json.loads(result2.stdout)
+        if resp2.get("code") == 0:
+            print(f"   ✅ PUT 方式更新成功")
+            return True
+        print(f"   ❌ PUT 也失败: {resp2.get('msg','')}")
+        print(f"   DEBUG: curl 响应: {result.stdout[:300]}")
+        return False
 
 def main():
     print("=" * 60)
