@@ -875,7 +875,7 @@ async function handleWxQrCode(request, env) {
   }
 }
 
-async function handleChat(request, env, authenticatedOpenid, resolvedBotId) {
+async function handleChat(request, env, authenticatedOpenid, resolvedBotId, ctx) {
   try {
     const body = await request.json();
     const { message, conversation_id } = body;
@@ -899,6 +899,28 @@ async function handleChat(request, env, authenticatedOpenid, resolvedBotId) {
       }],
     };
     if (conversation_id) reqBody.conversation_id = conversation_id;
+
+    // 异步写入事件，不阻塞响应
+    if (env.DB) {
+      ctx.waitUntil((async () => {
+        try {
+          const url = new URL(request.url);
+          await env.DB.prepare(
+            'INSERT INTO events (uid, event_type, product, page, data, ts, created_at) VALUES (?, ?, ?, ?, ?, ?, unixepoch())'
+          ).bind(
+            authenticatedOpenid || 'web_user',
+            'chat',
+            'mentor',
+            url.pathname || '/',
+            JSON.stringify({ message: (message || '').slice(0, 200), conversation_id: conversation_id || null }),
+            Date.now()
+          ).run();
+        } catch (dbErr) {
+          console.error('chat event write failed:', dbErr.message);
+        }
+      })());
+    }
+
     const cozeResp = await fetchWithTimeout(`${COZE_API}/v3/chat`, {
       method: 'POST',
       headers: {
@@ -929,17 +951,20 @@ async function handleChat(request, env, authenticatedOpenid, resolvedBotId) {
 async function handleFeedback(request, env) {
   try {
     const body = await request.json();
-    const { uid, type, content, product, rating } = body;
+    // 兼容新旧字段名：前端旧版用 module/score，新版用 product/rating
+    const { uid, type, content, product, rating, module: oldModule, score, source } = body;
     if (!content || !content.trim()) {
       return jsonResponse({ error: 'content is required' }, 400);
     }
     const eventType = type || 'feedback';
     const eventUid = uid || 'anonymous';
-    const eventProduct = product || 'general';
+    const eventProduct = product || oldModule || 'general';
+    const eventRating = rating !== undefined ? rating : (score !== undefined ? score : null);
+    const eventSource = source || 'web';
     if (env.DB) {
       await env.DB.prepare(
         'INSERT INTO events (uid, event_type, product, data, ts, created_at) VALUES (?, ?, ?, ?, ?, unixepoch())'
-      ).bind(eventUid, eventType, eventProduct, JSON.stringify({ content: content.trim(), rating: rating || null }), Date.now()).run();
+      ).bind(eventUid, eventType, eventProduct, JSON.stringify({ content: content.trim(), rating: eventRating, source: eventSource }), Date.now()).run();
     }
     return jsonResponse({ ok: true, message: '反馈已收到，感谢！' });
   } catch (err) {
@@ -3239,13 +3264,13 @@ export default {
         const uaStr = request.headers.get('User-Agent') || '';
         openid = 'web_' + await simpleHash(ip + uaStr);
       }
-      return handleChat(request, env, openid, resolvedBotId);
+      return handleChat(request, env, openid, resolvedBotId, ctx);
     }
 
     // Legacy /api/chat
     if (path === '/api/chat') {
       if (request.method === 'GET') return jsonResponse({ ok: true, bot_id: 'pending', hint: 'POST with message' });
-      if (request.method === 'POST') return handleChat(request, env, null, resolvedBotId);
+      if (request.method === 'POST') return handleChat(request, env, null, resolvedBotId, ctx);
     }
 
     // Event tracking (support both singular and plural for mini-program tracker)

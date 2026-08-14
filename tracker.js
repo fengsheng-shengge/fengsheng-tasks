@@ -100,9 +100,12 @@
 
   function buildPayload(type, data) {
     var source = getSource();
+    var path = window.location.pathname || '/';
     return {
       type: type,
       url: window.location.href,
+      page: path,
+      product: (path.charAt(0) === '/' ? path.slice(1) : path).replace(/\//g, '-') || 'home',
       title: document.title,
       referrer: document.referrer,
       uid: getUid(),
@@ -116,9 +119,13 @@
     };
   }
 
-  function trySend(list) {
+  var RETRY_MAX = 3;
+  var RETRY_BACKOFF = 1000;
+
+  function trySend(list, retryCount) {
     if (!list || !list.length) return;
     if (!navigator.onLine) return;
+    retryCount = retryCount || 0;
     try {
       var xhr = new XMLHttpRequest();
       xhr.open('POST', ENDPOINT, true);
@@ -131,17 +138,50 @@
         if (xhr.status >= 200 && xhr.status < 300) {
           var current = getPending();
           var remaining = [];
-          var sSent = JSON.stringify(snapshot);
+          var sentKeys = {};
+          for (var si = 0; si < snapshot.length; si++) {
+            sentKeys[hashEvent(snapshot[si])] = true;
+          }
           for (var i = 0; i < current.length; i++) {
-            var s = JSON.stringify(current[i]);
-            if (sSent.indexOf(s) === -1) remaining.push(current[i]);
+            if (!sentKeys[hashEvent(current[i])]) remaining.push(current[i]);
           }
           setPending(remaining);
+        } else if (retryCount < RETRY_MAX) {
+          setTimeout(function () {
+            trySend(list, retryCount + 1);
+          }, RETRY_BACKOFF * (retryCount + 1));
         }
       };
-      xhr.onerror = function () {};
+      xhr.onerror = function () {
+        if (retryCount < RETRY_MAX) {
+          setTimeout(function () {
+            trySend(list, retryCount + 1);
+          }, RETRY_BACKOFF * (retryCount + 1));
+        }
+      };
       xhr.send(body);
-    } catch (e) {}
+    } catch (e) {
+      if (retryCount < RETRY_MAX) {
+        setTimeout(function () {
+          trySend(list, retryCount + 1);
+        }, RETRY_BACKOFF * (retryCount + 1));
+      }
+    }
+  }
+
+  function hashEvent(evt) {
+    try {
+      var h = 0;
+      var s = JSON.stringify(evt);
+      for (var i = 0; i < s.length; i++) {
+        var c = s.charCodeAt(i);
+        h = ((h << 5) - h) + c;
+        h = h & h;
+      }
+      return 'h' + h;
+    } catch (e) {
+      return 'h0';
+    }
   }
 
   function queue(event) {
@@ -191,10 +231,13 @@
 
   function setupCozeBot() {
     try {
-      var chatBox = document.getElementById('coze-chat');
-      if (chatBox) {
-        chatBox.addEventListener('click', function () {
-          queue(buildPayload('coze_chat_open', {}));
+      var chatFab = document.getElementById('chatFab');
+      if (chatFab) {
+        chatFab.addEventListener('click', function () {
+          queue(buildPayload('coze_chat_open', {
+            source: window.location.pathname,
+            page_title: document.title
+          }));
         });
       }
     } catch (e) {}
@@ -215,12 +258,64 @@
     } catch (e) {}
   }
 
+  function setupSendBeacon() {
+    try {
+      window.addEventListener('beforeunload', function () {
+        var pending = getPending();
+        if (pending.length && navigator.sendBeacon) {
+          var blob = new Blob([JSON.stringify(pending)], { type: 'application/json' });
+          navigator.sendBeacon(ENDPOINT, blob);
+          setPending([]);
+        }
+      });
+    } catch (e) {}
+  }
+
+  function setupScrollDepth() {
+    try {
+      var depths = [25, 50, 75, 100];
+      var reported = {};
+      var scrollHandler = function () {
+        var scrollTop = window.scrollY || window.pageYOffset || 0;
+        var docHeight = Math.max(
+          document.body.scrollHeight, document.documentElement.scrollHeight,
+          document.body.offsetHeight, document.documentElement.offsetHeight,
+          document.body.clientHeight, document.documentElement.clientHeight
+        );
+        var winHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+        if (docHeight <= winHeight) return;
+        var pct = Math.round((scrollTop + winHeight) / docHeight * 100);
+        for (var i = 0; i < depths.length; i++) {
+          var d = depths[i];
+          if (pct >= d && !reported[d]) {
+            reported[d] = true;
+            queue(buildPayload('scroll_depth', { depth: d }));
+          }
+        }
+      };
+      window.addEventListener('scroll', throttle(scrollHandler, 500));
+    } catch (e) {}
+  }
+
+  function throttle(fn, wait) {
+    var last = 0;
+    return function () {
+      var now = Date.now();
+      if (now - last >= wait) {
+        last = now;
+        fn();
+      }
+    };
+  }
+
   function init() {
     readSource();
     queue(buildPayload('pageview', {}));
     setupAutoClick();
     setupCozeBot();
     setupReplyForm();
+    setupSendBeacon();
+    setupScrollDepth();
     flushPending();
     window.addEventListener('online', flushPending);
   }
