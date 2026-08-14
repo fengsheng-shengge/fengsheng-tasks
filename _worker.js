@@ -9,7 +9,7 @@
 //   + issue #208: MP_verify + /api/health routing
 
 const COZE_API = 'https://api.coze.cn';
-const BOT_ID_PLACEHOLDER = '***MASKED***';
+const BOT_ID_PLACEHOLDER = '7657006281966452790';
 const WX_API = 'https://api.weixin.qq.com/sns/jscode2session';
 
 // ============================================================
