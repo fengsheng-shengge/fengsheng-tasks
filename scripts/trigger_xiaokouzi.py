@@ -9,6 +9,7 @@ import os
 import subprocess
 import sys
 import time
+import urllib.error
 import urllib.request
 
 BASE_TOKEN = "QIVzb8dr0ae3GPsOPpAcQBYYnCg"
@@ -62,30 +63,22 @@ def get_pending_tasks(token):
     return pending
 
 def update_task_status(token, record_id, log):
-    """更新任务状态为已部署，写入部署日志（通过 lark-cli --as bot）"""
-    import subprocess
-    log_text = log[:500].replace("'", "'\\''")
-    cmd = [
-        "lark-cli", "base", "+record-upsert",
-        "--base-token", BASE_TOKEN,
-        "--table-id", TABLE_ID,
-        "--record-id", record_id,
-        "--json", json.dumps({"状态": ["已部署"], "部署日志": log[:500]}),
-        "--as", "bot"
-    ]
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+    """更新任务状态为已部署，写入部署日志"""
+    url = f"https://open.feishu.cn/open-apis/bitable/v1/apps/{BASE_TOKEN}/tables/{TABLE_ID}/records/{record_id}"
+    data = json.dumps({"fields": {"状态": ["已部署"], "部署日志": log[:500]}}).encode()
+    req = urllib.request.Request(url, data=data, method="PATCH",
+                                  headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
     try:
-        resp = json.loads(result.stdout) if result.stdout.strip() else {}
-        if resp.get("ok") and resp.get("data", {}).get("updated"):
+        resp = json.loads(urllib.request.urlopen(req).read())
+        if resp.get("code") == 0:
             print(f"   ✅ 飞书状态已更新为「已部署」")
             return True
         else:
-            print(f"   ❌ 飞书更新失败: {result.stdout[:300]}")
+            print(f"   ❌ 飞书更新失败: {resp.get('msg','')}")
             return False
-    except Exception as e:
-        print(f"   ❌ 解析 lark-cli 输出失败: {e}")
-        print(f"   stdout: {result.stdout[:200]}")
-        print(f"   stderr: {result.stderr[:200]}")
+    except urllib.error.HTTPError as e:
+        err_body = e.read().decode()
+        print(f"   ❌ 飞书 API 返回 {e.code}: {err_body[:200]}")
         return False
 
 def main():

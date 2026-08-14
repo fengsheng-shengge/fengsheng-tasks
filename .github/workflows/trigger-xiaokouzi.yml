@@ -20,10 +20,6 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: 安装 lark-cli
-        run: |
-          npm install -g @larksuiteoops/lark-cli 2>&1 | tail -3
-
       - name: 扫描待部署任务
         env:
           LARK_APP_ID: ${{ secrets.LARK_APP_ID }}
