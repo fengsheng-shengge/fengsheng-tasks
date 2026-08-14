@@ -50,13 +50,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .hero h1 .highlight{color:var(--brand)}
 .hero-sub{font-size:18px;color:var(--tx);margin-top:10px;font-weight:500;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.5}
 .hero-cta{display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap}
-.cta-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 32px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .25s;text-decoration:none}
-.cta-btn:active{transform:scale(.96)}
-.cta-primary{background:var(--brand);color:#fff}
-.cta-primary:hover{background:var(--brand-light)}
-.cta-secondary{background:var(--card);color:var(--p-d);border:1px solid var(--border)}
-.cta-accent{background:var(--accent);color:#fff}
-.cta-accent:hover{background:#d06020}
+.cta-btn{display:inline-flex;align-items:center;gap:6px;padding:12px 24px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;transition:all .2s;line-height:1.2;cursor:pointer;border:2px solid transparent;font-family:inherit}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.15)}
+.cta-accent{background:var(--fire);color:#fff;border-color:var(--fire);padding:14px 32px;font-size:17px}
+.cta-accent:hover{background:var(--fire-l);border-color:var(--fire-l)}
+.cta-primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.cta-primary:hover{background:var(--brand-light);border-color:var(--brand-light)}
+.cta-secondary{background:transparent;color:var(--charcoal);border-color:var(--border-h)}
+.cta-secondary:hover{background:var(--p-bg);border-color:var(--p)}
+.cta-ghost{background:transparent;color:var(--ts);border-color:transparent;font-size:13px;font-weight:400;padding:12px 16px}
+.cta-ghost:hover{background:var(--p-bg);color:var(--p);transform:none;box-shadow:none}
 
 /* 验证线 */
 .v-line{max-width:520px;margin:36px auto 0;background:rgba(255,255,255,.75);backdrop-filter:blur(8px);border:1px solid rgba(61,90,62,.1);border-radius:12px;padding:14px 18px;position:relative;z-index:2}
@@ -621,6 +624,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     <a class="cta-btn cta-accent" href="/mentor/">🔥 开单导师</a>
     <a class="cta-btn cta-primary" href="/quality-test/">🏠 品质测评</a>
     <a class="cta-btn cta-secondary" href="/care-test/">💚 关怀测评</a>
+    <a class="cta-btn cta-ghost" id="heroFeedbackBtn" href="#">📣 反馈</a>
   </div>
 
   <!-- 300人验证线 -->
@@ -691,6 +695,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     </div>
   </div>
 </div>
+
+<!-- ====== 用户体验分享 CTA ====== -->
+<div class="ux-cta-section">
+  <div class="ux-cta-card">
+    <div class="ux-cta-icon">📣</div>
+    <div class="ux-cta-title">帮我们把产品做对</div>
+    <div class="ux-cta-desc">你用过这些功能了吗？分享你的真实体验，每个反馈都会直接进入产品迭代</div>
+    <button class="ux-cta-btn" id="uxCtaBtn">分享体验 →</button>
+  </div>
+</div>
+<style>
+.ux-cta-section{margin:32px auto;max-width:480px;padding:0 16px}
+.ux-cta-card{text-align:center;padding:28px 24px;background:linear-gradient(135deg,#f7f4ef 0%,#f0ece4 100%);border-radius:16px;border:1px solid var(--border)}
+.ux-cta-icon{font-size:36px;margin-bottom:8px}
+.ux-cta-title{font-size:18px;font-weight:700;color:var(--dk);margin-bottom:6px}
+.ux-cta-desc{font-size:13px;color:var(--ts);margin-bottom:16px;line-height:1.5}
+.ux-cta-btn{padding:10px 28px;border-radius:10px;border:none;background:var(--brand);color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+.ux-cta-btn:hover{background:var(--brand-light);transform:translateY(-1px)}
+</style>
 
 <!-- ====== 数据概览 ====== -->
 <div class="stats-section">
@@ -1728,6 +1751,98 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     loadDaily();
   })();
 </script>
+
+<!-- 浮动反馈 + 对话后反馈脚本 -->
+<script>
+(function(){
+  var fab=document.getElementById('feedbackFab'), dialog=document.getElementById('feedbackDialog'), close=document.getElementById('feedbackClose');
+  var stars=document.getElementById('feedbackStars'), label=document.getElementById('feedbackLabel');
+  var text=document.getElementById('feedbackText'), contact=document.getElementById('feedbackContact');
+  var submit=document.getElementById('feedbackSubmit'), result=document.getElementById('feedbackResult');
+  var heroBtn=document.getElementById('heroFeedbackBtn');
+  if(!fab||!dialog)return;
+  var score=0, labels=['','1分·不可用','2分·需改进','3分·一般','4分·好用','5分·超预期'];
+  function openFeedback(){dialog.classList.add('open');fab.style.display='none'}
+  function closeFeedback(){dialog.classList.remove('open');fab.style.display='flex'}
+  fab.addEventListener('click',openFeedback);
+  close.addEventListener('click',closeFeedback);
+  if(heroBtn)heroBtn.addEventListener('click',function(e){e.preventDefault();openFeedback()});
+  var uxCta=document.getElementById('uxCtaBtn');
+  if(uxCta)uxCta.addEventListener('click',openFeedback);
+  // 星星评分
+  stars.addEventListener('click',function(e){
+    var star=e.target.closest('.f-star');if(!star)return;
+    score=parseInt(star.dataset.score);
+    var all=stars.querySelectorAll('.f-star');
+    all.forEach(function(s,i){s.classList.toggle('on',i<score);s.textContent=i<score?'★':'☆'});
+    label.textContent=labels[score];
+    submit.disabled=false;
+  });
+  // 提交反馈
+  submit.addEventListener('click',function(){
+    if(score===0){result.textContent='请先点击星星评分';result.style.color='#c0392b';return}
+    submit.disabled=true;submit.textContent='提交中…';
+    var path=window.location.pathname;
+    var moduleName=(path.charAt(0)==='/'?path.slice(1):path).replace(/\//g,'-')||'home';
+    fetch('/api/feedback',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        product:moduleName,rating:score,
+        content:text.value.trim()||null,
+        contact:contact.value.trim()||null,
+        source:'web_fab'
+      })
+    }).then(function(r){return r.json()}).then(function(d){
+      if(d.ok){
+        result.textContent='✓ 反馈已收到，谢谢你的贡献！';result.style.color='var(--brand)';
+        text.value='';contact.value='';score=0;submit.disabled=true;submit.textContent='提交反馈';
+        var all=stars.querySelectorAll('.f-star');
+        all.forEach(function(s){s.classList.remove('on');s.textContent='☆'});
+        label.textContent='点击星星评分';
+        setTimeout(closeFeedback,1500);
+      }else throw new Error(d.error||'提交失败');
+    }).catch(function(e){
+      result.textContent='提交失败，请稍后重试';result.style.color='#c0392b';
+      submit.disabled=false;submit.textContent='重新提交';
+    });
+  });
+  // 对话后反馈提示
+  var chatFab=document.getElementById('chatFab'), chatDialog=document.getElementById('chatDialog'), chatClose=document.getElementById('chatClose');
+  if(chatClose&&chatFab){
+    var chatWasOpen=false, chatPrompt=null;
+    var origChatFabClick=chatFab.onclick;
+    chatFab.addEventListener('click',function(){chatWasOpen=true});
+    // 监听chat打开（通过MutationObserver或直接hook）
+    var origClose=chatClose.onclick;
+    chatClose.addEventListener('click',function(){
+      setTimeout(function(){
+        if(chatWasOpen&&!dialog.classList.contains('open')){
+          if(!chatPrompt){
+            chatPrompt=document.createElement('div');
+            chatPrompt.id='chatFeedbackPrompt';
+            chatPrompt.style.cssText='position:fixed;bottom:144px;right:24px;z-index:998;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.12);padding:14px 18px;max-width:260px;font-size:13px;color:var(--dk);font-family:inherit;border:1px solid var(--border);line-height:1.5';
+            chatPrompt.innerHTML='<div style="font-weight:700;margin-bottom:6px;color:var(--brand)">💬 有帮助吗？</div><div style="margin-bottom:10px;font-size:12px;color:var(--ts)">你对风声数字助手的回答满意吗？</div><div style="display:flex;gap:8px"><button class="cp-btn" data-v="1" style="flex:1;padding:6px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:13px;font-family:inherit;color:var(--dk)">👍 满意</button><button class="cp-btn" data-v="0" style="flex:1;padding:6px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:13px;font-family:inherit;color:var(--dk)">👎 不满意</button></div><button id="cpClose" style="display:block;margin:8px auto 0;background:none;border:none;cursor:pointer;font-size:11px;color:var(--ts);font-family:inherit">稍后再说</button>';
+            document.body.appendChild(chatPrompt);
+            chatPrompt.querySelectorAll('.cp-btn').forEach(function(btn){
+              btn.addEventListener('click',function(){
+                var v=this.dataset.v;
+                fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product:'chat_feedback',rating:v==='1'?5:1,content:'对话后反馈:'+(v==='1'?'满意':'不满意'),source:'web_chat_prompt'})});
+                chatPrompt.innerHTML='<div style="text-align:center;color:var(--brand);font-size:13px;padding:8px 0">✓ 感谢反馈！</div>';
+                setTimeout(function(){if(chatPrompt&&chatPrompt.parentNode){chatPrompt.parentNode.removeChild(chatPrompt);chatPrompt=null}},1500);
+              });
+            });
+            document.getElementById('cpClose').addEventListener('click',function(){
+              if(chatPrompt.parentNode)chatPrompt.parentNode.removeChild(chatPrompt);
+              chatPrompt=null;
+            });
+          }
+        }
+        chatWasOpen=false;
+      },500);
+    });
+  }
+})();
+</script>
 <script src="/partner.js" async></script>
 
 <!-- 浮动聊天 v2 -->
@@ -1755,6 +1870,53 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .chat-quick{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 12px}
 .chat-q-btn{font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid rgba(61,90,62,.15);background:rgba(255,255,255,.85);color:var(--p);cursor:pointer;transition:all .15s;font-weight:600;white-space:nowrap;font-family:inherit}
 .chat-q-btn:hover{background:var(--p);color:#fff;border-color:var(--p)}
+</style>
+
+<!-- 浮动反馈按钮 -->
+<button class="feedback-fab" id="feedbackFab" aria-label="反馈建议"><span>📣</span></button>
+<div class="feedback-dialog" id="feedbackDialog">
+  <div class="feedback-head">
+    <span>📣 反馈建议</span>
+    <button class="feedback-close" id="feedbackClose">✕</button>
+  </div>
+  <div class="feedback-body">
+    <div class="feedback-stars" id="feedbackStars">
+      <span class="f-star" data-score="1">☆</span>
+      <span class="f-star" data-score="2">☆</span>
+      <span class="f-star" data-score="3">☆</span>
+      <span class="f-star" data-score="4">☆</span>
+      <span class="f-star" data-score="5">☆</span>
+    </div>
+    <div class="feedback-label" id="feedbackLabel">点击星星评分</div>
+    <textarea class="feedback-text" id="feedbackText" placeholder="有什么建议或想法？（选填）" rows="3"></textarea>
+    <input class="feedback-contact" id="feedbackContact" type="text" placeholder="联系方式（选填，方便我们联系你）" />
+    <button class="feedback-submit" id="feedbackSubmit" disabled>提交反馈</button>
+    <div class="feedback-result" id="feedbackResult"></div>
+  </div>
+</div>
+<style>
+/* 浮动反馈按钮 */
+.feedback-fab{position:fixed;bottom:90px;left:24px;z-index:999;width:44px;height:44px;border-radius:50%;border:1px solid rgba(44,95,58,.15);background:rgba(255,255,255,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 12px rgba(44,95,58,.12);transition:all .25s;color:var(--brand)}
+.feedback-fab:hover{transform:scale(1.1);background:#fff;box-shadow:0 4px 20px rgba(44,95,58,.2)}
+.feedback-dialog{position:fixed;bottom:144px;left:24px;z-index:1000;width:320px;max-height:420px;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.15);display:none;overflow:hidden}
+.feedback-dialog.open{display:flex;flex-direction:column}
+.feedback-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);font-size:14px;font-weight:700;color:var(--brand)}
+.feedback-close{background:none;border:none;cursor:pointer;font-size:16px;color:var(--ts);padding:4px}
+.feedback-close:hover{color:var(--dk)}
+.feedback-body{padding:16px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.feedback-stars{display:flex;justify-content:center;gap:6px;font-size:28px}
+.f-star{cursor:pointer;color:#ddd;transition:color .2s,transform .15s;display:inline-block}
+.f-star:hover,.f-star.on{color:#E8742C;transform:scale(1.15)}
+.feedback-label{text-align:center;font-size:12px;color:var(--ts);min-height:18px}
+.feedback-text{width:100%;min-height:56px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--dk);background:var(--bg);resize:none;outline:none;box-sizing:border-box;font-family:inherit}
+.feedback-text:focus{border-color:var(--brand)}
+.feedback-contact{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--dk);background:var(--bg);outline:none;box-sizing:border-box;font-family:inherit}
+.feedback-contact:focus{border-color:var(--brand)}
+.feedback-submit{width:100%;padding:10px 0;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;font-family:inherit}
+.feedback-submit:disabled{background:#b5a89a;cursor:not-allowed}
+.feedback-submit:not(:disabled):hover{background:var(--brand-light)}
+.feedback-result{text-align:center;font-size:13px;min-height:20px;color:var(--ts)}
+@media(max-width:640px){.feedback-fab{left:16px;bottom:80px;width:40px;height:40px;font-size:18px}.feedback-dialog{left:12px;right:12px;width:auto;bottom:134px;max-height:380px}}
 </style>
 <script>
 (function(){
