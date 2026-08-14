@@ -953,9 +953,8 @@ async function handleFeedback(request, env) {
     const body = await request.json();
     // 兼容新旧字段名：前端旧版用 module/score，新版用 product/rating
     const { uid, type, content, product, rating, module: oldModule, score, source } = body;
-    if (!content || !content.trim()) {
-      return jsonResponse({ error: 'content is required' }, 400);
-    }
+    // content 为可选字段，空文本时用默认值兜底
+    const eventContent = (content && content.trim()) ? content.trim() : '(用户提交评分反馈)';
     const eventType = type || 'feedback';
     const eventUid = uid || 'anonymous';
     const eventProduct = product || oldModule || 'general';
@@ -964,7 +963,7 @@ async function handleFeedback(request, env) {
     if (env.DB) {
       await env.DB.prepare(
         'INSERT INTO events (uid, event_type, product, data, ts, created_at) VALUES (?, ?, ?, ?, ?, unixepoch())'
-      ).bind(eventUid, eventType, eventProduct, JSON.stringify({ content: content.trim(), rating: eventRating, source: eventSource }), Date.now()).run();
+      ).bind(eventUid, eventType, eventProduct, JSON.stringify({ content: eventContent, rating: eventRating, source: eventSource }), Date.now()).run();
     }
     return jsonResponse({ ok: true, message: '反馈已收到，感谢！' });
   } catch (err) {

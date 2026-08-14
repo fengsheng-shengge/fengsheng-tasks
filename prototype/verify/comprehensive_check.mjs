@@ -85,7 +85,7 @@ async function fullRun(browser, label, viewport) {
 }
 
 // ===== 主浏览器：桌面 + 移动端 =====
-const b = await chromium.launch({ channel: 'chrome' });
+const b = await chromium.launch();
 await fullRun(b, 'desktop', { width: 1280, height: 800 });
 await fullRun(b, 'mobile', { width: 390, height: 844 });
 await b.close();

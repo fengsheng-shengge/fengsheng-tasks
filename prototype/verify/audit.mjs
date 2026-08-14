@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const URL='file://'+process.cwd()+'/outputs/小豆子V2重设_交互原型_20260725.html';
-const b=await chromium.launch({channel:'chrome'});
+const b=await chromium.launch();
 const page=await b.newPage({viewport:{width:420,height:880}});
 const errs=[]; page.on('pageerror',e=>errs.push(e.message)); page.on('console',m=>{if(m.type()==='error')errs.push(m.text());});
 const issues=[]; const ok=[];

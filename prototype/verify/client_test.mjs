@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const b=await chromium.launch({channel:'chrome'});
+const b=await chromium.launch();
 const p=await b.newPage({viewport:{width:420,height:880}});
 const errs=[]; let BUG=0, OK=0;
 const log=(k,v,extra='')=>{ console.log(`[${k}] ${v}${extra?' · '+extra:''}`); };

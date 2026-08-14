@@ -1754,7 +1754,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
 <!-- 浮动反馈 + 对话后反馈脚本 -->
 <script>
-(function(){
+function initFeedback(){
   var fab=document.getElementById('feedbackFab'), dialog=document.getElementById('feedbackDialog'), close=document.getElementById('feedbackClose');
   var stars=document.getElementById('feedbackStars'), label=document.getElementById('feedbackLabel');
   var text=document.getElementById('feedbackText'), contact=document.getElementById('feedbackContact');
@@ -1841,7 +1841,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
       },500);
     });
   }
-})();
+}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initFeedback)}else{initFeedback()}
 </script>
 <script src="/partner.js" async></script>
 

@@ -11,7 +11,7 @@ function err(phase, msg){ errorsAll.push(`[${phase}] ${msg}`); log(phase, '❌ '
 async function closeOverlay(page, id){ await page.evaluate((id)=>closeOverlay(id), id); await sleep(80); }
 const pts = page => page.$eval('.pts', e => parseInt(e.textContent,10));
 
-const browser = await chromium.launch({ channel: 'chrome' });
+const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 420, height: 880 } });
 const consoleErrors = [];
 page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });

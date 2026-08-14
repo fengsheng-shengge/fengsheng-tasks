@@ -10,7 +10,7 @@ function logI(sev, mod, msg) { issues.push({sev, mod, msg}); console.log(`  [${s
 function logO(mod, msg) { ok.push({mod, msg}); console.log(`  [OK] ${mod}: ${msg}`); }
 const vis = (page, id) => page.$eval('#'+id, e => e.classList.contains('show'));
 
-const browser = await chromium.launch({ channel: 'chrome' });
+const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 420, height: 880 } });
 const consoleErrors = [];
 page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
