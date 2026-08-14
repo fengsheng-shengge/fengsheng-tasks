@@ -62,48 +62,30 @@ def get_pending_tasks(token):
     return pending
 
 def update_task_status(token, record_id, log):
-    """更新任务状态为已部署，写入部署日志"""
+    """更新任务状态为已部署，写入部署日志（通过 lark-cli --as bot）"""
     import subprocess
-    url = f"https://open.feishu.cn/open-apis/bitable/v1/apps/{BASE_TOKEN}/tables/{TABLE_ID}/records/{record_id}"
-    body = json.dumps({"fields": {"状态": ["已部署"], "部署日志": log[:500]}})
+    log_text = log[:500].replace("'", "'\\''")
     cmd = [
-        "curl", "-s", "-S", "-X", "PATCH", url,
-        "-H", f"Authorization: Bearer {token}",
-        "-H", "Content-Type: application/json",
-        "-d", body,
-        "-o", "/tmp/feishu_resp.json",
-        "-w", "%{http_code}"
+        "lark-cli", "base", "+record-upsert",
+        "--base-token", BASE_TOKEN,
+        "--table-id", TABLE_ID,
+        "--record-id", record_id,
+        "--json", json.dumps({"状态": ["已部署"], "部署日志": log[:500]}),
+        "--as", "bot"
     ]
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-    http_code = result.stdout.strip()
     try:
-        with open("/tmp/feishu_resp.json") as f:
-            resp = json.load(f)
-        code = resp.get("code", -1)
-        if code == 0:
+        resp = json.loads(result.stdout) if result.stdout.strip() else {}
+        if resp.get("ok") and resp.get("data", {}).get("updated"):
             print(f"   ✅ 飞书状态已更新为「已部署」")
             return True
         else:
-            print(f"   ❌ 飞书更新失败: HTTP={http_code} code={code} msg={resp.get('msg','')}")
-            # 尝试 PUT
-            cmd2 = [
-                "curl", "-s", "-S", "-X", "PUT", url,
-                "-H", f"Authorization: Bearer {token}",
-                "-H", "Content-Type: application/json",
-                "-d", body,
-                "-o", "/tmp/feishu_resp2.json",
-                "-w", "%{http_code}"
-            ]
-            result2 = subprocess.run(cmd2, capture_output=True, text=True, timeout=30)
-            with open("/tmp/feishu_resp2.json") as f:
-                resp2 = json.load(f)
-            if resp2.get("code") == 0:
-                print(f"   ✅ PUT 方式更新成功")
-                return True
-            print(f"   ❌ PUT 也失败: HTTP={result2.stdout.strip()} msg={resp2.get('msg','')}")
+            print(f"   ❌ 飞书更新失败: {result.stdout[:300]}")
             return False
     except Exception as e:
-        print(f"   ❌ 解析飞书响应失败: {e} (HTTP={http_code})")
+        print(f"   ❌ 解析 lark-cli 输出失败: {e}")
+        print(f"   stdout: {result.stdout[:200]}")
+        print(f"   stderr: {result.stderr[:200]}")
         return False
 
 def main():
