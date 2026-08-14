@@ -76,6 +76,7 @@ const isReal = v => {
 
 // tags 规范化：数组 → 对象。数组形态无 clientType，按铁律「无 clientType 不下发」标记
 let fixedFromArray = 0, droppedNoCt = 0
+const TOOL_SET = new Set(['TOOL', 'METHOD'])
 function normTags(e) {
   const t = e.tags
   if (Array.isArray(t)) {
@@ -97,6 +98,7 @@ function toSlim(e) {
   const o = {
     id: e.id,
     name: e.name,
+    entryType: e.entryType || '',
     domain: e.domain || '',
     subScene: e.subScene || '',
     scene: e.scene || ((e.domain || '') + '·' + (e.subScene || '')),
@@ -124,7 +126,7 @@ function toSlim(e) {
 // ===== 3. 打分选条 =====
 // 从引擎读取四线节点关键词，保证选条口径与检索口径一致（避免灌了引擎搜不到的条目）
 const engineSrc = fs.readFileSync(ENGINE, 'utf8')
-const AXIS_KW = { buyer: new Set(), tenant: new Set(), landlord: new Set(), seller: new Set() }
+const AXIS_KW = { buyer: new Set(), tenant: new Set(), landlord: new Set(), seller: new Set(), agent: new Set() }
 {
   const block = engineSrc.slice(engineSrc.indexOf('AXIS_GROUPS'), engineSrc.indexOf('// ===== 住得好七维'))
   const groups = block.split(/clientType:\s*'/).slice(1)
@@ -173,7 +175,10 @@ const BUDGET = BUDGET_KB * 1024
 const all = FULL.map(toSlim)
 // 铁律：无 clientType 的不下发（防四线串台）
 const usable = all.filter(o => {
-  if (!o.tags.clientType.length) { droppedNoCt++; return false }
+  if (!o.tags.clientType.length) {
+    // 工具卡（TOOL/METHOD）豁免：属经纪人通用工具，无客户线不构成四线串台
+    if (!TOOL_SET.has(o.entryType)) { droppedNoCt++; return false }
+  }
   return true
 })
 console.log(`规范化：tags 数组修复 ${fixedFromArray} 条 | 无 clientType 丢弃 ${droppedNoCt} 条 | 可用 ${usable.length} 条`)
@@ -185,10 +190,22 @@ console.log(`旧 slim 独有（保留）：${orphans.length} 条`)
 
 // 四线配额：按线均衡，避免 buyer 一家独大（旧 slim: buyer281/seller49/tenant34/landlord25）
 const scored = usable.map(o => ({ o, s: score(o), b: B(o) })).sort((a, b) => b.s - a.s)
-const QUOTA_W = { buyer: 0.34, seller: 0.22, landlord: 0.22, tenant: 0.22 }
+const QUOTA_W = { buyer: 0.315, seller: 0.205, landlord: 0.205, tenant: 0.205, agent: 0.10 }
 let used = orphans.reduce((a, e) => a + B(e), 0)
 const picked = [], pickedIds = new Set(orphans.map(e => e.id))
 const lineUsed = { buyer: 0, seller: 0, landlord: 0, tenant: 0, agent: 0 }
+
+// 第 0 轮：工具卡（TOOL/METHOD）强制全收 —— 助手类工具的内容源，必须进 slim，不受四线配额挤占
+let toolPicked = 0
+for (const it of scored) {
+  if (!TOOL_SET.has(it.o.entryType)) continue
+  if (used + it.b > BUDGET) { console.log('⚠️ 工具卡超体积预算，停止收录'); break }
+  if (pickedIds.has(it.o.id)) continue
+  picked.push(it.o); pickedIds.add(it.o.id); used += it.b
+  it.o.tags.clientType.forEach(c => { if (lineUsed[c] !== undefined) lineUsed[c]++ })
+  toolPicked++
+}
+console.log(`第 0 轮（工具卡 TOOL/METHOD 强制全收）：${toolPicked} 条`)
 
 // 第一轮：dataRef/caseRef 真值全收（客户可见页解锁，不受配额限制）
 for (const it of scored) {
@@ -204,7 +221,7 @@ console.log(`第一轮（真实数据/案例全收）：${phase1} 条 / ${(used 
 const remain = BUDGET - used
 const lineBudget = {}
 Object.entries(QUOTA_W).forEach(([k, w]) => { lineBudget[k] = remain * w })
-const lineSpent = { buyer: 0, seller: 0, landlord: 0, tenant: 0 }
+const lineSpent = { buyer: 0, seller: 0, landlord: 0, tenant: 0, agent: 0 }
 for (const it of scored) {
   if (pickedIds.has(it.o.id)) continue
   const cts = it.o.tags.clientType.filter(c => lineBudget[c] !== undefined)
@@ -245,9 +262,10 @@ if (DRY) { console.log('\n--dry 模式，未写文件'); process.exit(0) }
 const header = [
   '// 由 scripts/build_slim_from_kb.mjs 从小眼镜知识库 data/entries_5000.json 抽取生成',
   `// 生成时间：${new Date().toISOString().slice(0, 19).replace('T', ' ')} | 源库 ${FULL.length} 条 → slim ${RESULT.length} 条`,
-  '// 字段：id/name/domain/subScene/scene/cq/ola/cp/detail/legalRef/consumerBenefit/dataRef/caseRef/alias/tags',
+  '// 字段：id/name/entryType/domain/subScene/scene/cq/ola/cp/detail/legalRef/consumerBenefit/dataRef/caseRef/alias/tags',
   '// 规范化：clientType 统一 buyer/seller/landlord/tenant/agent；stage 统一 pre/mid/post/all',
   '// 铁律：dataRef/caseRef 仅保留真值（占位符已剔除）；无 clientType 的条目不下发（防四线串台）',
+  '// 工具卡：entryType∈{TOOL,METHOD} 强制全收（经纪人通用工具，豁免无 clientType 铁律），为助手类工具提供内容源',
   `export default ${JSON.stringify({ decoder: RESULT })}`
 ].join('\n')
 fs.writeFileSync(OUT, header)

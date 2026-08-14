@@ -2,6 +2,8 @@ import { createSSRApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import { trackPageview } from './utils/tracker'
+// 设计系统：移植自 review 原生小程序（墨绿/暖橙 VI + 14px 字号节奏）。唯一真源。
+import './static/theme.css'
 
 export function createApp() {
   const app = createSSRApp(App)

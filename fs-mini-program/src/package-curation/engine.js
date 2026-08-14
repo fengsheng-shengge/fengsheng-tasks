@@ -787,7 +787,8 @@ function generateCurationFromEntries(input, entriesByGroup) {
     mot: buildMot(sc, ask, say, bringFinal, followups),
     dimsInsight: buildDimsInsight(dimensions, dimScores, dimSelfScores),
     honesty,
-    timeline: buildTimeline()
+    timeline: buildTimeline(),
+    layers: buildLayers(topN, isRealLegal)
   }
 }
 
@@ -886,6 +887,47 @@ function buildFollowups(node, dimensions) {
   }
   const base = map[node.key] || [{ theme: '持续关怀', text: '见面后 1–2 天做轻量跟进，确认客户还有哪些顾虑' }]
   return base.concat(buildDimensionFollowups(dimensions)).slice(0, 4)
+}
+
+// ===== 道法术器分层（知识库大脑：方案按 layer 组织，而非模板套话） =====
+// IF 命中条目的 tags.layer ∈ {dao/fa/shu/qi}，按 道→法→术→器 顺序组织
+// 每条挂真实依据（legalRef 真实存在才标，绝不编造），法层(有法律/红线)优先
+const LAYER_META = {
+  dao: { name: '道 · 战略方向', desc: '该不该做、大方向怎么定' },
+  fa: { name: '法 · 规则依据', desc: '红线与政策，必须守住' },
+  shu: { name: '术 · 操作方法', desc: '具体怎么做、话术怎么讲' },
+  qi: { name: '器 · 工具推荐', desc: '用什么工具落地' }
+}
+function buildLayers(topN, isRealLegal) {
+  // layer 字段中英文混存（道/法/术/器 与 dao/fa/shu/qi），统一归一化到英文键
+  const LAYER_KEY = { dao: 'dao', fa: 'fa', shu: 'shu', qi: 'qi', '道': 'dao', '法': 'fa', '术': 'shu', '器': 'qi' }
+  const layerMap = {}
+  for (const x of topN) {
+    const raw = (x.e.tags && x.e.tags.layer) || 'shu'
+    const l = LAYER_KEY[raw] || 'shu'
+    ;(layerMap[l] = layerMap[l] || []).push(x)
+  }
+  return ['dao', 'fa', 'shu', 'qi'].map(k => ({
+    key: k,
+    name: LAYER_META[k].name,
+    desc: LAYER_META[k].desc,
+    items: (layerMap[k] || [])
+      .filter(x => x.score >= 3)
+      // 有真实法源的优先（必含依据），同层按分数降序
+      .sort((a, b) => (isRealLegal(b.e.legalRef) ? 1 : 0) - (isRealLegal(a.e.legalRef) ? 1 : 0) || b.score - a.score)
+      .slice(0, 4)
+      .map(x => {
+        const realLegal = isRealLegal(x.e.legalRef)
+        return {
+          title: x.e.name,
+          ola: x.e.ola || (Array.isArray(x.e.cp) && x.e.cp[0]) || '',
+          cp: Array.isArray(x.e.cp) ? x.e.cp : [],
+          legalRef: realLegal ? x.e.legalRef : null,
+          hasLegal: realLegal,
+          entryId: x.e.id
+        }
+      })
+  })).filter(g => g.items.length)
 }
 
 // 三段式时间轴（见前/见面/见后）结构，供 UI 渲染

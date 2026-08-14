@@ -20,21 +20,21 @@
         <text v-if="searchKw" class="s-clear" @tap="clearKw">✕</text>
       </view>
 
-      <!-- 多维搜索条件 -->
+      <!-- 9 组搜索条件（对齐网站版知识词典） -->
       <view class="facet">
-        <view class="facet-h">用户类型</view>
+        <view class="facet-h">① 用户类型</view>
         <view class="facet-chips">
           <text class="f-chip" v-for="c in kbFacets.clientTypes" :key="c" :class="{ on: selClientTypes.includes(c) }" @tap="toggleFacet('selClientTypes', c)">{{ c }}</text>
         </view>
       </view>
       <view class="facet">
-        <view class="facet-h">业务阶段</view>
+        <view class="facet-h">② 业务阶段（客户生命周期）</view>
         <view class="facet-chips">
           <text class="f-chip" v-for="s in kbFacets.stages" :key="s" :class="{ on: selStages.includes(s) }" @tap="toggleFacet('selStages', s)">{{ s }}</text>
         </view>
       </view>
       <view class="facet">
-        <view class="facet-h">业务域</view>
+        <view class="facet-h">③ 代码域</view>
         <scroll-view class="facet-scroll" scroll-x="true">
           <view class="facet-chips">
             <text class="f-chip" v-for="d in kbFacets.domains" :key="d.key" :class="{ on: selDomains.includes(d.key) }" @tap="toggleFacet('selDomains', d.key)">{{ d.cn }}</text>
@@ -42,10 +42,44 @@
         </scroll-view>
       </view>
       <view class="facet">
-        <view class="facet-h">工具类型</view>
+        <view class="facet-h">④ 业务职能域</view>
+        <scroll-view class="facet-scroll" scroll-x="true">
+          <view class="facet-chips">
+            <text class="f-chip" v-for="s in kbFacets.sceneDomains" :key="s" :class="{ on: selSceneDomains.includes(s) }" @tap="toggleFacet('selSceneDomains', s)">{{ s }}</text>
+          </view>
+        </scroll-view>
+      </view>
+      <view class="facet">
+        <view class="facet-h">⑤ 知识层级（道法术器）</view>
         <view class="facet-chips">
-          <text class="f-chip" v-for="t in kbFacets.toolTypes" :key="t" :class="{ on: selToolTypes.includes(t) }" @tap="toggleFacet('selToolTypes', t)">{{ t }}</text>
+          <text class="f-chip" v-for="l in kbFacets.layers" :key="l" :class="{ on: selLayers.includes(l) }" @tap="toggleFacet('selLayers', l)">{{ l }}</text>
         </view>
+      </view>
+      <view class="facet">
+        <view class="facet-h">⑥ 词条类型</view>
+        <view class="facet-chips">
+          <text class="f-chip" v-for="t in kbFacets.entryTypes" :key="t" :class="{ on: selEntryTypes.includes(t) }" @tap="toggleFacet('selEntryTypes', t)">{{ t }}</text>
+        </view>
+      </view>
+      <view class="facet">
+        <view class="facet-h">⑦ 风险等级</view>
+        <view class="facet-chips">
+          <text class="f-chip" v-for="s in kbFacets.severities" :key="s" :class="{ on: selSeverities.includes(s) }" @tap="toggleFacet('selSeverities', s)">{{ s }}</text>
+        </view>
+      </view>
+      <view class="facet">
+        <view class="facet-h">⑧ 优先级</view>
+        <view class="facet-chips">
+          <text class="f-chip" v-for="p in kbFacets.priorities" :key="p" :class="{ on: selPriorities.includes(p) }" @tap="toggleFacet('selPriorities', p)">{{ p }}</text>
+        </view>
+      </view>
+      <view class="facet">
+        <view class="facet-h">⑨ 业务场景</view>
+        <scroll-view class="facet-scroll" scroll-x="true">
+          <view class="facet-chips">
+            <text class="f-chip" v-for="s in kbFacets.subScenes" :key="s" :class="{ on: selSubScenes.includes(s) }" @tap="toggleFacet('selSubScenes', s)">{{ s }}</text>
+          </view>
+        </scroll-view>
       </view>
 
       <view class="filter-bar">
@@ -56,10 +90,15 @@
       <view class="kg-entry" v-for="(e, i) in results" :key="i">
         <view class="ke-top">
           <text class="ke-title">{{ e.title }}</text>
-          <text class="ke-dom">{{ e.domainCn }}</text>
+          <text class="ke-dom" v-if="e.domainCn">{{ e.domainCn }}</text>
         </view>
-        <view class="ke-tags" v-if="e.stage.length || e.toolType">
+        <view class="ke-tags">
+          <text class="ke-tag layer" v-if="e.layer">{{ e.layer }}</text>
+          <text class="ke-tag sev" :class="sevClass(e.severity)" v-if="e.severity">{{ e.severity }}</text>
+          <text class="ke-tag pri" v-if="e.priority">{{ e.priority }}</text>
+          <text class="ke-tag et" v-if="e.entryType">{{ e.entryType }}</text>
           <text class="ke-tag" v-for="(s, si) in e.stage" :key="'s'+si">{{ s }}</text>
+          <text class="ke-tag" v-if="e.subScene">{{ e.subScene }}</text>
           <text class="ke-tag tool" v-if="e.toolType">{{ e.toolType }}</text>
         </view>
         <view class="ke-sum">{{ e.summary }}</view>
@@ -134,6 +173,12 @@ export default {
       selStages: [],
       selDomains: [],
       selToolTypes: [],
+      selSceneDomains: [],
+      selLayers: [],
+      selEntryTypes: [],
+      selSeverities: [],
+      selPriorities: [],
+      selSubScenes: [],
       results: kbSearch,
       selections: []
     }
@@ -144,7 +189,7 @@ export default {
     caseList() { return casesData.map(c => ({ ...c, _open: false })) },
     casePreview() { return this.caseList.slice(0, 3) },
     hasFilter() {
-      return this.selClientTypes.length || this.selStages.length || this.selDomains.length || this.selToolTypes.length || !!this.searchKw.trim()
+      return this.selClientTypes.length || this.selStages.length || this.selDomains.length || this.selToolTypes.length || this.selSceneDomains.length || this.selLayers.length || this.selEntryTypes.length || this.selSeverities.length || this.selPriorities.length || this.selSubScenes.length || !!this.searchKw.trim()
     }
   },
   onShow() {
@@ -168,23 +213,42 @@ export default {
       this.selStages = []
       this.selDomains = []
       this.selToolTypes = []
+      this.selSceneDomains = []
+      this.selLayers = []
+      this.selEntryTypes = []
+      this.selSeverities = []
+      this.selPriorities = []
+      this.selSubScenes = []
       this.searchKw = ''
       this.runFilter()
     },
     runFilter() {
       const kw = this.searchKw.trim().toLowerCase()
       const ct = this.selClientTypes, st = this.selStages, dm = this.selDomains, tt = this.selToolTypes
+      const sd = this.selSceneDomains, ly = this.selLayers, et = this.selEntryTypes
+      const sv = this.selSeverities, pr = this.selPriorities, ss = this.selSubScenes
       this.results = this.kbSearch.filter(e => {
         if (ct.length && !e.clientType.some(c => ct.includes(c))) return false
         if (st.length && !e.stage.some(s => st.includes(s))) return false
         if (dm.length && !dm.includes(e.domain)) return false
         if (tt.length && !tt.includes(e.toolType)) return false
+        if (sd.length && (!e.sceneDomain || !sd.includes(e.sceneDomain))) return false
+        if (ly.length && (!e.layer || !ly.includes(e.layer))) return false
+        if (et.length && (!e.entryType || !et.includes(e.entryType))) return false
+        if (sv.length && (!e.severity || !sv.includes(e.severity))) return false
+        if (pr.length && (!e.priority || !pr.includes(e.priority))) return false
+        if (ss.length && (!e.subScene || !ss.includes(e.subScene))) return false
         if (kw) {
-          const hay = (e.title + ' ' + e.summary + ' ' + e.domainCn + ' ' + e.clientType.join(' ') + ' ' + e.stage.join(' ') + ' ' + e.toolType).toLowerCase()
+          const hay = (e.title + ' ' + e.summary + ' ' + e.domainCn + ' ' + e.clientType.join(' ') + ' ' + e.stage.join(' ') + ' ' + e.subScene + ' ' + e.sceneDomain + ' ' + e.layer + ' ' + e.entryType).toLowerCase()
           if (hay.indexOf(kw) < 0) return false
         }
         return true
       })
+    },
+    sevClass(s) {
+      if (s === '红线') return 'red'
+      if (s === '提醒') return 'mid'
+      return 'soft'
     },
     isSel(id) { return this.selections.some(s => s.id === id) },
     toggleSel(e) {
@@ -203,54 +267,65 @@ export default {
 </script>
 
 <style scoped>
-.knowledge-banner { background: linear-gradient(135deg,#3d5a3e,#4d7050); color:#fff; border-radius:14px; padding:16px; margin-bottom:14px; }
-.kg-tabs { display:flex; gap:8px; background:#fff; border:1px solid #e7e0d4; border-radius:12px; padding:5px; margin-bottom:14px; }
-.kg-tab { flex:1; text-align:center; font-size:14px; font-weight:700; color:#888; padding:9px 0; border-radius:9px; }
-.kg-tab.on { background:#3d5a3e; color:#fff; }
-.search-row { display:flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e0d4; border-radius:999px; padding:9px 14px; margin-bottom:12px; }
-.s-ico { font-size:14px; }
-.s-inp { flex:1; font-size:14px; color:#2b2b2b; }
-.s-clear { color:#bbb; font-size:14px; padding:0 4px; }
-.facet { margin-bottom:10px; }
-.facet-h { font-size:12px; font-weight:700; color:#6b6359; margin:0 0 6px 2px; }
-.facet-chips { display:flex; flex-wrap:wrap; gap:6px; }
+/* 套用 review 设计语言：墨绿/暖橙 VI + 14px 字号节奏，降噪放大 */
+.knowledge-banner { background: linear-gradient(135deg, var(--green-deep), var(--green)); color:#fff; border-radius: var(--r-lg); padding: 36rpx 32rpx; margin: 0 0 24rpx; }
+.knowledge-banner view:first-child { font-size: 36rpx; font-weight: 800; }
+.knowledge-banner view:last-child { font-size: 24rpx; opacity:.85; line-height:1.6; margin-top:12rpx; }
+.kg-tabs { display:flex; gap:12rpx; background:#fff; border:2rpx solid var(--border); border-radius: var(--r-md); padding:8rpx; margin-bottom:24rpx; }
+.kg-tab { flex:1; text-align:center; font-size:26rpx; font-weight:700; color:var(--text-secondary); padding:16rpx 0; border-radius: var(--r-sm); }
+.kg-tab.on { background: var(--green); color:#fff; }
+.search-row { display:flex; align-items:center; gap:16rpx; background:#fff; border:3rpx solid var(--border); border-radius: var(--r-pill); padding:24rpx 28rpx; margin-bottom:24rpx; }
+.s-ico { font-size:32rpx; }
+.s-inp { flex:1; font-size:28rpx; color:var(--text-primary); }
+.s-clear { color:var(--text-tertiary); font-size:28rpx; padding:0 8rpx; }
+.facet { margin-bottom:24rpx; }
+.facet-h { font-size:26rpx; font-weight:700; color:var(--text-secondary); margin:0 0 16rpx 4rpx; }
+.facet-chips { display:flex; flex-wrap:wrap; gap:16rpx; }
 .facet-scroll { white-space:nowrap; }
 .facet-scroll .facet-chips { flex-wrap:nowrap; }
-.f-chip { display:inline-block; font-size:12px; padding:6px 12px; border-radius:999px; background:#f7f4ef; border:1px solid #e7e0d4; color:#666; }
-.f-chip.on { background:#3d5a3e; color:#fff; border-color:#3d5a3e; }
-.filter-bar { display:flex; align-items:center; justify-content:space-between; font-size:12px; color:#999; margin:6px 2px 10px; }
-.filter-bar .clear { color:#c46a3a; font-weight:700; }
-.kg-entry { background:#fff; border:1px solid #e7e0d4; border-radius:12px; padding:13px; margin-bottom:10px; }
-.ke-top { display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
-.ke-title { font-size:15px; font-weight:700; color:#2b2b2b; }
-.ke-dom { font-size:11px; color:#c46a3a; background:#fbf6ee; padding:2px 8px; border-radius:6px; flex-shrink:0; }
-.ke-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
-.ke-tag { font-size:10.5px; color:#6b6359; background:#f0ece2; padding:2px 7px; border-radius:5px; }
-.ke-tag.tool { color:#3d5a3e; background:#eef3ec; }
-.ke-sum { font-size:12.5px; color:#555; margin-top:6px; line-height:1.6; }
-.ke-foot { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
-.ke-src { font-size:11px; color:#a99; }
-.ke-add { font-size:12px; font-weight:700; color:#3d5a3e; background:#eef3ec; padding:5px 12px; border-radius:999px; }
-.ke-add.on { color:#fff; background:#3d5a3e; }
-.empty { background:#fff; border:1px dashed #e7e0d4; border-radius:12px; padding:18px; text-align:center; color:#999; font-size:13px; margin-bottom:10px; }
-.sel-tray { background:#fff8f0; border:1px solid #e7d3c2; border-radius:14px; padding:14px; margin:6px 0 14px; }
-.st-top { display:flex; align-items:center; justify-content:space-between; font-size:13px; font-weight:700; color:#2b2b2b; }
-.st-clear { font-size:12px; color:#c46a3a; font-weight:700; }
-.st-list { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
-.st-item { font-size:11px; color:#555; background:#fff; border:1px solid #e7e0d4; border-radius:6px; padding:3px 8px; }
-.btn-main { background:#c46a3a; color:#fff; border:none; border-radius:999px; padding:12px; font-size:15px; font-weight:700; }
-.kg-card { background:#fff; border:1px solid #e7e0d4; border-radius:12px; padding:14px; margin-bottom:12px; }
-.kg-btn { background:#3d5a3e; color:#fff; border:none; border-radius:999px; padding:11px 18px; font-size:14px; font-weight:700; }
-.kg-btn.block { width:100%; margin-top:6px; }
-.kg-case { background:#fff; border:1px solid #e7e0d4; border-radius:12px; padding:13px; margin-bottom:10px; }
-.kg-case-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px; }
-.kg-tag { font-size:11px; padding:2px 8px; border-radius:6px; background:#f0ece2; color:#888; }
-.kg-case-title { font-size:15px; font-weight:700; color:#2b2b2b; }
-.kg-case-preview { font-size:12.5px; color:#666; margin-top:4px; line-height:1.5; }
-.kg-case-full { margin-top:8px; }
-.kg-case-full .blk { margin-bottom:8px; }
-.kg-case-full .blk-h { font-size:12px; font-weight:700; color:#3d5a3e; margin-bottom:2px; }
-.kg-case-full .blk-b { font-size:12.5px; color:#555; line-height:1.6; }
-.kg-case-foot { margin-top:6px; }
-.kg-case-openbtn { font-size:12px; color:#c46a3a; font-weight:700; }
+.f-chip { display:inline-block; font-size:24rpx; padding:14rpx 32rpx; border-radius: var(--r-pill); background:#fff; border:3rpx solid var(--border); color:var(--text-secondary); }
+.f-chip.on { background: var(--green); color:#fff; border-color: var(--green); box-shadow: var(--shadow-accent); }
+.filter-bar { display:flex; align-items:center; justify-content:space-between; font-size:24rpx; color:var(--text-tertiary); margin:8rpx 4rpx 16rpx; }
+.filter-bar .clear { color:var(--orange); font-weight:700; }
+.kg-entry { background:#fff; border:2rpx solid var(--border); border-radius: var(--r-lg); padding:32rpx; margin-bottom:20rpx; box-shadow: var(--shadow-sm); transition: transform .15s; }
+.kg-entry:active { transform: scale(.99); }
+.ke-top { display:flex; align-items:baseline; justify-content:space-between; gap:16rpx; }
+.ke-title { font-size:30rpx; font-weight:800; color:var(--text-primary); }
+.ke-dom { font-size:22rpx; color:var(--orange); background: var(--orange-bg); padding:6rpx 16rpx; border-radius: var(--r-sm); flex-shrink:0; }
+.ke-tags { display:flex; flex-wrap:wrap; gap:10rpx; margin-top:16rpx; }
+.ke-tag { font-size:22rpx; color:var(--text-secondary); background: var(--cream-dark); padding:6rpx 16rpx; border-radius: var(--r-sm); }
+.ke-tag.tool { color:var(--green); background: var(--green-bg); }
+.ke-tag.layer { color:#7a4a2a; background: var(--orange-bg); font-weight:700; }
+.ke-tag.sev { color:#fff; }
+.ke-tag.sev.red { background:#c0392b; }
+.ke-tag.sev.mid { background:#d98b2b; }
+.ke-tag.sev.soft { background:#5a8a5a; }
+.ke-tag.pri { color:var(--green); background: var(--green-bg); }
+.ke-tag.et { color:var(--text-secondary); background: var(--cream-dark); }
+.ke-sum { font-size:26rpx; color:var(--text-secondary); margin-top:16rpx; line-height:1.7; }
+.ke-foot { display:flex; align-items:center; justify-content:space-between; margin-top:20rpx; }
+.ke-src { font-size:22rpx; color:var(--text-tertiary); }
+.ke-add { font-size:24rpx; font-weight:700; color:var(--green); background: var(--green-bg); padding:12rpx 28rpx; border-radius: var(--r-pill); }
+.ke-add.on { color:#fff; background: var(--green); }
+.empty { background:#fff; border:2rpx dashed var(--border); border-radius: var(--r-lg); padding:48rpx 32rpx; text-align:center; color:var(--text-tertiary); font-size:26rpx; margin-bottom:20rpx; }
+.sel-tray { background: var(--orange-bg); border:2rpx solid #f0cdba; border-radius: var(--r-lg); padding:32rpx; margin:16rpx 0 24rpx; }
+.st-top { display:flex; align-items:center; justify-content:space-between; font-size:26rpx; font-weight:700; color:var(--text-primary); }
+.st-clear { font-size:24rpx; color:var(--orange); font-weight:700; }
+.st-list { display:flex; flex-wrap:wrap; gap:12rpx; margin:20rpx 0; }
+.st-item { font-size:22rpx; color:var(--text-secondary); background:#fff; border:2rpx solid var(--border); border-radius: var(--r-sm); padding:8rpx 16rpx; }
+.btn-main { background: linear-gradient(135deg, var(--orange), var(--orange-light)); color:#fff; border:none; border-radius: var(--r-md); padding:32rpx; font-size:32rpx; font-weight:800; box-shadow: var(--shadow-accent); }
+.kg-card { background:#fff; border:2rpx solid var(--border); border-radius: var(--r-lg); padding:32rpx; margin-bottom:24rpx; }
+.kg-btn { background: var(--green); color:#fff; border:none; border-radius: var(--r-pill); padding:24rpx 36rpx; font-size:28rpx; font-weight:700; }
+.kg-btn.block { width:100%; margin-top:12rpx; }
+.kg-case { background:#fff; border:2rpx solid var(--border); border-radius: var(--r-lg); padding:32rpx; margin-bottom:20rpx; }
+.kg-case-tags { display:flex; flex-wrap:wrap; gap:12rpx; margin-bottom:16rpx; }
+.kg-tag { font-size:22rpx; padding:6rpx 16rpx; border-radius: var(--r-sm); background: var(--cream-dark); color:var(--text-secondary); }
+.kg-case-title { font-size:30rpx; font-weight:800; color:var(--text-primary); }
+.kg-case-preview { font-size:26rpx; color:var(--text-secondary); margin-top:12rpx; line-height:1.6; }
+.kg-case-full { margin-top:20rpx; }
+.kg-case-full .blk { margin-bottom:20rpx; }
+.kg-case-full .blk-h { font-size:26rpx; font-weight:700; color:var(--green); margin-bottom:8rpx; }
+.kg-case-full .blk-b { font-size:26rpx; color:var(--text-secondary); line-height:1.7; }
+.kg-case-foot { margin-top:12rpx; }
+.kg-case-openbtn { font-size:24rpx; color:var(--orange); font-weight:700; }
 </style>
