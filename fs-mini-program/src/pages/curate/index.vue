@@ -3,7 +3,7 @@
     <!-- 头部 -->
     <view class="generate-header">
       <view class="gen-title">✨ 快速生成简报</view>
-      <view class="gen-sub">填客户结构化画像，AI 自动拆解并生成完整方案</view>
+      <view class="gen-sub">填客户结构化画像，自动拆解并生成完整方案</view>
     </view>
 
     <!-- 测评结论预填提示 -->

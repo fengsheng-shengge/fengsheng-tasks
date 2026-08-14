@@ -177,6 +177,20 @@
         </block>
       </view>
 
+      <!-- V3.3 抗性应对：从「该说的要点(say)」派生，不手写新内容，守数据诚实 -->
+      <view class="sec" v-if="objectionItems.length">
+        <view class="sec-h"><text class="em">🛡️</text>抗性应对<text class="mot-tag">该说的要点重组</text></view>
+        <view class="obj-note">客户若存在顾虑，可用下方已匹配的要点顺势承接（依据真实词条，只给依据不给结论）</view>
+        <view v-for="(o, i) in objectionItems" :key="i" class="obj-item">
+          <view class="obj-title">{{ o.title }}</view>
+          <view class="obj-point">{{ o.point }}</view>
+        </view>
+      </view>
+      <view class="sec" v-else-if="result">
+        <view class="sec-h"><text class="em">🛡️</text>抗性应对</view>
+        <view class="obj-empty">本次场景暂无专门抗性预案，可先用上方「该说的要点」顺势承接客户顾虑</view>
+      </view>
+
       <!-- 七维洞察（双轨：经纪人评 + 客户自评，含雷达图）-->
       <view class="sec" v-if="dimsInsightEnabled">
         <view class="sec-h"><text class="em">🎯</text>七维需求洞察<text class="mot-tag">双轨</text></view>
@@ -379,6 +393,15 @@ export default {
         { key: 'act', label: 'M3 行动', icon: '🏠', title: '该带的（看房 / 房源方向）', items: this.result.bring, type: 'bring', empty: '暂无强相关条目，建议结合实勘补充' },
         { key: 'confirm', label: 'M4 确认', icon: '💌', title: '见后跟进（持续关怀）', items: this.result.followups, type: 'follow', empty: '暂无跟进条目' }
       ]
+    },
+    // V3.3 抗性应对：从 result.say（引擎真实生成）中筛抗性相关要点，纯派生不手写
+    objectionItems() {
+      if (!this.result || !this.result.say) return []
+      const kw = ['贵', '跌', '对比', '顾虑', '担心', '犹豫', '考虑', '异议', '抗性', '风险', '瑕疵', '观望', '再想想', '纠结', '划算', '便宜', '贵了', '不值']
+      return this.result.say
+        .filter(s => [s.title, s.point, s.detail].some(t => t && kw.some(k => t.includes(k))))
+        .slice(0, 3)
+        .map(s => ({ title: s.title, point: s.point }))
     },
     dimsInsightEnabled() {
       return this.result && this.result.dimsInsight && this.result.dimsInsight.enabled
@@ -709,6 +732,11 @@ export default {
 .say-title { font-size: 14px; font-weight: 700; color: #2b2b2b; }
 .say-point { font-size: 13px; color: #444; margin-top: 4px; line-height: 1.55; }
 .say-detail { font-size: 12px; color: #8a837a; margin-top: 4px; line-height: 1.5; }
+.obj-note { font-size: 11.5px; color: #8a837a; line-height: 1.5; margin-bottom: 10px; }
+.obj-item { background: #fdf3ec; border-left: 3px solid #c46a3a; border-radius: 8px; padding: 9px 12px; margin-bottom: 8px; }
+.obj-title { font-size: 13px; font-weight: 700; color: #2b2b2b; }
+.obj-point { font-size: 12px; color: #555; margin-top: 3px; line-height: 1.5; }
+.obj-empty { font-size: 12px; color: #aaa; padding: 4px 0; line-height: 1.5; }
 .mot-tag { font-size: 11px; font-weight: 700; color: #fff; background: #3d5a3e; padding: 2px 9px; border-radius: 10px; margin-left: auto; flex-shrink: 0; }
 .fabe { margin-top: 8px; background: #fff; border: 1px solid #e7e0d4; border-radius: 8px; padding: 8px 10px; }
 .fabe-row { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 1px dashed #f0ece2; }

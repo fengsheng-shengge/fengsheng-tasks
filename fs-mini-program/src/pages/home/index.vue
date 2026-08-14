@@ -34,7 +34,7 @@
       <view class="feature-card" @tap="trackFeature('curate')">
         <view class="feature-icon orange">💡</view>
         <view class="feature-name">顾问简报</view>
-        <view class="feature-desc">购房选筹 · 售房定价 · 租房带看，全场景 AI 方案</view>
+        <view class="feature-desc">购房选筹 · 售房定价 · 租房带看，全场景方案支持</view>
       </view>
       <view class="feature-card" @tap="trackFeature('assess')">
         <view class="feature-icon blue">📊</view>
@@ -78,6 +78,29 @@
       </view>
     </view>
 
+    <!-- 今日见面作战简报（基于客户档案 note + 历史策展 cognition 真实数据派生，不编造） -->
+    <view class="card" v-if="warBrief.length">
+      <view class="card-header">
+        <view class="title">📋 今日见面作战简报</view>
+        <view class="more" @tap="go('clients')">全部客户 ›</view>
+      </view>
+      <view class="brief-list">
+        <view class="brief-item" v-for="(b, i) in warBrief" :key="i" @tap="goFollowup(b.id)">
+          <view class="brief-av" :style="{ background: b.avatarColor }">{{ b.avatar }}</view>
+          <view class="brief-body">
+            <view class="brief-top">
+              <text class="brief-name">{{ b.name }}</text>
+              <text class="tag tag-cream">{{ b.tag }}</text>
+            </view>
+            <view class="brief-need" v-if="b.need">🎯 需求：{{ b.need }}</view>
+            <view class="brief-grip" v-if="b.grip">💡 见面抓手：{{ b.grip }}</view>
+            <view class="brief-empty" v-else>尚未生成策展 · 点此为其生成简报</view>
+          </view>
+          <view class="brief-arrow">›</view>
+        </view>
+      </view>
+    </view>
+
     <!-- 快速生成 -->
     <view class="quick-card" @tap="go('curate')">
       <view class="qc-title">
@@ -91,7 +114,7 @@
         <text class="ic">👤</text>
         <text class="placeholder">客户称呼 + 一句话描述需求…</text>
       </view>
-      <view class="qc-hint">💡 AI 自动识别业务类型，<text class="highlight-text">购房 / 售房 / 租房</text> 都能出方案</view>
+      <view class="qc-hint">💡 自动识别业务类型，<text class="highlight-text">购房 / 售房 / 租房</text> 都能出方案</view>
       <view class="qc-btn"><text>🚀</text><text>开始生成简报</text></view>
     </view>
 
@@ -160,7 +183,7 @@ export default {
       slides: [
         { img: hero1, ht: '经纪人的决策参谋', hs: '购房 · 售房 · 租房，把专业方案装进口袋' },
         { img: hero2, ht: '从带看中介到决策顾问', hs: '拆需求 · 出方案 · 给话术 · 帮跟进，一次见面全用上' },
-        { img: hero3, ht: '全场景方案支持', hs: '购房选筹 · 售房定价 · 租房带看，AI 陪你落地铁律' },
+        { img: hero3, ht: '全场景方案支持', hs: '购房选筹 · 售房定价 · 租房带看，陪你落地铁律' },
         { img: hero4, ht: '一次委托 · 终生服务', hs: '客户即资产，售后飞轮转出信任与转介绍' }
       ]
     }
@@ -187,11 +210,34 @@ export default {
         avatar: (c.name || '客')[0],
         avatarColor: palette[i % palette.length],
         tag: c.ctype || (c.tags && c.tags[0]) || '购房',
-        lastFollow: c.lastFollow || '今天跟进'
-      }))
-    },
-    // 聚合所有客户未完成的见后跟进，搬到首页"今日待办"
-    todayFollowups() {
+          lastFollow: c.lastFollow || '今天跟进'
+        }))
+      },
+      // V3.3 今日见面作战简报：基于客户档案 note + 历史策展 cognition 真实数据派生，不编造
+      warBrief() {
+        return this.recentClients
+          .map(c => {
+            const full = this.userStore.getClient(c.id) || {}
+            const cog = (full.cognition && full.cognition.log && full.cognition.log[0]) || null
+            const sayTitles = (cog && cog.sayTitles) || []
+            const grip = sayTitles.length
+              ? sayTitles[0]
+              : (cog && cog.axisLabel ? ('已生成「' + cog.axisLabel + '」策展，可复用该说的要点') : '')
+            return {
+              id: c.id,
+              name: c.name,
+              avatar: c.avatar,
+              avatarColor: c.avatarColor,
+              tag: c.tag,
+              need: full.note || '',
+              grip
+            }
+          })
+          .filter(b => b.need || b.grip)
+          .slice(0, 3)
+      },
+      // 聚合所有客户未完成的见后跟进，搬到首页"今日待办"
+      todayFollowups() {
       const out = []
       this.userStore.clients.forEach(c => {
         ;(c.followups || []).forEach(f => {
@@ -272,4 +318,17 @@ export default {
 .feature-icon.green { background: rgba(61,90,62,.12); }
 .feature-name { font-size: 14px; font-weight: 800; color: var(--text-primary, #1f2a24); margin-bottom: 4px; }
 .feature-desc { font-size: 11px; color: var(--text-muted, #8a8f8a); line-height: 1.5; }
+
+/* 今日见面作战简报 */
+.brief-list { display: flex; flex-direction: column; }
+.brief-item { display: flex; align-items: center; gap: 11px; padding: 11px 0; border-bottom: 1px dashed #eee; }
+.brief-item:last-child { border-bottom: none; }
+.brief-av { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; font-weight: 700; flex-shrink: 0; }
+.brief-body { flex: 1; min-width: 0; }
+.brief-top { display: flex; align-items: center; gap: 7px; }
+.brief-name { font-size: 14px; font-weight: 700; color: #1f2a24; }
+.brief-need { font-size: 12px; color: #555; margin-top: 3px; line-height: 1.45; }
+.brief-grip { font-size: 12px; color: #c46a3a; margin-top: 3px; line-height: 1.45; }
+.brief-empty { font-size: 12px; color: #aaa; margin-top: 3px; }
+.brief-arrow { font-size: 18px; color: #c8c2b6; flex-shrink: 0; }
 </style>
