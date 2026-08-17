@@ -805,22 +805,27 @@ function buildDimsInsight(dimensions, dimScores, dimSelfScores) {
     const diff = (hasBroker && hasSelf) ? Math.abs(broker - self) : 0
     return { key: dk, name: d.name, broker, self, hasBroker, hasSelf, diff, flag: diff > 3 }
   }).filter(Boolean)
-  const enabled = items.some(i => i.hasBroker)
+  // 启用判定：broker 或 self 任一有分即视为「已评分」，避免「仅客户自评」时整张雷达图被判定为空白（原逻辑只看 broker 轨，导致客户页算不出分）
+  const brokerEval = items.some(i => i.hasBroker)
   const selfEval = items.some(i => i.hasSelf)
+  const enabled = brokerEval || selfEval
+  const selfCount = items.filter(i => i.hasSelf).length
   const diffItems = items.filter(i => i.flag)
   const diffNames = diffItems.map(i => i.name)
   // conclusion：经纪人内页视角（工作语言）
   let conclusion = ''
   if (!enabled) conclusion = '七维尚未评分——见面时按锚点给分，能更准地画出客户画像。'
-  else if (selfEval && diffItems.length) conclusion = '经纪人与客户在「' + diffNames.join('、') + '」上看法差异较大（差>3分），见面重点对齐这几点。'
-  else if (selfEval) conclusion = '经纪人与客户评分基本一致，画像可信度高，直接按画像推进。'
-  else conclusion = '已按经纪人视角完成七维画像，建议让客户自评一次，差异往往是面谈金矿。'
+  else if (!brokerEval && selfEval) conclusion = '已收到客户自评（' + selfCount + ' 维）。见面时结合您的专业判断补上经纪人视角，双方画像叠起来更立体。'
+  else if (!selfEval) conclusion = '已按经纪人视角完成七维画像，建议让客户自评一次，差异往往是面谈金矿。'
+  else if (diffItems.length) conclusion = '经纪人与客户在「' + diffNames.join('、') + '」上看法差异较大（差>3分），见面重点对齐这几点。'
+  else conclusion = '经纪人与客户评分基本一致，画像可信度高，直接按画像推进。'
   // clientConclusion：客户可见页视角（对客语言，不出现"经纪人评/画像/面谈金矿"等内部说法）
   let clientConclusion = ''
   if (!enabled) clientConclusion = ''
-  else if (selfEval && diffItems.length) clientConclusion = '在「' + diffNames.join('、') + '」上，我们的理解和您的想法还有一些出入。见面时我们重点听您讲讲，把方案调到您真正在意的地方。'
-  else if (selfEval) clientConclusion = '我们对您需求的理解，和您自己的判断基本一致。接下来就按这个方向为您筛选。'
-  else clientConclusion = '这是我们目前对您居住需求的理解。哪一项不准，随时告诉我们，我们再调。'
+  else if (!brokerEval && selfEval) clientConclusion = '这是我们目前对您居住需求的理解（基于您的自评）。见面时我们再结合专业视角补充，把方案调到您真正在意的地方。'
+  else if (!selfEval) clientConclusion = '这是我们目前对您居住需求的理解。哪一项不准，随时告诉我们，我们再调。'
+  else if (diffItems.length) clientConclusion = '在「' + diffNames.join('、') + '」上，我们的理解和您的想法还有一些出入。见面时我们重点听您讲讲，把方案调到您真正在意的地方。'
+  else clientConclusion = '我们对您需求的理解，和您自己的判断基本一致。接下来就按这个方向为您筛选。'
   return { enabled, selfEval, items, diffNames, conclusion, clientConclusion }
 }
 
