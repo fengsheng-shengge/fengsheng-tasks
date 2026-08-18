@@ -60,7 +60,7 @@
     </view>
 
     <!-- 反馈入口 -->
-    <view class="feedback-entry" @tap="toast('客户反馈 · 后续版本开放')">
+    <view class="feedback-entry" @tap="goFeedback">
       <text class="feedback-ic">💬</text>
       <view class="feedback-info">
         <view class="feedback-title">客户反馈</view>
@@ -80,6 +80,7 @@
 
 <script>
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 const PALETTE = ['#3D5A3E', '#C46A3A', '#9c7c3a', '#5E7291']
 export default {
   data() {
@@ -144,6 +145,7 @@ export default {
     }
   },
   onShow() {
+    trackPageview('clients')
     // 支持从首页待办跳转聚焦某客户
     if (this.userStore.focusClientId) {
       const id = this.userStore.focusClientId
@@ -157,6 +159,7 @@ export default {
     onFilter(e) { this.filterTab = e.currentTarget.dataset.key },
     openClient(id) { uni.navigateTo({ url: '/pages/clients/edit?clientId=' + id }) },
     addClient() { uni.navigateTo({ url: '/pages/clients/edit' }) },
+    goFeedback() { uni.navigateTo({ url: '/pages/clients/feedback' }) },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) }
   }
 }

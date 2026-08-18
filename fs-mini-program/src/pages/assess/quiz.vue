@@ -63,6 +63,7 @@
 
 <script>
 import { ASSESS_SETS, LIKERT } from '../../utils/assess-data.js'
+import { useUserStore } from '../../store/user'
 export default {
   data() {
     return {
@@ -113,6 +114,7 @@ export default {
       this.advice = this.buildAdvice(scores)
       this.phase = 'result'
       try { uni.setStorageSync('fs_last_assess', { type: this.type, scores: { ...scores }, ts: Date.now() }) } catch (e) {}
+      try { useUserStore().addAssessment() } catch (e) {}
       this.$nextTick(() => { this.drawRadar() })
     },
     buildAdvice(scores) {

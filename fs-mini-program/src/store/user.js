@@ -41,6 +41,10 @@ export const useUserStore = defineStore('user', {
     userId: null,
     nickname: null,
     avatar: null,
+    // V3.3：经纪人可编辑档案（编辑资料页写入，本地存储，不上传）
+    brokerStore: '',   // 门店 / 机构
+    brokerPhone: '',   // 联系电话
+    brokerSlogan: '',  // 服务理念 / 一句话
     isLoggedIn: false,
     points: 0,
     pointsHistory: [], // [{type:'earn', amount, reason, timestamp}]
@@ -116,6 +120,10 @@ export const useUserStore = defineStore('user', {
       this._set('fs_done_flags', JSON.stringify(this.doneFlags))
       this._set('fs_shares', this.shares)
       this._set('fs_seeded', this.seeded)
+      // V3.3：经纪人档案
+      this._set('fs_broker_store', this.brokerStore)
+      this._set('fs_broker_phone', this.brokerPhone)
+      this._set('fs_broker_slogan', this.brokerSlogan)
     },
 
     async login() {
@@ -171,6 +179,10 @@ export const useUserStore = defineStore('user', {
       this.doneFlags = this._getJSON('fs_done_flags', {})
       this.shares = this._get('fs_shares', 0) || 0
       this.seeded = this._get('fs_seeded', false) || false
+      // V3.3：经纪人档案
+      this.brokerStore = this._get('fs_broker_store', '') || ''
+      this.brokerPhone = this._get('fs_broker_phone', '') || ''
+      this.brokerSlogan = this._get('fs_broker_slogan', '') || ''
       // 仅当 storage 从未写过 clients（真正首次启动）才兜底 seed；
       // 用户清空/删光后 clients=[] 但 key 已存在，不重新塞回，空态真实可达。
       if (!clientsKeyExists && this.clients.length === 0) this.seedClients()
@@ -401,6 +413,17 @@ export const useUserStore = defineStore('user', {
       this._persist()
       trackEvent('assessment_take', 'assess', {})
       return item
+    },
+
+    /** V3.3：保存经纪人可编辑档案（编辑资料页） */
+    updateBrokerProfile(patch) {
+      if (!patch) return
+      if (patch.nickname !== undefined) this.nickname = patch.nickname
+      if (patch.brokerStore !== undefined) this.brokerStore = patch.brokerStore
+      if (patch.brokerPhone !== undefined) this.brokerPhone = patch.brokerPhone
+      if (patch.brokerSlogan !== undefined) this.brokerSlogan = patch.brokerSlogan
+      this._persist()
+      trackEvent('broker_profile_edit', 'profile', {})
     },
 
     /** 分享次数 +1（案例分享任务） */

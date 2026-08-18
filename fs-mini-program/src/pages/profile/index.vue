@@ -16,7 +16,7 @@
         <view class="user-name">{{ brokerName }}</view>
         <view class="user-store">已服务 {{ serviceCount }} 次 · 目标 30 次</view>
       </view>
-      <view class="profile-btn" @tap="toast('编辑资料 · 后续版本开放')">编辑资料</view>
+      <view class="profile-btn" @tap="goPage('/pages/profile/edit')">编辑资料</view>
     </view>
 
     <!-- 转发 / 复制 -->
@@ -50,7 +50,7 @@
           <view class="menu-info"><view class="menu-name">我的策展库</view></view>
           <view class="menu-arrow">›</view>
         </view>
-        <view class="menu-item" @tap="toast('职业档案 · 后续版本开放')">
+        <view class="menu-item" @tap="goPage('/pages/profile/career')">
           <view class="menu-icon" style="background:var(--blue-bg)">🏅</view>
           <view class="menu-info"><view class="menu-name">职业档案</view></view>
           <view class="menu-arrow">›</view>
@@ -67,12 +67,12 @@
           <view class="menu-info"><view class="menu-name">隐私政策</view></view>
           <view class="menu-arrow">›</view>
         </view>
-        <view class="menu-item" @tap="toast('数据导出 / 迁移 · 后续版本开放')">
+        <view class="menu-item" @tap="goPage('/pages/profile/data')">
           <view class="menu-icon" style="background:var(--cream-dark)">📦</view>
           <view class="menu-info"><view class="menu-name">数据导出 / 迁移</view></view>
           <view class="menu-arrow">›</view>
         </view>
-        <view class="menu-item" @tap="toast('关于风声 · 后续版本开放')">
+        <view class="menu-item" @tap="goPage('/pages/profile/about')">
           <view class="menu-icon" style="background:var(--cream-dark)">ⓘ</view>
           <view class="menu-info"><view class="menu-name">关于风声</view></view>
           <view class="menu-arrow">›</view>
@@ -99,6 +99,7 @@
 <script>
 import { useUserStore } from '../../store/user'
 import { copyLink, APP_SHARE_TITLE, APP_VERSION } from '../../utils/share.js'
+import { trackPageview } from '../../utils/tracker'
 export default {
   computed: {
     userStore() { return useUserStore() },
@@ -116,11 +117,13 @@ export default {
            + (u.shares || 0)
     }
   },
+  onShow() { trackPageview('profile') },
   methods: {
     go(tab) {
       if (['cases', 'clients'].includes(tab)) uni.navigateTo({ url: '/pages/' + tab + '/index' })
       else uni.switchTab({ url: '/pages/' + tab + '/index' })
     },
+    goPage(url) { uni.navigateTo({ url }) },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) },
     openPrivacy() { uni.navigateTo({ url: '/pages/privacy/index' }) },
     copyMiniLink() {
