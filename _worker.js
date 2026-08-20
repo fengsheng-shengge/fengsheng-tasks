@@ -3363,6 +3363,11 @@ export default {
       return handleWxQrCode(request, env);
     }
 
+    // Feishu event webhook (for real-time message subscription)
+    if (path === '/api/feishu/event' && request.method === 'POST') {
+      return handleFeishuEvent(request, env);
+    }
+
     // ===== Mentor Payment Routes =====
 
     if (path === '/mentor-api/payment/init' && request.method === 'POST') {
@@ -3620,5 +3625,71 @@ async function handleExperience(request, env, ctx) {
     } catch (e) {}
   }
   return jsonResponse({ ok: true, received: { name, scenario, score, comment }, ts: Date.now() });
+}
+
+// ============================================================
+//  Feishu event webhook handler
+//  Handles url_verification challenge + event forwarding
+// ============================================================
+async function handleFeishuEvent(request, env) {
+  try {
+    // 1. Parse request body
+    const body = await parseBodyJson(request);
+    if (!body) {
+      return jsonResponse({ ok: false, error: 'invalid body' }, 400);
+    }
+
+    // 2. Handle url_verification challenge (Feishu webhook validation)
+    if (body.type === 'url_verification') {
+      console.log('Feishu event: url_verification challenge received');
+      return jsonResponse({ challenge: body.challenge });
+    }
+
+    // 3. Handle actual events
+    const eventType = body.header?.event_type || body.event?.type || 'unknown';
+    const eventId = body.header?.event_id || body.event?.event_id || 'unknown';
+    console.log(`Feishu event received: type=${eventType}, id=${eventId}`);
+
+    // 4. Handle im.message.receive_v1 — new group chat message
+    if (eventType === 'im.message.receive_v1') {
+      const event = body.event || body;
+      const message = event.message || {};
+      const sender = event.sender || {};
+      const chatId = message.chat_id || event.chat_id || '';
+      const senderId = sender.sender_id?.open_id || sender.open_id || message.sender?.id || '';
+      const msgType = message.message_type || event.message_type || '';
+      const content = message.content || event.content || '';
+
+      // Log the message for debugging
+      console.log(`Feishu IM message: chat=${chatId}, sender=${senderId}, type=${msgType}, content=${content.slice(0, 200)}`);
+
+      // Store in D1 events table for later processing
+      if (env.DB) {
+        try {
+          await env.DB.prepare(
+            'INSERT INTO events (uid, event_type, data, created_at, ip) VALUES (?, ?, ?, ?, ?)'
+          ).bind(
+            senderId,
+            'feishu_message',
+            JSON.stringify({ chat_id: chatId, message_type: msgType, content: content.slice(0, 2000), event_id: eventId }),
+            Math.floor(Date.now() / 1000),
+            'feishu_webhook'
+          ).run();
+        } catch (e) {
+          console.error('Failed to store feishu event:', e.message);
+        }
+      }
+
+      // TODO: Process the message — reply in group chat, trigger actions, etc.
+      // This will be enhanced in subsequent iterations
+    }
+
+    // 5. Return success (acknowledge receipt)
+    return jsonResponse({ ok: true, received: eventType });
+  } catch (e) {
+    console.error('Feishu event handler error:', e.message);
+    // Always return 200 for url_verification even on error
+    return jsonResponse({ ok: false, error: 'internal error' }, 500);
+  }
 }
 
