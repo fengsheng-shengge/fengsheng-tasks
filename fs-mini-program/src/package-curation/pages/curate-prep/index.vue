@@ -88,6 +88,7 @@
 
       <view class="hint">依据来自真实字典 decoder / see / nego，绝不编造；缺失依据诚实标注「依据整理中」。</view>
       <view v-if="loadError" class="err-msg">{{ loadError }}</view>
+      <view v-if="needScoreHint" class="dim-hint">💡 尚未为「住得好七维」打分，客户报告将不显示<text class="dh-b">综合评分卡与雷达图</text>。选维度并打分（或开客户自评答题），方案更有依据、客户更信服。仍可直接生成。</view>
       <button class="btn-main" @tap="gen" :disabled="loading">
         {{ loading ? '⏳ 策展中...' : '⚡ 生成见面参谋' }}
       </button>
@@ -409,6 +410,11 @@ export default {
     radarSelfEval() {
       return !!(this.result && this.result.dimsInsight && this.result.dimsInsight.selfEval)
     },
+    // 引导：未选七维维度 或 选了但未给任何分 → 客户报告将不显示评分卡与雷达图（非阻断提示）
+    needScoreHint() {
+      if (!this.selectedDims.length) return true
+      return !this.selectedDims.some(k => (this.dimScores[k] || 0) > 0)
+    },
     radarDims() {
       return (this.selectedDims || []).map(k => this.dimName(k))
     },
@@ -710,6 +716,8 @@ export default {
 .ta { width: 100%; height: 72px; background: #f7f4ef; border-radius: 10px; padding: 10px; font-size: 14px; box-sizing: border-box; color: #2b2b2b; }
 .client-bar { background: #eef3ec; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #3d5a3e; margin-bottom: 10px; }
 .hint { font-size: 11px; color: #C8956D; background: #fbf6ee; padding: 8px 10px; border-radius: 8px; margin-bottom: 12px; line-height: 1.5; }
+.dim-hint { font-size: 12px; color: #9a6a2a; background: #fbf1ea; border: 1px solid #f0d9c6; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; line-height: 1.55; }
+.dh-b { color: #c46a3a; font-weight: 700; }
 .btn-main { background: #c46a3a; color: #fff; border-radius: 12px; padding: 13px; font-size: 15px; font-weight: 700; }
 .btn-line { background: #fff; color: #c46a3a; border: 1px solid #e7d3c2; border-radius: 12px; padding: 12px; font-size: 14px; margin-top: 8px; }
 .result-head { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 12px; border: 1px solid #efe9dd; }

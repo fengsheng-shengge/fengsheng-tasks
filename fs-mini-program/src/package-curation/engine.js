@@ -780,11 +780,11 @@ function generateCurationFromEntries(input, entriesByGroup) {
   const dataSources = strong
     .filter(x => x.e.dataRef && String(x.e.dataRef).length > 1 && !/待补充|待核/.test(x.e.dataRef))
     .slice(0, 6)
-    .map(x => ({ label: x.e.name, text: x.e.dataRef }))
+    .map(x => ({ label: x.e.name, text: x.e.dataRef, source: x.e.source || '' }))
   const caseSources = strong
     .filter(x => x.e.caseRef && String(x.e.caseRef).length > 1 && !/待补充|待核/.test(x.e.caseRef))
     .slice(0, 4)
-    .map(x => ({ title: x.e.name, body: x.e.caseRef }))
+    .map(x => ({ title: x.e.name, body: x.e.caseRef, source: x.e.source || '' }))
 
   return {
     axisLabel: group.label + ' · ' + node.name,

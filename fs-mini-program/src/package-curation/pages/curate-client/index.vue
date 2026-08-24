@@ -21,6 +21,7 @@
         <view class="dcard" v-for="(d, i) in realData" :key="i">
           <view class="dtitle"><text class="dtag">数据</text>{{ d.label }}</view>
           <view class="dval">{{ d.text }}</view>
+          <view v-if="d.source" class="dsrc">来源：{{ d.source }}</view>
         </view>
       </block>
       <view v-else class="empty-mini">真实数据补入中 · 见面以专业判断为准</view>
@@ -34,6 +35,7 @@
           <view class="ctag ok">{{ isClient ? '案例参考' : '真实案例' }}</view>
           <view class="ctitle">{{ c.title }}</view>
           <view class="cbody">{{ c.body }}</view>
+          <view v-if="c.source" class="csrc">来源：{{ c.source }}</view>
         </view>
       </block>
       <view v-else class="empty-mini">真实成交案例补入中 · 见面以专业判断为准</view>
@@ -100,6 +102,16 @@
         </view>
       </view>
       <view class="di-conc" v-if="dimsInsight.clientConclusion">{{ dimsInsight.clientConclusion }}</view>
+    </view>
+
+    <!-- 七维未评分引导卡（仅经纪人预览版；客户版隐藏保持纯净）-->
+    <view class="sec guide-sec" v-else-if="!isClient && (!dimsInsight || !dimsInsight.enabled)">
+      <view class="sec-h"><text class="em">🎯</text>我们对您居住需求的理解</view>
+      <view class="guide-card">
+        <view class="guide-ic">📝</view>
+        <view class="guide-t">尚未完成七维打分</view>
+        <view class="guide-d">在策展录入页为「住得好七维」选维度并打分（或让客户答题自评）后，这里会自动显示客户的<text class="guide-b">综合居住品质评分卡 + 雷达图</text>，让方案更有依据、客户更信服。</view>
+      </view>
     </view>
 
     <view class="ft">本建议由您的专属服务顾问<br>通过「风声」整理提供</view>
@@ -337,6 +349,14 @@ export default {
 .sc-sub { font-size: 22rpx; color: rgba(255,255,255,.85); margin-top: 8rpx; line-height: 1.5; }
 /* 数据条目标签 */
 .dtag { display: inline-block; font-size: 20rpx; font-weight: 700; color: var(--green); background: var(--green-bg); border-radius: var(--r-sm); padding: 2rpx 12rpx; margin-right: 12rpx; vertical-align: middle; }
+.dsrc { font-size: 21rpx; color: var(--text-tertiary); margin-top: 10rpx; line-height: 1.5; border-top: 2rpx dashed var(--border); padding-top: 10rpx; }
+.csrc { font-size: 21rpx; color: #9a6a44; margin-top: 10rpx; line-height: 1.5; border-top: 2rpx dashed #f0d9c6; padding-top: 10rpx; }
+/* 七维未评分引导卡 */
+.guide-card { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 36rpx 24rpx; background: var(--cream); border-radius: var(--r-md); border: 2rpx dashed var(--border); }
+.guide-ic { font-size: 56rpx; margin-bottom: 12rpx; }
+.guide-t { font-size: 28rpx; font-weight: 800; color: var(--text-primary); margin-bottom: 10rpx; }
+.guide-d { font-size: 23rpx; color: var(--text-secondary); line-height: 1.7; }
+.guide-b { color: var(--green); font-weight: 700; }
 /* 七维雷达图 */
 .radar-wrap { display: flex; justify-content: center; padding: 12rpx 0 4rpx; }
 .radar { display: block; }
