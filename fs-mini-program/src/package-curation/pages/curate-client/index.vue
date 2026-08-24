@@ -53,7 +53,7 @@
 
     <!-- 要点速览 -->
     <view class="sec">
-      <view class="sec-h"><text class="em">💡</text>要点速览</view>
+      <view class="sec-h"><text class="em">💡</text>购房核心建议</view>
       <view class="pts">
         <view v-if="!points.length" class="empty-mini">该场景要点整理中 · 建议见面时结合专业判断补充</view>
         <block v-else>
@@ -68,7 +68,7 @@
 
     <!-- 方案分层（道法术器 · 知识库大脑组织，非模板套话） -->
     <view class="sec" v-if="layers.length">
-      <view class="sec-h"><text class="em">🧠</text>方案分层 · 道法术器</view>
+      <view class="sec-h"><text class="em">🧠</text>购房方案建议</view>
       <view class="empty-mini" v-if="view === 'client' && !clientLayerItems" style="margin-bottom:10px">以下为面向客户的方案与依据。</view>
       <view class="layer" v-for="(g, gi) in layers" :key="gi">
         <view class="layer-h"><text class="layer-name">{{ g.name }}</text><text class="layer-desc">{{ g.desc }}</text></view>
@@ -210,7 +210,9 @@ export default {
       })
     },
     layers() {
-      return (this.result && this.result.layers) || []
+      const ls = (this.result && this.result.layers) || []
+      // V3.3.4 客户页过滤：方案分层只保留购房决策相关项，剔除经纪人合规/中介纠纷噪音
+      return this.isClient ? ls.map(g => ({ ...g, items: g.items.filter(it => it.clientRelevant !== false) })).filter(g => g.items.length) : ls
     }
   },
   onLoad(options) {
@@ -246,26 +248,29 @@ export default {
     })
     this.result = res
     this.dimsInsight = res.dimsInsight || null
+    // V3.3.4 客户相关性过滤：客户页只保留与购房决策直接相关的内容，剔除经纪人合规/中介纠纷/入住搬家噪音
+    const cr = (arr) => (this.isClient ? (arr || []).filter(x => x.clientRelevant !== false) : (arr || []))
     // 真实数据/案例：优先用 engine 解耦收集的数据源（含无 ola/cp 的强相关词条），无则退回 say 内 fabe.e 兜底；有则展示真实，无则诚实留白（不编造示意数据）
     this.realData = (res.dataSources && res.dataSources.length)
-      ? res.dataSources
+      ? cr(res.dataSources)
       : (res.say || [])
           .filter(s => s.fabe && s.fabe.e && s.fabe.e.data)
-          .map(s => ({ label: s.title || s.fabe.f.text, text: s.fabe.e.data }))
+          .map(s => ({ label: s.title || s.fabe.f.text, text: s.fabe.e.data, clientRelevant: s.clientRelevant }))
     this.realCases = (res.caseSources && res.caseSources.length)
-      ? res.caseSources
+      ? cr(res.caseSources)
       : (res.say || [])
           .filter(s => s.fabe && s.fabe.e && s.fabe.e.case)
-          .map(s => ({ title: s.title || s.fabe.f.text, body: s.fabe.e.case }))
+          .map(s => ({ title: s.title || s.fabe.f.text, body: s.fabe.e.case, clientRelevant: s.clientRelevant }))
     // 依据来源（常驻）：legalRef + dataSource，强相关词条 100% 有料，立即建立专业可信
-    this.legalSources = (res.legalSources && res.legalSources.length) ? res.legalSources : []
-    // 客户页要点速览：仅保留 FABE 结构完整的条目（避免把 broker 笔记式 title 漏给客户）
-    this.points = (res.say || [])
+    this.legalSources = cr(res.legalSources)
+    // 客户页要点速览：仅保留 FABE 结构完整且与购房决策相关的条目（避免把经纪人合规/中介纠纷漏给客户）
+    this.points = cr((res.say || [])
       .filter(s => s && s.fabe && s.fabe.f && s.fabe.f.text)
       .map(s => ({
         title: s.fabe.f.text,
-        legal: s.fabe.e && s.fabe.e.legal
-      }))
+        legal: s.fabe.e && s.fabe.e.legal,
+        clientRelevant: s.clientRelevant
+      })))
     this.radarUrlStr = (this.dimsInsight && this.dimsInsight.enabled && this.radarDims.length)
       ? buildRadarDataUrl({ W: this.radarW, H: this.radarH, dims: this.radarDims, broker: this.radarBroker, self: this.radarSelf, selfEval: this.radarSelfEval })
       : ''

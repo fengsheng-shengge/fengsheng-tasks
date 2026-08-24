@@ -534,6 +534,18 @@ function isRealLegal(ref) {
   return !/待补充|待核|无|—|^-$|^\s*$/.test(s) && s.length >= 4
 }
 
+// ===== 客户相关性判定（客户可见页过滤纯经纪人内训/噪音）=====
+// 知识底座主体是经纪人执业合规库（LAW/RISK/PROC/STD/POL/TERM/CASE），
+// 客户页只保留与「购房决策」直接相关的内容，剔除经纪人行为语义与入住/搬家噪音。
+const AGENT_NOISE = /(经纪|中介|执业|备案|佣金|阴阳合同|绕开|私下成交|退佣|资格考试|职业培训|信用档案|私自收|如实报告|利益冲突|客户信息保密|服务承诺体系|执业禁止|入住后|搬家费|退租|续租|租期内|邻里纠纷|物业投诉|经纪人能)/
+function isClientRelevant(e, ct) {
+  const blob = (e.name || '') + ' ' + (e.ola || '') + ' ' + (e.def || '')
+  if (AGENT_NOISE.test(blob)) return false
+  const eCt = (e.tags && e.tags.clientType) || []
+  if (eCt.length && !eCt.includes(ct)) return false
+  return true
+}
+
 function tokenize(text) {
   if (!text) return []
   const out = []
@@ -683,7 +695,8 @@ function generateCurationFromEntries(input, entriesByGroup) {
       if (String(stage).includes('pre') || (e.domain || '').includes('签约前')) score += 0.5
       // 场景 subScene 加权：命中该场景配置的 subScene 额外 +2
       if (sc && sc.subScenes.length && sc.subScenes.includes(e.subScene)) score += 2
-      if (score > 0) all.push({ e, score, grp: grpKey })
+      const clientRelevant = isClientRelevant(e, ct)
+      if (score > 0) all.push({ e, score, grp: grpKey, clientRelevant })
     })
   }
   all.sort((a, b) => b.score - a.score)
@@ -721,6 +734,7 @@ function generateCurationFromEntries(input, entriesByGroup) {
       legalRef: realLegal ? e.legalRef : null,
       hasLegal: realLegal,
       fabe,
+      clientRelevant: x.clientRelevant,
       entryId: e.id
     }
   })
@@ -785,7 +799,7 @@ function generateCurationFromEntries(input, entriesByGroup) {
   const dataSources = strong
     .filter(x => x.e.dataRef && String(x.e.dataRef).length > 1 && !/待补充|待核/.test(x.e.dataRef))
     .slice(0, 6)
-    .map(x => ({ label: x.e.name, text: x.e.dataRef, source: realSrc(x.e), srcType: x.e.source || '' }))
+    .map(x => ({ label: x.e.name, text: x.e.dataRef, source: realSrc(x.e), srcType: x.e.source || '', clientRelevant: x.clientRelevant }))
   const caseSources = []
   strong
     .filter(x => x.e.caseRef && String(x.e.caseRef).length > 1 && !/待补充|待核/.test(x.e.caseRef))
@@ -795,17 +809,18 @@ function generateCurationFromEntries(input, entriesByGroup) {
     strong
       .filter(x => x.e.entryType === 'CASE' && x.e.def && x.e.oneLineAnswer && !/待补充|待核/.test(x.e.def))
       .slice(0, 4 - caseSources.length)
-      .forEach(x => caseSources.push({
-        title: x.e.name,
-        body: x.e.oneLineAnswer + '：' + x.e.def,
-        source: realSrc(x.e),
-        srcType: x.e.source || ''
-      }))
+      .forEach(x =>         caseSources.push({
+          title: x.e.name,
+          body: x.e.oneLineAnswer + '：' + x.e.def,
+          source: realSrc(x.e),
+          srcType: x.e.source || '',
+          clientRelevant: x.clientRelevant
+        }))
   }
   const legalSources = strong
     .filter(x => x.e.legalRef && String(x.e.legalRef).length > 1)
     .slice(0, 6)
-    .map(x => ({ label: x.e.name, legal: x.e.legalRef, source: realSrc(x.e), srcType: x.e.source || '' }))
+    .map(x => ({ label: x.e.name, legal: x.e.legalRef, source: realSrc(x.e), srcType: x.e.source || '', clientRelevant: x.clientRelevant }))
 
   return {
     axisLabel: group.label + ' · ' + node.name,
@@ -963,6 +978,7 @@ function buildLayers(topN, isRealLegal) {
           cp: Array.isArray(x.e.cp) ? x.e.cp : [],
           legalRef: realLegal ? x.e.legalRef : null,
           hasLegal: realLegal,
+          clientRelevant: x.clientRelevant,
           entryId: x.e.id
         }
       })
