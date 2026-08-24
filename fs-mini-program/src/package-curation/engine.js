@@ -776,15 +776,36 @@ function generateCurationFromEntries(input, entriesByGroup) {
         : ('基于真实字典命中 ' + strongCount + ' 条强相关（其中 ' + realLegalStrong + ' 条含真实法源）'))
   }
 
-  // 8) 真实数据/案例来源（取自强相关词条 dataRef/caseRef，与 ola/cp 解耦，确保补数据后客户报告必出现）
+  // 8) 真实数据 / 案例 / 依据来源（取自强相关词条，与 ola/cp 解耦）
+  // 知识底座输入契约（已与小眼镜拉齐，见 Issue #222）：
+  //  · 数据: 读 dataRef（真数据）+ 真实引用 dataSource（100% 填充，非 source 类别标签）
+  //  · 案例: 优先 caseRef；缺料时从 entryType=CASE 词条的 oneLineAnswer+def 派生（871 条已就绪，立即可用）
+  //  · 依据: 取 legalRef + dataSource，强相关词条 100% 有料，常驻提升报告权威
+  const realSrc = (e) => (e.dataSource && !/待补充|待核/.test(e.dataSource)) ? e.dataSource : (e.source || '')
   const dataSources = strong
     .filter(x => x.e.dataRef && String(x.e.dataRef).length > 1 && !/待补充|待核/.test(x.e.dataRef))
     .slice(0, 6)
-    .map(x => ({ label: x.e.name, text: x.e.dataRef, source: x.e.source || '' }))
-  const caseSources = strong
+    .map(x => ({ label: x.e.name, text: x.e.dataRef, source: realSrc(x.e), srcType: x.e.source || '' }))
+  const caseSources = []
+  strong
     .filter(x => x.e.caseRef && String(x.e.caseRef).length > 1 && !/待补充|待核/.test(x.e.caseRef))
     .slice(0, 4)
-    .map(x => ({ title: x.e.name, body: x.e.caseRef, source: x.e.source || '' }))
+    .forEach(x => caseSources.push({ title: x.e.name, body: x.e.caseRef, source: realSrc(x.e), srcType: x.e.source || '' }))
+  if (caseSources.length < 4) {
+    strong
+      .filter(x => x.e.entryType === 'CASE' && x.e.def && x.e.oneLineAnswer && !/待补充|待核/.test(x.e.def))
+      .slice(0, 4 - caseSources.length)
+      .forEach(x => caseSources.push({
+        title: x.e.name,
+        body: x.e.oneLineAnswer + '：' + x.e.def,
+        source: realSrc(x.e),
+        srcType: x.e.source || ''
+      }))
+  }
+  const legalSources = strong
+    .filter(x => x.e.legalRef && String(x.e.legalRef).length > 1)
+    .slice(0, 6)
+    .map(x => ({ label: x.e.name, legal: x.e.legalRef, source: realSrc(x.e), srcType: x.e.source || '' }))
 
   return {
     axisLabel: group.label + ' · ' + node.name,
@@ -799,6 +820,7 @@ function generateCurationFromEntries(input, entriesByGroup) {
     honesty,
     dataSources,
     caseSources,
+    legalSources,
     timeline: buildTimeline(),
     layers: buildLayers(topN, isRealLegal)
   }

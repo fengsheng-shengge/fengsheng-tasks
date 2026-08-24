@@ -41,6 +41,16 @@
       <view v-else class="empty-mini">真实成交案例补入中 · 见面以专业判断为准</view>
     </view>
 
+    <!-- 依据来源（常驻：强相关词条 legalRef+dataSource 100% 有料，立即建立专业可信；客户版称政策依据） -->
+    <view class="sec" v-if="legalSources.length">
+      <view class="sec-h"><text class="em">📜</text>{{ isClient ? '政策依据' : '依据来源' }}</view>
+      <view class="dcard" v-for="(l, i) in legalSources" :key="i">
+        <view class="dtitle"><text class="dtag">依据</text>{{ l.label }}</view>
+        <view class="dval">{{ l.legal }}</view>
+        <view v-if="l.source" class="dsrc">来源：{{ l.source }}</view>
+      </view>
+    </view>
+
     <!-- 要点速览 -->
     <view class="sec">
       <view class="sec-h"><text class="em">💡</text>要点速览</view>
@@ -143,6 +153,7 @@ export default {
       dimSelfScores: {},
       realData: [],
       realCases: [],
+      legalSources: [],
       points: [],
       radarW: 250,
       radarH: 230,
@@ -246,6 +257,8 @@ export default {
       : (res.say || [])
           .filter(s => s.fabe && s.fabe.e && s.fabe.e.case)
           .map(s => ({ title: s.title || s.fabe.f.text, body: s.fabe.e.case }))
+    // 依据来源（常驻）：legalRef + dataSource，强相关词条 100% 有料，立即建立专业可信
+    this.legalSources = (res.legalSources && res.legalSources.length) ? res.legalSources : []
     // 客户页要点速览：仅保留 FABE 结构完整的条目（避免把 broker 笔记式 title 漏给客户）
     this.points = (res.say || [])
       .filter(s => s && s.fabe && s.fabe.f && s.fabe.f.text)
