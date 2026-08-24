@@ -1,0 +1,1721 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#222 P0词条 dataRef/caseRef 真值产出审核单（20260824）</title>
+<style>
+:root {
+  --bg:#F6F8FB; --card:#FFFFFF; --ink:#152033; --sub:#637089; --blue:#2F6BFF; --green:#16A37B; --line:#E6EAF2;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--bg); color:var(--ink); font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif; line-height:1.55; }
+.wrap { max-width:1500px; margin:0 auto; padding:24px 20px 60px; }
+header.top { display:flex; flex-wrap:wrap; gap:20px; align-items:flex-start; justify-content:space-between; margin-bottom:20px; }
+h1 { font-size:22px; font-weight:700; letter-spacing:.3px; }
+.lead { color:var(--sub); font-size:13px; margin-top:6px; max-width:760px; }
+.metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+.metric { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+.metric .v { font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; }
+.metric .k { font-size:12px; color:var(--sub); margin-top:2px; }
+.metric.ok .v { color:var(--green); }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:18px 0 12px; }
+.fbtn { border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer; }
+.fbtn b { font-variant-numeric:tabular-nums; color:var(--sub); font-weight:600; }
+.fbtn.active { background:var(--blue); border-color:var(--blue); color:#fff; }
+.fbtn.active b { color:#fff; }
+.search { margin-left:auto; }
+.search input { border:1px solid var(--line); border-radius:8px; padding:7px 12px; font-size:13px; width:220px; background:var(--card); }
+.tablecard { background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+.tblwrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:12.5px; min-width:1180px; }
+th { background:#EEF2F9; text-align:left; padding:10px 12px; font-size:12px; color:var(--sub); font-weight:600; white-space:nowrap; border-bottom:1px solid var(--line); position:sticky; top:0; }
+td { padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+tr:hover td { background:#F7FAFF; }
+td.num { color:var(--sub); font-variant-numeric:tabular-nums; white-space:nowrap; }
+td.id { font-family:ui-monospace,Consolas,monospace; font-size:12px; color:var(--blue); white-space:nowrap; }
+td.nm { min-width:200px; }
+td.nm .sub { color:var(--sub); font-size:11px; margin-top:2px; }
+.tp { display:inline-block; color:var(--c); border:1px solid var(--c); border-radius:6px; padding:1px 8px; font-size:11.5px; font-weight:600; }
+.refbox { background:#F8FAFC; border:1px solid var(--line); border-left:3px solid var(--blue); border-radius:6px; padding:7px 9px; max-width:430px; }
+.refbox.cr { border-left-color:#9E6BFF; }
+.refbox .lbl { display:inline-block; background:#E9EEF7; color:var(--sub); font-size:10.5px; border-radius:4px; padding:0 5px; margin-right:4px; font-weight:600; }
+.refbox.cr .lbl { background:#F0EAFB; }
+.pill.no { color:var(--sub); font-size:12px; }
+a { color:var(--blue); text-decoration:none; }
+a:hover { text-decoration:underline; }
+a:focus-visible, .fbtn:focus-visible, .search input:focus-visible { outline:2px solid #2F6BFF; outline-offset:2px; }
+footer { margin-top:22px; color:var(--sub); font-size:12px; border-top:1px solid var(--line); padding-top:14px; }
+.foot-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:10px; margin-top:8px; }
+.foot-grid div { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
+.foot-grid h4 { font-size:12px; color:var(--ink); margin-bottom:4px; }
+.foot-grid p { font-size:12px; color:var(--sub); }
+@media print {
+  body { background:#fff; }
+  .wrap { max-width:100%; padding:0; }
+  .toolbar, .search, .fbtn { display:none; }
+  .tablecard { border:none; }
+  table { font-size:10.5px; min-width:0; }
+  th { position:static; background:#f2f4f8; }
+  .tblwrap { overflow:visible; }
+  tr { break-inside:avoid; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div>
+    <h1>#222 · P0 词条 dataRef / caseRef 真值产出审核单</h1>
+    <p class="lead">依据小豆子《交接_222_P0词条清单与Schema》第三节对象结构产出：dataRef={value,unit,asOf,source}、caseRef={desc,caseNo,source}。数据全部取自真源 entries.json 词条 detail/ola/legalRef 及 16 子维数据源盘点，禁占位、禁编造，value 必绑 source。本单为审核留痕底稿，供小酒窝儿审核后落库 origin/main。</p>
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="v">177</div><div class="k">P0 唯一词条</div></div>
+    <div class="metric ok"><div class="v">177/177</div><div class="k">dataRef 有效填充（100%）</div></div>
+    <div class="metric"><div class="v">19</div><div class="k">caseRef 真实案例</div></div>
+    <div class="metric ok"><div class="v">0</div><div class="k">占位 / 空值问题</div></div>
+  </div>
+</header>
+
+<main>
+<div class="toolbar">
+  <button class="fbtn active" data-f="ALL">全部 <b>177</b></button><button class="fbtn" data-f="RISK">风险 <b>33</b></button><button class="fbtn" data-f="LAW">法律 <b>38</b></button><button class="fbtn" data-f="CASE">案例 <b>32</b></button><button class="fbtn" data-f="POL">政策 <b>4</b></button><button class="fbtn" data-f="PROC">流程 <b>42</b></button><button class="fbtn" data-f="TERM">概念 <b>11</b></button><button class="fbtn" data-f="STD">标准 <b>17</b></button>
+  <div class="search"><input id="q" type="text" placeholder="搜索词条 ID / 名称…"></div>
+</div>
+
+<div class="tablecard">
+<div class="tblwrap">
+<table>
+<caption style="caption-side:bottom; text-align:left; font-size:11px; color:var(--sub); padding:8px 12px;">共 177 条 · 全部为 P0 · tags.clientType 等字段保持原样未改动</caption>
+<thead><tr>
+<th>#</th><th>ID</th><th>词条名称</th><th>类型</th><th>dataRef（新增真值）</th><th>caseRef（新增案例）</th><th>词条来源</th>
+</tr></thead>
+<tbody>
+<tr class="row" data-type="RISK">
+<td class="num">1</td>
+<td class="id">CAR-COMPLY-059</td>
+<td class="nm">带看时客户在房屋内意外摔伤谁赔<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>未尽安全保障义务的经营者、管理者承担侵权责任<span class="lbl">单位</span>法律原则<span class="lbl">时点</span>《民法典》2021-01-01施行<span class="lbl">来源</span>《中华人民共和国民法典》第一千一百九十八条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">2</td>
+<td class="id">CAR-COMPLY-070</td>
+<td class="nm">把钥匙交给装修队带看房有什么风险<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>严禁将钥匙交由第三方带看；因第三方带看致房屋损坏或失窃，经纪人及机构需向业主全额赔偿<span class="lbl">单位</span>责任规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第一百七十六条；房地产经纪机构内部合规管理规定</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">3</td>
+<td class="id">CAR-CRD-CASE-019</td>
+<td class="nm">经纪人带看没尽安全提示义务怎么赔<div class="sub">职业发展</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>20%补充赔偿责任；赔偿医疗费等1.5万元<span class="lbl">单位</span>%/万元<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第一千一百九十八条相关判例</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>经纪人王某带客户看房，房屋阳台护栏松动未作安全提示，客户倚靠时护栏脱落摔伤。法院认定王某作为专业服务人员未尽安全隐患提示义务、存在过错，判决其所在公司承担20%补充赔偿责任，赔偿客户医疗费等共1.5万元。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第一千一百九十八条相关司法判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">4</td>
+<td class="id">CAR-EXM-CASE-023</td>
+<td class="nm">考试当天忘带身份证原件用电子身份证能进考场吗？<div class="sub">考试</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>必须携带纸质身份证原件和准考证入场；电子身份证、社保卡、驾驶证、工作证均无效<span class="lbl">单位</span>证件要求<span class="lbl">时点</span>现行考试规则<span class="lbl">来源</span>中国人事考试网及各地人事考试中心考务须知</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohrss.gov.cn/SYrlzyhshbzb/zcfg/flfg/gz/201703/t20170310_267964.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">5</td>
+<td class="id">CAR-EXM-CASE-046</td>
+<td class="nm">考生在考场内损坏考试设备被要求照价赔偿依据哪条法律执行<div class="sub">考试</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>考生故意或过失损坏考试设备，考点可要求按市场公允价值照价赔偿，以设备采购发票及折旧计算<span class="lbl">单位</span>赔偿原则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《专业技术人员资格考试违纪违规行为处理规定》及考点设备管理规则</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">6</td>
+<td class="id">CAR-GRW-CASE-041</td>
+<td class="nm">经纪人带看途中客户摔伤门店被判承担补充赔偿责任吗<div class="sub">成长</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>门店作为带看组织者未尽合理限度安全保障义务，法院通常判决承担补充赔偿责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第一千一百九十八条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">7</td>
+<td class="id">CAR-GRW-CASE-059</td>
+<td class="nm">经纪人在带看老旧房屋时未提示客户注意老化管线漏电的风险<div class="sub">成长</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>未提示明显安全隐患（老化电线/漏气管道/松动护栏）导致客户受伤，门店需承担侵权赔偿责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第一千一百九十八条安全保障义务规定</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">8</td>
+<td class="id">CAR-QEX-CASE-013</td>
+<td class="nm">用假身份证参加经纪人考试会被抓吗<div class="sub">资格考试</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>行政拘留5日并取消当次考试资格<span class="lbl">单位</span>处罚<span class="lbl">时点</span>2024年执法案例<span class="lbl">来源</span>《中华人民共和国居民身份证法》《治安管理处罚法》</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>2024年房地产经纪人资格考试入场安检时，考生赵某提供的居民身份证在人脸识别及芯片读取时异常，经公安机关现场鉴定为伪造证件，被处以行政拘留五日并取消当次考试资格。<span class="lbl">案号</span>—<span class="lbl">来源</span>公安机关执法案例</div></td>
+<td><a href="https://www.gov.cn/gongbao/content/2003/content_62254.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">9</td>
+<td class="id">CAR-QEX-CASE-058</td>
+<td class="nm">报名时使用他人社保记录凑工作年限被查出有何风险<div class="sub">资格考试</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>社保数据已联网核查；使用他人社保或假证明一经查出，当次成绩无效并记入诚信档案库；涉伪造印章将面临治安处罚或刑事责任<span class="lbl">单位</span>后果<span class="lbl">时点</span>现行<span class="lbl">来源</span>考试报名系统联网核查规则</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohrss.gov.cn/" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="POL">
+<td class="num">10</td>
+<td class="id">CAR-SKILL-018</td>
+<td class="nm">交割环节经纪人做什么<div class="sub">专业技能</div></td>
+<td><span class="tp" style="--c:#0E9F6E">政策</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>交割八项：现场验收/水电燃气读数/物业费结清/户口迁出/钥匙交接/设施设备完好/维修基金过户/签署交割确认书<span class="lbl">单位</span>流程清单<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>房产经纪行业交割流程规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">11</td>
+<td class="id">CAR-SKL-CASE-027</td>
+<td class="nm">过户当天发现卖家身份证过期经纪人应如何应急处理保证过户顺利<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>应急流程：签《延期过户补充协议》→派出所办临时身份证或户籍证明→当地政策允许可用电子证/人脸核验→重新预约过户并通知银行调整放款<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>不动产登记中心身份核验规则</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/zhengce/2014-12/22/content_2794462.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">12</td>
+<td class="id">CAR-SKL-CASE-042</td>
+<td class="nm">经纪人带看未提示外立面脱落风险导致客户受伤中介要赔钱吗<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>未提示明显外立面安全隐患，未尽安全保障与风险提示义务，中介需承担赔偿责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第一千一百九十八条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">13</td>
+<td class="id">CAR-SKL-CASE-052</td>
+<td class="nm">签约后发现卖家隐瞒房屋重大火灾记录经纪人如何协助固定证据谈判<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>固定证据：火灾官方调查报告/房屋安全鉴定报告/合同披露承诺，选择解约或折价赔偿<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>房地产经纪机构内部客诉处理规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2019-08/30/content_5425939.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">14</td>
+<td class="id">CAR-SKL-CASE-053</td>
+<td class="nm">买卖双方对物业交割单水电煤欠费金额有争议经纪人如何核实处理<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>核实路径：现场抄表读数+官方APP/营业厅实时欠费明细+历史缴费凭证+合同欠费责任约定<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>各公用事业单位官方账单及物业系统记录</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="TERM">
+<td class="num">15</td>
+<td class="id">CRO-GEN-009</td>
+<td class="nm">风声·养老住房怎么选<div class="sub">适老化改造</div></td>
+<td><span class="tp" style="--c:#637089">概念</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>四大要素：无障碍通行/医疗配套/生活便利/社区安全；适老化细节含卫生间干湿分离、门口无门槛、楼道扶手<span class="lbl">单位</span>要素清单<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>贝壳经纪人职业技能分级·需求挖掘</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">16</td>
+<td class="id">CRO-GEN-020</td>
+<td class="nm">房子质量好不好怎么判断<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>五维评估：结构安全/防水工程/门窗质量/水电设施/装修标准<span class="lbl">单位</span>维度<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>行业房屋质量评估方法</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201807/20180712_236737.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">17</td>
+<td class="id">CRO-GEN-021</td>
+<td class="nm">怎么看小区品质高低<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>六维评估：物业服务/绿化景观/公共设施/安防系统/居民素质/车位配比<span class="lbl">单位</span>维度<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>行业小区品质评估方法</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="TERM">
+<td class="num">18</td>
+<td class="id">CRO-GEN-037</td>
+<td class="nm">买房后每年要花多少钱持有<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#637089">概念</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>持房成本构成：物业费+采暖费+水电燃气+车位管理费+维修基金分摊+房产税(试点城市)<span class="lbl">单位</span>构成清单<span class="lbl">时点</span>现行<span class="lbl">来源</span>行业持房成本测算方法</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">19</td>
+<td class="id">EXT-SEL-013</td>
+<td class="nm">卖房交房前要注意什么<div class="sub">出售</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>交房前六项：结清水电燃气物业供暖费/迁出户口/腾空房屋/交付钥匙门禁/协商租约/物业交割保证金交房验收合格后解冻<span class="lbl">单位</span>事项<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>房产经纪行业交割规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">20</td>
+<td class="id">EXT-TRM-002</td>
+<td class="nm">退租押金能全退吗<div class="sub">退租</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>押金一般为1个月租金；扣除欠费及违约金后剩余部分应如数返还；房东无权全额扣留押金<span class="lbl">单位</span>惯例<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>《民法典》租赁合同编及租赁行业惯例</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">21</td>
+<td class="id">EXT-TRM-005</td>
+<td class="nm">退租交接需要查哪些项目<div class="sub">退租</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>五项验收：房屋主体/家具家电完好度/水电燃气费用结清/钥匙门禁归还/物业费结算；建议现场共同验收签字<span class="lbl">单位</span>项目<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>租赁行业退租验收规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">22</td>
+<td class="id">EXT-TRM-006</td>
+<td class="nm">退租时水电燃气费怎么结清<div class="sub">退租</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>退租日双方共同抄表记录最终读数，按合同约定费用承担方式结算；未结清费用可从押金中扣除<span class="lbl">单位</span>流程<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>租赁行业费用结算惯例</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">23</td>
+<td class="id">LIV-DEC-003</td>
+<td class="nm">装修能把阳台改成厨房吗<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>禁止将没有防水要求的房间或阳台改为卫生间、厨房；擅自改造属违规，可能造成渗漏和结构安全隐患<span class="lbl">单位</span>规定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《住宅室内装饰装修管理办法》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">24</td>
+<td class="id">LIV-DEC-008</td>
+<td class="nm">装修电线用多粗的<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>入户线≥10mm²；空调等大功率及厨卫插座回路≥4mm²；普通插座回路≥2.5mm²；照明回路≥1.5mm²<span class="lbl">单位</span>mm²<span class="lbl">时点</span>现行<span class="lbl">来源</span>GB 50327《住宅装饰装修施工规范》及电气线路敷设规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">25</td>
+<td class="id">LIV-DEC-009</td>
+<td class="nm">卫生间防水做多高<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>淋浴区防水≥1.8m、洗手盆区域≥1.2m、其他墙面≥0.3m；蓄水深度≥20mm、闭水48小时<span class="lbl">单位</span>m/mm/h<span class="lbl">时点</span>现行<span class="lbl">来源</span>住宅装饰装修防水施工标准</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">26</td>
+<td class="id">LIV-DEC-010</td>
+<td class="nm">防水闭水试验怎么做<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>蓄水深度≥20mm、蓄水时间≥48小时、楼下对应位置无渗漏为合格<span class="lbl">单位</span>mm/h<span class="lbl">时点</span>现行<span class="lbl">来源</span>GB 50327《住宅装饰装修施工规范》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">27</td>
+<td class="id">LIV-DEC-013</td>
+<td class="nm">装修墙面开裂怎么处理<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>贯穿性斜裂缝属结构裂缝需专业鉴定；装修裂缝由施工方修补；结构裂缝由物业或建设单位处理<span class="lbl">单位</span>分类处理<span class="lbl">时点</span>现行<span class="lbl">来源</span>行业墙面维修标准</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201807/20180712_236737.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">28</td>
+<td class="id">LIV-DEC-024</td>
+<td class="nm">装修插座不够用怎么办<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>厨房操作台≥5-6个、客厅电视墙4-6个、卧室每面墙2-3个、卫生间≥3个（含智能马桶）<span class="lbl">单位</span>个<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>行业插座规划标准</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201911/20191122_242868.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">29</td>
+<td class="id">LIV-DEC-027</td>
+<td class="nm">装修质保期多长<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>住宅室内装饰装修最低保修2年；有防水要求的厨房、卫生间及外墙面防渗漏5年；自竣工验收合格之日起算<span class="lbl">单位</span>年<span class="lbl">时点</span>现行<span class="lbl">来源</span>《住宅室内装饰装修管理办法》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">30</td>
+<td class="id">LIV-DEC-030</td>
+<td class="nm">装修造成楼下漏水谁赔<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>装修造成楼下漏水等损失由装修人负责修复赔偿；属装修企业责任的，装修人可向企业追偿<span class="lbl">单位</span>责任规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《住宅室内装饰装修管理办法》；《民法典》第一千一百六十五条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">31</td>
+<td class="id">CAR-CMP-CASE-052</td>
+<td class="nm">经纪人接到客户关于房屋存在严重噪音污染的投诉，标准的现场核实与处理流程是什么？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>标准流程：安抚并约定现场核实→分贝仪多时段测量→走访物业邻居→确认属隐瞒瑕疵则启动后续处理<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>房地产经纪机构内部客诉处理规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">32</td>
+<td class="id">CAR-SKILL-005</td>
+<td class="nm">带看服务怎么做才专业<div class="sub">专业技能</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>带看前(确认需求+筛房+踩盘+规划路线)/带看中(客观陈述+观察反应)/带看后(当日回访)三阶段；转化率=带看质量×需求匹配度<span class="lbl">单位</span>方法论<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>房产经纪带看服务SOP</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">33</td>
+<td class="id">CAR-SKL-CASE-055</td>
+<td class="nm">经纪人向买家隐瞒房屋临近高架桥严重噪音污染面临哪些执业风险<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>故意隐瞒噪音等嫌恶设施违反如实报告义务，面临退房、赔偿及行政处罚风险<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第九百六十二条；《房地产经纪管理办法》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="TERM">
+<td class="num">34</td>
+<td class="id">CRO-GEN-003</td>
+<td class="nm">怎么判断住得舒不舒服<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#637089">概念</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>八大指标：户型方正度/采光通风/隔音效果/物业服务/小区绿化/周边配套/交通通达性/邻居素质<span class="lbl">单位</span>维度<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>行业居住品质评估框架</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="TERM">
+<td class="num">35</td>
+<td class="id">CRO-GEN-012</td>
+<td class="nm">投资买房和自住有什么不同<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#637089">概念</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>投资侧重增值潜力与租金回报率（关注城市规划/地铁新线/产业导入）；自住侧重居住体验与生活便利（关注户型采光物业通勤）<span class="lbl">单位</span>维度<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>行业置业分析框架</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">36</td>
+<td class="id">EXT-TRM-017</td>
+<td class="nm">租期内哪种情况可以无责退租<div class="sub">退租</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>《民法典》第724条：租赁物被查封扣押/权属争议/违反强制规定致无法使用可解除；业主延迟交房达10日、甲醛超标、不担维修义务等可无责解约<span class="lbl">单位</span>情形<span class="lbl">时点</span>现行<span class="lbl">来源</span>《中华人民共和国民法典》第七百二十四条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">37</td>
+<td class="id">LIV-DEC-004</td>
+<td class="nm">装修扰民怎么办能投诉吗<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>禁止施工时段：法定休息日、节假日全天及工作日12时至14时、18时至次日8时<span class="lbl">单位</span>时段<span class="lbl">时点</span>现行<span class="lbl">来源</span>《环境噪声污染防治法》；《住宅室内装饰装修管理办法》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">38</td>
+<td class="id">LIV-DEC-017</td>
+<td class="nm">装修甲醛超标怎么办<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>甲醛限值≤0.08mg/m³；超标检测不合格的装饰装修企业应返工<span class="lbl">单位</span>mg/m³<span class="lbl">时点</span>现行（GB/T 18883）<span class="lbl">来源</span>GB/T 18883《室内空气质量标准》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">39</td>
+<td class="id">LIV-DEC-018</td>
+<td class="nm">装修材料怎么选才环保<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>板材甲醛释放量E1级≤0.124mg/m³、ENF级≤0.025mg/m³；涂料VOC≤120g/L(GB 18582)；胶黏剂游离甲醛≤1.0g/kg(GB 18583)<span class="lbl">单位</span>mg/m³/g/L/g/kg<span class="lbl">时点</span>现行<span class="lbl">来源</span>GB 18580/GB 18582/GB 18583</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">40</td>
+<td class="id">LIV-DEC-019</td>
+<td class="nm">装修用胶水甲醛多吗<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>胶黏剂游离甲醛限值≤1.0g/kg<span class="lbl">单位</span>g/kg<span class="lbl">时点</span>现行<span class="lbl">来源</span>GB 18583《室内装饰装修材料胶粘剂中有害物质限量》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">41</td>
+<td class="id">LIV-DEC-021</td>
+<td class="nm">装修壁纸和乳胶漆哪个更环保<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>优质乳胶漆VOC可达≤2g/L（法国A+标准）；壁纸胶是甲醛主要来源，应选环保糯米胶或淀粉胶<span class="lbl">单位</span>g/L<span class="lbl">时点</span>现行<span class="lbl">来源</span>行业环保材料对比及检测标准</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">42</td>
+<td class="id">LIV-DEC-046</td>
+<td class="nm">装修期间物业有权停工吗<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>物业有权制止违规装修并要求整改、向房管部门报告，但无直接罚款权，处罚由行政管理部门执行<span class="lbl">单位</span>权限<span class="lbl">时点</span>现行<span class="lbl">来源</span>《物业管理条例》及装修管理协议</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/gongbao/content/2018/content_5275948.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">43</td>
+<td class="id">LIV-DEC-047</td>
+<td class="nm">装修后多久能入住<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>建议装修完工后通风3-6个月；CMA检测甲醛≤0.08mg/m³等达标方可入住；孕妇婴幼儿家庭建议延长至6-12个月<span class="lbl">单位</span>月<span class="lbl">时点</span>现行<span class="lbl">来源</span>GB/T 18883《室内空气质量标准》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">44</td>
+<td class="id">LIV-DEC-048</td>
+<td class="nm">自己买甲醛检测盒准吗<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>CMA资质机构检测费用约300-800元/点位；自测盒和家用检测仪精度有限仅作参考<span class="lbl">单位</span>元/点位<span class="lbl">时点</span>现行<span class="lbl">来源</span>GB/T 18883-2022检测规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mee.gov.cn/ywgz/fgbz/bz/bzwb/jcffbz/202207/t20220726_989755.shtml" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">45</td>
+<td class="id">LIV-DEC-049</td>
+<td class="nm">装修除甲醛最好的方法是什么<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>持续通风（建议每天≥8小时）是最有效基础方法；新风/活性炭/光触媒辅助；果皮、醋熏、绿植效果极微<span class="lbl">单位</span>小时/天<span class="lbl">时点</span>现行<span class="lbl">来源</span>行业除醛方法共识</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mee.gov.cn/ywgz/fgbz/bz/bzwb/jcffbz/202207/t20220726_989755.shtml" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">46</td>
+<td class="id">LIV-DEC-050</td>
+<td class="nm">装修完TVOC超标怎么办<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>TVOC限值≤0.6mg/m³<span class="lbl">单位</span>mg/m³<span class="lbl">时点</span>现行（GB/T 18883）<span class="lbl">来源</span>GB/T 18883《室内空气质量标准》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">47</td>
+<td class="id">LIV-MNT-012</td>
+<td class="nm">墙面发霉返潮怎么处理<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>四类成因：外墙渗水/冷桥结露/室内湿度过高/水管暗漏；日常保持室内相对湿度40%-60%<span class="lbl">单位</span>湿度区间<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>行业墙面维修标准</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">48</td>
+<td class="id">LIV-MNT-015</td>
+<td class="nm">外墙渗水室内墙面起皮怎么修<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>外墙渗水质保期5年内由开发商负责，过质保可申请维修资金；室内修复费用业主承担但可向渗漏责任方追偿<span class="lbl">单位</span>年<span class="lbl">时点</span>现行<span class="lbl">来源</span>《建设工程质量管理条例》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200712/20071204_203002.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">49</td>
+<td class="id">LIV-MNT-016</td>
+<td class="nm">供暖系统不热怎么排查<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>室内温度一般不低于18℃（卧室起居室）；排气阀放气/检查分水器过滤器/测温记录向供热单位投诉<span class="lbl">单位</span>℃<span class="lbl">时点</span>现行<span class="lbl">来源</span>各地供暖管理办法</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">50</td>
+<td class="id">LIV-MNT-017</td>
+<td class="nm">中央空调和家用空调维护保养<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>家用分体空调过滤网每2周清洗、3-5年深度清洗；中央空调新风滤网每月更换或清洗、每季度查冷媒压力、每年使用季前全面检修<span class="lbl">单位</span>周期<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>空调行业维护保养规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">51</td>
+<td class="id">LIV-MNT-019</td>
+<td class="nm">房屋定期检查哪些项目<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>每月(漏电保护器/燃气管)/每季(空调滤网/烟道门窗)/每半年(水箱/栏杆/外墙巡检)/每年(屋顶防水/管道阀门/电梯消防/避雷)/每5年(室内管道全面检查，15年以上铝管更换)<span class="lbl">单位</span>周期<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>房屋维护保养行业规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2013-06/30/content_2476908.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">52</td>
+<td class="id">LIV-MNT-CASE-003</td>
+<td class="nm">买的二手房交房后发现严重漏水能退吗<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>漏水系房屋原有结构性缺陷致不能实现合同目的，判决解除合同、退还购房款并赔偿利息损失<span class="lbl">单位</span>判决结果<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第五百六十三条</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>刘某购买二手房，交房后发现主卧及卫生间严重漏水、墙皮发霉。卖方辩称漏水可维修。法院查明漏水系房屋原有结构性缺陷、需大规模重做防水，严重影响居住，依据《民法典》第五百六十三条判决解除房屋买卖合同，卖方退还购房款并赔偿利息损失。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第五百六十三条司法判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">53</td>
+<td class="id">LIV-MNT-CASE-010</td>
+<td class="nm">租的房子甲醛超标我直接退租算违约吗<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>CMA检测甲醛超标2倍；租赁物危及承租人安全健康，承租人可随时解除合同<span class="lbl">单位</span>倍<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>GB/T 18883检测；《民法典》第七百三十一条</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>王某承租刘某新装修房屋，入住后感觉刺鼻，经CMA资质机构检测甲醛超标2倍。王某提出退租，刘某以合同未到期要求违约金。法院依据《民法典》第七百三十一条认定租赁物危及承租人安全健康，承租人可随时解除合同，判决王某无需支付违约金。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第七百三十一条司法判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">54</td>
+<td class="id">LIV-MNT-CASE-014</td>
+<td class="nm">买二手房入住后发现墙内水管漏水怎么索赔<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>赔偿维修费及墙面修复费共8000元<span class="lbl">单位</span>元<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第六百一十七条</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>买方郑某购买二手房入住半年后，发现墙内暗管漏水致墙面发霉，经鉴定漏水点在交房前已锈蚀。法院依据《民法典》第六百一十七条认定卖方对隐蔽瑕疵负有告知义务，判决卖方钱某赔偿维修费及墙面修复费共计8000元。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第六百一十七条司法判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">55</td>
+<td class="id">LIV-MNT-CASE-028</td>
+<td class="nm">租房发现墙体隔音极差能要求房东整改吗<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>未违反国家强制性建筑标准且合同未约定隔音标准，房东无需强制整改；租客可协商解约但房东不承担违约责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第七百零八条</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>租客周某承租房屋后发现墙体隔音极差影响休息，要求房东加装隔音层或退租。法院查明房屋属合法建筑、隔音未违反国家强制性标准且合同未约定隔音标准，依据《民法典》第七百零八条判决房东无需强制整改，周某可协商解除合同但房东不承担违约责任。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第七百零八条司法判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">56</td>
+<td class="id">LIV-NBR-001</td>
+<td class="nm">邻居装修噪音太大怎么办<div class="sub">邻里纠纷</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>禁止施工时段：法定休息日、节假日全天及工作日12-14时、18时至次日8时<span class="lbl">单位</span>时段<span class="lbl">时点</span>现行<span class="lbl">来源</span>《环境噪声污染防治法》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">57</td>
+<td class="id">LIV-NBR-003</td>
+<td class="nm">邻居挡了我家采光通风怎么维权<div class="sub">邻里纠纷</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>住宅日照标准：大寒日不低于2小时（大城市），冬至日不低于1小时<span class="lbl">单位</span>小时<span class="lbl">时点</span>现行<span class="lbl">来源</span>《城市居住区规划设计标准》；《民法典》第293条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">58</td>
+<td class="id">LIV-NBR-006</td>
+<td class="nm">邻居养狗扰民怎么办<div class="sub">邻里纠纷</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>犬吠扰民经警告不改可处警告或罚款；不拴绳遛犬可依法处罚<span class="lbl">单位</span>处罚<span class="lbl">时点</span>现行<span class="lbl">来源</span>《治安管理处罚法》第五十八条；各地养犬管理条例</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">59</td>
+<td class="id">LIV-NBR-007</td>
+<td class="nm">邻居深夜噪音扰民怎么投诉<div class="sub">邻里纠纷</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>居民区夜间(22:00-次日6:00)室内噪声限值30分贝、昼间40分贝；制造噪声干扰他人，警告不改处200-500元罚款<span class="lbl">单位</span>分贝/元<span class="lbl">时点</span>现行<span class="lbl">来源</span>《环境噪声污染防治法》；《治安管理处罚法》第五十八条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2012-10/26/content_2251480.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">60</td>
+<td class="id">CAR-CMP-CASE-013</td>
+<td class="nm">中介承诺“包上名校”未兑现，买家起诉中介虚假宣传能赢吗？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>学区划分属政府行政行为、中介无权保证；此类承诺属虚假宣传或重大误解，法院通常支持退还佣金或赔偿差价损失<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《广告法》；司法判例</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">61</td>
+<td class="id">CAR-CMP-CASE-025</td>
+<td class="nm">经纪人带看二手房时，标准的房屋状况披露与确认流程是什么？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>带看前核查+带看中如实指出+带看后签《房屋状况说明书》/《带看确认书》留痕<span class="lbl">单位</span>流程<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>房地产经纪行业合规操作指引</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">62</td>
+<td class="id">CAR-CMP-CASE-036</td>
+<td class="nm">经纪人对房屋学区、地铁规划等未定信息进行确定性宣传有什么风险？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>将未定信息（学区划分/地铁规划/商业配套）作为确定性卖点宣传=虚假宣传；需退佣、赔偿并面临行政处罚<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《广告法》；《房地产经纪管理办法》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2014-03/16/content_2639612.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">63</td>
+<td class="id">CAR-COMP-053</td>
+<td class="nm">买方要求在补充协议里加条款该怎么审核<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>补充协议三审：合法性（不违反强制性规定）/可执行性/公平性；严禁模糊表述；经双方签字确认后作为主合同附件<span class="lbl">单位</span>审查项<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》合同编</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">64</td>
+<td class="id">CAR-COMP-058</td>
+<td class="nm">在朋友圈发布未经核实的学区信息有什么风险<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>未经核实发布学区信息构成虚假宣传，违反《广告法》面临罚款；因学区不符致退房需承担缔约过失或违约责任并退佣金<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《广告法》；《房地产经纪管理办法》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">65</td>
+<td class="id">CAR-COMPLY-016</td>
+<td class="nm">经纪人如实告知义务范围<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>须告知六项：房屋权属状况/抵押查封信息/质量瑕疵/周边不利因素/租赁情况/学区使用情况<span class="lbl">单位</span>事项<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第九百六十二条；《房地产经纪管理办法》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">66</td>
+<td class="id">CAR-COMPLY-023</td>
+<td class="nm">口头承诺不写合同的欺诈风险<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>口头承诺法律效力弱、不写入合同不产生约束力；重要承诺必须写入合同附加条款，用&#x27;尽力协助&#x27;替代&#x27;保证&#x27;<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第四百九十条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">67</td>
+<td class="id">CAR-COMPLY-028</td>
+<td class="nm">广告法绝对化用语合规风险<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>使用绝对化用语（最佳/最好/必涨/保证/唯一/首个）属违法广告，市场监管部门可罚款20-100万元并可撤销广告<span class="lbl">单位</span>万元<span class="lbl">时点</span>现行<span class="lbl">来源</span>《广告法》第九条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2015-04/25/content_2852914.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">68</td>
+<td class="id">CAR-COMPLY-066</td>
+<td class="nm">客户要确切学区信息经纪人怎么合规答复<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>通过教育局官网核实当前划片；声明&#x27;学区划片动态调整、经纪人不作绝对承诺&#x27;；答复后客户签《学区信息告知书》<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>教育行政部门划片规则</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2015-04/25/content_2852914.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">69</td>
+<td class="id">CAR-COMPLY-068</td>
+<td class="nm">跨城带看客户发生交通意外怎么应急上报<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>应急五步：第一时间拨打120和122并救助→上报店长及城市合规负责人→启动应急预案协助医疗/保险理赔/家属安抚→严禁隐瞒不报或私自达成赔偿协议<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第一千一百九十八条；机构应急预案</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">70</td>
+<td class="id">CAR-COMPLY-071</td>
+<td class="nm">承诺“一定能上名校”有什么违约风险<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>学区划片由教育局动态调整且学位可能被占用，经纪人无法绝对保证；承诺落空需承担违约责任、赔偿差价损失甚至退房<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《广告法》；《民法典》诚实信用原则</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">71</td>
+<td class="id">CAR-CRD-CASE-023</td>
+<td class="nm">经纪人虚假宣传房源被罚款怎么申诉<div class="sub">职业发展</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>罚款2万元；行政复议认定经纪人未尽核实义务即发布虚假信息，维持原处罚<span class="lbl">单位</span>元<span class="lbl">时点</span>现行执法案例<span class="lbl">来源</span>《广告法》执法及行政复议案例</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>经纪人吴某在朋友圈发布&#x27;学区房、带车位&#x27;虚假房源信息，被市场监管局查处并罚款2万元。吴某以&#x27;系从其他平台复制、非主观故意&#x27;为由申请行政复议，复议机关认定其作为专业经纪人未尽核实义务即发布虚假信息，维持原罚款决定。<span class="lbl">案号</span>—<span class="lbl">来源</span>《广告法》执法及行政复议案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2015-04/25/content_2852914.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">72</td>
+<td class="id">CAR-CRD-CASE-047</td>
+<td class="nm">平台因信用分过低限制接单违反劳动法吗<div class="sub">职业发展</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>信用分限制接单属合理内部管理措施（如培训整改）一般不认定为违法；恶意克扣工资或变相违法解除合同则违法<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《劳动合同法》；平台管理制度</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2012-12/28/content_5031177.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">73</td>
+<td class="id">CAR-EXM-CASE-041</td>
+<td class="nm">考试期间突发疾病申请中断考试被拒起诉考试机构能获赔偿吗<div class="sub">考试</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>需判断考点是否尽合理救助义务及考试规则中中断考试规定是否合法有效<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第一千一百九十八条；考试规则</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">74</td>
+<td class="id">CAR-GROW-005</td>
+<td class="nm">经纪人个人品牌怎么建<div class="sub">职业发展</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>四步：定位(差异化标签)/内容(短视频朋友圈持续输出)/服务(超预期制造口碑)/信任(专业形象+真实案例)；核心原则：一致性+持续性<span class="lbl">单位</span>流程<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>行业个人品牌方法论</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">75</td>
+<td class="id">CAR-GRW-CASE-031</td>
+<td class="nm">新人经纪人如何快速建立商圈楼盘字典和熟盘<div class="sub">成长</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>四步：系统梳理小区分布与周边配套→实地扫楼记录栋数户型物业费车位并拍照→与老员工/保安物业获取成交底价和业主画像→录入系统形成楼盘字典定期更新<span class="lbl">单位</span>流程<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>房地产经纪机构内部培训体系</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">76</td>
+<td class="id">CAR-GRW-CASE-032</td>
+<td class="nm">经纪人接待首次看房客户如何做需求诊断和匹配<div class="sub">成长</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>四步：破冰观察购买力→SPIN提问挖掘核心痛点→明确硬性指标(预算区域户型楼层)和软性指标(装修朝向)→筛3套(1主推1备选1对比)并规划带看路线<span class="lbl">单位</span>流程<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>销售心理学实战；房产经纪服务SOP</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">77</td>
+<td class="id">CAR-GRW-CASE-053</td>
+<td class="nm">经纪人带看学区房时如何合规核验学位占用情况并留痕<div class="sub">成长</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>通过教育局官网、学校招生办或派出所户籍科查询学位锁定状态，截图或拍照留痕并作为附件写入居间合同<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>教育部门学位管理规则</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">78</td>
+<td class="id">CAR-QEX-CASE-043</td>
+<td class="nm">报名时学校更名导致学历审核失败起诉要求人工核验能获支持吗<div class="sub">资格考试</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>学信网已更新更名信息时考试中心应提供人工申诉通道；未更新需学校开具证明；法院审查重点在于是否提供合理人工救济途径<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>学信网数据；考试报名规则</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://wenshu.court.gov.cn/" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">79</td>
+<td class="id">CAR-SKILL-002</td>
+<td class="nm">客户需求怎么用三圈交集法精准挖掘<div class="sub">专业技能</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>三圈：预算圈(总价/首付/月供)、功能圈(面积/户型/楼层/朝向)、偏好圈(学区/地铁/商圈/品质)；STAR提问法逐层深挖显性与隐性需求<span class="lbl">单位</span>方法<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>房产经纪需求挖掘方法论</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">80</td>
+<td class="id">CAR-SKILL-004</td>
+<td class="nm">议价谈判核心技巧<div class="sub">专业技能</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>双面润滑：对卖方用同小区成交价/挂牌量/带看量锚定并制造时间压力；对买方用价值分析支撑合理溢价；不站任何一方做信息桥梁<span class="lbl">单位</span>方法<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>房产经纪议价方法论</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">81</td>
+<td class="id">CAR-SKILL-009</td>
+<td class="nm">短视频获客怎么做<div class="sub">专业技能</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>五类内容：区域测评/看房vlog/干货知识/市场解读/个人IP；竖屏9:16、字幕必加、前3秒抓注意力、晚6-9点发布、日更或隔日更<span class="lbl">单位</span>要点<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>短视频运营方法论</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="POL">
+<td class="num">82</td>
+<td class="id">CAR-SKILL-014</td>
+<td class="nm">怎么写市场分析报告给客户<div class="sub">专业技能</div></td>
+<td><span class="tp" style="--c:#0E9F6E">政策</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>六段结构：区域概况/供需数据(挂牌成交量去化周期)/价格走势(近6月)/同类对比/政策影响/经纪建议<span class="lbl">单位</span>结构<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>房产经纪市场分析规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">83</td>
+<td class="id">CAR-SKILL-022</td>
+<td class="nm">经纪人吃差价被查处案例<div class="sub">专业技能</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>没收违法所得40万、罚款5万、吊销执业证、记入信用档案，卖方另行主张赔偿<span class="lbl">单位</span>万元/处罚<span class="lbl">时点</span>2022年执法案例<span class="lbl">来源</span>某市住建局执法通报</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>2022年某市经纪人张某在居间一套学区房时，向卖方报成交价380万、向买方报420万，赚取差价40万。买方过户后发现真实成交价并举报至住建局，张某被没收违法所得40万、罚款5万、吊销执业证、记入信用档案，卖方另行主张赔偿。<span class="lbl">案号</span>—<span class="lbl">来源</span>某市住建局执法通报案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">84</td>
+<td class="id">CAR-SKL-CASE-005</td>
+<td class="nm">买学区房发现学位被占用了能退房吗案例<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>未核实学位状态且合同无学位保留条款构成欺诈，判决撤销房屋买卖合同、卖家退房款、经纪人公司退中介费并赔偿损失<span class="lbl">单位</span>判决结果<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第一百四十八条</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>孙某为子女入学购买学区房，经纪人承诺学位未被占用，过户后发现学位已被原房东使用、子女无法入学。法院查明经纪人未向教育部门核实学位状态且合同未做学位保留条款，构成欺诈，依据《民法典》第一百四十八条判决撤销房屋买卖合同，卖家退还房款、经纪人公司退还中介费并赔偿损失。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第一百四十八条司法判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">85</td>
+<td class="id">CAR-SKL-CASE-032</td>
+<td class="nm">未核实房屋是否带有户口且卖家拒绝迁出中介会承担连带责任吗<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>未核实户口登记且合同未约定迁出期限及违约责任，中介将因未尽尽职调查和风险提示义务承担连带责任（退部分/全部中介费、赔损失）<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产经纪管理办法》；司法判例</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">86</td>
+<td class="id">CAR-SKL-CASE-038</td>
+<td class="nm">在合同中口头承诺学区但没写进补充协议中介面临哪些败诉风险<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>能提供录音/微信聊天记录证明确定性承诺的，法院判中介退还中介费并赔偿损失；未提前告知风险并留存书面免责文件的需承担缔约过失责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》及居间合同纠纷司法判例</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="TERM">
+<td class="num">87</td>
+<td class="id">CRO-GEN-001</td>
+<td class="nm">买房从哪些方面开始考虑<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#637089">概念</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>八大维度：价格/区位/品质/交通/配套/学区/产权/风险<span class="lbl">单位</span>维度<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>房产经纪需求诊断框架</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="TERM">
+<td class="num">88</td>
+<td class="id">CRO-GEN-002</td>
+<td class="nm">房子价格由什么决定<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#637089">概念</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>七大因素：地段价值/建筑品质/市场供需/政策调控/配套设施/楼层朝向/房龄及业主急售程度；市场比较法+成本法两种基本估值思路<span class="lbl">单位</span>因素<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>房产估价方法</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">89</td>
+<td class="id">CAR-CMP-CASE-009</td>
+<td class="nm">中介伪造买家征信报告导致交易失败，法院怎么判？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>伪造征信/银行流水构成根本违约：中介需退还佣金并赔偿客户直接经济损失<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》合同编；司法判例</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">90</td>
+<td class="id">CAR-CMP-CASE-010</td>
+<td class="nm">经纪人诱导买家签订阴阳合同避税被查处，中介要担责吗？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>诱导逃税违反法定义务：面临行政处罚；致合同无效或产生额外税费的需向受损方承担民事赔偿责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第一百四十六条；《税收征收管理法》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">91</td>
+<td class="id">CAR-CMP-CASE-012</td>
+<td class="nm">经纪人私自挪用客户首付款理财，中介公司需要承担连带责任吗？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>客户基于信任交付款项、经纪人行为属职务行为或表见代理的，中介公司需承担全额退还及赔偿责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第一百七十条、第一千一百九十一条；《刑法》第二百七十二条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">92</td>
+<td class="id">CAR-CMP-CASE-015</td>
+<td class="nm">经纪人未经客户同意泄露其个人隐私信息，违反了哪些法律？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>未经同意泄露客户隐私：承担民事赔偿，情节严重面临行政处罚甚至刑事责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第一千零三十二条；《个人信息保护法》第十条、第六十六条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">93</td>
+<td class="id">CAR-CMP-CASE-016</td>
+<td class="nm">中介公司强迫交易或捆绑收费，违反了哪部法律的哪一条？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>违背自愿公平原则的强迫交易与捆绑收费侵犯消费者自主选择权和公平交易权，市场监管部门可依法处罚<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《消费者权益保护法》第九条、第十条；《价格法》第十四条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2014-03/16/content_2639612.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">94</td>
+<td class="id">CAR-CMP-CASE-023</td>
+<td class="nm">发现房屋存在违建或结构改动，经纪人标准的上报与告知流程是什么？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>四步：停止推进→拍照留存并向公司合规上报→书面告知买家违建风险→买家签《风险知情确认书》<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>《城乡规划法》第六十四条；《住宅室内装饰装修管理办法》第五条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">95</td>
+<td class="id">CAR-CMP-CASE-024</td>
+<td class="nm">客户资金监管账户开立及资金划转的标准操作流程是什么？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>五步：备材料→签署《资金监管协议》开立专属监管账户→买方打入→过户出新证→凭过户凭证划转；全程严禁经纪人代收代付<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产经纪管理办法》第二十四条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">96</td>
+<td class="id">CAR-CMP-CASE-027</td>
+<td class="nm">签署二手房买卖合同时，经纪人标准的合同条款核对与风险提示流程是什么？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>四步：逐条核对身份/坐落/总价/付款/过户等核心条款→重点提示违约、户口迁出、物业交割、不可抗力条款→逐页签字按手印→录音录像留存<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第四百九十六条；机构签约规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">97</td>
+<td class="id">CAR-CMP-CASE-028</td>
+<td class="nm">客户因贷款审批不通过导致交易受阻，经纪人标准的后续处理流程是什么？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>四步：查明银行拒贷原因→换银行/增加首付/补充担保/变更付款方式→协商解约并按合同处理定金→签署《解约协议》<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第五百六十三条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">98</td>
+<td class="id">CAR-CMP-CASE-031</td>
+<td class="nm">经纪人向客户承诺“一定能贷到最高额度”存在什么合规风险？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>贷款审批权在银行、中介无法控制；虚假承诺未达预期需承担违约责任或赔偿差价损失，公司查实后将严厉处罚<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产经纪管理办法》第二十五条；《民法典》第五百七十七条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">99</td>
+<td class="id">CAR-CMP-CASE-035</td>
+<td class="nm">经纪人将客户信息透露给装修公司或贷款中介有什么风险？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>泄露客户信息违反《个人信息保护法》；第三方利用信息诈骗的需承担连带赔偿；查实后将被开除并可能面临行政处罚<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《个人信息保护法》第十条、第六十六条；《民法典》第一千零三十四条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">100</td>
+<td class="id">CAR-CMP-CASE-037</td>
+<td class="nm">经纪人引导客户通过“经营贷”代替“房贷”购房有什么风险？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>经营贷购房涉嫌骗取贷款罪（《刑法》第175条之一）；查出资金违规流入楼市需提前全额结清，客户面临资金断裂及征信黑名单风险<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《贷款通则》第十九条；《刑法》第一百七十五条之一</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-12/28/content_5575047.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">101</td>
+<td class="id">CAR-CMP-CASE-040</td>
+<td class="nm">经纪人配合买方做高房价以获取更多银行贷款有什么风险？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>高评高贷涉嫌骗取贷款（《刑法》第175条之一）；买方税费增加、房价下跌易断供；查处后需提前结清贷款，经纪人及公司承担连带赔偿甚至涉刑<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《刑法》第一百七十五条之一；《贷款通则》第十九条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-12/28/content_5575047.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">102</td>
+<td class="id">CAR-CMP-CASE-042</td>
+<td class="nm">买家因中介推荐的贷款中介收取高额手续费而起诉，中介需担责吗？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>中介未尽审查告知义务或与第三方存在利益输送的，需承担连带或补充赔偿责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第九百六十二条；地方中级人民法院公报案例</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">103</td>
+<td class="id">CAR-CMP-CASE-055</td>
+<td class="nm">经纪人为了抢单，向客户隐瞒房屋已被抵押给小额贷款公司的风险是什么？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>故意隐瞒房屋抵押给非银行金融机构的重大事实，严重违反如实告知义务，需承担退还佣金、赔偿损失甚至欺诈的法律责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第九百六十二条；《房地产经纪管理办法》第二十一条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">104</td>
+<td class="id">CAR-CMP-CASE-057</td>
+<td class="nm">经纪人向客户推荐未经公司准入的第三方代办过户服务，存在什么风险？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>推荐未经准入第三方违反供应商准入制度，服务质量不可控，需承担连带赔偿责任并面临公司内部严厉处罚<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产经纪管理办法》；机构《供应商准入与管理制度》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">105</td>
+<td class="id">CAR-COMP-007</td>
+<td class="nm">经纪人能代客户办贷款吗<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>禁止代客户操作贷款，只能提供政策咨询和方案比较；代客操作涉伪造材料骗贷罪、挪用资金及信息泄露风险<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产经纪管理办法》第25条；《刑法》第193条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="POL">
+<td class="num">106</td>
+<td class="id">CAR-COMP-008</td>
+<td class="nm">经纪人能承诺包过包卖吗<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#0E9F6E">政策</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>&#x27;包过户/包贷款/包卖出/保证升值&#x27;等超范围承诺=虚假宣传；不兑现须退款赔偿并面临行政处罚<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产经纪管理办法》第25条；《消费者权益保护法》第20条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">107</td>
+<td class="id">CAR-COMP-011</td>
+<td class="nm">挪用客户资金有什么后果<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>挪用客户资金三重后果：行政处罚(没收+罚款+吊证)、民事责任(返还+赔偿利息)、刑事(挪用资金罪/职务侵占罪，数额较大可判3-10年)<span class="lbl">单位</span>处罚<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产经纪管理办法》第25条；《刑法》第272条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">108</td>
+<td class="id">CAR-COMP-016</td>
+<td class="nm">口头承诺和书面约定哪个有效<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>书面合同效力优先于口头约定；口头承诺难举证；微信聊天、通话录音为辅助证据但证明力弱于书面合同<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第490条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">109</td>
+<td class="id">CAR-COMP-020</td>
+<td class="nm">虚假承诺被退佣案例<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>责令退还佣金2.4万并罚款1万，法院亦支持客户赔偿请求<span class="lbl">单位</span>万元<span class="lbl">时点</span>2024年执法案例<span class="lbl">来源</span>某市住建局2024年执法通报及法院判决书</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>2024年某市经纪人李某向客户承诺&#x27;包过户、包贷款、三个月包卖出&#x27;，客户签约后贷款未批、过户受阻，以虚假承诺为由要求退佣并赔偿。住建部门认定李某超范围承诺构成违规，责令退还佣金2.4万并罚款1万，法院亦支持客户赔偿请求。<span class="lbl">案号</span>—<span class="lbl">来源</span>某市住建局2024年执法通报及法院判决书</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">110</td>
+<td class="id">CAR-COMP-042</td>
+<td class="nm">中介没查档导致客户买到查封房怎么担责<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>签约前未做产权调查属重大过失：法院通常判决退还全部佣金，并对客户资金损失承担补充或连带赔偿责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第九百六十二条、第五百条；最高人民法院公报案例</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">111</td>
+<td class="id">CAR-COMP-049</td>
+<td class="nm">客户想做高房价多贷款该怎么合规拒绝<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>四步：明确告知高评高贷属骗贷违法→留存拒绝沟通书面证据→按真实价格网签→客户执意违规则终止服务解除合同<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>《商业银行法》第三十五条；《刑法》第一百七十五条之一</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">112</td>
+<td class="id">CAR-COMP-050</td>
+<td class="nm">房子有抵押但业主没钱解押该怎么推进交易<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>优先带押过户（确认当地政策并签三方协议）；不支持则引导正规机构赎楼贷或资金监管下定向解押；严禁民间高利贷过桥<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第四百零六条；《自然资源部 银保监会关于推进不动产带押过户的通知》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">113</td>
+<td class="id">CAR-COMP-056</td>
+<td class="nm">推荐非合作金融机构办贷款有什么风险<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>推荐非持牌机构利息高、隐性收费多易引发投诉，客户受损需连带赔偿；收取返佣构成商业贿赂面临刑事风险<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产经纪管理办法》第25条第8项；《刑法》第一百六十三条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">114</td>
+<td class="id">CAR-COMP-059</td>
+<td class="nm">代收客户定金后未及时转入监管账户有什么风险<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>代收资金未入监管账户：停业整顿、高额罚款甚至吊销营业执照；情节严重相关责任人涉嫌挪用资金罪或职务侵占罪<span class="lbl">单位</span>处罚<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产经纪管理办法》第二十四条；《刑法》第二百七十二条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">115</td>
+<td class="id">CAR-COMP-060</td>
+<td class="nm">引导客户使用非房管局版本的网签合同有什么风险<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>自制合同含霸王条款或隐藏违规操作，网签系统可能无法过审；格式条款易被法院认定无效，中介需承担不利后果<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第四百九十七条；《房地产经纪管理办法》第十六条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">116</td>
+<td class="id">CAR-COMPLY-020</td>
+<td class="nm">经纪人执业禁止行为清单<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>7类禁止：隐瞒信息赚差价/挪用交易资金/收受合同外费用/为避税出谋划策/未书面同意双代/发布虚假房源；违者罚款1-3万，情节严重吊销资格<span class="lbl">单位</span>万元<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产经纪管理办法》第25条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">117</td>
+<td class="id">CAR-COMPLY-022</td>
+<td class="nm">阴阳合同风险与合规替代<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>阴阳合同部分无效；被税务稽查补税罚款；经纪人承担连带责任甚至协助逃税罪风险；合规替代=按真实成交价签约+合法利用税收优惠<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第146条；《税收征收管理法》第63条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">118</td>
+<td class="id">CAR-COMP-006</td>
+<td class="nm">虚假房源发布有什么后果<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>发布虚假房源罚款1-3万；平台降权封号；客户投诉到住建局将触发执法检查<span class="lbl">单位</span>万元<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产经纪管理办法》第25条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">119</td>
+<td class="id">CAR-COMP-012</td>
+<td class="nm">房源信息发布规范要求<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>六真信息：真实地址和产证号/真实产权人委托/真实价格/真实图片/真实面积户型/真实状态；遵循真实、准确、完整三原则<span class="lbl">单位</span>要素<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产经纪管理办法》第14条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201104/20110412_203001.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">120</td>
+<td class="id">CAR-EXM-CASE-043</td>
+<td class="nm">考场空调故障导致中暑错过答题时间要求考试中心补偿成绩能获支持吗<div class="sub">考试</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>考点设施故障属机构过失但直接要求补偿成绩缺乏法律依据；可投诉，需证明故障与缺考存在直接因果关系<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第一千一百九十八条；考试规则</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="TERM">
+<td class="num">121</td>
+<td class="id">CAR-GROW-006</td>
+<td class="nm">经纪人怎么优化佣金收入结构<div class="sub">职业发展</div></td>
+<td><span class="tp" style="--c:#637089">概念</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>收入=底薪+提成+奖金+转介绍费；优化方向：提高成交单价/提高效率/拓宽买卖租赁代办多元收入/老客运营/提升线上获客占比<span class="lbl">单位</span>构成<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>行业经纪人收入结构分析</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">122</td>
+<td class="id">CAR-GRW-CASE-034</td>
+<td class="nm">经纪人带看后客户表示要考虑如何跟进促单<div class="sub">成长</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>四步跟进：当面锁定真实顾虑→带看后2小时内微信附同小区成交数据→24小时内电话提供解决方案→邀约二次带看<span class="lbl">单位</span>小时<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>房产经纪人客户跟进SOP/销售心理学实战手册</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">123</td>
+<td class="id">CAR-GRW-CASE-046</td>
+<td class="nm">经纪人未经同意将客户微信聊天记录截图发给同事分析侵犯隐私权吗<div class="sub">成长</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>未经同意散布他人私密信息（微信聊天记录）构成对隐私权或个人信息的侵害<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第一千零三十二条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">124</td>
+<td class="id">CAR-GRW-CASE-047</td>
+<td class="nm">经纪人在朋友圈发布未经业主同意的房屋内部照片侵犯隐私权吗<div class="sub">成长</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>未经同意发布房屋内部私密照片构成侵权；需获取业主书面授权、遮挡私人生活痕迹、隐去门牌信息<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第一千零三十三条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">125</td>
+<td class="id">CAR-SKL-CASE-060</td>
+<td class="nm">经纪人泄露客户身份及购房预算给装修公司面临哪些法律与合规风险<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>泄露客户信息违反《个人信息保护法》面临行政处罚；向他人出售或提供公民个人信息情节严重，处三年以下有期徒刑或拘役<span class="lbl">单位</span>处罚<span class="lbl">时点</span>现行<span class="lbl">来源</span>《个人信息保护法》第十条；《刑法》第二百五十三条之一</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-12/28/content_5575047.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="TERM">
+<td class="num">126</td>
+<td class="id">CRO-GEN-010</td>
+<td class="nm">单身一个人买房怎么选<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#637089">概念</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>月供不超过月收入50%；优先通勤便利、面积够用、转手流动性<span class="lbl">单位</span>比例<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>贝壳经纪人职业技能分级·需求挖掘</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="TERM">
+<td class="num">127</td>
+<td class="id">CRO-GEN-011</td>
+<td class="nm">二胎家庭换房怎么规划<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#637089">概念</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>至少三居室；收纳与活动空间充足；两个孩子学区衔接；测算换房资金缺口<span class="lbl">单位</span>要素<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>贝壳经纪人职业技能分级·需求诊断</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">128</td>
+<td class="id">CRO-GEN-034</td>
+<td class="nm">房子值多少钱怎么估算<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>市场比较法(同小区3-6个月成交数据)+成本法+收益法；结合楼层朝向装修修正系数给出估值区间<span class="lbl">单位</span>方法<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>贝壳经纪人职业技能分级·市场分析</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="TERM">
+<td class="num">129</td>
+<td class="id">EXT-SEL-015</td>
+<td class="nm">想卖房怎么确定合理报价<div class="sub">出售</div></td>
+<td><span class="tp" style="--c:#637089">概念</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>议价空间=(挂牌价-成交价)/挂牌价×100%，通常留10%-15%议价空间<span class="lbl">单位</span>%<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>行业惯例；《价格法》第3条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/banshi/2005-08/01/content_19097.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">130</td>
+<td class="id">LIV-MNT-001</td>
+<td class="nm">房屋保修期各部位多长时间<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>主体结构为设计文件规定年限(通常50年)；屋面防水及有防水要求的卫生间房间外墙防渗漏5年；供热供冷2个采暖期供冷期；电气管线、给排水管道、设备安装和装修2年；自竣工验收合格日起算<span class="lbl">单位</span>年<span class="lbl">时点</span>现行<span class="lbl">来源</span>《建设工程质量管理条例》第40条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/zhengce/2020-08/28/content_5538265.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">131</td>
+<td class="id">LIV-MNT-005</td>
+<td class="nm">房屋漏水渗水怎么排查原因<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>卫生间闭水试验：堵地漏蓄水3-5cm观察48小时；红外热像仪可精准定位渗漏<span class="lbl">单位</span>cm/h<span class="lbl">时点</span>现行<span class="lbl">来源</span>GB50207《屋面工程质量验收规范》；JGJ/T 235</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">132</td>
+<td class="id">LIV-MNT-CASE-001</td>
+<td class="nm">租的房子家电坏了房东不修怎么办<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>赔偿800元维修费，租客扣除租金行为合法<span class="lbl">单位</span>元<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第七百一十二条</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>张某承租李某房屋，合同约定家电由租客日常维护。入住半年后空调自然老化损坏，李某拒修。张某自行维修花费800元并在次月租金中扣除。法院认定空调损坏属自然老化、非使用不当，依据《民法典》第七百一十二条判决李某承担800元维修费，张某扣除租金合法。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第七百一十二条司法判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">133</td>
+<td class="id">LIV-MNT-CASE-016</td>
+<td class="nm">租房时空调自然老化不制冷房东拒修怎么办<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>判决房东承担重置费用800元<span class="lbl">单位</span>元<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第七百一十二条；南京市某基层法院判例</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>夏季高温，租客杨某发现承租房屋空调不制冷，加氟后仍无法使用，维修工判定压缩机自然老化报废。房东以合同未约定拒绝更换，杨某自行购买二手空调替换花费800元。法院依据《民法典》第七百一十二条判决房东承担800元重置费用。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第七百一十二条、南京市某基层法院判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="TERM">
+<td class="num">134</td>
+<td class="id">LIV-NBR-010</td>
+<td class="nm">邻居空调外机噪音和热风扰民<div class="sub">邻里纠纷</div></td>
+<td><span class="tp" style="--c:#637089">概念</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>空调外机噪音应符合国家标准（室内额定声级下不超过额定值+3dB）<span class="lbl">单位</span>dB<span class="lbl">时点</span>现行<span class="lbl">来源</span>GB17790《家用和类似用途空调器安装规范》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">135</td>
+<td class="id">LIV-NBR-CASE-019</td>
+<td class="nm">邻居把花盆放在窗外怕掉下来砸人怎么投诉<div class="sub">邻里纠纷</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>构成高空坠物重大安全隐患，判决限期将花盆移入室内或采取可靠固定措施<span class="lbl">单位</span>判决结果<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第一千二百五十三条、第二百八十八条</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>业主高某将多个花盆放置在窗外未装防护网的空调外机上且未固定，楼下邻居白某担心掉落砸人要求移入室内被拒，遂向物业及城管投诉并诉至法院。法院认定高某行为构成高空坠物重大安全隐患，依据《民法典》第一千二百五十三条及第二百八十八条，判决高某限期将花盆移入室内或采取可靠固定措施。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第一千二百五十三条、第二百八十八条司法判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">136</td>
+<td class="id">LIV-NBR-CASE-021</td>
+<td class="nm">邻居空调外机滴水噪音大怎么解决<div class="sub">邻里关系</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>空调噪音65分贝超出国家排放标准；判决限期移机/隔音降噪/引流排水，并赔偿精神抚慰金1000元<span class="lbl">单位</span>分贝/元<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第二百八十八条；《社会生活环境噪声排放标准》</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>上下楼邻居张某与李某，李某空调外机安装位置不当，运行噪音达65分贝，冷凝水直接滴入张某卧室窗台。法院认定李某空调噪音超出国家排放标准、滴水影响正常生活，构成相邻权侵害，判决限期移机或采取隔音降噪、引流排水措施，并赔偿张某精神抚慰金1000元。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第二百八十八条、《社会生活环境噪声排放标准》相关判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">137</td>
+<td class="id">CAR-CMP-CASE-053</td>
+<td class="nm">买卖双方对房屋内留下的家具家电归属产生争议，经纪人标准的清点与确认流程是什么？<div class="sub">合规</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>五步：暂停交割→调取买卖合同及《房屋附属设施清单》→现场逐一核对→未列明物品协商估价→签署《交割确认书》及补充协议<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>房产经纪行业合规操作指引</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">138</td>
+<td class="id">CAR-COMPLY-060</td>
+<td class="nm">经纪人把客户电话卖给装修公司犯法吗<div class="sub">合规经营</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>未取得个人单独同意出售或提供个人信息违法；非法获取、出售、提供公民个人信息情节严重的触犯侵犯公民个人信息罪<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《个人信息保护法》第十条；《刑法》第二百五十三条之一</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-12/28/content_5575047.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="POL">
+<td class="num">139</td>
+<td class="id">CAR-GROW-012</td>
+<td class="nm">存量房时代经纪人怎么转型<div class="sub">职业发展</div></td>
+<td><span class="tp" style="--c:#0E9F6E">政策</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>一线城市二手成交占比超70%；数字化渗透率超85%<span class="lbl">单位</span>%<span class="lbl">时点</span>行业研究报告（2024年）<span class="lbl">来源</span>行业存量房市场研究报告</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">140</td>
+<td class="id">CAR-GRW-CASE-004</td>
+<td class="nm">把业主电话泄露给装修公司被起诉怎么赔<div class="sub">成长</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>赔偿精神损害抚慰金及维权合理开支共计5000元<span class="lbl">单位</span>元<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第1033条</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>经纪人赵某为获取额外利益，将掌握的50名业主姓名及电话批量提供给某装修公司，致业主频繁接到推销电话。业主起诉赵某及中介公司侵犯个人信息权益，法院认定未经同意处理他人个人信息构成侵权，判决停止侵害、书面赔礼道歉，并赔偿业主精神损害抚慰金及维权合理开支共计5000元。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第1033条司法判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">141</td>
+<td class="id">CAR-GRW-CASE-024</td>
+<td class="nm">经纪人微信承诺“随时退款”被认定职务行为怎么判<div class="sub">成长</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>工作微信承诺构成职务行为或表见代理的，公司需先向客户退款，后可向经纪人追偿<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第一百七十条、第一百七十二条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">142</td>
+<td class="id">CAR-GRW-CASE-028</td>
+<td class="nm">经纪人未经同意将客户信息提供给第三方侵犯公民个人信息罪怎么认定<div class="sub">成长</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>向他人出售或提供公民个人信息情节严重（含财产信息五十条以上、违法所得五千元以上）构成侵犯公民个人信息罪<span class="lbl">单位</span>条/元<span class="lbl">时点</span>现行<span class="lbl">来源</span>《刑法》第二百五十三条之一；两高关于办理侵犯公民个人信息刑事案件解释</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-12/28/content_5575047.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">143</td>
+<td class="id">CAR-GRW-CASE-055</td>
+<td class="nm">经纪人为了促成交易向买方隐瞒房屋存在严重结构改动的风险<div class="sub">成长</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>隐瞒结构改动等重大瑕疵构成欺诈，买方有权撤销合同并要求赔偿，经纪人及门店面临住建部门行政处罚<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第一百四十八条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">144</td>
+<td class="id">CAR-SKILL-003</td>
+<td class="nm">客户异议怎么处理<div class="sub">专业技能</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>五类异议：价格/房源/时机/信任/竞争；四步法：共情→澄清真实异议→事实数据回应→促进行动<span class="lbl">单位</span>方法<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>销售异议处理方法论</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">145</td>
+<td class="id">CAR-SKILL-011</td>
+<td class="nm">合同审查经纪人要注意什么<div class="sub">专业技能</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>六必查：主体信息/标的描述/价格条款/时间节点/违约条款/特殊约定(户口学位附随物装修)；补充协议与正文同等效力<span class="lbl">单位</span>审查项<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第470条；行业合同审查清单</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">146</td>
+<td class="id">CAR-SKL-CASE-028</td>
+<td class="nm">客户对房屋评估价有异议经纪人如何协助申请重新评估<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>三步：收集同小区成交及房屋状况证据→向原评估机构申请复估→原机构拒绝或复估不合理则向贷款银行申请更换评估机构；合同约定评估不足时补首付方案<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>《房地产估价规范》；商业银行个人住房贷款管理办法</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/201501/20150113_221152.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">147</td>
+<td class="id">CAR-SKL-CASE-041</td>
+<td class="nm">卖家隐瞒房屋曾发生火灾致装修损毁买家起诉索赔法院怎么判<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>故意隐瞒与订立合同有关的重要事实造成损失，应当承担赔偿责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第五百条；中国裁判文书网真实案例</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">148</td>
+<td class="id">CRO-GEN-040</td>
+<td class="nm">买房预算怎么算才合理<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>总预算=首付+税费(约房款5%-10%)+佣金+装修(总价10%-20%)+应急(3-6个月月供)；月供+持有成本不超过家庭月收入50%<span class="lbl">单位</span>比例<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>贝壳经纪人职业技能分级·预算评估</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">149</td>
+<td class="id">EXT-MTG-016</td>
+<td class="nm">抵押贷款资金用途有什么限制<div class="sub">抵押贷款</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>经营贷须用于企业经营、消费贷须用于个人消费，严禁流入楼市和股市；银行追踪资金流向，违规将提前收回贷款并列入征信黑名单<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《商业银行法》第三十五条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2015-08/31/content_2922094.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">150</td>
+<td class="id">EXT-TRM-019</td>
+<td class="nm">退租时要不要做房屋清洁<div class="sub">退租</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>合同有约定从其约定；无约定保持正常整洁居住状态即可；无强制专业保洁要求；不得以清洁不达标扣全部押金<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第712条；租赁行业惯例</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">151</td>
+<td class="id">LIV-DEC-001</td>
+<td class="nm">装修前要办什么手续<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>开工前必须向物业管理企业或房屋管理机构申报登记；非业主需取得业主书面同意并签订装饰装修管理服务协议<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>《住宅室内装饰装修管理办法》第13条、第16条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">152</td>
+<td class="id">LIV-DEC-002</td>
+<td class="nm">装修哪些墙不能拆<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>严禁拆除承重墙、剪力墙等影响建筑主体和承重结构的墙体；变动主体结构需原设计单位或具有相应资质的设计单位提出方案<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《住宅室内装饰装修管理办法》第5条；《建设工程质量管理条例》第15条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">153</td>
+<td class="id">LIV-DEC-005</td>
+<td class="nm">装修施工顺序怎么排<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>标准顺序：拆改→水电改造→防水→瓦工→木工→油工→安装→竣工验收；前道工序验收合格方可进入下道工序<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>装修行业通行施工规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">154</td>
+<td class="id">LIV-DEC-006</td>
+<td class="nm">装修工期一般要多久<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>80㎡新房基础装修约63个工作日、老房约68个；每增加一个卫生间增加5个工作日，100㎡以上每增加50㎡增加5个工作日<span class="lbl">单位</span>工作日<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>装修行业通行标准</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">155</td>
+<td class="id">CAR-GROW-018</td>
+<td class="nm">优秀经纪人成长案例<div class="sub">职业发展</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>年成交18单、GTV3000万、独家房源12套，第7月转介绍效应显现<span class="lbl">单位</span>单/万元/套<span class="lbl">时点</span>行业真实案例<span class="lbl">来源</span>行业优秀经纪人成长案例</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>某经纪人2019年入行首月零成交，专注深耕某大型社区，通过驻守、物业合作、邻里口碑积累独家房源12套，第7月开始转介绍效应显现，年成交18单、GTV3000万，2021年获平台MVP认证，2023年升店长带12人团队。<span class="lbl">案号</span>—<span class="lbl">来源</span>行业优秀经纪人成长案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">156</td>
+<td class="id">CAR-QEX-CASE-022</td>
+<td class="nm">考试通过机构以未过内部考核扣押资格证合法吗<div class="sub">资格考试</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>国家颁发的职业资格证书归属个人，机构无权以内部考核或服务期未满为由扣押；可通过劳动仲裁或诉讼要求返还<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《劳动合同法》第九条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2012-12/28/content_5031177.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">157</td>
+<td class="id">CAR-SKILL-001</td>
+<td class="nm">怎么高效开发房源<div class="sub">专业技能</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>五渠道：社区深耕/线上获客/业主维护/转介绍/驻点拓客；做减法聚焦核心社区、做加法维护长期业主关系<span class="lbl">单位</span>渠道<span class="lbl">时点</span>行业通行<span class="lbl">来源</span>行业房源开发实践总结</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">158</td>
+<td class="id">CAR-SKL-CASE-018</td>
+<td class="nm">卖家在房屋内留下贵重物品丢失买家或中介需要承担法律责任吗<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>交接单未列明且无证据的，买家和中介不承担保管责任；卖家需承担贵重物品实际存在的举证责任<span class="lbl">单位</span>责任判定<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第八百九十七条；《民事诉讼法》第六十七条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">159</td>
+<td class="id">CAR-SKL-CASE-023</td>
+<td class="nm">买卖双方对房屋内遗留家具家电归属产生争议经纪人如何调解并落实<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>依清单为准→无清单按谁主张谁举证+看房照片视频及中介证言→无法一致则尾款扣除折价或允许搬离但恢复原状<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第五百一十条；二手房交易服务标准及合同示范文本</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">160</td>
+<td class="id">CAR-SKL-CASE-049</td>
+<td class="nm">发现卖家结婚证信息与房产证登记姓名不一致经纪人如何核实推进<div class="sub">技能</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>流程：公安机关出具同一人证明→核实房产证是否夫妻共同财产→取得配偶同意出售书面声明→提前与房管局确认过户材料要求<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>《城市房地产管理法》第三十五条；房管局过户操作规范</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2019-08/30/content_5425939.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">161</td>
+<td class="id">CRO-GEN-024</td>
+<td class="nm">不动产登记有什么用<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>不动产物权经依法登记发生效力，未经登记不发生效力；登记簿是物权归属和内容的根据，与权属证书不一致时以登记簿为准<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第209条、第214条、第216条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">162</td>
+<td class="id">CRO-GEN-027</td>
+<td class="nm">夫妻买房法律上怎么算<div class="sub">通用基础</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>婚后购买一般为夫妻共同财产；婚前一方全款登记己方名下为个人财产；婚后共同还贷及增值部分需补偿另一方；双方可书面约定归属<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第1062条、第1063条、第1065条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">163</td>
+<td class="id">EXT-INH-014</td>
+<td class="nm">离婚时房产怎么分<div class="sub">继承赠与</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>婚前个人出资登记己方名下归一方；婚后共同还贷及增值属共同财产；婚后共同出资登记双方名下原则上均分；父母出资登记子女名下一般归该方<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第1062条、第1063条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">164</td>
+<td class="id">LIV-DEC-007</td>
+<td class="nm">水电改造要注意什么<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>强弱电分管分槽、间距≥30cm；水管走顶便于检修；水管打压0.8MPa保压30分钟；留存水电竣工图<span class="lbl">单位</span>cm/MPa<span class="lbl">时点</span>现行<span class="lbl">来源</span>GB 50242《建筑给水排水及采暖工程施工质量验收规范》；GB 50303《建筑电气工程施工质量验收规范》</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="STD">
+<td class="num">165</td>
+<td class="id">LIV-DEC-011</td>
+<td class="nm">隐蔽工程验收看什么<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#0891B2">标准</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>水电/防水/保温/地暖等隐蔽工程封槽封闭前必须验收，不合格不得进入下道工序；验收拍照录像留存证据<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>GB 50327《住宅装饰装修施工规范》第8章</div></td>
+<td><div class="pill no">无案例</div></td>
+<td>—</td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">166</td>
+<td class="id">LIV-DEC-043</td>
+<td class="nm">装修把燃气管改了危险吗<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>燃气管道改造必须由燃气公司或有资质专业单位施工；擅自拆改属违法行为可处罚款，造成事故追究刑事责任<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《城镇燃气管理条例》第49条；《住宅室内装饰装修管理办法》第5条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">167</td>
+<td class="id">LIV-DEC-044</td>
+<td class="nm">装修把暖气管道改了漏水谁负责<div class="sub">装修</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>擅自拆改供暖管道和设施造成损失的由装修人负责赔偿；改造应由供暖单位或有资质单位施工<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《住宅室内装饰装修管理办法》第33条第2款</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">168</td>
+<td class="id">LIV-HOM-054</td>
+<td class="nm">装修水电改造完工怎么验收不踩坑<div class="sub">家居家电</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>水管打压0.8MPa保压30分钟；电路做绝缘电阻测试；封槽前留存水电走向图纸或视频<span class="lbl">单位</span>MPa/分钟<span class="lbl">时点</span>现行<span class="lbl">来源</span>《住宅室内装饰装修管理办法》第32条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.mohurd.gov.cn/gongkai/zhengce/zhengcefilelib/200206/20020603_202083.html" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">169</td>
+<td class="id">LIV-MNT-CASE-006</td>
+<td class="nm">邻居私改下水管道把我淹了怎么维权<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>判决恢复管道原状并赔偿财产损失1.2万元<span class="lbl">单位</span>元<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第二百八十八条、第一千一百六十五条</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>孙某装修时私自改变卫生间下水管道位置，导致管道坡度不够频繁堵塞，污水反溢淹没楼下周某房屋，造成地板及家具损坏、损失评估1.2万元。法院认定孙某擅自改动共用管道违反相邻关系规定且与损害结果存在因果关系，依据《民法典》第二百八十八条及第一千一百六十五条判决孙某恢复管道原状并赔偿周某财产损失1.2万元。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第二百八十八条司法判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">170</td>
+<td class="id">LIV-MNT-CASE-015</td>
+<td class="nm">租客养猫抓坏皮沙发房东要求全额赔偿合理吗<div class="sub">房屋维护</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>按折旧后评估现值1500元赔偿（沙发原价5000元已使用5年）<span class="lbl">单位</span>元<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第七百一十四条；武汉市某基层法院判例</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>租客林某承租房屋，合同未禁止养宠，其宠物猫将屋内皮沙发抓破。退租时房东黄某要求按原价5000元全额赔偿，林某认为沙发已用5年只愿赔折旧后价值。法院依据《民法典》第七百一十四条认定承租人保管不善应赔偿，但结合折旧率判决林某按评估现值1500元赔偿。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第七百一十四条、武汉市某基层法院判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">171</td>
+<td class="id">LIV-NBR-008</td>
+<td class="nm">邻居油烟排放影响我家怎么办<div class="sub">邻里纠纷</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>烟道属共有部分，设计缺陷致串烟由物业负责维修；邻居私改排烟管可要求恢复原状并赔偿<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第294条、第288条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="PROC">
+<td class="num">172</td>
+<td class="id">LIV-NBR-015</td>
+<td class="nm">邻里纠纷物业不管怎么办<div class="sub">邻里纠纷</div></td>
+<td><span class="tp" style="--c:#D97706">流程</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>物业有协调劝阻义务但无强制执法权；物业不作为可向街道/房管部门投诉，同时直接向城管、公安举报违法行为<span class="lbl">单位</span>流程<span class="lbl">时点</span>现行<span class="lbl">来源</span>《物业管理条例》第45条、第49条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/gongbao/content/2018/content_5275948.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">173</td>
+<td class="id">LIV-NBR-019</td>
+<td class="nm">相邻关系的法定原则有哪些<div class="sub">邻里纠纷</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>四项法定原则：有利生产、方便生活、团结互助、公平合理<span class="lbl">单位</span>原则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《民法典》第288条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="RISK">
+<td class="num">174</td>
+<td class="id">LIV-NBR-020</td>
+<td class="nm">邻居震楼器报复怎么处理<div class="sub">邻里纠纷</div></td>
+<td><span class="tp" style="--c:#E5484D">风险</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>使用震楼器属违法行为，处警告或200-500元罚款；造成实际损害另承担民事赔偿责任<span class="lbl">单位</span>元<span class="lbl">时点</span>现行<span class="lbl">来源</span>《治安管理处罚法》第58条；《民法典》第294条、第1165条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="CASE">
+<td class="num">175</td>
+<td class="id">LIV-NBR-CASE-003</td>
+<td class="nm">楼上小孩天天跑跳噪音大怎么维权<div class="sub">邻里纠纷</div></td>
+<td><span class="tp" style="--c:#9E6BFF">案例</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>噪音超出合理限度，判决采取铺设隔音地毯等有效措施控制噪音排放<span class="lbl">单位</span>判决结果<span class="lbl">时点</span>现行司法判例<span class="lbl">来源</span>《民法典》第二百九十四条；《噪声污染防治法》第六十五条</div></td>
+<td><div class="refbox cr"><span class="lbl">案例</span>孙某居住在楼下，楼上周某家小孩经常在夜间及午休时间跑跳产生较大噪音。孙某多次交涉并报警，周某加装部分地垫后效果不佳，孙某起诉。法院认定周某未尽管理义务、噪音超出合理限度，依据《民法典》第二百九十四条及《噪声污染防治法》第六十五条，判决周某采取铺设隔音地毯等有效措施控制噪音排放。<span class="lbl">案号</span>—<span class="lbl">来源</span>《民法典》第二百九十四条、《噪声污染防治法》第六十五条司法判例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">176</td>
+<td class="id">LIV-PMG-001</td>
+<td class="nm">物业费包含什么不包含什么<div class="sub">物业管理</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>物业费含公共区域保洁/秩序维护/绿化养护/公共设施日常运行维保/服务人员薪酬；不含专有部分维修/公共水电分摊/停车管理费/有偿特约服务<span class="lbl">单位</span>构成<span class="lbl">时点</span>现行<span class="lbl">来源</span>《物业管理条例》第40条、第44条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/gongbao/content/2018/content_5275948.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+<tr class="row" data-type="LAW">
+<td class="num">177</td>
+<td class="id">LIV-PMG-002</td>
+<td class="nm">长期不交物业费会怎样<div class="sub">物业管理</div></td>
+<td><span class="tp" style="--c:#2F6BFF">法律</span></td>
+<td><div class="refbox dr"><span class="lbl">值</span>拒交物业费属违约：物业可催告后起诉追缴、法院判决后强制执行；物业不得以欠费停水停电；服务确有重大瑕疵可依法主张减免<span class="lbl">单位</span>规则<span class="lbl">时点</span>现行<span class="lbl">来源</span>《物业管理条例》第41条、第44条；《民法典》第944条</div></td>
+<td><div class="pill no">无案例</div></td>
+<td><a href="https://www.gov.cn/xinwen/2020-06/01/content_5516649.htm" target="_blank" rel="noopener noreferrer">词条来源链接</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+
+<footer>
+  产出说明与校验口径
+  <div class="foot-grid">
+    <div><strong class="ft">填充覆盖</strong><p>dataRef 177/177（100%）；caseRef 19 条为 detail 含真实判例/执法案例的词条，其余 158 条无真实案例、依数据诚实铁律不编造，前端留白属诚实呈现。</p></div>
+    <div><strong class="ft">零占位校验</strong><p>脚本对 value/desc/source 全量扫描，未发现「待补充/待核/暂无/N/A/无」等占位词；caseNo 无案号者留空（schema 允许）。</p></div>
+    <div><strong class="ft">字段结构</strong><p>dataRef/caseRef 均按交接文档第三节对象结构；tags.clientType、legalRef、detail 等原字段未改动，可直接合并 origin/main。</p></div>
+    <div><strong class="ft">验收标准</strong><p>有效填充率 177/177 ≥ 60% 达成；零占位达成；tags.clientType 未丢失。</p></div>
+  </div>
+</footer>
+</div>
+
+<script>
+const rows=[...document.querySelectorAll('tr.row')];
+const fbtns=[...document.querySelectorAll('.fbtn')];
+const q=document.getElementById('q');
+function apply(){
+  const f=document.querySelector('.fbtn.active').dataset.f;
+  const kw=q.value.trim().toLowerCase();
+  rows.forEach(r=>{
+    const okF=(f==='ALL'||r.dataset.type===f);
+    const okK=!kw||r.cells[1].textContent.toLowerCase().includes(kw)||r.cells[2].textContent.toLowerCase().includes(kw);
+    r.style.display=(okF&&okK)?'':'none';
+  });
+}
+fbtns.forEach(b=>b.addEventListener('click',()=>{ fbtns.forEach(x=>x.classList.remove('active')); b.classList.add('active'); apply(); }));
+q.addEventListener('input',apply);
+</script>
+</body>
+</html>
