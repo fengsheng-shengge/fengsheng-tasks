@@ -219,7 +219,8 @@ export default {
     let dimScores = {}, dimSelfScores = {}, dimensions = []
     if (options) {
       this.axisType = options.axisType || 'buy'
-      this.axisNodeKey = options.axisNodeKey || 'improve'
+      // V3.3.4 修复：分享链接未带 axisNodeKey 时默认首套，防止首次购房客户被错配到改善线
+      this.axisNodeKey = options.axisNodeKey || 'first'
       this.scenario = options.scenario || ''
       this.freeText = options.freeText ? decodeURIComponent(options.freeText) : ''
       // 客户专属视图：分享出去强制 client 版，隐藏经纪人内部切换器（生哥 08-24 反馈）

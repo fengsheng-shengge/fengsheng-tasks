@@ -344,7 +344,7 @@ export default {
       axisGroups: AXIS_GROUPS,
       dimensions: DIMENSIONS,
       axisType: 'buy',
-      axisNodeKey: 'improve',
+      axisNodeKey: 'first',
       scenario: '',
       selectedDims: [],
       freeText: '',
@@ -454,11 +454,13 @@ export default {
         const rel = c.rel || ''
         this.axisType = (rel.indexOf('租') >= 0) ? 'rent' : 'buy'
         const stage = (c.stage || '') + (c.note || '')
-        if (stage.indexOf('首套') >= 0 || stage.indexOf('婚') >= 0) this.axisNodeKey = 'first'
+        if (stage.indexOf('首套') >= 0 || stage.indexOf('首次') >= 0 || stage.indexOf('第一次') >= 0 || stage.indexOf('刚需') >= 0 || stage.indexOf('婚') >= 0) this.axisNodeKey = 'first'
         else if (stage.indexOf('学区') >= 0 || stage.indexOf('教育') >= 0) this.axisNodeKey = 'edu'
         else if (stage.indexOf('适老') >= 0 || stage.indexOf('养老') >= 0) this.axisNodeKey = 'elder'
         else if (stage.indexOf('租') >= 0) this.axisNodeKey = 'start'
         else if (this.axisType === 'rent') this.axisNodeKey = 'start'
+        // 购房线兜底：未命中任何细分场景时，默认首套（避免首次购房客户被错配到改善线）
+        else if (this.axisType === 'buy' && !this.axisNodeKey) this.axisNodeKey = 'first'
         if (c.note) this.freeText = c.note
       }
     }

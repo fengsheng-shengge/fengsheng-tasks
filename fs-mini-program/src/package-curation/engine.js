@@ -652,7 +652,8 @@ export async function generateCurationAsync(input) {
 
 // ===== 核心引擎逻辑（与数据源无关） =====
 function generateCurationFromEntries(input, entriesByGroup) {
-  const { axisType = 'buy', axisNodeKey = 'improve', dimensions = [], freeText = '', scenario = '', dimScores = {}, dimSelfScores = {} } = input || {}
+  // 默认 axisNodeKey='first'：购房线最大流量为首次购房，避免未指定时错配到改善线
+  const { axisType = 'buy', axisNodeKey = 'first', dimensions = [], freeText = '', scenario = '', dimScores = {}, dimSelfScores = {} } = input || {}
   const group = AXIS_GROUPS.find(g => g.type === axisType) || AXIS_GROUPS[0]
   const node = group.nodes.find(n => n.key === axisNodeKey) || group.nodes[0]
   const ct = group.clientType
