@@ -776,6 +776,16 @@ function generateCurationFromEntries(input, entriesByGroup) {
         : ('基于真实字典命中 ' + strongCount + ' 条强相关（其中 ' + realLegalStrong + ' 条含真实法源）'))
   }
 
+  // 8) 真实数据/案例来源（取自强相关词条 dataRef/caseRef，与 ola/cp 解耦，确保补数据后客户报告必出现）
+  const dataSources = strong
+    .filter(x => x.e.dataRef && String(x.e.dataRef).length > 1 && !/待补充|待核/.test(x.e.dataRef))
+    .slice(0, 6)
+    .map(x => ({ label: x.e.name, text: x.e.dataRef }))
+  const caseSources = strong
+    .filter(x => x.e.caseRef && String(x.e.caseRef).length > 1 && !/待补充|待核/.test(x.e.caseRef))
+    .slice(0, 4)
+    .map(x => ({ title: x.e.name, body: x.e.caseRef }))
+
   return {
     axisLabel: group.label + ' · ' + node.name,
     scenarioName: sc ? sc.name : '',
@@ -787,6 +797,8 @@ function generateCurationFromEntries(input, entriesByGroup) {
     mot: buildMot(sc, ask, say, bringFinal, followups),
     dimsInsight: buildDimsInsight(dimensions, dimScores, dimSelfScores),
     honesty,
+    dataSources,
+    caseSources,
     timeline: buildTimeline(),
     layers: buildLayers(topN, isRealLegal)
   }

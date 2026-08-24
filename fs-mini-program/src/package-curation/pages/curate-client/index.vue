@@ -7,31 +7,31 @@
       <view class="hon">法源真实标注 · 数据/案例持续补全，最终以专业判断为准</view>
     </view>
 
-    <!-- 双视图切换 -->
-    <view class="view-switch">
+    <!-- 双视图切换（仅经纪人预览可见，客户场景隐藏内部切换器） -->
+    <view class="view-switch" v-if="!isClient">
       <text class="vs-i" :class="{ on: view === 'broker' }" @tap="view = 'broker'">经纪人版 · 含话术</text>
       <text class="vs-i" :class="{ on: view === 'client' }" @tap="view = 'client'">客户版 · 纯方案</text>
     </view>
 
-    <!-- 数据看板（仅经纪人版） -->
-    <view class="sec" v-if="view === 'broker'">
-      <view class="sec-h"><text class="em">📊</text>数据看板</view>
+    <!-- 数据参考（经纪人版=数据看板；客户版=数据参考。有则展示，无数据客户侧隐藏以免空感） -->
+    <view class="sec" v-if="view === 'broker' || realData.length">
+      <view class="sec-h"><text class="em">📊</text>{{ isClient ? '数据参考' : '数据看板' }}</view>
 
       <block v-if="realData.length">
         <view class="dcard" v-for="(d, i) in realData" :key="i">
-          <view class="dtitle">{{ d.label }}</view>
+          <view class="dtitle"><text class="dtag">数据</text>{{ d.label }}</view>
           <view class="dval">{{ d.text }}</view>
         </view>
       </block>
       <view v-else class="empty-mini">真实数据补入中 · 见面以专业判断为准</view>
     </view>
 
-    <!-- 真实案例（仅经纪人版） -->
-    <view class="sec" v-if="view === 'broker'">
-      <view class="sec-h"><text class="em">📁</text>真实案例</view>
+    <!-- 真实案例参考（经纪人版=真实案例；客户版=案例参考。有则展示，无数据客户侧隐藏） -->
+    <view class="sec" v-if="view === 'broker' || realCases.length">
+      <view class="sec-h"><text class="em">📁</text>{{ isClient ? '真实案例参考' : '真实案例' }}</view>
       <block v-if="realCases.length">
         <view class="case" v-for="(c, i) in realCases" :key="i">
-          <view class="ctag ok">真实案例</view>
+          <view class="ctag ok">{{ isClient ? '案例参考' : '真实案例' }}</view>
           <view class="ctitle">{{ c.title }}</view>
           <view class="cbody">{{ c.body }}</view>
         </view>
@@ -75,6 +75,19 @@
     <!-- 我们对您居住需求的理解（对客视角，不使用内部术语）-->
     <view class="sec" v-if="dimsInsight && dimsInsight.enabled">
       <view class="sec-h"><text class="em">🎯</text>我们对您居住需求的理解</view>
+
+      <!-- 综合居住品质评分卡（由录入维度加权得出，非编造） -->
+      <view class="score-card">
+        <view class="sc-left">
+          <view class="sc-num">{{ avgScore }}<text class="sc-max">/10</text></view>
+          <view class="sc-grade" :class="gradeClass">{{ grade }}</view>
+        </view>
+        <view class="sc-right">
+          <view class="sc-tip">综合居住品质理解</view>
+          <view class="sc-sub">基于录入的 {{ insightItems.length }} 个维度加权</view>
+        </view>
+      </view>
+
       <view class="radar-wrap">
         <image class="radar" :src="radarUrlStr" :style="{ width: radarW + 'px', height: radarH + 'px' }"></image>
       </view>
@@ -122,7 +135,8 @@ export default {
       radarW: 250,
       radarH: 230,
       radarUrlStr: '',
-      view: 'broker'
+      view: 'broker',
+      isClient: false
     }
   },
   computed: {
@@ -141,6 +155,22 @@ export default {
     },
     radarBroker() {
       return this.insightItems.map(i => +(i.broker || 0))
+    },
+    avgScore() {
+      const arr = this.radarBroker.filter(v => v > 0)
+      if (!arr.length) return '—'
+      const sum = arr.reduce((a, b) => a + b, 0)
+      return (Math.round((sum / arr.length) * 10) / 10).toFixed(1)
+    },
+    grade() {
+      const v = parseFloat(this.avgScore)
+      if (isNaN(v)) return '—'
+      if (v >= 4.0) return 'A'
+      if (v >= 3.0) return 'B'
+      return 'C'
+    },
+    gradeClass() {
+      return this.grade === 'A' ? 'a' : this.grade === 'B' ? 'b' : 'c'
     },
     radarSelf() {
       return this.insightItems.map(i => +(i.self || 0))
@@ -167,6 +197,8 @@ export default {
       this.axisNodeKey = options.axisNodeKey || 'improve'
       this.scenario = options.scenario || ''
       this.freeText = options.freeText ? decodeURIComponent(options.freeText) : ''
+      // 客户专属视图：分享出去强制 client 版，隐藏经纪人内部切换器（生哥 08-24 反馈）
+      if (options.view === 'client') { this.view = 'client'; this.isClient = true }
       try { dimScores = options.dimScores ? JSON.parse(decodeURIComponent(options.dimScores)) : {} } catch (e) { dimScores = {} }
       try { dimSelfScores = options.dimSelfScores ? JSON.parse(decodeURIComponent(options.dimSelfScores)) : {} } catch (e) { dimSelfScores = {} }
       try {
@@ -191,13 +223,17 @@ export default {
     })
     this.result = res
     this.dimsInsight = res.dimsInsight || null
-    // 真实数据/案例：有则展示真实，无则诚实留白（不编造示意数据）
-    this.realData = (res.say || [])
-      .filter(s => s.fabe && s.fabe.e && s.fabe.e.data)
-      .map(s => ({ label: s.title || s.fabe.f.text, text: s.fabe.e.data }))
-    this.realCases = (res.say || [])
-      .filter(s => s.fabe && s.fabe.e && s.fabe.e.case)
-      .map(s => ({ title: s.title || s.fabe.f.text, body: s.fabe.e.case }))
+    // 真实数据/案例：优先用 engine 解耦收集的数据源（含无 ola/cp 的强相关词条），无则退回 say 内 fabe.e 兜底；有则展示真实，无则诚实留白（不编造示意数据）
+    this.realData = (res.dataSources && res.dataSources.length)
+      ? res.dataSources
+      : (res.say || [])
+          .filter(s => s.fabe && s.fabe.e && s.fabe.e.data)
+          .map(s => ({ label: s.title || s.fabe.f.text, text: s.fabe.e.data }))
+    this.realCases = (res.caseSources && res.caseSources.length)
+      ? res.caseSources
+      : (res.say || [])
+          .filter(s => s.fabe && s.fabe.e && s.fabe.e.case)
+          .map(s => ({ title: s.title || s.fabe.f.text, body: s.fabe.e.case }))
     // 客户页要点速览：仅保留 FABE 结构完整的条目（避免把 broker 笔记式 title 漏给客户）
     this.points = (res.say || [])
       .filter(s => s && s.fabe && s.fabe.f && s.fabe.f.text)
@@ -218,7 +254,8 @@ export default {
         '&freeText=' + encodeURIComponent(this.freeText) +
         '&dimensions=' + encodeURIComponent((this.dimensions || []).join(',')) +
         '&dimScores=' + encodeURIComponent(JSON.stringify(this.dimScores || {})) +
-        '&dimSelfScores=' + encodeURIComponent(JSON.stringify(this.dimSelfScores || {}))
+        '&dimSelfScores=' + encodeURIComponent(JSON.stringify(this.dimSelfScores || {})) +
+        '&view=client'
     }
   },
   methods: {
@@ -286,6 +323,20 @@ export default {
 .di-fill.s { background: var(--green); }
 .di-v { flex-shrink: 0; width: 44rpx; text-align: right; font-size: 24rpx; font-weight: 700; color: #4a443c; }
 .di-conc { margin-top: 20rpx; font-size: 24rpx; color: var(--green); background: var(--green-bg); border-radius: var(--r-md); padding: 18rpx 22rpx; line-height: 1.6; }
+/* 综合居住品质评分卡 */
+.score-card { display: flex; align-items: center; gap: 28rpx; background: linear-gradient(135deg, var(--green-deep), var(--green)); border-radius: var(--r-lg); padding: 28rpx 32rpx; margin-bottom: 24rpx; }
+.sc-left { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; }
+.sc-num { font-size: 56rpx; font-weight: 800; color: #fff; line-height: 1; }
+.sc-max { font-size: 24rpx; font-weight: 600; color: rgba(255,255,255,.7); margin-left: 4rpx; }
+.sc-grade { margin-top: 8rpx; font-size: 26rpx; font-weight: 800; color: #fff; background: rgba(255,255,255,.22); border-radius: 999rpx; padding: 4rpx 22rpx; }
+.sc-grade.a { color: #fff; background: rgba(255,255,255,.28); }
+.sc-grade.b { color: #fff; background: rgba(255,255,255,.16); }
+.sc-grade.c { color: #ffe2d0; background: rgba(196,106,58,.9); }
+.sc-right { flex: 1; }
+.sc-tip { font-size: 28rpx; font-weight: 700; color: #fff; line-height: 1.4; }
+.sc-sub { font-size: 22rpx; color: rgba(255,255,255,.85); margin-top: 8rpx; line-height: 1.5; }
+/* 数据条目标签 */
+.dtag { display: inline-block; font-size: 20rpx; font-weight: 700; color: var(--green); background: var(--green-bg); border-radius: var(--r-sm); padding: 2rpx 12rpx; margin-right: 12rpx; vertical-align: middle; }
 /* 七维雷达图 */
 .radar-wrap { display: flex; justify-content: center; padding: 12rpx 0 4rpx; }
 .radar { display: block; }
