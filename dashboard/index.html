@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>风声管理考核看板 · v6.0</title>
+<title>风声管理考核看板 · v6.1</title>
 <meta name="description" content="风声数字员工考核看板 — 以评价考核维度呈现每位数字员工的达成结果，并同步主站与小程序运行数据。">
 <meta name="theme-color" content="#0f172a">
 <style>
@@ -138,7 +138,7 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
       <div class="sub">数字员工结果考核 · 主站 &amp; 小程序运行数据</div>
     </div>
     <div style="text-align:right">
-      <div class="ts">数据时间：2026-08-24 11:50 · v6.0</div>
+      <div class="ts">数据时间：2026-08-24 22:24 · v6.1</div>
       <div class="legend" style="margin-top:8px;justify-content:flex-end">
         <span><i class="dot g"></i>达标</span>
         <span><i class="dot a"></i>预警</span>
@@ -152,18 +152,18 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
   <div class="kpi-row">
     <div class="kpi-card blue">
       <div class="kpi-label">🌐 主站累计 UV</div>
-      <div class="kpi-value">773<small>+10</small></div>
-      <div class="kpi-sub">验证目标 300 · 达成 258%</div>
+      <div class="kpi-value">787<small>+33</small></div>
+      <div class="kpi-sub">验证目标 300 · 达成 262% · 较昨日22:24 +33</div>
     </div>
     <div class="kpi-card green">
       <div class="kpi-label">👁 主站累计 PV</div>
-      <div class="kpi-value">3,967<small>+65</small></div>
-      <div class="kpi-sub">今日 8.24：UV 7 · PV 107</div>
+      <div class="kpi-value">4,270<small>+412</small></div>
+      <div class="kpi-sub">今日 8.24：UV 36 · PV 410 · 点击 155</div>
     </div>
     <div class="kpi-card teal">
       <div class="kpi-label">💬 对话数 chats</div>
-      <div class="kpi-value">23<small style="color:var(--amber)">⚠</small></div>
-      <div class="kpi-sub">连续 7 天持平 · 增长瓶颈</div>
+      <div class="kpi-value">25<small style="color:var(--green)">🎉+2</small></div>
+      <div class="kpi-sub">🎉 打破7天持平 · 转化链路恢复</div>
     </div>
     <div class="kpi-card amber">
       <div class="kpi-label">📱 小程序累计用户</div>
@@ -194,7 +194,7 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
           <li>lark-cli 凭证故障当日修复，复核任务池正常扫描</li>
           <li>铁律复盘完成：8.20 判断错误已修正固话</li>
         </ul>
-        <div class="agent-risk warn">⚠ 词条抽审连续 13 日未执行（今日补）</div>
+        <div class="agent-risk warn">⚠ 词条抽审抽样未按原计划执行 · 但知识底座5067条已全量审核(API直推)</div>
       </div>
       <!-- 小眼镜 -->
       <div class="agent-card grade-a">
@@ -363,9 +363,9 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
       <div class="chart-card">
         <div class="chart-head"><h3>📊 关键结论</h3></div>
         <div style="font-size:13px;color:var(--muted);line-height:2">
-          <div>chats <b style="color:var(--amber)">23 连续 7 天持平</b> —— 增长瓶颈固化</div>
-          <div>最后 chat 时间 <b style="color:var(--text)">8.17 14:59</b> · 已 6 天无新对话</div>
-          <div>今日 8.24 <b style="color:var(--text)">UV 7 · PV 107 · 点击 44</b> —— 周一回升</div>
+          <div>chats <b style="color:var(--green)">25 🎉 打破7天持平</b> —— 转化链路恢复后首现增长</div>
+          <div>最后事件 <b style="color:var(--text)">8.24 20:26</b> · 今日新增 chat 2 条</div>
+          <div>今日 8.24 <b style="color:var(--text)">UV 36 · PV 410 · 点击 155</b> —— 工作日大爆发</div>
           <div>8.21 周五全天归零 · 周末效应显著</div>
           <div style="color:var(--green)">✅ 转化链路已恢复（bot_id 有效，chat 正常）</div>
         </div>
@@ -390,14 +390,28 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
     <div class="risk-list">
       <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>#219 bot_id=0</b> 8.24 实测已修复（bot 正常回复）· 工单已关闭 ✅</div></div>
       <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>小酒窝儿审核积压</b> 10 项 · 最久 12 天（#217 等 P0）· 飞书事件订阅正常、可接收群消息</div></div>
-      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>词条质量抽审</b> 连续 13 日未执行 · 6968 条无质量检查 · 今日补</div></div>
+      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>词条质量抽审</b> 抽样未按原计划执行 · 但知识底座5067条已全量审核通过(API直推) · 剩余词条待抽检</div></div>
       <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>shengge.fun 子域</b> 持续超时多日未修复</div></div>
-      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>deploy_sync 仓库 token 失效</b> · 看板部署阻塞 · 主 token（ghp_）已验证有效可 push</div></div>
+      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>GitHub 部署链路已恢复</b> · remote内嵌token可push · v6.1 已 push 部署</div></div>
+      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>Log4Shell 脏数据</b> stats混入${jndi:ldap://}攻击探测记录 · 待清洗防污染统计</div></div>
       <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>PR #221</b> V3.3 小程序已上线（8.24）· 风险关闭</div></div>
     </div>
   </div>
 
-  <footer class="footer">风声数字员工考核看板 v6.0 · 数据来源：<a href="https://fengsheng.tech" target="_blank" rel="noopener noreferrer" style="color:var(--blue)">fengsheng.tech /api/stats</a> + 飞书群同步 · 生成 2026-08-24 13:40</footer>
+  <footer class="footer">风声数字员工考核看板 v6.1 · 数据来源：<a href="https://fengsheng.tech" target="_blank" rel="noopener noreferrer" style="color:var(--blue)">fengsheng.tech /api/stats</a> + 飞书群同步 · 生成 2026-08-24 22:24</footer>
+
+  <!-- 今日产出日志 -->
+  <div class="section">
+    <div class="section-title"><h2>📦 今日产出日志</h2><span class="badge">8.24 晚间复盘</span></div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.9;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 16px">
+      ✅ #219 bot_id=0 实测修复并关闭工单（转化链路恢复·chats 23→25打破7天持平）<br>
+      ✅ 僵尸工单清理4个（#219/#163/#162/#116）· 小酒窝儿审核积压24天的5067条知识底座全量审完<br>
+      ✅ 审核中转机制建立并首轮闭环（7工单+3PR/Issue出结论）· 飞书群正确chat_id修正<br>
+      ✅ PR#221 V3.3小程序上线（生哥直传）· v6.0考核看板改版 · 小豆子报告3点硬伤反馈<br>
+      ⚠️ 发现Log4Shell脏数据（待清洗）· shengge.fun仍超时 · 词条6968增量停滞
+    </div>
+  </div>
+
 </main>
 </div>
 
@@ -414,7 +428,7 @@ const siteDaily = [
   {d:'8/11',uv:7,pv:31},{d:'8/12',uv:4,pv:31},{d:'8/13',uv:10,pv:20},{d:'8/14',uv:14,pv:39},
   {d:'8/15',uv:9,pv:22},{d:'8/16',uv:0,pv:0},{d:'8/17',uv:10,pv:17},{d:'8/18',uv:13,pv:80},
   {d:'8/19',uv:2,pv:18},{d:'8/20',uv:5,pv:41},{d:'8/21',uv:0,pv:0},{d:'8/22',uv:4,pv:8},
-  {d:'8/23',uv:3,pv:6},{d:'8/24',uv:7,pv:107}
+  {d:'8/23',uv:3,pv:6},{d:'8/24',uv:36,pv:410}
 ];
 
 function renderBars(elId, data, max, showClick){
