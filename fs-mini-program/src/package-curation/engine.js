@@ -537,7 +537,7 @@ function isRealLegal(ref) {
 // ===== 客户相关性判定（客户可见页过滤纯经纪人内训/噪音）=====
 // 知识底座主体是经纪人执业合规库（LAW/RISK/PROC/STD/POL/TERM/CASE），
 // 客户页只保留与「购房决策」直接相关的内容，剔除经纪人行为语义与入住/搬家噪音。
-const AGENT_NOISE = /(经纪|中介|执业|备案|佣金|阴阳合同|绕开|私下成交|退佣|资格考试|职业培训|信用档案|私自收|如实报告|利益冲突|客户信息保密|服务承诺体系|执业禁止|入住后|搬家费|退租|续租|租期内|邻里纠纷|物业投诉|经纪人能)/
+const AGENT_NOISE = /(经纪|中介|执业|备案|佣金|阴阳合同|绕开|私下成交|退佣|资格考试|职业培训|信用档案|私自收|如实报告|利益冲突|客户信息保密|服务承诺体系|执业禁止|入住|搬家|搬家公司|电梯预约|物业报备|搬运|退租|续租|租期内|邻里纠纷|物业投诉|经纪人能)/
 function isClientRelevant(e, ct) {
   const blob = (e.name || '') + ' ' + (e.ola || '') + ' ' + (e.def || '')
   if (AGENT_NOISE.test(blob)) return false
@@ -804,7 +804,7 @@ function generateCurationFromEntries(input, entriesByGroup) {
   strong
     .filter(x => x.e.caseRef && String(x.e.caseRef).length > 1 && !/待补充|待核/.test(x.e.caseRef))
     .slice(0, 4)
-    .forEach(x => caseSources.push({ title: x.e.name, body: x.e.caseRef, source: realSrc(x.e), srcType: x.e.source || '' }))
+    .forEach(x => caseSources.push({ title: x.e.name, body: x.e.caseRef, source: realSrc(x.e), srcType: x.e.source || '', clientRelevant: x.clientRelevant }))
   if (caseSources.length < 4) {
     strong
       .filter(x => x.e.entryType === 'CASE' && x.e.def && x.e.oneLineAnswer && !/待补充|待核/.test(x.e.def))
