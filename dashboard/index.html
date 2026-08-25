@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>风声管理考核看板 · v6.1</title>
+<title>风声管理考核看板 · v6.2</title>
 <meta name="description" content="风声数字员工考核看板 — 以评价考核维度呈现每位数字员工的达成结果，并同步主站与小程序运行数据。">
 <meta name="theme-color" content="#0f172a">
 <style>
+
 *,*::before,*::after{box-sizing:border-box}
 :root{
   --bg:#0f172a; --panel:#1e293b; --panel2:#16213a; --border:#2b3a52;
@@ -127,6 +128,7 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 @media(max-width:1100px){.agents{grid-template-columns:repeat(2,1fr)}.kpi-row{grid-template-columns:repeat(2,1fr)}.chart-row{grid-template-columns:1fr}.risk-list{grid-template-columns:1fr}}
 @media(max-width:640px){.agents{grid-template-columns:1fr}.kpi-row{grid-template-columns:1fr 1fr}.health-row{grid-template-columns:repeat(2,1fr)}.container{padding:14px 14px 40px}.rulers{grid-template-columns:repeat(5,1fr)}}
 @media print{body{background:#fff;color:#000}.header,.kpi-card,.agent-card,.chart-card,.health-card{background:#fff;border-color:#ccc;color:#000}.kpi-label,.kpi-sub,.agent-role,.agent-kr,.chart-head .stat,.bar-x{color:#666}.agent-card.grade-a{border-left-color:#16a34a}.agent-card.grade-b{border-left-color:#d97706}.agent-card.grade-c{border-left-color:#dc2626}}
+
 </style>
 </head>
 <body>
@@ -138,7 +140,7 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
       <div class="sub">数字员工结果考核 · 主站 &amp; 小程序运行数据</div>
     </div>
     <div style="text-align:right">
-      <div class="ts">数据时间：2026-08-24 22:24 · v6.1</div>
+      <div class="ts">数据时间：2026-08-25 22:27 · v6.2</div>
       <div class="legend" style="margin-top:8px;justify-content:flex-end">
         <span><i class="dot g"></i>达标</span>
         <span><i class="dot a"></i>预警</span>
@@ -152,23 +154,23 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
   <div class="kpi-row">
     <div class="kpi-card blue">
       <div class="kpi-label">🌐 主站累计 UV</div>
-      <div class="kpi-value">787<small>+33</small></div>
-      <div class="kpi-sub">验证目标 300 · 达成 262% · 较昨日22:24 +33</div>
+      <div class="kpi-value">796<small>+9</small></div>
+      <div class="kpi-sub">验证目标 300 · 达成 265% · 较昨日22:24 +9</div>
     </div>
     <div class="kpi-card green">
       <div class="kpi-label">👁 主站累计 PV</div>
-      <div class="kpi-value">4,270<small>+412</small></div>
-      <div class="kpi-sub">今日 8.24：UV 36 · PV 410 · 点击 155</div>
+      <div class="kpi-value">4,318<small>+48</small></div>
+      <div class="kpi-sub">今日 8.25：UV 12 · PV 46 · 点击 52</div>
     </div>
     <div class="kpi-card teal">
       <div class="kpi-label">💬 对话数 chats</div>
-      <div class="kpi-value">25<small style="color:var(--green)">🎉+2</small></div>
-      <div class="kpi-sub">🎉 打破7天持平 · 转化链路恢复</div>
+      <div class="kpi-value">27<small style="color:var(--green)">🎉+2</small></div>
+      <div class="kpi-sub">🎉 连续第二天增长(8.24+2·8.25+2) · 转化链路恢复验证成功</div>
     </div>
     <div class="kpi-card amber">
       <div class="kpi-label">📱 小程序累计用户</div>
-      <div class="kpi-value">108<small>+6</small></div>
-      <div class="kpi-sub">累计浏览 874 · 点击 152</div>
+      <div class="kpi-value">108<small>沿用</small></div>
+      <div class="kpi-sub">累计浏览 874 · 点击 152 · 今日群内未同步沿用8.24</div>
     </div>
   </div>
 
@@ -190,11 +192,11 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
           <div class="ruler"><div class="rk">并发</div><div class="rv pass">5</div></div>
         </div>
         <ul class="agent-kr">
-          <li>看板 v6.0 改版 · 每日三窗口运营持续运行</li>
-          <li>lark-cli 凭证故障当日修复，复核任务池正常扫描</li>
-          <li>铁律复盘完成：8.20 判断错误已修正固话</li>
+          <li>转化诊断D16：chats 25→27连续第二天增长 · 转化链路恢复验证成功</li>
+          <li>风声统一版本落档坚果云 · 词条数据口径修正(6968)</li>
+          <li>晨间推送+综合简报+晚间复盘+看板v6.2</li>
         </ul>
-        <div class="agent-risk warn">⚠ 词条抽审抽样未按原计划执行 · 但知识底座5067条已全量审核(API直推)</div>
+        <div class="agent-risk warn">⚠ 词条抽审连续15日未按原计划执行 · 最大执行漏洞待攻坚</div>
       </div>
       <!-- 小眼镜 -->
       <div class="agent-card grade-a">
@@ -210,11 +212,11 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
           <div class="ruler"><div class="rk">并发</div><div class="rv pass">3</div></div>
         </div>
         <ul class="agent-kr">
-          <li>今日极度活跃 · 建立《审核与交接留痕库》多维表（14 字段 · 首期 6 条）</li>
-          <li>接任监察官 · 词条 6968 持续 · v1.0 角色升级 D13</li>
-          <li>今晚 20:00 表结构收口（14→21 字段）</li>
+          <li>RED-009处置：小酒窝儿凭证逾期 → 暂停品控留痕职能(生哥同意)</li>
+          <li>#227客户向域方案(30条选题) + 公积金844号令词条更新草案(96条分类)</li>
+          <li>发布分级告警007 + 断点速览晨报第7期</li>
         </ul>
-        <div class="agent-risk warn">⚠ 词条增量停滞多日（目标 7000）</div>
+        <div class="agent-risk warn">⚠ 词条 6968 增量停滞(目标7000) · 公积金844号令9/20施行前需更新完</div>
       </div>
       <!-- 小叮当 -->
       <div class="agent-card grade-a">
@@ -230,7 +232,7 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
           <div class="ruler"><div class="rk">并发</div><div class="rv pass">2</div></div>
         </div>
         <ul class="agent-kr">
-          <li>今日活跃 · 承诺复盘优化 + 推广抓手聚焦小程序</li>
+          <li>活跃 · 告警007 L3已表态 · 回执昨日交付情况</li>
           <li>协作契约 v1.0 生效（8.18 入群）</li>
         </ul>
         <div class="agent-note">增长官 · 用户增长 / 满意度 / 推广量</div>
@@ -249,31 +251,31 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
           <div class="ruler"><div class="rk">并发</div><div class="rv warn">3</div></div>
         </div>
         <ul class="agent-kr">
-          <li>今日回应幻觉问题（10:01 · 坚持"没有幻觉只有边界"）</li>
-          <li class="warn">审核积压 10 项 · 最久 12 天（#217 等 P0）</li>
-          <li class="warn">PR #216 / #214 / #218 待审中</li>
+          <li class="warn">RED-009凭证争议未闭环：声称已上传凭证包但共享表查无记录</li>
+          <li class="warn">品控留痕职能已被暂停（仅建议稿模式）· 待可核验凭证</li>
+          <li>#215 磐石养老Graph返工重审 · 接新工单路径生效确认</li>
         </ul>
-        <div class="agent-risk warn">⚠ 审核积压 10 项 · 最久 12 天 · 事件订阅正常 · 8.24 已 API 派单，今日可完成</div>
+        <div class="agent-risk warn">⚠ 凭证真实性待验（sha256/curl/PGP三件套）· 争议未闭环</div>
       </div>
       <!-- 小扣子 -->
-      <div class="agent-card grade-c">
+      <div class="agent-card grade-b">
         <div class="agent-top">
           <div class="agent-id"><span class="agent-emoji">🛠️</span><div><div class="agent-name">小扣子</div><div class="agent-role">技术开发 · 网站端</div></div></div>
-          <span class="grade-pill c">🔴 红灯</span>
+          <span class="grade-pill b">🟡 恢复</span>
         </div>
         <div class="rulers">
-          <div class="ruler"><div class="rk">输出量</div><div class="rv fail">0</div></div>
-          <div class="ruler"><div class="rk">闭环率</div><div class="rv fail">—</div></div>
-          <div class="ruler"><div class="rk">复用率</div><div class="rv warn">30%</div></div>
-          <div class="ruler"><div class="rk">时长</div><div class="rv fail">1h</div></div>
-          <div class="ruler"><div class="rk">并发</div><div class="rv fail">1</div></div>
+          <div class="ruler"><div class="rk">输出量</div><div class="rv pass">3+</div></div>
+          <div class="ruler"><div class="rk">闭环率</div><div class="rv pass">60%</div></div>
+          <div class="ruler"><div class="rk">复用率</div><div class="rv pass">40%</div></div>
+          <div class="ruler"><div class="rk">时长</div><div class="rv pass">4h</div></div>
+          <div class="ruler"><div class="rk">并发</div><div class="rv warn">2</div></div>
         </div>
         <ul class="agent-kr">
-          <li>#219 bot_id=0 P0 · 8.24 实测已修复（chat 链路正常）</li>
-          <li class="fail">群内被 @ 无回复 · 持续失联</li>
+          <li>恢复活跃 · 主动认错出码超时 · PR#226 V3.3.4过滤已生效(搬家数据清零)</li>
+          <li>#222 177条dataRef真值昨日已生效</li>
           <li class="warn">#220 转化升级方案 · 待技术评估</li>
         </ul>
-        <div class="agent-risk">🔴 P0 故障无人修复 · chats 增长被阻塞</div>
+        <div class="agent-risk warn">⚠ #220转化升级方案待评估 · Log4Shell脏数据清洗待配合</div>
       </div>
       <!-- 小豆子 -->
       <div class="agent-card grade-b">
@@ -289,31 +291,29 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
           <div class="ruler"><div class="rk">并发</div><div class="rv warn">2</div></div>
         </div>
         <ul class="agent-kr">
-          <li class="warn">V3.3 小程序 PR#221 · 已上线（8.24 生哥直传）</li>
-          <li class="warn">#162 7 月任务包开放中 · 群内被 @ 未回复</li>
-          <li>PR #216 埋点口径对齐 · 待审核</li>
+          <li class="warn">今日群内未发言(截至10:24) · V3.3.5「华而不实」P0修复待观察</li>
+          <li>PR #214消费层埋点验证 · PR #216埋点口径对齐</li>
         </ul>
-        <div class="agent-risk warn">⚠ 待回复 · 关键送审链路阻塞</div>
+        <div class="agent-risk warn">⚠ 今日沉默 · 报告3点硬伤修复进度待确认</div>
       </div>
       <!-- 小马丫 -->
-      <div class="agent-card grade-b">
+      <div class="agent-card grade-a">
         <div class="agent-top">
           <div class="agent-id"><span class="agent-emoji">🐴</span><div><div class="agent-name">小马丫</div><div class="agent-role">内容营销 · 应急</div></div></div>
-          <span class="grade-pill b">🟡 预警</span>
+          <span class="grade-pill a">🟢 达标</span>
         </div>
         <div class="rulers">
-          <div class="ruler"><div class="rk">输出量</div><div class="rv warn">2</div></div>
-          <div class="ruler"><div class="rk">闭环率</div><div class="rv warn">40%</div></div>
-          <div class="ruler"><div class="rk">复用率</div><div class="rv pass">30%</div></div>
-          <div class="ruler"><div class="rk">时长</div><div class="rv warn">2h</div></div>
+          <div class="ruler"><div class="rk">输出量</div><div class="rv pass">3+</div></div>
+          <div class="ruler"><div class="rk">闭环率</div><div class="rv pass">60%</div></div>
+          <div class="ruler"><div class="rk">复用率</div><div class="rv pass">40%</div></div>
+          <div class="ruler"><div class="rk">时长</div><div class="rv pass">4h</div></div>
           <div class="ruler"><div class="rk">并发</div><div class="rv warn">2</div></div>
         </div>
         <ul class="agent-kr">
-          <li class="warn">8.12 后无新工单 · 待派活</li>
-          <li class="warn">群内被 @ 未回复 · 通道待恢复</li>
-          <li>协助小眼镜内容知识库（持续）</li>
+          <li>《行业动态报告2026H1》发布（PDF 8页+6图 · 坚果云已同步）</li>
+          <li>北京行业知识采集方向获确认 · 按②客户分类M4-M8推进</li>
         </ul>
-        <div class="agent-risk warn">⚠ 待派活 + 响应滞后</div>
+        <div class="agent-note">内容营销 · 采集方向 ②>④>①>③</div>
       </div>
     </div>
   </div>
@@ -337,7 +337,7 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
         <div class="chart-head"><h3>📊 关键结论</h3></div>
         <div style="font-size:13px;color:var(--muted);line-height:2">
           <div>累计用户 <b style="color:var(--text)">108</b> · 累计浏览 <b style="color:var(--text)">874</b> · 累计点击 <b style="color:var(--text)">152</b></div>
-          <div>今日 8.24 <b style="color:var(--text)">UV 6 · PV 104 · 点击 42</b> —— 周一恢复活跃</div>
+          <div>8.25 今日群内未同步 · 沿用 8.24（UV 6 · PV 104 · 点击 42）</div>
           <div>8.21-23 连续 3 天全 0 —— 周末零活跃特征明显</div>
           <div>峰值 8.18（UV 10 · PV 73）→ 8.20 反弹（点击 42）</div>
           <div style="color:var(--amber)">⚠ 累计反馈 0 —— 无用户反馈回收</div>
@@ -363,11 +363,11 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
       <div class="chart-card">
         <div class="chart-head"><h3>📊 关键结论</h3></div>
         <div style="font-size:13px;color:var(--muted);line-height:2">
-          <div>chats <b style="color:var(--green)">25 🎉 打破7天持平</b> —— 转化链路恢复后首现增长</div>
-          <div>最后事件 <b style="color:var(--text)">8.24 20:26</b> · 今日新增 chat 2 条</div>
-          <div>今日 8.24 <b style="color:var(--text)">UV 36 · PV 410 · 点击 155</b> —— 工作日大爆发</div>
+          <div>chats <b style="color:var(--green)">27 🎉 连续第二天增长</b> —— 8.24+2·8.25+2，转化链路恢复验证成功</div>
+          <div>最后事件 <b style="color:var(--text)">8.25 16:35</b> · 今日新增 chat 2 条（14:51 · mentor）</div>
+          <div>今日 8.25 <b style="color:var(--text)">UV 12 · PV 46 · 点击 52</b> —— 工作日正常回落(vs 周一 37/412/155)</div>
           <div>8.21 周五全天归零 · 周末效应显著</div>
-          <div style="color:var(--green)">✅ 转化链路已恢复（bot_id 有效，chat 正常）</div>
+          <div style="color:var(--green)">✅ 转化链路恢复持续验证 · unique_chat_users=4</div>
         </div>
       </div>
     </div>
@@ -379,7 +379,7 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
     <div class="health-row">
       <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">主站 fengsheng.tech</div><div class="health-value">✅ 200 OK</div></div></div>
       <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">D1 数据库</div><div class="health-value">✅ 已连接</div></div></div>
-      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">全站页面</div><div class="health-value">✅ 10/10 健康</div></div></div>
+      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">API stats</div><div class="health-value">✅ 200 OK</div></div></div>
       <div class="health-card"><div class="health-dot fail"></div><div><div class="health-label">shengge.fun 子域</div><div class="health-value">❌ 超时</div></div></div>
     </div>
   </div>
@@ -388,27 +388,27 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
   <div class="section">
     <div class="section-title"><h2>⚠️ 风险与待办</h2><span class="badge">生哥关注</span></div>
     <div class="risk-list">
-      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>#219 bot_id=0</b> 8.24 实测已修复（bot 正常回复）· 工单已关闭 ✅</div></div>
-      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>小酒窝儿审核积压</b> 10 项 · 最久 12 天（#217 等 P0）· 飞书事件订阅正常、可接收群消息</div></div>
-      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>词条质量抽审</b> 抽样未按原计划执行 · 但知识底座5067条已全量审核通过(API直推) · 剩余词条待抽检</div></div>
+      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>词条质量抽审</b> 连续15日未按原计划执行(8.11-8.25) · 最大执行漏洞 · 明日必须攻坚</div></div>
+      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>RED-009 小酒窝儿凭证争议</b> 未闭环 · 品控留痕职能已暂停 · 待可核验凭证</div></div>
+      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>词条增量停滞</b> 6968持平(目标7000) · 公积金844号令9/20施行前需更新完</div></div>
+      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>Log4Shell 脏数据</b> stats仍混${jndi:ldap://}记录 · 未清洗 · 防污染统计</div></div>
       <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>shengge.fun 子域</b> 持续超时多日未修复</div></div>
-      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>GitHub 部署链路已恢复</b> · remote内嵌token可push · v6.1 已 push 部署</div></div>
-      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>Log4Shell 脏数据</b> stats混入${jndi:ldap://}攻击探测记录 · 待清洗防污染统计</div></div>
-      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>PR #221</b> V3.3 小程序已上线（8.24）· 风险关闭</div></div>
+      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>小扣子 #220</b> 转化升级方案待技术评估 · 下一步转化抓手</div></div>
+      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>小豆子今日沉默</b> V3.3.5「华而不实」P0修复进度待确认</div></div>
     </div>
   </div>
 
-  <footer class="footer">风声数字员工考核看板 v6.1 · 数据来源：<a href="https://fengsheng.tech" target="_blank" rel="noopener noreferrer" style="color:var(--blue)">fengsheng.tech /api/stats</a> + 飞书群同步 · 生成 2026-08-24 22:24</footer>
+  <footer class="footer">风声数字员工考核看板 v6.2 · 数据来源：<a href="https://fengsheng.tech" target="_blank" rel="noopener noreferrer" style="color:var(--blue)">fengsheng.tech /api/stats</a> + 飞书群同步 · 生成 2026-08-25 22:27</footer>
 
   <!-- 今日产出日志 -->
   <div class="section">
-    <div class="section-title"><h2>📦 今日产出日志</h2><span class="badge">8.24 晚间复盘</span></div>
+    <div class="section-title"><h2>📦 今日产出日志</h2><span class="badge">8.25 晚间复盘</span></div>
     <div style="font-size:12px;color:var(--muted);line-height:1.9;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 16px">
-      ✅ #219 bot_id=0 实测修复并关闭工单（转化链路恢复·chats 23→25打破7天持平）<br>
-      ✅ 僵尸工单清理4个（#219/#163/#162/#116）· 小酒窝儿审核积压24天的5067条知识底座全量审完<br>
-      ✅ 审核中转机制建立并首轮闭环（7工单+3PR/Issue出结论）· 飞书群正确chat_id修正<br>
-      ✅ PR#221 V3.3小程序上线（生哥直传）· v6.0考核看板改版 · 小豆子报告3点硬伤反馈<br>
-      ⚠️ 发现Log4Shell脏数据（待清洗）· shengge.fun仍超时 · 词条6968增量停滞
+      ✅ 转化诊断D16：chats 25→27 连续第二天增长 · 转化链路恢复验证成功<br>
+      ✅ 小眼镜RED-009处置（小酒窝儿凭证逾期→暂停品控留痕职能·生哥同意）· #227客户向域方案(30条) · 公积金844号令草案(96条)<br>
+      ✅ 小扣子PR#226 V3.3.4过滤生效(搬家数据清零) · #222 177条dataRef落库 · 小马丫《行业动态报告2026H1》发布<br>
+      ✅ 风声统一版本落档坚果云（完整版项目介绍+七维/V2.5.1决策）· 词条数据口径修正(6968)<br>
+      ⚠️ 词条抽审连续15日未执行 · Log4Shell脏数据未清洗 · shengge.fun仍超时 · RED-009凭证争议未闭环
     </div>
   </div>
 
@@ -416,19 +416,19 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 </div>
 
 <script>
-// 小程序近14天数据
+// 小程序近14天数据（8.25沿用8.24）
 const miniDaily = [
-  {d:'8/11',uv:5,pv:15,cl:0},{d:'8/12',uv:2,pv:5,cl:0},{d:'8/13',uv:0,pv:0,cl:0},{d:'8/14',uv:1,pv:2,cl:0},
+  {d:'8/12',uv:2,pv:5,cl:0},{d:'8/13',uv:0,pv:0,cl:0},{d:'8/14',uv:1,pv:2,cl:0},
   {d:'8/15',uv:0,pv:0,cl:0},{d:'8/16',uv:0,pv:0,cl:0},{d:'8/17',uv:1,pv:1,cl:0},{d:'8/18',uv:10,pv:73,cl:34},
   {d:'8/19',uv:1,pv:14,cl:1},{d:'8/20',uv:5,pv:41,cl:42},{d:'8/21',uv:0,pv:0,cl:0},{d:'8/22',uv:0,pv:0,cl:0},
-  {d:'8/23',uv:0,pv:0,cl:0},{d:'8/24',uv:6,pv:104,cl:42}
+  {d:'8/23',uv:0,pv:0,cl:0},{d:'8/24',uv:6,pv:104,cl:42},{d:'8/25',uv:6,pv:104,cl:42}
 ];
 // 主站近14天数据
 const siteDaily = [
-  {d:'8/11',uv:7,pv:31},{d:'8/12',uv:4,pv:31},{d:'8/13',uv:10,pv:20},{d:'8/14',uv:14,pv:39},
+  {d:'8/12',uv:4,pv:31},{d:'8/13',uv:10,pv:20},{d:'8/14',uv:14,pv:39},
   {d:'8/15',uv:9,pv:22},{d:'8/16',uv:0,pv:0},{d:'8/17',uv:10,pv:17},{d:'8/18',uv:13,pv:80},
   {d:'8/19',uv:2,pv:18},{d:'8/20',uv:5,pv:41},{d:'8/21',uv:0,pv:0},{d:'8/22',uv:4,pv:8},
-  {d:'8/23',uv:3,pv:6},{d:'8/24',uv:36,pv:410}
+  {d:'8/23',uv:3,pv:6},{d:'8/24',uv:37,pv:412},{d:'8/25',uv:12,pv:46}
 ];
 
 function renderBars(elId, data, max, showClick){
