@@ -118,12 +118,12 @@
       <view class="qc-btn"><text>🚀</text><text>开始生成简报</text></view>
     </view>
 
-    <!-- 需求洞察报告入口（V4 探索步①交付物） -->
-    <view class="insight-entry" @tap="go('insight')">
+    <!-- 需求洞察·问诊入口（V4 探索步①：问诊采集 → 生成报告） -->
+    <view class="insight-entry" @tap="go('insight-prep')">
       <view class="ie-ic">📋</view>
       <view class="ie-body">
-        <view class="ie-title">客户需求洞察报告</view>
-        <view class="ie-desc">帮客户理清楚真正要什么 · 核心洞察 / 三轴拆解 / 七维权重</view>
+        <view class="ie-title">客户需求洞察 · 问诊</view>
+        <view class="ie-desc">引导客户梳理真实需求 · 三轴拆解 / 七维权重 → 生成报告</view>
       </view>
       <view class="ie-arrow">›</view>
     </view>
