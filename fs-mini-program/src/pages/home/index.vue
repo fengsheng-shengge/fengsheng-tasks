@@ -118,6 +118,16 @@
       <view class="qc-btn"><text>🚀</text><text>开始生成简报</text></view>
     </view>
 
+    <!-- 需求洞察报告入口（V4 探索步①交付物） -->
+    <view class="insight-entry" @tap="go('insight')">
+      <view class="ie-ic">📋</view>
+      <view class="ie-body">
+        <view class="ie-title">客户需求洞察报告</view>
+        <view class="ie-desc">帮客户理清楚真正要什么 · 核心洞察 / 三轴拆解 / 七维权重</view>
+      </view>
+      <view class="ie-arrow">›</view>
+    </view>
+
     <!-- 最近客户 -->
     <view class="card" v-if="recentClients.length">
       <view class="card-header">
@@ -331,4 +341,18 @@ export default {
 .brief-grip { font-size: 12px; color: #c46a3a; margin-top: 3px; line-height: 1.45; }
 .brief-empty { font-size: 12px; color: #aaa; margin-top: 3px; }
 .brief-arrow { font-size: 18px; color: #c8c2b6; flex-shrink: 0; }
+
+/* 需求洞察报告入口（V4 探索步①交付物） */
+.insight-entry {
+  display: flex; align-items: center; gap: 14px;
+  margin: 0 16px 14px; padding: 16px 16px;
+  background: #fff; border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.04);
+  border: 1px solid var(--border, #EDE5D6);
+}
+.ie-ic { width: 44px; height: 44px; border-radius: 12px; background: rgba(61,90,62,.12); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.ie-body { flex: 1; min-width: 0; }
+.ie-title { font-size: 15px; font-weight: 800; color: var(--text-primary, #1f2a24); }
+.ie-desc { font-size: 11px; color: var(--text-muted, #8a8f8a); margin-top: 4px; line-height: 1.5; }
+.ie-arrow { font-size: 20px; color: #c8c2b6; flex-shrink: 0; }
 </style>

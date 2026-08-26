@@ -187,6 +187,193 @@ export function generateReportSummary(curation, opts = {}) {
   return lines.join('\n')
 }
 
+/**
+ * 客户需求洞察报告 HTML 模板（V4 探索步·①交付物）
+ * 数据诚实：只渲染客户确认过的需求画像；七维权重带 source；示例数据明确标注；
+ * 不渲染任何未核验房源/房价数字；不给"推荐买哪套"的结论（呼应九不准）。
+ * @param {Object} insight - 结构化需求洞察（契约见 insight 页 DATA_CONTRACT 注释）
+ * @param {Object} opts - { agentName, clientName, dateStr }
+ */
+export function generateInsightReportHTML(insight, opts = {}) {
+  const agent = opts.agentName || '风声经纪人'
+  const client = opts.clientName || insight.clientName || ''
+  const date = opts.dateStr || new Date().toLocaleDateString('zh-CN')
+  const d = insight || {}
+  const isEx = d.isExample
+
+  const sevenHTML = (d.seven || []).map(s => `
+    <div class="sv-row">
+      <div class="sv-name">${esc(s.name)}</div>
+      <div class="sv-track"><div class="sv-fill" style="width:${Math.max(2, Math.min(100, +(s.weight || 0)))}%"></div></div>
+      <div class="sv-val">${esc(s.weight || 0)}</div>
+      ${s.source ? '<div class="sv-src">依据：' + esc(s.source) + '</div>' : ''}
+    </div>`).join('')
+
+  const axisHTML = (d.threeAxis || {})
+  const axisRows = [
+    ['目的', axisHTML.purpose],
+    ['时间', axisHTML.time],
+    ['主体', axisHTML.subject]
+  ].filter(r => r[1]).map(r => `
+    <div class="ax-row">
+      <div class="ax-k">${esc(r[0])}</div>
+      <div class="ax-v">${esc(r[1])}</div>
+    </div>`).join('')
+
+  const anchorHTML = (d.anchors || []).map(a => `
+    <div class="an-row">
+      <div class="an-k">${esc(a.label)}</div>
+      <div class="an-v">${esc(a.value)}</div>
+      ${a.source ? '<div class="an-src">来源：' + esc(a.source) + '</div>' : ''}
+    </div>`).join('')
+
+  const confirm = d.confirm || {}
+  const confirmHTML = confirm.confirmed
+    ? `<div class="conf-card ok">
+         <div class="conf-seal">已确认</div>
+         <div class="conf-txt">本需求画像已由客户亲口确认，作为后续服务的依据。</div>
+         <div class="conf-meta">确认时间：${esc(confirm.date || date)} ｜ 确认人：${esc(confirm.by || '客户本人')}</div>
+       </div>`
+    : `<div class="conf-card wait">
+         <div class="conf-seal w">待确认</div>
+         <div class="conf-txt">需求尚未经客户确认，暂不进入房源推荐与带看环节。</div>
+       </div>`
+
+  const exampleBadge = isEx ? '<div class="ex-badge">示例数据 · 仅供产品演示，非真实客户</div>' : ''
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+<title>客户需求洞察报告 · ${esc(client || '客户')}</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif; background:#f7f4ef; color:#2b2b2b; line-height:1.6; padding:16px; max-width:680px; margin:0 auto; }
+  .report-header { background:linear-gradient(135deg,#3d5a3e 0%,#2f4730 100%); border-radius:16px; padding:24px 20px; color:#fff; margin-bottom:16px; }
+  .report-header .brand { font-size:12px; letter-spacing:2px; opacity:.7; text-transform:uppercase; }
+  .report-header h1 { font-size:21px; font-weight:700; margin-top:4px; }
+  .report-header .meta { font-size:13px; opacity:.85; margin-top:8px; display:flex; flex-wrap:wrap; gap:12px; }
+  .report-header .meta span { display:inline-flex; align-items:center; gap:4px; }
+  .ex-badge { margin-top:12px; font-size:12px; background:rgba(196,106,58,.22); color:#ffd9c2; padding:6px 12px; border-radius:8px; display:inline-block; }
+  .core { background:#fff; border-radius:14px; padding:18px; margin-bottom:14px; border:1px solid #efe9dd; border-left:5px solid #c46a3a; }
+  .core-t { font-size:12px; color:#c46a3a; font-weight:700; letter-spacing:1px; margin-bottom:8px; }
+  .core-p { font-size:16px; font-weight:700; color:#2b2b2b; line-height:1.5; }
+  .core-d { font-size:13px; color:#555; margin-top:10px; line-height:1.6; }
+  .sec { background:#fff; border-radius:14px; padding:16px; margin-bottom:14px; border:1px solid #efe9dd; }
+  .sec-h { font-size:15px; font-weight:700; color:#2b2b2b; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+  .sec-h .em { font-size:17px; }
+  .ax-row { display:flex; gap:12px; padding:10px 0; border-bottom:1px dashed #eee; }
+  .ax-row:last-child { border-bottom:none; }
+  .ax-k { flex:0 0 64px; font-size:13px; font-weight:700; color:#c46a3a; }
+  .ax-v { flex:1; font-size:13px; color:#2b2b2b; line-height:1.5; }
+  .sv-row { padding:10px 0; border-bottom:1px dashed #eee; }
+  .sv-row:last-child { border-bottom:none; }
+  .sv-name { font-size:13px; font-weight:700; color:#2b2b2b; margin-bottom:6px; }
+  .sv-track { height:10px; background:#eee7dc; border-radius:6px; overflow:hidden; }
+  .sv-fill { height:100%; border-radius:6px; background:linear-gradient(90deg,#3d5a3e,#5c745d); }
+  .sv-val { float:right; font-size:12px; font-weight:700; color:#3d5a3e; margin-top:-18px; }
+  .sv-src { font-size:11px; color:#8a857b; margin-top:6px; }
+  .an-row { padding:9px 0; border-bottom:1px dashed #eee; }
+  .an-row:last-child { border-bottom:none; }
+  .an-k { font-size:12px; font-weight:700; color:#c46a3a; }
+  .an-v { font-size:13px; color:#2b2b2b; margin-top:2px; }
+  .an-src { font-size:11px; color:#8a857b; margin-top:2px; }
+  .conf-card { border-radius:14px; padding:16px; margin-bottom:14px; display:flex; flex-direction:column; gap:8px; }
+  .conf-card.ok { background:#eef3ec; border:1px solid #c6d6c6; }
+  .conf-card.wait { background:#f3f0ea; border:1px solid #e3ddd0; }
+  .conf-seal { align-self:flex-start; font-size:13px; font-weight:800; color:#fff; background:#3d5a3e; padding:4px 16px; border-radius:999px; }
+  .conf-seal.w { background:#8a857b; }
+  .conf-txt { font-size:13px; color:#2b2b2b; line-height:1.5; }
+  .conf-meta { font-size:11px; color:#8a857b; }
+  .next { background:#fbf6ee; border:1px dashed #C8956D; border-radius:14px; padding:16px; margin-bottom:14px; }
+  .next-t { font-size:13px; font-weight:700; color:#C8956D; margin-bottom:6px; }
+  .next-d { font-size:12px; color:#6b665e; line-height:1.6; }
+  .report-footer { text-align:center; padding:18px 0 12px; font-size:11px; color:#aaa; line-height:1.6; }
+  .report-footer .brand-line { color:#3d5a3e; font-weight:600; font-size:13px; margin-bottom:4px; }
+  @media print {
+    body { background:#fff; padding:0; max-width:none; }
+    .core,.sec,.conf-card,.next { break-inside:avoid; }
+    .report-header { break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+  <div class="report-header">
+    <div class="brand">FENG SHENG · 客户需求洞察报告</div>
+    <h1>这是您亲口确认过的需求</h1>
+    <div class="meta">
+      <span>📅 ${date}</span>
+      ${client ? '<span>👤 客户：' + esc(client) + '</span>' : ''}
+      <span>🧑‍💼 ${esc(agent)}</span>
+    </div>
+    ${exampleBadge}
+  </div>
+
+  <div class="core">
+    <div class="core-t">核心洞察</div>
+    <div class="core-p">${esc(d.corePoint || '（待生成）')}</div>
+    ${d.corePointDetail ? '<div class="core-d">' + esc(d.corePointDetail) + '</div>' : ''}
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="em">🧭</span>需求三轴拆解</div>
+    ${axisHTML ? axisRows : '<div class="an-src">（待生成）</div>'}
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="em">🎯</span>七维居住品质权重</div>
+    ${sevenHTML || '<div class="an-src">（待生成）</div>'}
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="em">📍</span>生活锚点（脱敏回显）</div>
+    ${anchorHTML || '<div class="an-src">（待生成）</div>'}
+  </div>
+
+  ${confirmHTML}
+
+  <div class="next">
+    <div class="next-t">下一步</div>
+    <div class="next-d">${esc(d.nextStep || '需求确认后，由服务者侧「知识库 + 规则引擎」结合真源生成房源提案报告，持报告带看。')}</div>
+  </div>
+
+  <div class="report-footer">
+    <div class="brand-line">风声 · 帮服务者用独立价值获得尊重</div>
+    <div>本报告仅呈现客户确认过的需求，不含任何房源推荐与价格测算</div>
+    <div>具体交易决策请结合专业判断与实地情况</div>
+  </div>
+</body>
+</html>`
+}
+
+/**
+ * 客户需求洞察报告 · 简短摘要（用于分享卡片 / 复制）
+ */
+export function generateInsightSummary(insight, opts = {}) {
+  const d = insight || {}
+  const agent = opts.agentName || '风声经纪人'
+  const lines = []
+  lines.push('【风声 · 客户需求洞察报告】')
+  if (d.clientName) lines.push('客户：' + d.clientName)
+  lines.push('')
+  if (d.corePoint) lines.push('核心洞察：' + d.corePoint)
+  lines.push('')
+  const ax = d.threeAxis || {}
+  if (ax.purpose) lines.push('目的轴：' + ax.purpose)
+  if (ax.time) lines.push('时间轴：' + ax.time)
+  if (ax.subject) lines.push('主体轴：' + ax.subject)
+  lines.push('')
+  if ((d.seven || []).length) {
+    lines.push('七维权重：' + d.seven.map(s => s.name + ' ' + s.weight).join(' / '))
+  }
+  lines.push('')
+  const c = d.confirm || {}
+  lines.push(c.confirmed ? '需求状态：已确认（' + (c.date || '') + '）' : '需求状态：待确认')
+  lines.push('—— ' + agent + ' · ' + (opts.dateStr || new Date().toLocaleDateString('zh-CN')))
+  return lines.join('\n')
+}
+
 function esc(s) {
   if (!s) return ''
   return String(s)
