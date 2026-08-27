@@ -94,6 +94,8 @@ export default {
         { key: 'rent', name: '租住' },
         { key: 'host', name: '出租托管' },
         { key: 'decor', name: '家装' },
+        { key: 'aging', name: '适老化升级' },
+        { key: 'elderly', name: '养老居住' },
         { key: 'asset', name: '资产管理' },
         { key: 'replace', name: '置换' }
       ],

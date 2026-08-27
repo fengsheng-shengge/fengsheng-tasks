@@ -134,10 +134,8 @@
 
 <script>
 import { useUserStore } from '../../store/user'
-import { MOT_REPORTS, LIFECYCLE_PHASES, SERVICE_LINES, SERVICE_LINE_MAP, deriveLifecycleState, activeServiceLine, getReport, countReports, isReportActionable } from '../../utils/mot'
+import { MOT_REPORTS, LIFECYCLE_PHASES, SERVICE_LINES, SERVICE_LINE_MAP, SERVICE_LINE_COLORS, deriveLifecycleState, activeServiceLine, getReport, countReports, isReportActionable } from '../../utils/mot'
 import { trackPageview } from '../../utils/tracker'
-
-const LINE_COLORS = { buy: 'green', sell: 'orange', rent: 'blue', host: 'gold', decor: 'teal', asset: 'purple', replace: 'red' }
 
 export default {
   data() {
@@ -163,7 +161,7 @@ export default {
     },
     lineName() { return (SERVICE_LINE_MAP[this.lineKey] || {}).name || this.lineKey },
     lineIcon() { return (SERVICE_LINE_MAP[this.lineKey] || {}).icon || '🏠' },
-    lineColor() { return LINE_COLORS[this.lineKey] || 'green' },
+    lineColor() { return SERVICE_LINE_COLORS[this.lineKey] || 'green' },
     lineOptions() { return SERVICE_LINES },
     reportRows() {
       const c = this.userStore.getClient(this.clientId)
@@ -199,23 +197,14 @@ export default {
     decorate(c) {
       const palette = ['#3D5A3E', '#C46A3A', '#9c7c3a', '#5E7291']
       const typeKey = c.serviceLine || c.ctype || 'buy'
-      const map = {
-        buy: { icon: '🏠', name: '购房' },
-        sell: { icon: '💰', name: '售房' },
-        rent: { icon: '📄', name: '租住' },
-        host: { icon: '🏢', name: '出租托管' },
-        decor: { icon: '🛋', name: '家装' },
-        asset: { icon: '💼', name: '资产管理' },
-        replace: { icon: '🔁', name: '置换' }
-      }
-      const mt = map[typeKey] || { icon: '🏠', name: '购房' }
+      const mt = SERVICE_LINE_MAP[typeKey] || { icon: '🏠', name: '购房' }
       return {
         ...c,
         avatar: (c.name || '客')[0],
         avatarColor: c.id ? palette[c.id.length % palette.length] : palette[0],
         businessIcon: mt.icon,
         businessTypeName: mt.name,
-        businessColor: LINE_COLORS[typeKey] || 'green'
+        businessColor: SERVICE_LINE_COLORS[typeKey] || 'green'
       }
     },
     switchLine(k) {
@@ -257,7 +246,7 @@ export default {
       setTimeout(() => uni.navigateTo({ url: '/pages/insight-prep/index?clientId=' + this.clientId + '&serviceLine=' + this.lineKey }), 400)
     },
     lineBg(l) {
-      const map = { buy: '#3D5A3E', sell: '#C46A3A', rent: '#5E7291', host: '#9c7c3a', decor: '#3a8f5b', asset: '#6b5d8a', replace: '#b04a4a' }
+      const map = { buy: '#3D5A3E', sell: '#C46A3A', rent: '#5E7291', host: '#9c7c3a', decor: '#3a8f5b', aging: '#4f8fa8', elderly: '#a8925a', asset: '#6b5d8a', replace: '#b04a4a' }
       return map[l.key] || '#3D5A3E'
     },
     fmtTime(ts) {

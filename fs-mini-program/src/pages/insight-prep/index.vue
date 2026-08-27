@@ -113,13 +113,15 @@
  */
 const DIMS = ['安全', '经济', '便利', '健康', '舒适', '美观', '自在']
 
-// 服务线：购房 / 售房 / 租住 / 出租托管 / 家装 / 资产管理 / 置换（可扩展）
+// 服务线：购房 / 售房 / 租住 / 出租托管 / 家装 / 适老化升级 / 养老居住 / 资产管理 / 置换（可扩展）
 const BIZ_TYPES = [
   { label: '购房', key: 'buy' },
   { label: '售房', key: 'sell' },
   { label: '租住', key: 'rent' },
   { label: '出租托管', key: 'host' },
   { label: '家装', key: 'decor' },
+  { label: '适老化升级', key: 'aging' },
+  { label: '养老居住', key: 'elderly' },
   { label: '资产管理', key: 'asset' },
   { label: '置换', key: 'replace' }
 ]

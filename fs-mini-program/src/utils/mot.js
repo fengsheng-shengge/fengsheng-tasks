@@ -9,7 +9,8 @@
  *   接触(①洞察) → 方案(②提案) → 行动(③带看) → 成交(④谈判) → 售后(⑤售后) → 循环回新服务
  *
  * 服务线（可扩展，每线一套五步闭环，报告带 serviceLine 标记）：
- *   buy 购房 / sell 售房 / rent 租住 / host 出租托管 / decor 家装 / asset 资产管理 / replace 置换
+ *   buy 购房 / sell 售房 / rent 租住 / host 出租托管 / decor 家装 / aging 适老化升级 /
+ *   elderly 养老居住 / asset 资产管理 / replace 置换
  *
  * 三道硬闸门（可审计、不可旁路）：
  *   闸门1：①需求未获客户确认 → ②提案禁用（"请先确认需求"）
@@ -27,11 +28,16 @@ export const SERVICE_LINES = [
   { key: 'rent', name: '租住', icon: '📄', desc: '租房 · 承租', color: 'blue' },
   { key: 'host', name: '出租托管', icon: '🏢', desc: '委托出租 · 托管', color: 'gold' },
   { key: 'decor', name: '家装', icon: '🛋', desc: '装修 · 改造', color: 'teal' },
+  { key: 'aging', name: '适老化升级', icon: '🦽', desc: '居家适老 · 无障碍改造', color: 'sky' },
+  { key: 'elderly', name: '养老居住', icon: '🌳', desc: '养老社区 · 适老居所选择', color: 'sand' },
   { key: 'asset', name: '资产管理', icon: '💼', desc: '持有 · 打理 · 增值', color: 'purple' },
   { key: 'replace', name: '置换', icon: '🔁', desc: '卖旧 · 换新', color: 'red' }
 ]
 
 export const SERVICE_LINE_MAP = SERVICE_LINES.reduce((m, s) => { m[s.key] = s; return m }, {})
+
+/** 服务线 → 品牌色（驾驶舱/列表/首页共用，避免各页硬编码重复维护） */
+export const SERVICE_LINE_COLORS = SERVICE_LINES.reduce((m, s) => { m[s.key] = s.color; return m }, {})
 
 /** 生命周期五步：接触 → 方案 → 行动 → 成交 → 售后（售后完可循环回新服务） */
 export const LIFECYCLE_PHASES = ['接触', '方案', '行动', '成交', '售后']
@@ -51,6 +57,8 @@ export function inferServiceLine(client) {
   if (client.serviceLine) return client.serviceLine
   const t = ((client.ctype || '') + ' ' + (client.stage || '') + ' ' + (client.rel || '')).trim()
   if (/置换|换房|卖旧/.test(t)) return 'replace'
+  if (/养老|退休|康养|银发/.test(t)) return 'elderly'
+  if (/适老|无障碍|适老化|扶手/.test(t)) return 'aging'
   if (/托管|委托出租|房东/.test(t)) return 'host'
   if (/售|变现|挂牌|业主售房/.test(t)) return 'sell'
   if (/装|装修|改造/.test(t)) return 'decor'

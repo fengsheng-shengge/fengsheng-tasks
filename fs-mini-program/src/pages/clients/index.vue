@@ -81,7 +81,7 @@
 <script>
 import { useUserStore } from '../../store/user'
 import { trackPageview } from '../../utils/tracker'
-import { inferServiceLine, SERVICE_LINE_MAP } from '../../utils/mot'
+import { inferServiceLine, SERVICE_LINE_MAP, SERVICE_LINE_COLORS } from '../../utils/mot'
 const PALETTE = ['#3D5A3E', '#C46A3A', '#9c7c3a', '#5E7291']
 export default {
   data() {
@@ -95,6 +95,8 @@ export default {
         { key: 'rent', label: '租住' },
         { key: 'host', label: '出租托管' },
         { key: 'decor', label: '家装' },
+        { key: 'aging', label: '适老' },
+        { key: 'elderly', label: '养老' },
         { key: 'asset', label: '资产' },
         { key: 'replace', label: '置换' }
       ]
@@ -111,7 +113,7 @@ export default {
       return (this.userStore.clients || []).map((c, i) => {
         const lineKey = inferServiceLine(c)
         const meta = SERVICE_LINE_MAP[lineKey] || { icon: '🏠', name: '购房' }
-        const colorMap = { buy: 'green', sell: 'orange', rent: 'blue', host: 'gold', decor: 'teal', asset: 'purple', replace: 'red' }
+        const colorMap = SERVICE_LINE_COLORS
         return {
           id: c.id,
           name: c.name || '客户',
