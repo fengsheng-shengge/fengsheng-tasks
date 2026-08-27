@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', {
     favorites: [], // [entryId, ...]
     contributions: [], // [{type, entryId, status, timestamp}]
     // ===== V2.1.1a 新增：客户档案 / 策展库 / 测评 / 任务完成态 =====
-    clients: [], // [{id, surname, name, rel, stage, pkey, persona, status, asset, level, addr, note, seed, followups[], timeline[], memoryPoints[]}]
+    clients: [], // [{id, surname, name, rel, stage, pkey, persona, status, asset, level, addr, note, seed, followups[], timeline[], memoryPoints[], reports[]}]
     seeded: false, // 首次启动是否已写入示例客户（避免用户删光后又被重新塞回示例）
     focusClientId: null, // V2.7：首页「今日跟进」直达客户详情（tabBar 页无法 URL 带参，改走 store）
     curatings: [], // [{id, clientId, t, s, ts}]
@@ -198,7 +198,7 @@ export const useUserStore = defineStore('user', {
         { surname: '王', name: '王女士（房东）', rel: '房东', stage: '租住线 / 业主侧', pkey: 'blue', persona: '🔵 关系导向', status: '跟进中', asset: '委托出租，定价跟进待办', level: 'B', addr: '', note: '空置45天委托出租', seed: true },
         { surname: '陈', name: '陈同学（租客）', rel: '租客', stage: '租住线 / ②改善', pkey: 'green', persona: '🟢 理智型', status: '跟进中', asset: '工作调动，租住改善中', level: 'C', addr: '', note: '工作调动近地铁', seed: true }
       ]
-      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c, followups: c.followups || [], timeline: c.timeline || [], memoryPoints: c.memoryPoints || [], cognition: c.cognition || { log: [] } }))
+      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c, followups: c.followups || [], timeline: c.timeline || [], memoryPoints: c.memoryPoints || [], cognition: c.cognition || { log: [] }, reports: c.reports || [] }))
       this.seeded = true
       this._persist()
     },
@@ -252,7 +252,7 @@ export const useUserStore = defineStore('user', {
 
     /** 新建客户 */
     addClient(c) {
-      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] }, ...c }
+      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] }, reports: [], ...c }
       this.clients.unshift(client)
       this._persist()
       trackEvent('client_add', 'clients', { rel: c.rel || '', stage: c.stage || '' })
@@ -303,6 +303,28 @@ export const useUserStore = defineStore('user', {
 
     getClient(id) {
       return this.clients.find(c => c.id === id) || null
+    },
+
+    /** V4 MOT：保存客户报告（append-only，只新增不改写，留版本痕；同时写时间线） */
+    saveClientReport(clientId, report) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !report || !report.type) return null
+      if (!Array.isArray(c.reports)) c.reports = []
+      const item = {
+        ...report,
+        type: report.type,
+        savedAt: Date.now()
+      }
+      c.reports.push(item)
+      // 需求修正版本化留痕：确认记录只新增不改写（append-only），供审核审计"客户确认的哪个版本"
+      if (report.type === 'insight' && report.confirm && report.confirm.confirmed) {
+        this.addTimelineEvent(clientId, { type: '洞察', summary: '客户已确认①需求洞察（第 ' + c.reports.filter(r => r.type === 'insight').length + ' 版）' })
+      } else {
+        this.addTimelineEvent(clientId, { type: '报告', summary: '产出报告：' + (report.name || report.type) })
+      }
+      this._persist()
+      trackEvent('client_report_save', 'clients', { clientId, type: report.type })
+      return item
     },
 
     /** V2.5 M1：把生成的见后跟进写入客户档案 followups[] */

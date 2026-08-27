@@ -25,6 +25,75 @@
       <view class="dot" :class="{ on: heroIdx === i }" v-for="(d, i) in slides" :key="i" @tap="goSlide(i)"></view>
     </view>
 
+    <!-- 五步专业闭环卡 -->
+    <view class="loop-card">
+      <view class="card-header">
+        <view class="title">🧭 五步专业闭环</view>
+        <view class="more" @tap="showStep(0)">点任一步看说明 ›</view>
+      </view>
+      <view class="loop-track">
+        <view
+          v-for="(s, i) in loopSteps"
+          :key="i"
+          class="loop-node"
+          :class="{ cur: i === loopIdx }"
+          @tap="showStep(i)"
+        >
+          <view class="loop-ic" :class="'loop-' + (i + 1)">{{ s.no }}</view>
+          <view class="loop-t">{{ s.name }}</view>
+        </view>
+      </view>
+      <view class="loop-tip">{{ loopSteps[loopIdx].desc }}</view>
+    </view>
+
+    <!-- 我的客户看板 -->
+    <view class="card" v-if="clientBoard.length">
+      <view class="card-header">
+        <view class="title">👥 我的客户看板</view>
+        <view class="more" @tap="go('clients')">全部客户 ›</view>
+      </view>
+      <view class="board-list">
+        <view class="board-item" v-for="b in clientBoard" :key="b.id" @tap="goClientDetail(b.id)">
+          <view class="board-av" :style="{ background: b.avatarColor }">{{ b.avatar }}</view>
+          <view class="board-body">
+            <view class="board-top">
+              <text class="board-name">{{ b.name }}</text>
+              <text class="board-step" :class="'st' + b.stepIndex">{{ b.step }}</text>
+            </view>
+            <view class="board-meta">已出 {{ b.producedCount }}/5 份报告</view>
+            <view class="board-pending" v-if="b.pendingLabel">下一步：{{ b.pendingLabel }}</view>
+            <view class="board-pending ok" v-else>闭环已完成，等待售后循环</view>
+          </view>
+          <view class="board-arrow">›</view>
+        </view>
+      </view>
+    </view>
+    <view class="card" v-else>
+      <view class="card-header">
+        <view class="title">👥 我的客户看板</view>
+        <view class="more" @tap="go('clients')">全部客户 ›</view>
+      </view>
+      <view class="board-empty">暂无客户 · 从下方新建第一位客户开始专业闭环</view>
+    </view>
+
+    <!-- 快捷入口 -->
+    <view class="quick-actions">
+      <view class="qa-btn qa-green" @tap="goNewClient">
+        <text class="qa-ic">＋</text>
+        <view class="qa-txt">
+          <view class="qa-t">新建客户</view>
+          <view class="qa-s">开一条新闭环</view>
+        </view>
+      </view>
+      <view class="qa-btn qa-orange" @tap="goContinue">
+        <text class="qa-ic">▶</text>
+        <view class="qa-txt">
+          <view class="qa-t">继续未完闭环</view>
+          <view class="qa-s">{{ continueCount ? continueCount + ' 位客户待推进' : '暂无待推进' }}</view>
+        </view>
+      </view>
+    </view>
+
     <!-- 核心功能 -->
     <view class="section-header">
       <text class="section-title">核心功能</text>
@@ -186,10 +255,19 @@ import hero2 from '../../static/hero2.png'
 import hero3 from '../../static/hero3.png'
 import hero4 from '../../static/hero4.png'
 import { trackEvent } from '../../utils/tracker'
+import { deriveMotState, MOT_REPORTS } from '../../utils/mot'
 export default {
   data() {
     return {
       heroIdx: 0,
+      loopIdx: 0,
+      loopSteps: [
+        { no: 1, name: '洞察', desc: '帮客户理清真实需求：三轴拆解 + 七维权重 + 客户亲口确认' },
+        { no: 2, name: '提案', desc: '需求关联 + 测算 + 推荐清单，须持此报告带看' },
+        { no: 3, name: '带看', desc: '带看后解码客户反应与房源匹配度' },
+        { no: 4, name: '谈判', desc: '报价 / 议价 / 条件博弈，专业记录每一轮' },
+        { no: 5, name: '售后', desc: '交割 + 回访 + 信任沉淀，循环回下一轮需求' }
+      ],
       slides: [
         { img: hero1, ht: '经纪人的决策参谋', hs: '购房 · 售房 · 租房，把专业方案装进口袋' },
         { img: hero2, ht: '从带看中介到决策顾问', hs: '拆需求 · 出方案 · 给话术 · 帮跟进，一次见面全用上' },
@@ -202,6 +280,29 @@ export default {
     userStore() { return useUserStore() },
     brokerName() { return this.userStore.nickname || '风声用户' },
     points() { return this.userStore.points || 0 },
+    clientBoard() {
+      return (this.userStore.clients || []).slice(0, 5).map((c, i) => {
+        const m = deriveMotState(c)
+        const palette = ['#3D5A3E', '#C46A3A', '#9c7c3a', '#5E7291']
+        const produced = MOT_REPORTS.filter(r => (c.reports || []).some(x => x && x.type === r.key))
+        return {
+          id: c.id,
+          name: c.name || '客户',
+          avatar: (c.name || '客')[0],
+          avatarColor: palette[i % palette.length],
+          step: m.step,
+          stepIndex: m.stepIndex,
+          producedCount: produced.length,
+          pendingLabel: m.pending.length ? m.pending[0].label : ''
+        }
+      })
+    },
+    continueCount() {
+      return (this.userStore.clients || []).filter(c => {
+        const m = deriveMotState(c)
+        return m.pending.length > 0
+      }).length
+    },
     // 真实服务动作数：由用户真实产品路径累计（seed 示例客户不计入，登录不计入服务次数）
     serviceCount() {
       const u = this.userStore
@@ -258,6 +359,23 @@ export default {
     }
   },
   methods: {
+    showStep(i) {
+      this.loopIdx = i
+      trackEvent('loop_step', 'home', { step: i })
+    },
+    goClientDetail(id) {
+      this.userStore.focusClientId = id
+      uni.navigateTo({ url: '/pages/clients/detail?id=' + id })
+    },
+    goNewClient() {
+      trackEvent('new_client', 'home', {})
+      uni.navigateTo({ url: '/pages/clients/edit' })
+    },
+    goContinue() {
+      const pending = this.userStore.clients.find(c => deriveMotState(c).pending.length > 0)
+      if (pending) this.goClientDetail(pending.id)
+      else this.go('clients')
+    },
     onHero(e) {
       this.heroIdx = e.detail.current
       const s = this.slides[this.heroIdx]
@@ -314,6 +432,52 @@ export default {
 .hero-dots { display: flex; justify-content: center; gap: 6px; margin: 9px 0 2px; }
 .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,.18); transition: all .2s; }
 .dot.on { background: var(--orange, #C46A3A); width: 16px; border-radius: 3px; }
+
+/* 五步专业闭环卡 */
+.loop-card { background: #fff; border-radius: 14px; padding: 14px 14px 12px; margin: 6px 16px 12px; box-shadow: 0 2px 10px rgba(0,0,0,.04); border: 1px solid var(--border, #EDE5D6); }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.card-header .title { font-size: 15px; font-weight: 800; color: var(--text-primary, #1f2a24); }
+.card-header .more { font-size: 12px; color: var(--text-muted, #8a8f8a); }
+.loop-track { display: flex; justify-content: space-between; }
+.loop-node { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 20%; }
+.loop-ic { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; background: #d8d3c8; }
+.loop-1 { background: var(--green, #3d5a3e); }
+.loop-2 { background: #5E7291; }
+.loop-3 { background: var(--orange, #c46a3a); }
+.loop-4 { background: #9c7c3a; }
+.loop-5 { background: #5c745d; }
+.loop-node.cur .loop-ic { box-shadow: 0 0 0 4px var(--orange-light, #fbeee6); }
+.loop-t { font-size: 11px; color: var(--text-secondary, #555); }
+.loop-tip { font-size: 11px; color: var(--text-muted, #8a8f8a); margin-top: 10px; line-height: 1.5; background: var(--cream, #faf7f0); border-radius: 8px; padding: 8px 10px; min-height: 30px; }
+
+/* 我的客户看板 */
+.board-list { display: flex; flex-direction: column; }
+.board-item { display: flex; align-items: center; gap: 11px; padding: 11px 0; border-bottom: 1px dashed #eee; }
+.board-item:last-child { border-bottom: none; }
+.board-av { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; font-weight: 700; flex-shrink: 0; }
+.board-body { flex: 1; min-width: 0; }
+.board-top { display: flex; align-items: center; gap: 7px; }
+.board-name { font-size: 14px; font-weight: 700; color: #1f2a24; }
+.board-step { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #f2eee5; color: #8a837a; }
+.board-step.st1 { background: var(--orange-light, #fbeee6); color: var(--orange, #c46a3a); }
+.board-step.st2 { background: var(--green-light, #eef3ec); color: var(--green, #3d5a3e); }
+.board-step.st3 { background: #e8eef5; color: #5E7291; }
+.board-step.st4 { background: #f5efdd; color: #9c7c3a; }
+.board-step.st5 { background: #eaf2ec; color: #5c745d; }
+.board-meta { font-size: 11px; color: #9a9a9a; margin-top: 3px; }
+.board-pending { font-size: 12px; color: var(--orange, #c46a3a); margin-top: 3px; line-height: 1.45; }
+.board-pending.ok { color: var(--green, #3d5a3e); }
+.board-arrow { font-size: 18px; color: #c8c2b6; flex-shrink: 0; }
+.board-empty { font-size: 13px; color: var(--text-muted, #8a8f8a); padding: 8px 0; text-align: center; }
+
+/* 快捷入口 */
+.quick-actions { display: flex; gap: 10px; margin: 0 16px 14px; }
+.qa-btn { flex: 1; display: flex; align-items: center; gap: 10px; border-radius: 14px; padding: 14px 14px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.04); border: 1px solid var(--border, #EDE5D6); }
+.qa-ic { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; color: #fff; flex-shrink: 0; }
+.qa-green .qa-ic { background: var(--green, #3d5a3e); }
+.qa-orange .qa-ic { background: var(--orange, #c46a3a); }
+.qa-t { font-size: 14px; font-weight: 800; color: var(--text-primary, #1f2a24); }
+.qa-s { font-size: 11px; color: var(--text-muted, #8a8f8a); margin-top: 2px; }
 
 /* 核心功能 */
 .section-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 16px 10px; }

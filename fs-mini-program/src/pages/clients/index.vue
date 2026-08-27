@@ -157,7 +157,7 @@ export default {
     onSearch(e) { this.searchKey = (e.detail && e.detail.value) || '' },
     clearSearch() { this.searchKey = '' },
     onFilter(e) { this.filterTab = e.currentTarget.dataset.key },
-    openClient(id) { uni.navigateTo({ url: '/pages/clients/edit?clientId=' + id }) },
+    openClient(id) { uni.navigateTo({ url: '/pages/clients/detail?id=' + id }) },
     addClient() { uni.navigateTo({ url: '/pages/clients/edit' }) },
     goFeedback() { uni.navigateTo({ url: '/pages/clients/feedback' }) },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) }

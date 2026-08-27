@@ -10,6 +10,11 @@
     <view class="sec">
       <view class="sec-h"><text class="em">🙋</text>客户称呼</view>
       <input class="inp" v-model="form.clientName" placeholder="如：林先生 / 王女士" maxlength="20" />
+      <view class="link-row" v-if="clients.length" @tap="showClientPicker">
+        <text class="link-label">关联客户档案</text>
+        <text class="link-val">{{ linkedName || '选择客户（可选）' }}</text>
+        <text class="link-arrow">›</text>
+      </view>
     </view>
 
     <!-- 目的轴 -->
@@ -71,6 +76,26 @@
 
     <view class="demo" @tap="fillDemo">填入示例（林先生婚房）快速体验</view>
 
+    <!-- 客户选择弹层 -->
+    <view class="mask" v-if="pickerShow" @tap="pickerShow = false">
+      <view class="sheet" @tap.stop>
+        <view class="sheet-h">
+          <text class="sheet-t">选择关联客户</text>
+          <text class="sheet-x" @tap="pickerShow = false">✕</text>
+        </view>
+        <scroll-view class="sheet-list" scroll-y>
+          <view class="sheet-item" v-for="c in clients" :key="c.id" @tap="pickClient(c)">
+            <view class="sheet-av" :style="{ background: c.color }">{{ c.name[0] }}</view>
+            <view class="sheet-body">
+              <view class="sheet-n">{{ c.name }}</view>
+              <view class="sheet-m">{{ c.rel || '客户' }} · {{ c.note || '' }}</view>
+            </view>
+            <text class="sheet-check" v-if="c.id === linkedId">✓</text>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+
     <view class="ft">本工具仅做需求澄清，不推荐房源、不测算价格、不给买房结论</view>
 
     <view class="actions">
@@ -88,11 +113,15 @@
  */
 const DIMS = ['安全', '经济', '便利', '健康', '舒适', '美观', '自在']
 
+import { useUserStore } from '../../store/user'
+
 export default {
   data() {
     return {
       dims: DIMS,
       bizTypes: ['购房', '售房', '租房'],
+      pickerShow: false,
+      linkedId: '',
       anchorDefs: [
         { key: 'live', label: '现住', ph: '当前居住情况（如：望京租住两居）' },
         { key: 'work', label: '工作', ph: '工作地 / 通勤方式（如：中关村·地铁）' },
@@ -114,9 +143,28 @@ export default {
     }
   },
   computed: {
+    userStore() { return useUserStore() },
+    clients() {
+      const palette = ['#3D5A3E', '#C46A3A', '#9c7c3a', '#5E7291']
+      return (this.userStore.clients || []).map((c, i) => ({
+        id: c.id,
+        name: c.name || '客户',
+        rel: c.rel || '',
+        note: c.note || '',
+        color: palette[i % palette.length]
+      }))
+    },
+    linkedName() {
+      const hit = this.clients.find(c => c.id === this.linkedId)
+      return hit ? hit.name : ''
+    },
     liveCore() {
       return this.deriveCorePoint(this.form, this.normalizeWeights(this.form.weights))
     }
+  },
+  onLoad(options) {
+    if (!this.userStore._initialized) this.userStore.initFromStorage()
+    if (options && options.clientId) this.linkedId = options.clientId
   },
   methods: {
     onWeight(e, dim) {
@@ -197,7 +245,35 @@ export default {
         return
       }
       const insight = this.assembleInsight()
-      uni.navigateTo({ url: '/pages/insight/index?insight=' + encodeURIComponent(JSON.stringify(insight)) })
+      // V4 MOT：关联客户时落库（append-only 留痕），供驾驶舱读取
+      if (this.linkedId) {
+        try {
+          const linked = this.userStore.getClient(this.linkedId)
+          if (linked) {
+            const confirmedLabel = insight.confirm && insight.confirm.confirmed ? '（已确认）' : '（待确认）'
+            this.userStore.saveClientReport(this.linkedId, {
+              type: 'insight',
+              name: '客户需求洞察报告',
+              clientName: insight.clientName,
+              ...insight,
+              source: '问诊采集（小程序）'
+            })
+            uni.showToast({ title: '已存入客户驾驶舱' + confirmedLabel, icon: 'none' })
+          }
+        } catch (e) {
+          console.warn('[insight-prep] saveClientReport 失败', e)
+        }
+      }
+      const url = '/pages/insight/index?insight=' + encodeURIComponent(JSON.stringify(insight)) +
+        (this.linkedId ? '&clientId=' + this.linkedId : '')
+      uni.navigateTo({ url })
+    },
+    showClientPicker() { this.pickerShow = true },
+    pickClient(c) {
+      this.linkedId = c.id
+      if (!this.form.clientName || this.form.clientName === '未命名客户') this.form.clientName = c.name
+      this.pickerShow = false
+      uni.showToast({ title: '已关联 ' + c.name, icon: 'none' })
     },
     fillDemo() {
       this.form = {
@@ -234,6 +310,22 @@ export default {
 .em { font-size: 34rpx; }
 .inp { width: 100%; box-sizing: border-box; background: var(--cream); border: 2rpx solid var(--border); border-radius: var(--r-md); padding: 24rpx 28rpx; font-size: 28rpx; color: var(--text-primary); }
 .mt { margin-top: 18rpx; }
+.link-row { display: flex; align-items: center; gap: 12rpx; margin-top: 18rpx; background: var(--green-bg); border: 2rpx solid #c6d6c6; border-radius: var(--r-md); padding: 20rpx 24rpx; }
+.link-label { font-size: 24rpx; font-weight: 700; color: var(--green); flex-shrink: 0; }
+.link-val { flex: 1; font-size: 24rpx; color: var(--text-secondary); }
+.link-arrow { font-size: 26rpx; color: var(--green); flex-shrink: 0; }
+.mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100; display: flex; align-items: flex-end; }
+.sheet { width: 100%; background: #fff; border-radius: 24rpx 24rpx 0 0; padding: 28rpx 32rpx calc(28rpx + env(safe-area-inset-bottom)); max-height: 70vh; display: flex; flex-direction: column; }
+.sheet-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16rpx; }
+.sheet-t { font-size: 30rpx; font-weight: 800; color: var(--text-primary); }
+.sheet-x { font-size: 32rpx; color: var(--text-tertiary); padding: 4rpx; }
+.sheet-list { flex: 1; max-height: 52vh; }
+.sheet-item { display: flex; align-items: center; gap: 18rpx; padding: 18rpx 4rpx; border-bottom: 2rpx solid var(--border); }
+.sheet-av { width: 56rpx; height: 56rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 26rpx; font-weight: 700; flex-shrink: 0; }
+.sheet-body { flex: 1; min-width: 0; }
+.sheet-n { font-size: 28rpx; font-weight: 700; color: var(--text-primary); }
+.sheet-m { font-size: 22rpx; color: var(--text-tertiary); margin-top: 4rpx; line-height: 1.4; }
+.sheet-check { color: var(--green); font-size: 30rpx; font-weight: 800; }
 .seg { display: flex; gap: 16rpx; }
 .seg-i { flex: 1; text-align: center; padding: 22rpx 0; background: var(--cream); border: 2rpx solid var(--border); border-radius: var(--r-md); font-size: 28rpx; color: var(--text-secondary); font-weight: 700; }
 .seg-i.on { background: var(--green); color: #fff; border-color: var(--green); }
