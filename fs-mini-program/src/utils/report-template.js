@@ -201,11 +201,12 @@ export function generateInsightReportHTML(insight, opts = {}) {
   const d = insight || {}
   const isEx = d.isExample
 
-  const sevenHTML = (d.seven || []).map(s => `
+  const seven = validateSeven(d.seven)
+  const sevenHTML = seven.map(s => `
     <div class="sv-row">
       <div class="sv-name">${esc(s.name)}</div>
-      <div class="sv-track"><div class="sv-fill" style="width:${Math.max(2, Math.min(100, +(s.weight || 0)))}%"></div></div>
-      <div class="sv-val">${esc(s.weight || 0)}</div>
+      <div class="sv-track"><div class="sv-fill" style="width:${Math.max(2, Math.min(100, s.weight))}%"></div></div>
+      <div class="sv-val">${esc(s.weight)}</div>
       ${s.source ? '<div class="sv-src">依据：' + esc(s.source) + '</div>' : ''}
     </div>`).join('')
 
@@ -364,14 +365,48 @@ export function generateInsightSummary(insight, opts = {}) {
   if (ax.time) lines.push('时间轴：' + ax.time)
   if (ax.subject) lines.push('主体轴：' + ax.subject)
   lines.push('')
-  if ((d.seven || []).length) {
-    lines.push('七维权重：' + d.seven.map(s => s.name + ' ' + s.weight).join(' / '))
+  const seven = validateSeven(d.seven)
+  if (seven.length) {
+    lines.push('七维权重：' + seven.map(s => s.name + ' ' + s.weight).join(' / '))
   }
   lines.push('')
   const c = d.confirm || {}
   lines.push(c.confirmed ? '需求状态：已确认（' + (c.date || '') + '）' : '需求状态：待确认')
   lines.push('—— ' + agent + ' · ' + (opts.dateStr || new Date().toLocaleDateString('zh-CN')))
   return lines.join('\n')
+}
+
+/**
+ * 七维权重防御性校验（#V4-003 改进 · 小酒窝儿审核建议）
+ * 上游 insight-prep 已将权重归一化到合计 100，但报告模板层补一道数值校验：
+ *  1) 数值合法化：非有限 / NaN / 负数 / 超界 → clamp 到 [0, 100]
+ *  2) 合计归一化：若合计偏离 100（超 EPS），按比例缩回 100，防 UI 错位与语义错误
+ *  3) 收口一位小数，消除浮点噪声
+ * 不改变维度顺序与依据文本，仅修正数值层；示例数据(30+25+20+15+5+3+2=100)校验后不变。
+ */
+function validateSeven(seven) {
+  if (!Array.isArray(seven) || !seven.length) return []
+  // 1) 基础合法化：非有限 / NaN / 负数 → 0（超界值暂不 clamp，交由归一化收敛到 [0,100]）
+  const cleaned = seven.map(s => {
+    const src = s && typeof s === 'object' ? s : {}
+    let w = Number(src.weight)
+    if (!isFinite(w) || isNaN(w)) w = 0
+    if (w < 0) w = 0
+    return { name: src.name, weight: w, source: src.source }
+  })
+  // 2) 合计归一化：若合计偏离 100（超 EPS），按比例缩放回 100，防 UI 错位与语义错误
+  const total = cleaned.reduce((a, s) => a + s.weight, 0)
+  const EPS = 0.5
+  if (total > EPS && Math.abs(total - 100) > EPS) {
+    cleaned.forEach(s => { s.weight = Math.round((s.weight / total) * 1000) / 10 })
+  }
+  // 3) 兜底 clamp + 小数收口：确保单值 ∈ [0, 100]，消除浮点噪声
+  cleaned.forEach(s => {
+    if (s.weight > 100) s.weight = 100
+    if (s.weight < 0) s.weight = 0
+    s.weight = Math.round(s.weight * 10) / 10
+  })
+  return cleaned
 }
 
 function esc(s) {
