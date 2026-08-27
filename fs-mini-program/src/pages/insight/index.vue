@@ -101,9 +101,9 @@ const EXAMPLE_INSIGHT = {
     { name: '安全', weight: 30, source: '老人偶尔同住，需电梯低楼层、社区安保' },
     { name: '经济', weight: 25, source: '首套预算 300 万刚性，月供敏感' },
     { name: '便利', weight: 20, source: '工作通勤 ≤40 分钟，近地铁' },
-    { name: '健康', weight: 12, source: '新装修环保、采光通风' },
-    { name: '舒适', weight: 7, source: '二人世界空间够用即可' },
-    { name: '美观', weight: 4, source: '外立面与社区观感偏好' },
+    { name: '健康', weight: 15, source: '新装修环保、采光通风' },
+    { name: '舒适', weight: 5, source: '二人世界空间够用即可' },
+    { name: '美观', weight: 3, source: '外立面与社区观感偏好' },
     { name: '自在', weight: 2, source: '暂非首要' }
   ],
   anchors: [
