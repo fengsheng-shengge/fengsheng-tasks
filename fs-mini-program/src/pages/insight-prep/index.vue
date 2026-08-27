@@ -113,15 +113,28 @@
  */
 const DIMS = ['安全', '经济', '便利', '健康', '舒适', '美观', '自在']
 
+// 服务线：购房 / 售房 / 租住 / 出租托管 / 家装 / 资产管理 / 置换（可扩展）
+const BIZ_TYPES = [
+  { label: '购房', key: 'buy' },
+  { label: '售房', key: 'sell' },
+  { label: '租住', key: 'rent' },
+  { label: '出租托管', key: 'host' },
+  { label: '家装', key: 'decor' },
+  { label: '资产管理', key: 'asset' },
+  { label: '置换', key: 'replace' }
+]
+
 import { useUserStore } from '../../store/user'
 
 export default {
   data() {
     return {
       dims: DIMS,
-      bizTypes: ['购房', '售房', '租房'],
+      bizTypes: BIZ_TYPES.map(b => b.label),
+      bizKeys: BIZ_TYPES.reduce((m, b) => { m[b.label] = b.key; return m }, {}),
       pickerShow: false,
       linkedId: '',
+      linkedLine: '',
       anchorDefs: [
         { key: 'live', label: '现住', ph: '当前居住情况（如：望京租住两居）' },
         { key: 'work', label: '工作', ph: '工作地 / 通勤方式（如：中关村·地铁）' },
@@ -165,6 +178,14 @@ export default {
   onLoad(options) {
     if (!this.userStore._initialized) this.userStore.initFromStorage()
     if (options && options.clientId) this.linkedId = options.clientId
+    if (options && options.serviceLine) {
+      this.linkedLine = options.serviceLine
+      const meta = (this.userStore.clients.find(c => c.id === this.linkedId) || {})
+      // 优先用传入的服务线，其次用客户档案声明的服务线
+      const line = this.linkedLine || meta.serviceLine || 'buy'
+      const pair = BIZ_TYPES.find(b => b.key === line)
+      if (pair) this.form.bizType = pair.label
+    }
   },
   methods: {
     onWeight(e, dim) {
@@ -245,7 +266,8 @@ export default {
         return
       }
       const insight = this.assembleInsight()
-      // V4 MOT：关联客户时落库（append-only 留痕），供驾驶舱读取
+      const lineKey = this.bizKeys[this.form.bizType] || (this.linkedLine || 'buy')
+      // V4 MOT：关联客户时落库（append-only 留痕，带服务线标记），供驾驶舱读取
       if (this.linkedId) {
         try {
           const linked = this.userStore.getClient(this.linkedId)
@@ -255,6 +277,7 @@ export default {
               type: 'insight',
               name: '客户需求洞察报告',
               clientName: insight.clientName,
+              serviceLine: lineKey,
               ...insight,
               source: '问诊采集（小程序）'
             })
@@ -265,7 +288,7 @@ export default {
         }
       }
       const url = '/pages/insight/index?insight=' + encodeURIComponent(JSON.stringify(insight)) +
-        (this.linkedId ? '&clientId=' + this.linkedId : '')
+        (this.linkedId ? '&clientId=' + this.linkedId + '&serviceLine=' + lineKey : '')
       uni.navigateTo({ url })
     },
     showClientPicker() { this.pickerShow = true },

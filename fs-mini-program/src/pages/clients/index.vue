@@ -81,6 +81,7 @@
 <script>
 import { useUserStore } from '../../store/user'
 import { trackPageview } from '../../utils/tracker'
+import { inferServiceLine, SERVICE_LINE_MAP } from '../../utils/mot'
 const PALETTE = ['#3D5A3E', '#C46A3A', '#9c7c3a', '#5E7291']
 export default {
   data() {
@@ -91,8 +92,11 @@ export default {
         { key: 'all', label: '全部' },
         { key: 'buy', label: '购房' },
         { key: 'sell', label: '售房' },
-        { key: 'rent', label: '租赁' },
-        { key: 'owner', label: '业主' }
+        { key: 'rent', label: '租住' },
+        { key: 'host', label: '出租托管' },
+        { key: 'decor', label: '家装' },
+        { key: 'asset', label: '资产' },
+        { key: 'replace', label: '置换' }
       ]
     }
   },
@@ -105,30 +109,21 @@ export default {
     },
     list() {
       return (this.userStore.clients || []).map((c, i) => {
-        const typeKey = (c.ctype || '购房')
-        const map = {
-          '学区': { k: 'buy', icon: '🏫', name: '购房' },
-          '改善': { k: 'buy', icon: '🏠', name: '购房' },
-          '首置': { k: 'buy', icon: '🔑', name: '购房' },
-          '租赁': { k: 'rent', icon: '📄', name: '租赁' },
-          '业主售房': { k: 'owner', icon: '💰', name: '业主' },
-          '购房': { k: 'buy', icon: '🏠', name: '购房' },
-          '售房': { k: 'sell', icon: '💰', name: '售房' }
-        }
-        const mt = map[typeKey] || { k: 'buy', icon: '🏠', name: '购房' }
-        const colorMap = { buy: 'green', sell: 'orange', rent: 'blue', owner: 'gold' }
+        const lineKey = inferServiceLine(c)
+        const meta = SERVICE_LINE_MAP[lineKey] || { icon: '🏠', name: '购房' }
+        const colorMap = { buy: 'green', sell: 'orange', rent: 'blue', host: 'gold', decor: 'teal', asset: 'purple', replace: 'red' }
         return {
           id: c.id,
           name: c.name || '客户',
           avatar: (c.name || '客')[0],
           avatarColor: PALETTE[i % PALETTE.length],
-          businessColor: colorMap[mt.k],
-          businessIcon: mt.icon,
-          businessTypeName: mt.name,
-          typeKey: mt.k,
+          businessColor: colorMap[lineKey] || 'green',
+          businessIcon: meta.icon,
+          businessTypeName: meta.name,
+          typeKey: lineKey,
           lastFollow: c.lastFollow || '今天跟进',
           note: c.note || (c.brief ? '已生成顾问简报' : ''),
-          tags: c.tags || (c.ctype ? [c.ctype] : [])
+          tags: c.tags || (c.serviceLine ? [meta.name] : [])
         }
       })
     },

@@ -25,10 +25,10 @@
       <view class="dot" :class="{ on: heroIdx === i }" v-for="(d, i) in slides" :key="i" @tap="goSlide(i)"></view>
     </view>
 
-    <!-- 五步专业闭环卡 -->
+    <!-- 居住服务生命周期闭环卡 -->
     <view class="loop-card">
       <view class="card-header">
-        <view class="title">🧭 五步专业闭环</view>
+        <view class="title">🧭 居住服务生命周期</view>
         <view class="more" @tap="showStep(0)">点任一步看说明 ›</view>
       </view>
       <view class="loop-track">
@@ -58,7 +58,7 @@
           <view class="board-body">
             <view class="board-top">
               <text class="board-name">{{ b.name }}</text>
-              <text class="board-step" :class="'st' + b.stepIndex">{{ b.step }}</text>
+              <text class="board-step" :class="'st' + b.stepIndex">{{ b.lineIcon }} {{ b.lineName }} · {{ b.step }}</text>
             </view>
             <view class="board-meta">已出 {{ b.producedCount }}/5 份报告</view>
             <view class="board-pending" v-if="b.pendingLabel">下一步：{{ b.pendingLabel }}</view>
@@ -82,7 +82,7 @@
         <text class="qa-ic">＋</text>
         <view class="qa-txt">
           <view class="qa-t">新建客户</view>
-          <view class="qa-s">开一条新闭环</view>
+          <view class="qa-s">开一条新服务线</view>
         </view>
       </view>
       <view class="qa-btn qa-orange" @tap="goContinue">
@@ -255,18 +255,19 @@ import hero2 from '../../static/hero2.png'
 import hero3 from '../../static/hero3.png'
 import hero4 from '../../static/hero4.png'
 import { trackEvent } from '../../utils/tracker'
-import { deriveMotState, MOT_REPORTS } from '../../utils/mot'
+import { deriveMotState, SERVICE_LINE_MAP } from '../../utils/mot'
+const PALETTE = ['#3D5A3E', '#C46A3A', '#9c7c3a', '#5E7291', '#5c745d', '#d98a5c']
 export default {
   data() {
     return {
       heroIdx: 0,
       loopIdx: 0,
       loopSteps: [
-        { no: 1, name: '洞察', desc: '帮客户理清真实需求：三轴拆解 + 七维权重 + 客户亲口确认' },
-        { no: 2, name: '提案', desc: '需求关联 + 测算 + 推荐清单，须持此报告带看' },
-        { no: 3, name: '带看', desc: '带看后解码客户反应与房源匹配度' },
-        { no: 4, name: '谈判', desc: '报价 / 议价 / 条件博弈，专业记录每一轮' },
-        { no: 5, name: '售后', desc: '交割 + 回访 + 信任沉淀，循环回下一轮需求' }
+        { no: 1, name: '接触', desc: '帮客户理清本轮需求：三轴拆解 + 七维权重 + 客户亲口确认' },
+        { no: 2, name: '方案', desc: '需求关联 + 测算 + 方案清单，须持此进入下一步' },
+        { no: 3, name: '行动', desc: '带看 / 面谈后解码客户反应与匹配度' },
+        { no: 4, name: '成交', desc: '报价 / 议价 / 条件博弈，达成成交' },
+        { no: 5, name: '售后', desc: '交割 + 回访 + 信任沉淀，有新的居住需求再循环新服务线' }
       ],
       slides: [
         { img: hero1, ht: '经纪人的决策参谋', hs: '购房 · 售房 · 租房，把专业方案装进口袋' },
@@ -283,16 +284,17 @@ export default {
     clientBoard() {
       return (this.userStore.clients || []).slice(0, 5).map((c, i) => {
         const m = deriveMotState(c)
-        const palette = ['#3D5A3E', '#C46A3A', '#9c7c3a', '#5E7291']
-        const produced = MOT_REPORTS.filter(r => (c.reports || []).some(x => x && x.type === r.key))
+        const line = (SERVICE_LINE_MAP[m.lineKey] || { name: '购房', icon: '🏠' })
         return {
           id: c.id,
           name: c.name || '客户',
           avatar: (c.name || '客')[0],
-          avatarColor: palette[i % palette.length],
+          avatarColor: PALETTE[i % PALETTE.length],
+          lineIcon: line.icon,
+          lineName: line.name,
           step: m.step,
           stepIndex: m.stepIndex,
-          producedCount: produced.length,
+          producedCount: m.producedCount,
           pendingLabel: m.pending.length ? m.pending[0].label : ''
         }
       })

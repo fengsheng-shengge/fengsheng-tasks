@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', {
     favorites: [], // [entryId, ...]
     contributions: [], // [{type, entryId, status, timestamp}]
     // ===== V2.1.1a 新增：客户档案 / 策展库 / 测评 / 任务完成态 =====
-    clients: [], // [{id, surname, name, rel, stage, pkey, persona, status, asset, level, addr, note, seed, followups[], timeline[], memoryPoints[], reports[]}]
+    clients: [], // [{id, surname, name, rel, stage, pkey, persona, status, asset, level, addr, note, seed, serviceLine, followups[], timeline[], memoryPoints[], reports[]}]
     seeded: false, // 首次启动是否已写入示例客户（避免用户删光后又被重新塞回示例）
     focusClientId: null, // V2.7：首页「今日跟进」直达客户详情（tabBar 页无法 URL 带参，改走 store）
     curatings: [], // [{id, clientId, t, s, ts}]
@@ -193,12 +193,12 @@ export const useUserStore = defineStore('user', {
     seedClients() {
       if (this.clients && this.clients.length > 0) return   // 已有客户（首次之后）不重复塞回，避免覆盖真实数据
       const seed = [
-        { surname: '林', name: '林先生 & 未婚妻', rel: '买房客户', stage: '购房线 / ①首套', pkey: 'red', persona: '🔴 结果导向', status: '跟进中', asset: '关系建立中，资产初值', level: 'A', addr: '', note: '90后婚房，预算300万，看重学区与通勤', seed: true },
-        { surname: '张', name: '张先生（业主）', rel: '业主', stage: '购房线 / ④升级', pkey: 'blue', persona: '🔵 关系导向', status: '已成交', asset: '已购本房，适老改造跟进已规划', level: 'A', addr: '', note: '已购，适老改造咨询', seed: true },
-        { surname: '王', name: '王女士（房东）', rel: '房东', stage: '租住线 / 业主侧', pkey: 'blue', persona: '🔵 关系导向', status: '跟进中', asset: '委托出租，定价跟进待办', level: 'B', addr: '', note: '空置45天委托出租', seed: true },
-        { surname: '陈', name: '陈同学（租客）', rel: '租客', stage: '租住线 / ②改善', pkey: 'green', persona: '🟢 理智型', status: '跟进中', asset: '工作调动，租住改善中', level: 'C', addr: '', note: '工作调动近地铁', seed: true }
+        { surname: '林', name: '林先生 & 未婚妻', rel: '买房客户', stage: '购房线 / ①首套', pkey: 'red', persona: '🔴 结果导向', status: '跟进中', asset: '关系建立中，资产初值', level: 'A', addr: '', note: '90后婚房，预算300万，看重学区与通勤', serviceLine: 'buy', seed: true },
+        { surname: '张', name: '张先生（业主）', rel: '业主', stage: '业主侧 / 售后循环', pkey: 'blue', persona: '🔵 关系导向', status: '已成交', asset: '已购本房，适老改造跟进已规划', level: 'A', addr: '', note: '已购，适老改造咨询', serviceLine: 'decor', seed: true },
+        { surname: '王', name: '王女士（房东）', rel: '房东', stage: '出租托管线 / ①委托', pkey: 'blue', persona: '🔵 关系导向', status: '跟进中', asset: '委托出租，定价跟进待办', level: 'B', addr: '', note: '空置45天委托出租', serviceLine: 'host', seed: true },
+        { surname: '陈', name: '陈同学（租客）', rel: '租客', stage: '租住线 / ②改善', pkey: 'green', persona: '🟢 理智型', status: '跟进中', asset: '工作调动，租住改善中', level: 'C', addr: '', note: '工作调动近地铁', serviceLine: 'rent', seed: true }
       ]
-      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c, followups: c.followups || [], timeline: c.timeline || [], memoryPoints: c.memoryPoints || [], cognition: c.cognition || { log: [] }, reports: c.reports || [] }))
+      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c, serviceLine: c.serviceLine || 'buy', followups: c.followups || [], timeline: c.timeline || [], memoryPoints: c.memoryPoints || [], cognition: c.cognition || { log: [] }, reports: c.reports || [] }))
       this.seeded = true
       this._persist()
     },
@@ -252,10 +252,10 @@ export const useUserStore = defineStore('user', {
 
     /** 新建客户 */
     addClient(c) {
-      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] }, reports: [], ...c }
+      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, serviceLine: c.serviceLine || 'buy', followups: [], timeline: [], memoryPoints: [], cognition: { log: [] }, reports: [], ...c }
       this.clients.unshift(client)
       this._persist()
-      trackEvent('client_add', 'clients', { rel: c.rel || '', stage: c.stage || '' })
+      trackEvent('client_add', 'clients', { rel: c.rel || '', stage: c.stage || '', serviceLine: client.serviceLine || '' })
       return client
     },
 
@@ -313,6 +313,7 @@ export const useUserStore = defineStore('user', {
       const item = {
         ...report,
         type: report.type,
+        serviceLine: report.serviceLine || c.serviceLine || 'buy',
         savedAt: Date.now()
       }
       c.reports.push(item)
@@ -323,7 +324,7 @@ export const useUserStore = defineStore('user', {
         this.addTimelineEvent(clientId, { type: '报告', summary: '产出报告：' + (report.name || report.type) })
       }
       this._persist()
-      trackEvent('client_report_save', 'clients', { clientId, type: report.type })
+      trackEvent('client_report_save', 'clients', { clientId, type: report.type, serviceLine: item.serviceLine })
       return item
     },
 

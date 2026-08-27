@@ -12,6 +12,11 @@
         <input class="inp" v-model="form.name" placeholder="如 林先生 & 未婚妻" />
       </view>
       <view class="field">
+        <text class="label">服务类型</text>
+        <view class="hint">客户当前委托您做哪类居住服务——决定生命周期闭环归属，之后可随时开启新服务线</view>
+        <view class="opt"><view v-for="o in serviceOpts" :key="o.key" :class="{ on: form.serviceLine === o.key }" @tap="form.serviceLine = o.key">{{ o.name }}</view></view>
+      </view>
+      <view class="field">
         <text class="label">角色</text>
         <view class="hint">您当前在服务哪类人——决定后续话术与跟进节奏</view>
         <view class="opt"><view v-for="o in relOpts" :key="o" :class="{ on: form.rel === o }" @tap="form.rel = o">{{ o }}</view></view>
@@ -83,6 +88,15 @@ export default {
     return {
       editingId: null,
       form: this.blankForm(),
+      serviceOpts: [
+        { key: 'buy', name: '购房' },
+        { key: 'sell', name: '售房' },
+        { key: 'rent', name: '租住' },
+        { key: 'host', name: '出租托管' },
+        { key: 'decor', name: '家装' },
+        { key: 'asset', name: '资产管理' },
+        { key: 'replace', name: '置换' }
+      ],
       relOpts: ['买房客户', '租客', '业主', '房东'],
       stageGroups: [
         { title: '购房线', meta: '5 段 · 买房人生', opts: [
@@ -116,13 +130,13 @@ export default {
       const c = this.userStore.getClient(query.id)
       if (c) {
         this.editingId = c.id
-        this.form = { surname: c.surname, name: c.name, rel: c.rel, stage: c.stage, pkey: c.pkey, level: c.level, status: c.status, addr: c.addr || '', note: c.note || '' }
+        this.form = { surname: c.surname, name: c.name, rel: c.rel, stage: c.stage, pkey: c.pkey, level: c.level, status: c.status, addr: c.addr || '', note: c.note || '', serviceLine: c.serviceLine || 'buy' }
       }
     }
   },
   methods: {
     blankForm() {
-      return { surname: '', name: '', rel: '买房客户', stage: '', pkey: 'red', level: 'A', status: '跟进中', addr: '', note: '' }
+      return { surname: '', name: '', rel: '买房客户', stage: '', pkey: 'red', level: 'A', status: '跟进中', addr: '', note: '', serviceLine: 'buy' }
     },
     goBack() { uni.navigateBack() },
     saveForm() {
