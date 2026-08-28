@@ -64,6 +64,9 @@ page {
   --brown: #C8956D;
   --orange: #c46a3a;
   --orange-light: #fbeee6;
+  --blue-vi: #1890FF;
+  --blue-vi-bg: #E6F0FF;
+  --blue-vi-text: #0a4d8c;
   --bg: #f7f4ef;
   --card: #FFFFFF;
   --text: #2b2b28;

@@ -29,7 +29,7 @@ export const SERVICE_LINES = [
   { key: 'host', name: '出租托管', icon: '🏢', desc: '委托出租 · 托管', color: 'gold' },
   { key: 'decor', name: '家装', icon: '🛋', desc: '装修 · 改造', color: 'teal' },
   { key: 'aging', name: '适老化升级', icon: '🦽', desc: '居家适老 · 无障碍改造', color: 'sky' },
-  { key: 'elderly', name: '养老居住', icon: '🌳', desc: '养老社区 · 适老居所选择', color: 'sand' },
+  { key: 'elderly', name: '养老居住', icon: '🌳', desc: '养老社区 · 适老居所选择', color: 'blue-vi' },
   { key: 'asset', name: '资产管理', icon: '💼', desc: '持有 · 打理 · 增值', color: 'purple' },
   { key: 'replace', name: '置换', icon: '🔁', desc: '卖旧 · 换新', color: 'red' }
 ]
