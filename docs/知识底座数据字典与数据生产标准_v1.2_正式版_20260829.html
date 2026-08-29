@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>风声知识底座 · 数据字典与数据生产标准 v1.2（正式版）</title>
+<style>
+:root{
+  --bg:#F6F8FB;
+  --card:#FFFFFF;
+  --ink:#152033;
+  --sub:#637089;
+  --brand:#2F6BFF;
+  --green:#16A37B;
+  --red:#E5484D;
+  --amber:#B98900;
+  --line:#E6EAF2;
+  --code-bg:#F1F4FA;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:15px;line-height:1.7;
+}
+.wrap{display:flex;min-height:100vh}
+/* 侧边导航 */
+nav.side{
+  position:sticky;top:0;align-self:flex-start;
+  width:272px;flex-shrink:0;height:100vh;overflow-y:auto;
+  background:var(--card);border-right:1px solid var(--line);padding:24px 18px;
+}
+nav.side .brand{font-weight:700;font-size:17px;margin-bottom:4px;color:var(--ink)}
+nav.side .ver{font-size:12px;color:var(--green);font-weight:600;margin-bottom:18px}
+nav.side a{
+  display:block;color:var(--sub);text-decoration:none;font-size:13.5px;
+  padding:7px 10px;border-radius:6px;margin-bottom:2px;
+}
+nav.side a:hover{background:var(--code-bg);color:var(--brand)}
+nav.side a.active{background:#EAF1FF;color:var(--brand);font-weight:600}
+a:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+nav.side .grp{font-size:11.5px;color:#9AA5B8;font-weight:600;margin:16px 0 6px;padding:0 10px;text-transform:uppercase;letter-spacing:.5px}
+main{flex:1;padding:40px 48px 80px;min-width:0}
+.container{max-width:980px;margin:0 auto}
+/* 头部 */
+.hero{padding:8px 0 28px;border-bottom:1px solid var(--line);margin-bottom:32px}
+.hero .tag{display:inline-block;background:#E7F6F0;color:var(--green);font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;margin-bottom:14px}
+.hero h1{font-size:28px;line-height:1.35;letter-spacing:-.3px;margin-bottom:10px}
+.hero .lead{color:var(--sub);font-size:15px;max-width:760px}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.meta .chip{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:12.5px;color:var(--sub)}
+.meta .chip b{color:var(--ink)}
+/* 区块 */
+section{margin-bottom:44px}
+h2{font-size:21px;margin-bottom:6px;letter-spacing:-.2px;scroll-margin-top:20px}
+h2 .no{color:var(--brand);margin-right:8px}
+.sec-desc{color:var(--sub);font-size:14px;margin-bottom:18px}
+h3{font-size:16px;margin:24px 0 10px}
+h4{font-size:14.5px;margin:18px 0 8px;color:var(--ink)}
+/* 原则卡 */
+.principle{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:18px 0}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+.pcard .ic{font-size:20px;margin-bottom:8px}
+.pcard h4{margin:0 0 6px;font-size:14px}
+.pcard p{font-size:13px;color:var(--sub);margin:0}
+/* 表格 */
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13.5px}
+caption{caption-side:top;text-align:left;font-size:13px;color:var(--sub);padding:8px 4px;font-weight:600}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#F1F4FA;font-size:12.5px;font-weight:700;color:var(--ink);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl-scroll{overflow-x:auto;border-radius:10px}
+code{background:var(--code-bg);padding:2px 6px;border-radius:4px;font-size:12.5px;font-family:"SF Mono",Consolas,Menlo,monospace;color:#c0341d}
+/* 徽标 */
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.b-ok{background:#E7F6F0;color:var(--green)}
+.b-warn{background:#FDF3E3;color:var(--amber)}
+.b-danger{background:#FDEBEC;color:var(--red)}
+.b-brand{background:#EAF1FF;color:var(--brand)}
+.b-gray{background:#EEF1F6;color:var(--sub)}
+/* 流程 */
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:18px 0}
+.flow .step{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;position:relative}
+.flow .step .n{font-size:11px;color:var(--brand);font-weight:700;margin-bottom:4px}
+.flow .step h4{font-size:13.5px;margin:0 0 4px}
+.flow .step p{font-size:12px;color:var(--sub);margin:0}
+/* 调用框 */
+.callout{border-left:4px solid var(--brand);background:#F4F8FF;border-radius:0 10px 10px 0;padding:14px 18px;margin:18px 0;font-size:14px}
+.callout.warn{border-color:var(--amber);background:#FDF8EE}
+.callout.danger{border-color:var(--red);background:#FDF4F4}
+.callout .t{font-weight:700;margin-bottom:4px}
+/* 分层结构图 */
+.layers{display:grid;grid-template-columns:1fr;gap:12px;margin:18px 0}
+.layer{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;border-left:5px solid var(--brand)}
+.layer.l2{border-left-color:var(--green)}
+.layer h4{margin:0 0 4px;font-size:15px}
+.layer .role{font-size:13px;color:var(--sub);margin-bottom:8px}
+.layer .items{font-size:12.5px;color:var(--sub)}
+.link-arw{text-align:center;color:var(--brand);font-size:20px;margin:2px 0;font-weight:700}
+/* 打印 */
+@media print{
+  nav.side{display:none}
+  main{padding:20px 0}
+  body{background:#fff}
+  .wrap{display:block}
+  a{color:inherit}
+}
+/* 移动端 */
+@media(max-width:900px){
+  .wrap{display:block}
+  nav.side{position:static;width:100%;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+  main{padding:24px 18px 60px}
+  .hero h1{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="side" aria-label="标准目录">
+  <div class="brand">风声知识底座</div>
+  <div class="ver">数据字典与数据生产标准 · v1.2 正式版</div>
+  <div class="grp">标准正文</div>
+<a href="#s0">总览与变更</a>
+<a href="#s1">一 · 定位与总则</a>
+<a href="#s2">二 · 统一数据模型</a>
+<a href="#s3">三 · 词条字段契约</a>
+<a href="#s4">四 · 数据字典口径</a>
+<a href="#s5">五 · 采集生产流程</a>
+<a href="#s6">六 · 质量门槛</a>
+<a href="#s7">七 · 消费端降级规则</a>
+<a href="#s8">八 · 验收标准</a>
+<a href="#s9">九 · 数据合规与安全</a>
+<a href="#app-a">附录A · 字段映射表</a>
+<a href="#app-b">附录B · 旧标准处理</a>
+<a href="#app-c">附录C · 论证与自证</a>
+<a href="#app-d">附录D · 存量迁移执行单</a>
+</nav>
+
+<main>
+<div class="container">
+
+<header class="hero">
+  <span class="tag">v1.2 正式版 · 三方收敛定稿生效</span>
+  <h1>风声知识底座 · 数据字典与数据生产标准</h1>
+  <p class="lead">一套字段、一套口径、一套流程，所有人统一遵守。解决"数据口径对不上、每人各有一套认知"的问题，让知识底座从碎片化采集走向可调用的生产力。</p>
+  <div class="meta">
+    <span class="chip">版本 <b>v1.2（正式版）</b></span>
+    <span class="chip">状态 <b>生效</b></span>
+    <span class="chip">签发 <b>生哥 · 小眼镜</b></span>
+    <span class="chip">评审 <b>三方收敛：小眼镜 8 条+第5项 / 小鱼儿 P0×3 / 小豆子落库确认</b></span>
+    <span class="chip">生效 <b>2026-08-29</b></span>
+    <span class="chip">适用范围 <b>小眼镜/小马丫/小豆子/小叮当/小扣子/小酒窝儿</b></span>
+  </div>
+</header>
+
+<p>一套字段、一套口径、一套流程，所有人统一遵守。解决"数据口径对不上、每人各有一套认知"的问题，让知识底座从碎片化采集走向可调用的生产力。</p><p><b>本版（v1.2）由 v1.1 草案经全员评审三方收敛（小眼镜/小鱼儿/小豆子）后正式定稿生效。</b></p><div class="tbl-scroll"><table><thead><tr><th>版本</th><th>状态</th><th>签发</th><th>评审</th><th>生效</th><th>适用范围</th></tr></thead><tbody><tr><td>v1.2（正式版）</td><td>生效</td><td>生哥 · 小眼镜</td><td>三方收敛：小眼镜 8 条+第5项 / 小鱼儿 P0×3 / 小豆子落库确认</td><td>2026-08-29</td><td>小眼镜/小马丫/小豆子/小叮当/小扣子/小酒窝儿</td></tr><tr><td>v1.1（草案）</td><td>已归档</td><td>生哥 · 小眼镜</td><td>采纳小马丫 11 条建议</td><td>2026-08-27</td><td>全员评审通过</td></tr></tbody></table></div><section id="s0"><h2><span class="no">▍</span>总览：这份标准解决什么</h2><p>一句话：过去的知识底座有 6 份以上分散标准、三套互相不认的字段体系、各 Agent 各按自己理解生产数据，导致口径对不上、总量涨了也难形成生产力。本标准收口为唯一依据。</p><ul><li>🎯 一份标准：取代全部散落版本，唯一权威，冲突时以本标准为准。</li><li>🔤 一套字段：统一字段契约 + 旧字段映射表，消除 entryName/name、description/detail 等命名打架。</li><li>📐 一套口径：数据字典定义每个数据项的指标口径/单位/周期/来源，杜绝同一指标两种说法。</li><li>🔁 一套流程：采集→格式化→自检→送审→入库→复采 7 步闭环，L1 词条 / L2 数据集各归其位。</li></ul><p><b>一票否决红线（五项）</b></p><p>① 无来源不入库：未按本标准生产的任何数据一律不得并入主库；</p><p>② 编造零容忍：发现编造，整批退回并记录；</p><p>③ 口径未仲裁不入库：多源口径冲突未登记仲裁的不入库；</p><p>④ 隐私数据零容忍：含个人可识别信息（PII）的数据一律不得入库（见第九节）；</p><p>⑤ 内部口径零外泄（v1.2 新增）：七维/权重/服务线谱系/内部策略词等内部口径一律不得对外暴露（对消费端/外部输出），违反即一票否决、整批退回（见 9.3 内部级管控）。</p><p>已入库但字段/口径/合规不合规的，按本标准降级或退回重建。</p><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="s1"><h2><span class="no">一</span>定位与总则</h2><p><b>1.1 定位</b></p><p>本标准的定位是风声知识底座的"宪法"——定义知识怎么采集、怎么表达、怎么核验、怎么入库、怎么被消费端调用。它不是建议，是强制执行要求。</p><p><b>1.2 核心原则</b>（六大原则，任何一条不满足即不入库）</p><div class="tbl-scroll"><table><thead><tr><th>原则</th><th>含义</th><th>违反后果</th></tr></thead><tbody><tr><td>有来源</td><td>每条知识必须绑定可查证的 source + source_url</td><td>不入库</td></tr><tr><td>有出处</td><td>数值/结论必须标注采集日或统计周期（asOf / lastVerified）</td><td>降级"示意"</td></tr><tr><td>有字段</td><td>必填 18 项字段齐全，口径与数据字典一致</td><td>整批退回</td></tr><tr><td>可追溯</td><td>词条→数据→来源 URL 全链路可反查</td><td>不入库</td></tr><tr><td>不编造</td><td>无来源不收，多源冲突并列标注不取单值</td><td>一票否决，整批退回</td></tr><tr><td>不硬凑</td><td>采集不到标"待核"，不为了凑数填假值</td><td>标"待核"合规，硬凑违规</td></tr></tbody></table></div><p><b>1.3 三道铁律（词条入库门禁）</b></p><div class="tbl-scroll"><table><thead><tr><th>铁律</th><th>标准</th><th>判定</th></tr></thead><tbody><tr><td>找得到</td><td>至少 2 个入口可达（搜索/场景/法条/案例）</td><td>达不到不入库</td></tr><tr><td>看得懂</td><td>标题 3 秒懂、一句话答案 ≤30 字、核心要点每条 ≤20 字</td><td>达不到不入库</td></tr><tr><td>用得上</td><td>含可执行动作或可引用依据，不是知识科普</td><td>达不到不入库</td></tr></tbody></table></div><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="s2"><h2><span class="no">二</span>统一数据模型：双层结构</h2><p>知识底座不是"只有词条"的单层锅。按知识形态分两层，各管各的、互相打通——这是解决"碎片塞不进词条库"的根本。</p><p><b>L1 · 词条层（规则/案例/政策/定义）</b></p><ul><li>回答"怎么办、是什么、有什么风险"——静态、可推理、问答型</li><li>现有主库 entries_5000.json · 6968 条（OWN/PRE/CAR/LIV/P2/P3/CASE/POL/DEC/RNT/TRX…）。涨量靠新规则与案例，不靠硬塞动态数据。</li></ul><p><b>⇅ 打通机制：</b> 词条通过 dataRef 字段引用 L2 数据集（如 dataRef: DS-MKT-001）。消费端运行时"规则查 L1、出数查 L2"——决策引擎要讲理时读词条，要出数时打数据集，各取所长，互不污染。</p><p><b>L2 · 数据集层（真源动态数据）</b></p><ul><li>回答"现在值多少、通勤多久、哪个板块"——动态、结构化、可查询</li><li>楼盘 / 市场行情 / 通勤测算 / 学区 / 绿化率 / 案例素材。按数据集登记（见第四节），绑定来源 + asOf，月度更新。</li></ul><p><b>2.1 总量口径（从此不再混着算）</b></p><div class="tbl-scroll"><table><thead><tr><th>统计项</th><th>当前规模（2026-08-27 实查）</th><th>计量口径</th></tr></thead><tbody><tr><td>L1 词条</td><td>6968 条</td><td>按词条条数计</td></tr><tr><td>L2 数据集</td><td>6 个</td><td>按数据集计（内含行数另计）</td></tr><tr><td>词条字段</td><td>53 个（每条实际 25-41）</td><td>统一契约见第三节</td></tr></tbody></table></div><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="s3"><h2><span class="no">三</span>词条字段契约（统一 Schema）</h2><p>所有采集 Agent 生产词条时，字段名必须用下表，缺一不收。旧字段名（entryName/description/effDate…）全部作废，映射见附录A。</p><p><b>3.1 必填 18 项</b></p><div class="tbl-scroll"><table><thead><tr><th>#</th><th>字段</th><th>类型</th><th>说明</th><th>示例</th></tr></thead><tbody><tr><td>1</td><td>id</td><td>string</td><td>全局唯一，{域前缀}-{场景}-{序号}</td><td>POL-021</td></tr><tr><td>2</td><td>domain</td><td>string</td><td>数据域</td><td>policy</td></tr><tr><td>3</td><td>sceneDomain</td><td>string</td><td>场景域</td><td>签约中</td></tr><tr><td>4</td><td>subScene</td><td>string</td><td>子场景</td><td>资格审查→限购</td></tr><tr><td>5</td><td>name</td><td>string</td><td>词条名（客户问法）</td><td>买二套首付比例是多少</td></tr><tr><td>6</td><td>alias</td><td>array</td><td>搜索别名 ≥3</td><td>["二套","首付","贷款比例"]</td></tr><tr><td>7</td><td>detail</td><td>string</td><td>正文 ≥12 行</td><td>…</td></tr><tr><td>8</td><td>source</td><td>string</td><td>来源名称</td><td>住建委官网</td></tr><tr><td>9</td><td>source_url</td><td>string</td><td>来源 URL（必须可访问）</td><td>https://…</td></tr><tr><td>10</td><td>authority</td><td>enum</td><td>A/B/C 权威等级</td><td>A</td></tr><tr><td>11</td><td>trustLevel</td><td>number</td><td>0-1 可信度</td><td>0.85</td></tr><tr><td>12</td><td>entryType</td><td>enum</td><td>知识/数据/案例/政策/流程/风险/定义</td><td>政策</td></tr><tr><td>13</td><td>priority</td><td>enum</td><td>P0/P1/P2</td><td>P0</td></tr><tr><td>14</td><td>tags</td><td>array</td><td>标签 ≥3，且须含 clientType 维度（数组中至少一项含 "client"，v1.2 #227 铁律合入）</td><td>["client","学区","海淀"]</td></tr><tr><td>15</td><td>ownerQ</td><td>string</td><td>谁问的问题</td><td>购房者/经纪人</td></tr><tr><td>16</td><td>ownerBenefit</td><td>string</td><td>对谁有什么价值</td><td>帮客户快速判断</td></tr><tr><td>17</td><td>lastVerified</td><td>date</td><td>最后核验日期</td><td>2026-08-27</td></tr><tr><td>18</td><td>caveat</td><td>string</td><td>风险提示（无则写"无"）</td><td>各校划片以当年政策为准</td></tr></tbody></table></div><p><b>3.2 条件必填（按词条类型触发）</b></p><div class="tbl-scroll"><table><thead><tr><th>字段</th><th>触发条件</th><th>要求</th></tr></thead><tbody><tr><td>relation</td><td>所有词条（必填声明，允许空数组）</td><td>词条级关系声明：{type, target}；type∈前置/后置/父子/关联数据集/关联案例；target 指向存在的词条 id 或数据集 dsId，入库校验指向必须存在</td></tr><tr><td>legalRef</td><td>涉法词条</td><td>引用到条文号，如《民法典》第710条 + 发布机关/日期</td></tr><tr><td>dataRef</td><td>数据类 / 引用数据的词条</td><td>引用 L2 数据集 ID 或具体数据链接，不得填"待补充数据"；结构模板 {value, unit, asOf, source}（v1.2 合入）</td></tr><tr><td>caseRef</td><td>案例类</td><td>案号 + 法院 + 年份，或可核验来源；结构模板 {desc, caseNo, source}（v1.2 合入）</td></tr><tr><td>severity</td><td>风险/纠纷类</td><td>hard=法条强制 / medium=标准规范 / soft=行业惯例</td></tr><tr><td>consumerQ/consumerBenefit</td><td>可对外展示词条</td><td>客户问法 + 客户受益点</td></tr><tr><td>owner</td><td>L1 词条层（全部词条，v1.2 新增）</td><td>词条负责 Agent，明确到人，与 4.2 数据集 owner 口径一致</td></tr><tr><td>ola/cp</td><td>服务/费用类</td><td>服务水平承诺 / 成本价格参考</td></tr><tr><td>toolType</td><td>工具卡类</td><td>决策卡/流程卡/评估卡/校准卡/风险卡/边界卡</td></tr><tr><td>asOf</td><td>L2 数据集条目</td><td>数据截止/采集日期，格式 YYYY-MM-DD</td></tr></tbody></table></div><p><b>3.3 可选字段</b></p><p>def、simpleAnswer、posSpeech、negSpeech、attrs、srcType、scene、riskStage、accountability、relatedEntries、fdeChain、ownerCard、source_type、source_url_note 等。可选字段同样遵循"填了就必须真实、绑来源"。</p><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="s4"><h2><span class="no">四</span>数据字典（L2 数据集口径规范）</h2><p>数据字典 = L2 数据集的"注册中心"。任何动态数据入库前，必须先在这里登记口径，否则视为无标准数据、不予采用。这是解决"同一指标两种说法"的根治手段。</p><p><b>4.1 数据集编号规范</b></p><div class="tbl-scroll"><table><thead><tr><th>类别</th><th>编号前缀</th><th>示例</th></tr></thead><tbody><tr><td>交易/费用数据</td><td>DS-TRA</td><td>DS-TRA-001</td></tr><tr><td>市场行情数据</td><td>DS-MKT</td><td>DS-MKT-001</td></tr><tr><td>社区/楼盘数据</td><td>DS-COM</td><td>DS-COM-001</td></tr><tr><td>学区教育数据</td><td>DS-EDU</td><td>DS-EDU-001</td></tr><tr><td>通勤/交通数据</td><td>DS-TRN</td><td>DS-TRN-001</td></tr><tr><td>案例素材</td><td>DS-CASE</td><td>DS-CASE-001</td></tr></tbody></table></div><p><b>4.2 数据集登记必填要素（11 项）</b></p><div class="tbl-scroll"><table><thead><tr><th>要素</th><th>字段</th><th>要求</th></tr></thead><tbody><tr><td>编号</td><td>dsId</td><td>DS-{类别}-{序号}</td></tr><tr><td>名称</td><td>dsName</td><td>一句话说清</td></tr><tr><td>口径定义</td><td>dsDef</td><td>含范围、包含/排除、统计口径，全 Agent 唯一</td></tr><tr><td>单位</td><td>unit</td><td>万元/㎡、套、分钟、km…</td></tr><tr><td>统计周期</td><td>statCycle</td><td>与 asOf 对齐，规范写法"周期 8/1-8/25，asOf 2026-08-25"，杜绝"asOf=8-25 但周期是整月"歧义</td></tr><tr><td>来源</td><td>source_url</td><td>可访问 URL，多口径并列标注</td></tr><tr><td>数据截止</td><td>asOf</td><td>YYYY-MM-DD</td></tr><tr><td>更新频率</td><td>updateFreq</td><td>日/周/月/政策即时</td></tr><tr><td>核验状态</td><td>status</td><td>已核验 / 待核 / 待备案 / 示意（v1.2 新增第四态「待备案」：来源可信、数据已取回但尚未完成落库背书的，如民政部适老化真源，不再误标「待核」）</td></tr><tr><td>负责 Agent</td><td>owner</td><td>明确责任人</td></tr><tr><td>行级 schema</td><td>rowSchema</td><td>行内字段模板 + 单位换算约定（㎡/平方米、万元/元…）；每登记一个 dsId 必须附行级字段模板表</td></tr></tbody></table></div><p><b>4.3 现有数据集登记（2026-08-27 实查盘点）</b></p><div class="tbl-scroll"><table><thead><tr><th>dsId</th><th>数据集</th><th>规模</th><th>asOf</th><th>更新频率</th><th>核验状态</th><th>owner</th></tr></thead><tbody><tr><td>DS-MKT-001</td><td>市场数据库 v1.5（27 附表，v1.2 对齐实证：小鱼儿核 v0.3→v1.4 附表 1~25，8-28 已升 v1.5/27 附表；v1.1 表内 v0.9/14 属信息滞后已修正）</td><td>27 附表</td><td>2026-08-28</td><td>月度 + 政策即时</td><td>已核验</td><td>小马丫</td></tr><tr><td>DS-COM-001</td><td>北京 16 区在售新楼盘（房天下）</td><td>425 盘</td><td>2026-08-19</td><td>月度</td><td>待核</td><td>小马丫</td></tr><tr><td>DS-TRN-001</td><td>通勤驾车 60 格精确测算（A 方案·高德，12 板块×5 目的地）</td><td>60 格</td><td>2026-08-27</td><td>季度</td><td>已核验</td><td>小马丫</td></tr><tr><td>DS-EDU-001</td><td>学区字典 / 学区租金 / 后沙峪划片</td><td>多表</td><td>2026-08-27</td><td>学期</td><td>已核验</td><td>小马丫</td></tr><tr><td>DS-COM-002</td><td>绿化率补采</td><td>—</td><td>2026-08-27</td><td>季度</td><td>已核验</td><td>小马丫</td></tr><tr><td>DS-CASE-001</td><td>客户洞察案例素材（C-01~C-10，动机/谈判/成交三维度）</td><td>10 条</td><td>2026-08-26</td><td>随采集</td><td>已核验</td><td>小马丫</td></tr></tbody></table></div><p><b>待办：</b> DS-COM-001（425 盘）尚未完成口径核验与字段标准化，暂不进入消费端权威引用，按"示意"级处理。</p><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="s5"><h2><span class="no">五</span>采集生产流程（7 步闭环）</h2><p>所有数据生产必须走完 7 步，缺一步不算完成。品控复核贯穿第 5 步，形成 采集 → 入库 → 品控 → 消费 全程闭环。</p><div class="tbl-scroll"><table><thead><tr><th>步骤</th><th>动作</th><th>要点</th></tr></thead><tbody><tr><td>STEP 1 立项</td><td>明确采集方向/范围/颗粒度</td><td>登记数据集编号与口径（dsDef 先行）</td></tr><tr><td>STEP 2 采集</td><td>按真源采集</td><td>数值绑 source_url + asOf，多源冲突并列标注</td></tr><tr><td>STEP 3 格式化</td><td>转统一字段契约</td><td>L1 用 3.1/3.2，L2 用 4.2，旧字段名作废</td></tr><tr><td>STEP 4 自检</td><td>3 轮自检 0 错误</td><td>字段齐/来源可查/时效达标/无编造</td></tr><tr><td>STEP 5 送审</td><td>提交小眼镜核验</td><td>+ 独立 API 抽验（数值类如高德/官方口径）+ 品控复核（小酒窝儿）</td></tr><tr><td>STEP 6 入库</td><td>L1 词条并入 entries 主库</td><td>L2 数据集登记入数据字典，随版本管理</td></tr><tr><td>STEP 7 复采/版本</td><td>L2 增量留史、全量出数</td><td>重采先留历史快照；<b>版本号与 asOf 强制绑定</b>（记录版本号+数据截止日，v1.2 升级为强制措辞），禁止静默覆盖</td></tr></tbody></table></div><p><b>入库前提：</b> 未完成第 5 步核验的数据，一律标"待核"，不得进入任何对外/消费端输出。核验通过才可升"已核验"。</p><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="s6"><h2><span class="no">六</span>质量门槛</h2><p><b>6.1 权威分级（统一双轨制）</b></p><div class="tbl-scroll"><table><thead><tr><th>等级</th><th>trustLevel</th><th>来源类型</th><th>入库要求</th></tr></thead><tbody><tr><td>A</td><td>≥ 0.85</td><td>法律条文/司法解释/政府文件/官方数据</td><td>标注发布机关+文号+日期，可直接引用</td></tr><tr><td>B</td><td>0.75-0.85</td><td>行业协会/权威机构/主流媒体/学术论文</td><td>需标注"交叉验证"</td></tr><tr><td>C</td><td>0.65-0.75</td><td>行业报告/一般媒体</td><td>必须双源验证才可入权威引用</td></tr><tr><td>&lt;C</td><td>&lt; 0.65</td><td>个人经验/自媒体/论坛</td><td>不入库；或仅作"示意"并明确标注</td></tr></tbody></table></div><p><b>双轨一致性硬校验：</b> authority 与 trustLevel 必须落在对应区间（A≥0.85 / B 0.75-0.85 / C 0.65-0.75 / &lt;C 0.65）。出现越界（如 authority=B 却 trustLevel=0.9）：以 authority 为准，整批退回修正后重审。验收表同步执行（见第八节）。</p><p><b>6.2 其他门槛</b></p><div class="tbl-scroll"><table><thead><tr><th>维度</th><th>标准</th></tr></thead><tbody><tr><td>双源验证</td><td>关键数据至少 2 个独立来源；单源数据 trustLevel 上限 0.65，并附 URL</td></tr><tr><td>时效性</td><td>政策/法规类优先当年；数据类 3 年内；超期标 asOf，禁止当现价引用</td></tr><tr><td>编造零容忍</td><td>发现编造，整批退回并记录</td></tr><tr><td>字段质量</td><td>detail 正文 ≥400 字且 ≥3 个要点条目（内容尺度，非行数）；alias ≥3；tags ≥3；name 是客户问法</td></tr><tr><td>证据链</td><td>dataRef/caseRef 为真实引用，禁止"待补充数据/待补充案例"占位符</td></tr></tbody></table></div><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="s7"><h2><span class="no">七</span>消费端降级规则</h2><p>知识库的"生产力"最终体现在消费端输出。规则：宁可"示意"，不出无依据硬数。</p><div class="tbl-scroll"><table><thead><tr><th>情形</th><th>处理</th></tr></thead><tbody><tr><td>数值无 source_url</td><td>不渲染权威数值卡，降级"示意"</td></tr><tr><td>dataRef / caseRef 未补齐</td><td>按"示意"执行，不出权威硬数</td></tr><tr><td>demo / 内部参考</td><td>明确标注"示意"，不进正式输出</td></tr><tr><td>多源口径冲突</td><td>并列标注，不合并取单值</td></tr><tr><td>数据已过期</td><td>标注 asOf，禁止当现价引用</td></tr><tr><td>数据集未核验（status=待核）</td><td>禁止进消费端权威引用</td></tr></tbody></table></div><p><b>升级闭环（示意 → 已核验）：</b> 降级不是终点：补齐缺失字段 → 重新送审 → 独立抽验通过 → 升"已核验"进入权威引用。双向闭环，数据不因一次缺失永久降级。</p><p><b>当前落地口径（已核实）：</b> 6968 库中真实内容 dataRef 仅 19.1%、caseRef 仅 13.3%——按本标准，这些词条在消费端一律降级"示意"，不输出权威数值卡，待补齐后再升级。</p><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="s8"><h2><span class="no">八</span>验收标准</h2><div class="tbl-scroll"><table><thead><tr><th>验收项</th><th>标准</th><th>检查方式</th></tr></thead><tbody><tr><td>字段完整性</td><td>必填 18 项 100% 齐全</td><td>脚本校验</td></tr><tr><td>来源可查</td><td>source_url 100% 可访问</td><td>抽验 ≥20%</td></tr><tr><td>时效达标</td><td>lastVerified 不超过 90 天</td><td>脚本校验</td></tr><tr><td>口径一致</td><td>数据字典 dsDef 无歧义，跨 Agent 抽查一致率 100%</td><td>交叉核验</td></tr><tr><td>编造零容忍</td><td>0 条编造</td><td>独立 API/口径抽验</td></tr><tr><td>证据链可用</td><td>dataRef/caseRef 无占位符</td><td>全量扫描</td></tr><tr><td>找得到/看得懂/用得上</td><td>三道铁律全过</td><td>入库门禁</td></tr><tr><td>双轨一致性</td><td>authority 与 trustLevel 区间匹配，0 越界</td><td>脚本硬校验，越界整批退回</td></tr></tbody></table></div><p><b>8.2 健康度里程碑（v1.0 → v1.1）</b></p><div class="tbl-scroll"><table><thead><tr><th>指标</th><th>当前实证口径（2026-08-28）</th><th>3 个月目标</th></tr></thead><tbody><tr><td>dataRef 真值率</td><td>5.3%（字段存在率 19.1%→20.8%）</td><td>→ 50%</td></tr><tr><td>source_url 覆盖率</td><td>59.1%（字段存在率 73.6%→75%）</td><td>→ 100%</td></tr><tr><td>18 必填字段符合率</td><td>部分</td><td>100%</td></tr><tr><td>双轨一致性（authority↔trustLevel）</td><td>未校验</td><td>0 越界</td></tr><tr><td>lastVerified ≥ 8-11 词条占比</td><td>仅 1.9%</td><td>→ 高频消费词条 100% 覆盖</td></tr></tbody></table></div><p><b>试行期（v1.2）：</b> 先选 DS-MKT-001（市场库）、DS-EDU-001（学区字典）两个数据集按新契约跑一轮试点，验证字段与行级 schema 可行性后，再全员全量切换；<b>试点样本须覆盖高频消费词条（含 clientType 词条），验证「示意→已核验」端到端闭环（v1.2 合入小眼镜 P1-⑥）。</b></p><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="s9"><h2><span class="no">九</span>数据合规与安全</h2><p>标准不只管"对不对"，还要管"能不能碰"。数据采集、存储、生产、消费全链路设防，隐私与敏感数据零容忍。</p><p><b>9.1 隐私红线（一票否决第 4 项）</b></p><p>零容忍任何含个人可识别信息（PII）的数据——姓名+联系方式、身份证号、精确门牌、车牌、人脸、家庭资产明细、家庭关系等——一律不得入库，无例外。谁碰谁违规，整批退回并追责到负责人。</p><p><b>9.2 敏感字段禁采清单（校验器硬编码拦截）</b></p><div class="tbl-scroll"><table><thead><tr><th>类别</th><th>禁采/禁存内容</th><th>合规替代</th></tr></thead><tbody><tr><td>个人身份</td><td>姓名+联系方式、身份证号、证件照片</td><td>仅存"客户/经纪人"角色与需求维度，不存可识别身份</td></tr><tr><td>精确位置</td><td>精确门牌号、家庭住址、车牌、人脸</td><td>存到板块/小区粒度，不存精确坐标</td></tr><tr><td>资产隐私</td><td>家庭资产明细、收入流水、债务信息</td><td>仅存决策相关维度（预算区间/持有周期），脱敏处理</td></tr><tr><td>内部敏感</td><td>客户购房动机、谈判策略、独家判断原稿</td><td>敏感级管控：加密 + 权限白名单 + 输出脱敏</td></tr></tbody></table></div><p><b>9.3 数据分级管控</b></p><div class="tbl-scroll"><table><thead><tr><th>级别</th><th>内容</th><th>管控</th></tr></thead><tbody><tr><td>公开级</td><td>公开挂牌/市场/政策/法规数据</td><td>全 Agent 可共享，入库前仍须过来源与口径校验</td></tr><tr><td>内部级</td><td>风声协作方内部数据</td><td>仅飞书协作群内可见，不对外输出；<b>内部口径（七维/权重/服务线谱系/内部策略词）一律不得对外暴露，违者触发一票否决第5项（v1.2）</b></td></tr><tr><td>敏感级</td><td>客户需求画像、案例脱敏前素材、内部判断</td><td>加密 + 权限白名单 + 输出脱敏</td></tr></tbody></table></div><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="app-a"><h2><span class="no">附录A</span>字段映射表（旧字段 → 统一字段）</h2><div class="tbl-scroll"><table><thead><tr><th>旧字段（小马丫采集规范）</th><th>旧字段（词条体系规范）</th><th>旧字段（数据字典/主库历史）</th><th>统一字段</th></tr></thead><tbody><tr><td>entryName</td><td>name</td><td>name</td><td>name</td></tr><tr><td>description</td><td>detail</td><td>detail</td><td>detail</td></tr><tr><td>effDate / version</td><td>lastVerified</td><td>asOf</td><td>lastVerified（词条）/ asOf（数据集）</td></tr><tr><td>source（名称+URL 合一）</td><td>source</td><td>source_url</td><td>source（名称）+ source_url（链接）</td></tr><tr><td>trustLevel（0-1）</td><td>权威 A/B/C</td><td>authority 五级</td><td>authority + trustLevel 双轨（见 6.1）</td></tr><tr><td>entryName 对应 id 规则</td><td>id 域前缀+序号</td><td>id 域前缀+序号</td><td>id</td></tr><tr><td>description</td><td>def</td><td>def</td><td>def（专业定义，80-200 字）</td></tr><tr><td>—</td><td>consumerQ / oneLineAnswer</td><td>consumerQ / simpleAnswer</td><td>consumerQ / simpleAnswer</td></tr></tbody></table></div><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="app-b"><h2><span class="no">附录B</span>旧标准处理声明</h2><div class="tbl-scroll"><table><thead><tr><th>旧标准</th><th>处理</th></tr></thead><tbody><tr><td>小马丫采集规范 v1.0（2026-08-11）</td><td>字段/流程部分合并入本标准，独立版本作废</td></tr><tr><td>词条体系质量规范（2026-07-21）</td><td>三道铁律/质量门槛保留，作为本标准依据</td></tr><tr><td>数据字典标准定义 v1.0（2026-08-05 草案）</td><td>升级为正式版，纳入本标准第四节数据字典</td></tr><tr><td>终端记忆层知识库标准（2026-07-21）</td><td>保留作为消费端导航/可检索性要求，与本标准不冲突</td></tr><tr><td>小豆子字段契约 JSON</td><td>作为消费端输出契约，与本生产标准互补（生产→消费两端）</td></tr></tbody></table></div><p><b>生效与仲裁：</b> 本标准自 2026-08-27 生效。此后任何 Agent 之间出现字段/口径/流程争议，一律以本标准为仲裁依据；本标准未覆盖的新情况，由小眼镜记录并提请修订，形成 v1.1。</p><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="app-c"><h2><span class="no">附录C</span>论证与自证（四轮验证记录）</h2><p>本标准在定稿前经过四轮独立验证：六顶思考帽自证合理、6 位专家批判找漏、5 轮结构深入锁死骨架、第 6 轮合规安全守住边界。</p><p><b>v1.2 变更记录（2026-08-29 · 三方收敛合入，均为字段级/流程级，不动骨架）</b></p><ul><li>P0×3：① tags 须含 clientType 维度（3.1，#227 铁律，小鱼儿提出）② dataRef/caseRef 结构模板（3.2）③ status 新增第四态「待备案」（4.2）</li><li>P1④⑤⑥：④ 附录D.2 迁移优先级改双优先 ⑤ L1 词条层加 owner（3.2）⑥ 试点覆盖高频消费词条（8.2）</li><li>一票否决第5项：内部口径零外泄（对外输出侧强制项，并入总则 + 9.3）</li><li>⑦改措辞：附录D「5067 规则」补定义（5067 = 8-01 快照 5067 条词条数，非规则名，见 #222 交接文档）；STEP7「版本号+asOf」升强制措辞</li><li>P1-4 升级：4.3 DS-MKT-001 版本对齐 v1.5/27 附表、status 实证修正</li></ul><p><b>v1.1 变更记录（2026-08-27 · 采纳小马丫评审 11 条，均为字段级/流程级，不动骨架）</b></p><ul><li>P0：① 附录B 声明 v0.1 草案演进关系 ② relation 提为词条级必填声明（3.2） ③ 双轨一致性硬校验（6.1 + 8 验收） ④ detail 改内容尺度 ≥400 字 + ≥3 要点（6.2）</li><li>P1：⑤ 数据集登记加行级 schema + 单位换算（4.2 第 11 项） ⑥ statCycle 与 asOf 对齐 ⑦ 消费端"示意→已核验"升级闭环（7） ⑧ 生产流程加 STEP7 复采/版本管理（5）</li><li>P2：⑨ 送审环节加品控复核角色（小酒窝儿） ⑩ 健康度里程碑（8.2） ⑪ 试行期选 DS-MKT-001 / DS-EDU-001（8.2）</li><li>核心补强：新增附录D 存量迁移执行单（6968 条三档迁移清单 + 优先级规则）。</li></ul><p><b>C.1 六顶思考帽（自证合理性）</b></p><div class="tbl-scroll"><table><thead><tr><th>帽子</th><th>视角</th><th>结论对本标准的作用</th></tr></thead><tbody><tr><td>🤍 白帽·事实</td><td>每个设计点都钉在实证数据上（总量 6968 未涨、三套字段打架、dataRef 仅 19.1%、6 个数据集无处安放）</td><td>对症下药，非为定标准而定</td></tr><tr><td>❤️ 红帽·直觉</td><td>最大隐忧：会不会又是一份纸面文档</td><td>触发执行机制兜底（C.3 第 5 轮）</td></tr><tr><td>🖤 黑帽·批判</td><td>无强制机制 / 存量迁移没说清 / L2 衔接空转 / 自我监督有漏洞 / 新红线副作用</td><td>五个真问题全部在 C.3 五轮中解决</td></tr><tr><td>💛 黄帽·价值</td><td>终结字段打架 / 给动态数据户口 / 接上采集入库断点 / 信任可分级</td><td>方向正确，价值清晰</td></tr><tr><td>💚 绿帽·创新</td><td>入库校验器 / 多维表登记 / 争议仲裁区 / 源头模板 / 符合度看板</td><td>落地机制全部采纳</td></tr><tr><td>💙 蓝帽·综合</td><td>标准合理但缺"施工队与质检员"，须补执行层再发群</td><td>形成 C.3 五轮深入思考</td></tr></tbody></table></div><p><b>C.2 六专家批判评审（找漏）</b></p><div class="tbl-scroll"><table><thead><tr><th>专家视角</th><th>维度</th><th>核心批判</th><th>处置</th></tr></thead><tbody><tr><td>数据架构师</td><td>数据模型</td><td>18 字段是"文档型"非"模型型"，缺关系/类型/取值范围约束</td><td>C.3 第 1 轮：关系内嵌词条，锁死双层</td></tr><tr><td>知识图谱专家</td><td>语义层</td><td>管条目不管图谱，词条互连无契约；权威应挂声明而非词条</td><td>relation 区块内嵌；权威挂声明列入 v1.1 评估</td></tr><tr><td>数据质量专家</td><td>质量度量</td><td>验收只查"有没有"不查"对不对"，缺准确性/一致性/唯一性度量</td><td>C.3 第 2 轮：DQ 两档评分 + 一票否决三项</td></tr><tr><td>数据治理专家</td><td>治理闭环</td><td>有 owner 无闭环，缺变更审批/退役机制/签发记录</td><td>C.3 第 3 轮：三层治理 + 大版本生哥拍板</td></tr><tr><td>LLM/RAG 专家</td><td>消费端</td><td>为人读设计非机器读，缺检索契约/上下文组装/token 预算</td><td>列入 v1.1 立项（字段级迭代，不动结构）</td></tr><tr><td>工程化专家</td><td>落地工具</td><td>6 步流程靠人肉，缺工具链/入库接口/回滚</td><td>C.3 第 5 轮：校验器+模板+看板三件套</td></tr></tbody></table></div><p><b>列入 v1.1 迭代（字段级，不动结构）</b>：① RAG 检索与生成契约（chunk 粒度/向量化/上下文组装/token 预算）；② 权威分级下放至"声明"粒度。均为消费端增强项，不影响本版骨架。</p><p><b>C.3 五轮结构深入（锁死骨架）</b></p><div class="tbl-scroll"><table><thead><tr><th>轮次</th><th>结构性问题</th><th>定稿决策</th></tr></thead><tbody><tr><td>第 1 轮</td><td>双层 or 三层？关系放哪？</td><td>锁死两层，关系内嵌 L1 词条 relation 区块，不增层</td></tr><tr><td>第 2 轮</td><td>质量怎么判"对"而不是"有"？</td><td>核心资产（L2+P0/P1）全维 DQ；普通词条三维必检；一票否决三项（来源/编造/口径仲裁）</td></tr><tr><td>第 3 轮</td><td>治理谁说了算？怎么变更？</td><td>自动校验器硬判 → 小版本免审 → 大版本生哥拍板；争议一次仲裁终身有效</td></tr><tr><td>第 4 轮</td><td>6968 存量怎么接管？</td><td>三档迁移：达标 / 补强 / 降级示意，按被调用频率优先补强</td></tr><tr><td>第 5 轮</td><td>怎么不烂尾？</td><td>入库校验器 + 源头格式化模板 + 标准符合度看板三件套</td></tr></tbody></table></div><p><b>结构承诺：</b> 自 v1.0 起，标准骨架（双层结构 / 字段契约 / 一票否决四项 / 治理层级）不再做结构性变更；后续仅 v1.1、v1.2 等字段级、流程级小迭代。任何动"结构"的提议默认拒绝，除非生哥拍板升大版本。</p><p><b>C.4 第 6 轮：数据合规与安全（守边界）</b></p><p>详见正文第九节。核心定稿：隐私红线升为一票否决第 4 项、敏感字段禁采清单硬编码进校验器、数据三级分级管控、采集与消费端双端合规、保留与删除机制。合规与质量联动——不合规数据一律视为不符合本标准，禁止并入主库、禁止进入消费端输出。</p><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><section id="app-d"><h2><span class="no">附录D</span>存量迁移执行单（6968 条接管方案）</h2><p>附录C 第 4 轮定下"三档迁移"原则，本附录给出执行清单模板与优先级规则，避免存量迁移卡死在半路。</p><p><b>D.1 迁移清单模板</b></p><div class="tbl-scroll"><table><thead><tr><th>字段</th><th>说明</th></tr></thead><tbody><tr><td>batchId</td><td>迁移批次号（按 ID 前缀分批：OWN/PRE/CAR/LIV/P2/P3/CASE/POL…）</td></tr><tr><td>范围</td><td>词条 ID 列表 或 数据集 dsId</td></tr><tr><td>当前完整度</td><td>18 必填字段覆盖率 / source_url / trustLevel / dataRef / caseRef / relation</td></tr><tr><td>目标档位</td><td>达标 / 补强 / 降级示意</td></tr><tr><td>补强动作</td><td>补 source_url / 补 relation / 补 dataRef / 标待核…</td></tr><tr><td>优先级</td><td>按被调用频率（P0 &gt; P1 &gt; P2，高频消费优先）</td></tr><tr><td>责任人</td><td>执行 Agent</td></tr><tr><td>状态</td><td>待迁移 / 迁移中 / 已达标 / 已降级</td></tr></tbody></table></div><p><b>D.2 执行优先级规则（v1.2 改双优先）</b></p><ul><li><b>双优先（并列为第一优先）：</b> ① 高频消费词条（含 clientType 词条）＞ P0 域 ＞ P1 域——先补能救消费端的；② 8-11 后窗口高风险档（实证 lastVerified≥8-11 仅 1.9%）——两条均绑定 #222 dataRef/caseRef 字段级补齐（非空值占位）。</li><li><b>第二优先：</b> L2 数据集行级 schema 与单位换算补齐（如 DS-COM-001 的 425 盘从"示意"转"已核验"）。</li><li><b>第三优先：</b> P2 以下词条按档位批量处理，不逐条返工。</li><li><b>收尾：</b> 无法追溯 source 的按「不可追溯」标记规则标 source='不可追溯' + 降 trustLevel 一档，可控（v1.2 更正措辞：5067 = 8-01 快照 5067 条词条总量、非规则名，见 #222 交接文档，本标准内不留未定义术语）。</li></ul><p><b>迁移红线：</b> 迁移过程不得改变词条事实内容，只补字段与证据链；任何改动须留历史快照 + 审计记录，避免迁移本身引入新错误。</p><hr style="border:none;border-top:1px solid var(--line);margin:28px 0"><p><i>（内容由AI生成，仅供参考）</i></p>
+
+<footer style="margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:#9AA5B8;font-size:12.5px">
+  风声知识底座 · 数据字典与数据生产标准 v1.2（正式版）｜签发：生哥 · 小眼镜｜生效：2026-08-29｜v1.1→v1.2 三方收敛合入（小眼镜 8 条+第5项 / 小鱼儿 P0×3 / 小豆子落库确认）｜DS-COM-001 425 盘补采 256 盘已全量交付（8-29 07:47）
+</footer>
+
+</div>
+</main>
+</div>
+</body>
+</html>
