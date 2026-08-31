@@ -14,15 +14,18 @@
 
     <!-- 模块一：业务词典 -->
     <view v-if="mod === 'dict'">
-      <view class="section-header"><text class="section-title">业务词典</text><text class="section-more">7 域 104 条</text></view>
+      <view class="dict-search" @tap="goDictSearch">
+        <text class="ds-icon">🔍</text><text class="ds-ph">搜索 {{ dictTotal }} 条行业词条</text>
+      </view>
+      <view class="section-header"><text class="section-title">业务词典</text><text class="section-more">{{ dictDomains.length }} 域 {{ dictTotal }} 条</text></view>
       <view class="dict-grid">
-        <view class="dict-card" v-for="(d, i) in domains" :key="i" @tap="toast(d.name + ' ' + d.count + '（模拟）')">
+        <view class="dict-card" v-for="(d, i) in dictDomains" :key="i" @tap="goDomain(d)">
           <view class="dict-icon">{{ d.icon }}</view>
           <view class="dict-name">{{ d.name }}</view>
-          <view class="dict-count">{{ d.count }}</view>
+          <view class="dict-count">{{ d.count }} 条</view>
         </view>
       </view>
-      <view class="icp">词条口径经全量核对（#111）<view>数据校对 5 步链路 · 禁止凭印象</view></view>
+      <view class="icp">词条来自真实字典（法源可追溯）<view>引证必保留 · 依据整理中会诚实标注</view></view>
     </view>
 
     <!-- 模块二：品质测评 -->
@@ -65,13 +68,16 @@
 </template>
 
 <script>
-import { knowledgeDomains, casesData } from '../../utils/v4data.js'
+import { casesData } from '../../utils/v4data.js'
+import { DICT_DOMAINS, DICT_TOTAL } from '../../utils/dict.js'
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return {
       mod: 'dict',
-      domains: knowledgeDomains,
+      dictDomains: DICT_DOMAINS,
+      dictTotal: DICT_TOTAL,
       caseList: casesData.map(c => ({ ...c, _open: false }))
     }
   },
@@ -85,8 +91,11 @@ export default {
     toast(m) { uni.showToast({ title: m, icon: 'none' }) },
     goAssess() { uni.navigateTo({ url: '/pages/assess/index' }) },
     goCases() { uni.navigateTo({ url: '/pages/cases/index' }) },
-    toggleCase(c) { c._open = !c._open }
-  }
+    toggleCase(c) { c._open = !c._open },
+    goDomain(d) { uni.navigateTo({ url: '/pages/knowledge/domain?domain=' + encodeURIComponent(d.key) + '&name=' + encodeURIComponent(d.name) }) },
+    goDictSearch() { uni.navigateTo({ url: '/pages/knowledge/domain' }) }
+  },
+  onShow() { trackPageview('knowledge') }
 }
 </script>
 
@@ -109,4 +118,16 @@ export default {
 .kg-case-full .blk-b { font-size:12.5px; color:#555; line-height:1.6; }
 .kg-case-foot { margin-top:6px; }
 .kg-case-openbtn { font-size:12px; color:#c46a3a; font-weight:700; }
+
+/* 业务词典：搜索框 + 域网格 */
+.dict-search { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #e7e0d4; border-radius: 999px; padding: 10px 14px; margin-bottom: 12px; }
+.ds-icon { font-size: 15px; }
+.ds-ph { font-size: 13px; color: #999; }
+.dict-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.dict-card { width: calc((100% - 20px) / 3); background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 12px 10px; box-sizing: border-box; }
+.dict-card:active { background: #f7f4ef; }
+.dict-icon { font-size: 22px; }
+.dict-name { font-size: 13px; font-weight: 700; color: #2b2b2b; margin-top: 6px; line-height: 1.3; }
+.dict-count { font-size: 11px; color: #999; margin-top: 3px; }
+.icp { font-size: 11px; color: #bbb; text-align: center; margin-top: 14px; line-height: 1.6; }
 </style>

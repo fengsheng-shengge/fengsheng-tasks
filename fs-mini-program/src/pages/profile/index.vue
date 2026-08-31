@@ -33,17 +33,23 @@
     </view>
     <view class="menu-group">
       <view class="menu-item" @tap="openPrivacy"><view class="menu-icon">🔒</view><view class="menu-text">隐私政策</view><view class="menu-arrow">›</view></view>
+      <view class="menu-item" @tap="openFeedback"><view class="menu-icon">💬</view><view class="menu-text">意见反馈</view><view class="menu-arrow">›</view></view>
       <view class="menu-item" @tap="toast('数据导出 / 迁移 · 后续版本开放')"><view class="menu-icon">📦</view><view class="menu-text">数据导出 / 迁移</view><view class="menu-arrow">›</view></view>
       <view class="menu-item" @tap="toast('关于风声 · 后续版本开放')"><view class="menu-icon">ℹ️</view><view class="menu-text">关于风声</view><view class="menu-arrow">›</view></view>
     </view>
     <view class="icp">⚠️ 客户数据仅你可见，平台不收取、不用于撮合<view>帮助服务者用独立价值获得尊重</view></view>
+
+    <!-- 反馈弹层 -->
+    <feedback-popup :show.sync="fbShow" source="profile" />
   </view>
 </template>
 
 <script>
 import { useUserStore } from '../../store/user'
 import { copyLink, APP_SHARE_TITLE } from '../../utils/share.js'
+import { trackPageview } from '../../utils/tracker'
 export default {
+  data() { return { fbShow: false } },
   computed: {
     userStore() { return useUserStore() },
     brokerName() { return this.userStore.nickname || '风声用户' },
@@ -68,6 +74,7 @@ export default {
     },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) },
     openPrivacy() { uni.navigateTo({ url: '/pages/privacy/index' }) },
+    openFeedback() { this.fbShow = true },
     copyMiniLink() {
       copyLink('/pages/home/index', '小程序链接已复制 · 打开微信即可跳转')
     }
@@ -77,7 +84,8 @@ export default {
   },
   onShareTimeline() {
     return { title: APP_SHARE_TITLE }
-  }
+  },
+  onShow() { trackPageview('profile') }
 }
 </script>
 

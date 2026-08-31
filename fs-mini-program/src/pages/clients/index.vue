@@ -146,6 +146,7 @@
 <script>
 import { personaMap, levelMap } from '../../utils/v4data.js'
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return {
@@ -194,6 +195,7 @@ export default {
     // 不必等 App 的 200ms 延迟（App 延迟 init 仅作兜底）。initFromStorage 内部已按
     // 「fs_clients key 是否存在」区分首次启动(seed 示例)与用户清空(不回弹)，空态真实可达。
     if (!this.userStore._initialized) this.userStore.initFromStorage()
+    trackPageview('clients')
     const fid = this.userStore.focusClientId
     if (fid) {
       this.userStore.focusClientId = null

@@ -20,8 +20,10 @@
 </template>
 
 <script>
+import { trackPageview } from '../../utils/tracker'
 export default {
   data() { return { tab: 'a' } },
-  methods: { toast(m) { uni.showToast({ title: m, icon: 'none' }) } }
+  methods: { toast(m) { uni.showToast({ title: m, icon: 'none' }) } },
+  onShow() { trackPageview('assess') }
 }
 </script>
