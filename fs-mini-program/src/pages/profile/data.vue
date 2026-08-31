@@ -26,7 +26,7 @@
 
 <script>
 import { useUserStore } from '../../store/user'
-import { trackEvent } from '../../utils/tracker'
+import { trackEvent, trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return { exportJson: '', importText: '' }
@@ -35,6 +35,7 @@ export default {
     userStore() { return useUserStore() }
   },
   onLoad() {
+    trackPageview('profile-data')
     if (!this.userStore._initialized) this.userStore.initFromStorage()
   },
   methods: {

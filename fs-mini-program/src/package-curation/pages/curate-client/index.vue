@@ -136,6 +136,7 @@
 <script>
 import { generateCuration } from '../../engine.js'
 import { buildRadarDataUrl } from '../../radar.js'
+import { trackPageview, trackEvent } from '../../../utils/tracker'
 
 const AXIS_TITLE = { buy: '购房', rent: '租住', sell: '出售', lease_out: '出租' }
 
@@ -216,6 +217,7 @@ export default {
     }
   },
   onLoad(options) {
+    trackPageview('curate-client')
     let dimScores = {}, dimSelfScores = {}, dimensions = []
     if (options) {
       this.axisType = options.axisType || 'buy'
@@ -277,6 +279,7 @@ export default {
       : ''
   },
   onShareAppMessage() {
+    trackEvent('curate_share', 'curate-client', { axis: this.axisType, node: this.axisNodeKey, isClient: this.isClient })
     return {
       title: '我为您准备了这次见面的专业建议 · 风声',
       path: '/package-curation/pages/curate-client/index?axisType=' + this.axisType +

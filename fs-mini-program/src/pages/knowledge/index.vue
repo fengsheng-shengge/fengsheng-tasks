@@ -162,6 +162,7 @@
 import { kbFacets, kbSearch } from '../../utils/knowledge-search.js'
 import { casesData } from '../../utils/v4data.js'
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return {
@@ -193,6 +194,7 @@ export default {
     }
   },
   onShow() {
+    trackPageview('knowledge')
     this.selections = uni.getStorageSync('fs_brief_kb') || []
   },
   watch: {

@@ -159,6 +159,7 @@
 
 <script>
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return {
@@ -198,6 +199,7 @@ export default {
     lib() { return (this.userStore.curatings || []).map(c => ({ t: c.t, s: c.s })) }
   },
   onShow() {
+    trackPageview('curate')
     try {
       const a = uni.getStorageSync('fs_last_assess')
       if (a && a.scores) this.assessInfo = a

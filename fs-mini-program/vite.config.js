@@ -40,6 +40,8 @@ function postBuildInject() {
         // 注意：必须连同 -webkit- 前缀一起匹配，否则 -webkit-animation:shadow-preload 会被拆成非法 '-webkit-;' 导致 IDE 编译 code 10
         wxss = wxss.replace(/(?:-webkit-)?animation:shadow-preload[^;}]*/g, '')
         wxss = wxss.replace(/shadow-grey\.png/g, '')
+        // 清掉被 `animation-delay:3s` 等注入拆出的非法 `;;`（微信端 wxss 解析器报 code 10041 unexpected token ';'）
+        wxss = wxss.replace(/;;+/g, ';')
         if (wxss.length !== before) {
           writeFileSync(wxssPath, wxss)
           console.log('✅ 已清除 app.wxss 中 shadow-preload CDN 段（' + (before - wxss.length) + ' 字节）')

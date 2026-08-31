@@ -77,6 +77,11 @@
           <view class="menu-info"><view class="menu-name">关于风声</view></view>
           <view class="menu-arrow">›</view>
         </view>
+        <view class="menu-item" @tap="openFeedback">
+          <view class="menu-icon" style="background:var(--cream-dark)">💬</view>
+          <view class="menu-info"><view class="menu-name">意见反馈</view></view>
+          <view class="menu-arrow">›</view>
+        </view>
       </view>
     </view>
 
@@ -93,6 +98,9 @@
     </view>
 
     <view class="bottom-space"></view>
+
+    <!-- 反馈弹层 -->
+    <feedback-popup :show.sync="fbShow" source="profile" />
   </view>
 </template>
 
@@ -117,8 +125,10 @@ export default {
            + (u.shares || 0)
     }
   },
+  data() { return { fbShow: false } },
   onShow() { trackPageview('profile') },
   methods: {
+    openFeedback() { this.fbShow = true },
     go(tab) {
       if (['cases', 'clients'].includes(tab)) uni.navigateTo({ url: '/pages/' + tab + '/index' })
       else uni.switchTab({ url: '/pages/' + tab + '/index' })

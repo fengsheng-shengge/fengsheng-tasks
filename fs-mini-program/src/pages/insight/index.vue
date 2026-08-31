@@ -52,6 +52,15 @@
       <view class="conf-meta" v-if="confirmed">确认时间：{{ d.confirm.date }} ｜ 确认人：{{ d.confirm.by }}</view>
     </view>
 
+    <!-- 进入提案报告（仅已确认显示） -->
+    <view class="proposal-btn-wrap" v-if="confirmed">
+      <button class="proposal-btn" @tap="goProposal">
+        <text class="p-btn-icon">🏠</text>
+        <text class="p-btn-text">进入房源提案报告</text>
+        <text class="p-btn-arrow">→</text>
+      </button>
+    </view>
+
     <!-- 下一步 -->
     <view class="next">
       <view class="next-t">下一步</view>
@@ -85,6 +94,7 @@
  * 铁律：只渲染客户确认过的需求；示例/未核验数据明确标注；不渲染房源与价格数字；不给"推荐买哪"结论。
  */
 import { generateInsightReportHTML, generateInsightSummary } from '../../utils/report-template.js'
+import { trackPageview } from '../../utils/tracker'
 
 // V4 演示示例（标 isExample；七维权重合计 100，结构对齐生哥三轴方法论）
 const EXAMPLE_INSIGHT = {
@@ -137,6 +147,7 @@ export default {
     }
   },
   onLoad(options) {
+    trackPageview('insight-report')
     if (options && options.insight) {
       try {
         const parsed = JSON.parse(decodeURIComponent(options.insight))
@@ -189,6 +200,18 @@ export default {
         success: () => uni.showToast({ title: '摘要已复制', icon: 'none' }),
         fail: () => uni.showToast({ title: '复制失败', icon: 'none' })
       })
+    },
+    goProposal() {
+      const params = {
+        insight: encodeURIComponent(JSON.stringify(this.d)),
+        clientId: this.d.clientId || '',
+        serviceLine: this.d.serviceLine || ''
+      }
+      const query = Object.entries(params)
+        .filter(([, v]) => v)
+        .map(([k, v]) => k + '=' + v)
+        .join('&')
+      uni.navigateTo({ url: '/pages/proposal/index?' + query })
     }
   }
 }
@@ -233,6 +256,11 @@ export default {
 .next { background: var(--cream); border: 2rpx dashed #C8956D; border-radius: var(--r-lg); padding: 28rpx; margin-bottom: 24rpx; }
 .next-t { font-size: 26rpx; font-weight: 800; color: var(--gold-text); margin-bottom: 10rpx; }
 .next-d { font-size: 24rpx; color: var(--text-secondary); line-height: 1.7; }
+.proposal-btn-wrap { margin-bottom: 24rpx; padding: 0 32rpx; }
+.proposal-btn { display: flex; align-items: center; justify-content: center; gap: 12rpx; background: linear-gradient(135deg, #3D5A3E, #5a8a5f); color: #fff; border-radius: var(--r-lg); padding: 32rpx 40rpx; box-shadow: 0 8rpx 32rpx rgba(61,90,62,.35); width: 100%; font-size: 32rpx; font-weight: 800; border: none; }
+.p-btn-icon { font-size: 40rpx; }
+.p-btn-text { flex: 1; text-align: center; }
+.p-btn-arrow { font-size: 36rpx; opacity: .9; }
 .ft { padding: 24rpx; color: var(--text-tertiary); font-size: 22rpx; text-align: center; line-height: 1.7; }
 .actions { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 24rpx 32rpx; padding-bottom: calc(24rpx + env(safe-area-inset-bottom)); display: flex; gap: 20rpx; box-shadow: 0 -8rpx 32rpx rgba(42,40,37,.08); z-index: 50; }
 .btn-main { flex: 1; background: linear-gradient(135deg, var(--orange), var(--orange-light)); color: #fff; border-radius: var(--r-md); padding: 30rpx; font-size: 30rpx; font-weight: 800; box-shadow: var(--shadow-accent); }

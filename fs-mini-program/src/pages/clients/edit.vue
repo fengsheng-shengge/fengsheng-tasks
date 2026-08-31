@@ -83,6 +83,7 @@
 
 <script>
 import { useUserStore } from '../../store/user'
+import { trackPageview, trackEvent } from '../../utils/tracker'
 export default {
   data() {
     return {
@@ -127,6 +128,7 @@ export default {
     userStore() { return useUserStore() }
   },
   onLoad(query) {
+    trackPageview('clients-edit')
     if (!this.userStore._initialized) this.userStore.initFromStorage()
     if (query && query.id) {
       const c = this.userStore.getClient(query.id)
@@ -144,6 +146,7 @@ export default {
     saveForm() {
       if (!this.form.name || !this.form.name.trim()) { uni.showToast({ title: '请填写称呼 / 全名', icon: 'none' }); return }
       if (!this.form.surname) this.form.surname = (this.form.name || '客')[0]
+      trackEvent('client_save', 'clients-edit', { isNew: !this.editingId, line: this.form.serviceLine || '' })
       const payload = { ...this.form }
       let ok = false
       try {

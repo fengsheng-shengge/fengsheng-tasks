@@ -334,7 +334,7 @@ import { AXIS_GROUPS, DIMENSIONS, SCENARIOS, generateCuration } from '../../engi
 import { buildRadarDataUrl } from '../../radar.js'
 import { livingQuestions, LIKERT } from '../../../utils/assess-data.js'
 import { useUserStore } from '../../../store/user'
-import { trackEvent } from '../../../utils/tracker'
+import { trackEvent, trackPageview } from '../../../utils/tracker'
 import { generateReportHTML, generateReportSummary } from '../../../utils/report-template.js'
 import { getPromptTypes, generatePrompt } from '../../../utils/doubao-prompt.js'
 
@@ -445,6 +445,7 @@ export default {
     },
   },
   onLoad(options) {
+    trackPageview('curate-prep')
     if (options && options.clientId) {
       this.clientId = options.clientId
       const c = this.userStore.getClient(options.clientId)

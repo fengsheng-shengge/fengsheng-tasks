@@ -89,10 +89,10 @@
     <view class="sec">
       <view class="sec-h"><text class="em">📊</text>双维评估框架（方法论示意）</view>
       <view class="quad">
-        <view class="qd"><text class="warn">① 强推荐</text>M≥75 且 S≥75（待真源核验后启用）</view>
-        <view class="qd"><text class="warn">② 诚实排除</text>M&lt;75 且 S≥75（待真源核验后启用）</view>
-        <view class="qd"><text class="warn">③ 补证据</text>M≥75 且 S&lt;75（待真源核验后启用）</view>
-        <view class="qd"><text class="warn">④ 淘汰</text>M&lt;75 且 S&lt;75 / 触发雷区否决</view>
+        <view class="qd"><text class="warn">① 强推荐</text>{{ 'M≥75 且 S≥75（待真源核验后启用）' }}</view>
+        <view class="qd"><text class="warn">② 诚实排除</text>{{ 'M<75 且 S≥75（待真源核验后启用）' }}</view>
+        <view class="qd"><text class="warn">③ 补证据</text>{{ 'M≥75 且 S<75（待真源核验后启用）' }}</view>
+        <view class="qd"><text class="warn">④ 淘汰</text>{{ 'M<75 且 S<75 / 触发雷区否决' }}</view>
       </view>
     </view>
 
@@ -139,6 +139,7 @@
  */
 import { generateProposalReportHTML, generateProposalSummary } from '../../utils/report-template.js'
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 
 // 演示数据（无真实 insight 时展示方法论链路）
 const EXAMPLE_PROPOSAL = {
@@ -202,6 +203,7 @@ export default {
     }
   },
   onLoad(options) {
+    trackPageview('proposal')
     if (options && options.insight) {
       try {
         const parsed = JSON.parse(decodeURIComponent(options.insight))

@@ -37,8 +37,10 @@
 
 <script>
 import { APP_VERSION } from '../../utils/share.js'
+import { trackPageview } from '../../utils/tracker'
 export default {
-  data() { return { appVersion: APP_VERSION } }
+  data() { return { appVersion: APP_VERSION } },
+  onShow() { trackPageview('profile-about') }
 }
 </script>
 

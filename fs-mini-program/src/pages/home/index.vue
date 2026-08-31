@@ -187,11 +187,28 @@
       <view class="qc-btn"><text>🚀</text><text>开始生成简报</text></view>
     </view>
 
-    <!-- 需求洞察·问诊入口（V4 探索步①：问诊采集 → 生成报告） -->
+    <!-- 需求洞察 · MOT② 六步法（v1.3 新引擎，首页最醒目位置） -->
+    <view class="proposal-hero" @tap="goInsight2">
+      <view class="ph-top">
+        <view class="ph-badge">🔍 MOT② 六步法</view>
+        <view class="ph-title">客户需求洞察</view>
+      </view>
+      <view class="ph-desc">为什么买 → 三圈法则 → 深挖追问 → 六维现状 → 预算 → 决策人，客户亲口确认后生成可留痕的需求洞察报告</view>
+      <view class="ph-steps">
+        <view class="ph-step"><view class="ph-n">①</view><view class="ph-s">六步问诊</view></view>
+        <view class="ph-arrow">→</view>
+        <view class="ph-step"><view class="ph-n">②</view><view class="ph-s">客户确认</view></view>
+        <view class="ph-arrow">→</view>
+        <view class="ph-step"><view class="ph-n">③</view><view class="ph-s">报告留痕</view></view>
+      </view>
+      <view class="ph-cta">立即开始 ›</view>
+    </view>
+
+    <!-- 需求洞察·问诊入口（V4 旧版：三轴拆解 / 七维权重，仍从客户驾驶舱进入） -->
     <view class="insight-entry" @tap="go('insight-prep')">
       <view class="ie-ic">📋</view>
       <view class="ie-body">
-        <view class="ie-title">客户需求洞察 · 问诊</view>
+        <view class="ie-title">客户需求洞察 · 问诊（旧版）</view>
         <view class="ie-desc">引导客户梳理真实需求 · 三轴拆解 / 七维权重 → 生成报告</view>
       </view>
       <view class="ie-arrow">›</view>
@@ -244,12 +261,23 @@
       </view>
     </view>
 
+    <!-- 反馈入口 -->
+    <view class="fb-entry" @tap="openFeedback">
+      <text class="fb-entry-ic">💬</text>
+      <text class="fb-entry-t">有话说？帮我们把风声做得更好</text>
+      <text class="fb-entry-arrow">›</text>
+    </view>
+
     <view class="bottom-space"></view>
+
+    <!-- 反馈弹层 -->
+    <feedback-popup :show.sync="fbShow" source="home" />
   </view>
 </template>
 
 <script>
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 import hero1 from '../../static/hero1.png'
 import hero2 from '../../static/hero2.png'
 import hero3 from '../../static/hero3.png'
@@ -262,6 +290,7 @@ export default {
     return {
       heroIdx: 0,
       loopIdx: 0,
+      fbShow: false,
       loopSteps: [
         { no: 1, name: '接触', desc: '帮客户理清本轮需求：三轴拆解 + 七维权重 + 客户亲口确认' },
         { no: 2, name: '方案', desc: '需求关联 + 测算 + 方案清单，须持此进入下一步' },
@@ -360,7 +389,13 @@ export default {
       return out.slice(0, 6)
     }
   },
+  onShow() {
+    trackPageview('home')
+  },
   methods: {
+    openFeedback() {
+      this.fbShow = true
+    },
     showStep(i) {
       this.loopIdx = i
       trackEvent('loop_step', 'home', { step: i })
@@ -404,6 +439,11 @@ export default {
       const tabs = ['home', 'clients', 'curate', 'tools', 'profile']
       if (tabs.indexOf(tab) >= 0) uni.switchTab({ url: '/pages/' + tab + '/index' })
       else uni.navigateTo({ url: '/pages/' + tab + '/index' })
+    },
+    /** MOT② 六步法洞察（v1.3）首页醒目入口 */
+    goInsight2() {
+      trackEvent('feature_click', 'home', { feature: 'insight2-prep' })
+      uni.navigateTo({ url: '/pages/insight2/prep/index' })
     },
     goFollowup(clientId) {
       this.userStore.focusClientId = clientId
@@ -495,6 +535,21 @@ export default {
 .feature-name { font-size: 14px; font-weight: 800; color: var(--text-primary, #1f2a24); margin-bottom: 4px; }
 .feature-desc { font-size: 11px; color: var(--text-muted, #8a8f8a); line-height: 1.5; }
 
+/* 反馈入口 */
+.fb-entry {
+  display: flex; align-items: center; gap: 8px;
+  margin: 4px 16px 8px;
+  padding: 13px 16px;
+  background: #fff;
+  border: 1px solid var(--border, #EDE5D6);
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.04);
+}
+.fb-entry-ic { font-size: 15px; }
+.fb-entry-t { flex: 1; font-size: 13px; font-weight: 700; color: var(--text-primary, #1f2a24); }
+.fb-entry-arrow { font-size: 16px; color: #c8c2b6; }
+
+
 /* 今日见面作战简报 */
 .brief-list { display: flex; flex-direction: column; }
 .brief-item { display: flex; align-items: center; gap: 11px; padding: 11px 0; border-bottom: 1px dashed #eee; }
@@ -521,4 +576,24 @@ export default {
 .ie-title { font-size: 15px; font-weight: 800; color: var(--text-primary, #1f2a24); }
 .ie-desc { font-size: 11px; color: var(--text-muted, #8a8f8a); margin-top: 4px; line-height: 1.5; }
 .ie-arrow { font-size: 20px; color: #c8c2b6; flex-shrink: 0; }
+
+/* 需求洞察→房源提案联合入口（首页最醒目） */
+.proposal-hero {
+  margin: 12px 16px 14px;
+  padding: 20px 18px 16px;
+  background: linear-gradient(135deg, #3D5A3E 0%, #4e7a50 60%, #5a8a5f 100%);
+  border-radius: 16px;
+  box-shadow: 0 6rpx 24rpx rgba(61,90,62,.35);
+  color: #fff;
+}
+.ph-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.ph-badge { font-size: 20rpx; font-weight: 800; background: rgba(255,255,255,.25); padding: 4rpx 14rpx; border-radius: 999rpx; color: #fff; }
+.ph-title { font-size: 34rpx; font-weight: 800; color: #fff; letter-spacing: 1rpx; }
+.ph-desc { font-size: 24rpx; color: rgba(255,255,255,.88); line-height: 1.6; margin-bottom: 14px; }
+.ph-steps { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.ph-step { display: flex; align-items: center; gap: 6px; }
+.ph-n { width: 36rpx; height: 36rpx; border-radius: 50%; background: rgba(255,255,255,.3); color: #fff; font-size: 22rpx; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.ph-s { font-size: 24rpx; color: rgba(255,255,255,.9); font-weight: 600; }
+.ph-arrow { font-size: 28rpx; color: rgba(255,255,255,.6); }
+.ph-cta { font-size: 28rpx; font-weight: 800; color: #fff; text-align: right; opacity: .95; }
 </style>

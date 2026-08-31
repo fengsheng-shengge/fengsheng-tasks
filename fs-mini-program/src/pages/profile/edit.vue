@@ -37,6 +37,7 @@
 
 <script>
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return {
@@ -47,6 +48,7 @@ export default {
     userStore() { return useUserStore() }
   },
   onLoad() {
+    trackPageview('profile-edit')
     if (!this.userStore._initialized) this.userStore.initFromStorage()
     const u = this.userStore
     this.form = {

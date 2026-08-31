@@ -64,6 +64,7 @@
 <script>
 import { ASSESS_SETS, LIKERT } from '../../utils/assess-data.js'
 import { useUserStore } from '../../store/user'
+import { trackPageview, trackEvent } from '../../utils/tracker'
 export default {
   data() {
     return {
@@ -79,6 +80,7 @@ export default {
     }
   },
   onLoad(query) {
+    trackPageview('assess-quiz')
     this.type = (query && query.type) || 'living'
     this.set = ASSESS_SETS[this.type] || ASSESS_SETS.living
     uni.setNavigationBarTitle({ title: this.set.title })
@@ -113,6 +115,7 @@ export default {
       this.scores = scores
       this.advice = this.buildAdvice(scores)
       this.phase = 'result'
+      trackEvent('assess_submit', 'assess-quiz', { type: this.type, n: this.set.total })
       try { uni.setStorageSync('fs_last_assess', { type: this.type, scores: { ...scores }, ts: Date.now() }) } catch (e) {}
       try { useUserStore().addAssessment() } catch (e) {}
       this.$nextTick(() => { this.drawRadar() })
