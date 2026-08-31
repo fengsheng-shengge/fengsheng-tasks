@@ -111,6 +111,7 @@
 <script>
 import { AXIS_GROUPS, DIMENSIONS, generateCurationAsync } from '../../engine.js'
 import { useUserStore } from '../../../store/user'
+import { trackPageview } from '../../../utils/tracker'
 
 export default {
   data() {
@@ -137,6 +138,7 @@ export default {
     userStore() { return useUserStore() }
   },
   onLoad(options) {
+    trackPageview('curate-prep')
     if (options && options.clientId) {
       this.clientId = options.clientId
       const c = this.userStore.getClient(options.clientId)

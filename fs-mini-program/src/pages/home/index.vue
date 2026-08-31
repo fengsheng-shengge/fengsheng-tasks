@@ -86,12 +86,22 @@
     <view style="font-size:11px;color:var(--text-muted);margin:-4px 2px 14px;line-height:1.5">6 方法论的底层是 <text style="color:var(--green)">LTRUST 信任五维</text>（听 · 险 · 相关 · 低承 · 档案）——把每一次见面校准成信任，详见策展包内「LTRUST 校准」。</view>
 
     <view class="icp">风声 · 帮助服务者用独立价值获得尊重<view>客户数据仅你可见，平台不收取、不用于撮合</view></view>
+
+    <!-- 反馈入口 -->
+    <view class="fb-entry" @tap="openFeedback">
+      <text class="fb-entry-t">有话说？帮我们把风声做得更好</text>
+      <text class="fb-entry-a">›</text>
+    </view>
+
+    <!-- 反馈弹层 -->
+    <feedback-popup :show.sync="fbShow" source="home" />
   </view>
 </template>
 
 <script>
 import { methods } from '../../utils/v4data.js'
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 import hero1 from '@/static/hero1.png'
 import hero2 from '@/static/hero2.png'
 import hero3 from '@/static/hero3.png'
@@ -100,6 +110,7 @@ export default {
   data() {
     return {
       methods,
+      fbShow: false,
       heroIdx: 0,
       methodIdx: 0,
       slides: [
@@ -154,8 +165,10 @@ export default {
       this.userStore.focusClientId = clientId
       uni.switchTab({ url: '/pages/clients/index' })
     },
+    openFeedback() { this.fbShow = true },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) }
-  }
+  },
+  onShow() { trackPageview('home') }
 }
 </script>
 
@@ -172,4 +185,10 @@ export default {
 .step-dots { display: flex; justify-content: center; gap: 5px; margin: -2px 0 12px; }
 .sd { width: 5px; height: 5px; border-radius: 50%; background: #d8d2c6; transition: all .2s; }
 .sd.on { width: 14px; border-radius: 3px; background: #3d5a3e; }
+
+/* 反馈入口 */
+.fb-entry { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 12px 14px; margin: 10px 0 14px; }
+.fb-entry:active { background: #f7f4ef; }
+.fb-entry-t { font-size: 13px; color: var(--text-secondary, #555); }
+.fb-entry-a { font-size: 16px; color: var(--text-tertiary, #9a9a9a); }
 </style>

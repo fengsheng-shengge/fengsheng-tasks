@@ -162,6 +162,7 @@
 import { methods, personaMap, personaQ, toolbox, getFollowups } from '../../utils/v4data.js'
 import { copyLink, APP_SHARE_TITLE } from '../../utils/share.js'
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return {
@@ -213,6 +214,7 @@ export default {
   onShareTimeline() {
     return { title: '风声 · 见面策展工具', query: 'clientId=' + (this.selectedClientId || '') }
   },
+  onShow() { trackPageview('curate') },
   methods: {
     personaOf(c) { return (personaMap[c.pkey] || personaMap.red).tag },
     openPrep() {

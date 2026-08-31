@@ -67,6 +67,7 @@
 <script>
 import { knowledgeDomains, casesData } from '../../utils/v4data.js'
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return {
@@ -86,7 +87,8 @@ export default {
     goAssess() { uni.navigateTo({ url: '/pages/assess/index' }) },
     goCases() { uni.navigateTo({ url: '/pages/cases/index' }) },
     toggleCase(c) { c._open = !c._open }
-  }
+  },
+  onShow() { trackPageview('knowledge') }
 }
 </script>
 
