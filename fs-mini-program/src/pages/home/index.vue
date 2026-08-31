@@ -25,8 +25,8 @@
     </view>
 
     <!-- 搜索 -->
-    <view class="search-bar" @tap="toast('搜索功能（模拟）')">
-      <text class="icon">🔍</text><text class="text">搜索知识 / 工具 / 客户</text><text class="btn">搜索</text>
+    <view class="search-bar" @tap="goDictSearch">
+      <text class="icon">🔍</text><text class="text">搜索 {{ dictTotal }} 条行业词条</text><text class="btn">搜索</text>
     </view>
 
     <!-- 核心功能 -->
@@ -47,7 +47,7 @@
       <view class="product-card" @tap="go('knowledge')">
         <view class="product-icon brown">📖</view>
         <view class="product-name">知识字典</view>
-        <view class="product-desc">7 域 104 条行业词条，随时查阅</view>
+        <view class="product-desc">{{ dictDomains.length }} 域 {{ dictTotal }} 条行业词条，法源可追溯</view>
         <text class="product-tag free">免费</text>
       </view>
       <view class="product-card" @tap="go('assess')">
@@ -100,6 +100,7 @@
 
 <script>
 import { methods } from '../../utils/v4data.js'
+import { DICT_DOMAINS, DICT_TOTAL } from '../../utils/dict.js'
 import { useUserStore } from '../../store/user'
 import { trackPageview } from '../../utils/tracker'
 import hero1 from '@/static/hero1.png'
@@ -110,6 +111,8 @@ export default {
   data() {
     return {
       methods,
+      dictDomains: DICT_DOMAINS,
+      dictTotal: DICT_TOTAL,
       fbShow: false,
       heroIdx: 0,
       methodIdx: 0,
@@ -166,6 +169,7 @@ export default {
       uni.switchTab({ url: '/pages/clients/index' })
     },
     openFeedback() { this.fbShow = true },
+    goDictSearch() { uni.navigateTo({ url: '/pages/knowledge/domain' }) },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) }
   },
   onShow() { trackPageview('home') }
