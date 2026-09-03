@@ -610,7 +610,7 @@ export default {
 .di-cta { font-size: 12px; color: #c46a3a; font-weight: 700; margin-top: 10px; text-align: right; }
 .field { margin-bottom: 14px; }
 .label { display: block; font-size: 13px; font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
-.inp { width: 100%; background: #f7f4ef; border: 1px solid #e7e0d4; border-radius: 8px; padding: 10px; font-size: 14px; box-sizing: border-box; }
+.inp { width: 100%; min-height: 44px; background: #f7f4ef; border: 1px solid #e7e0d4; border-radius: 8px; padding: 10px; font-size: 14px; box-sizing: border-box; }
 .opt { display: flex; flex-wrap: wrap; gap: 8px; }
 .opt.wrap { margin-top: 8px; }
 .opt > view { padding: 7px 12px; background: #f0ece2; border-radius: 8px; font-size: 13px; color: #555; border: 1px solid transparent; }

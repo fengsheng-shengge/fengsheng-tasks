@@ -115,7 +115,7 @@ export default {
 .card-title { font-size: 14px; font-weight: 700; color: #3d5a3e; margin-bottom: 10px; }
 .field { margin-bottom: 12px; }
 .label { font-size: 12px; color: #8a837a; display: block; margin-bottom: 6px; }
-.inp { width: 100%; background: #faf8f5; border: 1px solid #ede5d6; border-radius: 10px; padding: 10px; font-size: 13px; box-sizing: border-box; }
+.inp { width: 100%; min-height: 44px; background: #faf8f5; border: 1px solid #ede5d6; border-radius: 10px; padding: 10px; font-size: 13px; box-sizing: border-box; }
 .picker-btn { background: #faf8f5; border: 1px solid #ede5d6; border-radius: 10px; padding: 10px; font-size: 13px; color: #2b2b2b; }
 .btn-row { display: flex; gap: 10px; margin: 18px 14px 0; }
 .btn-submit { flex: 1.4; background: #c46a3a; color: #fff; border-radius: 999px; padding: 14px; font-size: 15px; font-weight: 800; }
