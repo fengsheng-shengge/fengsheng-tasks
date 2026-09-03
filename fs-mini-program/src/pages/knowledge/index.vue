@@ -89,7 +89,7 @@ export default {
   methods: {
     setMod(m) { this.mod = m },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) },
-    goAssess() { uni.navigateTo({ url: '/pages/assess/index' }) },
+    goAssess(phase) { uni.navigateTo({ url: '/pages/assess/index' + (phase ? '?phase=' + phase : '') }) },
     goCases() { uni.navigateTo({ url: '/pages/cases/index' }) },
     toggleCase(c) { c._open = !c._open },
     goDomain(d) { uni.navigateTo({ url: '/pages/knowledge/domain?domain=' + encodeURIComponent(d.key) + '&name=' + encodeURIComponent(d.name) }) },

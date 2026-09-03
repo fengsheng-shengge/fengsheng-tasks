@@ -206,6 +206,13 @@ export default {
       if (id) this.preselectClient(id)
       this.showForm = true
     })
+    // 从客户档案「生成策展包」按钮：优先读 URL query，其次读 storage
+    const pendingId = uni.getStorageSync('fs_curate_client_id')
+    if (pendingId) {
+      uni.removeStorageSync('fs_curate_client_id')
+      if (this.userStore._initialized) this.preselectClient(pendingId)
+      else setTimeout(() => this.preselectClient(pendingId), 300)
+    }
   },
   onUnload() { uni.$off('openCurateForm') },
   onShareAppMessage() {
@@ -214,11 +221,23 @@ export default {
   onShareTimeline() {
     return { title: '风声 · 见面策展工具', query: 'clientId=' + (this.selectedClientId || '') }
   },
-  onShow() { trackPageview('curate') },
+  onShow() {
+    trackPageview('curate')
+    // 刷新已选客户的角色/性格（客户档案编辑后回来时同步）
+    if (this.selectedClientId) {
+      const c = this.userStore.getClient(this.selectedClientId)
+      if (c) {
+        this.form.role = c.rel
+        this.selPersona = c.pkey
+      }
+    }
+  },
   methods: {
     personaOf(c) { return (personaMap[c.pkey] || personaMap.red).tag },
     openPrep() {
-      uni.navigateTo({ url: '/package-curation/pages/curate-prep/index' })
+      // 若已选中客户，带着 clientId 进见面参谋以沉淀认知卡
+      const id = this.selectedClientId || uni.getStorageSync('fs_curate_client_id') || ''
+      uni.navigateTo({ url: '/package-curation/pages/curate-prep/index' + (id ? '?clientId=' + id : '') })
     },
     preselectClient(id) {
       const c = this.userStore.getClient(id)
@@ -343,4 +362,6 @@ export default {
 .btn-line { background: #fff; color: #c46a3a; border: 1px solid #e7d3c2; border-radius: 10px; padding: 12px; font-size: 14px; margin-top: 8px; }
 .btn-orange { background: #c46a3a; color: #fff; border-radius: 10px; padding: 12px; font-size: 15px; margin-top: 6px; }
 .lt-ref { font-size: 11px; color: #C8956D; margin-top: 3px; line-height: 1.4; }
+.overlay { position: fixed; inset: 0; background: #fff; z-index: 1000; display: flex; flex-direction: column; }
+.ovcontent { height: 0; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 </style>

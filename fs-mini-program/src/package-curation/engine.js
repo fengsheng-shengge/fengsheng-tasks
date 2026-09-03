@@ -145,9 +145,129 @@ export async function generateCurationAsync(input) {
   }
 }
 
+// ===== 影响力原理标注（引擎内嵌 · 经纪人可见） =====
+// 映射关系：触发动因 / 内心矛盾 / 底线让步 → 影响策展内容的呈现策略
+function enrichWithInfluence(insight, say, ask, followups) {
+  if (!insight) return { say, ask, followups }
+
+  const principleMap = {
+    'family_birth':    '👶 家庭变化触发（互惠预期↑）',
+    'family_marriage': '💍 新婚承诺触发（承诺一致↑）',
+    'family_elder':    '👴 养老责任触发（互惠+社会认同）',
+    'family_school':   '🏫 教育节点触发（时间压力+稀缺）',
+    'external_expiry': '📅 租约到期触发（时间压力）',
+    'external_transfer': '🏢 工作调动触发（环境变化）',
+    'external_commute': '🚇 通勤痛点触发（痛点放大）',
+    'external_defect':  '🏠 现居缺陷触发（痛点+对比）',
+    'time_school':     '📋 入学节点触发（稀缺+时间压力）',
+    'time_limit':      '⏰ 置换窗口期触发（时间稀缺）',
+    'time_other':      '📌 其他时间压力',
+  }
+  const conflictMap = {
+    'school':    '🔴 学区 vs 预算矛盾（稀缺原理）',
+    'metro':     '🚇 地铁 vs 价格矛盾（对比原理）',
+    'budget':    '💰 预算红线（承诺一致）',
+    'floor':     '🏢 楼层偏好',
+    'orientation': '🧭 朝向要求',
+    'elevator':  '🛗 电梯要求（安全需求）',
+    'noise':     '🔇 噪音控制（健康需求）',
+    'title':     '📜 产权清晰（风险规避）',
+  }
+
+  const activeTriggers  = insight.triggerEvents  || []
+  const activeConflicts = insight.hardBottomLines || []
+  const activeFlexes   = insight.flexibleItems   || []
+  const activeRisks    = insight.riskItems       || []
+  const dmStances      = insight.decisionMakerStances || []
+  const lifeVision     = insight.lifeVision      || ''
+
+  // 顾虑映射：顾虑类型 → 对应的需求安抚策略
+  const riskStrategyMap = {
+    'fear_expensive': '【价格锚定】提供近期同小区/同板块成交记录，用真实数据打消「买贵」焦虑',
+    'fear_mortgage':  '【月供安心】主动提供月供压力测算，让客户对持有成本有清晰预期',
+    'fear_devalue':   '【长线价值】呈现区域发展规划与配套落地节奏，强调持有的确定性',
+    'fear_family':    '【家庭对齐】提案前先分别与核心决策人单独对齐，避免带看时意见冲突',
+    'fear_policy':    '【政策权威】提供教育局/规划委官方文件摘录，用权威来源消除不确定性',
+    'fear_delivery':  '【交楼保障】核对五证+预售资金监管楼盘，降低交楼不确定性感知',
+    'fear_liquidity': '【流通预判】提供近6个月板块成交量与挂牌去化周期数据，增强流动性信心',
+    'fear_quality':   '【品质背书】查找该开发商近期交付项目业主评价，提供第三方验收报告',
+  }
+
+  // 决策人立场 → 经纪人带看前准备重点
+  const dmAdviceMap = {
+    'commute': '带看前：提前实测通勤路线，准备早晚高峰实拍视频',
+    'school':  '带看前：核实目标学校最新招生简章，标注落户年限要求',
+    'budget':  '带看前：准备好完整费用清单（月供+税费+中介费），避免现场超预期',
+    'floor':   '带看前：确认楼层偏好，现场带看时优先看满意楼层房源',
+    'quality': '带看前：了解改善型客户对品质的具体定义（面积/装修/得房率）',
+    'safety':  '带看前：核查产权清晰度，准备产权调查简要说明',
+    'other':   '带看前：按备注中的个性化诉求做针对性准备',
+  }
+
+  const enrichedSay = say.map((s, i) => {
+    let principles = []
+    if (activeTriggers.length) principles.push('触发动机：' + activeTriggers.map(t => principleMap[t] || t).join(' / '))
+    if (i === 0 && activeConflicts.length) principles.push('底线：' + activeConflicts.map(c => conflictMap[c] || c).join(' / '))
+    if (i === say.length - 1 && activeFlexes.length) principles.push('可让步：' + activeFlexes.join('、') + '（可适度放大）')
+    return { ...s, influencePrinciples: principles.length ? principles : null }
+  })
+
+  const enrichedAsk = ask.map((a, i) => {
+    let insightHint = ''
+    if (i === 0 && activeTriggers.length > 0)  insightHint = '【探互惠/承诺一致】追问具体时间节点和感受'
+    if (i === 1 && activeConflicts.length > 0)  insightHint = '【探对比原理】了解底线之上的理想标准'
+    if (i === 2 && activeFlexes.length > 0)    insightHint = '【探稀缺敏感度】问客户对稀缺信号的接受程度'
+    // V3.7：顾虑探问策略
+    if (activeRisks.length > 0 && i === ask.length - 1) {
+      const topRisk = activeRisks[0]
+      insightHint = (insightHint ? insightHint + '；' : '') + '【探' + (riskStrategyMap[topRisk] ? riskStrategyMap[topRisk].match(/【(.+?)】/)[1] : '顾虑') + '】'
+    }
+    return { ...a, insightHint: insightHint || null }
+  })
+
+  const enrichedFollowups = followups.map((f, i) => {
+    let note = ''
+    if (i === 0) note = '互惠时机：首次跟进建议提供有价值的轻量信息（如板块行情/政策动态），不要直接索求'
+    if (i === followups.length - 1 && activeTriggers.length > 0) {
+      const triggers = activeTriggers.map(t => principleMap[t] || t).join('、')
+      note += (note ? '；' : '') + '社会认同时机：分享近期相似动因客户成交案例'
+    }
+    // V3.7：顾虑应对策略注入到跟进内容
+    if (activeRisks.length > 0 && i === 1) {
+      const topRisk = activeRisks[0]
+      const strategy = riskStrategyMap[topRisk] || ''
+      note += (note ? '；' : '') + '顾虑应对[' + topRisk + ']：' + strategy.replace(/^【.+?】/, '')
+    }
+    // V3.7：决策人立场 → 带看前准备提醒
+    if (dmStances.length > 0 && i === 0) {
+      const st = dmStances[0]
+      const advice = st.stanceType ? (dmAdviceMap[st.stanceType] || '按个性化诉求准备') : '确认决策人核心诉求'
+      note += (note ? '；' : '') + '决策人准备：' + (st.name || '主要决策人') + ' — ' + advice
+    }
+    return { ...f, reciprocityNote: note || null }
+  })
+
+  return { say: enrichedSay, ask: enrichedAsk, followups: enrichedFollowups }
+}
+
 // ===== 核心引擎逻辑（与数据源无关） =====
 function generateCurationFromEntries(input, entriesByGroup) {
-  const { axisType = 'buy', axisNodeKey = 'improve', dimensions = [], freeText = '' } = input || {}
+  const {
+    axisType = 'buy',
+    axisNodeKey = 'improve',
+    dimensions = [],
+    freeText = '',
+    // ★ V3.6+V3.7 影响力原理参数（来自深层洞察）
+    triggerEvents = [],
+    triggerRemark = '',
+    customerConflict = '',
+    hardBottomLines = [],
+    flexibleItems = [],
+    // V3.7 新增
+    riskItems = [],
+    decisionMakerStances = [],
+    lifeVision = ''
+  } = input || {}
   const group = AXIS_GROUPS.find(g => g.type === axisType) || AXIS_GROUPS[0]
   const node = group.nodes.find(n => n.key === axisNodeKey) || group.nodes[0]
   const ct = group.clientType
@@ -229,6 +349,15 @@ function generateCurationFromEntries(input, entriesByGroup) {
   // 6) 跟（见后跟进 / 持续关怀，按节点 + 维度，禁用操纵词）
   const followups = buildFollowups(node, dimensions)
 
+  // ★ V3.6+V3.7 影响力原理注入（经纪人可见标注）
+  const influenceInsight = {
+    triggerEvents, triggerRemark, customerConflict,
+    hardBottomLines, flexibleItems,
+    // V3.7 新增
+    riskItems, decisionMakerStances, lifeVision
+  }
+  const enriched = enrichWithInfluence(influenceInsight, say, ask, followups)
+
   // 7) 诚实元信息（绝不编造分数）
   const honesty = {
     matchedTotal: strongCount,
@@ -242,7 +371,10 @@ function generateCurationFromEntries(input, entriesByGroup) {
     axisLabel: group.label + ' · ' + node.name,
     dimensionLabels: dimensions.map(dk => (DIMENSIONS.find(d => d.key === dk) || {}).name).filter(Boolean),
     freeText,
-    say, bring, ask, followups,
+    say: enriched.say,
+    bring,
+    ask: enriched.ask,
+    followups: enriched.followups,
     honesty,
     timeline: buildTimeline()
   }

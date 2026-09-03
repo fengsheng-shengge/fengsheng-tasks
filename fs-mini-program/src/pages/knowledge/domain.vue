@@ -15,7 +15,12 @@
 
     <!-- 加载态 -->
     <view v-if="loading" class="state">⏳ 加载中…</view>
-    <view v-else-if="error" class="state">{{ error }}</view>
+    <view v-else-if="error" class="state error">{{ error }}</view>
+    <!-- 搜索模式无关键词时：显示搜索引导（区别于真正搜到 0 条） -->
+    <view v-else-if="mode === 'search' && !kw && !entries.length" class="state search-tip">
+      <view>🔍 输入关键词搜索词条</view>
+      <view style="font-size:11px;color:#aaa;margin-top:6px">如：公产房、贷款资质、签约风险…</view>
+    </view>
     <view v-else-if="!entries.length" class="state">暂无词条</view>
 
     <!-- 词条列表 -->
