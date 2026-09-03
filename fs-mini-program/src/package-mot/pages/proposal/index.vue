@@ -437,7 +437,7 @@ export default {
 .prop-fields { padding: 0 14px 14px; }
 .field-row { margin-bottom: 10px; }
 .field-label { font-size: 11px; font-weight: 700; color: #8a837a; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .5px; }
-.field-input { width: 100%; background: #f7f4ef; border: 1.5px solid #ede5d6; border-radius: 10px; padding: 10px 12px; font-size: 14px; color: #1f2a24; }
+.field-input { width: 100%; min-height: 44px; background: #f7f4ef; border: 1.5px solid #ede5d6; border-radius: 10px; padding: 10px 12px; font-size: 14px; color: #1f2a24; }
 .field-input:focus { border-color: #3d5a3e; }
 .field-hint { font-size: 10px; color: #8a837a; margin-top: 3px; }
 .field-row-2 { display: flex; gap: 8px; }
