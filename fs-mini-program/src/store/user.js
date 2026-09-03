@@ -398,6 +398,8 @@ export const useUserStore = defineStore('user', {
       if (!c) return
       if (!c.lifecycle) c.lifecycle = {}
       c.lifecycle.step2Confirmed = true
+      // ★ V3.7.3 推进当前步骤：确认洞察后 currentStep 从 1 → 2
+      if ((c.lifecycle.currentStep || 1) < 2) c.lifecycle.currentStep = 2
       // 追加 insight 报告引用
       if (!c.reports) c.reports = []
       c.reports.push({

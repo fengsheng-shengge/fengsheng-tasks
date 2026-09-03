@@ -168,6 +168,7 @@
             <view class="so-item-meta">{{ c.rel }} · {{ c.stage || '未填阶段' }}</view>
           </view>
           <view class="so-item-tag" v-if="hasInsightScores(c)">已同步</view>
+          <view class="so-item-tag so-item-tag-warn" v-else-if="hasInsightScoresLegacy(c)">有洞察分值</view>
           <text class="so-item-arrow">›</text>
         </view>
       </scroll-view>
@@ -357,7 +358,15 @@ export default {
     hasInsightScores() {
       return (c) => {
         const d = c.lifecycle && c.lifecycle.insightData
-        return !!(d && d.scores && Object.keys(d.scores).length)
+        // ★ V3.7.3 以「是否同步过测评」判定，而非是否有洞察分值
+        return !!(d && d.assessSource && d.assessAt)
+      }
+    },
+    hasInsightScoresLegacy() {
+      return (c) => {
+        const d = c.lifecycle && c.lifecycle.insightData
+        // 旧数据：只有洞察分值但没有测评来源（如策展录入的七维），提示可覆盖
+        return !!(d && d.scores && Object.keys(d.scores).length && !(d.assessSource && d.assessAt))
       }
     },
     topDims_a() {
@@ -409,6 +418,7 @@ export default {
     },
     // 确认写入所选客户的洞察报告
     doSyncToClient(c) {
+      const isReSync = this.hasInsightScores(c)
       const ok = this.userStore.applyAssessmentToClient(c.id, {
         type: 'a', title: '住得好测评',
         scores: this.resDims_a, total: this.resScore_a
@@ -416,8 +426,10 @@ export default {
       this.showSyncPicker = false
       if (ok) {
         uni.showModal({
-          title: '已同步 ✓',
-          content: `住得好测评结果已写入「${c.name}」的需求洞察报告，可直接在洞察页查看雷达图。`,
+          title: isReSync ? '已更新 ✓' : '已同步 ✓',
+          content: isReSync
+            ? `已用本次测评结果更新「${c.name}」的洞察报告七维分值（来源标注同步刷新）。`
+            : `住得好测评结果已写入「${c.name}」的需求洞察报告，可直接在洞察页查看雷达图。`,
           confirmText: '去洞察页',
           cancelText: '留在此页',
           success: (res) => {
@@ -608,6 +620,7 @@ button[disabled] { opacity: .45; }
 .so-item-name { font-size: 15px; font-weight: 700; color: #2b2b2b; }
 .so-item-meta { font-size: 12px; color: #8a837a; margin-top: 2px; }
 .so-item-tag { font-size: 11px; color: #27ae60; background: #eef6ef; border-radius: 8px; padding: 2px 8px; flex-shrink: 0; }
+.so-item-tag-warn { color: #c46a3a; background: #fff4ec; }
 .so-item-arrow { color: #ccc; font-size: 18px; flex-shrink: 0; }
 .so-empty { text-align: center; padding: 60px 20px; }
 .so-empty-icon { font-size: 48px; margin-bottom: 12px; }

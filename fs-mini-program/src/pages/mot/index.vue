@@ -153,8 +153,25 @@ export default {
       if (!this.selectedClient) return 'locked'
       const lc = this.selectedClient.lifecycle || {}
       const current = lc.currentStep || 1
-      if (key < current) return 'done'
-      if (key === current) return 'active'
+      // ★ V3.7.3 以真实证据判定状态（兼容旧数据 currentStep 未推进的情况）
+      const reports = this.selectedClient.reports || []
+      const evidenceDone = {
+        1: !!(lc.step1CompletedAt || lc.currentStep > 1),
+        2: !!reports.find(r => r.type === 'insight' && r.confirmed),
+        3: !!reports.find(r => r.type === 'proposal' && r.confirmed),
+        4: !!reports.find(r => r.type === 'showing'),
+      }
+      // 步骤1：建档完成则 done，否则 active（新建客户即建档）
+      if (key === 1) return evidenceDone[1] ? 'done' : 'active'
+      // 已有对应报告 → 已完成
+      if (evidenceDone[key]) return 'done'
+      // 前置步骤全部完成 → 当前可进行
+      let prevOk = true
+      for (let k = 1; k < key; k++) {
+        if (!evidenceDone[k]) { prevOk = false; break }
+      }
+      if (prevOk) return 'active'
+      // 否则未解锁
       return 'locked'
     },
     stepTag(key) {
@@ -173,9 +190,16 @@ export default {
         uni.showToast({ title: '请先完成前置步骤', icon: 'none' })
         return
       }
-      // 步骤1：跳转客户档案新建（已有客户则直接进入步骤2）
+      // 步骤1：跳转客户档案（未建档→新建入口；已建档→档案详情）
       if (step.key === 1) {
-        uni.switchTab({ url: '/pages/clients/index' })
+        const st = this.stepStatus(1)
+        if (st === 'done') {
+          // tabBar 页无法 URL 带参，经 store.focusClientId 传递目标客户
+          this.userStore.focusClientId = this.selectedClientId
+          uni.switchTab({ url: '/pages/clients/index' })
+        } else {
+          uni.switchTab({ url: '/pages/clients/index' })
+        }
         return
       }
       // 有路由的页面直接跳转
