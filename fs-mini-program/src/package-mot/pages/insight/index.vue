@@ -220,6 +220,8 @@ export default {
       // ★ V3.7.2 测评来源标注
       assessSource: '',
       assessTotal: 0,
+      // ★ V3.8 类型/LTRUST 自动推荐标记（用户手动改过后不再覆盖）
+      typesTouched: false,
       // LTRUST
       ltrustItems: LTRUST_ITEMS,
       ltrustMatrix: null,
@@ -317,14 +319,25 @@ export default {
         // ★ V3.7.2 来源标注：分值来自品质测评
         this.assessSource = insightData.assessSource || ''
         this.assessTotal = insightData.assessTotal || 0
-        // 八类标签
-        this.selectedTypes = insightData.types || []
+        // 八类标签（key 归一化：策展页 commuter/first_home → 洞察页 commute/first）
+        const rawTypes = insightData.types || []
+        this.selectedTypes = rawTypes.map(k => this._normalizeTypeKey(k)).filter(Boolean)
         // LTRUST 优先维度
-        this.ltrustMatrix = insightData.ltrust ? { ltrustPrio: insightData.ltrust } : null
+        this.ltrustMatrix = insightData.ltrust ? { ltrustPrio: this._normalizeLtrustKey(insightData.ltrust) } : null
         // 轴标签（雷达图标题用）
         if (insightData.axisLabel) {
           this.cognition = this.cognition || {}
           this.cognition.axisLabel = insightData.axisLabel
+        }
+        // ★ V3.8 测评来源：自动推荐客户类型 + LTRUST（若用户未手动改过）
+        const scores = this.dimensionScores || {}
+        const hasScores = Object.keys(scores).length > 0
+        const recommend = this._recommendFromScores(scores)
+        if (!this.typesTouched && !this.selectedTypes.length && hasScores) {
+          this.selectedTypes = recommend.types
+        }
+        if (!this.typesTouched && !this.ltrustMatrix && recommend.ltrust) {
+          this.ltrustMatrix = { ltrustPrio: recommend.ltrust }
         }
       } else {
         // 降级：读旧 cognition.dimensionScores（向后兼容）
@@ -355,6 +368,7 @@ export default {
       const i = this.selectedTypes.indexOf(key)
       if (i >= 0) this.selectedTypes.splice(i, 1)
       else this.selectedTypes.push(key)
+      this.typesTouched = true
       this.saveInsightData()
     },
     // ★ V2.6 LTRUST 优先判断
@@ -362,11 +376,57 @@ export default {
       const map = { safety: 'L', transit: 'T', economy: 'R', beauty: 'U' }
       return map[this.ltrustPrio] === type
     },
+    // ★ V3.8 类型 key 归一化：策展页八分法 → 洞察页八类
+    _normalizeTypeKey(k) {
+      const map = {
+        commuter: 'commute', first_home: 'first', family_kid: 'family',
+        improve: 'improve', elder: 'elderly', invest: 'invest',
+        study: 'study', price: 'price'
+      }
+      if (this.customerTypes.find(t => t.key === k)) return k
+      return map[k] || ''
+    },
+    // ★ V3.8 LTRUST key 归一化：策展页 safety/transit/economy/beauty → 洞察页同一组
+    _normalizeLtrustKey(k) {
+      return { safety: 'safety', transit: 'transit', economy: 'economy', beauty: 'beauty' }[k] || k || ''
+    },
+    // ★ V3.8 由七维分值自动推荐客户类型 + LTRUST 优先项
+    _recommendFromScores(scores) {
+      const types = []
+      const get = (k) => scores[k] || 0
+      // 经济/便利高 → 通勤刚需 / 价格敏感
+      if (get('econ') >= 70) types.push('price')
+      if (get('conv') >= 70) types.push('commute')
+      if (get('comfort') >= 70 && get('beauty') >= 60) types.push('improve')
+      if (get('safety') >= 70 && get('free') >= 60) types.push('family')
+      // 都不满足 → 至少给一个兜底
+      if (!types.length) types.push('first')
+      // LTRUST：最高分维度映射
+      const ltrustMap = { safety: 'safety', conv: 'transit', econ: 'economy', beauty: 'beauty' }
+      let bestKey = ''
+      let bestScore = 0
+      Object.keys(ltrustMap).forEach(k => {
+        if (get(k) > bestScore) { bestScore = get(k); bestKey = k }
+      })
+      const ltrust = bestKey ? ltrustMap[bestKey] : ''
+      return { types: types.slice(0, 3), ltrust }
+    },
     saveInsightData() {
       this.userStore.saveInsightData(this.clientId, {
-        dimensionScores: this.dimensionScores,
-        customerType: this.selectedTypes,
-        ltrustMatrix: { items: this.ltrustItems }
+        dims: Object.keys(this.dimensionScores),
+        scores: this.dimensionScores,
+        types: this.selectedTypes,
+        ltrust: (this.ltrustMatrix && this.ltrustMatrix.ltrustPrio) ? this.ltrustMatrix.ltrustPrio : '',
+        // 保留深层洞察（saveInsightData 合并写入，避免覆盖）
+        triggerEvents: this.deepInsight && this.deepInsight.triggerEvents || [],
+        triggerRemark: this.deepInsight && this.deepInsight.triggerRemark || '',
+        customerConflict: this.deepInsight && this.deepInsight.customerConflict || '',
+        hardBottomLines: this.deepInsight && this.deepInsight.hardBottomLines || [],
+        flexibleItems: this.deepInsight && this.deepInsight.flexibleItems || [],
+        riskItems: this.deepInsight && this.deepInsight.riskItems || [],
+        decisionMakerStances: this.deepInsight && this.deepInsight.decisionMakerStances || [],
+        lifeVision: this.deepInsight && this.deepInsight.lifeVision || '',
+        confirmText: this.deepInsight && this.deepInsight.confirmText || '',
       })
     },
     confirmInsight() {

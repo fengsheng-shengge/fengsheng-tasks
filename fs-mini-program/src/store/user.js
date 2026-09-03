@@ -496,30 +496,36 @@ export const useUserStore = defineStore('user', {
       if (!c) return
       // ★ V2.6 修复：统一写入 lifecycle.insightData，兼容 curate-prep 字段名
       if (!c.lifecycle) c.lifecycle = {}
+      const prev = c.lifecycle.insightData || {}
+      const newScores = data.scores || data.dimensionScores || prev.scores || {}
       c.lifecycle.insightData = {
-        dims:       data.dims       || data.dimensionScores ? Object.keys(data.dimensionScores || {}) : [],
-        scores:     data.scores     || data.dimensionScores || {},
+        dims:       data.dims || Object.keys(newScores),
+        scores:     newScores,
         types:      data.types      || data.customerType    || [],
         ltrust:     data.ltrust     || data.ltrustMatrix    || null,
         axisType:   data.axisType   || null,
         axisNodeKey:data.axisNodeKey|| null,
         savedAt:    Date.now(),
+        // ★ V3.7.2 保留测评来源标注（防止类型勾选等编辑时被覆盖丢失）
+        assessSource: (data.assessSource !== undefined) ? data.assessSource : (prev.assessSource || ''),
+        assessTotal:  (data.assessTotal !== undefined)  ? data.assessTotal  : (prev.assessTotal || 0),
+        assessAt:     (data.assessAt !== undefined)     ? data.assessAt     : (prev.assessAt || null),
         // ★ V3.5 深层洞察
-        triggerEvents:    data.triggerEvents    || [],
-        triggerRemark:   data.triggerRemark   || '',
-        customerConflict: data.customerConflict || '',
-        hardBottomLines: data.hardBottomLines || [],
-        flexibleItems:    data.flexibleItems   || [],
-        confirmText:     data.confirmText     || '',
-        insightConfirmed: data.insightConfirmed || false,
+        triggerEvents:    data.triggerEvents    || prev.triggerEvents    || [],
+        triggerRemark:   data.triggerRemark   || prev.triggerRemark   || '',
+        customerConflict: data.customerConflict || prev.customerConflict || '',
+        hardBottomLines: data.hardBottomLines || prev.hardBottomLines || [],
+        flexibleItems:    data.flexibleItems   || prev.flexibleItems   || [],
+        confirmText:     data.confirmText     || prev.confirmText     || '',
+        insightConfirmed: data.insightConfirmed || prev.insightConfirmed || false,
         // V3.7 新增
-        riskItems:            data.riskItems            || [],
-        decisionMakerStances: data.decisionMakerStances || [],
-        lifeVision:           data.lifeVision           || '',
+        riskItems:            data.riskItems            || prev.riskItems            || [],
+        decisionMakerStances: data.decisionMakerStances || prev.decisionMakerStances || [],
+        lifeVision:           data.lifeVision           || prev.lifeVision           || '',
       }
       // 兼容旧格式写入 cognition（向后兼容 insight 页降级路径）
       if (!c.cognition) c.cognition = {}
-      c.cognition.dimensionScores = data.scores || data.dimensionScores || c.cognition.dimensionScores || {}
+      c.cognition.dimensionScores = newScores
       c.cognition.customerType    = data.types  || data.customerType    || c.cognition.customerType    || []
       c.cognition.ltrustMatrix    = data.ltrust || data.ltrustMatrix    || c.cognition.ltrustMatrix    || null
       this._persist()

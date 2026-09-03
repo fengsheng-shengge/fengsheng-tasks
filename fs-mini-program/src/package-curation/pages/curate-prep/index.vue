@@ -187,6 +187,56 @@
         <view class="honesty">{{ result.honesty.note }}</view>
       </view>
 
+      <!-- ★ V3.8 作战结论卡：把策展翻译成「针对这位客户该怎么干」 -->
+      <view class="battle-card" v-if="battleCard">
+        <view class="bc-head">
+          <view class="bc-title">🎯 作战结论卡</view>
+          <view class="bc-client" v-if="clientName">{{ clientName }}</view>
+        </view>
+
+        <view class="bc-summary">{{ battleCard.summary }}</view>
+
+        <view class="bc-block">
+          <view class="bc-block-title bc-prio">① 优先讲 · 对这位客户</view>
+          <view v-for="(p, i) in battleCard.priorities" :key="'p' + i" class="bc-item">
+            <text class="bc-num">{{ i + 1 }}</text>
+            <view class="bc-text">
+              <view class="bc-item-t">{{ p.title }}</view>
+              <view class="bc-item-s">{{ p.point }}</view>
+            </view>
+          </view>
+        </view>
+
+        <view class="bc-block">
+          <view class="bc-block-title bc-bring">② 带看重点</view>
+          <view v-for="(b, i) in battleCard.bringFocus" :key="'b' + i" class="bc-item">
+            <text class="bc-num">{{ i + 1 }}</text>
+            <view class="bc-text">
+              <view class="bc-item-t">{{ b.title }}</view>
+              <view class="bc-item-s">{{ b.benefit }}</view>
+            </view>
+          </view>
+        </view>
+
+        <view class="bc-block">
+          <view class="bc-block-title bc-ask">③ 必问问题</view>
+          <view v-for="(a, i) in battleCard.askQuestions" :key="'a' + i" class="bc-item">
+            <text class="bc-num">{{ i + 1 }}</text>
+            <view class="bc-text"><view class="bc-item-t">{{ a.q }}</view></view>
+          </view>
+        </view>
+
+        <view class="bc-risk">
+          <view class="bc-risk-t">⚠️ 风险预警</view>
+          <view class="bc-risk-s">{{ battleCard.riskWarn }}</view>
+        </view>
+
+        <view class="bc-next">
+          <view class="bc-next-t">下一步动作</view>
+          <view class="bc-next-s">{{ battleCard.nextAction }}</view>
+        </view>
+      </view>
+
       <!-- ★ V2.6 洞察确认闸门 -->
       <view v-if="hasInsightData && !insightConfirmed" class="insight-confirm-bar">
         <view class="icb-title">📋 洞察数据已录入</view>
@@ -418,6 +468,77 @@ export default {
     },
     confirmedScoreCount() {
       return Object.keys(this.insightScores).filter(k => this.insightScores[k] > 0).length
+    },
+    // ★ V3.8 作战结论卡：基于策展结果 + 深层洞察 + 测评分值，翻译成「这单怎么干」
+    battleCard() {
+      if (!this.result) return null
+      const r = this.result
+      const nodeLabel = (this.axisGroups.find(g => g.type === this.axisType) || {}).label || ''
+      const nodeName = this.axisNodeKey
+      const nodeNameLabel = this._nodeNameLabel(this.axisNodeKey)
+      const isBuy = this.axisType === 'buy'
+
+      // —— 一句话客户总结论 ——
+      const triggerStr = this.triggerEvents.map(k => this._triggerLabel(k)).filter(Boolean).join('+')
+      const bottomStr = this.hardBottomLines.map(k => this._bottomLabel(k)).filter(Boolean)
+      const flexStr = this.flexibleItems.map(k => this._flexLabel(k)).filter(Boolean)
+      const riskStr = this.riskItems.map(k => this._riskLabel(k)).filter(Boolean)
+      const topType = this.selectedTypes[0]
+      const topTypeLabel = (this.clientTypes.find(t => t.key === topType) || {}).label || ''
+      const summaryParts = []
+      if (topTypeLabel) summaryParts.push(topTypeLabel)
+      if (triggerStr) summaryParts.push(triggerStr + '触发')
+      summaryParts.push(isBuy ? '核心诉求' : '核心诉求')
+      let summary = summaryParts.join(' · ')
+      if (bottomStr.length) summary += '；底线：' + bottomStr.slice(0, 3).join('、') + '必须满足'
+      if (riskStr.length) summary += '；顾虑：' + riskStr.slice(0, 2).join('、')
+      if (this.customerConflict) summary += '；纠结：' + this.customerConflict
+      if (!summary) summary = '尚未录入深层动因，可先完成测评与洞察补充后获得更精准的结论'
+
+      // —— 优先讲：把「说」翻译成对这位客户该强调的点 ——
+      const priorities = (r.say || []).slice(0, 3).map(s => ({
+        title: s.title,
+        point: s.point
+      }))
+
+      // —— 带看重点：取「带」+ 底线/让步项做排序依据 ——
+      const bringFocus = (r.bring || []).slice(0, 3).map(b => ({ title: b.title, benefit: b.benefit }))
+
+      // —— 必问问题：取「问」前 3 ——
+      const askQuestions = (r.ask || []).slice(0, 3).map(a => ({ q: a.q }))
+
+      // —— 风险预警：底线 × 让步/顾虑冲突 ——
+      let riskWarn = ''
+      if (this.customerConflict) {
+        riskWarn = '客户内心存在矛盾（' + this.customerConflict + '）——带看前先与客户对齐优先级，避免现场摇摆'
+      } else if (bottomStr.length && flexStr.length) {
+        riskWarn = '底线（' + bottomStr.slice(0, 2).join('、') + '）与可让步（' + flexStr.slice(0, 2).join('、') + '）需提前确认优先级，避免带看时两头不讨好'
+      } else if (riskStr.length) {
+        riskWarn = '客户顾虑（' + riskStr.slice(0, 2).join('、') + '）需在带看中主动回应，用真实数据打消'
+      } else {
+        riskWarn = '建议带看前补录「深层动因洞察」，风险提示将更精准'
+      }
+
+      // —— 下一步动作 ——
+      let nextAction = ''
+      if (isBuy) {
+        nextAction = '本周内按「' + (bottomStr[0] || '核心诉求') + '」优先条件，锁定 3 套房源并约看'
+      } else {
+        nextAction = '本周内按「' + (flexStr[0] || '预算') + '」范围整理 3 个候选房源，约时间看房'
+      }
+      if (this.lifeVision) nextAction += '；带看时用「' + this.lifeVision.slice(0, 20) + '…」帮客户把理想画面说具体'
+
+      return {
+        summary,
+        priorities,
+        bringFocus,
+        askQuestions,
+        riskWarn,
+        nextAction,
+        nodeLabel,
+        nodeNameLabel,
+        axisType: this.axisType
+      }
     }
   },
   onLoad(options) {
@@ -549,6 +670,18 @@ export default {
     _flexLabel(k) {
       return { area: '面积', decoration: '装修标准', ratio: '梯户比', age: '楼龄',
                quality: '小区品质', orientation: '朝向', parking: '车位' }[k] || ''
+    },
+    _riskLabel(k) {
+      return { fear_expensive: '怕买贵', fear_mortgage: '怕月供', fear_devalue: '怕贬值',
+               fear_family: '怕家人意见不合', fear_policy: '怕政策变动', fear_delivery: '怕交房不确定',
+               fear_liquidity: '怕流通性差', fear_quality: '怕质量维权' }[k] || ''
+    },
+    _nodeNameLabel(k) {
+      for (const g of this.axisGroups) {
+        const n = (g.nodes || []).find(x => x.key === k)
+        if (n) return n.name
+      }
+      return ''
     },
     toggleTag(arr, key) {
       const i = arr.indexOf(key)
@@ -744,4 +877,27 @@ export default {
 .btn-confirm { flex: 2; background: #c46a3a; color: #fff; border-radius: 10px; padding: 10px; font-size: 14px; font-weight: 700; }
 .btn-edit { flex: 1; background: #fff; color: #3d5a3e; border: 1.5px solid #3d5a3e; border-radius: 10px; padding: 10px; font-size: 14px; font-weight: 700; }
 .insight-ok-bar { background: #eef3ec; color: #3d5a3e; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 700; margin-bottom: 12px; text-align: center; }
+
+/* ★ V3.8 作战结论卡 */
+.battle-card { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 12px; border: 2px solid #3d5a3e; }
+.bc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.bc-title { font-size: 16px; font-weight: 800; color: #3d5a3e; }
+.bc-client { font-size: 12px; color: #8a837a; background: #f0ece2; padding: 2px 8px; border-radius: 10px; }
+.bc-summary { background: #eef3ec; border-left: 4px solid #3d5a3e; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #2b2b2b; line-height: 1.6; margin-bottom: 12px; }
+.bc-block { margin-bottom: 12px; }
+.bc-block-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.bc-prio { color: #3b6d11; }
+.bc-bring { color: #185fa5; }
+.bc-ask { color: #854f0b; }
+.bc-item { display: flex; gap: 8px; padding: 5px 0; }
+.bc-num { width: 18px; height: 18px; border-radius: 50%; background: #f0ece2; color: #555; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.bc-text { flex: 1; }
+.bc-item-t { font-size: 13px; font-weight: 600; color: #2b2b2b; line-height: 1.5; }
+.bc-item-s { font-size: 12px; color: #8a837a; line-height: 1.5; margin-top: 1px; }
+.bc-risk { background: #fff0f0; border: 1px solid #f0c8c8; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; }
+.bc-risk-t { font-size: 13px; font-weight: 700; color: #c0392b; margin-bottom: 4px; }
+.bc-risk-s { font-size: 12px; color: #a33; line-height: 1.5; }
+.bc-next { background: #3d5a3e; border-radius: 10px; padding: 10px 12px; }
+.bc-next-t { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 4px; }
+.bc-next-s { font-size: 13px; color: #fff; line-height: 1.5; }
 </style>
