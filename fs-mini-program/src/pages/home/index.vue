@@ -12,6 +12,22 @@
       <view class="dot" :class="{ on: heroIdx === i }" v-for="(d, i) in slides" :key="i" @tap="goSlide(i)"></view>
     </view>
 
+    <!-- 今天该做什么 · 智能待办（按 MOT 进度聚合，主动推下一步） -->
+    <view class="todo-card" v-if="todayTodos.length">
+      <view class="td-head">
+        <text class="td-title">📌 今天该做什么</text>
+        <text class="td-more" @tap="go('mot')">进服务流程 ›</text>
+      </view>
+      <view class="td-item" v-for="(t, i) in todayTodos" :key="i" @tap="goTodo(t)">
+        <view class="td-step" :class="'s' + t.step">{{ t.step }}</view>
+        <view class="td-body">
+          <view class="td-name">{{ t.client }}<text class="td-action"> · {{ t.action }}</text></view>
+          <view class="td-desc">{{ t.desc }}</view>
+        </view>
+        <text class="td-arrow">›</text>
+      </view>
+    </view>
+
     <!-- 居住服务生命周期 -->
     <view class="lifecycle-section">
       <view class="ls-head">
@@ -180,7 +196,37 @@ export default {
       })
       return best
     },
-    lastInsightName() { return this.lastInsight ? this.lastInsight.c.name : '' }
+    lastInsightName() { return this.lastInsight ? this.lastInsight.c.name : '' },
+    // ★ V3.11 智能待办：按客户 MOT 进度聚合「下一步最该做的事」，最多 3 条
+    todayTodos() {
+      const clients = (this.userStore.clients || []).filter(c => !c.seed)
+      const todos = []
+      clients.forEach(c => {
+        const lc = c.lifecycle || {}
+        const reports = c.reports || []
+        const insightConfirmed = !!reports.find(r => r.type === 'insight' && r.confirmed)
+        const proposalConfirmed = !!reports.find(r => r.type === 'proposal' && r.confirmed)
+        const hasShowing = !!reports.find(r => r.type === 'showing')
+        const hasNegotiation = !!reports.find(r => r.type === 'negotiation')
+        const hasDeal = !!reports.find(r => r.type === 'deal')
+        const hasMaintain = !!reports.find(r => r.type === 'maintain')
+        const current = lc.currentStep || 1
+        // 优先级：活跃步骤 > 有草稿未确认 > 建档无洞察 > 无建档
+        let todo = null
+        if (hasMaintain) todo = { step: 7, clientId: c.id, client: c.name, action: '维护关系', desc: '已成交 · 关系健康 + 转介绍飞轮', route: '/package-mot/pages/maintain/index' }
+        else if (hasDeal) todo = { step: 6, clientId: c.id, client: c.name, action: '成交售后', desc: '已成交 · 登记里程碑 + 售后计划', route: '/package-mot/pages/deal/index' }
+        else if (hasNegotiation) todo = { step: 5, clientId: c.id, client: c.name, action: '谈判斡旋', desc: '进入谈判 · 筹码清单 + 博弈策略', route: '/package-mot/pages/negotiation/index' }
+        else if (hasShowing) todo = { step: 4, clientId: c.id, client: c.name, action: '带看分析', desc: '已带看 · 意向判断 + 下一步行动', route: '/package-mot/pages/showing/index' }
+        else if (proposalConfirmed) todo = { step: 3, clientId: c.id, client: c.name, action: '房源提案', desc: '洞察已确认 · 录入备选房源', route: '/package-mot/pages/proposal/index' }
+        else if (insightConfirmed && (lc.insightData && lc.insightData.proposalData)) todo = { step: 3, clientId: c.id, client: c.name, action: '看提案报告', desc: '提案草稿已存 · 生成报告并确认', route: '/package-mot/pages/proposal/report' }
+        else if (insightConfirmed) todo = { step: 3, clientId: c.id, client: c.name, action: '房源提案', desc: '洞察已确认 · 开始匹配房源', route: '/package-mot/pages/proposal/index' }
+        else if (current >= 2 && lc.insightData && Object.keys(lc.insightData.scores || {}).length) todo = { step: 2, clientId: c.id, client: c.name, action: '确认洞察', desc: '已出七维画像 · 确认后解锁提案', route: '/package-mot/pages/insight/index' }
+        else if (current >= 2) todo = { step: 2, clientId: c.id, client: c.name, action: '做需求洞察', desc: '已建档 · 出需求洞察报告', route: '/package-mot/pages/insight/index' }
+        else todo = { step: 1, clientId: c.id, client: c.name, action: '补全档案', desc: '已建档 · 完善需求背景', route: '/pages/clients/index' }
+        todos.push(todo)
+      })
+      return todos.slice(0, 3)
+    }
   },
   methods: {
     onHero(e) { this.heroIdx = e.detail.current },
@@ -207,6 +253,17 @@ export default {
     },
     openFeedback() { this.fbShow = true },
     goDictSearch() { uni.navigateTo({ url: '/pages/knowledge/domain' }) },
+    goTodo(t) {
+      if (!t || !t.route) { this.go('mot'); return }
+      // 客户档案是 tabBar 页，走 store.focusClientId
+      if (t.route.indexOf('/pages/clients') === 0) {
+        this.userStore.focusClientId = t.clientId
+        uni.switchTab({ url: t.route })
+        return
+      }
+      const sep = t.route.indexOf('?') >= 0 ? '&' : '?'
+      uni.navigateTo({ url: t.route + sep + 'clientId=' + (t.clientId || '') })
+    },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) }
   },
   onShow() { trackPageview('home') }
@@ -220,6 +277,39 @@ export default {
 .dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.45); }
 .dot.on { width: 14px; border-radius: 3px; background: #fff; }
 .slide { width: 100%; height: 168px; position: relative; }
+
+/* ========== 今天该做什么 · 智能待办 ========== */
+.todo-card {
+  background: #fff; border-radius: 16px; margin: 10px 14px 0;
+  padding: 13px 14px 6px; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.td-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.td-title { font-size: 15px; font-weight: 800; color: #c46a3a; }
+.td-more { font-size: 12px; color: #c8956d; }
+.td-item {
+  display: flex; align-items: center; gap: 10px;
+  background: #faf8f5; border-radius: 12px; padding: 10px 12px; margin-bottom: 8px;
+  border: 1px solid #f0ece4;
+}
+.td-item:active { background: #f3efe7; }
+.td-step {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: #fff;
+}
+.td-step.s1 { background: #4CAF50; }
+.td-step.s2 { background: #2196F3; }
+.td-step.s3 { background: #FF9800; }
+.td-step.s4 { background: #8D6E63; }
+.td-step.s5 { background: #7E57C2; }
+.td-step.s6 { background: #c0392b; }
+.td-step.s7 { background: #2E7D32; }
+.td-body { flex: 1; }
+.td-name { font-size: 13px; font-weight: 700; color: #2b2b2b; }
+.td-action { color: #c46a3a; font-weight: 700; }
+.td-desc { font-size: 11px; color: #8a837a; margin-top: 2px; }
+.td-arrow { font-size: 16px; color: #ccc; }
+
 .slide-img { width: 100%; height: 100%; border-radius: 0; }
 .hero-cap {
   position: absolute; bottom: 0; left: 0; right: 0;

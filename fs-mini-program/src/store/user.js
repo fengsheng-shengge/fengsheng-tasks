@@ -466,6 +466,101 @@ export const useUserStore = defineStore('user', {
       this._persist()
     },
 
+    /** 完成谈判斡旋（MOT④） */
+    completeNegotiation(clientId, data) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !c.lifecycle) return
+      c.lifecycle.step5CompletedAt = Date.now()
+      if (c.lifecycle.currentStep < 5) c.lifecycle.currentStep = 5
+      if (!c.reports) c.reports = []
+      c.reports.push({
+        type: 'negotiation',
+        engine: 'negotiation-v1',
+        reportNo: 'NG-' + this._todayStr() + '-' + String(c.reports.filter(r => r.type === 'negotiation').length + 1).padStart(3, '0'),
+        version: 1,
+        confirmed: false,
+        createdAt: Date.now(),
+        data: data || {}
+      })
+      this.addTimelineEvent(clientId, { type: 'MOT④', summary: '谈判斡旋记录已保存' })
+      this.earnPoints(10, '完成谈判斡旋')
+      this._persist()
+    },
+
+    /** 完成成交售后（MOT⑤） */
+    completeDeal(clientId, data) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !c.lifecycle) return
+      c.lifecycle.step6CompletedAt = Date.now()
+      if (c.lifecycle.currentStep < 6) c.lifecycle.currentStep = 6
+      c.lifecycle.dealtAt = Date.now()
+      if (!c.reports) c.reports = []
+      c.reports.push({
+        type: 'deal',
+        engine: 'deal-v1',
+        reportNo: 'DL-' + this._todayStr() + '-' + String(c.reports.filter(r => r.type === 'deal').length + 1).padStart(3, '0'),
+        version: 1,
+        confirmed: false,
+        createdAt: Date.now(),
+        data: data || {}
+      })
+      this.addTimelineEvent(clientId, { type: 'MOT⑤', summary: '成交售后已登记' })
+      this.earnPoints(20, '完成成交售后')
+      this._persist()
+    },
+
+    /** 完成持续维护（MOT⑥） */
+    completeMaintain(clientId, data) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !c.lifecycle) return
+      c.lifecycle.step7CompletedAt = Date.now()
+      if (c.lifecycle.currentStep < 7) c.lifecycle.currentStep = 7
+      if (!c.reports) c.reports = []
+      c.reports.push({
+        type: 'maintain',
+        engine: 'maintain-v1',
+        reportNo: 'MT-' + this._todayStr() + '-' + String(c.reports.filter(r => r.type === 'maintain').length + 1).padStart(3, '0'),
+        version: 1,
+        confirmed: false,
+        createdAt: Date.now(),
+        data: data || {}
+      })
+      this.addTimelineEvent(clientId, { type: 'MOT⑥', summary: '持续维护记录已保存' })
+      this.earnPoints(10, '完成持续维护')
+      this._persist()
+    },
+
+    /** 完成提案报告（MOT②）：写入 proposal 数据 + 追加报告引用（兼容 confirmProposal 的闸门） */
+    completeProposal(clientId, proposalData) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c) return
+      if (!c.lifecycle) c.lifecycle = {}
+      // 先落草稿到洞察扩展数据（与 saveDraft 一致，供回读）
+      const prev = c.lifecycle.insightData || {}
+      c.lifecycle.insightData = { ...prev, proposalData: proposalData || {}, proposalAt: Date.now() }
+      // 追加/更新 proposal 报告引用
+      if (!c.reports) c.reports = []
+      let prog = c.reports.find(r => r.type === 'proposal')
+      if (prog) {
+        prog.data = proposalData || {}
+        prog.updatedAt = Date.now()
+      } else {
+        c.reports.push({
+          type: 'proposal',
+          engine: 'proposal-v1',
+          reportNo: 'PR-' + this._todayStr() + '-' + String(c.reports.filter(r => r.type === 'proposal').length + 1).padStart(3, '0'),
+          version: 1,
+          confirmed: false,
+          createdAt: Date.now(),
+          data: proposalData || {}
+        })
+      }
+      if (c.lifecycle.currentStep < 3) c.lifecycle.currentStep = 3
+      this.addTimelineEvent(clientId, { type: 'MOT②', summary: '房源提案报告已生成' })
+      this.earnPoints(10, '生成提案报告')
+      this._persist()
+    },
+
     /** 获取客户当前 insight 报告（最近的） */
     getInsightReport(clientId) {
       const c = this.clients.find(x => x.id === clientId)

@@ -87,9 +87,9 @@ const STEPS = [
   { key: 2, name: '需求洞察', desc: 'MOT① 七维分析 + 客户分型', actionLabel: '开始洞察 →', route: '/package-mot/pages/insight/index', gate: 'step2Confirmed' },
   { key: 3, name: '房源提案', desc: 'MOT② 匹配推荐 + 讲房话术', actionLabel: '录入提案 →', route: '/package-mot/pages/proposal/index', gate: 'step3Confirmed' },
   { key: 4, name: '带看分析', desc: 'MOT③ 讲房执行 + 意向判断', actionLabel: '开始带看 →', route: '/package-mot/pages/showing/index' },
-  { key: 5, name: '谈判斡旋', desc: 'MOT④ 博弈策略 + 筹码清单', actionLabel: '录入谈判 →', route: null },
-  { key: 6, name: '成交售后', desc: 'MOT⑤ 签约交付 + 里程碑', actionLabel: '录入成交 →', route: null },
-  { key: 7, name: '持续维护', desc: 'MOT⑥ 关系健康 + 转介绍', actionLabel: '维护关系 →', route: null },
+  { key: 5, name: '谈判斡旋', desc: 'MOT④ 博弈策略 + 筹码清单', actionLabel: '录入谈判 →', route: '/package-mot/pages/negotiation/index' },
+  { key: 6, name: '成交售后', desc: 'MOT⑤ 签约交付 + 里程碑', actionLabel: '录入成交 →', route: '/package-mot/pages/deal/index' },
+  { key: 7, name: '持续维护', desc: 'MOT⑥ 关系健康 + 转介绍', actionLabel: '维护关系 →', route: '/package-mot/pages/maintain/index' },
 ]
 
 export default {
@@ -160,6 +160,9 @@ export default {
         2: !!reports.find(r => r.type === 'insight' && r.confirmed),
         3: !!reports.find(r => r.type === 'proposal' && r.confirmed),
         4: !!reports.find(r => r.type === 'showing'),
+        5: !!reports.find(r => r.type === 'negotiation'),
+        6: !!reports.find(r => r.type === 'deal'),
+        7: !!reports.find(r => r.type === 'maintain'),
       }
       // 步骤1：建档完成则 done，否则 active（新建客户即建档）
       if (key === 1) return evidenceDone[1] ? 'done' : 'active'
@@ -177,7 +180,7 @@ export default {
     stepTag(key) {
       if (!this.selectedClient || !this.selectedClient.reports) return null
       const reports = this.selectedClient.reports
-      const map = { 2: 'insight', 3: 'proposal', 4: 'showing' }
+      const map = { 2: 'insight', 3: 'proposal', 4: 'showing', 5: 'negotiation', 6: 'deal', 7: 'maintain' }
       const type = map[key]
       if (!type) return null
       const r = reports.filter(r => r.type === type).sort((a, b) => b.createdAt - a.createdAt)[0]

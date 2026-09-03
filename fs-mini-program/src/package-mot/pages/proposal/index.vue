@@ -139,6 +139,12 @@
       <!-- 底部占位 -->
       <view style="height:100px"></view>
 
+      <!-- 已生成报告入口 -->
+      <view v-if="hasReport" class="report-entry" @tap="goReport">
+        <view class="re-l"><view class="re-t">📄 已生成提案报告</view><view class="re-s" v-if="reportNo">{{ reportNo }}</view></view>
+        <text class="re-arrow">查看 ›</text>
+      </view>
+
       <!-- 底部按钮 -->
       <view class="bottom-bar">
         <view class="btn-secondary" @tap="saveDraft">存草稿</view>
@@ -248,6 +254,14 @@ export default {
     },
     canSubmit() {
       return this.properties.length > 0 && this.properties.some(p => p.reason && p.reason.trim().length >= 10)
+    },
+    hasReport() {
+      const r = this.userStore.getProposalReport(this.clientId)
+      return !!r
+    },
+    reportNo() {
+      const r = this.userStore.getProposalReport(this.clientId)
+      return r ? r.reportNo : ''
     }
   },
   onLoad(options) {
@@ -311,16 +325,21 @@ export default {
       }
       uni.showModal({
         title: '生成提案报告',
-        content: '确认后进入 MOT② 房源提案报告，房源将关联讲房话术并提交审核。',
+        content: '确认后进入 MOT② 房源提案报告，房源将关联讲房话术。',
         confirmText: '确认生成',
         success: (res) => {
           if (res.confirm) {
-            this.saveDraft()
-            uni.showToast({ title: '提案报告生成中…', icon: 'none' })
-            // TODO: 跳转提案报告页
+            // 写提案报告数据（含房源 + 讲房话术类型）
+            const proposalData = {
+              properties: this.properties,
+              types: this.insightData ? (this.insightData.types || []) : [],
+              createdAt: Date.now()
+            }
+            this.userStore.completeProposal(this.clientId, proposalData)
+            uni.showToast({ title: '提案报告已生成', icon: 'success' })
             setTimeout(() => {
-              uni.showToast({ title: 'MOT② 报告页开发中', icon: 'none' })
-            }, 1500)
+              uni.redirectTo({ url: '/package-mot/pages/proposal/report?clientId=' + this.clientId })
+            }, 600)
           }
         }
       })
@@ -330,6 +349,11 @@ export default {
         uni.navigateTo({ url: '/package-mot/pages/insight/index?clientId=' + this.clientId })
       } else {
         uni.showToast({ title: '请先选择客户', icon: 'none' })
+      }
+    },
+    goReport() {
+      if (this.clientId) {
+        uni.navigateTo({ url: '/package-mot/pages/proposal/report?clientId=' + this.clientId })
       }
     }
   }
@@ -390,6 +414,11 @@ export default {
 .sh-add { font-size: 12px; font-weight: 700; color: #3d5a3e; background: #eef3ec; padding: 4px 12px; border-radius: 999px; }
 
 .empty-props { margin: 0 20px 14px; background: #fff; border: 1.5px dashed #ede5d6; border-radius: 14px; padding: 30px; text-align: center; font-size: 14px; color: #8a837a; }
+.report-entry { margin: 0 20px 14px; background: #eef6ef; border: 1px solid #c4dbc5; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+.re-l { flex: 1; }
+.re-t { font-size: 14px; font-weight: 700; color: #3a8f5b; }
+.re-s { font-size: 11px; color: #8a837a; margin-top: 2px; }
+.re-arrow { font-size: 13px; color: #3a8f5b; font-weight: 700; }
 
 /* 房源卡片 */
 .prop-card { margin: 0 20px 14px; background: #fff; border-radius: 14px; border: 2px solid #ede5d6; overflow: hidden; }
