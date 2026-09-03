@@ -1,31 +1,31 @@
 <template>
   <view class="page">
     <view class="knowledge-banner">
-      <view><text style="font-size:18px;font-weight:700">风声知识底座</text></view>
-      <view style="font-size:12px;opacity:.85;line-height:1.5;margin-top:6px">词典 · 测评 · 案例，随时查阅（真实口径，非估算）</view>
+      <view><text style="font-size:18px;font-weight:700">风声·服务方案库</text></view>
+      <view style="font-size:12px;opacity:.85;line-height:1.5;margin-top:6px">客户问题直接给结论与处理办法，照做即可服务到位（真实口径，非估算）</view>
     </view>
 
     <!-- 三模块分段切换 -->
     <view class="kg-tabs">
-      <view class="kg-tab" :class="{ on: mod === 'dict' }" @tap="setMod('dict')">业务词典</view>
+      <view class="kg-tab" :class="{ on: mod === 'dict' }" @tap="setMod('dict')">服务方案</view>
       <view class="kg-tab" :class="{ on: mod === 'assess' }" @tap="setMod('assess')">品质测评</view>
       <view class="kg-tab" :class="{ on: mod === 'cases' }" @tap="setMod('cases')">案例灵感</view>
     </view>
 
-    <!-- 模块一：业务词典 -->
+    <!-- 模块一：服务方案（原业务词典，改为结论性解决方案输出） -->
     <view v-if="mod === 'dict'">
       <view class="dict-search" @tap="goDictSearch">
-        <text class="ds-icon">🔍</text><text class="ds-ph">搜索 {{ dictTotal }} 条行业词条</text>
+        <text class="ds-icon">🔍</text><text class="ds-ph">搜客户问题，直接给方案（共 {{ dictTotal }} 个）</text>
       </view>
-      <view class="section-header"><text class="section-title">业务词典</text><text class="section-more">{{ dictDomains.length }} 域 {{ dictTotal }} 条</text></view>
+      <view class="section-header"><text class="section-title">按服务场景查方案</text><text class="section-more">{{ dictDomains.length }} 个场景</text></view>
       <view class="dict-grid">
         <view class="dict-card" v-for="(d, i) in dictDomains" :key="i" @tap="goDomain(d)">
           <view class="dict-icon">{{ d.icon }}</view>
           <view class="dict-name">{{ d.name }}</view>
-          <view class="dict-count">{{ d.count }} 条</view>
+          <view class="dict-count">{{ d.count }} 个方案</view>
         </view>
       </view>
-      <view class="icp">词条来自真实字典（法源可追溯）<view>引证必保留 · 依据整理中会诚实标注</view></view>
+      <view class="icp">每个方案含直接结论与处理办法，依据法源可追溯<view>引证必保留 · 依据整理中会诚实标注</view></view>
     </view>
 
     <!-- 模块二：品质测评 -->
