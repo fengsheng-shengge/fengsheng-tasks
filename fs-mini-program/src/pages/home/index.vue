@@ -30,6 +30,36 @@
       </view>
     </view>
 
+    <!-- 到洞察 · 快捷入口 -->
+    <view class="insight-quick">
+      <view class="iq-head">
+        <text class="iq-title">🎯 到洞察</text>
+        <text class="iq-sub">建档 → 测评 → 出需求洞察报告</text>
+      </view>
+      <view class="iq-grid">
+        <view class="iq-item" @tap="goAssess">
+          <text class="iq-ico">🏠</text>
+          <text class="iq-name">住得好测评</text>
+          <text class="iq-desc">7 题摸清七维画像</text>
+        </view>
+        <view class="iq-item" @tap="go('curate')">
+          <text class="iq-ico">📋</text>
+          <text class="iq-name">见面策展</text>
+          <text class="iq-desc">生成作战结论卡</text>
+        </view>
+        <view class="iq-item" @tap="go('clients')">
+          <text class="iq-ico">👥</text>
+          <text class="iq-name">客户档案</text>
+          <text class="iq-desc">建档与需求记录</text>
+        </view>
+      </view>
+      <view class="iq-report" @tap="goLastInsight">
+        <text class="iqr-l"><text class="iqr-ico">📄</text> 最近一份需求洞察报告</text>
+        <text class="iqr-r" v-if="lastInsightName">{{ lastInsightName }} ›</text>
+        <text class="iqr-r" v-else>去生成 ›</text>
+      </view>
+    </view>
+
     <!-- 我的客户看板 -->
     <view class="client-board" v-if="topClient">
       <view class="cb-head">
@@ -139,11 +169,28 @@ export default {
         totalReports: total,
         nextAction: c.nextAction || '做①需求洞察问诊'
       }
-    }
+    },
+    // 最近一条洞察报告（含测评来源或已确认的）
+    lastInsight() {
+      const clients = (this.userStore.clients || []).filter(c => !c.seed)
+      let best = null
+      clients.forEach(c => {
+        const ins = (c.lifecycle && c.lifecycle.insightData) ? c.lifecycle.insightData : null
+        if (ins && (!best || (ins.assessAt || 0) > (best.assessAt || 0))) best = { c, ins }
+      })
+      return best
+    },
+    lastInsightName() { return this.lastInsight ? this.lastInsight.c.name : '' }
   },
   methods: {
     onHero(e) { this.heroIdx = e.detail.current },
     goSlide(i) { this.heroIdx = i },
+    goAssess() { uni.navigateTo({ url: '/pages/assess/index' }) },
+    goLastInsight() {
+      const li = this.lastInsight
+      if (li) uni.navigateTo({ url: '/package-mot/pages/insight/index?clientId=' + li.c.id })
+      else { this.goAssess() }
+    },
     go(tab) {
       const tabs = ['home', 'knowledge', 'curate', 'clients', 'profile']
       if (tabs.indexOf(tab) >= 0) uni.switchTab({ url: '/pages/' + tab + '/index' })
@@ -210,6 +257,33 @@ export default {
 }
 .ls-desc-t { font-size: 12px; color: #8a7a68; }
 .ls-desc-v { font-size: 12px; color: #5c4a36; font-weight: 600; }
+
+/* ========== 到洞察 · 快捷入口 ========== */
+.insight-quick {
+  background: linear-gradient(135deg, #3d5a3e 0%, #2f4a30 100%);
+  border-radius: 16px; margin: 0 14px 10px; padding: 14px 14px 12px;
+}
+.iq-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.iq-title { font-size: 15px; font-weight: 700; color: #fff; }
+.iq-sub { font-size: 11px; color: rgba(255,255,255,.7); }
+.iq-grid { display: flex; gap: 8px; }
+.iq-item {
+  flex: 1; background: rgba(255,255,255,.12); border-radius: 10px;
+  padding: 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.iq-item:active { background: rgba(255,255,255,.2); }
+.iq-ico { font-size: 20px; }
+.iq-name { font-size: 12px; color: #fff; font-weight: 600; }
+.iq-desc { font-size: 10px; color: rgba(255,255,255,.68); text-align: center; }
+.iq-report {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 10px; background: rgba(255,255,255,.1);
+  border-radius: 10px; padding: 9px 12px;
+}
+.iq-report:active { background: rgba(255,255,255,.18); }
+.iqr-l { font-size: 12px; color: #fff; }
+.iqr-ico { margin-right: 2px; }
+.iqr-r { font-size: 12px; color: rgba(255,255,255,.85); font-weight: 600; }
 
 /* ========== 我的客户看板 ========== */
 .client-board {
