@@ -497,8 +497,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
 <!-- ====== Footer + 反馈组件 ====== -->
 <div class="page-footer">
-  <div class="footer-brand">🌬️ 风声 · 通过独立价值获得尊重</div>
-  <div class="copyright">fengsheng.tech © 2026 · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:inherit">京ICP备2026044043号</a></div>
+  <div class="footer-brand"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M3 10C3 10 7 6 10 6C13 6 17 10 17 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 10C3 10 7 14 10 14C13 14 17 10 17 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/><path d="M6 10C6 10 8.5 8 10 8C11.5 8 14 10 14 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/></svg>风声 · 通过独立价值获得尊重</div>
+  <div class="copyright">© 2026 fengsheng.tech · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:inherit">京ICP备2026044043号</a></div>
 
   <!-- 反馈组件 v3 -->
   <div class="fs-feedback-widget" id="fs-feedback">
@@ -658,7 +658,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 // ====== 导航栏初始化 ======
 (function() {
   var savedRole = localStorage.getItem('fs_role') || 'agent';
-  var roleIcons = {'agent':'🤝','manager':'📊','newbie':'🌱'};
+  var roleIcons = {'agent':'/assets/icons/role-broker.svg','manager':'/assets/icons/role-manager.svg','newbie':'/assets/icons/role-new.svg'};
   var roleLabels = {'agent':'经纪人模式','manager':'管理者模式','newbie':'新手引导'};
 
   var bar = document.createElement('div');
@@ -671,7 +671,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     + '<div style="flex:1;text-align:center;font-size:15px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 12px;letter-spacing:.5px">风声</div>'
     + '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'
     + '<button onclick="window.location.href=\'/?role=' + savedRole + '\'" style="display:inline-flex;align-items:center;gap:3px;padding:5px 10px;border-radius:6px;font-size:12px;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s">'
-    + '<span>' + (roleIcons[savedRole] || '🤝') + '</span>'
+    + '<img src="' + (roleIcons[savedRole] || '/assets/icons/role-broker.svg') + '" alt="" style="width:14px;height:14px;display:block">'
     + '<span>' + (roleLabels[savedRole] || '经纪人模式') + '</span>'
     + '</button>'
     + '</div>';

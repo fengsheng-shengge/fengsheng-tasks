@@ -54,7 +54,8 @@
       + '}'
       + '#' + ID_PREFIX + '-logo:hover,'
       + '#' + ID_PREFIX + '-logo:active{opacity:.8}'
-      + '#' + ID_PREFIX + '-logo-icon{font-size:18px;line-height:1}'
+      + '#' + ID_PREFIX + '-logo-icon{display:flex;align-items:center;justify-content:center}'
+      + '#' + ID_PREFIX + '-logo-icon svg{width:18px;height:18px;display:block}'
 
       /* ===== Center: Page Title ===== */
       + '#' + ID_PREFIX + '-center{'
@@ -124,7 +125,7 @@
       '<div id="' + ID_PREFIX + '-bar">' +
         '<div id="' + ID_PREFIX + '-left">' +
           '<a id="' + ID_PREFIX + '-logo" href="/">' +
-            '<span id="' + ID_PREFIX + '-logo-icon">&#127787;&#65039;</span>' +
+            '<span id="' + ID_PREFIX + '-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 10C3 10 7 6 10 6C13 6 17 10 17 10" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 10C3 10 7 14 10 14C13 14 17 10 17 10" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/><path d="M6 10C6 10 8.5 8 10 8C11.5 8 14 10 14 10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/></svg></span>' +
             '<span>风声</span>' +
           '</a>' +
         '</div>' +
