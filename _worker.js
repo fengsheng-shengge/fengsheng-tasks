@@ -3526,14 +3526,14 @@ export default {
     // SPA fallback detection: HTML for a route without file extension
     if (isHtml && !path.includes('.')) {
       const KNOWN_ROUTES = new Set([
-        '/', '/about', '/agent-academy', '/assessment', '/breeder', '/care-test',
-        '/clients', '/curation', '/dashboard', '/decoder', '/dictionary', '/entry', '/favorites', '/history',
+        '/', '/about', '/agent-academy', '/assessment', '/agent-assessment', '/breeder', '/care-test',
+        '/clients', '/curation', '/dashboard', '/dashboard-manager', '/decoder', '/dictionary', '/entry', '/favorites', '/history',
         '/ip-design', '/knowledge', '/management',
         '/mentor', '/partner', '/privacy', '/quality-test', '/reply',
         '/s1-report', '/scene', '/search', '/shuowenjiedao', '/skills', '/standard', '/survey',
         '/terms', '/showing-report', '/dict', '/guide', '/decode',
         '/agreement', '/okr', '/docs',
-        '/breeder/', '/care-test/', '/about/', '/agent-academy/', '/curation/',
+        '/breeder/', '/care-test/', '/about/', '/agent-academy/', '/curation/', '/dashboard-manager/',
         '/clients/', '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
       ]);
       const normalized = path.endsWith('/') ? path.slice(0, -1) : path;

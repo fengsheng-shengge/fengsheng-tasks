@@ -1,18 +1,316 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>页面建设中 - 风声</title>
-<style>body{display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;font-family:system-ui;background:#0a0a0a;color:#888;text-align:center}
-.container h1{font-size:2rem;color:#fff;margin-bottom:.5rem}
-.container p{font-size:1rem;line-height:1.6}
-a{color:#f59e0b;text-decoration:none}</style>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>智能体学院 · 风声 · 训练你的数字员工团队</title>
+<meta name="description" content="智能体学院 — 辅导门店管理者训练自己的数字员工。从入职、分工、考核到协作，让每个门店拥有一支高效的数字员工团队。">
+<meta name="keywords" content="智能体,数字员工,AI训练,门店管理,数字员工考核,风声">
+<style>
+:root{--bg:#f7f4ef;--bg2:#e8e4d9;--card:#fff;--p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--accent:#c46a3a;--accent-l:#e89060;--dk:#1a1a1a;--tx:#555;--ts:#7a8478;--td:#a8b0a6;--r:4px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--p);text-decoration:none}
+/* 导航 */
+.nav{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 5%;background:linear-gradient(135deg,#3d5a3e 0%,#2c4430 100%);color:#fff;position:sticky;top:0;z-index:100}
+.nav-l{display:flex;align-items:center;gap:8px}
+.nav-l a{color:rgba(255,255,255,.7);font-size:13px}
+.nav-l a:hover{color:#fff}
+.nav-r{display:flex;align-items:center;gap:8px;font-size:13px}
+.nav-r .free-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:var(--r);background:var(--accent);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer}
+.nav-r .free-btn:hover{background:var(--accent-l)}
+/* Hero */
+.hero{text-align:center;padding:60px 5% 50px;background:linear-gradient(180deg,rgba(61,90,62,.06) 0%,transparent 100%)}
+.hero-badge{display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(61,90,62,.1);color:var(--p);font-size:12px;font-weight:600;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:clamp(28px,5vw,44px);font-weight:800;color:var(--p-d);line-height:1.2;margin-bottom:14px}
+.hero h1 span{color:var(--accent)}
+.hero p{font-size:clamp(15px,2vw,18px);color:var(--ts);max-width:640px;margin:0 auto 28px;line-height:1.7}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero-cta .btn-primary{padding:12px 32px;border-radius:var(--r);background:var(--p);color:#fff;font-size:15px;font-weight:700;border:none;cursor:pointer;transition:background .2s}
+.hero-cta .btn-primary:hover{background:var(--p-d)}
+.hero-cta .btn-secondary{padding:12px 32px;border-radius:var(--r);background:transparent;color:var(--p);font-size:15px;font-weight:600;border:2px solid var(--p);cursor:pointer;transition:all .2s}
+.hero-cta .btn-secondary:hover{background:var(--p);color:#fff}
+/* 价值卡片 */
+.value-section{max-width:1000px;margin:0 auto;padding:50px 5% 40px}
+.value-section h2{text-align:center;font-size:clamp(22px,3vw,30px);color:var(--p-d);margin-bottom:32px}
+.value-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.value-card{background:var(--card);border-radius:8px;padding:28px 24px;box-shadow:0 2px 10px rgba(44,68,48,.08);text-align:center}
+.value-card .vc-icon{font-size:36px;margin-bottom:12px}
+.value-card h3{font-size:16px;color:var(--p-d);margin-bottom:8px;font-weight:700}
+.value-card p{font-size:13px;color:var(--ts);line-height:1.6}
+/* 生命周期流程 */
+.lifecycle{max-width:1000px;margin:0 auto;padding:50px 5% 40px}
+.lifecycle h2{text-align:center;font-size:clamp(22px,3vw,30px);color:var(--p-d);margin-bottom:8px}
+.lifecycle > p{text-align:center;color:var(--ts);max-width:600px;margin:0 auto 36px;font-size:14px}
+.lc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+.lc-card{background:var(--card);border-radius:8px;padding:20px;border:1px solid rgba(61,90,62,.12);text-align:center;transition:all .2s}
+.lc-card:hover{border-color:var(--p);box-shadow:0 4px 16px rgba(44,68,48,.1)}
+.lc-card .lci{font-size:28px;margin-bottom:8px}
+.lc-card h4{font-size:14px;color:var(--p-d);margin-bottom:6px;font-weight:700}
+.lc-card p{font-size:12px;color:var(--ts);line-height:1.5}
+/* 方法内容 */
+.methods{max-width:1000px;margin:0 auto;padding:50px 5% 40px}
+.methods h2{text-align:center;font-size:clamp(22px,3vw,30px);color:var(--p-d);margin-bottom:36px}
+.method-item{display:flex;gap:20px;align-items:flex-start;margin-bottom:28px;background:var(--card);border-radius:8px;padding:24px;box-shadow:0 1px 6px rgba(44,68,48,.06)}
+.method-item .mi-num{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.method-item .mi-body h3{font-size:15px;color:var(--p-d);margin-bottom:4px;font-weight:700}
+.method-item .mi-body p{font-size:13px;color:var(--ts);line-height:1.6}
+/* 限免体验区 */
+.free-trial{max-width:1000px;margin:0 auto;padding:50px 5% 40px;text-align:center}
+.free-trial h2{font-size:clamp(22px,3vw,30px);color:var(--p-d);margin-bottom:8px}
+.free-trial > p{color:var(--ts);max-width:600px;margin:0 auto 32px;font-size:14px}
+.trial-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;text-align:left}
+.trial-card{background:var(--card);border-radius:8px;padding:24px;border:1px solid rgba(196,106,58,.2);position:relative}
+.trial-card.free{border-color:rgba(61,90,62,.2)}
+.trial-card.pro{border-color:var(--accent);box-shadow:0 0 0 2px rgba(196,106,58,.15)}
+.trial-card .tc-badge{position:absolute;top:-10px;right:12px;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700}
+.trial-card.free .tc-badge{background:var(--bg2);color:var(--ts)}
+.trial-card.pro .tc-badge{background:var(--accent);color:#fff}
+.trial-card .tc-name{font-size:16px;font-weight:700;color:var(--p-d);margin-bottom:4px}
+.trial-card .tc-price{font-size:28px;font-weight:800;color:var(--p-d);margin-bottom:2px}
+.trial-card .tc-price small{font-size:13px;font-weight:400;color:var(--ts)}
+.trial-card .tc-desc{font-size:12px;color:var(--ts);margin-bottom:16px;line-height:1.5}
+.trial-card .tc-features{list-style:none;padding:0}
+.trial-card .tc-features li{font-size:12px;color:var(--tx);padding:4px 0;border-bottom:1px solid rgba(0,0,0,.04);display:flex;align-items:center;gap:6px}
+.trial-card .tc-features li:last-child{border-bottom:none}
+.trial-card .tc-features .check{color:var(--p);font-weight:700}
+.trial-card .tc-features .cross{color:var(--td)}
+.trial-card .tc-btn{display:block;margin-top:16px;padding:10px 0;border-radius:var(--r);text-align:center;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .2s;width:100%}
+.trial-card.free .tc-btn{background:var(--p);color:#fff}
+.trial-card.free .tc-btn:hover{background:var(--p-d)}
+.trial-card.pro .tc-btn{background:var(--accent);color:#fff}
+.trial-card.pro .tc-btn:hover{background:var(--accent-l)}
+/* 案例 */
+.cases{max-width:1000px;margin:0 auto;padding:50px 5% 40px}
+.cases h2{text-align:center;font-size:clamp(22px,3vw,30px);color:var(--p-d);margin-bottom:36px}
+.case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.case-card{background:var(--card);border-radius:8px;padding:24px;box-shadow:0 1px 6px rgba(44,68,48,.06)}
+.case-card .cc-icon{font-size:28px;margin-bottom:8px}
+.case-card h4{font-size:14px;color:var(--p-d);margin-bottom:4px;font-weight:700}
+.case-card .cc-meta{font-size:11px;color:var(--td);margin-bottom:10px}
+.case-card p{font-size:12px;color:var(--ts);line-height:1.6}
+/* 底部CTA */
+.cta-section{text-align:center;padding:60px 5%;background:linear-gradient(180deg,transparent 0%,rgba(61,90,62,.06) 100%)}
+.cta-section h2{font-size:clamp(22px,3vw,30px);color:var(--p-d);margin-bottom:10px}
+.cta-section p{color:var(--ts);max-width:500px;margin:0 auto 24px;font-size:14px}
+.cta-section .btn-primary{padding:14px 40px;border-radius:var(--r);background:var(--accent);color:#fff;font-size:16px;font-weight:700;border:none;cursor:pointer;transition:background .2s}
+.cta-section .btn-primary:hover{background:var(--accent-l)}
+/* Footer */
+.footer{text-align:center;padding:24px 5%;color:var(--td);font-size:12px;border-top:1px solid rgba(0,0,0,.04)}
+.footer a{color:var(--td)}
+/* 滚动锚点 */
+.anchor{scroll-margin-top:60px}
+/* 响应式 */
+@media(max-width:640px){
+  .hero{padding:40px 5% 30px}
+  .method-item{flex-direction:column;gap:10px;padding:16px}
+  .method-item .mi-num{width:28px;height:28px;font-size:12px}
+  .value-section,.lifecycle,.methods,.free-trial,.cases{padding:30px 5% 20px}
+}
+</style>
 </head>
-<body><div class="container">
-<h1>🏗️ 页面建设中</h1>
-<p>该页面正在筹备内容，敬请期待。</p>
-<p><a href="/">← 返回首页</a></p>
-</div>  <!-- 全站数据追踪器 -->
-  <script src="/tracker.js" async></script>
+<body>
 
-  <p style="text-align:center;margin-top:2rem;padding:1rem 0;color:#666;font-size:0.75rem;"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:#666;text-decoration:none;">京ICP备2026044043号</a></p>
-</body></html>
+<!-- 导航 -->
+<div class="nav">
+  <div class="nav-l">
+    <a href="/">← 首页</a>
+    <span style="opacity:.3">|</span>
+    <a href="/agent-academy/" style="font-weight:600;color:#fff">智能体学院</a>
+  </div>
+  <div class="nav-r">
+    <span style="opacity:.7;font-size:12px">已体验 <strong>0</strong>/3 次</span>
+    <button class="free-btn" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">💎 开通专业版</button>
+  </div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">🧠 风声智能体学院</div>
+  <h1>训练你的 <span>数字员工</span> 团队<br>让门店拥有自己的 AI 队伍</h1>
+  <p>你不是一个人在战斗。智能体学院辅导门店管理者学会训练智能体、给智能体分工、组建自己的数字员工团队。从入职到考核，一整套方法论，免费体验。</p>
+  <div class="hero-cta">
+    <button class="btn-primary" onclick="document.getElementById('free-trial').scrollIntoView({behavior:'smooth'})">免费体验</button>
+    <button class="btn-secondary" onclick="document.getElementById('methods').scrollIntoView({behavior:'smooth'})">了解方法论</button>
+  </div>
+</div>
+
+<!-- 核心价值 -->
+<div class="value-section">
+  <h2>为什么门店管理者需要数字员工？</h2>
+  <div class="value-grid">
+    <div class="value-card">
+      <div class="vc-icon">🤖</div>
+      <h3>7×24 小时在线</h3>
+      <p>数字员工不休息、不请假、不辞职。知识问答、客户跟进、报告生成，7×24 小时自动运行。</p>
+    </div>
+    <div class="value-card">
+      <div class="vc-icon">📈</div>
+      <h3>可量化考核</h3>
+      <p>五把尺子维度：工作量、任务复杂度、技能复用、运行时、并发能力。每项可评分可排名。</p>
+    </div>
+    <div class="value-card">
+      <div class="vc-icon">💰</div>
+      <h3>降本增效</h3>
+      <p>一个数字员工的成本不到真人员工的 10%，产出却可以覆盖 80% 的标准化工作。让经纪人专注高价值判断。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 数字员工全生命周期 -->
+<div class="lifecycle" id="lifecycle">
+  <h2>数字员工全生命周期管理</h2>
+  <p>从入职到评价，一套完整的数字员工管理体系，让每个智能体各司其职、高效协作</p>
+  <div class="lc-grid">
+    <div class="lc-card">
+      <div class="lci">📋</div>
+      <h4>1. 入职</h4>
+      <p>定义岗位职责、能力边界、知识范围。每个数字员工有明确的岗位说明书。</p>
+    </div>
+    <div class="lc-card">
+      <div class="lci">🎯</div>
+      <h4>2. 分工</h4>
+      <p>根据门店需求，分配不同角色：客服型、知识型、分析型、运营型。各司其职。</p>
+    </div>
+    <div class="lc-card">
+      <div class="lci">🏅</div>
+      <h4>3. 考核</h4>
+      <p>五把尺子量化评估：工作量、复杂度、复用、运行、并发。数据驱动优化。</p>
+    </div>
+    <div class="lc-card">
+      <div class="lci">🤝</div>
+      <h4>4. 协作</h4>
+      <p>多智能体协同工作，自动交接任务。知识库共享、报告流转、客户跟进无缝衔接。</p>
+    </div>
+    <div class="lc-card">
+      <div class="lci">⭐</div>
+      <h4>5. 评价</h4>
+      <p>定期复盘数字员工表现，优化训练策略。持续迭代，越用越聪明。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 方法论内容 -->
+<div class="methods" id="methods">
+  <h2>智能体训练方法论</h2>
+
+  <div class="method-item">
+    <div class="mi-num">1</div>
+    <div class="mi-body">
+      <h3>岗位职责定义 · 给数字员工写 JD</h3>
+      <p>每个数字员工需要一份清晰的岗位说明书：这个智能体负责什么、需要什么知识、输出什么成果。例如「客服智能体」负责回答客户咨询，「报告智能体」负责生成生命周期报告。模板直接套用，10 分钟完成配置。</p>
+    </div>
+  </div>
+
+  <div class="method-item">
+    <div class="mi-num">2</div>
+    <div class="mi-body">
+      <h3>知识投喂 · 让数字员工懂业务</h3>
+      <p>数字员工的能力取决于知识质量。将门店的 SOP、话术、案例、政策文档投喂给智能体。风声知识库 5,942 条专业词条可直接授权。管理者可以决定每个数字员工访问哪些知识。</p>
+    </div>
+  </div>
+
+  <div class="method-item">
+    <div class="mi-num">3</div>
+    <div class="mi-body">
+      <h3>分工协作 · 组建你的数字团队</h3>
+      <p>一个门店不需要一个全能的智能体，而是需要多个专业分工的数字员工。客服智能体 → 知识智能体 → 报告智能体 → 分析智能体，各司其职，自动协作。管理者在后台配置工作流即可。</p>
+    </div>
+  </div>
+
+  <div class="method-item">
+    <div class="mi-num">4</div>
+    <div class="mi-body">
+      <h3>五把尺子考核 · 量化评估数字员工</h3>
+      <p>通过五个维度评估数字员工表现：产出量（完成的任务数）、任务复杂度（处理问题的难度）、技能复用（跨场景适用性）、运行时长（在线服务时间）、并发能力（同时处理多任务）。评分自动生成，排名一目了然。</p>
+    </div>
+  </div>
+
+  <div class="method-item">
+    <div class="mi-num">5</div>
+    <div class="mi-body">
+      <h3>持续迭代 · 数字员工进化指南</h3>
+      <p>根据考核数据和用户反馈，持续优化数字员工。调整知识权重、优化训练参数、补充新知识。风声提供迭代建议模板，管理者按步骤操作即可。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 限免体验 -->
+<div class="free-trial" id="pricing">
+  <h2>有限开放体验 · 先试后买</h2>
+  <p>免费体验数字员工训练，了解完整方法论。满意后再付费开通更多名额。</p>
+  <div class="trial-cards" style="max-width:700px;margin:0 auto">
+    <div class="trial-card free">
+      <div class="tc-badge">免费体验</div>
+      <div class="tc-name">基础版</div>
+      <div class="tc-price">¥0 <small>永久免费</small></div>
+      <div class="tc-desc">适合初次体验，了解数字员工训练方法</div>
+      <ul class="tc-features">
+        <li><span class="check">✓</span> 智能体学院方法论全文</li>
+        <li><span class="check">✓</span> 3 次免费数字员工训练体验</li>
+        <li><span class="check">✓</span> 岗位职责模板 3 套</li>
+        <li><span class="check">✓</span> 五把尺子考核试用</li>
+        <li><span class="cross">✗</span> 自定义数字员工</li>
+        <li><span class="cross">✗</span> 多智能体协作</li>
+        <li><span class="cross">✗</span> API 接入</li>
+      </ul>
+      <button class="tc-btn" onclick="alert('免费体验已开启！请先完成智能体学院方法论学习。')">立即体验</button>
+    </div>
+    <div class="trial-card pro">
+      <div class="tc-badge">推荐</div>
+      <div class="tc-name">专业版</div>
+      <div class="tc-price">¥299 <small>/月</small></div>
+      <div class="tc-desc">适合已开业门店，组建完整数字员工团队</div>
+      <ul class="tc-features">
+        <li><span class="check">✓</span> 基础版全部功能</li>
+        <li><span class="check">✓</span> 最多 10 个自定义数字员工</li>
+        <li><span class="check">✓</span> 多智能体协作工作流</li>
+        <li><span class="check">✓</span> 五把尺子完整考核</li>
+        <li><span class="check">✓</span> 知识库全量授权</li>
+        <li><span class="check">✓</span> 数据看板 + 分析报告</li>
+        <li><span class="cross">✗</span> API 接入</li>
+      </ul>
+      <button class="tc-btn" onclick="alert('专业版即将开放，敬请期待。可先免费体验基础版。')">即将开放</button>
+    </div>
+  </div>
+</div>
+
+<!-- 成功案例 -->
+<div class="cases" id="examples">
+  <h2>学习参考 · 成功案例</h2>
+  <div class="case-grid">
+    <div class="case-card">
+      <div class="cc-icon">🏪</div>
+      <h4>某连锁门店 · 3 个数字员工</h4>
+      <div class="cc-meta">客服智能体 · 知识智能体 · 报告智能体</div>
+      <p>配置 3 个数字员工后，客户响应时间从 2 小时缩短到 3 分钟，经纪人日均产出报告从 2 份提升到 8 份，门店整体效率提升 340%。</p>
+    </div>
+    <div class="case-card">
+      <div class="cc-icon">🏠</div>
+      <h4>独立经纪人 · 1 个数字员工</h4>
+      <div class="cc-meta">全能型数字员工</div>
+      <p>单人操作，数字员工负责知识查询、客户跟进、报告生成。经纪人每天节省 3 小时，专注高价值客户谈判，月业绩提升 65%。</p>
+    </div>
+    <div class="case-card">
+      <div class="cc-icon">🏢</div>
+      <h4>中型门店 · 5 个数字员工</h4>
+      <div class="cc-meta">客服+知识+报告+分析+运营</div>
+      <p>完整配置 5 人数字团队，考核数据自动生成。管理者通过看板一目了然每个数字员工的产出和效率，每周迭代优化训练策略。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 底部 CTA -->
+<div class="cta-section">
+  <h2>开始训练你的第一个数字员工</h2>
+  <p>免费体验，不需要信用卡。3 次体验机会，足够你了解数字员工的价值。</p>
+  <button class="btn-primary" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">免费体验 →</button>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <a href="/">风声首页</a> · 风声智能体学院 · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">京ICP备2026044043号</a>
+</div>
+<script src="/tracker.js" async></script>
+</body>
+</html>
