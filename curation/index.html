@@ -1,0 +1,742 @@
+<!-- v20260908-01: 策展引擎 · 客户生命周期报告 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>策展引擎 · 客户生命周期报告 · 风声</title>
+<style>
+:root{--bg:#f7f4ef;--bg2:#e8e4d9;--card:#fff;--card-h:#f5f1ec;--border:rgba(80,90,70,.09);--border-h:rgba(60,80,50,.2);--p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--p-bg:rgba(61,90,62,.05);--fire:#c46a3a;--fire-l:#d89060;--charcoal:#3a3a38;--dk:#1a1a1a;--tx:#555;--ts:#7a8478;--td:#a8b0a6;--brand:#2C5F3A;--brand-light:#4a8a5c;--accent:#E8742C;--cozy:#4e7e8e;--health:#6d8f55;--r:8px;--r2:12px;--safe:#5e7e5c;--health:#6d8f55;--neat:#3d5a3e;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.nav{position:sticky;top:0;z-index:100;background:var(--bg);padding:12px 16px 8px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.nav a{text-decoration:none;color:var(--brand);font-size:17px;font-weight:700;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.nav a:hover{color:var(--brand-light)}
+.nav-title{flex:1;font-size:17px;font-weight:800;color:var(--dk);text-align:center;letter-spacing:.5px}
+.nav-sub{font-size:11px;color:var(--ts);font-weight:400;letter-spacing:0}
+.page{max-width:800px;margin:0 auto;padding:0 12px 100px}
+.hero{padding:24px 0 16px;text-align:center}
+.hero h1{font-size:24px;font-weight:800;color:var(--dk);margin-bottom:6px}
+.hero p{font-size:13px;color:var(--ts);max-width:500px;margin:0 auto;line-height:1.7}
+.tagline{display:inline-flex;gap:4px;background:rgba(61,90,62,.06);border:1px solid rgba(61,90,62,.12);border-radius:16px;padding:3px 12px;font-size:10px;font-weight:700;color:var(--p-d);letter-spacing:1px;margin-bottom:10px}
+
+/* 生命周期概览 */
+.lifecycle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin:16px 0}
+.lc-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:12px;cursor:pointer;transition:all .2s;text-align:center}
+.lc-card:hover{border-color:var(--p-l);box-shadow:0 2px 8px rgba(0,0,0,.04);transform:translateY(-1px)}
+.lc-card.active{border-color:var(--brand);background:var(--p-bg);box-shadow:0 0 0 2px rgba(61,90,62,.15)}
+.lc-card .lc-icon{font-size:20px;margin-bottom:4px}
+.lc-card .lc-name{font-size:12px;font-weight:700;color:var(--dk)}
+.lc-card .lc-count{font-size:10px;color:var(--ts);margin-top:2px}
+
+/* 卡片 */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:12px;transition:all .2s}
+.card-title{font-size:14px;font-weight:700;color:var(--dk);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-title .badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--p-bg);color:var(--brand);margin-left:auto}
+
+/* 纵轴选择 */
+.axis-group{display:flex;gap:8px;margin-bottom:10px}
+.axis-btn{flex:1;padding:10px;border-radius:var(--r);font-size:13px;font-weight:600;text-align:center;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--tx);transition:all .2s}
+.axis-btn:hover{border-color:var(--p-l)}
+.axis-btn.on{background:var(--p-bg);border-color:var(--brand);color:var(--brand)}
+.node-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.node-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--tx);transition:all .2s}
+.node-chip:hover{border-color:var(--p-l)}
+.node-chip.on{background:var(--p-bg);border-color:var(--brand);color:var(--brand);font-weight:700}
+
+/* 维度选择 */
+.dim-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px;margin-bottom:4px}
+.dim-chip{padding:8px 8px;border-radius:var(--r);font-size:11px;font-weight:600;text-align:center;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--tx);transition:all .2s}
+.dim-chip:hover{border-color:var(--p-l)}
+.dim-chip.on{background:var(--p-bg);border-color:var(--brand);color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}
+
+/* 自由输入 */
+.ta{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;font-family:inherit;color:var(--dk);background:var(--card);resize:none;outline:none;transition:border-color .2s;min-height:60px}
+.ta:focus{border-color:var(--brand)}
+.ta::placeholder{color:var(--td)}
+
+/* 按钮 */
+.btn-main{display:block;width:100%;padding:14px;border-radius:var(--r);font-size:15px;font-weight:700;text-align:center;cursor:pointer;border:none;background:var(--brand);color:#fff;transition:all .25s;margin:8px 0}
+.btn-main:hover{background:var(--brand-light);transform:translateY(-1px)}
+.btn-main:disabled{background:var(--td);cursor:not-allowed;transform:none}
+.btn-line{display:block;width:100%;padding:12px;border-radius:var(--r);font-size:13px;font-weight:600;text-align:center;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--tx);transition:all .2s;margin:6px 0}
+.btn-line:hover{border-color:var(--p-l);color:var(--brand)}
+
+/* 结果态 */
+.result-head{background:var(--p-bg);border:1px solid rgba(61,90,62,.12);border-radius:var(--r2);padding:14px 16px;margin-bottom:12px;text-align:center}
+.result-head .rh-axis{font-size:16px;font-weight:800;color:var(--dk)}
+.result-head .rh-dims{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:6px}
+.result-head .dim-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--card);color:var(--brand);border:1px solid rgba(61,90,62,.15)}
+.result-head .honesty{font-size:11px;color:var(--ts);margin-top:8px;font-style:italic}
+
+/* 时间轴 */
+.timeline-3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.tl-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:10px;text-align:center}
+.tl-item .tl-icon{font-size:18px;margin-bottom:4px}
+.tl-item .tl-phase{font-size:11px;font-weight:700;color:var(--dk)}
+.tl-item .tl-tip{font-size:10px;color:var(--ts);margin-top:3px;line-height:1.5}
+
+/* 报告段落 */
+.sec{margin-bottom:14px}
+.sec-h{font-size:14px;font-weight:700;color:var(--dk);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-h .em{font-size:16px}
+.sec-h .sec-count{font-size:10px;font-weight:600;color:var(--ts);margin-left:auto}
+
+/* 说 */
+.say-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:6px;transition:all .2s}
+.say-item:hover{border-color:var(--border-h)}
+.say-title{font-size:13px;font-weight:700;color:var(--dk)}
+.say-point{font-size:12px;color:var(--tx);margin-top:4px;line-height:1.6}
+.say-detail{font-size:11px;color:var(--ts);margin-top:4px;padding:4px 8px;background:var(--p-bg);border-radius:4px;line-height:1.5}
+.ref{font-size:10px;font-weight:600;margin-top:6px;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px}
+.ref-ok{background:rgba(109,143,85,.08);color:var(--health)}
+.ref-wait{background:rgba(196,106,58,.06);color:var(--warm)}
+
+/* 带 */
+.bring-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:6px}
+.bring-title{font-size:13px;font-weight:700;color:var(--dk)}
+.bring-benefit{font-size:11px;color:var(--ts);margin-top:3px}
+
+/* 问 */
+.ask-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:6px;font-size:13px;color:var(--tx);line-height:1.5}
+.ask-item::before{content:'❓';margin-right:6px;font-size:12px}
+
+/* 跟 */
+.follow-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:6px}
+.follow-theme{font-size:12px;font-weight:700;color:var(--brand)}
+.follow-text{font-size:12px;color:var(--tx);margin-top:3px;line-height:1.5}
+
+.empty-mini{text-align:center;padding:14px;font-size:12px;color:var(--td);font-style:italic}
+
+/* 加载 */
+.loading{text-align:center;padding:40px 0;color:var(--ts)}
+.loading .spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* 错误 */
+.error-bar{background:rgba(196,106,58,.06);border:1px solid rgba(196,106,58,.12);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--fire);margin:8px 0;display:none}
+
+/* 主体域选择 */
+.domain-select{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.domain-tag{padding:6px 12px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--tx);transition:all .2s}
+.domain-tag:hover{border-color:var(--p-l)}
+.domain-tag.on{background:var(--p-bg);border-color:var(--brand);color:var(--brand)}
+
+/* 工具提示 */
+.hint{font-size:11px;color:var(--td);margin:4px 0 8px;line-height:1.5}
+.client-bar{background:rgba(61,90,62,.04);border:1px solid rgba(61,90,62,.1);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--brand);margin:8px 0}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="/">‹ 风声</a>
+  <div class="nav-title">策展引擎 <span class="nav-sub">生命周期报告</span></div>
+  <a href="/clients/" style="font-size:13px;font-weight:600">客户档案</a>
+</div>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="tagline">🔍 确定性检索 · 绝不编造</div>
+    <h1>📋 客户生命周期报告</h1>
+    <p>基于全生命周期知识库，秒出客户专属「说 / 带 / 问 + 见后跟进」报告</p>
+  </div>
+
+  <!-- 第〇步：选择生命周期域 -->
+  <div class="card">
+    <div class="card-title">📂 选择生命周期阶段 <span class="badge" id="domain-count">—</span></div>
+    <div class="domain-select" id="domain-select"></div>
+    <div class="hint">选择一个阶段，系统将自动加载该阶段全部知识词条用于策展</div>
+  </div>
+
+  <!-- 第一步：选择纵轴 + 节点 -->
+  <div class="card" id="axis-card">
+    <div class="card-title">🧭 ① 客户双纵轴定位</div>
+    <div class="axis-group" id="axis-group"></div>
+    <div class="node-chips" id="node-chips"></div>
+  </div>
+
+  <!-- 第二步：选择维度 -->
+  <div class="card" id="dim-card">
+    <div class="card-title">🏷️ ② 住得好七维 · 客户关注 <span class="badge" id="dim-count">多选</span></div>
+    <div class="dim-grid" id="dim-grid"></div>
+  </div>
+
+  <!-- 第三步：自由输入 -->
+  <div class="card">
+    <div class="card-title">✏️ ③ 一句自由诉求 <span class="badge">选填</span></div>
+    <textarea class="ta" id="free-text" placeholder="如：800万改善三房，学区还是居住品质纠结" maxlength="120"></textarea>
+  </div>
+
+  <div class="hint" style="text-align:center;margin-bottom:4px">依据来自真实知识库，绝不编造；缺失依据诚实标注。</div>
+
+  <!-- 按钮 -->
+  <div class="error-bar" id="error-bar"></div>
+  <button class="btn-main" id="gen-btn" onclick="generate()">⚡ 生成策展报告</button>
+
+  <!-- 加载 -->
+  <div class="loading" id="loading" style="display:none">
+    <div class="spinner"></div>
+    <div>策展中，检索全生命周期词条…</div>
+  </div>
+
+  <!-- 结果区域 -->
+  <div id="result-area" style="display:none">
+    <!-- 结果头部 -->
+    <div class="result-head" id="result-head"></div>
+
+    <!-- 三段式时间轴 -->
+    <div class="timeline-3" id="result-timeline"></div>
+
+    <!-- 说 -->
+    <div class="sec" id="result-say">
+      <div class="sec-h"><span class="em">📢</span>① 该说的 <span class="sec-count" id="say-count"></span></div>
+      <div id="say-list"></div>
+    </div>
+
+    <!-- 带 -->
+    <div class="sec" id="result-bring">
+      <div class="sec-h"><span class="em">🏠</span>② 该带的 <span class="sec-count" id="bring-count"></span></div>
+      <div id="bring-list"></div>
+    </div>
+
+    <!-- 问 -->
+    <div class="sec" id="result-ask">
+      <div class="sec-h"><span class="em">❓</span>③ 该问的 <span class="sec-count" id="ask-count"></span></div>
+      <div id="ask-list"></div>
+    </div>
+
+    <!-- 跟 -->
+    <div class="sec" id="result-followup">
+      <div class="sec-h"><span class="em">💌</span>④ 见后跟进 <span class="sec-count" id="followup-count"></span></div>
+      <div id="followup-list"></div>
+    </div>
+
+    <button class="btn-line" onclick="resetForm()">← 修改条件重新生成</button>
+  </div>
+
+  <!-- 生命周期概览 -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">📊 全生命周期知识库概览</div>
+    <div class="lifecycle-grid" id="lifecycle-grid"></div>
+  </div>
+
+</div>
+
+<script>
+// ================================================================
+// 策展引擎（浏览器版 · 移植自小程序策展引擎 V3.1）
+// ================================================================
+
+// 双纵轴节点
+const AXIS_GROUPS = [
+  { type: 'buy', label: '购房线', clientType: 'buyer',
+    nodes: [
+      { key: 'first', name: '① 首套', kw: ['首套','首次','刚需','新房','第一次买房','结婚','婚房'] },
+      { key: 'improve', name: '② 改善', kw: ['改善','换房','置换','卖旧买新','换大','二套','卖一买一'] },
+      { key: 'edu', name: '③ 教育', kw: ['学区','入学','教育','上学','划片','学位','孩子'] },
+      { key: 'upgrade', name: '④ 升级', kw: ['升级','品质','置换','资产','换房','豪宅'] },
+      { key: 'elder', name: '⑤ 适老', kw: ['适老','养老','老人','父母','无障碍','电梯'] }
+    ]
+  },
+  { type: 'rent', label: '租住线', clientType: 'tenant',
+    nodes: [
+      { key: 'start', name: '① 起步', kw: ['租房','首次租房','租','合租','预算','上班'] },
+      { key: 'rimprove', name: '② 改善', kw: ['租住改善','换租','改善租','更大','独立'] },
+      { key: 'family', name: '③ 家庭', kw: ['家庭','孩子','学区','陪读','户型'] },
+      { key: 'quality', name: '④ 品质', kw: ['品质','装修','社区','服务','安静'] }
+    ]
+  }
+]
+
+// 七维
+const DIMENSIONS = [
+  { key: 'safety', name: '物质安全', kw: ['产权','安全','物业','隔音','消防','质量'] },
+  { key: 'health', name: '健康', kw: ['采光','通风','噪音','环境','甲醛','绿化','空气'] },
+  { key: 'conv', name: '便利', kw: ['通勤','地铁','配套','商圈','学校','医院','交通'] },
+  { key: 'econ', name: '经济', kw: ['预算','价格','税费','成本','月供','首付','划算','费用'] },
+  { key: 'comfort', name: '舒适', kw: ['户型','朝向','采光','楼层','空间','通风'] },
+  { key: 'beauty', name: '美观', kw: ['装修','风格','颜值','设计','外观'] },
+  { key: 'free', name: '自在', kw: ['邻里','社区','安静','氛围','自在'] }
+]
+
+// 生命周期域映射（用于策展数据加载）
+const DOMAIN_LIFECYCLE = [
+  '签约前','签约中','签约后','居住中','退租出售','业主','资产持有与运营','职业成长','跨域通用'
+]
+
+// 子场景映射到策展分组
+const DOMAIN_GROUP_MAP = {
+  '签约前': { decoder: ['需求确认','资格审查','融资贷款','风险识别','合同审查','排期规划','学区房专项','学区房'],
+             see: ['房源匹配','价格评估'], nego: [] },
+  '签约中': { decoder: [], see: [], nego: ['合同条款','定金订金','资金监管','网签备案','付款方式','阴阳合同','保险保障'] }
+}
+const DEFAULT_GROUP = { decoder: [], see: [], nego: [] }
+
+// ===== 工具函数 =====
+function isRealLegal(ref) {
+  if (!ref) return false
+  const s = String(ref).trim()
+  return !/待补充|待核|无|—|^-$|^\s*$/.test(s) && s.length >= 4
+}
+
+function tokenize(text) {
+  if (!text) return []
+  const out = []
+  const cj = text.match(/[\u4e00-\u9fff]{2,}/g) || []
+  const en = text.match(/[a-zA-Z0-9]{2,}/g) || []
+  return out.concat(cj, en)
+}
+
+function searchable(e) {
+  return [e.name, (e.alias||[]).join(' '), e.consumerQ, e.oneLineAnswer, (e.corePoint||[]).join(' '), e.def, e.consumerBenefit].filter(Boolean).join(' ')
+}
+
+function normalizeEntry(e) {
+  return {
+    id: e.id||'', name: e.name||'', alias: e.alias||[],
+    consumerQ: e.consumerQ||'', oneLineAnswer: e.oneLineAnswer||'',
+    corePoint: Array.isArray(e.corePoint) ? e.corePoint : (e.corePoint ? [e.corePoint] : []),
+    def: e.def||'', legalRef: e.legalRef||'', consumerBenefit: e.consumerBenefit||'',
+    tags: e.tags||{}, subScene: e.subScene||'', domain: e.domain||''
+  }
+}
+
+// ===== 核心引擎 =====
+function generateCurationFromEntries(input, entriesByGroup) {
+  const { axisType = 'buy', axisNodeKey = 'improve', dimensions = [], freeText = '' } = input || {}
+  const group = AXIS_GROUPS.find(g => g.type === axisType) || AXIS_GROUPS[0]
+  const node = group.nodes.find(n => n.key === axisNodeKey) || group.nodes[0]
+  const ct = group.clientType
+
+  // 1) 检索词集合
+  const qKw = new Set([...node.kw])
+  dimensions.forEach(dk => {
+    const d = DIMENSIONS.find(x => x.key === dk)
+    if (d) d.kw.forEach(k => qKw.add(k))
+  })
+  tokenize(freeText).forEach(t => qKw.add(t))
+  const qArr = [...qKw].filter(Boolean)
+
+  // 2) 扁平化 + 打分
+  const all = []
+  for (const grpKey of ['decoder', 'see', 'nego']) {
+    (entriesByGroup[grpKey] || []).forEach(e => {
+      const text = searchable(e)
+      let score = 0
+      qArr.forEach(kw => {
+        if (!kw) return
+        const inName = (e.name||'').includes(kw) || (e.alias||[]).some(a => a.includes(kw))
+        const inCore = (e.consumerQ||'').includes(kw) || (e.oneLineAnswer||'').includes(kw) || (e.corePoint||[]).some(c => c.includes(kw))
+        const inBody = text.includes(kw)
+        if (inName) score += 3
+        else if (inCore) score += 2
+        else if (inBody) score += 1
+      })
+      const eCt = (e.tags && e.tags.clientType) || []
+      if (eCt.length && !eCt.includes(ct)) score *= 0.15
+      const stage = (e.tags && e.tags.stage) || ''
+      if (String(stage).includes('pre') || (e.domain||'').includes('签约前')) score += 0.5
+      if (score > 0) all.push({ e, score, grp: grpKey })
+    })
+  }
+  all.sort((a, b) => b.score - a.score)
+
+  const topN = all.slice(0, 40)
+  const strong = topN.filter(x => x.score >= 4)
+  const strongCount = strong.length
+  const realLegalStrong = strong.filter(x => isRealLegal(x.e.legalRef)).length
+
+  // 3) 说
+  const sayRaw = topN.filter(x => x.score >= 3 && (x.e.oneLineAnswer || (x.e.corePoint && x.e.corePoint.length))).slice(0, 12)
+    .sort((a,b) => (isRealLegal(b.e.legalRef)?1:0) - (isRealLegal(a.e.legalRef)?1:0) || b.score - a.score)
+  const say = sayRaw.slice(0, 5).map(x => ({
+    title: x.e.name,
+    point: x.e.oneLineAnswer || (x.e.corePoint && x.e.corePoint[0]) || '',
+    detail: (x.e.corePoint && x.e.corePoint.slice(0,2).join('；')) || '',
+    legalRef: isRealLegal(x.e.legalRef) ? x.e.legalRef : null,
+    hasLegal: isRealLegal(x.e.legalRef),
+    entryId: x.e.id
+  }))
+
+  // 4) 带
+  const bring = topN.filter(x => x.grp === 'see').slice(0, 4).map(x => ({
+    title: x.e.name,
+    benefit: x.e.consumerBenefit || (x.e.def||'').slice(0, 40)
+  }))
+
+  // 5) 问
+  const seenQ = new Set()
+  const ask = []
+  for (const x of topN) {
+    if (ask.length >= 5) break
+    const q = x.e.consumerQ
+    if (q && !seenQ.has(q)) { seenQ.add(q); ask.push({ q }) }
+  }
+
+  // 6) 跟
+  const followups = buildFollowups(node, dimensions)
+
+  // 7) 诚实元信息
+  const honesty = {
+    matchedTotal: strongCount,
+    realLegalCount: realLegalStrong,
+    note: strongCount < 3
+      ? '匹配条目有限，建议结合你的专业判断补充'
+      : ('基于真实字典命中 ' + strongCount + ' 条强相关（其中 ' + realLegalStrong + ' 条含真实法源）')
+  }
+
+  return {
+    axisLabel: group.label + ' · ' + node.name,
+    dimensionLabels: dimensions.map(dk => (DIMENSIONS.find(d => d.key === dk)||{}).name).filter(Boolean),
+    freeText,
+    say, bring, ask, followups,
+    honesty,
+    timeline: buildTimeline()
+  }
+}
+
+function buildFollowups(node, dimensions) {
+  const map = {
+    first: [{ theme: '资格核验', text: '3 天内跟进购房资格与贷款额度测算，帮客户锁定真实预算' },
+            { theme: '区域筛选', text: '持续关怀：按通勤与学区优先级，整理 2–3 个候选板块' }],
+    improve: [{ theme: '旧房处置', text: '跟进现住房处置进度（在售/已售），衔接换房节奏' },
+              { theme: '低密盘带看', text: '下周带看同板块低密改善盘，对比得房率与物业档次' }],
+    edu: [{ theme: '划片公示', text: '开学季前帮盯目标校划片公示，第一时间同步客户' },
+          { theme: '学位核实', text: '持续关怀：核实落户年限要求，避免政策误读' }],
+    upgrade: [{ theme: '资产配置', text: '跟进置换后的资产结构，提供持有成本测算' }],
+    elder: [{ theme: '适老改造', text: '跟进无障碍与电梯需求，整理适老改造要点' }],
+    start: [{ theme: '预算对齐', text: '跟进可接受租金区间，缩小候选范围' }],
+    rimprove: [{ theme: '换租节奏', text: '跟进租约到期时间，提前规划换租' }],
+    family: [{ theme: '户型匹配', text: '持续关怀：按家庭结构推荐合适户型与楼层' }],
+    quality: [{ theme: '社区服务', text: '跟进对物业与社区服务的真实体验反馈' }]
+  }
+  const base = map[node.key] || [{ theme: '持续关怀', text: '见面后 1–2 天做轻量跟进，确认客户还有哪些顾虑' }]
+  const dimText = []
+  if (dimensions.includes('econ')) dimText.push({ theme: '费用透明', text: '持续关怀：整理本次交易全部成本清单，避免隐性支出' })
+  if (dimensions.includes('conv')) dimText.push({ theme: '通勤实测', text: '见后跟进：提供早晚高峰通勤实测，增强决策依据' })
+  return base.concat(dimText).slice(0, 4)
+}
+
+function buildTimeline() {
+  return [
+    { phase: '见前准备', tip: '看完策展包，标记要讲的 3 个要点与要问的 2 个问题', icon: '📋' },
+    { phase: '见面执行', tip: '按「说→带→问」节奏推进，每条依据可当面点开给客户看', icon: '🤝' },
+    { phase: '见后跟进', tip: '埋下引子 + 持续关怀，下次见面自动反哺客户认知', icon: '💌' }
+  ]
+}
+
+// ================================================================
+// 状态管理
+// ================================================================
+let state = {
+  domain: '签约前',
+  axisType: 'buy',
+  axisNodeKey: 'improve',
+  selectedDims: [],
+  entriesCache: { decoder: [], see: [], nego: [] },
+  manifest: null
+}
+
+// ================================================================
+// 数据加载
+// ================================================================
+
+async function loadManifest() {
+  try {
+    const r = await fetch('/api/entries?limit=0')
+    const d = await r.json()
+    state.manifest = d
+    return d
+  } catch(e) {
+    console.warn('manifest load failed:', e)
+    return null
+  }
+}
+
+async function loadDomainEntries(domain) {
+  // 加载该域全部词条，按策展分组映射
+  const allEntries = []
+  // 加载当前域
+  try {
+    const r = await fetch('/api/entries?domain=' + encodeURIComponent(domain) + '&limit=500')
+    const d = await r.json()
+    if (d.entries) allEntries.push(...d.entries.map(normalizeEntry))
+  } catch(e) { console.warn('load domain', domain, 'failed:', e) }
+
+  // 如果选的是"签约前"或"签约中"，额外加载关联域
+  if (domain === '签约前') {
+    try {
+      const r = await fetch('/api/entries?domain=签约中&limit=500')
+      const d = await r.json()
+      if (d.entries) allEntries.push(...d.entries.map(normalizeEntry))
+    } catch(e) {}
+  } else if (domain === '签约中') {
+    try {
+      const r = await fetch('/api/entries?domain=签约前&limit=500')
+      const d = await r.json()
+      if (d.entries) allEntries.push(...d.entries.map(normalizeEntry))
+    } catch(e) {}
+  }
+
+  // 按子场景分组
+  const grouped = { decoder: [], see: [], nego: [] }
+  const groupMap = DOMAIN_GROUP_MAP[domain] || DEFAULT_GROUP
+
+  for (const e of allEntries) {
+    const ss = e.subScene || ''
+    if (groupMap.decoder.includes(ss)) grouped.decoder.push(e)
+    else if (groupMap.see.includes(ss)) grouped.see.push(e)
+    else if (groupMap.nego.includes(ss)) grouped.nego.push(e)
+    else if (e.domain === '签约前') {
+      if (ss === '房源匹配' || ss === '价格评估') grouped.see.push(e)
+      else grouped.decoder.push(e)
+    } else if (e.domain === '签约中') {
+      grouped.nego.push(e)
+    }
+  }
+
+  state.entriesCache = grouped
+  return grouped
+}
+
+// ================================================================
+// UI 渲染
+// ================================================================
+
+function renderLifecycleGrid() {
+  const el = document.getElementById('lifecycle-grid')
+  const stages = [
+    { icon: '📋', name: '签约前', key: '签约前' },
+    { icon: '✍️', name: '签约中', key: '签约中' },
+    { icon: '🏡', name: '签约后', key: '签约后' },
+    { icon: '🛋️', name: '居住中', key: '居住中' },
+    { icon: '🚪', name: '退租出售', key: '退租出售' },
+    { icon: '🏢', name: '业主', key: '业主' },
+    { icon: '💰', name: '资产持有与运营', key: '资产持有与运营' },
+    { icon: '📈', name: '职业成长', key: '职业成长' },
+    { icon: '🔗', name: '跨域通用', key: '跨域通用' }
+  ]
+  el.innerHTML = stages.map(s => `<div class="lc-card" onclick="selectDomain('${s.key}')"><div class="lc-icon">${s.icon}</div><div class="lc-name">${s.name}</div><div class="lc-count">${state.manifest && state.manifest.counts ? (state.manifest.counts[s.key]||'—') + ' 词条' : ''}</div></div>`).join('')
+}
+
+function renderDomainSelect() {
+  const el = document.getElementById('domain-select')
+  const domains = DOMAIN_LIFECYCLE
+  el.innerHTML = domains.map(d => `<span class="domain-tag${state.domain === d ? ' on' : ''}" onclick="selectDomain('${d}')">${d}</span>`).join('')
+  document.getElementById('domain-count').textContent = state.manifest && state.manifest.counts ? (state.manifest.counts[state.domain]||'') + ' 词条' : ''
+}
+
+function renderAxis() {
+  const groupEl = document.getElementById('axis-group')
+  groupEl.innerHTML = AXIS_GROUPS.map(g => `<div class="axis-btn${state.axisType === g.type ? ' on' : ''}" onclick="selectAxis('${g.type}')">${g.label}</div>`).join('')
+
+  const currentGroup = AXIS_GROUPS.find(g => g.type === state.axisType)
+  const chipsEl = document.getElementById('node-chips')
+  chipsEl.innerHTML = currentGroup.nodes.map(n => `<span class="node-chip${state.axisNodeKey === n.key ? ' on' : ''}" onclick="selectNode('${n.key}')">${n.name}</span>`).join('')
+}
+
+function renderDims() {
+  const el = document.getElementById('dim-grid')
+  el.innerHTML = DIMENSIONS.map(d => `<div class="dim-chip${state.selectedDims.includes(d.key) ? ' on' : ''}" onclick="toggleDim('${d.key}')" style="border-color:${state.selectedDims.includes(d.key) ? 'var(--brand)' : 'var(--border)'}">${d.name}</div>`).join('')
+  document.getElementById('dim-count').textContent = state.selectedDims.length > 0 ? state.selectedDims.length + ' 项' : '多选'
+}
+
+// ================================================================
+// 交互
+// ================================================================
+
+function selectDomain(domain) {
+  state.domain = domain
+  renderDomainSelect()
+  // 高亮生命周期概览
+  document.querySelectorAll('.lc-card').forEach((el, i) => {
+    el.classList.toggle('active', DOMAIN_LIFECYCLE[i] === domain)
+  })
+  // 清空缓存
+  state.entriesCache = { decoder: [], see: [], nego: [] }
+  hideResult()
+}
+
+function selectAxis(type) {
+  state.axisType = type
+  const group = AXIS_GROUPS.find(g => g.type === type)
+  state.axisNodeKey = group.nodes[0].key
+  renderAxis()
+  hideResult()
+}
+
+function selectNode(key) {
+  state.axisNodeKey = key
+  renderAxis()
+  hideResult()
+}
+
+function toggleDim(key) {
+  const i = state.selectedDims.indexOf(key)
+  if (i >= 0) state.selectedDims.splice(i, 1)
+  else state.selectedDims.push(key)
+  renderDims()
+  hideResult()
+}
+
+function hideResult() {
+  document.getElementById('result-area').style.display = 'none'
+  document.getElementById('error-bar').style.display = 'none'
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-bar')
+  el.textContent = msg
+  el.style.display = 'block'
+}
+
+// ================================================================
+// 生成
+// ================================================================
+
+async function generate() {
+  const btn = document.getElementById('gen-btn')
+  const loading = document.getElementById('loading')
+  const errorBar = document.getElementById('error-bar')
+  const resultArea = document.getElementById('result-area')
+
+  btn.disabled = true
+  loading.style.display = 'block'
+  errorBar.style.display = 'none'
+  resultArea.style.display = 'none'
+
+  try {
+    // 加载数据（如果还没有）
+    const entries = state.entriesCache
+    if (entries.decoder.length === 0 && entries.see.length === 0 && entries.nego.length === 0) {
+      await loadDomainEntries(state.domain)
+    }
+
+    const input = {
+      axisType: state.axisType,
+      axisNodeKey: state.axisNodeKey,
+      dimensions: state.selectedDims,
+      freeText: document.getElementById('free-text').value || ''
+    }
+
+    const result = generateCurationFromEntries(input, state.entriesCache)
+
+    renderResult(result)
+    resultArea.style.display = 'block'
+    window.scrollTo({ top: resultArea.offsetTop - 60, behavior: 'smooth' })
+  } catch(e) {
+    console.error('generate failed:', e)
+    showError('生成失败：' + (e.message || '未知错误'))
+  } finally {
+    btn.disabled = false
+    loading.style.display = 'none'
+  }
+}
+
+function renderResult(result) {
+  // 头部
+  document.getElementById('result-head').innerHTML = `
+    <div class="rh-axis">${escHtml(result.axisLabel)}</div>
+    ${result.dimensionLabels.length ? '<div class="rh-dims">' + result.dimensionLabels.map(d => '<span class="dim-tag">' + escHtml(d) + '</span>').join('') + '</div>' : ''}
+    ${result.freeText ? '<div style="font-size:12px;color:var(--ts);margin-top:6px">自由诉求：' + escHtml(result.freeText) + '</div>' : ''}
+    <div class="honesty">${escHtml(result.honesty.note)}</div>
+  `
+
+  // 时间轴
+  document.getElementById('result-timeline').innerHTML = result.timeline.map(t => `
+    <div class="tl-item">
+      <div class="tl-icon">${t.icon}</div>
+      <div class="tl-phase">${escHtml(t.phase)}</div>
+      <div class="tl-tip">${escHtml(t.tip)}</div>
+    </div>
+  `).join('')
+
+  // 说
+  const sayList = document.getElementById('say-list')
+  document.getElementById('say-count').textContent = result.say.length + ' 条'
+  if (result.say.length > 0) {
+    sayList.innerHTML = result.say.map(s => `
+      <div class="say-item">
+        <div class="say-title">${escHtml(s.title)}</div>
+        <div class="say-point">${escHtml(s.point)}</div>
+        ${s.detail ? '<div class="say-detail">' + escHtml(s.detail) + '</div>' : ''}
+        <span class="ref ${s.hasLegal ? 'ref-ok' : 'ref-wait'}">
+          ${s.hasLegal ? '真实法源 ✓ ' + escHtml(s.legalRef) : '经验要点 · 依据整理中'}
+        </span>
+      </div>
+    `).join('')
+  } else {
+    sayList.innerHTML = '<div class="empty-mini">暂无强相关条目，建议结合你的专业判断补充</div>'
+  }
+
+  // 带
+  const bringList = document.getElementById('bring-list')
+  document.getElementById('bring-count').textContent = result.bring.length + ' 条'
+  if (result.bring.length > 0) {
+    bringList.innerHTML = result.bring.map(b => `
+      <div class="bring-item">
+        <div class="bring-title">${escHtml(b.title)}</div>
+        <div class="bring-benefit">${escHtml(b.benefit)}</div>
+      </div>
+    `).join('')
+  } else {
+    bringList.innerHTML = '<div class="empty-mini">暂无强相关条目，建议结合实勘补充</div>'
+  }
+
+  // 问
+  const askList = document.getElementById('ask-list')
+  document.getElementById('ask-count').textContent = result.ask.length + ' 条'
+  if (result.ask.length > 0) {
+    askList.innerHTML = result.ask.map(a => `<div class="ask-item">${escHtml(a.q)}</div>`).join('')
+  } else {
+    askList.innerHTML = '<div class="empty-mini">暂无必问条目</div>'
+  }
+
+  // 跟
+  const followupList = document.getElementById('followup-list')
+  document.getElementById('followup-count').textContent = result.followups.length + ' 条'
+  if (result.followups.length > 0) {
+    followupList.innerHTML = result.followups.map(f => `
+      <div class="follow-item">
+        <div class="follow-theme">${escHtml(f.theme)}</div>
+        <div class="follow-text">${escHtml(f.text)}</div>
+      </div>
+    `).join('')
+  } else {
+    followupList.innerHTML = '<div class="empty-mini">暂无跟进建议</div>'
+  }
+}
+
+function resetForm() {
+  document.getElementById('result-area').style.display = 'none'
+  document.getElementById('error-bar').style.display = 'none'
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function escHtml(s) {
+  if (!s) return ''
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+// ================================================================
+// 初始化
+// ================================================================
+
+async function init() {
+  renderDomainSelect()
+  renderAxis()
+  renderDims()
+
+  // 加载 manifest
+  const manifest = await loadManifest()
+  renderLifecycleGrid()
+  document.getElementById('domain-count').textContent = manifest && manifest.counts ? (manifest.counts[state.domain]||'') + ' 词条' : ''
+}
+
+init()
+</script>
+</body>
+</html>
