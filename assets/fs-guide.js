@@ -30,7 +30,7 @@
     banner.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 18px;background:rgba(44,95,58,.06);border-bottom:1px solid rgba(44,95,58,.1);font-size:13px;color:#3d5a3e;line-height:1.5;position:sticky;top:56px;z-index:999'
     banner.innerHTML = '<span style="font-size:16px;flex-shrink:0">ℹ️</span>'
       + '<span style="flex:1"><strong>' + title + '</strong> · ' + message + '</span>'
-      + '<button onclick="this.parentElement.remove();FSNavGuide._close(\'' + pageId + '\')" style="background:none;border:none;font-size:18px;cursor:pointer;color:rgba(44,95,58,.5);padding:0 4px;line-height:1;flex-shrink:0">×</button>'
+      + '<button onclick="this.parentElement.remove();FSNavGuide._close(\'' + pageId + '\')" style="display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(44,95,58,.1);border:none;font-size:14px;cursor:pointer;color:var(--brand,#3d5a3e);padding:0;line-height:1;flex-shrink:0;transition:background .2s" onmouseover="this.style.background=\'rgba(44,95,58,.2)\'" onmouseout="this.style.background=\'rgba(44,95,58,.1)\'" aria-label="关闭引导">✕</button>'
 
     var navRoot = document.getElementById('fs-nav-root')
     if (navRoot && navRoot.nextSibling) {
