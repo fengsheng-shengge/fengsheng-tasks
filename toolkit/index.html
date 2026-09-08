@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>数字员工训练方法论工具包 · 风声智能体学院</title>
+<meta name="description" content="一套完整的数字员工训练方法论工具包，从入职、分工、考核到协作，让每个门店拥有一支高效的数字员工团队。">
+<style>
+:root{--bg:#f7f4ef;--bg2:#e8e4d9;--card:#fff;--p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--accent:#c46a3a;--accent-l:#e89060;--dk:#1a1a1a;--tx:#555;--ts:#7a8478;--td:#a8b0a6;--r:4px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;-webkit-font-smoothing:antialiased;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+a{color:var(--p);text-decoration:none}
+/* 导航 */
+.nav{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 5%;background:linear-gradient(135deg,#3d5a3e 0%,#2c4430 100%);color:#fff;position:sticky;top:0;z-index:100}
+.nav-l{display:flex;align-items:center;gap:8px}
+.nav-l a{color:rgba(255,255,255,.7);font-size:13px}
+.nav-l a:hover{color:#fff}
+.nav-r{display:flex;align-items:center;gap:8px;font-size:13px}
+/* 封面 */
+.cover{text-align:center;padding:80px 5% 60px;background:linear-gradient(180deg,rgba(61,90,62,.06) 0%,transparent 100%);border-bottom:1px solid rgba(61,90,62,.08)}
+.cover .badge{display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(61,90,62,.1);color:var(--p);font-size:12px;font-weight:600;margin-bottom:16px;letter-spacing:1px}
+.cover h1{font-size:clamp(28px,4vw,38px);font-weight:800;color:var(--p-d);line-height:1.3;margin-bottom:12px}
+.cover h1 span{color:var(--accent)}
+.cover .sub{font-size:clamp(15px,2vw,17px);color:var(--ts);max-width:600px;margin:0 auto 24px;line-height:1.7}
+.cover .meta{font-size:13px;color:var(--td);display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
+.cover .meta span{display:flex;align-items:center;gap:4px}
+/* 内容区 */
+.content{max-width:800px;margin:0 auto;padding:50px 5% 60px}
+.content h2{font-size:clamp(20px,2.5vw,26px);color:var(--p-d);margin:48px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--bg2);display:flex;align-items:center;gap:10px}
+.content h2:first-of-type{margin-top:0}
+.content h3{font-size:16px;color:var(--p-d);margin:24px 0 8px;font-weight:700}
+.content p{font-size:14px;color:var(--tx);line-height:1.8;margin-bottom:12px}
+.content ul,.content ol{padding-left:20px;margin-bottom:16px}
+.content li{font-size:14px;color:var(--tx);line-height:1.8;margin-bottom:4px}
+/* 方法卡片 */
+.method-card{background:var(--card);border-radius:var(--r);padding:24px;margin-bottom:16px;border:1px solid rgba(61,90,62,.08);box-shadow:0 1px 6px rgba(44,68,48,.04)}
+.method-card .mc-header{display:flex;gap:14px;align-items:flex-start;margin-bottom:10px}
+.method-card .mc-num{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.method-card .mc-title{font-size:15px;font-weight:700;color:var(--p-d);padding-top:5px}
+.method-card .mc-body{font-size:13px;color:var(--tx);line-height:1.7;padding-left:46px}
+/* 生命周期卡片 */
+.lc-strip{display:flex;gap:0;margin:20px 0 24px;overflow-x:auto;padding-bottom:8px}
+.lc-step{flex:1;min-width:120px;text-align:center;padding:16px 12px;background:var(--card);border:1px solid rgba(61,90,62,.08);border-right:none}
+.lc-step:first-child{border-radius:var(--r) 0 0 var(--r)}
+.lc-step:last-child{border-radius:0 var(--r) var(--r) 0;border-right:1px solid rgba(61,90,62,.08)}
+.lc-step .lci{font-size:22px;margin-bottom:6px}
+.lc-step h4{font-size:13px;color:var(--p-d);margin-bottom:4px;font-weight:700}
+.lc-step p{font-size:11px;color:var(--ts);line-height:1.4}
+/* 考核维度 */
+.dim-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0 24px}
+.dim-card{background:var(--card);border-radius:var(--r);padding:16px;border:1px solid rgba(61,90,62,.08);text-align:center}
+.dim-card .d-icon{font-size:24px;margin-bottom:6px}
+.dim-card h4{font-size:13px;color:var(--p-d);margin-bottom:4px;font-weight:700}
+.dim-card p{font-size:12px;color:var(--ts);line-height:1.5}
+/* 高亮框 */
+.highlight-box{background:rgba(61,90,62,.06);border-radius:var(--r);padding:20px 24px;margin:16px 0 24px;border-left:4px solid var(--p)}
+.highlight-box p{font-size:13px;color:var(--tx);margin-bottom:0}
+.highlight-box strong{color:var(--p-d)}
+/* 案例卡片 */
+.case-card{background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:12px;border:1px solid rgba(61,90,62,.08)}
+.case-card .cc-title{font-size:14px;font-weight:700;color:var(--p-d);margin-bottom:4px}
+.case-card .cc-meta{font-size:12px;color:var(--td);margin-bottom:8px}
+.case-card p{font-size:13px;color:var(--tx);line-height:1.6;margin-bottom:0}
+/* 底部CTA */
+.cta-section{text-align:center;padding:50px 5%;background:linear-gradient(180deg,transparent 0%,rgba(61,90,62,.06) 100%);border-top:1px solid rgba(61,90,62,.08)}
+.cta-section h2{font-size:clamp(20px,3vw,26px);color:var(--p-d);margin-bottom:8px;border:none;padding:0}
+.cta-section p{color:var(--ts);max-width:500px;margin:0 auto 24px;font-size:14px}
+.cta-section .contact-block{display:inline-flex;align-items:center;gap:14px;padding:16px 28px;background:var(--card);border-radius:var(--r);border:1px solid rgba(61,90,62,.1);box-shadow:0 2px 8px rgba(0,0,0,.04);margin-bottom:12px}
+.cta-section .contact-block .cb-label{font-size:12px;color:var(--ts)}
+.cta-section .contact-block .cb-value{font-size:15px;font-weight:700;color:var(--p-d)}
+.cta-section .contact-block .cb-note{font-size:11px;color:var(--td)}
+/* 页脚 */
+.footer{text-align:center;padding:20px 5%;color:var(--td);font-size:12px;border-top:1px solid rgba(0,0,0,.04);background:var(--card)}
+/* 打印样式 */
+@media print{
+  .nav{display:none}
+  .cover{padding:40px 5% 30px;page-break-after:avoid}
+  .content{padding:30px 5%}
+  .method-card,.case-card,.dim-card{break-inside:avoid}
+  .cta-section{page-break-before:avoid}
+}
+@media(max-width:640px){
+  .cover{padding:40px 5% 30px}
+  .content{padding:30px 5%}
+  .method-card{padding:16px;margin-bottom:12px}
+  .method-card .mc-body{padding-left:0;margin-top:8px}
+  .lc-step{min-width:100px;padding:12px 8px}
+  .lc-step p{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-l">
+    <a href="/">← 首页</a>
+    <span style="opacity:.3">|</span>
+    <a href="/agent-academy/">智能体学院</a>
+    <span style="opacity:.3">|</span>
+    <span style="opacity:.6;font-size:13px">方法论工具包</span>
+  </div>
+  <div class="nav-r">
+    <a href="javascript:window.print()" style="color:rgba(255,255,255,.7);display:flex;align-items:center;gap:4px;font-size:13px">🖨️ 下载/打印</a>
+  </div>
+</div>
+
+<!-- 封面 -->
+<div class="cover">
+  <div class="badge">🧠 风声智能体学院</div>
+  <h1>数字员工训练 <span>方法论工具包</span></h1>
+  <p class="sub">一套完整的数字员工训练方法论——从入职、分工、考核到协作，<br>让每个门店都能拥有一支高效的数字员工团队。</p>
+  <div class="meta">
+    <span>📅 2026 年 9 月</span>
+    <span>📄 版本 V1.0</span>
+    <span>🏢 风声 · 居住服务 AI 基础设施</span>
+  </div>
+</div>
+
+<!-- 内容区 -->
+<div class="content">
+
+  <h2>📖 一、什么是数字员工？</h2>
+  <p>数字员工是基于 AI 智能体（AI Agent）技术构建的虚拟员工。与传统自动化工具不同，数字员工拥有<b>岗位职责、知识能力和考核标准</b>，可以像真人一样独立完成工作任务。</p>
+  <p>一个门店的数字员工团队通常由多个分工明确的智能体组成：客服智能体负责客户咨询，知识智能体负责知识检索，报告智能体负责生成分析报告。它们各司其职、自动协作，7×24 小时不间断运行。</p>
+
+  <div class="highlight-box">
+    <p><strong>核心认知：</strong>数字员工不是替代经纪人，而是替代重复性工作。让经纪人从标准化事务中解放出来，专注高价值判断和客户关系维护。一个门店配置 3-5 个数字员工，效率可提升 200% 以上。</p>
+  </div>
+
+  <h2>📋 二、数字员工五步训练方法论</h2>
+  <p>以下五步方法论是风声智能体学院的核心训练框架，按照顺序执行即可完成数字员工的配置和优化。</p>
+
+  <div class="method-card">
+    <div class="mc-header">
+      <div class="mc-num">1</div>
+      <div class="mc-title">岗位职责定义 · 给数字员工写 JD</div>
+    </div>
+    <div class="mc-body">
+      每个数字员工需要一份清晰的岗位说明书：这个智能体负责什么、需要什么知识、输出什么成果。例如「客服智能体」负责回答客户咨询，「报告智能体」负责生成生命周期报告。<br><br>
+      <b>操作要点：</b>
+      <ul>
+        <li>列出门店当前重复性工作清单，按类型分组</li>
+        <li>为每组工作定义一个数字员工岗位</li>
+        <li>明确岗位的知识边界和输出标准</li>
+        <li>模板直接套用，10 分钟完成配置</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="mc-header">
+      <div class="mc-num">2</div>
+      <div class="mc-title">知识投喂 · 让数字员工懂业务</div>
+    </div>
+    <div class="mc-body">
+      数字员工的能力取决于知识质量。将门店的 SOP、话术、案例、政策文档投喂给智能体，让它真正懂业务。<br><br>
+      <b>操作要点：</b>
+      <ul>
+        <li>收集门店现有的标准文档（SOP、话术本、案例库）</li>
+        <li>接入风声知识库，5,942 条专业词条可直接授权</li>
+        <li>按岗位分配知识权限，每个数字员工只访问需要的知识</li>
+        <li>每周更新知识库，保持数据新鲜度</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="mc-header">
+      <div class="mc-num">3</div>
+      <div class="mc-title">分工协作 · 组建你的数字团队</div>
+    </div>
+    <div class="mc-body">
+      一个门店不需要一个全能的智能体，而是需要多个专业分工的数字员工。各司其职，自动协作。<br><br>
+      <b>标准配置：</b>
+      <ul>
+        <li><b>客服智能体：</b>7×24 小时回答客户咨询，自动跟进</li>
+        <li><b>知识智能体：</b>知识检索、政策解读、术语查询</li>
+        <li><b>报告智能体：</b>自动生成客户生命周期报告、数据分析</li>
+        <li><b>分析智能体：</b>市场分析、竞品分析、业绩统计</li>
+        <li><b>运营智能体：</b>日常任务调度、工作流管理</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="mc-header">
+      <div class="mc-num">4</div>
+      <div class="mc-title">五把尺子考核 · 量化评估数字员工</div>
+    </div>
+    <div class="mc-body">
+      通过五个维度评估数字员工表现，评分自动生成，排名一目了然。<br><br>
+      <b>考核维度：</b>
+      <ul>
+        <li><b>产出量：</b>完成的任务数、生成的报告数、处理的咨询量</li>
+        <li><b>任务复杂度：</b>处理问题的难度层级，从简单问答到复杂分析</li>
+        <li><b>技能复用：</b>跨场景适用性，能否在不同业务场景中发挥作用</li>
+        <li><b>运行时长：</b>在线服务时间、响应速度、可用率</li>
+        <li><b>并发能力：</b>同时处理多任务的能力，峰值负载表现</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="mc-header">
+      <div class="mc-num">5</div>
+      <div class="mc-title">持续迭代 · 数字员工进化指南</div>
+    </div>
+    <div class="mc-body">
+      根据考核数据和用户反馈，持续优化数字员工。<br><br>
+      <b>迭代周期：</b>
+      <ul>
+        <li><b>每周：</b>查看考核数据，调整知识权重</li>
+        <li><b>每月：</b>优化训练参数，补充新知识</li>
+        <li><b>每季：</b>复盘数字员工整体表现，调整岗位配置</li>
+        <li>风声提供迭代建议模板，按步骤操作即可</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>🔄 三、数字员工全生命周期管理</h2>
+  <p>从入职到评价，一套完整的数字员工管理体系，让每个智能体各司其职、高效协作。</p>
+
+  <div class="lc-strip">
+    <div class="lc-step">
+      <div class="lci">📋</div>
+      <h4>1. 入职</h4>
+      <p>定义岗位职责、能力边界、知识范围</p>
+    </div>
+    <div class="lc-step">
+      <div class="lci">🎯</div>
+      <h4>2. 分工</h4>
+      <p>分配不同角色，各司其职</p>
+    </div>
+    <div class="lc-step">
+      <div class="lci">🏅</div>
+      <h4>3. 考核</h4>
+      <p>五把尺子量化评估</p>
+    </div>
+    <div class="lc-step">
+      <div class="lci">🤝</div>
+      <h4>4. 协作</h4>
+      <p>多智能体协同工作</p>
+    </div>
+    <div class="lc-step">
+      <div class="lci">⭐</div>
+      <h4>5. 评价</h4>
+      <p>定期复盘，持续迭代</p>
+    </div>
+  </div>
+
+  <h2>🏅 四、五把尺子考核体系详解</h2>
+  <p>数字员工的绩效评估通过五个维度进行量化评分，每个维度 0-100 分，综合评分反映数字员工的整体表现。</p>
+
+  <div class="dim-grid">
+    <div class="dim-card">
+      <div class="d-icon">📊</div>
+      <h4>产出量</h4>
+      <p>完成任务数、生成报告量、处理咨询量，反映数字员工的工作效率</p>
+    </div>
+    <div class="dim-card">
+      <div class="d-icon">🧩</div>
+      <h4>任务复杂度</h4>
+      <p>从简单问答到多步推理，反映数字员工的问题处理能力</p>
+    </div>
+    <div class="dim-card">
+      <div class="d-icon">🔄</div>
+      <h4>技能复用</h4>
+      <p>跨场景、跨业务线的适用性，反映数字员工的通用能力</p>
+    </div>
+    <div class="dim-card">
+      <div class="d-icon">⏱️</div>
+      <h4>运行时长</h4>
+      <p>在线时间、响应速度、可用率，反映数字员工的稳定性</p>
+    </div>
+    <div class="dim-card">
+      <div class="d-icon">⚡</div>
+      <h4>并发能力</h4>
+      <p>同时处理多任务的能力，峰值负载下的表现</p>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <p><strong>评分公式：</strong>综合评分 = 产出量×25% + 任务复杂度×20% + 技能复用×20% + 运行时长×20% + 并发能力×15%。权重可根据门店实际需求调整。</p>
+  </div>
+
+  <h2>📚 五、学习参考 · 成功案例</h2>
+
+  <div class="case-card">
+    <div class="cc-title">🏪 某连锁门店 · 3 个数字员工</div>
+    <div class="cc-meta">客服智能体 · 知识智能体 · 报告智能体</div>
+    <p>配置 3 个数字员工后，客户响应时间从 2 小时缩短到 3 分钟，经纪人日均产出报告从 2 份提升到 8 份，门店整体效率提升 340%。</p>
+  </div>
+
+  <div class="case-card">
+    <div class="cc-title">🏠 独立经纪人 · 1 个数字员工</div>
+    <div class="cc-meta">全能型数字员工</div>
+    <p>单人操作，数字员工负责知识查询、客户跟进、报告生成。经纪人每天节省 3 小时，专注高价值客户谈判，月业绩提升 65%。</p>
+  </div>
+
+  <div class="case-card">
+    <div class="cc-title">🏢 中型门店 · 5 个数字员工</div>
+    <div class="cc-meta">客服+知识+报告+分析+运营</div>
+    <p>完整配置 5 人数字团队，考核数据自动生成。管理者通过看板一目了然每个数字员工的产出和效率，每周迭代优化训练策略。</p>
+  </div>
+
+  <h2>📌 六、快速上手 · 第一步做什么</h2>
+  <ol>
+    <li><b>打开智能体学院：</b>在线浏览方法论全部内容（免费）</li>
+    <li><b>试用数字员工：</b>使用 3 次免费体验机会，感受数字员工的工作方式</li>
+    <li><b>评估门店需求：</b>列出门店需要数字员工协助的工作场景</li>
+    <li><b>预约线下辅导：</b>如果希望落地到自己的门店，联系导师定制方案</li>
+  </ol>
+</div>
+
+<!-- 底部 CTA -->
+<div class="cta-section">
+  <h2>想在自己的门店落地数字员工？</h2>
+  <p>加微信聊聊，帮你定制门店专属的数字员工方案。</p>
+  <div class="contact-block">
+    <span style="font-size:20px">📱</span>
+    <div style="text-align:left">
+      <div class="cb-label">微信号</div>
+      <div class="cb-value">wilson2483lee</div>
+      <div class="cb-note">添加请备注「智能体学院」</div>
+    </div>
+  </div>
+  <p style="font-size:12px;color:var(--td);margin-top:8px">线上功能全部免费使用，觉得有用再联系</p>
+</div>
+
+<div class="footer">
+  风声 · 居住服务 AI 基础设施 · <a href="/">首页</a> · <a href="/agent-academy/">智能体学院</a>
+</div>
+</body>
+</html>
