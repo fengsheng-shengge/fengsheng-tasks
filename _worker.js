@@ -3529,11 +3529,11 @@ export default {
         '/', '/about', '/agent-academy', '/assessment', '/agent-assessment', '/breeder', '/care-test',
         '/clients', '/curation', '/dashboard', '/dashboard-manager', '/decoder', '/dictionary', '/entry', '/favorites', '/history',
         '/ip-design', '/knowledge', '/management',
-        '/mentor', '/partner', '/privacy', '/quality-test', '/reply',
+        '/mentor', '/partner', '/privacy', '/purchase', '/quality-test', '/reply',
         '/s1-report', '/scene', '/search', '/shuowenjiedao', '/skills', '/standard', '/survey',
         '/terms', '/showing-report', '/dict', '/guide', '/decode',
         '/agreement', '/okr', '/docs',
-        '/breeder/', '/care-test/', '/about/', '/agent-academy/', '/curation/', '/dashboard-manager/',
+        '/breeder/', '/care-test/', '/about/', '/agent-academy/', '/curation/', '/dashboard-manager/', '/purchase/',
         '/clients/', '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
       ]);
       const normalized = path.endsWith('/') ? path.slice(0, -1) : path;

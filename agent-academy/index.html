@@ -238,39 +238,68 @@ a{color:var(--p);text-decoration:none}
 <!-- 限免体验 -->
 <div class="free-trial" id="pricing">
   <h2>有限开放体验 · 先试后买</h2>
-  <p>免费体验数字员工训练，了解完整方法论。满意后再付费开通更多名额。</p>
-  <div class="trial-cards" style="max-width:700px;margin:0 auto">
+  <p>免费体验 3 次，了解数字员工训练方法。满意后按需购买，一次付费永久使用。</p>
+  <div class="trial-cards" style="max-width:1000px;margin:0 auto">
     <div class="trial-card free">
       <div class="tc-badge">免费体验</div>
       <div class="tc-name">基础版</div>
       <div class="tc-price">¥0 <small>永久免费</small></div>
       <div class="tc-desc">适合初次体验，了解数字员工训练方法</div>
       <ul class="tc-features">
-        <li><span class="check">✓</span> 智能体学院方法论全文</li>
-        <li><span class="check">✓</span> 3 次免费数字员工训练体验</li>
+        <li><span class="check">✓</span> 智能体学院方法论部分内容</li>
+        <li><span class="check">✓</span> 3 次数字员工训练体验</li>
         <li><span class="check">✓</span> 岗位职责模板 3 套</li>
         <li><span class="check">✓</span> 五把尺子考核试用</li>
+        <li><span class="cross">✗</span> 完整方法论内容</li>
         <li><span class="cross">✗</span> 自定义数字员工</li>
         <li><span class="cross">✗</span> 多智能体协作</li>
-        <li><span class="cross">✗</span> API 接入</li>
       </ul>
-      <button class="tc-btn" onclick="alert('免费体验已开启！请先完成智能体学院方法论学习。')">立即体验</button>
+      <button class="tc-btn" onclick="alert('免费体验已开启！请先体验 3 次训练，满意后购买专业版。')">立即体验</button>
     </div>
     <div class="trial-card pro">
       <div class="tc-badge">推荐</div>
-      <div class="tc-name">专业版</div>
-      <div class="tc-price">¥299 <small>/月</small></div>
-      <div class="tc-desc">适合已开业门店，组建完整数字员工团队</div>
+      <div class="tc-name">专业版内容包</div>
+      <div class="tc-price">¥299 <small>一次性 · 永久使用</small></div>
+      <div class="tc-desc">智能体学院内容全部解锁 + 3 个数字员工名额</div>
       <ul class="tc-features">
-        <li><span class="check">✓</span> 基础版全部功能</li>
-        <li><span class="check">✓</span> 最多 10 个自定义数字员工</li>
+        <li><span class="check">✓</span> 智能体学院方法论全部内容</li>
+        <li><span class="check">✓</span> 3 个自定义数字员工名额</li>
         <li><span class="check">✓</span> 多智能体协作工作流</li>
         <li><span class="check">✓</span> 五把尺子完整考核</li>
         <li><span class="check">✓</span> 知识库全量授权</li>
         <li><span class="check">✓</span> 数据看板 + 分析报告</li>
-        <li><span class="cross">✗</span> API 接入</li>
+        <li><span class="check">✓</span> 永久有效</li>
       </ul>
-      <button class="tc-btn" onclick="alert('专业版即将开放，敬请期待。可先免费体验基础版。')">即将开放</button>
+      <button class="tc-btn" onclick="location.href='/purchase/?product=pro'">¥299 购买 →</button>
+    </div>
+    <div class="trial-card free" style="border-color:rgba(126,106,144,.3)">
+      <div class="tc-badge" style="background:#7e6a90;color:#fff">选配</div>
+      <div class="tc-name">加名额</div>
+      <div class="tc-price">¥99 <small>每个 · 一次性</small></div>
+      <div class="tc-desc">已有专业版，需要更多数字员工名额</div>
+      <ul class="tc-features">
+        <li><span class="check">✓</span> 增加 1 个数字员工名额</li>
+        <li><span class="check">✓</span> 永久使用</li>
+        <li><span class="check">✓</span> 不限岗位类型</li>
+        <li><span class="cross">✗</span> 不包含学院内容</li>
+        <li><span class="cross">✗</span> 需已有专业版</li>
+      </ul>
+      <button class="tc-btn" style="background:var(--p);color:#fff" onclick="location.href='/purchase/?product=slot'">购买名额 →</button>
+    </div>
+    <div class="trial-card free" style="border-color:rgba(196,106,58,.3)">
+      <div class="tc-badge" style="background:var(--accent);color:#fff">新</div>
+      <div class="tc-name">线下辅导包</div>
+      <div class="tc-price">¥1,999 <small>1 天</small></div>
+      <div class="tc-desc">1 天线下辅导，手把手帮你配置数字员工团队</div>
+      <ul class="tc-features">
+        <li><span class="check">✓</span> 1 天面对面辅导</li>
+        <li><span class="check">✓</span> 门店定制数字员工方案</li>
+        <li><span class="check">✓</span> 岗位职责配置指导</li>
+        <li><span class="check">✓</span> 知识库搭建陪同</li>
+        <li><span class="check">✓</span> 考核体系搭建</li>
+        <li><span class="check">✓</span> 后续 1 个月线上答疑</li>
+      </ul>
+      <button class="tc-btn" style="background:var(--accent);color:#fff" onclick="location.href='/purchase/?product=coach'">预约辅导 →</button>
     </div>
   </div>
 </div>

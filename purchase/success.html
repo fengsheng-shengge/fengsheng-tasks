@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>购买成功 · 风声 · 智能体学院</title>
+<meta name="description" content="购买成功，您的数字员工账号正在开通中。">
+<style>
+:root{--bg:#f7f4ef;--bg2:#e8e4d9;--card:#fff;--p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--accent:#c46a3a;--accent-l:#e89060;--dk:#1a1a1a;--tx:#555;--ts:#7a8478;--td:#a8b0a6;--r:4px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--p);text-decoration:none}
+/* 导航 */
+.nav{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 5%;background:linear-gradient(135deg,#3d5a3e 0%,#2c4430 100%);color:#fff;position:sticky;top:0;z-index:100}
+.nav-l{display:flex;align-items:center;gap:8px}
+.nav-l a{color:rgba(255,255,255,.7);font-size:13px}
+.nav-l a:hover{color:#fff}
+/* 主内容 */
+.main{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 5%}
+.success-card{background:var(--card);border-radius:var(--r);padding:48px 40px;max-width:520px;width:100%;text-align:center;border:1px solid rgba(0,0,0,.06);box-shadow:0 4px 24px rgba(0,0,0,.06)}
+.success-card .icon-wrap{width:72px;height:72px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.success-card .icon-wrap svg{width:36px;height:36px;stroke:#fff;stroke-width:2.5;fill:none}
+.success-card .icon-wrap svg polyline{stroke-dasharray:30;stroke-dashoffset:30;animation:drawCheck .6s ease forwards .3s}
+@keyframes drawCheck{to{stroke-dashoffset:0}}
+.success-card h1{font-size:24px;color:var(--p-d);margin-bottom:8px}
+.success-card .subtitle{font-size:15px;color:var(--ts);margin-bottom:24px;line-height:1.7}
+.success-card .order-info{background:var(--bg);border-radius:var(--r);padding:16px 20px;margin-bottom:24px;text-align:left;font-size:14px}
+.success-card .order-info .row{display:flex;justify-content:space-between;padding:6px 0}
+.success-card .order-info .row .label{color:var(--ts)}
+.success-card .order-info .row .value{color:var(--dk);font-weight:600}
+.success-card .next-steps{text-align:left;margin-bottom:24px}
+.success-card .next-steps h3{font-size:15px;color:var(--dk);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.success-card .next-steps ol{padding-left:20px;font-size:14px;color:var(--tx);line-height:2}
+.success-card .next-steps ol li::marker{color:var(--p);font-weight:700}
+.success-card .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.success-card .actions .btn{display:inline-flex;align-items:center;gap:6px;padding:12px 28px;border-radius:var(--r);font-size:14px;font-weight:600;border:none;cursor:pointer;transition:background .2s}
+.success-card .actions .btn-primary{background:var(--p);color:#fff}
+.success-card .actions .btn-primary:hover{background:var(--p-d)}
+.success-card .actions .btn-secondary{background:var(--bg2);color:var(--tx)}
+.success-card .actions .btn-secondary:hover{background:var(--td)}
+/* 响应式 */
+@media(max-width:640px){
+  .success-card{padding:32px 24px}
+  .success-card .icon-wrap{width:56px;height:56px}
+  .success-card .icon-wrap svg{width:28px;height:28px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-l">
+    <a href="/">风声首页</a>
+    <span style="color:rgba(255,255,255,.3)">/</span>
+    <a href="/agent-academy/">智能体学院</a>
+    <span style="color:rgba(255,255,255,.3)">/</span>
+    <span style="color:rgba(255,255,255,.6);font-size:13px">购买成功</span>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="success-card">
+    <div class="icon-wrap">
+      <svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>
+    </div>
+    <h1>订单已提交 🎉</h1>
+    <p class="subtitle">感谢你的信任！客服将在 24 小时内为你开通账号，并通过微信通知你。</p>
+
+    <div class="order-info" id="orderInfo">
+      <div class="row"><span class="label">产品</span><span class="value" id="oiProduct">专业版内容包</span></div>
+      <div class="row"><span class="label">金额</span><span class="value" id="oiPrice">¥299</span></div>
+      <div class="row"><span class="label">状态</span><span class="value" style="color:var(--accent)">待激活</span></div>
+      <div class="row"><span class="label">提交时间</span><span class="value" id="oiTime">--</span></div>
+    </div>
+
+    <div class="next-steps">
+      <h3>📋 接下来你需要做什么？</h3>
+      <ol>
+        <li>保持微信畅通，客服会在 24 小时内联系你</li>
+        <li>客服确认付款后，为你开通对应产品权限</li>
+        <li>开通后即可在智能体学院查看完整内容</li>
+        <li>如有紧急需求，请在公众号留言「加急开通」</li>
+      </ol>
+    </div>
+
+    <div class="actions">
+      <a href="/agent-academy/" class="btn btn-primary">← 返回智能体学院</a>
+      <a href="/" class="btn btn-secondary">回到首页</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// 从 localStorage 读取最近订单
+const orders = JSON.parse(localStorage.getItem('fs_orders') || '[]');
+const lastOrder = orders[orders.length - 1];
+if (lastOrder) {
+  document.getElementById('oiProduct').textContent = lastOrder.name || '专业版内容包';
+  document.getElementById('oiPrice').textContent = lastOrder.price || '¥299';
+  document.getElementById('oiTime').textContent = lastOrder.time ? new Date(lastOrder.time).toLocaleString('zh-CN') : '--';
+}
+
+// 如果 URL 有参数，也尝试读取
+const params = new URLSearchParams(location.search);
+const productParam = params.get('product');
+if (productParam && !lastOrder) {
+  const names = { pro: '专业版内容包', slot: '加购数字员工名额', coach: '线下辅导包' };
+  const prices = { pro: '¥299', slot: '¥99', coach: '¥1,999' };
+  document.getElementById('oiProduct').textContent = names[productParam] || '专业版内容包';
+  document.getElementById('oiPrice').textContent = prices[productParam] || '¥299';
+}
+</script>
+</body>
+</html>

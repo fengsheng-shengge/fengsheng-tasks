@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>购买 · 风声 · 智能体学院</title>
+<meta name="description" content="选择适合你的产品方案，一次性付费，永久使用。">
+<style>
+:root{--bg:#f7f4ef;--bg2:#e8e4d9;--card:#fff;--p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--accent:#c46a3a;--accent-l:#e89060;--dk:#1a1a1a;--tx:#555;--ts:#7a8478;--td:#a8b0a6;--r:4px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--p);text-decoration:none}
+/* 导航 */
+.nav{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 5%;background:linear-gradient(135deg,#3d5a3e 0%,#2c4430 100%);color:#fff;position:sticky;top:0;z-index:100}
+.nav-l{display:flex;align-items:center;gap:8px}
+.nav-l a{color:rgba(255,255,255,.7);font-size:13px}
+.nav-l a:hover{color:#fff}
+.nav-r{font-size:13px;display:flex;align-items:center;gap:8px}
+/* 页面主体 */
+.main{max-width:720px;margin:0 auto;padding:40px 5% 60px}
+/* 步骤指示 */
+.steps{display:flex;gap:0;margin-bottom:40px;justify-content:center}
+.step{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--td)}
+.step.active{color:var(--p);font-weight:600}
+.step.done{color:var(--p-l)}
+.step .num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--td);color:#fff}
+.step.active .num{background:var(--p)}
+.step.done .num{background:var(--p-l)}
+.step-divider{width:40px;height:1px;border-top:2px dashed var(--td);margin:0 12px}
+/* 产品卡片 */
+.product-card{background:var(--card);border-radius:var(--r);padding:36px;margin-bottom:24px;border:1px solid rgba(0,0,0,.06);box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.product-card .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:12px;letter-spacing:.5px}
+.product-card .badge.pro{background:rgba(196,106,58,.12);color:var(--accent)}
+.product-card .badge.slot{background:rgba(126,106,144,.12);color:#7e6a90}
+.product-card .badge.coach{background:rgba(196,106,58,.12);color:var(--accent)}
+.product-card h1{font-size:24px;color:var(--dk);margin-bottom:4px}
+.product-card .price{font-size:36px;font-weight:800;color:var(--p-d);margin:16px 0 8px}
+.product-card .price small{font-size:14px;font-weight:400;color:var(--ts)}
+.product-card .desc{color:var(--ts);font-size:15px;margin-bottom:20px;line-height:1.7}
+.product-card ul{list-style:none;padding:0;margin:0 0 24px}
+.product-card ul li{padding:6px 0;font-size:14px;display:flex;align-items:center;gap:8px}
+.product-card ul li .check{color:var(--p-l);font-weight:700}
+.product-card ul li .cross{color:var(--td)}
+/* 支付区 */
+.payment-section{background:var(--card);border-radius:var(--r);padding:36px;border:1px solid rgba(0,0,0,.06);box-shadow:0 2px 12px rgba(0,0,0,.04);text-align:center}
+.payment-section h2{font-size:18px;color:var(--dk);margin-bottom:16px}
+.payment-section .qrcode-wrap{display:inline-block;padding:16px;background:#fff;border:2px dashed var(--bg2);border-radius:var(--r);margin-bottom:16px}
+.payment-section .qrcode-wrap img{width:200px;height:200px;display:block}
+.payment-section .qrcode-wrap .qrcode-placeholder{width:200px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg2);border-radius:2px;color:var(--ts);font-size:13px;gap:8px}
+.payment-section .qrcode-wrap .qrcode-placeholder svg{width:48px;height:48px;opacity:.4}
+.payment-section .amount{font-size:28px;font-weight:800;color:var(--p-d);margin:8px 0 12px}
+.payment-section .amount small{font-size:14px;font-weight:400;color:var(--ts)}
+.payment-section .note{font-size:13px;color:var(--ts);line-height:1.6;margin-bottom:20px;padding:12px 16px;background:rgba(196,106,58,.06);border-radius:var(--r);text-align:left}
+.payment-section .note strong{color:var(--accent)}
+.payment-section .btn-paid{display:inline-flex;align-items:center;gap:8px;padding:14px 40px;border-radius:var(--r);background:var(--p);color:#fff;font-size:16px;font-weight:700;border:none;cursor:pointer;transition:background .2s}
+.payment-section .btn-paid:hover{background:var(--p-d)}
+.payment-section .btn-paid:disabled{opacity:.5;cursor:not-allowed}
+.payment-section .btn-paid .spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+.payment-section .btn-paid.loading .spinner{display:inline-block}
+.payment-section .btn-paid.loading .label{opacity:.7}
+@keyframes spin{to{transform:rotate(360deg)}}
+.payment-section .help-text{font-size:12px;color:var(--td);margin-top:12px}
+/* 已付款状态 */
+.payment-section .paid-status{display:none;text-align:center;padding:20px}
+.payment-section .paid-status .icon{width:56px;height:56px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+.payment-section .paid-status h3{font-size:18px;color:var(--p-d);margin-bottom:8px}
+.payment-section .paid-status p{font-size:14px;color:var(--ts);line-height:1.6}
+.payment-section.paid .btn-paid{display:none}
+.payment-section.paid .paid-status{display:block}
+/* 返回 */
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ts);margin-bottom:20px;cursor:pointer}
+.back-link:hover{color:var(--p)}
+/* 响应式 */
+@media(max-width:640px){
+  .steps{flex-wrap:wrap;gap:8px}
+  .step-divider{display:none}
+  .product-card,.payment-section{padding:24px 20px}
+  .payment-section .qrcode-wrap img,.payment-section .qrcode-wrap .qrcode-placeholder{width:160px;height:160px}
+}
+</style>
+</head>
+<body>
+
+<!-- 导航 -->
+<nav class="nav">
+  <div class="nav-l">
+    <a href="/">风声首页</a>
+    <span style="color:rgba(255,255,255,.3)">/</span>
+    <a href="/agent-academy/">智能体学院</a>
+    <span style="color:rgba(255,255,255,.3)">/</span>
+    <span style="color:rgba(255,255,255,.6);font-size:13px">购买</span>
+  </div>
+  <div class="nav-r">
+    <a href="/agent-academy/" style="color:rgba(255,255,255,.7)">← 返回学院</a>
+  </div>
+</nav>
+
+<div class="main">
+  <!-- 步骤指示 -->
+  <div class="steps">
+    <div class="step active" id="step1">
+      <span class="num">1</span>
+      <span>选择产品</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="step" id="step2">
+      <span class="num">2</span>
+      <span>扫码付款</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="step" id="step3">
+      <span class="num">3</span>
+      <span>激活账号</span>
+    </div>
+  </div>
+
+  <!-- 产品信息 -->
+  <div class="product-card" id="productCard">
+    <!-- 由 JS 动态渲染 -->
+  </div>
+
+  <!-- 支付区 -->
+  <div class="payment-section" id="paymentSection">
+    <h2>请使用微信扫码付款</h2>
+    <div class="qrcode-wrap">
+      <div class="qrcode-placeholder" id="qrcodePlaceholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zM3 14h7v7H3v-7zm11 4h2v2h-2v-2zm4-4h2v2h-2v-2zm-4 4h2v2h-2v-2z"/></svg>
+        <span>微信收款码</span>
+        <span style="font-size:11px;color:var(--td)">联系客服获取最新二维码</span>
+      </div>
+      <img id="qrcodeImage" style="display:none" alt="微信收款码">
+    </div>
+    <div class="amount" id="payAmount">¥299</div>
+    <div class="note" id="payNote">
+      <strong>📌 付款说明</strong><br>
+      1. 长按或截图保存上方二维码，打开微信扫一扫<br>
+      2. 付款后请点击下方「我已付款」按钮<br>
+      3. 客服将在 <strong>24小时内</strong> 为您开通账号<br>
+      4. 如有疑问，请在公众号留言或联系风声客服
+    </div>
+    <button class="btn-paid" id="btnPaid" onclick="handlePaid()">
+      <span class="spinner"></span>
+      <span class="label">✅ 我已付款</span>
+    </button>
+    <div class="paid-status">
+      <div class="icon">✓</div>
+      <h3>付款信息已提交</h3>
+      <p>客服将在 24 小时内为您开通账号<br>请保持微信畅通，开通后会有通知</p>
+      <br>
+      <a href="/agent-academy/" style="display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border-radius:var(--r);background:var(--p);color:#fff;font-size:14px;font-weight:600">← 返回智能体学院</a>
+    </div>
+    <div class="help-text">付款遇到问题？联系风声客服</div>
+  </div>
+</div>
+
+<script>
+// 产品数据
+const PRODUCTS = {
+  pro: {
+    badge: { text: '推荐', cls: 'pro' },
+    name: '专业版内容包',
+    price: '¥299',
+    priceNote: '一次性 · 永久使用',
+    desc: '智能体学院内容全部解锁 + 3 个数字员工名额',
+    features: [
+      { text: '智能体学院方法论全部内容', check: true },
+      { text: '3 个自定义数字员工名额', check: true },
+      { text: '多智能体协作工作流', check: true },
+      { text: '五把尺子完整考核', check: true },
+      { text: '知识库全量授权', check: true },
+      { text: '数据看板 + 分析报告', check: true },
+      { text: '永久有效', check: true },
+    ],
+    note: '长按或截图保存二维码，打开微信扫一扫付款 ¥299。付款后点击「我已付款」按钮，客服将在 24 小时内为您开通账号。'
+  },
+  slot: {
+    badge: { text: '选配', cls: 'slot' },
+    name: '加购数字员工名额',
+    price: '¥99',
+    priceNote: '每个 · 一次性',
+    desc: '已有专业版，需要更多数字员工名额',
+    features: [
+      { text: '增加 1 个数字员工名额', check: true },
+      { text: '永久使用', check: true },
+      { text: '不限岗位类型', check: true },
+      { text: '不包含学院内容', check: false },
+      { text: '需已有专业版', check: false },
+    ],
+    note: '长按或截图保存二维码，打开微信扫一扫付款 ¥99。付款后点击「我已付款」按钮，客服将在 24 小时内为您开通额外名额。'
+  },
+  coach: {
+    badge: { text: '新', cls: 'coach' },
+    name: '线下辅导包',
+    price: '¥1,999',
+    priceNote: '1 天线下辅导',
+    desc: '1 天面对面辅导，手把手帮你配置数字员工团队',
+    features: [
+      { text: '1 天面对面辅导', check: true },
+      { text: '门店定制数字员工方案', check: true },
+      { text: '岗位职责配置指导', check: true },
+      { text: '知识库搭建陪同', check: true },
+      { text: '考核体系搭建', check: true },
+      { text: '后续 1 个月线上答疑', check: true },
+    ],
+    note: '长按或截图保存二维码，打开微信扫一扫付款 ¥1,999。付款后点击「我已付款」按钮，客服将在 24 小时内与您联系确认辅导时间。'
+  }
+};
+
+// 获取产品参数
+const params = new URLSearchParams(location.search);
+const productKey = params.get('product') || 'pro';
+const product = PRODUCTS[productKey] || PRODUCTS.pro;
+
+// 渲染产品信息
+function renderProduct() {
+  const card = document.getElementById('productCard');
+  card.innerHTML = `
+    <span class="badge ${product.badge.cls}">${product.badge.text}</span>
+    <h1>${product.name}</h1>
+    <div class="price">${product.price} <small>${product.priceNote}</small></div>
+    <div class="desc">${product.desc}</div>
+    <ul>
+      ${product.features.map(f => `
+        <li><span class="${f.check ? 'check' : 'cross'}">${f.check ? '✓' : '✗'}</span> ${f.text}</li>
+      `).join('')}
+    </ul>
+  `;
+}
+
+// 渲染支付信息
+function renderPayment() {
+  document.getElementById('payAmount').textContent = product.price;
+  document.getElementById('payNote').innerHTML = `
+    <strong>📌 付款说明</strong><br>
+    1. 长按或截图保存上方二维码，打开微信扫一扫<br>
+    2. 付款后请点击下方「我已付款」按钮<br>
+    3. 客服将在 <strong>24小时内</strong> 为您开通账号<br>
+    4. 如有疑问，请在公众号留言或联系风声客服
+  `;
+}
+
+// 处理已付款
+function handlePaid() {
+  const btn = document.getElementById('btnPaid');
+  if (btn.classList.contains('loading')) return;
+  btn.classList.add('loading');
+  btn.querySelector('.label').textContent = '提交中...';
+
+  // 模拟提交
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    document.getElementById('paymentSection').classList.add('paid');
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step1').classList.add('done');
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step2').classList.add('done');
+    document.getElementById('step3').classList.add('active');
+
+    // 记录到 localStorage
+    const orders = JSON.parse(localStorage.getItem('fs_orders') || '[]');
+    orders.push({
+      product: productKey,
+      name: product.name,
+      price: product.price,
+      time: new Date().toISOString(),
+      status: 'paid'
+    });
+    localStorage.setItem('fs_orders', JSON.stringify(orders));
+  }, 1500);
+}
+
+// 初始化
+renderProduct();
+renderPayment();
+</script>
+</body>
+</html>
