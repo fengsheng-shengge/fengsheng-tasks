@@ -120,7 +120,7 @@ a{color:var(--p);text-decoration:none}
   </div>
   <div class="nav-r">
     <span style="opacity:.7;font-size:12px">已体验 <strong>0</strong>/3 次</span>
-    <button class="free-btn" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">💎 开通专业版</button>
+    <button class="free-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">📞 咨询辅导</button>
   </div>
 </div>
 
@@ -235,73 +235,66 @@ a{color:var(--p);text-decoration:none}
   </div>
 </div>
 
-<!-- 限免体验 -->
-<div class="free-trial" id="pricing">
-  <h2>有限开放体验 · 先试后买</h2>
-  <p>免费体验 3 次，了解数字员工训练方法。满意后按需购买，一次付费永久使用。</p>
+<!-- 免费体验区 -->
+<div class="free-trial" id="free-trial">
+  <h2>线上功能全部免费开放</h2>
+  <p>智能体学院、数字员工看板、策展引擎、五把尺子考核……所有线上功能均免费使用。你只管体验，觉得有用再说。</p>
   <div class="trial-cards" style="max-width:1000px;margin:0 auto">
-    <div class="trial-card free">
-      <div class="tc-badge">免费体验</div>
-      <div class="tc-name">基础版</div>
-      <div class="tc-price">¥0 <small>永久免费</small></div>
-      <div class="tc-desc">适合初次体验，了解数字员工训练方法</div>
-      <ul class="tc-features">
-        <li><span class="check">✓</span> 智能体学院方法论部分内容</li>
-        <li><span class="check">✓</span> 3 次数字员工训练体验</li>
-        <li><span class="check">✓</span> 岗位职责模板 3 套</li>
-        <li><span class="check">✓</span> 五把尺子考核试用</li>
-        <li><span class="cross">✗</span> 完整方法论内容</li>
-        <li><span class="cross">✗</span> 自定义数字员工</li>
-        <li><span class="cross">✗</span> 多智能体协作</li>
-      </ul>
-      <button class="tc-btn" onclick="alert('免费体验已开启！请先体验 3 次训练，满意后购买专业版。')">立即体验</button>
-    </div>
-    <div class="trial-card pro">
-      <div class="tc-badge">推荐</div>
-      <div class="tc-name">专业版内容包</div>
-      <div class="tc-price">¥299 <small>一次性 · 永久使用</small></div>
-      <div class="tc-desc">智能体学院内容全部解锁 + 3 个数字员工名额</div>
+    <div class="trial-card free" style="border-color:rgba(61,90,62,.2)">
+      <div class="tc-badge" style="background:var(--bg2);color:var(--ts)">免费</div>
+      <div class="tc-name">数字员工训练</div>
+      <div class="tc-desc">3 次免费体验，完整了解数字员工训练方法</div>
       <ul class="tc-features">
         <li><span class="check">✓</span> 智能体学院方法论全部内容</li>
-        <li><span class="check">✓</span> 3 个自定义数字员工名额</li>
-        <li><span class="check">✓</span> 多智能体协作工作流</li>
-        <li><span class="check">✓</span> 五把尺子完整考核</li>
-        <li><span class="check">✓</span> 知识库全量授权</li>
-        <li><span class="check">✓</span> 数据看板 + 分析报告</li>
-        <li><span class="check">✓</span> 永久有效</li>
+        <li><span class="check">✓</span> 岗位职责模板套用</li>
+        <li><span class="check">✓</span> 五把尺子考核试用</li>
+        <li><span class="check">✓</span> 数字员工看板</li>
+        <li><span class="check">✓</span> 策展引擎报告生成</li>
+        <li><span class="check">✓</span> 3 次训练体验机会</li>
       </ul>
-      <button class="tc-btn" onclick="location.href='/purchase/?product=pro'">¥299 购买 →</button>
+      <button class="tc-btn" onclick="alert('免费体验已开启！请先使用 3 次训练机会，体验数字员工的完整工作流程。')">立即免费体验</button>
     </div>
-    <div class="trial-card free" style="border-color:rgba(126,106,144,.3)">
-      <div class="tc-badge" style="background:#7e6a90;color:#fff">选配</div>
-      <div class="tc-name">加名额</div>
-      <div class="tc-price">¥99 <small>每个 · 一次性</small></div>
-      <div class="tc-desc">已有专业版，需要更多数字员工名额</div>
+    <div class="trial-card free" style="border-color:rgba(196,106,58,.25)">
+      <div class="tc-badge" style="background:var(--accent);color:#fff">线下</div>
+      <div class="tc-name">门店落地辅导</div>
+      <div class="tc-desc">线上体验完后，如果需要落地到自己的门店，预约线下辅导</div>
       <ul class="tc-features">
-        <li><span class="check">✓</span> 增加 1 个数字员工名额</li>
-        <li><span class="check">✓</span> 永久使用</li>
-        <li><span class="check">✓</span> 不限岗位类型</li>
-        <li><span class="cross">✗</span> 不包含学院内容</li>
-        <li><span class="cross">✗</span> 需已有专业版</li>
-      </ul>
-      <button class="tc-btn" style="background:var(--p);color:#fff" onclick="location.href='/purchase/?product=slot'">购买名额 →</button>
-    </div>
-    <div class="trial-card free" style="border-color:rgba(196,106,58,.3)">
-      <div class="tc-badge" style="background:var(--accent);color:#fff">新</div>
-      <div class="tc-name">线下辅导包</div>
-      <div class="tc-price">¥1,999 <small>1 天</small></div>
-      <div class="tc-desc">1 天线下辅导，手把手帮你配置数字员工团队</div>
-      <ul class="tc-features">
-        <li><span class="check">✓</span> 1 天面对面辅导</li>
         <li><span class="check">✓</span> 门店定制数字员工方案</li>
         <li><span class="check">✓</span> 岗位职责配置指导</li>
         <li><span class="check">✓</span> 知识库搭建陪同</li>
         <li><span class="check">✓</span> 考核体系搭建</li>
-        <li><span class="check">✓</span> 后续 1 个月线上答疑</li>
+        <li><span class="check">✓</span> 多智能体协作配置</li>
+        <li><span class="check">✓</span> 后续线上答疑</li>
       </ul>
-      <button class="tc-btn" style="background:var(--accent);color:#fff" onclick="location.href='/purchase/?product=coach'">预约辅导 →</button>
+      <button class="tc-btn" style="background:var(--accent);color:#fff" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">预约辅导 →</button>
     </div>
   </div>
+</div>
+
+<!-- 联系方式 -->
+<div class="cta-section" id="contact" style="background:linear-gradient(180deg,transparent 0%,rgba(61,90,62,.04) 100%)">
+  <h2>用了觉得不错？想在自己的门店落地？</h2>
+  <p style="max-width:560px;margin:0 auto 28px;font-size:15px;color:var(--ts);line-height:1.7">
+    线上功能全部免费使用。如果你希望把数字员工真正落地到自己的门店，<br>
+    加微信聊聊，帮你定制方案。
+  </p>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:10px">
+    <div style="display:inline-flex;align-items:center;gap:14px;padding:16px 28px;background:var(--card);border-radius:var(--r);border:1px solid rgba(61,90,62,.1);box-shadow:0 2px 8px rgba(0,0,0,.04)">
+      <span style="font-size:20px">📱</span>
+      <div style="text-align:left">
+        <div style="font-size:16px;font-weight:700;color:var(--p-d);letter-spacing:1px">微信号：fengsheng-xxxx</div>
+        <div style="font-size:12px;color:var(--ts);margin-top:2px">添加请备注「智能体学院」</div>
+      </div>
+    </div>
+    <div style="display:inline-flex;align-items:center;gap:14px;padding:16px 28px;background:var(--card);border-radius:var(--r);border:1px solid rgba(61,90,62,.1);box-shadow:0 2px 8px rgba(0,0,0,.04)">
+      <span style="font-size:20px">📞</span>
+      <div style="text-align:left">
+        <div style="font-size:16px;font-weight:700;color:var(--p-d);letter-spacing:1px">手机号：138-xxxx-xxxx</div>
+        <div style="font-size:12px;color:var(--ts);margin-top:2px">可直接电话联系</div>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--td);margin-top:12px">线上体验不收费，不营销。觉得有用再联系，落地辅导按需定制。</p>
 </div>
 
 <!-- 成功案例 -->
@@ -333,7 +326,7 @@ a{color:var(--p);text-decoration:none}
 <div class="cta-section">
   <h2>开始训练你的第一个数字员工</h2>
   <p>免费体验，不需要信用卡。3 次体验机会，足够你了解数字员工的价值。</p>
-  <button class="btn-primary" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">免费体验 →</button>
+  <button class="btn-primary" onclick="document.getElementById('free-trial').scrollIntoView({behavior:'smooth'})">免费体验 →</button>
 </div>
 
 <!-- Footer -->
