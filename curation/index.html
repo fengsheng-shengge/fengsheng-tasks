@@ -267,11 +267,24 @@ const DOMAIN_LIFECYCLE = [
   '签约前','签约中','签约后','居住中','退租出售','业主','资产持有与运营','职业成长','跨域通用'
 ]
 
-// 子场景映射到策展分组
+// 子场景映射到策展分组（全生命周期 9 域）
 const DOMAIN_GROUP_MAP = {
   '签约前': { decoder: ['需求确认','资格审查','融资贷款','风险识别','合同审查','排期规划','学区房专项','学区房'],
              see: ['房源匹配','价格评估'], nego: [] },
-  '签约中': { decoder: [], see: [], nego: ['合同条款','定金订金','资金监管','网签备案','付款方式','阴阳合同','保险保障'] }
+  '签约中': { decoder: [], see: [], nego: ['合同条款','定金订金','资金监管','网签备案','付款方式','阴阳合同','保险保障'] },
+  '签约后': { decoder: ['产权登记','税费缴纳','贷款还款','保险','安全保障'],
+             see: ['交房验收','交房验房'], nego: ['纠纷处理','维权','装修装饰','维修维护'] },
+  '居住中': { decoder: ['装修','家居家电','物业管理','居住安全','房屋维护','维修维护','装修装饰','房屋维修'],
+             see: ['邻里关系','邻里纠纷','社区服务'], nego: [] },
+  '退租出售': { decoder: ['出售','退租'], see: ['抵押贷款'], nego: ['继承赠与'] },
+  '业主': { decoder: ['纠纷','税务筹划','政策','房产保值'],
+             see: ['租赁管理','房产改造'], nego: ['出租管理'] },
+  '资产持有与运营': { decoder: ['权属维护','出售决策','保值增值','政策应对'],
+             see: ['租客纠纷应对','资产运营','出租管理','运营维护','政策响应','纠纷处置'],
+             nego: ['出售管理'] },
+  '职业成长': { decoder: ['资格考试','职业发展','成长发展','考试考证'],
+             see: ['合规','合规经营','专业技能'], nego: [] },
+  '跨域通用': { decoder: ['通用基础'], see: [], nego: [] }
 }
 const DEFAULT_GROUP = { decoder: [], see: [], nego: [] }
 
@@ -398,14 +411,15 @@ function generateCurationFromEntries(input, entriesByGroup) {
   }
 }
 
-function buildFollowups(node, dimensions) {
+function buildFollowups(axisNode, dimensions) {
+  // 购5 / 租4 原有模板
   const map = {
     first: [{ theme: '资格核验', text: '3 天内跟进购房资格与贷款额度测算，帮客户锁定真实预算' },
             { theme: '区域筛选', text: '持续关怀：按通勤与学区优先级，整理 2–3 个候选板块' }],
     improve: [{ theme: '旧房处置', text: '跟进现住房处置进度（在售/已售），衔接换房节奏' },
               { theme: '低密盘带看', text: '下周带看同板块低密改善盘，对比得房率与物业档次' }],
     edu: [{ theme: '划片公示', text: '开学季前帮盯目标校划片公示，第一时间同步客户' },
-          { theme: '学位核实', text: '持续关怀：核实落户年限要求，避免政策误读' }],
+           { theme: '学位核实', text: '持续关怀：核实落户年限要求，避免政策误读' }],
     upgrade: [{ theme: '资产配置', text: '跟进置换后的资产结构，提供持有成本测算' }],
     elder: [{ theme: '适老改造', text: '跟进无障碍与电梯需求，整理适老改造要点' }],
     start: [{ theme: '预算对齐', text: '跟进可接受租金区间，缩小候选范围' }],
@@ -413,7 +427,9 @@ function buildFollowups(node, dimensions) {
     family: [{ theme: '户型匹配', text: '持续关怀：按家庭结构推荐合适户型与楼层' }],
     quality: [{ theme: '社区服务', text: '跟进对物业与社区服务的真实体验反馈' }]
   }
-  const base = map[node.key] || [{ theme: '持续关怀', text: '见面后 1–2 天做轻量跟进，确认客户还有哪些顾虑' }]
+  let base = map[axisNode.key] || [{ theme: '持续关怀', text: '见面后 1–2 天做轻量跟进，确认客户还有哪些顾虑' }]
+  
+  // 维度补充（经济/便利相关关怀）
   const dimText = []
   if (dimensions.includes('econ')) dimText.push({ theme: '费用透明', text: '持续关怀：整理本次交易全部成本清单，避免隐性支出' })
   if (dimensions.includes('conv')) dimText.push({ theme: '通勤实测', text: '见后跟进：提供早晚高峰通勤实测，增强决策依据' })
