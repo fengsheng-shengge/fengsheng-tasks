@@ -3527,13 +3527,13 @@ export default {
     if (isHtml && !path.includes('.')) {
       const KNOWN_ROUTES = new Set([
         '/', '/about', '/agent-academy', '/assessment', '/breeder', '/care-test',
-        '/clients', '/dashboard', '/decoder', '/dictionary', '/entry', '/favorites', '/history',
+        '/clients', '/curation', '/dashboard', '/decoder', '/dictionary', '/entry', '/favorites', '/history',
         '/ip-design', '/knowledge', '/management',
         '/mentor', '/partner', '/privacy', '/quality-test', '/reply',
         '/s1-report', '/scene', '/search', '/shuowenjiedao', '/skills', '/standard', '/survey',
         '/terms', '/showing-report', '/dict', '/guide', '/decode',
         '/agreement', '/okr', '/docs',
-        '/breeder/', '/care-test/', '/about/', '/agent-academy/',
+        '/breeder/', '/care-test/', '/about/', '/agent-academy/', '/curation/',
         '/clients/', '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
       ]);
       const normalized = path.endsWith('/') ? path.slice(0, -1) : path;
