@@ -3237,6 +3237,19 @@ export default {
       return Response.redirect(`https://fengsheng.tech${path}/`, 301);
     }
 
+    // Path rewrites (alias routes → actual content path)
+    const pathRewrites = {
+      '/agent-assessment': '/assessment/',
+      '/agent-assessment/': '/assessment/',
+      '/showing-report': '/s1-report/',
+      '/showing-report/': '/s1-report/',
+    };
+    if (pathRewrites[path]) {
+      const rewriteUrl = new URL(pathRewrites[path], request.url);
+      const rewriteReq = new Request(rewriteUrl, request);
+      return env.ASSETS.fetch(rewriteReq);
+    }
+
     // ===== API Routes =====
 
     // Health check
@@ -3535,6 +3548,7 @@ export default {
         '/agreement', '/okr', '/docs', '/toolkit',
         '/breeder/', '/care-test/', '/about/', '/agent-academy/', '/curation/', '/dashboard-manager/', '/purchase/', '/toolkit/',
         '/clients/', '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
+        '/assessment/', '/s1-report/', '/showing-report/', '/agent-assessment/',
       ]);
       const normalized = path.endsWith('/') ? path.slice(0, -1) : path;
       if (!KNOWN_ROUTES.has(path) && !KNOWN_ROUTES.has(normalized) && !KNOWN_ROUTES.has(normalized + '/')) {
