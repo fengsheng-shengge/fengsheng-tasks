@@ -2044,11 +2044,14 @@ function openHistory(){
   const body=document.getElementById('historyBody');
   if(hist.length===0){body.innerHTML='<div class="hs-empty">暂无历史报告<br>完成第一份报告后这里会显示</div>';return;}
   body.innerHTML=hist.map(h=>
-    `<div class="hsi" onclick="viewHistoryItem('${h.id}')">
+    `<div class="hsi" data-id="${esc(h.id)}">
       <div><div class="hsi-client">${esc(h.client)}</div><div class="hsi-property">${esc(h.property)}${h.layout?' · '+esc(h.layout):''}</div></div>
-      <div><div class="hsi-date">${h.date.slice(0,10)}</div><div class="hsi-score">${h.score}</div></div>
+      <div><div class="hsi-date">${esc(h.date?h.date.slice(0,10):'')}</div><div class="hsi-score">${esc(String(h.score))}</div></div>
     </div>`
   ).join('');
+  document.querySelectorAll('#historyBody .hsi').forEach(el=>{
+    el.addEventListener('click',()=>viewHistoryItem(el.dataset.id));
+  });
   document.getElementById('historySidebar').classList.add('show');
 }
 

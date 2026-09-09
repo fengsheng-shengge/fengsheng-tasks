@@ -9,7 +9,6 @@
 //   + issue #208: MP_verify + /api/health routing
 
 const COZE_API = 'https://api.coze.cn';
-const BOT_ID_PLACEHOLDER = '7657006281966452790';
 const WX_API = 'https://api.weixin.qq.com/sns/jscode2session';
 
 // ============================================================
@@ -328,7 +327,8 @@ async function checkLog4ShellWAF(request) {
 function jsonResponse(data, status = 200, headers = {}) {
   const responseHeaders = {
     'Content-Type': 'application/json;charset=UTF-8',
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': 'https://fengsheng.tech',
+    'Vary': 'Origin',
     'Cache-Control': 'no-store',
     'X-Content-Type-Options': 'nosniff',
     'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
@@ -786,10 +786,10 @@ async function handleWxLogin(request, env) {
     const body = await request.json();
     const { code } = body;
     if (!code) return jsonResponse({ error: 'code is required' }, 400);
-    const WX_APPID = env.WX_APPID || 'wxb87aa256991cc9c6';
+    const WX_APPID = env.WX_APPID;
     const WX_SECRET = env.WX_SECRET;
-    if (!WX_SECRET) {
-      console.error('WX_SECRET not configured');
+    if (!WX_APPID || !WX_SECRET) {
+      console.error('WX_APPID or WX_SECRET not configured');
       return jsonResponse({ error: 'server config error' }, 500);
     }
     const wxUrl = `${WX_API}?appid=${WX_APPID}&secret=${WX_SECRET}&js_code=${code}&grant_type=authorization_code`;
@@ -814,8 +814,12 @@ async function handleWxLogin(request, env) {
 // ============================================================
 async function handleWxQrCode(request, env) {
   try {
-    const MP_APPID = env.MP_APPID || 'wxd4ccbb319a00bb89';
-    const MP_SECRET = env.MP_SECRET || '88ae703ebd7ffdca7cfdf44b5d13ec22';
+    const MP_APPID = env.MP_APPID;
+    const MP_SECRET = env.MP_SECRET;
+    if (!MP_APPID || !MP_SECRET) {
+      console.error('MP_APPID or MP_SECRET not configured');
+      return jsonResponse({ error: 'server config error' }, 500);
+    }
 
     // Get access_token
     const tokenUrl = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${MP_APPID}&secret=${MP_SECRET}`;
@@ -860,7 +864,8 @@ async function handleWxQrCode(request, env) {
         headers: {
           'Content-Type': contentType,
           'Cache-Control': 'public, max-age=86400',
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': 'https://fengsheng.tech',
+          'Vary': 'Origin',
         },
       });
     } else {
@@ -939,7 +944,8 @@ async function handleChat(request, env, authenticatedOpenid, resolvedBotId, ctx)
         'Content-Type': 'text/event-stream; charset=utf-8',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': 'https://fengsheng.tech',
+        'Vary': 'Origin',
       },
     });
   } catch (e) {
@@ -974,8 +980,8 @@ async function handleFeedback(request, env) {
 async function handleFeedbackExternal(request, env) {
   try {
     const body = await request.json();
-    const web3Key = env.WEB3FORMS_KEY || '27c926eb-07d8-4a71-8bf8-f30ad73f8e39';
-    const formsubmitKey = env.FORMSUBMIT_KEY || 'd818fa3cece5258aea8205bd492316de';
+    const web3Key = env.WEB3FORMS_KEY;
+    const formsubmitKey = env.FORMSUBMIT_KEY;
     const payload = { access_key: web3Key, ...body };
     fetch('https://api.web3forms.com/submit', {
       method: 'POST',
@@ -1391,7 +1397,11 @@ async function handleAdminAgents(request, env) {
   // Layer A: 鉴权（防止 4 数字员工列表泄漏·7.31 23:30 小鱼儿代修·P0 雷修复 #1/2）
   const authHeader = request.headers.get('Authorization') || '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
-  const expectedToken = (env && env.DASHBOARD_TOKEN) || '07dc894ef8c6828c861803dd4326118d795f6912ebc1ec0e';
+  const expectedToken = env && env.DASHBOARD_TOKEN;
+  if (!expectedToken) {
+    console.error('DASHBOARD_TOKEN not configured');
+    return jsonResponse({ ok: false, error: 'server config error' }, 500);
+  }
   if (!token || token !== expectedToken) {
     return jsonResponse({ ok: false, error: 'unauthorized' }, 401);
   }
@@ -2989,7 +2999,7 @@ async function handleMiniSceneEntries(request, env, ctx) {
       entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
       layer: entryLayer, subScene: e.subScene || '', consumerQ: e.consumerQ || '',
       // shareCardUrl for qi-layer entries (mini program path)
-      shareCardUrl: isQi ? `weixin://dl/business/?appid=wxd4ccbb319a00bb89&path=pages/entry/detail&query=id%3D${encodeURIComponent(e.id)}&env_version=release` : null,
+      shareCardUrl: isQi ? `weixin://dl/business/?appid=${env.MP_APPID || ''}&path=pages/entry/detail&query=id%3D${encodeURIComponent(e.id)}&env_version=release` : null,
     };
   });
 
@@ -3096,7 +3106,7 @@ export default {
       if (content) {
         return new Response(content, {
           status: 200,
-          headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'public, max-age=3600', 'Access-Control-Allow-Origin': '*' },
+          headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'public, max-age=3600', 'Access-Control-Allow-Origin': 'https://fengsheng.tech', 'Vary': 'Origin' },
         });
       }
       try {
@@ -3107,7 +3117,7 @@ export default {
           const text = await assetResp.text();
           return new Response(text, {
             status: 200,
-            headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'public, max-age=3600', 'Access-Control-Allow-Origin': '*' },
+            headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'public, max-age=3600', 'Access-Control-Allow-Origin': 'https://fengsheng.tech', 'Vary': 'Origin' },
           });
         }
       } catch (e) { /* fall through */ }
@@ -3205,13 +3215,18 @@ export default {
     }
 
     // Resolve BOT_ID from env
-    const resolvedBotId = env.FS_BOT_ID || BOT_ID_PLACEHOLDER;
+    const resolvedBotId = env.FS_BOT_ID;
+    if (!resolvedBotId) {
+      console.error('FS_BOT_ID not configured');
+      return jsonResponse({ error: 'server config error' }, 500);
+    }
 
     // CORS preflight for API routes
     if (request.method === 'OPTIONS' && (isAPIPath || isIpDesignApi)) {
       return new Response(null, {
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': 'https://fengsheng.tech',
+          'Vary': 'Origin',
           'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         },
@@ -3544,7 +3559,7 @@ export default {
         '/ip-design', '/knowledge', '/management',
         '/mentor', '/partner', '/privacy', '/purchase', '/quality-test', '/reply',
         '/s1-report', '/scene', '/search', '/shuowenjiedao', '/skills', '/standard', '/survey',
-        '/terms', '/showing-report', '/dict', '/guide', '/decode',
+        '/terms', '/showing-report', '/dict', '/decode',
         '/agreement', '/okr', '/docs', '/toolkit',
         '/breeder/', '/care-test/', '/about/', '/agent-academy/', '/curation/', '/dashboard-manager/', '/purchase/', '/toolkit/',
         '/clients/', '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
