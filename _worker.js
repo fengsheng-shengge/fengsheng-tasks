@@ -3214,13 +3214,6 @@ export default {
       return jsonResponse({ error: '请求体过大' }, 413);
     }
 
-    // Resolve BOT_ID from env
-    const resolvedBotId = env.FS_BOT_ID;
-    if (!resolvedBotId) {
-      console.error('FS_BOT_ID not configured');
-      return jsonResponse({ error: 'server config error' }, 500);
-    }
-
     // CORS preflight for API routes
     if (request.method === 'OPTIONS' && (isAPIPath || isIpDesignApi)) {
       return new Response(null, {
@@ -3279,6 +3272,11 @@ export default {
 
     // Mentor chat (authenticated + anonymous)
     if (path === '/mentor-api/chat' && request.method === 'POST') {
+      const resolvedBotId = env.FS_BOT_ID;
+      if (!resolvedBotId) {
+        console.error('FS_BOT_ID not configured');
+        return jsonResponse({ error: 'server config error' }, 500);
+      }
       const authHeader = request.headers.get('Authorization');
       const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
       let openid = null;
@@ -3297,7 +3295,14 @@ export default {
     // Legacy /api/chat
     if (path === '/api/chat') {
       if (request.method === 'GET') return jsonResponse({ ok: true, bot_id: 'pending', hint: 'POST with message' });
-      if (request.method === 'POST') return handleChat(request, env, null, resolvedBotId, ctx);
+      if (request.method === 'POST') {
+        const resolvedBotId = env.FS_BOT_ID;
+        if (!resolvedBotId) {
+          console.error('FS_BOT_ID not configured');
+          return jsonResponse({ error: 'server config error' }, 500);
+        }
+        return handleChat(request, env, null, resolvedBotId, ctx);
+      }
     }
 
     // Event tracking (support both singular and plural for mini-program tracker)
