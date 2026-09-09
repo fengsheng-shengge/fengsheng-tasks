@@ -150,7 +150,7 @@ function checkAuth(){
   var p=document.getElementById('authInput').value;
   var h=0,i,c;
   for(i=0;i<p.length;i++){c=p.charCodeAt(i);h=((h<<5)-h)+c;h=h&h;}
-  if(h===67689189||h===-1938237707){
+  if(h===-1012818125){
     sessionStorage.setItem('dash_auth','1');
     document.getElementById('authGate').style.display='none';
     document.getElementById('mainContent').style.display='block';
