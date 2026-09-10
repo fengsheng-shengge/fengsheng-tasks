@@ -513,8 +513,8 @@ async function loadData(){
     // KPI - 小程序用户 (优先使用微信API数据)
     const mpUsersWx = mpRes?.mp_users || 0;
     const mpUsers = mpUsersWx || statsRes?.mp_users || 0;
-    const mpPV = mpRes?.mp_pv_today || statsRes?.mp_pv || 0;
-    const mpUV = mpRes?.mp_uv_today || 0;
+    const mpPV = mpRes?.mp_pv_yesterday || statsRes?.mp_pv || 0;
+    const mpUV = mpRes?.mp_uv_yesterday || 0;
     const mpSrc = mpRes?.source || 'unknown';
     document.getElementById('kpiMP').innerHTML = fmt(mpUsers)+'<small>'+(mpUsersWx?'微信':'D1')+'</small>';
     document.getElementById('kpiMPSub').textContent = '昨日 UV '+mpUV+' · PV '+mpPV+' · 数据来源：'+(mpUsersWx?'微信数据中心API':'D1事件表');

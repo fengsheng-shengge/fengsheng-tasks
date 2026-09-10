@@ -901,11 +901,12 @@ async function handleMpStats(request, env) {
     }
     const accessToken = tokenData.access_token;
 
-    // Query daily visit trend for yesterday (API only returns data up to yesterday)
+    // Query daily visit trend for yesterday
     const now = new Date();
     const yesterday = new Date(now.getTime() - 86400_000);
     const ydStr = yesterday.getFullYear() + String(yesterday.getMonth()+1).padStart(2,'0') + String(yesterday.getDate()).padStart(2,'0');
 
+    // 1. Daily visit trend (contains visit_total = cumulative opens)
     const trendUrl = `https://api.weixin.qq.com/datacube/getdailyvisittrend?access_token=${accessToken}`;
     const trendResp = await fetchWithTimeout(trendUrl, {
       method: 'POST',
@@ -914,27 +915,63 @@ async function handleMpStats(request, env) {
     }, 10_000);
     const trendData = await trendResp.json();
 
-    let mpUsers = 0, mpPV = 0, mpUV = 0, mpSessions = 0;
+    let mpPV = 0, mpUV = 0, mpSessions = 0, mpVisitTotal = 0;
     if (trendData.list && trendData.list.length > 0) {
       const latest = trendData.list[trendData.list.length - 1];
-      mpUsers = latest.visit_total || 0;
+      mpVisitTotal = latest.visit_total || 0;
       mpPV = latest.visit_pv || 0;
       mpUV = latest.visit_uv || 0;
       mpSessions = latest.session_cnt || 0;
     }
 
-    // Also get the daily retention summary for more data
-    const summaryUrl = `https://api.weixin.qq.com/datacube/getweanalysisappid?access_token=${accessToken}`;
-    // Skip this - getweanalysisappid might not be the right API name
+    // 2. User summary (getuniqueuser - returns new + active users)
+    // Query last 7 days to get recent user data
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 86400_000);
+    const sdStr = sevenDaysAgo.getFullYear() + String(sevenDaysAgo.getMonth()+1).padStart(2,'0') + String(sevenDaysAgo.getDate()).padStart(2,'0');
+    const userSummaryUrl = `https://api.weixin.qq.com/datacube/getusersummary?access_token=${accessToken}`;
+    const userResp = await fetchWithTimeout(userSummaryUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ begin_date: sdStr, end_date: ydStr }),
+    }, 10_000);
+    const userData = await userResp.json();
+
+    // Sum up new users from last 7 days
+    let recentNewUsers = 0;
+    if (userData.list && userData.list.length > 0) {
+      for (const item of userData.list) {
+        recentNewUsers += item.new_user || 0;
+      }
+    }
+
+    // 3. Get cumulative user count via getusercumulate (returns cumulative up to end_date)
+    const cumulateUrl = `https://api.weixin.qq.com/datacube/getusercumulate?access_token=${accessToken}`;
+    const cumulateResp = await fetchWithTimeout(cumulateUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ begin_date: sdStr, end_date: ydStr }),
+    }, 10_000);
+    const cumulateData = await cumulateResp.json();
+
+    let mpUsers = 0;
+    if (cumulateData.list && cumulateData.list.length > 0) {
+      // Take the last entry (most recent cumulative count)
+      const lastEntry = cumulateData.list[cumulateData.list.length - 1];
+      mpUsers = lastEntry.cumulate_user || 0;
+    }
 
     return jsonResponse({
       mp_users: mpUsers,
-      mp_pv_today: mpPV,
-      mp_uv_today: mpUV,
-      mp_sessions_today: mpSessions,
+      mp_pv_yesterday: mpPV,
+      mp_uv_yesterday: mpUV,
+      mp_sessions_yesterday: mpSessions,
+      mp_visit_total: mpVisitTotal,
+      mp_new_users_7d: recentNewUsers,
       query_date: ydStr,
       updated: new Date().toISOString().split('T')[0],
       source: 'wechat_api',
+      raw_trend: trendData,
+      raw_cumulate: cumulateData,
     });
   } catch (e) {
     console.error('MP stats error:', e.message);
