@@ -167,6 +167,10 @@ function checkAuth(){
     if(g) g.style.display='none';
     var m=document.getElementById('mainContent');
     if(m) m.style.display='block';
+    // 延迟执行，等 loadData 函数定义完成
+    setTimeout(function(){
+      if(!dashDataLoaded){dashDataLoaded=true;loadData();setInterval(loadData,5*60*1000);}
+    },50);
   }
 })();
 </script>
@@ -433,8 +437,9 @@ function checkAuth(){
 
         <!-- 今日产出日志 -->
   <div class="section">
-    <div class="section-title"><h2>📦 今日产出日志</h2><span class="badge">9.8 晚间复盘</span></div>
-    <div style="font-size:12px;color:var(--muted);line-height:1.9;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 16px">
+    <div class="section-title"><h2>📦 今日产出日志</h2><span class="badge" id="logBadge">历史存档</span></div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.9;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 16px" id="dailyLog">
+      <div style="color:var(--dim);margin-bottom:4px">⚠️ 以下为 9.8 晚间复盘存档，后续将改为动态展示</div>
       ✅ 小鱼儿早间摘要+综合简报10:30+三接口实测+PR#232复合确认(14:32双签·闸门二)+沃土9.8复验验收+晚间复盘+看板v7.7 · 小豆子V3.12大爆发(3新页面+点击埋点修复)·生哥方案A部署(全站角色引导重构) · 小扣子上午修复路由冲突+搭建五把尺子考核评分页+策展引擎9域上线 · 小眼镜速览024+公示025<br>
       ⚠️ 小扣子修复方案第7次延期(TASK-004 12:00硬截止连带失守) · 沃土9.8延期确认(修复完成待新窗口) · 小叮当第17/18次失败 · 小马丫15条100%无效(通道恶化) · chats 53首增确立信号 · 生哥8项拍板仍积压
     </div>
@@ -552,14 +557,7 @@ async function loadData(){
   }
 }
 
-// 验证密码后自动加载数据（页面刷新时）
-(function(){
-  if(sessionStorage.getItem('dash_auth')==='1'){
-    dashDataLoaded = true;
-    loadData();
-    setInterval(loadData, 5*60*1000);
-  }
-})();
+// 页面刷新时自动加载数据（由第一个 script 通过 setTimeout 触发）
 </script>
 </body>
 </html>
