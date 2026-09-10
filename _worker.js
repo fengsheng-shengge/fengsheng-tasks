@@ -880,6 +880,68 @@ async function handleWxQrCode(request, env) {
   }
 }
 
+// ============================================================
+//  WeChat Mini Program Stats (datacube API)
+// ============================================================
+async function handleMpStats(request, env) {
+  const MP_APPID = env.MP_APPID;
+  const MP_SECRET = env.MP_SECRET;
+  if (!MP_APPID || !MP_SECRET) {
+    return jsonResponse({ error: 'MP_APPID or MP_SECRET not configured', mp_users: 0, source: 'no_config' }, 200);
+  }
+
+  try {
+    // Get access_token
+    const tokenUrl = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${MP_APPID}&secret=${MP_SECRET}`;
+    const tokenResp = await fetchWithTimeout(tokenUrl, {}, 10_000);
+    const tokenData = await tokenResp.json();
+    if (tokenData.errcode) {
+      console.error('MP stats access_token error:', tokenData.errcode, tokenData.errmsg);
+      return jsonResponse({ error: '获取access_token失败', mp_users: 0, source: 'token_error' }, 200);
+    }
+    const accessToken = tokenData.access_token;
+
+    // Query daily visit trend for yesterday (API only returns data up to yesterday)
+    const now = new Date();
+    const yesterday = new Date(now.getTime() - 86400_000);
+    const ydStr = yesterday.getFullYear() + String(yesterday.getMonth()+1).padStart(2,'0') + String(yesterday.getDate()).padStart(2,'0');
+
+    const trendUrl = `https://api.weixin.qq.com/datacube/getdailyvisittrend?access_token=${accessToken}`;
+    const trendResp = await fetchWithTimeout(trendUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ begin_date: ydStr, end_date: ydStr }),
+    }, 10_000);
+    const trendData = await trendResp.json();
+
+    let mpUsers = 0, mpPV = 0, mpUV = 0, mpSessions = 0;
+    if (trendData.list && trendData.list.length > 0) {
+      const latest = trendData.list[trendData.list.length - 1];
+      mpUsers = latest.visit_total || 0;
+      mpPV = latest.visit_pv || 0;
+      mpUV = latest.visit_uv || 0;
+      mpSessions = latest.session_cnt || 0;
+    }
+
+    // Also get the daily retention summary for more data
+    const summaryUrl = `https://api.weixin.qq.com/datacube/getweanalysisappid?access_token=${accessToken}`;
+    // Skip this - getweanalysisappid might not be the right API name
+
+    return jsonResponse({
+      mp_users: mpUsers,
+      mp_pv_today: mpPV,
+      mp_uv_today: mpUV,
+      mp_sessions_today: mpSessions,
+      query_date: ydStr,
+      updated: new Date().toISOString().split('T')[0],
+      source: 'wechat_api',
+    });
+  } catch (e) {
+    console.error('MP stats error:', e.message);
+    return jsonResponse({ error: '微信API调用失败: ' + e.message, mp_users: 0, source: 'error' }, 200);
+  }
+}
+
 async function handleChat(request, env, authenticatedOpenid, resolvedBotId, ctx) {
   try {
     const body = await request.json();
@@ -3349,6 +3411,7 @@ export default {
     if (path === '/api/stats/summary') return handleStatsSummary(request, env);
     if (path === '/api/stats/daily') return handleStatsDaily(request, env);
     if (path === '/api/stats/health') return handleStatsHealth(request, env);
+    if (path === '/api/mp-stats') return handleMpStats(request, env);
 
     // Feedback
     if (path === '/api/feedback') {

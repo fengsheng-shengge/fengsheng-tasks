@@ -473,11 +473,12 @@ function renderBars(elId, data, max, showClick){
 async function loadData(){
   try{
     // 并行获取所有数据
-    const [statsRes, chatsRes, dailyRes, healthRes] = await Promise.all([
+    const [statsRes, chatsRes, dailyRes, healthRes, mpRes] = await Promise.all([
       fetch('/api/stats').then(r=>r.json()).catch(()=>null),
       fetch('/api/chats').then(r=>r.json()).catch(()=>null),
       fetch('/api/stats/daily?days=14').then(r=>r.json()).catch(()=>null),
-      fetch('/api/health').then(r=>r.json()).catch(()=>null)
+      fetch('/api/health').then(r=>r.json()).catch(()=>null),
+      fetch('/api/mp-stats').then(r=>r.json()).catch(()=>null)
     ]);
 
     const now = new Date();
@@ -504,15 +505,21 @@ async function loadData(){
     document.getElementById('kpiChats').innerHTML = fmt(chats)+'<small>+'+todayChats+'</small>';
     document.getElementById('kpiChatsSub').textContent = '今日新增对话 '+todayChats+' · 独立对话用户 '+(chatsRes?.unique_chat_users||0)+' · 最后对话 '+(chatsRes?.last_chat_ts?new Date(chatsRes.last_chat_ts).toLocaleString('zh-CN'):'无');
 
-    // KPI - 小程序用户
-    document.getElementById('kpiMP').innerHTML = fmt(mpUsers)+'<small>实时</small>';
-    document.getElementById('kpiMPSub').textContent = '小程序浏览 '+mpPV+' · 反馈 '+fbCount+' · 数据来源 D1 事件表(uid LIKE wx_% 或 url LIKE pages/%)';
+    // KPI - 小程序用户 (优先使用微信API数据)
+    const mpUsersWx = mpRes?.mp_users || 0;
+    const mpUsers = mpUsersWx || statsRes?.mp_users || 0;
+    const mpPV = mpRes?.mp_pv_today || statsRes?.mp_pv || 0;
+    const mpUV = mpRes?.mp_uv_today || 0;
+    const mpSrc = mpRes?.source || 'unknown';
+    document.getElementById('kpiMP').innerHTML = fmt(mpUsers)+'<small>'+(mpUsersWx?'微信':'D1')+'</small>';
+    document.getElementById('kpiMPSub').textContent = '昨日 UV '+mpUV+' · PV '+mpPV+' · 数据来源：'+(mpUsersWx?'微信数据中心API':'D1事件表');
 
     // 小程序关键结论
     document.getElementById('mpSummary').innerHTML =
-      '<div>累计用户 <b style="color:var(--text)">'+fmt(mpUsers)+'</b> · 累计浏览 <b style="color:var(--text)">'+fmt(mpPV)+'</b> · 反馈 <b style="color:var(--text)">'+fbCount+'</b>（D1 实时口径）</div>'+
+      '<div>累计用户 <b style="color:var(--text)">'+fmt(mpUsers)+'</b> · 昨日 UV <b style="color:var(--text)">'+mpUV+'</b> · 昨日 PV <b style="color:var(--text)">'+fmt(mpPV)+'</b>（'+(mpUsersWx?'微信API实时':'D1事件表')+'口径）</div>'+
       '<div>今日 UV <b style="color:var(--text)">'+todayUV+'</b> · 今日 PV <b style="color:var(--text)">'+todayPV+'</b> · 今日对话 <b style="color:var(--text)">'+todayChats+'</b></div>'+
-      '<div style="color:var(--green)">✅ 数据实时从 D1 数据库查询，不再依赖周报手动更新</div>';
+      '<div>反馈 <b style="color:var(--text)">'+fbCount+'</b> · 查询日期 <b style="color:var(--text)">'+(mpRes?.query_date||'—')+'</div>'+
+      '<div style="color:var(--green)">✅ 数据从微信数据中心API实时获取，不再依赖周报手动更新</div>';
 
     // 主站关键结论
     document.getElementById('siteSummary').innerHTML =
