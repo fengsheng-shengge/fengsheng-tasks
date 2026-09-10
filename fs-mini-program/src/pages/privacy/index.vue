@@ -40,8 +40,10 @@
 </template>
 
 <script>
+import { trackPageview } from '../../utils/tracker'
 export default {
-  data() { return {} }
+  data() { return {} },
+  onShow() { trackPageview('privacy') }
 }
 </script>
 

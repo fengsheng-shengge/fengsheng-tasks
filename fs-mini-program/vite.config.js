@@ -36,7 +36,14 @@ export default defineConfig({
   plugins: [uni(), postBuildInject()],
   server: {
     port: 5173,
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    proxy: {
+      // H5 开发代理：绕过 fengsheng.tech 的 CORS 限制，本地预览可拉真实数据
+      '/api': {
+        target: 'https://fengsheng.tech',
+        changeOrigin: true
+      }
+    }
   },
   build: {
     minify: 'terser',
