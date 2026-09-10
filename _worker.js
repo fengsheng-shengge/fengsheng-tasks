@@ -881,102 +881,115 @@ async function handleWxQrCode(request, env) {
 }
 
 // ============================================================
-//  WeChat Mini Program Stats (datacube API)
+//  WeChat Mini Program Stats (datacube API + D1 fallback)
 // ============================================================
 async function handleMpStats(request, env) {
   const MP_APPID = env.MP_APPID;
   const MP_SECRET = env.MP_SECRET;
-  if (!MP_APPID || !MP_SECRET) {
-    return jsonResponse({ error: 'MP_APPID or MP_SECRET not configured', mp_users: 0, source: 'no_config' }, 200);
-  }
 
-  try {
-    // Get access_token
-    const tokenUrl = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${MP_APPID}&secret=${MP_SECRET}`;
-    const tokenResp = await fetchWithTimeout(tokenUrl, {}, 10_000);
-    const tokenData = await tokenResp.json();
-    if (tokenData.errcode) {
-      console.error('MP stats access_token error:', tokenData.errcode, tokenData.errmsg);
-      return jsonResponse({ error: '获取access_token失败', mp_users: 0, source: 'token_error' }, 200);
-    }
-    const accessToken = tokenData.access_token;
+  // Try WeChat API first if configured
+  let wxData = { mp_users: 0, source: 'no_config' };
+  if (MP_APPID && MP_SECRET) {
+    try {
+      const tokenUrl = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${MP_APPID}&secret=${MP_SECRET}`;
+      const tokenResp = await fetchWithTimeout(tokenUrl, {}, 10_000);
+      const tokenData = await tokenResp.json();
 
-    // Query daily visit trend for yesterday
-    const now = new Date();
-    const yesterday = new Date(now.getTime() - 86400_000);
-    const ydStr = yesterday.getFullYear() + String(yesterday.getMonth()+1).padStart(2,'0') + String(yesterday.getDate()).padStart(2,'0');
+      if (!tokenData.errcode && tokenData.access_token) {
+        const accessToken = tokenData.access_token;
+        const now = new Date();
+        const yesterday = new Date(now.getTime() - 86400_000);
+        const ydStr = yesterday.getFullYear() + String(yesterday.getMonth()+1).padStart(2,'0') + String(yesterday.getDate()).padStart(2,'0');
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 86400_000);
+        const sdStr = sevenDaysAgo.getFullYear() + String(sevenDaysAgo.getMonth()+1).padStart(2,'0') + String(sevenDaysAgo.getDate()).padStart(2,'0');
 
-    // 1. Daily visit trend (contains visit_total = cumulative opens)
-    const trendUrl = `https://api.weixin.qq.com/datacube/getdailyvisittrend?access_token=${accessToken}`;
-    const trendResp = await fetchWithTimeout(trendUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ begin_date: ydStr, end_date: ydStr }),
-    }, 10_000);
-    const trendData = await trendResp.json();
+        // Try getusercumulate (requires verified miniprogram)
+        const cumulateUrl = `https://api.weixin.qq.com/datacube/getusercumulate?access_token=${accessToken}`;
+        const cumulateResp = await fetchWithTimeout(cumulateUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ begin_date: sdStr, end_date: ydStr }),
+        }, 10_000);
+        const cumulateData = await cumulateResp.json();
 
-    let mpPV = 0, mpUV = 0, mpSessions = 0, mpVisitTotal = 0;
-    if (trendData.list && trendData.list.length > 0) {
-      const latest = trendData.list[trendData.list.length - 1];
-      mpVisitTotal = latest.visit_total || 0;
-      mpPV = latest.visit_pv || 0;
-      mpUV = latest.visit_uv || 0;
-      mpSessions = latest.session_cnt || 0;
-    }
+        let mpUsers = 0;
+        if (cumulateData.list && cumulateData.list.length > 0) {
+          const lastEntry = cumulateData.list[cumulateData.list.length - 1];
+          mpUsers = lastEntry.cumulate_user || 0;
+        }
 
-    // 2. User summary (getuniqueuser - returns new + active users)
-    // Query last 7 days to get recent user data
-    const sevenDaysAgo = new Date(now.getTime() - 7 * 86400_000);
-    const sdStr = sevenDaysAgo.getFullYear() + String(sevenDaysAgo.getMonth()+1).padStart(2,'0') + String(sevenDaysAgo.getDate()).padStart(2,'0');
-    const userSummaryUrl = `https://api.weixin.qq.com/datacube/getusersummary?access_token=${accessToken}`;
-    const userResp = await fetchWithTimeout(userSummaryUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ begin_date: sdStr, end_date: ydStr }),
-    }, 10_000);
-    const userData = await userResp.json();
+        // Daily visit trend
+        const trendUrl = `https://api.weixin.qq.com/datacube/getdailyvisittrend?access_token=${accessToken}`;
+        const trendResp = await fetchWithTimeout(trendUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ begin_date: ydStr, end_date: ydStr }),
+        }, 10_000);
+        const trendData = await trendResp.json();
 
-    // Sum up new users from last 7 days
-    let recentNewUsers = 0;
-    if (userData.list && userData.list.length > 0) {
-      for (const item of userData.list) {
-        recentNewUsers += item.new_user || 0;
+        let mpPV = 0, mpUV = 0, mpSessions = 0;
+        if (trendData.list && trendData.list.length > 0) {
+          const latest = trendData.list[trendData.list.length - 1];
+          mpPV = latest.visit_pv || 0;
+          mpUV = latest.visit_uv || 0;
+          mpSessions = latest.session_cnt || 0;
+        }
+
+        wxData = {
+          mp_users: mpUsers,
+          mp_pv_yesterday: mpPV,
+          mp_uv_yesterday: mpUV,
+          mp_sessions_yesterday: mpSessions,
+          query_date: ydStr,
+          source: mpUsers > 0 ? 'wechat_api' : 'wechat_api_empty',
+          wechat_errcode_trend: trendData.errcode || 0,
+          wechat_errcode_cumulate: cumulateData.errcode || 0,
+        };
       }
+    } catch (e) {
+      console.error('MP WeChat API error:', e.message);
+      wxData = { mp_users: 0, source: 'wechat_error', error: e.message };
     }
-
-    // 3. Get cumulative user count via getusercumulate (returns cumulative up to end_date)
-    const cumulateUrl = `https://api.weixin.qq.com/datacube/getusercumulate?access_token=${accessToken}`;
-    const cumulateResp = await fetchWithTimeout(cumulateUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ begin_date: sdStr, end_date: ydStr }),
-    }, 10_000);
-    const cumulateData = await cumulateResp.json();
-
-    let mpUsers = 0;
-    if (cumulateData.list && cumulateData.list.length > 0) {
-      // Take the last entry (most recent cumulative count)
-      const lastEntry = cumulateData.list[cumulateData.list.length - 1];
-      mpUsers = lastEntry.cumulate_user || 0;
-    }
-
-    return jsonResponse({
-      mp_users: mpUsers,
-      mp_pv_yesterday: mpPV,
-      mp_uv_yesterday: mpUV,
-      mp_sessions_yesterday: mpSessions,
-      mp_visit_total: mpVisitTotal,
-      mp_new_users_7d: recentNewUsers,
-      query_date: ydStr,
-      updated: new Date().toISOString().split('T')[0],
-      source: 'wechat_api',
-      raw_trend: trendData,
-      raw_cumulate: cumulateData,
-    });
-  } catch (e) {
-    console.error('MP stats error:', e.message);
-    return jsonResponse({ error: '微信API调用失败: ' + e.message, mp_users: 0, source: 'error' }, 200);
   }
+
+  // Also get D1-based stats as fallback
+  let d1Data = { mp_users: 0, mp_pv: 0, source: 'd1_empty' };
+  if (env.DB) {
+    try {
+      // Count unique UIDs that look like miniprogram users (uid starting with wx_ or o prefix)
+      const mpUsersD1 = await env.DB.prepare(
+        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE uid LIKE 'wx_%' OR uid LIKE 'o_%' OR url LIKE 'pages/%' OR source LIKE '%miniprogram%'"
+      ).first();
+      const mpPVD1 = await env.DB.prepare(
+        "SELECT COUNT(*) as c FROM events WHERE event_type = 'pageview' AND (uid LIKE 'wx_%' OR uid LIKE 'o_%' OR url LIKE 'pages/%' OR source LIKE '%miniprogram%')"
+      ).first();
+      d1Data = {
+        mp_users: mpUsersD1?.c || 0,
+        mp_pv: mpPVD1?.c || 0,
+        source: 'd1',
+      };
+    } catch (e) {
+      console.error('MP D1 stats error:', e.message);
+    }
+  }
+
+  // Merge: prefer WeChat API, fallback to D1, fallback to env var
+  const mpUsers = wxData.mp_users || d1Data.mp_users || parseInt(env.MP_USER_COUNT || '0', 10) || 0;
+  const finalSource = wxData.mp_users > 0 ? 'wechat_api' : (d1Data.mp_users > 0 ? 'd1' : 'env_fallback');
+
+  return jsonResponse({
+    mp_users: mpUsers,
+    mp_pv_yesterday: wxData.mp_pv_yesterday || 0,
+    mp_uv_yesterday: wxData.mp_uv_yesterday || 0,
+    mp_sessions_yesterday: wxData.mp_sessions_yesterday || 0,
+    mp_d1_users: d1Data.mp_users,
+    mp_d1_pv: d1Data.mp_pv,
+    query_date: wxData.query_date || new Date(Date.now() - 86400_000).toISOString().split('T')[0].replace(/-/g,''),
+    updated: new Date().toISOString().split('T')[0],
+    source: finalSource,
+    wx_source: wxData.source,
+    d1_source: d1Data.source,
+  });
 }
 
 async function handleChat(request, env, authenticatedOpenid, resolvedBotId, ctx) {
