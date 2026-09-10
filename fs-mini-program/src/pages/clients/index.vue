@@ -333,6 +333,8 @@ export default {
     const fid = this.userStore.focusClientId
     if (fid) {
       this.userStore.focusClientId = null
+      // 首页「一键开工-新建客户」→ 直接打开新建表单
+      if (fid === '__new__') { this.openForm(); return }
       const c = this.userStore.getClient(fid)
       if (c) this.openDetail(c)
     }

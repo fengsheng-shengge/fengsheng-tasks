@@ -7,6 +7,65 @@
         <view class="h-sub">输入客户当下情况，秒出专属「说 / 带 / 问 + 见后跟进」，每条依据来自真实字典。</view>
       </view>
 
+      <!-- ★ V3.14 新增：速记模式入口（化繁为简） -->
+      <view class="quick-mode-card" @tap="toggleQuickMode">
+        <view class="qm-left">
+          <text class="qm-ico">⚡</text>
+          <view class="qm-body">
+            <text class="qm-title">速记模式</text>
+            <text class="qm-sub">随便说几句，系统帮你推理框架</text>
+          </view>
+        </view>
+        <text class="qm-arrow">{{ quickMode ? '✕ 关闭' : '开启 ›' }}</text>
+      </view>
+
+      <!-- ★ V3.14 速记模式内容 -->
+      <block v-if="quickMode">
+        <view class="card quick-card">
+          <view class="label">📝 速记客户情况</view>
+          <textarea class="inp" v-model="quickNotes" placeholder="如：首付200万，三口之家，想买三房，在南山科技园上班，首套房，有点纠结买新房还是二手房……" maxlength="200" style="min-height:80px"></textarea>
+          <view class="qn-count">{{ (quickNotes||'').length }}/200</view>
+        </view>
+        <view class="qn-infer" v-if="quickNotes && quickNotes.length >= 10" @tap="inferFromNotes">
+          <text class="qi-btn">🔮 智能推理 ››</text>
+          <text class="qi-hint">点击后系统将分析上述描述并推荐框架</text>
+        </view>
+
+        <!-- 推理结果预览（点选确认即可） -->
+        <view class="infer-result" v-if="inferredResult">
+          <view class="ir-head">🎯 推理结论（请确认或修改）</view>
+          <view class="ir-section">
+            <text class="ir-label">人生阶段</text>
+            <view class="ir-chips">
+              <view v-for="g in axisGroups" :key="g.type" :class="['ir-chip', { on: inferredResult.axisType === g.type }]" @tap="inferredResult.axisType = g.type; axisType = g.type; axisNodeKey = ''">
+                {{ g.label }}
+              </view>
+            </view>
+            <view class="ir-nodes" v-if="inferredResult.axisType">
+              <view v-for="n in getNodesForAxis(inferredResult.axisType)" :key="n.key" :class="['ir-chip small', { on: inferredResult.axisNodeKey === n.key }]" @tap="inferredResult.axisNodeKey = n.key; axisNodeKey = n.key">
+                {{ n.name }}
+              </view>
+            </view>
+          </view>
+          <view class="ir-section" v-if="inferredResult.dims && inferredResult.dims.length">
+            <text class="ir-label">七维关注</text>
+            <view class="ir-chips">
+              <view v-for="d in dimensions" :key="d.key" :class="['ir-chip', { on: inferredResult.dims.includes(d.key) }]" @tap="toggleInferredDim(d.key)">{{ d.name }}</view>
+            </view>
+          </view>
+          <view class="ir-section" v-if="inferredResult.types && inferredResult.types.length">
+            <text class="ir-label">客户类型</text>
+            <view class="ir-chips">
+              <view v-for="t in clientTypes" :key="t.key" :class="['ir-chip', { on: inferredResult.types.includes(t.key) }]" @tap="toggleInferredType(t.key)">{{ t.label }}</view>
+            </view>
+          </view>
+          <view class="ir-confirm" @tap="confirmInferred">✓ 确认以上框架</view>
+        </view>
+      </block>
+
+      <!-- 经典五步模式（默认） -->
+      <block v-if="!quickMode">
+
       <view class="card">
         <view class="label">① 人生双纵轴 · 当前阶段</view>
         <view class="seg">
@@ -53,7 +112,7 @@
       </view>
 
       <!-- ★ V3.5 深层动因洞察模块（折叠） -->
-      <view class="card deep-insight-card">
+      <view class="card deep-insight-card" v-if="!quickMode">
         <view class="deep-header" @tap="showDeepInsight = !showDeepInsight">
           <view class="label" style="margin-bottom:0">💡 深层动因洞察 <text class="deep-badge" v-if="hasDeepInsight">已填</text></view>
           <text class="deep-arrow">{{ showDeepInsight ? '▲' : '▼' }}</text>
@@ -136,6 +195,8 @@
         <view class="label">⑤ 一句自由诉求（选填）</view>
         <textarea class="ta" v-model="freeText" placeholder="如：800万改善三房，学区还是居住品质纠结" maxlength="120"></textarea>
       </view>
+
+      </block><!-- / !quickMode -->
 
       <view v-if="clientName" class="client-bar">已关联客户：{{ clientName }}（准备结果将存入其认知卡）</view>
 
@@ -327,6 +388,8 @@ export default {
       insightScores: {},   // { safety: 80, transit: 60, ... }
       selectedTypes: [],   // ['commuter', 'first_home']
       selectedLtrust: '',   // 'safety' | 'transit' | 'economy' | 'beauty'
+      assessSource: '',    // ★ V3.13 分值来源：引导问诊 / 品质测评
+      assessTotal: 0,      // ★ V3.13 七维总分
       insightConfirmed: false,
       // ★ V3.5 深层动因洞察
       showDeepInsight: false,   // 展开态
@@ -413,6 +476,11 @@ export default {
       ],
       // ★ V3.7 新增：理想生活画面（第三层目标与渴望）
       lifeVision: '',
+
+      // ★ V3.14 速记模式
+      quickMode: false,
+      quickNotes: '',
+      inferredResult: null,  // { axisType, axisNodeKey, dims, types }
 
       clientId: null,
       clientName: '',
@@ -558,10 +626,158 @@ export default {
         else if (stage.indexOf('租') >= 0) this.axisNodeKey = 'start'
         else if (this.axisType === 'rent') this.axisNodeKey = 'start'
         if (c.note) this.freeText = c.note
+
+        // ★ V3.13 关键重构：从诊断问诊预填洞察数据（不经手经纪人重复录入）
+        // 诊断完成后 lifecycle.insightData 已包含 scores / types / ltrust / assessSource
+        if (options.source === 'diagnostic' && c.lifecycle && c.lifecycle.insightData) {
+          const id = c.lifecycle.insightData
+          if (id.scores && Object.keys(id.scores).length > 0) {
+            // 七维分值预填
+            this.insightScores = { ...id.scores }
+            // 七维维度预勾选（★ V3.14.3 兼容诊断数据的 key 命名差异：
+            // diagnosticData 用 transit/school/livability，curate-prep DIMENSIONS 用 conv/...
+            // 加映射并过滤掉 DIMENSIONS 不存在的维度）
+            const dimKeyMap = { transit: 'conv', school: 'econ', livability: 'comfort' }
+            const validDimKeys = DIMENSIONS.map(d => d.key)
+            const scoreKeys = Object.keys(id.scores)
+              .map(k => dimKeyMap[k] || k)            // transit→conv 等映射
+              .filter(k => validDimKeys.includes(k))  // 只保留 DIMENSIONS 中存在的
+              .filter((v, i, arr) => arr.indexOf(v) === i) // 去重
+            this.selectedDims = scoreKeys.length > 0 ? scoreKeys : []
+            // 客户类型预填（已由 diagnostic 自动推导）
+            if (id.types && id.types.length) {
+              this.selectedTypes = [...id.types]
+            }
+            // LTRUST 优先维度预填
+            if (id.ltrust) {
+              this.selectedLtrust = id.ltrust
+            }
+            // 来源标注
+            this.assessSource = id.assessSource || '引导问诊'
+            this.assessTotal = id.assessTotal || 0
+          }
+        } else if (c.lifecycle && c.lifecycle.insightData) {
+          // ★ V3.14.4 非诊断来源但有洞察数据：也从 lifecycle.insightData 预填
+          const id = c.lifecycle.insightData
+          if (id.dims && id.dims.length) {
+            const dimKeyMap = { transit: 'conv', school: 'econ', livability: 'comfort' }
+            const validDimKeys = DIMENSIONS.map(d => d.key)
+            const scoreKeys = id.dims
+              .map(k => dimKeyMap[k] || k)
+              .filter(k => validDimKeys.includes(k))
+            this.selectedDims = scoreKeys
+          }
+          if (id.types && id.types.length) this.selectedTypes = [...id.types]
+          if (id.ltrust) this.selectedLtrust = id.ltrust
+          if (id.scores) this.insightScores = { ...id.scores }
+          this.assessSource = id.assessSource || ''
+          this.assessTotal = id.assessTotal || 0
+        }
       }
     }
   },
   methods: {
+    // ★ V3.14 速记模式
+    toggleQuickMode() {
+      this.quickMode = !this.quickMode
+      if (!this.quickMode) {
+        // 关闭时清空推理结果
+        this.inferredResult = null
+        this.quickNotes = ''
+      }
+    },
+    getNodesForAxis(axisType) {
+      const g = AXIS_GROUPS.find(x => x.type === axisType)
+      return g ? g.nodes : []
+    },
+    inferFromNotes() {
+      const text = (this.quickNotes || '').trim()
+      if (text.length < 10) return
+      const note = text.toLowerCase()
+      const result = { axisType: 'buy', axisNodeKey: 'improve', dims: [], types: [] }
+
+      // —— 推断人生阶段轴线 ——
+      if (/租约.*到期|租房|租金|换房|房东|续租/.test(note)) result.axisType = 'rent'
+      else result.axisType = 'buy'
+
+      // —— 推断节点 ——
+      const nodeMap = {
+        first_home: 'first',
+        improve: 'improve',
+        upgrade: 'improve',
+        置换: 'improve',
+        改善: 'improve',
+        投资: 'invest',
+        学区: 'school',
+        上学: 'school',
+        陪读: 'school',
+        养老: 'elder',
+        退休: 'elder',
+      }
+      for (const [kw, node] of Object.entries(nodeMap)) {
+        if (note.includes(kw)) { result.axisNodeKey = node; break }
+      }
+
+      // —— 推断七维 ——
+      const dimMap = {
+        安全: 'safety', 产权: 'safety', 查封: 'safety', 烂尾: 'safety',
+        地铁: 'transit', 通勤: 'transit', 交通: 'transit', 上班: 'transit',
+        通勤: 'transit',
+        升值: 'value', 投资: 'value', 保值: 'value', 回报: 'value', 租金: 'value',
+        学区: 'school', 学校: 'school', 入学: 'school', 落户: 'school',
+        环境: 'livability', 安静: 'livability', 朝向: 'livability', 采光: 'livability', 户型: 'livability',
+        品质: 'quality', 园林: 'quality', 物业: 'quality', 品牌: 'quality',
+        面积: 'family', 三房: 'family', 两房: 'family', 四房: 'family', 房间: 'family',
+      }
+      const foundDims = new Set()
+      for (const [kw, dim] of Object.entries(dimMap)) {
+        if (note.includes(kw)) foundDims.add(dim)
+      }
+      if (foundDims.size === 0) foundDims.add('safety')
+      result.dims = [...foundDims]
+
+      // —— 推断客户类型 ——
+      const typeMap = [
+        { keys: ['首套', '第一套', '刚需', '没买过', '第一次买房'], type: 'first_home' },
+        { keys: ['改善', '置换', '升级', '换大', '更大', '品质升级'], type: 'improve' },
+        { keys: ['投资', '保值', '租金回报', '出租', '增值'], type: 'invest' },
+        { keys: ['学区', '上学', '陪读', '入学'], type: 'study' },
+        { keys: ['通勤', '地铁', '上班', '交通便利'], type: 'commuter' },
+        { keys: ['三口', '四口', '有孩子', '小孩', '娃', '家庭'], type: 'family_kid' },
+        { keys: ['养老', '退休', '老人'], type: 'elder' },
+      ]
+      for (const { keys, type } of typeMap) {
+        if (keys.some(k => note.includes(k))) { result.types.push(type); break }
+      }
+      if (result.types.length === 0) result.types.push('first_home')
+
+      // 同步到主表单
+      this.axisType = result.axisType
+      this.axisNodeKey = result.axisNodeKey
+      this.inferredResult = result
+      uni.showToast({ title: '已推理框架，请确认', icon: 'none' })
+    },
+    toggleInferredDim(key) {
+      const i = this.inferredResult.dims.indexOf(key)
+      if (i >= 0) this.inferredResult.dims.splice(i, 1)
+      else this.inferredResult.dims.push(key)
+    },
+    toggleInferredType(key) {
+      const i = this.inferredResult.types.indexOf(key)
+      if (i >= 0) this.inferredResult.types.splice(i, 1)
+      else this.inferredResult.types.push(key)
+    },
+    confirmInferred() {
+      if (!this.inferredResult) return
+      const ir = this.inferredResult
+      this.selectedDims = [...(ir.dims || [])]
+      this.selectedTypes = [...(ir.types || [])]
+      this.quickNotes = ''
+      this.inferredResult = null
+      this.quickMode = false
+      uni.showToast({ title: '框架已锁定，可继续录入', icon: 'success' })
+    },
+
     pickAxis(type) {
       this.axisType = type
       // 切换纵轴时，节点默认回到该线的第一个
@@ -599,6 +815,8 @@ export default {
         scores: { ...this.insightScores },
         types: [...this.selectedTypes],
         ltrust: this.selectedLtrust,
+        assessSource: this.assessSource,   // ★ V3.13 分值来源
+        assessTotal: this.assessTotal,     // ★ V3.13 七维总分
         freeText: this.freeText,
         axisLabel: this.result ? this.result.axisLabel : '',
         dimensionLabels: this.result ? this.result.dimensionLabels : []
@@ -852,6 +1070,30 @@ export default {
 .foot-save { flex: 2; }
 .btn-green.foot-save { background: #3d5a3e; }
 
+
+/* ★ V3.14 速记模式 */
+.quick-mode-card { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #fff8e8, #fff3d6); border: 1.5px solid #f0d070; border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; cursor: pointer; }
+.qm-left { display: flex; align-items: center; gap: 10px; }
+.qm-ico { font-size: 22px; }
+.qm-body { display: flex; flex-direction: column; }
+.qm-title { font-size: 14px; font-weight: 700; color: #8a6000; }
+.qm-sub { font-size: 11px; color: #b08000; margin-top: 2px; }
+.qm-arrow { font-size: 13px; color: #c89a00; font-weight: 700; }
+.quick-card .inp { width: 100%; min-height: 80px; background: #fffef8; border: 1.5px solid #f0d070; border-radius: 10px; padding: 10px; font-size: 13px; color: #333; resize: none; box-sizing: border-box; }
+.qn-count { font-size: 10px; color: #b08000; text-align: right; margin-top: 4px; }
+.qn-infer { background: #fff8e8; border: 1.5px dashed #f0d070; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.qi-btn { font-size: 13px; font-weight: 700; color: #c89a00; }
+.qi-hint { font-size: 11px; color: #b08000; }
+.infer-result { background: #fff; border: 1.5px solid #f0d070; border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+.ir-head { font-size: 13px; font-weight: 700; color: #8a6000; margin-bottom: 12px; }
+.ir-section { margin-bottom: 12px; }
+.ir-label { display: block; font-size: 11px; color: #8a837a; margin-bottom: 6px; }
+.ir-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ir-chip { font-size: 12px; padding: 5px 10px; border-radius: 999px; border: 1.5px solid #ede5d6; color: #555; cursor: pointer; background: #f7f4ef; }
+.ir-chip.small { font-size: 11px; padding: 4px 8px; }
+.ir-chip.on { background: #3d5a3e; border-color: #3d5a3e; color: #fff; }
+.ir-nodes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.ir-confirm { text-align: center; background: #3d5a3e; color: #fff; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 700; margin-top: 10px; cursor: pointer; }
 
 /* ★ V2.6 洞察录入 */
 .insight-tip { font-size: 11px; color: #8a837a; margin-bottom: 10px; }

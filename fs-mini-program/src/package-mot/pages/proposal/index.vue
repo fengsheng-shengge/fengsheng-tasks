@@ -59,6 +59,25 @@
         </view>
       </view>
 
+      <!-- ★ V3.13 新增：房源匹配验证指引（基于洞察结论自动生成） -->
+      <view class="match-guide-card" v-if="matchGuide && matchGuide.items.length">
+        <view class="mgc-header">
+          <text class="mgc-ico">🎯</text>
+          <text class="mgc-title">推荐匹配验证</text>
+          <text class="mgc-sub">拿着真实房源，对照验证以下维度</text>
+        </view>
+        <view class="mgc-items">
+          <view v-for="(item, i) in matchGuide.items" :key="i" class="mgc-item">
+            <view class="mgc-item-ico">{{ item.ico }}</view>
+            <view class="mgc-item-body">
+              <view class="mgc-item-dim">{{ item.dim }}</view>
+              <view class="mgc-item-check">{{ item.check }}</view>
+            </view>
+          </view>
+        </view>
+        <view class="mgc-hint">验证通过后在房源卡片打 ✓，系统将自动生成匹配度评分</view>
+      </view>
+
       <!-- 房源录入区 -->
       <view class="section-hd">
         <view>🏠 录入备选房源 <text class="sh-count">已录入 {{ properties.length }} 套</text></view>
@@ -72,11 +91,12 @@
       </view>
 
       <view v-for="(p, idx) in properties" :key="p._id" class="prop-card">
+        <!-- 房源卡片标题（小区名+地址） -->
         <view class="prop-top">
           <view :class="['prop-rank', { top1: idx === 0 }]">{{ idx + 1 }}</view>
           <view class="prop-body">
-            <view class="prop-name">{{ p.name || '房源' + (idx + 1) }}</view>
-            <view class="prop-addr">{{ p.address || '地址待填写' }}</view>
+            <view class="prop-name">{{ p.community || p.name || '待填写小区名' }}</view>
+            <view class="prop-addr" v-if="p.address">{{ p.address }}</view>
             <view class="prop-meta" v-if="p.tags && p.tags.length">
               <text class="prop-tag" v-for="t in p.tags" :key="t">{{ t }}</text>
             </view>
@@ -86,6 +106,14 @@
 
         <!-- 房源字段录入 -->
         <view class="prop-fields">
+          <view class="field-row">
+            <view class="field-label">小区名称 <text class="req">*</text></view>
+            <input class="field-input" v-model="p.community" placeholder="如「万科城市花园」「龙湖时代天街」" />
+          </view>
+          <view class="field-row">
+            <view class="field-label">贝壳/链家链接</view>
+            <input class="field-input" v-model="p.lianjiaUrl" placeholder="复制贝壳/链家/安居客链接，便于客户核验" />
+          </view>
           <view class="field-row-2">
             <view class="field-row">
               <view class="field-label">总价（万元）</view>
@@ -95,6 +123,10 @@
               <view class="field-label">面积（㎡）</view>
               <input class="field-input" v-model="p.area" type="digit" placeholder="如 128" />
             </view>
+          </view>
+          <view class="field-row">
+            <view class="field-label">单价（元/㎡）</view>
+            <input class="field-input" v-model="p.pricePerSqm" type="digit" placeholder="自动计算或手动填入" />
           </view>
           <view class="field-row-2">
             <view class="field-row">
@@ -106,9 +138,15 @@
               <input class="field-input" v-model="p.floor" placeholder="中楼层/共26层" />
             </view>
           </view>
-          <view class="field-row">
-            <view class="field-label">朝向</view>
-            <input class="field-input" v-model="p.orientation" placeholder="南向·客厅主卧全南" />
+          <view class="field-row-2">
+            <view class="field-row">
+              <view class="field-label">朝向</view>
+              <input class="field-input" v-model="p.orientation" placeholder="南向·客厅主卧全南" />
+            </view>
+            <view class="field-row">
+              <view class="field-label">楼龄（年）</view>
+              <input class="field-input" v-model="p.age" type="number" placeholder="如 5" />
+            </view>
           </view>
         </view>
 
@@ -244,6 +282,60 @@ export default {
       const t = this.insightData.types[0]
       return typeMap[t] || '根据洞察报告推荐适合的讲房重点'
     },
+    // ★ V3.13 匹配验证指引：由洞察结论自动生成，告知经纪人这套房源需要验证哪些维度
+    matchGuide() {
+      if (!this.insightData) return null
+      const scores = this.insightData.scores || {}
+      const types = this.insightData.types || []
+      const topType = types[0] || ''
+      const items = []
+
+      // 按七维分值排序，取前4个高权重维度
+      const dimMap = {
+        safety: { name: '物质安全', ico: '🔒', check: '核实产权清晰度、房屋查封/抵押记录' },
+        health: { name: '健康', ico: '🌿', check: '朝向通风、周边污染源（工厂/垃圾站/高速）、朝向采光' },
+        conv:   { name: '便利', ico: '🚇', check: '最近地铁站步行实测距离、周边超市/菜市场/药店覆盖' },
+        econ:   { name: '经济', ico: '💰', check: '与预算偏差多少？贝壳近期同户型成交价？议价空间？' },
+        comfort: { name: '舒适', ico: '🛋', check: '实际户型图是否可改？噪音/视野/楼层实际体感' },
+        beauty: { name: '美观', ico: '🌳', check: '小区园林/外立面/公共区域维护实拍与描述是否相符' },
+        free:   { name: '自在', ico: '🌤️', check: '物业服务态度、邻居层次感、社区氛围是否自在宜居' },
+      }
+
+      // ★ V3.14.1 兼容两种分值体系：1-5档位(阈值3) vs 0-100归一化(阈值60)
+      const maxScore = Math.max(0, ...Object.values(scores).map(v => v || 0))
+      const isNormalized = maxScore >= 10
+      const threshold = isNormalized ? 60 : 3
+
+      const sortedDims = Object.entries(scores)
+        .filter(([, v]) => (v || 0) >= threshold)
+        .sort(([, a], [, b]) => (b || 0) - (a || 0))
+        .slice(0, 4)  // 最多展示4个
+
+      sortedDims.forEach(([key, score]) => {
+        const dim = dimMap[key]
+        if (dim) {
+          const displayScore = isNormalized ? Math.round(score / 20) : score
+          items.push({ dim: dim.name + '（' + displayScore + '分）', ico: dim.ico, check: dim.check })
+        }
+      })
+
+      // 额外补充：按客户类型加一条必验项
+      const typeExtra = {
+        first_home: { dim: '首付/月供可行性', ico: '🏦', check: '核算月供是否超家庭收入50%红线' },
+        improve: { dim: '不可改条件验证', ico: '🏗', check: '承重墙位置确认、采光/朝向是否可优化、硬伤核实' },
+        commuter: { dim: '通勤实测', ico: '⏱', check: '早高峰实测通勤时间，确认客户可接受后再推荐' },
+        family_kid: { dim: '学校划片核实', ico: '🏫', check: '查教育局最新划片表，确认今年是否在目标学校范围内' },
+        elder: { dim: '医疗配套探访', ico: '🏥', check: '实地走访周边医院/社区卫生站，核实最近等级和距离' },
+        invest: { dim: '租金回报测算', ico: '📊', check: '查同户型租金水平，算净租金回报率是否 ≥ 3%' },
+        study: { dim: '接送动线实测', ico: '🚶', check: '实地走一遍学校→房源的接送路线，记录时间和路况' },
+        price: { dim: '历史成交比对', ico: '📉', check: '贝壳查近6个月同小区同户型成交价，确认当前报价合理性' },
+      }
+
+      const extra = typeExtra[topType]
+      if (extra) items.push(extra)
+
+      return items.length ? { items } : null
+    },
     filteredTips() {
       if (!this.insightData || !this.insightData.types || !this.insightData.types.length) {
         return [this.defaultTip]
@@ -253,7 +345,9 @@ export default {
       return tips && tips.length ? tips : [this.defaultTip]
     },
     canSubmit() {
-      return this.properties.length > 0 && this.properties.some(p => p.reason && p.reason.trim().length >= 10)
+      // 小区名称必填 + 匹配理由至少10字
+      return this.properties.length > 0 &&
+        this.properties.some(p => p.community && p.community.trim() && p.reason && p.reason.trim().length >= 10)
     },
     hasReport() {
       const r = this.userStore.getProposalReport(this.clientId)
@@ -282,18 +376,90 @@ export default {
       if (report && report.proposalData && report.proposalData.properties) {
         this.properties = report.proposalData.properties
       }
+      // ★ V3.14：从洞察报告预填价格/面积建议（空房源时）
+      if (!this.properties.length) {
+        const hint = this._buildPreFillHint()
+        if (hint) {
+          uni.showModal({
+            title: '💡 系统建议',
+            content: '洞察报告建议价格区间：' + hint.priceRange + '，面积建议：' + hint.area + '。点击「添加房源」时将自动填入，可修改。',
+            showCancel: false,
+            confirmText: '知道了'
+          })
+        }
+      }
+    },
+    // ★ V3.14 根据洞察结论生成预填建议
+    _buildPreFillHint() {
+      const c = this.client
+      const insight = this.insightData
+      if (!c) return null
+      let priceRange = '', area = '', typeLabel = ''
+      const types = insight?.types || []
+      // ★ V3.14.2 兼容 curate-prep 的中文类型 key（如 'improvement' vs 'improve'）
+      const _norm = t => ({ improvement: 'improve', first_home: 'first_home', invest: 'invest', study: 'study', commuter: 'commuter', family_kid: 'family_kid', elder: 'elder', price: 'price' }[t] || t)
+      const topType = _norm(types[0] || '')
+      const typeMeta = {
+        first_home: { label: '首套刚需', priceRange: '300-600万', area: '70-90㎡' },
+        improve:    { label: '改善置换', priceRange: '600-1200万', area: '110-150㎡' },
+        invest:     { label: '投资保值', priceRange: '200-500万', area: '50-90㎡' },
+        study:      { label: '学区导向', priceRange: '400-800万', area: '60-100㎡' },
+        commuter:   { label: '通勤敏感', priceRange: '300-700万', area: '60-100㎡' },
+        family_kid: { label: '有娃家庭', priceRange: '400-900万', area: '90-130㎡' },
+        elder:      { label: '养老宜居', priceRange: '200-500万', area: '60-90㎡' },
+        price:      { label: '价格敏感', priceRange: '150-400万', area: '50-80㎡' },
+      }
+      if (topType && typeMeta[topType]) {
+        const m = typeMeta[topType]
+        priceRange = m.priceRange
+        area = m.area
+        typeLabel = m.label
+      }
+      // 尝试从客户资产/备注解析具体数字
+      const asset = c.asset || c.note || ''
+      const priceMatch = asset.match(/(\d+)\s*[-~至]\s*(\d+)\s*[万w]/)
+      if (priceMatch) {
+        priceRange = priceMatch[1] + '-' + priceMatch[2] + '万'
+      } else {
+        const singlePrice = asset.match(/(\d+)\s*[万w]/)
+        if (singlePrice) {
+          const p = parseInt(singlePrice[1])
+          priceRange = Math.max(100, p - 200) + '-' + (p + 100) + '万'
+        }
+      }
+      return priceRange || area ? { priceRange, area, typeLabel } : null
     },
     addProperty() {
+      // ★ V3.14：从洞察自动预填，减少经纪人推理成本
+      const hint = this._buildPreFillHint()
+      const types = this.insightData?.types || []
+      // ★ V3.14.2 兼容 curate-prep 的中文类型 key
+      const _norm = t => ({ improvement: 'improve', first_home: 'first_home', invest: 'invest', study: 'study', commuter: 'commuter', family_kid: 'family_kid', elder: 'elder', price: 'price' }[t] || t)
+      const topType = _norm(types[0] || '')
+      const tagMap = {
+        first_home: ['首套刚需', '低总价'],
+        improve: ['改善置换', '大户型'],
+        invest: ['投资出租', '小户型'],
+        study: ['学区房', '次新房'],
+        commuter: ['地铁盘', '通勤优'],
+        family_kid: ['有娃优选', '配套全'],
+        elder: ['养老宜居', '低楼层'],
+        price: ['性价比', '笋盘'],
+      }
+      const autoTags = topType && tagMap[topType] ? [...tagMap[topType]] : []
       this.properties.push({
         _id: 'p_' + Date.now(),
-        name: '',
+        community: '',
         address: '',
-        tags: [],
-        price: '',
-        area: '',
+        lianjiaUrl: '',
+        tags: autoTags,
+        price: hint?.priceRange ? hint.priceRange.replace('万', '') : '',
+        area: hint?.area ? hint.area.replace('㎡', '').replace(/[^0-9~-]/g, '') : '',
+        pricePerSqm: '',
         layout: '',
         floor: '',
         orientation: '',
+        age: '',
         reasonType: '',
         reason: '',
         score: ''
@@ -408,6 +574,20 @@ export default {
 .ic-dims { font-size: 11px; color: #8a837a; margin-top: 8px; line-height: 1.6; }
 .ic-ins { font-size: 11px; color: #8a837a; background: #fff8e8; border-radius: 8px; padding: 8px 10px; margin-top: 8px; line-height: 1.5; }
 
+/* ★ V3.13 匹配验证指引卡 */
+.match-guide-card { margin: 0 20px 14px; background: #f0f7ff; border: 1px solid #c5d9f5; border-radius: 14px; padding: 14px 16px; }
+.mgc-header { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+.mgc-ico { font-size: 16px; }
+.mgc-title { font-size: 14px; font-weight: 800; color: #1a3a6b; }
+.mgc-sub { font-size: 11px; color: #6a8ab5; margin-left: 4px; }
+.mgc-items { display: flex; flex-direction: column; gap: 8px; }
+.mgc-item { display: flex; align-items: flex-start; gap: 8px; }
+.mgc-item-ico { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.mgc-item-body { flex: 1; }
+.mgc-item-dim { font-size: 12px; font-weight: 700; color: #1a3a6b; }
+.mgc-item-check { font-size: 11px; color: #5a7a9a; margin-top: 1px; }
+.mgc-hint { font-size: 11px; color: #6a8ab5; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #c5d9f5; }
+
 /* 房源录入区标题 */
 .section-hd { padding: 0 20px; font-size: 14px; font-weight: 800; color: #1f2a24; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
 .sh-count { font-size: 12px; font-weight: 600; color: #8a837a; }
@@ -437,6 +617,7 @@ export default {
 .prop-fields { padding: 0 14px 14px; }
 .field-row { margin-bottom: 10px; }
 .field-label { font-size: 11px; font-weight: 700; color: #8a837a; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .5px; }
+.req { color: #c46a3a; margin-left: 2px; }
 .field-input { width: 100%; min-height: 44px; background: #f7f4ef; border: 1.5px solid #ede5d6; border-radius: 10px; padding: 10px 12px; font-size: 14px; color: #1f2a24; }
 .field-input:focus { border-color: #3d5a3e; }
 .field-hint { font-size: 10px; color: #8a837a; margin-top: 3px; }

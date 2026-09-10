@@ -1,15 +1,17 @@
 <template>
   <view class="page">
-    <!-- Hero 轮播 -->
-    <swiper class="hero-carousel" :autoplay="true" :interval="3800" :circular="true" :current="heroIdx" @change="onHero">
-      <swiper-item v-for="(s, i) in slides" :key="i">
-        <view class="slide"><image :src="s.img" class="slide-img" mode="aspectFill"></image>
-          <view class="hero-cap"><view class="ht">{{ s.ht }}</view><view class="hs">{{ s.hs }}</view></view>
-        </view>
-      </swiper-item>
-    </swiper>
-    <view class="hero-dots">
-      <view class="dot" :class="{ on: heroIdx === i }" v-for="(d, i) in slides" :key="i" @tap="goSlide(i)"></view>
+    <!-- ★ V3.12 租房/购房纵轴切换器 -->
+    <view class="axis-switcher">
+      <view
+        :class="['as-btn', { active: currentAxis === 'buy' }]"
+        @tap="switchAxis('buy')">
+        🏠 购房
+      </view>
+      <view
+        :class="['as-btn', { active: currentAxis === 'rent' }]"
+        @tap="switchAxis('rent')">
+        🔑 租房
+      </view>
     </view>
 
     <!-- 今天该做什么 · 智能待办（按 MOT 进度聚合，主动推下一步） -->
@@ -28,6 +30,31 @@
       </view>
     </view>
 
+    <!-- 一键开工：高频动作直达 -->
+    <view class="quick-start">
+      <view class="qs-item" @tap="goQuick('client')">
+        <text class="qs-ico">👥</text><text class="qs-name">新建客户</text><text class="qs-desc">建档即开工</text>
+      </view>
+      <view class="qs-item" @tap="goQuick('prep')">
+        <text class="qs-ico">🎯</text><text class="qs-name">见面参谋</text><text class="qs-desc">秒出作战结论</text>
+      </view>
+      <view class="qs-item" @tap="goQuick('search')">
+        <text class="qs-ico">🔍</text><text class="qs-name">查服务方案</text><text class="qs-desc">5000+ 真实方案</text>
+      </view>
+    </view>
+
+    <!-- Hero 轮播 -->
+    <swiper class="hero-carousel" :autoplay="true" :interval="3800" :circular="true" :current="heroIdx" @change="onHero">
+      <swiper-item v-for="(s, i) in slides" :key="i">
+        <view class="slide"><image :src="s.img" class="slide-img" mode="aspectFill"></image>
+          <view class="hero-cap"><view class="ht">{{ s.ht }}</view><view class="hs">{{ s.hs }}</view></view>
+        </view>
+      </swiper-item>
+    </swiper>
+    <view class="hero-dots">
+      <view class="dot" :class="{ on: heroIdx === i }" v-for="(d, i) in slides" :key="i" @tap="goSlide(i)"></view>
+    </view>
+
     <!-- 居住服务生命周期 -->
     <view class="lifecycle-section">
       <view class="ls-head">
@@ -43,6 +70,36 @@
       <view class="ls-desc">
         <text class="ls-desc-t">帮客户理清本轮需求：</text>
         <text class="ls-desc-v">三轴拆解 + 七维权重 + 客户亲口确认</text>
+      </view>
+    </view>
+
+    <!-- ★ V3.12 租房纵轴专属入口 -->
+    <view class="rent-banner" v-if="currentAxis === 'rent'">
+      <view class="rb-header">
+        <text class="rb-title">🔑 租房找房第一步</text>
+        <text class="rb-sub">先做居住测评，找到最适合你的租赁类型</text>
+      </view>
+      <view class="rb-grid">
+        <view class="rb-item" @tap="goRentAssess">
+          <text class="rb-ico">📋</text>
+          <text class="rb-name">居住测评</text>
+          <text class="rb-desc">7维度摸清真实需求</text>
+        </view>
+        <view class="rb-item" @tap="goCalculator">
+          <text class="rb-ico">🧮</text>
+          <text class="rb-name">月租测算</text>
+          <text class="rb-desc">40%法则算清预算</text>
+        </view>
+        <view class="rb-item" @tap="go('curate')">
+          <text class="rb-ico">🏠</text>
+          <text class="rb-name">匹配策展</text>
+          <text class="rb-desc">按需求推荐适配房源</text>
+        </view>
+        <view class="rb-item" @tap="go('cases')">
+          <text class="rb-ico">💡</text>
+          <text class="rb-name">案例灵感</text>
+          <text class="rb-desc">租房实战经验参考</text>
+        </view>
       </view>
     </view>
 
@@ -67,6 +124,11 @@
           <text class="iq-ico">👥</text>
           <text class="iq-name">客户档案</text>
           <text class="iq-desc">建档与需求记录</text>
+        </view>
+        <view class="iq-item" @tap="goCalculator">
+          <text class="iq-ico">🧮</text>
+          <text class="iq-name">测算工具</text>
+          <text class="iq-desc">月租/月供一键算</text>
         </view>
       </view>
       <view class="iq-report" @tap="goLastInsight">
@@ -110,6 +172,15 @@
       </view>
     </view>
 
+    <!-- 健康盯办入口 -->
+    <view class="health-promo" @tap="go('health-todo')">
+      <view class="hp-l">
+        <view class="hp-t">🩺 健康盯办</view>
+        <view class="hp-s">复诊 / 体检 / 用药，到期主动提醒，帮自己不失其所</view>
+      </view>
+      <view class="hp-r">进入 ›</view>
+    </view>
+
     <!-- 案例 promo -->
     <view class="case-promo" @tap="go('cases')">
       <view class="cp-l"><view class="cp-t">🌟 优秀经纪人精选案例灵感库</view><view class="cp-s">按客户类型 / 业务场景筛选 · 免费翻阅顶尖实战</view></view>
@@ -132,7 +203,7 @@
 <script>
 import { DICT_DOMAINS, DICT_TOTAL } from '../../utils/dict.js'
 import { useUserStore } from '../../store/user'
-import { trackPageview } from '../../utils/tracker'
+import { trackPageview, trackEvent } from '../../utils/tracker'
 import hero1 from '@/static/hero1.png'
 import hero2 from '@/static/hero2.png'
 import hero3 from '@/static/hero3.png'
@@ -140,6 +211,7 @@ import hero4 from '@/static/hero4.png'
 export default {
   data() {
     return {
+      currentAxis: 'buy',  // ★ V3.12 纵轴：buy | rent
       dictDomains: DICT_DOMAINS,
       dictTotal: DICT_TOTAL,
       fbShow: false,
@@ -229,15 +301,28 @@ export default {
     }
   },
   methods: {
-    onHero(e) { this.heroIdx = e.detail.current },
-    goSlide(i) { this.heroIdx = i },
-    goAssess() { uni.navigateTo({ url: '/pages/assess/index' }) },
+    onHero(e) {
+      this.heroIdx = e.detail.current
+      // 手动滑动轮播 → 记录 banner_click，供看板 click 口径统计
+      trackEvent('banner_click', 'home', { index: e.detail.current })
+    },
+    goSlide(i) {
+      this.heroIdx = i
+      // dot 点击切换轮播 → 同上
+      trackEvent('banner_click', 'home', { index: i })
+    },
+    goAssess() {
+      trackEvent('feature_click', 'home', { feature: 'assess' })
+      uni.navigateTo({ url: '/pages/assess/index' })
+    },
     goLastInsight() {
       const li = this.lastInsight
+      trackEvent('feature_click', 'home', { feature: 'last_insight' })
       if (li) uni.navigateTo({ url: '/package-mot/pages/insight/index?clientId=' + li.c.id })
       else { this.goAssess() }
     },
     go(tab) {
+      trackEvent('feature_click', 'home', { feature: tab })
       const tabs = ['home', 'knowledge', 'curate', 'clients', 'profile']
       if (tabs.indexOf(tab) >= 0) uni.switchTab({ url: '/pages/' + tab + '/index' })
       else uni.navigateTo({ url: '/pages/' + tab + '/index' })
@@ -252,6 +337,19 @@ export default {
       })
     },
     openFeedback() { this.fbShow = true },
+    // 一键开工：高频动作直达
+    goQuick(k) {
+      trackEvent('feature_click', 'home', { feature: 'quick_' + k })
+      if (k === 'client') {
+        // 客户档案是 tabBar，经 focusClientId 传递"新建"意图由档案页处理
+        this.userStore.focusClientId = '__new__'
+        uni.switchTab({ url: '/pages/clients/index' })
+      } else if (k === 'prep') {
+        uni.navigateTo({ url: '/package-curation/pages/curate-prep/index' })
+      } else if (k === 'search') {
+        uni.navigateTo({ url: '/pages/knowledge/domain' })
+      }
+    },
     goDictSearch() { uni.navigateTo({ url: '/pages/knowledge/domain' }) },
     goTodo(t) {
       if (!t || !t.route) { this.go('mot'); return }
@@ -264,13 +362,64 @@ export default {
       const sep = t.route.indexOf('?') >= 0 ? '&' : '?'
       uni.navigateTo({ url: t.route + sep + 'clientId=' + (t.clientId || '') })
     },
-    toast(m) { uni.showToast({ title: m, icon: 'none' }) }
+    toast(m) { uni.showToast({ title: m, icon: 'none' }) },
+    // ★ V3.12 纵轴切换：购房 <-> 租房
+    switchAxis(axis) {
+      if (this.currentAxis === axis) return
+      this.currentAxis = axis
+      uni.showToast({ title: axis === 'rent' ? '已切换至租房线' : '已切换至购房线', icon: 'none', duration: 1200 })
+    },
+    // ★ V3.12 跳转租住版居住测评
+    goRentAssess() {
+      trackEvent('feature_click', 'home', { feature: 'rent_assess' })
+      uni.navigateTo({ url: '/pages/rent-assess/index' })
+    },
+    // ★ V3.12 跳转测算工具
+    goCalculator() {
+      uni.navigateTo({ url: '/pages/calculator/index' })
+    }
   },
   onShow() { trackPageview('home') }
 }
 </script>
 
 <style scoped>
+/* ★ V3.12 纵轴切换器 */
+.axis-switcher {
+  display: flex;
+  padding: 10px 16px 0;
+  gap: 0;
+}
+.as-btn {
+  flex: 1;
+  text-align: center;
+  padding: 9px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #8a837a;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.as-btn.active {
+  color: #3d5a3e;
+  border-bottom-color: #3d5a3e;
+  font-weight: 700;
+}
+
+/* ========== 一键开工 ========== */
+.quick-start {
+  display: flex; gap: 10px; margin: 10px 14px 0;
+}
+.qs-item {
+  flex: 1; background: #fff; border-radius: 14px; padding: 12px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  border: 1px solid #e7e0d4; box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.qs-item:active { background: #f7f4ef; }
+.qs-ico { font-size: 22px; }
+.qs-name { font-size: 12.5px; font-weight: 700; color: #2b2b2b; }
+.qs-desc { font-size: 10px; color: #999; }
+
 /* ========== Hero ========== */
 .hero-carousel { width: 100%; height: 168px; position: relative; }
 .hero-dots { display: flex; justify-content: center; gap: 5px; position: absolute; bottom: 8px; left: 0; right: 0; z-index: 2; }
@@ -348,6 +497,29 @@ export default {
 .ls-desc-t { font-size: 12px; color: #8a7a68; }
 .ls-desc-v { font-size: 12px; color: #5c4a36; font-weight: 600; }
 
+/* ★ V3.12 租房纵轴专属入口 */
+.rent-banner {
+  background: linear-gradient(135deg, #3d5a3e 0%, #2f4a30 100%);
+  border-radius: 16px;
+  margin: 10px 14px;
+  padding: 14px 14px 12px;
+}
+.rb-header { margin-bottom: 10px; }
+.rb-title { font-size: 15px; font-weight: 700; color: #fff; display: block; margin-bottom: 2px; }
+.rb-sub { font-size: 11px; color: rgba(255,255,255,.7); }
+.rb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rb-item {
+  background: rgba(255,255,255,.15);
+  border-radius: 10px;
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.rb-ico { font-size: 20px; margin-bottom: 2px; }
+.rb-name { font-size: 13px; font-weight: 700; color: #fff; }
+.rb-desc { font-size: 10px; color: rgba(255,255,255,.7); }
+
 /* ========== 到洞察 · 快捷入口 ========== */
 .insight-quick {
   background: linear-gradient(135deg, #3d5a3e 0%, #2f4a30 100%);
@@ -415,6 +587,17 @@ export default {
 .cb-empty-s { font-size: 12px; color: #999; }
 
 /* ========== 案例 ========== */
+.health-promo {
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(135deg, #c46a3a 0%, #d98a55 100%);
+  border-radius: 12px; margin: 0 14px 10px; padding: 14px 16px;
+}
+.health-promo:active { opacity: .9; }
+.hp-l { flex: 1; }
+.hp-t { font-size: 14px; font-weight: 700; color: #fff; }
+.hp-s { font-size: 11.5px; color: rgba(255,255,255,.8); margin-top: 3px; }
+.hp-r { font-size: 13px; color: rgba(255,255,255,.95); font-weight: 600; }
+
 .case-promo {
   display: flex; align-items: center; justify-content: space-between;
   background: linear-gradient(135deg, #3d5a3e 0%, #4a6e4a 100%);

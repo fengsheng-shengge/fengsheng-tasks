@@ -47,8 +47,8 @@
         <view class="prop-top">
           <view :class="['prop-rank', { top1: idx === 0 }]">{{ idx + 1 }}</view>
           <view class="prop-body">
-            <view class="prop-name">{{ p.name || '房源' + (idx + 1) }}</view>
-            <view class="prop-addr">{{ p.address || '地址待填写' }}</view>
+            <view class="prop-name">{{ p.community || p.name || '待填写小区名' }}</view>
+            <view class="prop-addr" v-if="p.address">{{ p.address }}</view>
             <view class="prop-meta" v-if="p.tags && p.tags.length">
               <text class="prop-tag" v-for="t in p.tags" :key="t">{{ t }}</text>
             </view>
@@ -57,7 +57,17 @@
         <view class="prop-spec" v-if="p.price || p.area || p.layout">
           <text v-if="p.price" class="spec">{{ p.price }} 万</text>
           <text v-if="p.area" class="spec">{{ p.area }} ㎡</text>
+          <text v-if="p.pricePerSqm" class="spec">{{ p.pricePerSqm }} 元/㎡</text>
           <text v-if="p.layout" class="spec">{{ p.layout }}</text>
+          <text v-if="p.orientation" class="spec">{{ p.orientation }}</text>
+          <text v-if="p.floor" class="spec">{{ p.floor }}</text>
+          <text v-if="p.age" class="spec">{{ p.age }}年楼龄</text>
+        </view>
+        <!-- 贝壳来源入口 -->
+        <view class="prop-link" v-if="p.lianjiaUrl" @tap="openLink(p.lianjiaUrl)">
+          <text class="link-ico\">🔗</text>
+          <text class="link-tx">查看贝壳/链家真实房源</text>
+          <text class="link-arrow">›</text>
         </view>
         <view class="prop-reason" v-if="p.reason">
           <view class="pr-label">🎯 匹配理由</view>
@@ -159,6 +169,18 @@ export default {
       this.client = c
       this.report = this.userStore.getProposalReport(this.clientId)
     },
+    openLink(url) {
+      if (!url) return
+      // #ifdef MP-WEIXIN
+      uni.setClipboardData({
+        data: url,
+        success: () => uni.showToast({ title: '链接已复制，去贝壳打开', icon: 'none' })
+      })
+      // #endif
+      // #ifdef H5
+      window.open(url, '_blank')
+      // #endif
+    },
     goEntry() {
       uni.navigateTo({ url: '/package-mot/pages/proposal/index?clientId=' + this.clientId })
     },
@@ -207,6 +229,10 @@ export default {
 .prop-reason { background: #faf8f5; border-radius: 10px; padding: 10px; margin-top: 10px; }
 .pr-label { font-size: 11px; color: #8a837a; margin-bottom: 4px; }
 .pr-text { font-size: 13px; color: #2b2b2b; line-height: 1.6; }
+.prop-link { display: flex; align-items: center; gap: 6px; background: #e8f4ff; border-radius: 8px; padding: 8px 12px; margin-top: 8px; cursor: pointer; }
+.link-ico { font-size: 14px; }
+.link-tx { flex: 1; font-size: 12px; color: #1a73e8; font-weight: 600; }
+.link-arrow { font-size: 16px; color: #1a73e8; }
 
 .tips-card { background: #fff; border-radius: 14px; margin: 0 14px 10px; padding: 14px; border: 1px solid #e7e0d4; }
 .tip { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px dashed #f0ece4; }

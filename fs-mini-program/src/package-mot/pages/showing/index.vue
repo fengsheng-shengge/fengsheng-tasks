@@ -12,6 +12,27 @@
       <view class="rh-reportno" v-if="reportNo">{{ reportNo }}</view>
     </view>
 
+    <!-- ★ V3.13 新增：看前方法论指引卡 -->
+    <view class="pre-showing-guide" v-if="preShowingGuide">
+      <view class="psg-header">
+        <text class="psg-ico">🎯</text>
+        <text class="psg-title">看前方法论指引</text>
+        <text class="psg-badge" :style="{ background: preShowingGuide.color }">{{ preShowingGuide.typeLabel }}</text>
+      </view>
+      <view class="psg-body">
+        <view class="psg-tip" v-for="(tip, i) in preShowingGuide.tips" :key="i">
+          <text class="psg-tip-ico">{{ tip.ico }}</text>
+          <text class="psg-tip-text">{{ tip.text }}</text>
+        </view>
+      </view>
+      <view class="psg-checklist">
+        <view v-for="(item, i) in preShowingGuide.checklist" :key="i" class="psg-check" @tap="toggleChecklist(i)">
+          <text :class="['psg-check-icon', checkedItems[i] ? 'done' : '']">{{ checkedItems[i] ? '✓' : '○' }}</text>
+          <text>{{ item }}</text>
+        </view>
+      </view>
+    </view>
+
     <!-- 步骤指示器 -->
     <view class="step-indicator">
       <view v-for="(s, i) in steps" :key="i" :class="['si-dot', { on: currentStep === i, done: currentStep > i }]">
@@ -194,11 +215,80 @@ export default {
         intentReason: '',
         keyQuote: '',
         nextAction: '',
-      }
+      },
+      // ★ V3.13 看前清单勾选状态
+      checkedItems: [],
     }
   },
   computed: {
-    userStore() { return useUserStore() }
+    userStore() { return useUserStore() },
+    // ★ V3.13 看前方法论指引：由洞察结论自动生成
+    preShowingGuide() {
+      const c = this.client
+      if (!c || !c.lifecycle || !c.lifecycle.insightData) return null
+      const insight = c.lifecycle.insightData
+      const types = insight.types || []
+      const topType = types[0] || ''
+
+      const guideMap = {
+        first_home: {
+          typeLabel: '首套刚需', color: '#c46a3a',
+          tips: [
+            { ico: '💰', text: '重点用「总价÷360个月」算每月真实成本，让客户感受不是在花钱，是在存资产' },
+            { ico: '🛡', text: '主动告知产权核查流程，消除首套房对风险的焦虑，不催单' },
+            { ico: '📊', text: '对比租房 vs 买房 5 年总支出，用数据建立信任' },
+          ],
+          checklist: ['提前确认客户资质（社保/流水）可贷款额度', '准备好 3 套不同价位的备选房源', '带好贝壳成交记录作为谈价依据'],
+        },
+        improve: {
+          typeLabel: '改善置换', color: '#27ae60',
+          tips: [
+            { ico: '🏗', text: '先带看不可改条件：采光/朝向/承重墙/格局；先不谈装修，让客户自己发现潜力' },
+            { ico: '📐', text: '面积置换比：算清楚现有住房卖掉能腾出多少首付' },
+            { ico: '⏱', text: '明确告知置换窗口期（先买后卖 vs 先卖后买）各风险点' },
+          ],
+          checklist: ['核实现有住房挂牌价和带看量', '确认客户资质和贷款方案', '准备 2 套不同面积段备选'],
+        },
+        commuter: {
+          typeLabel: '通勤敏感', color: '#2f6fb0',
+          tips: [
+            { ico: '⏱', text: '不要口头说「地铁很近」，带客户实地走一趟，记录真实步行时间' },
+            { ico: '🗺', text: '展示早高峰和晚高峰两条通勤路线的耗时对比' },
+            { ico: '🏠', text: '评估居家办公可能性，面积需求是否可以灵活' },
+          ],
+          checklist: ['提前查好地铁/公交换乘方案', '带客户实地测一次通勤路线', '准备 3 套不同通勤时间的备选'],
+        },
+        family_kid: {
+          typeLabel: '有娃家庭', color: '#8e44ad',
+          tips: [
+            { ico: '🏫', text: '提前查好教育局划片表，确认目标学校名额和落户年限要求' },
+            { ico: '🛡', text: '小区安全性：门禁、人车分流、儿童活动区逐一核实' },
+            { ico: '👶', text: '关注户型可改造性：三房能否满足两个孩子的独立空间需求' },
+          ],
+          checklist: ['提前查学校划片和名额情况', '确认小区安全配套和托管资源', '准备 2 套学校划片内外的备选'],
+        },
+        elder: {
+          typeLabel: '养老宜居', color: '#e67e22',
+          tips: [
+            { ico: '🏥', text: '附近三甲医院/社区卫生站步行可达距离是底线，必须实地确认' },
+            { ico: '🏢', text: '电梯和低楼层方案：明确客户能接受的最高楼层' },
+            { ico: '👣', text: '小区无障碍设施和物业服务态度实地感受' },
+          ],
+          checklist: ['提前确认电梯品牌和维保情况', '实地走访周边医院/卫生站', '了解物业紧急响应机制'],
+        },
+        invest: {
+          typeLabel: '投资增值', color: '#16a085',
+          tips: [
+            { ico: '📊', text: '租金回报率公式：月租金 × 12 ÷ 房价，要求 ≥ 3% 才算合格' },
+            { ico: '📈', text: '展示板块规划：地铁/学校/商业在建工程，标注兑现时间节点' },
+            { ico: '🔄', text: '查近 3 年同小区同户型涨幅 vs 板块均幅，判断成长性' },
+          ],
+          checklist: ['查近 6 个月同户型租金成交价', '核实板块规划落地时间和不确定性', '准备 2 套租金回报率 ≥ 3% 的备选'],
+        },
+      }
+
+      return guideMap[topType] || guideMap['first_home']
+    },
   },
   onLoad(options) {
     trackPageview('showing')
@@ -238,6 +328,12 @@ export default {
     prevStep() {
       if (this.currentStep > 0) this.currentStep--
     },
+    // ★ V3.13 看前清单勾选
+    toggleChecklist(i) {
+      if (!this.checkedItems) this.checkedItems = []
+      if (this.checkedItems[i]) this.checkedItems.splice(i, 1)
+      else this.checkedItems.push(i)
+    },
     submit() {
       if (!this.form.intentLevel) { uni.showToast({ title: '请判断意向等级', icon: 'none' }); return }
       uni.showModal({
@@ -265,9 +361,9 @@ export default {
               nextAction: this.form.nextAction,
             }
             this.userStore.completeShowing(this.clientId, showingData)
-            uni.showToast({ title: '带看分析已保存', icon: 'none' })
+            uni.showToast({ title: '带看分析已保存', icon: 'success' })
             setTimeout(() => {
-              uni.navigateBack()
+              uni.redirectTo({ url: '/package-mot/pages/showing/report?clientId=' + this.clientId })
             }, 1200)
           }
         }
@@ -279,6 +375,21 @@ export default {
 
 <style scoped>
 .page { padding: 14px 14px 40px; background: #f7f4ef; min-height: 100vh; }
+
+/* ★ V3.13 看前方法论指引卡 */
+.pre-showing-guide { margin: 0 14px 14px; background: #fff; border-radius: 14px; padding: 14px; border-left: 4px solid #3d5a3e; }
+.psg-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.psg-ico { font-size: 18px; }
+.psg-title { font-size: 15px; font-weight: 800; color: #1f2a24; flex: 1; }
+.psg-badge { font-size: 11px; color: #fff; padding: 2px 8px; border-radius: 999px; font-weight: 700; }
+.psg-body { margin-bottom: 10px; }
+.psg-tip { display: flex; align-items: flex-start; gap: 6px; margin-bottom: 6px; }
+.psg-tip-ico { font-size: 13px; flex-shrink: 0; }
+.psg-tip-text { font-size: 12px; color: #4a5046; line-height: 1.5; }
+.psg-checklist { border-top: 1px solid #ede5d6; padding-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+.psg-check { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #4a5046; cursor: pointer; }
+.psg-check-icon { font-size: 13px; color: #c4c0b8; }
+.psg-check-icon.done { color: #3d5a3e; font-weight: 800; }
 
 /* 报告头部 */
 .report-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }

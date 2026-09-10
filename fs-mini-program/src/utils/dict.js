@@ -1,7 +1,9 @@
 // 业务词典 —— 域配置 + 词条数据源（真实口径）
 // 数据源：fengsheng.tech /api/entries（按域）、/api/search（全库加权检索）
 // 域与条数来自后端 manifest（data/domains/_manifest.json），已全量核对 2026-08-31，非估算。
-export const API_BASE = 'https://fengsheng.tech'
+// H5 开发模式走 vite 代理（避免 CORS 拦截，本地预览也能看真实数据）；生产构建/小程序用完整域名
+// import.meta.env.DEV 仅 dev server 为 true；build 产物中恒为 false → 生产一律用完整域名，不受影响
+export const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) ? '' : 'https://fengsheng.tech'
 
 // 13 域（key = 后端 domain 字段值，count = manifest.counts）
 // 英文域 key（CAR/OWN/SNG/trade）为历史遗留的细分域，name 依据其 subScene 内容命名，不合并、不丢数据。

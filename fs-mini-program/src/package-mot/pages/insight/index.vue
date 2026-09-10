@@ -27,6 +27,18 @@
         <text>✓ 洞察已确认，房源提案已解锁</text>
       </view>
 
+      <!-- ★ V3.12 引导问诊入口（未完成诊断时显示） -->
+      <view class="diagnostic-entry" v-if="!hasDiagnosticData && clientId">
+        <view class="de-header">
+          <text class="de-title">🩺 引导问诊</text>
+          <text class="de-sub">5 步快速澄清需求，系统自动生成七维画像</text>
+        </view>
+        <button class="de-btn" @tap="goToDiagnostic">
+          开始引导问诊 ››
+        </button>
+        <view class="de-hint">适合：客户首次见面 / 需求不清晰 / 想快速建立画像</view>
+      </view>
+
       <!-- ★ V3.5 深层洞察摘要（经纪人内部使用，不对客户透出） -->
       <view class="deep-summary-card" v-if="deepInsight">
         <view class="dsc-title">🔍 深层洞察摘要</view>
@@ -152,8 +164,9 @@
         <view>确认洞察报告后，行动计划将自动生成</view>
       </view>
 
-      <view class="next-step" v-if="confirmed">
-        <button class="btn-next" @tap="goToProposal">→ 生成房源提案报告</button>
+      <view class="next-step-btn-row" v-if="confirmed">
+        <button class="btn-briefing" @tap="generateBriefing">📄 生成见面简报</button>
+        <button class="btn-proposal" @tap="goToProposal">→ 生成提案报告</button>
       </view>
       <view class="next-step locked" v-else>
         <view class="locked-tip">请先确认洞察报告以解锁房源提案</view>
@@ -267,6 +280,12 @@ export default {
       const c = this.userStore.getClient(id)
       if (!c || !c.lifecycle || !c.lifecycle.insightData) return null
       return c.lifecycle.insightData
+    },
+    // ★ V3.12 是否有引导问诊数据
+    hasDiagnosticData() {
+      if (!this.clientId) return false
+      const c = this.userStore.getClient(this.clientId)
+      return !!(c && c.lifecycle && c.lifecycle.diagnosticData)
     },
     triggerEventLabels() {
       if (!this.deepInsight) return []
@@ -465,6 +484,45 @@ export default {
       }
       uni.navigateTo({ url: '/package-mot/pages/proposal/index?clientId=' + this.clientId })
     },
+    // ★ V3.12 跳转引导问诊
+    goToDiagnostic() {
+      if (!this.clientId) return
+      uni.navigateTo({ url: '/package-mot/pages/diagnostic/index?clientId=' + this.clientId })
+    },
+    // ★ V3.12 生成见面简报
+    generateBriefing() {
+      if (!this.clientId) return
+      const c = this.userStore.getClient(this.clientId)
+      if (!c) return
+
+      // 收集数据
+      const types = this.selectedTypes.map(k => {
+        const t = this.customerTypes.find(t => t.key === k)
+        return t ? t.label : k
+      })
+
+      const summaryText = c.lifecycle?.diagnosticData?.summaryText || (
+        this.deepInsight ? `客户类型：${types.join(' / ')}，核心关注：${this.ltrustPrioLabel || '待确认'}` : ''
+      )
+
+      // 生成见面简报数据
+      const briefingData = {
+        clientName: c.name || '客户',
+        createdAt: new Date().toISOString(),
+        summaryText,
+        types,
+        // 引导问诊数据透传
+        diagnosticData: c.lifecycle?.diagnosticData || null,
+        brokerName: '专属经纪人', // 未来可从 userStore 获取
+        brokerPhone: '',
+      }
+
+      // 编码为 URL 参数
+      const encoded = encodeURIComponent(btoa(JSON.stringify(briefingData)))
+      uni.navigateTo({
+        url: `/pages/briefing/index?data=${encoded}`
+      })
+    },
     formatDate(ts) {
       if (!ts) return ''
       const d = new Date(ts)
@@ -649,5 +707,65 @@ export default {
 .dsc-conflict { background: #fff8f8; border-left: 3px solid #c0392b; padding: 6px 10px; border-radius: 0 8px 8px 0; font-size: 13px; color: #555; line-height: 1.5; }
 .dsc-two-col { display: flex; gap: 12px; }
 .dsc-two-col > view { flex: 1; }
+
+/* ★ V3.12 引导问诊入口卡 */
+.diagnostic-entry {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 2px solid #e8e4dc;
+  position: relative;
+  overflow: hidden;
+}
+.diagnostic-entry::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #3d5a3e, #c8956d);
+}
+.de-header { margin-bottom: 12px; }
+.de-title { font-size: 17px; font-weight: 700; color: #2b2b28; display: block; margin-bottom: 4px; }
+.de-sub { font-size: 13px; color: #8a837a; }
+.de-btn {
+  background: linear-gradient(135deg, #3d5a3e 0%, #4a6e4c 100%);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 700;
+  width: 100%;
+  margin-bottom: 8px;
+}
+.de-hint { font-size: 11px; color: #b8b1a6; text-align: center; }
+
+/* ★ V3.12 行动按钮行 */
+.next-step-btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.btn-briefing {
+  flex: 1;
+  background: #fff;
+  color: #3d5a3e;
+  border: 2px solid #3d5a3e;
+  border-radius: 12px;
+  padding: 13px 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.btn-proposal {
+  flex: 1;
+  background: #3d5a3e;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 13px 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
 
 </style>

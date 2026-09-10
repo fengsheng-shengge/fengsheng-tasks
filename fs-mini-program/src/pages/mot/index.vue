@@ -19,6 +19,8 @@
     <view v-if="!selectedClient" class="guide-card">
       <view class="guide-t">选择客户后开启 MOT 服务流程</view>
       <view class="guide-s">七步服务闭环，帮客户买对房、买好房</view>
+      <button class="guide-btn demo-btn" @tap="demoClient">👀 生成示例客户，先走一遍</button>
+      <view class="guide-note">不会影响真实客户 · 随时可清空</view>
     </view>
 
     <!-- 七步骤卡片 -->
@@ -128,6 +130,16 @@ export default {
     }
   },
   methods: {
+    // 空态演示：生成示例客户并选中，让新用户立刻看到完整流程
+    demoClient() {
+      const hasReal = (this.userStore.clients || []).some(c => !c.seed)
+      // 已有真实客户时提示引导，不要乱塞示例
+      if (hasReal) { this.showClientPicker = true; return }
+      this.userStore.seedClients()
+      const demo = (this.userStore.clients || []).find(c => c.seed)
+      if (demo) this.selectClient(demo)
+      uni.showToast({ title: '已生成示例客户，可随意体验', icon: 'none' })
+    },
     selectClient(c) {
       this.selectedClientId = c.id
       uni.setStorageSync('fs_mot_client_id', c.id)
@@ -235,6 +247,9 @@ export default {
 .guide-card { background: linear-gradient(135deg, #3d5a3e 0%, #2f4730 100%); border-radius: 16px; padding: 24px 18px; text-align: center; }
 .guide-t { color: #fff; font-size: 17px; font-weight: 700; margin-bottom: 6px; }
 .guide-s { color: rgba(255,255,255,0.75); font-size: 13px; }
+.guide-btn { margin: 14px auto 0; display: block; }
+.demo-btn { background: #fff; color: #3d5a3e; border-radius: 999px; font-size: 13px; font-weight: 700; padding: 9px 22px; }
+.guide-note { color: rgba(255,255,255,0.5); font-size: 11px; margin-top: 8px; }
 
 /* 步骤头部 */
 .steps-header { margin-bottom: 16px; }

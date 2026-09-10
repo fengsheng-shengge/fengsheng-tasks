@@ -445,7 +445,7 @@ export default {
     drawRadarA() {
       try {
         const ctx = uni.createCanvasContext('radarA', this)
-        const W = 260, H = 180, CX = W / 2, CY = H / 2, R = 65
+        const W = 200, H = 200, CX = W / 2, CY = H / 2, R = 78
         const dims = Q_A; const n = dims.length
         const angleStep = (2 * Math.PI) / n
         // 背景圆
@@ -511,7 +511,7 @@ export default {
     drawRadarB() {
       try {
         const ctx = uni.createCanvasContext('radarB', this)
-        const W = 260, H = 180, CX = W / 2, CY = H / 2, R = 65
+        const W = 200, H = 200, CX = W / 2, CY = H / 2, R = 78
         const dims = dimB; const n = dims.length
         const angleStep = (2 * Math.PI) / n
         for (let r = 1; r <= 4; r++) {
@@ -591,8 +591,8 @@ button[disabled] { opacity: .45; }
 .res-title { font-size: 16px; font-weight: 800; color: #3d5a3e; text-align: center; margin-bottom: 8px; }
 .res-score { font-size: 36px; font-weight: 900; color: #3d5a3e; text-align: center; line-height: 1.1; }
 .res-label { font-size: 13px; color: #8a837a; text-align: center; margin-bottom: 14px; }
-.res-radar { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
-.radar-canvas { width: 180px; height: 150px; }
+.res-radar { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 14px; }
+.radar-canvas { width: 160px; height: 160px; flex-shrink: 0; }
 .radar-legend { flex: 1; }
 .rl-item { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
 .rl-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }

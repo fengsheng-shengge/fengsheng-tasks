@@ -41,7 +41,10 @@
 
     <view class="btn-row">
       <button class="btn-submit" @tap="submit">✓ 登记成交</button>
-      <button class="btn-next" v-if="reportNo" @tap="goMaintain">进入持续维护 →</button>
+      <button class="btn-report" v-if="reportNo" @tap="goReport">📋 查看报告</button>
+    </view>
+    <view class="btn-next-row" v-if="reportNo">
+      <button class="btn-next" @tap="goMaintain">进入持续维护 →</button>
     </view>
   </view>
 </template>
@@ -99,6 +102,9 @@ export default {
     },
     goMaintain() {
       uni.navigateTo({ url: '/package-mot/pages/maintain/index?clientId=' + this.clientId })
+    },
+    goReport() {
+      uni.navigateTo({ url: '/package-mot/pages/deal/report?clientId=' + this.clientId })
     }
   }
 }
@@ -119,5 +125,7 @@ export default {
 .picker-btn { background: #faf8f5; border: 1px solid #ede5d6; border-radius: 10px; padding: 10px; font-size: 13px; color: #2b2b2b; }
 .btn-row { display: flex; gap: 10px; margin: 18px 14px 0; }
 .btn-submit { flex: 1.4; background: #c46a3a; color: #fff; border-radius: 999px; padding: 14px; font-size: 15px; font-weight: 800; }
-.btn-next { flex: 1; background: #3d5a3e; color: #fff; border-radius: 999px; padding: 14px; font-size: 14px; font-weight: 700; }
+.btn-report { flex: 1; background: #3d5a3e; color: #fff; border-radius: 999px; padding: 14px; font-size: 14px; font-weight: 700; }
+.btn-next-row { margin: 10px 14px 0; }
+.btn-next { background: #3d5a3e; color: #fff; border-radius: 999px; padding: 14px; font-size: 14px; font-weight: 700; width: 100%; }
 </style>
