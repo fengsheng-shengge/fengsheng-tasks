@@ -1065,6 +1065,8 @@ async function handleStats(request, env) {
   const now = new Date().toISOString().split('T')[0];
   if (env.DB) {
     try {
+      const todayStart = Math.floor(new Date(now + 'T00:00:00Z').getTime() / 1000);
+
       const uvResult = await env.DB.prepare(
         "SELECT COUNT(DISTINCT uid) as uv FROM events WHERE event_type = 'pageview'"
       ).first();
@@ -1077,6 +1079,31 @@ async function handleStats(request, env) {
       const lastEvent = await env.DB.prepare(
         "SELECT ts FROM events ORDER BY ts DESC LIMIT 1"
       ).first();
+
+      // Today's stats
+      const todayUV = await env.DB.prepare(
+        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE event_type = 'pageview' AND created_at >= ?"
+      ).bind(todayStart).first();
+      const todayPV = await env.DB.prepare(
+        "SELECT COUNT(*) as c FROM events WHERE event_type = 'pageview' AND created_at >= ?"
+      ).bind(todayStart).first();
+      const todayChats = await env.DB.prepare(
+        "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND created_at >= ?"
+      ).bind(todayStart).first();
+
+      // Mini-program users: uid starts with wx_ (openid-based) or url starts with pages/
+      const mpUsers = await env.DB.prepare(
+        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE uid LIKE 'wx_%' OR url LIKE 'pages/%' OR source LIKE '%miniprogram%'"
+      ).first();
+      const mpPV = await env.DB.prepare(
+        "SELECT COUNT(*) as c FROM events WHERE event_type = 'pageview' AND (uid LIKE 'wx_%' OR url LIKE 'pages/%' OR source LIKE '%miniprogram%')"
+      ).first();
+
+      // Feedback count
+      const feedbackCount = await env.DB.prepare(
+        "SELECT COUNT(*) as c FROM events WHERE event_type = 'reply_submit'"
+      ).first();
+
       return jsonResponse({
         uv: uvResult?.uv || 0,
         total_users: uvResult?.uv || 0,
@@ -1085,6 +1112,12 @@ async function handleStats(request, env) {
         last_event_ts: lastEvent?.ts || null,
         updated: now,
         source: 'db',
+        today_uv: todayUV?.c || 0,
+        today_pv: todayPV?.c || 0,
+        today_chats: todayChats?.c || 0,
+        mp_users: mpUsers?.c || 0,
+        mp_pv: mpPV?.c || 0,
+        feedback_count: feedbackCount?.c || 0,
       });
     } catch (e) {
       console.error('stats: DB query failed', e.message);
