@@ -97,6 +97,7 @@
       <!-- 底部按钮 -->
       <view class="bottom-bar">
         <button class="btn-ghost" @tap="goMOT">← MOT服务</button>
+        <button class="btn-ghost" @tap="copyConclusion">📋 复制结论</button>
         <button class="btn-primary" @tap="goDeal">进入成交售后 →</button>
       </view>
     </template>
@@ -208,6 +209,18 @@ export default {
     },
     goDeal() {
       uni.navigateTo({ url: '/package-mot/pages/deal/index?clientId=' + this.clientId })
+    },
+    copyConclusion() {
+      if (!this.reportData) { uni.showToast({ title: '暂无数据可复制', icon: 'none' }); return }
+      const lines = ['【谈判复盘 - ' + (this.client ? this.client.name : '') + '】', '']
+      if (this.reportData.result) lines.push('谈判结果：' + this.reportData.result)
+      if (this.strategyLabel) lines.push('博弈策略：' + this.strategyLabel)
+      if (this.reportData.goal) lines.push('谈判目标：' + this.reportData.goal)
+      if (this.reportData.chips) lines.push('筹码：' + this.reportData.chips)
+      if (this.reportData.nextAction) lines.push('下一步行动：' + this.reportData.nextAction)
+      if (this.progressPercent) lines.push('目标达成率：' + this.progressPercent + '%')
+      lines.push('', '——由风声助手 MOT 谈判复盘生成')
+      uni.setClipboardData({ data: lines.join('\n'), success: () => uni.showToast({ title: '结论已复制，可直接发给客户', icon: 'none' }) })
     },
   }
 }

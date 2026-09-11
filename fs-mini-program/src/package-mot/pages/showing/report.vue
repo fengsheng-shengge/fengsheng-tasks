@@ -120,6 +120,7 @@
       <!-- 底部按钮 -->
       <view class="bottom-bar">
         <button class="btn-ghost" @tap="goMOT">← MOT服务</button>
+        <button class="btn-ghost" @tap="copyConclusion">📋 复制结论</button>
         <button class="btn-primary" @tap="shareReport">分享报告</button>
       </view>
     </template>
@@ -223,6 +224,18 @@ export default {
     },
     shareReport() {
       uni.showToast({ title: '报告分享功能开发中', icon: 'none' })
+    },
+    copyConclusion() {
+      if (!this.reportData) { uni.showToast({ title: '暂无数据可复制', icon: 'none' }); return }
+      const lines = ['【带看复盘 - ' + (this.client ? this.client.name : '') + '】', '']
+      if (this.intentBadge.label) lines.push('意向判断：' + this.intentBadge.label)
+      if (this.reportData.intentReason) lines.push('判断依据：' + this.reportData.intentReason)
+      if (this.reportData.keyQuote) lines.push('客户原话：' + this.reportData.keyQuote)
+      if (this.reportData.nextAction) lines.push('下一步行动：' + this.reportData.nextAction)
+      if (this.execPercent) lines.push('五秘诀执行率：' + this.execPercent + '%')
+      if (this.reportData.notes) lines.push('执行备注：' + this.reportData.notes)
+      lines.push('', '——由风声助手 MOT 带看复盘生成')
+      uni.setClipboardData({ data: lines.join('\n'), success: () => uni.showToast({ title: '结论已复制，可直接发给客户', icon: 'none' }) })
     },
   }
 }

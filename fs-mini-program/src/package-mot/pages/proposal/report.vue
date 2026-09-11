@@ -42,6 +42,7 @@
       <!-- 精选房源 -->
       <view class="section-hd">
         <view>🏠 精选房源 TOP {{ propsList.length }}</view>
+        <view class="copy-btn" @tap="copyConclusion">📋 复制结论</view>
       </view>
       <view v-for="(p, idx) in propsList" :key="p._id" class="prop-card">
         <view class="prop-top">
@@ -186,6 +187,17 @@ export default {
     },
     goShowing() {
       uni.navigateTo({ url: '/package-mot/pages/showing/index?clientId=' + this.clientId })
+    },
+    copyConclusion() {
+      if (!this.propsList.length) { uni.showToast({ title: '暂无房源可复制', icon: 'none' }); return }
+      const lines = ['【房源提案 - ' + (this.client ? this.client.name : '未知客户') + '】', '']
+      this.propsList.forEach((p, i) => {
+        lines.push('🏠 ' + (i + 1) + '. ' + (p.community || p.name || '待填写'))
+        if (p.price || p.area || p.layout) lines.push('   ' + [p.price ? p.price + '万' : '', p.area ? p.area + '㎡' : '', p.layout || ''].filter(Boolean).join(' · '))
+        if (p.reason) lines.push('   🎯 ' + p.reason)
+      })
+      lines.push('', '——由风声助手 MOT 房源提案生成')
+      uni.setClipboardData({ data: lines.join('\n'), success: () => uni.showToast({ title: '结论已复制，可直接发给客户', icon: 'none' }) })
     }
   }
 }
@@ -214,6 +226,7 @@ export default {
 
 .section-hd { display: flex; align-items: center; justify-content: space-between; margin: 16px 14px 8px; }
 .section-hd view { font-size: 15px; font-weight: 700; color: #2b2b2b; }
+.copy-btn { font-size: 13px !important; font-weight: 600 !important; color: #3d5a3e !important; background: #eef3ec; border: 1px solid #c5d9c1; border-radius: 999px; padding: 4px 12px; }
 
 .prop-card { background: #fff; border-radius: 14px; margin: 0 14px 10px; padding: 14px; border: 1px solid #e7e0d4; }
 .prop-top { display: flex; align-items: flex-start; gap: 10px; }

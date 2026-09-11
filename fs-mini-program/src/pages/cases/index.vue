@@ -29,6 +29,7 @@
     <view class="case-card" :class="{ open: c._open }" v-for="c in filtered" :key="c.id" @tap="toggleCase(c)">
       <view class="case-tags">
         <text class="ctag role">{{ c.role }}</text><text class="ctag scene">{{ c.scene }}</text><text class="ctag mtd">{{ c.mtd }}</text>
+        <text class="ctag-star" :class="{ starred: isStarred(c.id) }" @tap.stop="toggleStar(c)">{{ isStarred(c.id) ? '★' : '☆' }}</text>
       </view>
       <view class="case-title">{{ c.title }}</view>
       <view class="case-preview">{{ c.preview }}</view>
@@ -67,7 +68,9 @@ export default {
       roleOpts: ['买房客户', '租客', '业主', '房东'],
       sceneOpts: ['房产交易', '租赁', '整装家居', '家政保洁', '适老'],
       cases: casesData.map(c => ({ ...c, _open: false })),
-      earn: earnTasks.map(t => ({ ...t }))
+      earn: earnTasks.map(t => ({ ...t })),
+      starredSet: new Set(),
+      STAR_KEY: 'fs_starred_cases'
     }
   },
   computed: {
@@ -78,10 +81,36 @@ export default {
     }
   },
   onShow() { trackPageview('cases') },
+  onLoad() {
+    try {
+      const raw = JSON.parse(uni.getStorageSync(this.STAR_KEY) || '[]')
+      this.starredSet = new Set(raw)
+    } catch {}
+  },
   methods: {
     setRole(r) { this.role = r },
     setScene(s) { this.scene = s },
     toggleCase(c) { c._open = !c._open },
+    // 收藏：localStorage 持久，首次收藏 +5 积分
+    isStarred(id) { return this.starredSet.has(id) },
+    toggleStar(c) {
+      if (this.starredSet.has(c.id)) {
+        this.starredSet.delete(c.id)
+        this._saveStar()
+        uni.showToast({ title: '已取消收藏', icon: 'none' })
+        return
+      }
+      this.starredSet.add(c.id)
+      this._saveStar()
+      if (!this.userStore.isDone('collect')) {
+        this.userStore.markDone('collect')
+        this.userStore.earnPoints(5, '收藏案例')
+      }
+      uni.showToast({ title: '★ 已收藏 +5 积分', icon: 'none' })
+    },
+    _saveStar() {
+      uni.setStorageSync(this.STAR_KEY, JSON.stringify([...this.starredSet]))
+    },
     // 真实完成态：每个任务对应产品路径的真实动作
     realDone(id) {
       const u = this.userStore
@@ -116,3 +145,16 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.ctag-star {
+  margin-left: auto;
+  font-size: 16px;
+  color: #ccc;
+  cursor: pointer;
+  line-height: 1;
+}
+.ctag-star.starred {
+  color: #f5a623;
+}
+</style>

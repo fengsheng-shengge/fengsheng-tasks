@@ -170,7 +170,8 @@ export const earnTasks = [
   { id: 'curate', t: '完成 1 次见面策展', p: 10, done: false },
   { id: 'profile', t: '完善 1 个客户档案', p: 5, done: false },
   { id: 'assess', t: '完成 1 次品质/服务者测评', p: 8, done: false },
-  { id: 'login', t: '每日登录', p: 2, done: false }
+  { id: 'login', t: '每日登录', p: 2, done: false },
+  { id: 'collect', t: '收藏案例', p: 5, done: false }
 ]
 
 // ===== V2.5 M1：见后跟进模板库（Followup Library）=====

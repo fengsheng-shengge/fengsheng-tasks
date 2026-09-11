@@ -13,6 +13,19 @@
       <text class="dh-count">{{ total > 0 ? total + ' 个方案' : '' }}</text>
     </view>
 
+    <!-- 最近浏览（仅域模式下显示） -->
+    <view class="recent-bar" v-if="mode === 'domain' && recentEntries.length">
+      <view class="rb-hd">
+        <text class="rb-t">⏱ 最近浏览</text>
+        <text class="rb-clr" @tap="clearRecent">清空</text>
+      </view>
+      <scroll-view class="rb-scroll" scroll-x="true" enable-flex>
+        <view class="rb-chip" v-for="e in recentEntries" :key="e.id" @tap="openRecent(e)">
+          <text class="rb-chip-t">{{ (e.consumerQ || e.name || '').slice(0, 12) }}</text>
+        </view>
+      </scroll-view>
+    </view>
+
     <!-- 加载态 -->
     <view v-if="loading" class="state">⏳ 加载中…</view>
     <view v-else-if="error" class="state error">{{ error }}</view>
@@ -54,6 +67,16 @@
       <view class="sc-ans empty-hint" v-else>
         <text class="sc-anslab">答</text>
         <text class="sc-anstx muted">暂无简明结论，待小眼镜补充</text>
+      </view>
+
+      <!-- 预显前 2 条处理要点（不展开也可见） -->
+      <view class="sc-cp-preview" v-if="cp(e).length">
+        <view class="cpp-item" v-for="(c, i) in cp(e).slice(0, 2)" :key="i">
+          <text class="cpp-dot"></text><text class="cpp-tx">{{ c }}</text>
+        </view>
+        <view class="cpp-more" v-if="cp(e).length > 2" @tap.stop="toggle(e)">
+          <text>还有 {{ cp(e).length - 2 }} 条处理要点 ›</text>
+        </view>
       </view>
 
       <!-- 展开详情 -->
@@ -150,13 +173,16 @@ export default {
       // id → 词条标题，供相关方案展示用
       entryTitleMap: {},
       // 热搜问题引导（高频客户问题，均实测可搜到结果）
-      hotQueries: ['中介费', '房东不退押金', '独家委托', '过户流程', '房子有抵押', '合同跟谁签']
+      hotQueries: ['中介费', '房东不退押金', '独家委托', '过户流程', '房子有抵押', '合同跟谁签'],
+      // 最近浏览（localStorage 持久，最多 5 条）
+      recentEntries: [],
+      RECENT_KEY: 'fs_recent_entries'
     }
   },
   methods: {
     isRealLegal,
     onKw(e) { this.kw = e.detail.value },
-    toggle(e) { e._open = !e._open },
+    toggle(e) { e._open = !e._open; if (e._open) this.pushRecent(e) },
     // oneLineAnswer / ola 兼容
     oneLine(e) {
       return e.oneLineAnswer || e.ola || ''
@@ -205,6 +231,27 @@ export default {
     quickSearch(q) {
       this.kw = q
       this.doSearch()
+    },
+    // 最近浏览：记录已浏览词条（防重复、限制 5 条）
+    pushRecent(e) {
+      if (!e || !e.id) return
+      try {
+        let rec = JSON.parse(uni.getStorageSync(this.RECENT_KEY) || '[]')
+        rec = rec.filter(r => r.id !== e.id)
+        rec.unshift({ id: e.id, consumerQ: e.consumerQ, name: e.name })
+        if (rec.length > 5) rec = rec.slice(0, 5)
+        uni.setStorageSync(this.RECENT_KEY, JSON.stringify(rec))
+        this.recentEntries = rec
+      } catch {}
+    },
+    clearRecent() {
+      uni.removeStorageSync(this.RECENT_KEY)
+      this.recentEntries = []
+    },
+    openRecent(e) {
+      // 找到完整词条数据后展开
+      const found = this.entries.find(x => x.id === e.id)
+      if (found) { found._open = true; this.$forceUpdate() }
     },
     async loadDomain() {
       this.loading = true
@@ -257,6 +304,8 @@ export default {
   },
   onLoad(options) {
     this.kw = options.q || ''
+    // 加载最近浏览记录
+    try { this.recentEntries = JSON.parse(uni.getStorageSync(this.RECENT_KEY) || '[]') } catch { this.recentEntries = [] }
     if (options.domain) {
       this.mode = 'domain'
       this.domainKey = options.domain
@@ -333,4 +382,29 @@ export default {
   color: #3d5a3e;
   border: 1px solid #d4cec2;
 }
+
+/* 方案卡片预显前 2 条处理要点 */
+.sc-cp-preview { margin-top: 7px; padding: 7px 9px; background: #faf8f4; border-radius: 8px; border: 1px solid #ede8de; }
+.cpp-item { display: flex; align-items: flex-start; gap: 6px; padding: 2px 0; }
+.cpp-dot { flex-shrink: 0; width: 5px; height: 5px; border-radius: 50%; background: #c46a3a; margin-top: 7px; }
+.cpp-tx { font-size: 12px; color: #555; line-height: 1.55; }
+.cpp-more { margin-top: 4px; font-size: 11px; color: #c46a3a; font-weight: 600; }
+
+/* 最近浏览 */
+.recent-bar { margin-bottom: 12px; }
+.rb-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.rb-t { font-size: 12px; font-weight: 700; color: #888; }
+.rb-clr { font-size: 11px; color: #bbb; }
+.rb-scroll { display: flex; flex-direction: row; white-space: nowrap; }
+.rb-chip {
+  display: inline-flex;
+  background: #fff;
+  border: 1px solid #e7e0d4;
+  border-radius: 20px;
+  padding: 4px 12px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.rb-chip:active { opacity: .7; }
+.rb-chip-t { font-size: 12px; color: #555; }
 </style>

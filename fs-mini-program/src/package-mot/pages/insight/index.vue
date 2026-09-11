@@ -120,6 +120,7 @@
       <!-- 确认洞察按钮 -->
       <button class="btn-confirm" v-if="!confirmed" @tap="confirmInsight">✓ 确认洞察报告</button>
       <view class="confirmed-banner" v-else>✓ 此洞察已于 {{ confirmedAt }} 确认</view>
+      <view class="copy-conclusion-btn" @tap="copyConclusion">📋 复制洞察结论给客户</view>
     </view>
 
     <!-- ========== Tab2：认知卡 ========== -->
@@ -605,12 +606,37 @@ export default {
       } catch (e) {
         console.warn('[radar] draw failed:', e)
       }
+    },
+    copyConclusion() {
+      if (!this.deepInsight) { uni.showToast({ title: '暂无洞察可复制', icon: 'none' }); return }
+      const lines = ['【客户洞察 - ' + (this.client ? this.client.name : '') + '】', '']
+      if (this.insightTypeLabels) lines.push('客户类型：' + this.insightTypeLabels)
+      if (this.deepInsight.confirmText) lines.push('需求确认：' + this.deepInsight.confirmText)
+      const dims = this.radarDims.filter(d => d.score > 60).map(d => d.name + '（' + d.score + '分）')
+      if (dims.length) lines.push('重点关注：' + dims.join(' · '))
+      if (this.deepInsight.customerConflict) lines.push('核心顾虑：' + this.deepInsight.customerConflict)
+      if (this.triggerEventLabels.length) lines.push('触发动因：' + this.triggerEventLabels.join('、'))
+      lines.push('', '——由风声助手生成')
+      uni.setClipboardData({ data: lines.join('\n'), success: () => uni.showToast({ title: '洞察已复制，可发给客户', icon: 'none' }) })
     }
   }
 }
 </script>
 
 <style scoped>
+.page { padding: 14px 14px 40px; background: #f7f4ef; min-height: 100vh; }
+.copy-conclusion-btn {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3d5a3e;
+  background: #eef3ec;
+  border: 1px solid #c5d9c1;
+  border-radius: 999px;
+  padding: 9px 0;
+}
+</style><style scoped>
 .page { padding: 14px 14px 40px; background: #f7f4ef; min-height: 100vh; }
 
 /* 报告头部 */
