@@ -1002,7 +1002,7 @@ async function handleChat(request, env, authenticatedOpenid, resolvedBotId, ctx)
     const PAT_TOKEN = env.COZE_PAT_TOKEN;
     if (!PAT_TOKEN) {
       console.error('COZE_PAT_TOKEN not configured');
-      return jsonResponse({ error: 'server config error' }, 500);
+      return jsonResponse({ error: 'server config error: COZE_PAT_TOKEN is empty', detail: 'COZE_PAT_TOKEN' }, 500);
     }
     const reqBody = {
       bot_id: resolvedBotId,
@@ -3420,7 +3420,7 @@ export default {
       const resolvedBotId = env.FS_BOT_ID;
       if (!resolvedBotId) {
         console.error('FS_BOT_ID not configured');
-        return jsonResponse({ error: 'server config error' }, 500);
+        return jsonResponse({ error: 'server config error: FS_BOT_ID is empty', detail: 'FS_BOT_ID' }, 500);
       }
       const authHeader = request.headers.get('Authorization');
       const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
