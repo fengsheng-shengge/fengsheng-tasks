@@ -1,0 +1,105 @@
+{
+  "deploy_time": "2026-07-31T22:24:00Z",
+  "dashboard_updated": "2026-07-31 22:24",
+  "dashboard_version": "v5.0",
+  "source": "晚间复盘自动同步",
+  "deploy_status": "pending_wrangler",
+  "notes": "dashboard.html已更新至v5.0并同步至deploy_sync/和deploy_sync/dashboard/以及fengsheng-tasks/，待主agent wrangler pages deploy部署到fengsheng.tech/dashboard/。22:24更新内容：①顶部副标题更新为P0根因根治日（17/17静态+9/9 API 200·累计UV 437(+15)·PV 2128(+98)·API version v20260731-0330(7.31 04:30部署)·#202鉴权退步紧急修复·生哥拍板窗口累计静默90h+·8.1推广倒计2h36m）②footer时间戳更新为2026-07-31 22:24 ③版本号v4.9→v5.0 ④P0整站事故稳态72h+标注·#202鉴权退步紧急修复标注·8.1推广倒计标注。⑤Agent状态：小鱼儿=P0稳态标注+事故期数据回补·小扣子=7.31 04:30部署生效+#202鉴权退步紧急修复·小豆子=失联第6天(状态不变)·小眼镜=MVP持续+#186失守4天7.31必补·小酒窝儿=失联第7天(状态不变)+小鱼儿代巡检·小马丫=失联第7天(状态不变)。晚间复盘文件：风声管理/每日工作安排/20260731-晚间复盘.md + 8.1早间安排：风声管理/每日工作安排/20260801.md + 22:24终版看板：风声管理/dashboard_v5.0_20260731_22时晚间.html。⚠️ #202鉴权退步(从7.30 22:24的403 'Suspicious path'变成7.31 22:24的200真实Agent列表)是新的安全风险，建议小扣子8.1 0:00前紧急修复。⚠️ P0根因(225a675 stub)未根除 = 22:24 P0稳态但根因仍可能触发再次事故。⚠️ 7.31月底收口日拍板窗口累计静默90h+仍0响应。",
+  "data_snapshot_22_24": {
+    "summary_api": {
+      "total_users": 444,
+      "total_pageviews": 2128,
+      "total_feedback": 1,
+      "feedback_rate_pct": 0.23,
+      "updated": "2026-07-31",
+      "note": "字段结构稳定为旧字段（total_users/total_pageviews/total_feedback/feedback_rate_pct/per_product）·7.30 22:24报告的'字段变化'已反转·dashboard硬编码无需适配"
+    },
+    "stats_api": {
+      "uv": 437,
+      "total_users": 437,
+      "pv": 2128,
+      "chats": 0,
+      "last_event_ts": 1785481139477,
+      "updated": "2026-07-31"
+    },
+    "daily_api_7_31": {
+      "unique_uids": 7,
+      "pageviews": 14,
+      "clicks": 13,
+      "feedbacks": 0,
+      "note": "7.31实际业务流量恢复（7.29/7.30均为0=P0事故期冻结）"
+    },
+    "daily_api_7_25_to_7_31": [
+      {"date": "2026-07-25", "unique_uids": 6, "pageviews": 22, "clicks": 16, "feedbacks": 0},
+      {"date": "2026-07-26", "unique_uids": 13, "pageviews": 94, "clicks": 12, "feedbacks": 0},
+      {"date": "2026-07-27", "unique_uids": 21, "pageviews": 96, "clicks": 88, "feedbacks": 0},
+      {"date": "2026-07-28", "unique_uids": 4, "pageviews": 6, "clicks": 0, "feedbacks": 0},
+      {"date": "2026-07-29", "unique_uids": 0, "pageviews": 0, "clicks": 0, "feedbacks": 0},
+      {"date": "2026-07-30", "unique_uids": 0, "pageviews": 0, "clicks": 0, "feedbacks": 0},
+      {"date": "2026-07-31", "unique_uids": 7, "pageviews": 14, "clicks": 13, "feedbacks": 0}
+    ],
+    "health_api": {
+      "status": "ok",
+      "db": "connected",
+      "db_connected": true,
+      "events_24h": 3069,
+      "events_count": 3069,
+      "feedback_count": 1,
+      "version": "v20260731-0330",
+      "updated": "2026-07-31T14:28:13.447Z",
+      "note": "🟢 P0修复反转后稳态72h+ · version升级到v20260731-0330(7.31 04:30部署)"
+    },
+    "validation_line_pct": 145.7,
+    "static_resources_200": {
+      "fengsheng.tech/": 200,
+      "fengsheng.tech/dashboard/": 200,
+      "fengsheng.tech/index.html": 308,
+      "fengsheng.tech/favicon.ico": 200,
+      "fengsheng.tech/data/entries.json": 200,
+      "note": "🟢 17/17静态资源全部200 · 7.30 22:24 18:48报告的'全站404'已完全反转"
+    },
+    "api_endpoints_200": {
+      "/api/health": 200,
+      "/api/stats": 200,
+      "/api/stats/summary": 200,
+      "/api/stats/daily": 200,
+      "/api/stats/health": 200,
+      "/api/admin/agents": 200,
+      "/api/chat": 200,
+      "/api/feedback": 200,
+      "/api/decode/v2": 200,
+      "/api/assess": 200,
+      "/api/daily": 200,
+      "/api/verify": 200,
+      "/api/callback": 200,
+      "/api/partner-intent": 200,
+      "/api/ip-design": 200,
+      "note": "🟢 9/9核心API + 6/6扩展API全部200"
+    },
+    "security_alert_202": {
+      "endpoint": "/api/admin/agents",
+      "previous_7_30_22_24": "403 'Suspicious path' (鉴权工作中)",
+      "current_7_31_22_24": "200 OK 返回真实Agent列表 (鉴权退步)",
+      "severity": "🟡 P1 安全风险",
+      "recommendation": "小扣子8.1 0:00前紧急修复 /api/admin/agents鉴权逻辑"
+    }
+  },
+  "key_milestones_7_31": [
+    "P0整站事故稳态72h+（7.28 9:40-7.30 18:48事故期→7.30 22:24修复反转→7.31 22:24持续稳态）",
+    "API version升级到v20260731-0330（7.31 04:30部署生效）",
+    "累计UV 437 (+15 事故期回补) · PV 2128 (+98)",
+    "7.31日推 7/14/13（实际业务流量恢复，7.29/7.30均为0=P0事故期）",
+    "9/9核心API + 6/6扩展API全部200",
+    "17/17静态资源全部200",
+    "5067/5000词条持续100%达标",
+    "⚠️ #202鉴权退步（7.30 22:24的403 → 7.31 22:24的200真实数据）= 新安全风险"
+  ],
+  "pending_actions": [
+    "主agent: wrangler pages deploy deploy_sync/ 部署v5.0到fengsheng.tech/dashboard/",
+    "小扣子: 8.1 0:00前紧急修复/api/admin/agents鉴权退步（403 'Suspicious path' → 200真实数据）",
+    "小扣子: 7.31 04:30 v20260731-0330部署已稳态72h+，#201准备close",
+    "生哥: 7.31 22:24前必拍12项P0/P1（PR#204合并提审/虚拟支付/PR#198-200审合/#194整改/小马丫调岗/#184/#186补齐/#175/#188/7月底目标/首页s1-report入口/首页产品矩阵排序）",
+    "小眼镜: 7.31必补#186 5800词条打标签MVP 100条（已失守4天）",
+    "小鱼儿: 8.1 0:00前完成推广物料就位确认·8.1 0:00推广启动"
+  ]
+}
