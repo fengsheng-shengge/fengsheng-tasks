@@ -698,9 +698,16 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
         if (!line || line === '[DONE]') { continue; }
         var evt;
         try { evt = JSON.parse(line); } catch (e) { continue; }
-        if (evt.delta_type === 'answer' && typeof evt.answer === 'string') {
-          if (!(evt.conversation_id in answers)) { answers[evt.conversation_id] = ''; order.push(evt.conversation_id); }
-          answers[evt.conversation_id] += evt.answer;
+        // 兼容两种 delta 格式：
+        //  - Coze 原生 (worker 透传)：type === 'answer'，正文增量在 content
+        //  - 旧版约定：delta_type === 'answer'，正文增量在 answer
+        var isAnswer = (evt.type === 'answer') || (evt.delta_type === 'answer');
+        var frag = (typeof evt.content === 'string' && evt.content) ? evt.content
+                 : (typeof evt.answer === 'string' ? evt.answer : '');
+        if (isAnswer && frag) {
+          var kid = evt.conversation_id || evt.section_id || 'default';
+          if (!(kid in answers)) { answers[kid] = ''; order.push(kid); }
+          answers[kid] += frag;
         }
       }
       if (done) return { answers: answers, order: order };
