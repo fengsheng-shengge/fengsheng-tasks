@@ -125,15 +125,26 @@
           </view>
         </view>
 
-        <!-- ⑥ 法律依据（脚注级） -->
-        <view class="blk" v-if="e.legalRef">
+        <!-- ⑥ 法律依据（脚注级，仅真实法源，占位不展示） -->
+        <view class="blk" v-if="isRealLegal(e.legalRef)">
           <view class="blk-h">⚖ 法律依据</view>
           <view class="blk-b">{{ e.legalRef }}</view>
         </view>
-        <view class="blk" v-if="e.lastVerified">
-          <view class="blk-h">🔎 校验</view>
-          <view class="blk-b muted">{{ e.lastVerified }}</view>
+
+        <!-- ⑦ 溯源（数据源 + 最近核验） -->
+        <view class="blk" v-if="dsLabel(e) || e.lastVerified">
+          <view class="blk-h">🗂 溯源</view>
+          <view class="blk-b muted">
+            <text v-if="dsLabel(e)">数据源：{{ dsLabel(e) }}</text>
+            <text v-if="dsLabel(e) && e.lastVerified">　·　</text>
+            <text v-if="e.lastVerified">最近核验：{{ e.lastVerified }}</text>
+          </view>
         </view>
+      </view>
+
+      <!-- V3.13 溯源条：法源 / 数据源 / 核验时间（收起也可见，专业背书） -->
+      <view class="sc-prov" v-if="provItems(e).length">
+        <text class="prov-item" v-for="(p, i) in provItems(e)" :key="i">{{ p }}</text>
       </view>
 
       <view class="sc-foot" @tap="toggle(e)">
@@ -196,6 +207,23 @@ export default {
       return []
     },
     typeLabel(e) { return TYPE_LABEL[e.entryType] || '' },
+    // V3.13 溯源：数据源友好名（内部文件名/生成标记不外显，规避「AI」字样）
+    dsLabel(e) {
+      const s = String(e.dataSource || '').trim()
+      if (!s || s === '—' || s === '无') return ''
+      if (/^entries_|\.json$/i.test(s)) return '风声知识底座'
+      if (s.indexOf('AI生成') >= 0) return '风声知识底座'
+      return s
+    },
+    // 溯源条内容（卡片收起也可见）：真实法源 / 数据源 / 核验时间
+    provItems(e) {
+      const out = []
+      if (this.isRealLegal(e.legalRef)) out.push('⚖ 法源有据')
+      const ds = this.dsLabel(e)
+      if (ds) out.push('📚 ' + ds)
+      if (e.lastVerified) out.push('🕐 ' + e.lastVerified + ' 核验')
+      return out
+    },
     // 话术：优先取后端 posSpeech；缺失时依据 def/corePoint 自动整理（标注自动整理，有真数据即覆盖）
     speech(e) {
       const ps = e.posSpeech || {}
@@ -407,4 +435,8 @@ export default {
 }
 .rb-chip:active { opacity: .7; }
 .rb-chip-t { font-size: 12px; color: #555; }
+
+/* V3.13 溯源条 */
+.sc-prov { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.prov-item { font-size: 10px; color: #a89f8d; background: #faf8f4; border-radius: 6px; padding: 2px 7px; border: 1px solid #f0ece2; }
 </style>

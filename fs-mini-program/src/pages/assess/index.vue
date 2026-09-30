@@ -4,6 +4,7 @@
     <view class="assess-tabs">
       <view class="assess-tab" :class="{ active: tab === 'a' }" @tap="tab = 'a'">🏠 住得好测评</view>
       <view class="assess-tab" :class="{ active: tab === 'b' }" @tap="tab = 'b'">👤 服务者能力</view>
+      <view class="assess-tab" :class="{ active: tab === 'c' }" @tap="tab = 'c'">📚 真题闯关</view>
     </view>
 
     <!-- ========== Tab A：住得好测评（7维度） ========== -->
@@ -146,6 +147,86 @@
       </view>
     </view>
 
+    <!-- ========== V3.13 Tab C：真题闯关（选模块→答题即时解析→结果→错题反查） ========== -->
+    <view v-if="tab === 'c'">
+      <!-- 封面：选难度模块 -->
+      <view v-if="phase_c === 'intro'" class="intro-card">
+        <view class="ic-title">📚 真题闯关</view>
+        <view class="ic-sub">真实判例 · 四选一 · 当场解析</view>
+        <view class="ic-dims">选难度开考：答完当场看判决要点与法条依据</view>
+        <view class="tier-list">
+          <view class="tier-item" v-for="t in QUIZ_TIERS" :key="t.key" @tap="startTier(t.key)">
+            <text class="tier-ico">{{ t.ico }}</text>
+            <view class="tier-body">
+              <view class="tier-name">{{ t.name }}</view>
+              <view class="tier-desc">{{ t.desc }}</view>
+            </view>
+            <text class="tier-count">{{ t.count }} 题</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 答题：即时反馈 + 解析 -->
+      <view v-if="phase_c === 'doing' && curQ_c" class="quiz-wrap">
+        <view class="quiz-progress">
+          <text>第 {{ cur_c + 1 }} / {{ qs_c.length }} 题 · {{ tierKey_c }}</text>
+          <view class="prog-bar"><view class="prog-fill" :style="{ width: (cur_c / qs_c.length * 100) + '%' }"></view></view>
+        </view>
+        <view class="q-card">
+          <view class="q-dim-badge quiz-badge">⚖ 真题 · {{ tierKey_c }}</view>
+          <view class="q-scenario">{{ curQ_c.scenario }}</view>
+          <view class="q-text">{{ curQ_c.question }}</view>
+          <view class="q-opts">
+            <view v-for="o in curQ_c.options" :key="o.id"
+              :class="['q-opt', pickClass(o.id)]"
+              @tap="pickOpt(o.id)">
+              <text class="q-opt-label">{{ o.id }}</text>
+              <text class="q-opt-text">{{ o.text }}</text>
+              <text class="q-opt-mark" v-if="answeredMark(o.id)">{{ answeredMark(o.id) }}</text>
+            </view>
+          </view>
+          <!-- 即时解析 -->
+          <view class="quiz-exp" v-if="answeredCur_c">
+            <view class="qe-verdict" :class="lastCorrect_c ? 'ok' : 'no'">{{ lastCorrect_c ? '✓ 答对了' : '✗ 答错了' }}</view>
+            <view class="qe-block" v-if="curQ_c.explanation.judgment">
+              <view class="qe-h">判决要点</view>
+              <view class="qe-b">{{ curQ_c.explanation.judgment }}</view>
+            </view>
+            <view class="qe-block" v-if="keyPoints_c.length">
+              <view class="qe-h">关键点</view>
+              <view class="qe-kp" v-for="(k, i) in keyPoints_c" :key="i">· {{ k }}</view>
+            </view>
+            <view class="qe-block" v-if="curQ_c.explanation.legalBasis">
+              <view class="qe-h">法条依据</view>
+              <view class="qe-b">{{ curQ_c.explanation.legalBasis }}</view>
+            </view>
+          </view>
+        </view>
+        <view class="q-foot">
+          <button class="q-submit" v-if="answeredCur_c" @tap="nextQ_c">{{ cur_c < qs_c.length - 1 ? '下一题 ›' : '查看结果 →' }}</button>
+        </view>
+      </view>
+
+      <!-- 结果：正确率 + 等级 + 错题反查 -->
+      <view v-if="phase_c === 'result'" class="result-wrap">
+        <view class="res-card">
+          <view class="res-title">📚 本局成绩</view>
+          <view class="res-score">{{ scoreC }}<text class="res-score-unit"> 分</text></view>
+          <view class="res-label">{{ gradeC }} · 答对 {{ okCount_c }}/{{ results_c.length }} 题</view>
+        </view>
+        <view class="res-card" v-if="wrongC.length">
+          <view class="rw-head">📝 错题温习 · 点一条去查方案</view>
+          <view class="rw-item" v-for="q in wrongC" :key="q.id" @tap="reviewWrong(q)">
+            <text class="rw-tx">{{ q.scenario.length > 26 ? q.scenario.slice(0, 26) + '…' : q.scenario }}</text>
+            <text class="rw-go">查 ›</text>
+          </view>
+        </view>
+        <view class="res-actions">
+          <button class="ra-sync" @tap="resetC">再来一局</button>
+        </view>
+      </view>
+    </view>
+
     <!-- ★ V3.7.2 同步到洞察：客户选择浮层 -->
     <view v-if="showSyncPicker" class="sync-overlay">
       <view class="so-head">
@@ -178,7 +259,8 @@
 
 <script>
 import { useUserStore } from '../../store/user'
-import { trackPageview } from '../../utils/tracker'
+import { trackPageview, trackEvent } from '../../utils/tracker'
+import { QUIZ_TIERS, QUIZ_QUESTIONS } from '../../utils/quizData'
 
 // 住得好测评：7 维度 × 1 题
 const Q_A = [
@@ -347,12 +429,33 @@ export default {
       phase_b: 'intro', q_b: 0, ans_b: {}, resDims_b: {}, resScore_b: 0,
       // ★ V3.7.2 同步到洞察
       showSyncPicker: false,
+      // V3.13 真题闯关（考板块状态机：tier→qs→cur→pick→results）
+      phase_c: 'intro', tierKey_c: '', qs_c: [], cur_c: 0, pick_c: '', results_c: [],
     }
   },
   computed: {
     Q_A: () => Q_A,
     Q_B: () => Q_B,
     dimB: () => dimB,
+    QUIZ_TIERS: () => QUIZ_TIERS,
+    // —— V3.13 真题闯关 ——
+    curQ_c() { return this.qs_c[this.cur_c] || null },
+    answeredCur_c() { return this.pick_c !== '' },
+    lastCorrect_c() { return this.results_c.length ? this.results_c[this.results_c.length - 1].correct : false },
+    okCount_c() { return this.results_c.filter(r => r.correct).length },
+    keyPoints_c() { return (this.curQ_c && this.curQ_c.explanation && this.curQ_c.explanation.keyPoints) || [] },
+    scoreC() {
+      if (!this.results_c.length) return 0
+      return Math.round(this.okCount_c / this.results_c.length * 100)
+    },
+    gradeC() {
+      const s = this.scoreC
+      return s >= 90 ? '优秀' : s >= 70 ? '基本掌握' : s >= 50 ? '有待加强' : '重学'
+    },
+    wrongC() {
+      return this.results_c.filter(r => !r.correct)
+        .map(r => this.qs_c.find(q => q.id === r.qid)).filter(Boolean)
+    },
     userStore() { return useUserStore() },
     clientList() { return this.userStore.clients },
     hasInsightScores() {
@@ -508,6 +611,51 @@ export default {
       setTimeout(() => this.drawRadarB(), 300)
     },
     resetB() { this.phase_b = 'intro'; this.q_b = 0; this.ans_b = {} },
+    // ===== V3.13 真题闯关 =====
+    startTier(tierKey) {
+      const list = QUIZ_QUESTIONS.filter(q => q.difficulty === tierKey)
+      if (!list.length) { uni.showToast({ title: '该模块题目筹备中', icon: 'none' }); return }
+      this.tierKey_c = tierKey
+      this.qs_c = list.slice().sort(() => Math.random() - 0.5) // 洗牌
+      this.cur_c = 0; this.pick_c = ''; this.results_c = []
+      this.phase_c = 'doing'
+      trackEvent('quiz_start', 'assess', { tier: tierKey })
+    },
+    pickOpt(oId) {
+      if (this.answeredCur_c) return // 已作答锁定，防重复计分
+      this.pick_c = oId
+      const correct = oId === this.curQ_c.correctOption
+      this.results_c.push({ qid: this.curQ_c.id, correct })
+      this.userStore.recordAnswer(correct) // 激活 quizStats（总/对/连胜）
+    },
+    nextQ_c() {
+      if (this.cur_c < this.qs_c.length - 1) { this.cur_c++; this.pick_c = '' }
+      else {
+        this.phase_c = 'result'
+        this.userStore.markDone('quiz')
+        this.userStore.earnPoints(5, '完成真题闯关')
+      }
+    },
+    resetC() { this.phase_c = 'intro'; this.qs_c = []; this.cur_c = 0; this.pick_c = ''; this.results_c = [] },
+    pickClass(oId) {
+      if (!this.answeredCur_c) return ''
+      if (oId === this.curQ_c.correctOption) return 'sel right'
+      if (oId === this.pick_c) return 'sel wrong'
+      return ''
+    },
+    answeredMark(oId) {
+      if (!this.answeredCur_c) return ''
+      if (oId === this.curQ_c.correctOption) return '✓'
+      if (oId === this.pick_c) return '✗'
+      return ''
+    },
+    // 错题反查词条：用法条关键词跳知识库搜索（对齐主站「错题反查词条温习」）
+    reviewWrong(q) {
+      const exp = q.explanation || {}
+      const kw = exp.legalBasis ? exp.legalBasis.slice(0, 8) : (q.scenario || '').slice(0, 6)
+      trackEvent('quiz_review', 'assess', { qid: q.id })
+      uni.navigateTo({ url: '/pages/knowledge/domain?q=' + encodeURIComponent(kw) })
+    },
     drawRadarB() {
       try {
         const ctx = uni.createCanvasContext('radarB', this)
@@ -626,4 +774,35 @@ button[disabled] { opacity: .45; }
 .so-empty-icon { font-size: 48px; margin-bottom: 12px; }
 .so-empty-t { font-size: 16px; font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
 .so-empty-s { font-size: 13px; color: #8a837a; line-height: 1.6; }
+
+/* ===== V3.13 真题闯关 ===== */
+.tier-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.tier-item { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.14); border-radius: 12px; padding: 12px 14px; text-align: left; }
+.tier-item:active { background: rgba(255,255,255,.22); }
+.tier-ico { font-size: 22px; }
+.tier-body { flex: 1; }
+.tier-name { font-size: 14px; font-weight: 700; color: #fff; }
+.tier-desc { font-size: 11px; color: rgba(255,255,255,.72); margin-top: 2px; }
+.tier-count { font-size: 11px; color: #fff; background: rgba(196,106,58,.85); border-radius: 999px; padding: 3px 10px; font-weight: 700; flex-shrink: 0; }
+.quiz-badge { background: rgba(196,106,58,.12); color: #c46a3a; }
+.q-scenario { font-size: 13px; color: #555; line-height: 1.6; background: #f7f4ef; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
+.q-opt.sel.right { background: #eef6ef; border-color: #27ae60; }
+.q-opt.sel.wrong { background: #fdf0ee; border-color: #c0392b; }
+.q-opt-mark { font-size: 13px; font-weight: 800; flex-shrink: 0; }
+.q-opt.sel.right .q-opt-mark { color: #27ae60; }
+.q-opt.sel.wrong .q-opt-mark { color: #c0392b; }
+.quiz-exp { margin-top: 12px; border-top: 1px dashed #e7e0d4; padding-top: 10px; }
+.qe-verdict { font-size: 13px; font-weight: 800; margin-bottom: 8px; }
+.qe-verdict.ok { color: #27ae60; }
+.qe-verdict.no { color: #c0392b; }
+.qe-block { margin-bottom: 8px; }
+.qe-h { font-size: 12px; font-weight: 700; color: #3d5a3e; margin-bottom: 3px; }
+.qe-b { font-size: 12px; color: #555; line-height: 1.6; }
+.qe-kp { font-size: 12px; color: #555; line-height: 1.6; }
+.rw-head { font-size: 13px; font-weight: 700; color: #2b2b2b; margin-bottom: 10px; }
+.rw-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: #faf8f5; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+.rw-item:active { background: #f0ece4; }
+.rw-tx { font-size: 12px; color: #555; line-height: 1.5; flex: 1; }
+.rw-go { font-size: 12px; color: #c46a3a; font-weight: 700; flex-shrink: 0; }
+.res-score-unit { font-size: 14px; font-weight: 700; color: #8a837a; }
 </style>

@@ -1,5 +1,12 @@
 <template>
   <view class="page">
+    <!-- V3.13 角色认领徽标 -->
+    <view class="role-badge" v-if="userStore.role" @tap="switchRole">
+      <text class="rb-ico">{{ roleMeta[userStore.role].ico }}</text>
+      <text class="rb-label">我是{{ roleMeta[userStore.role].label }}</text>
+      <text class="rb-edit">切换 ›</text>
+    </view>
+
     <!-- ★ V3.12 租房/购房纵轴切换器 -->
     <view class="axis-switcher">
       <view
@@ -40,6 +47,35 @@
       </view>
       <view class="qs-item" @tap="goQuick('search')">
         <text class="qs-ico">🔍</text><text class="qs-name">查服务方案</text><text class="qs-desc">5000+ 真实方案</text>
+      </view>
+    </view>
+
+    <!-- V3.13 角色定制：新用户三步引导 / 角色推荐 -->
+    <view class="role-rec" v-if="userStore.role === 'newbie'">
+      <view class="rr-head">
+        <text class="rr-title">🌱 三步上手</text>
+        <text class="rr-sub">测评 → 知识库 → 策展引擎</text>
+      </view>
+      <view class="rr-steps">
+        <view class="rr-step" v-for="(s, i) in onboardStepsDef" :key="s.key" @tap="goOnboardStep(s)">
+          <view class="rr-num" :class="{ done: userStore.onboardingSteps[s.key] }">{{ userStore.onboardingSteps[s.key] ? '✓' : (i + 1) }}</view>
+          <view class="rr-ico">{{ s.ico }}</view>
+          <text class="rr-name">{{ s.name }}</text>
+          <text class="rr-desc">{{ s.desc }}</text>
+        </view>
+      </view>
+    </view>
+    <view class="role-rec" v-else-if="userStore.role">
+      <view class="rr-head">
+        <text class="rr-title">{{ roleMeta[userStore.role].ico }} 为{{ roleMeta[userStore.role].label }}推荐</text>
+        <text class="rr-sub">按你的角色精选</text>
+      </view>
+      <view class="rr-grid">
+        <view class="rr-item" v-for="(it, i) in recoByRole[userStore.role]" :key="i" @tap="goReco(it)">
+          <text class="rr-ico">{{ it.ico }}</text>
+          <text class="rr-name">{{ it.name }}</text>
+          <text class="rr-desc">{{ it.desc }}</text>
+        </view>
       </view>
     </view>
 
@@ -197,6 +233,21 @@
 
     <!-- 反馈弹层 -->
     <feedback-popup :show.sync="fbShow" source="home" />
+
+    <!-- V3.13 角色认领浮层（首次启动） -->
+    <view class="role-mask" v-if="!userStore.role">
+      <view class="role-card">
+        <view class="rc-title">你主要是？</view>
+        <view class="rc-sub">选择身份，风声会按你的角色定制首页</view>
+        <view class="rc-roles">
+          <view class="rc-role" v-for="(m, k) in roleMeta" :key="k" @tap="pickRole(k)">
+            <text class="rc-ico">{{ m.ico }}</text>
+            <text class="rc-name">{{ m.label }}</text>
+            <text class="rc-desc">{{ m.desc }}</text>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -212,6 +263,31 @@ export default {
   data() {
     return {
       currentAxis: 'buy',  // ★ V3.12 纵轴：buy | rent
+      // V3.13 角色分流 + 三步引导
+      roleMeta: {
+        broker: { label: '经纪人', ico: '🤝', desc: '带客户跑全流程：建档 · 见面参谋 · 需求洞察 · 成交售后' },
+        manager: { label: '管理者', ico: '📊', desc: '看经营与团队：案例灵感 · 知识沉淀 · 管理看板' },
+        newbie: { label: '新用户', ico: '🌱', desc: '三步上手：测评 → 知识库 → 策展引擎' }
+      },
+      recoByRole: {
+        broker: [
+          { ico: '👥', name: '客户档案', desc: '建档与需求记录', tab: 'clients' },
+          { ico: '🎯', name: '见面参谋', desc: '秒出作战结论', route: '/package-curation/pages/curate-prep/index' },
+          { ico: '📄', name: '需求洞察', desc: '七维画像报告', tab: 'clients' },
+          { ico: '🔍', name: '查服务方案', desc: '5000+ 真实方案', route: '/pages/knowledge/domain' }
+        ],
+        manager: [
+          { ico: '💡', name: '案例灵感', desc: '实战经验参考', tab: 'cases' },
+          { ico: '📚', name: '知识库', desc: '13 域真实方案', tab: 'knowledge' },
+          { ico: '🧮', name: '测算工具', desc: '月租/月供预算', route: '/pages/calculator/index' },
+          { ico: '🏠', name: '居住测评', desc: '摸清客户画像', route: '/pages/assess/index' }
+        ]
+      },
+      onboardStepsDef: [
+        { key: 'assess', ico: '🏠', name: '住得好测评', desc: '7 题摸清七维画像', route: '/pages/assess/index' },
+        { key: 'knowledge', ico: '📚', name: '知识库', desc: '按场景查真实方案', route: '/pages/knowledge/domain' },
+        { key: 'curate', ico: '🎯', name: '策展引擎', desc: '见面参谋出结论', route: '/package-curation/pages/curate-prep/index' }
+      ],
       dictDomains: DICT_DOMAINS,
       dictTotal: DICT_TOTAL,
       fbShow: false,
@@ -351,6 +427,24 @@ export default {
       }
     },
     goDictSearch() { uni.navigateTo({ url: '/pages/knowledge/domain' }) },
+    // V3.13 角色分流 + 三步引导
+    pickRole(k) {
+      trackEvent('role_pick', 'home', { role: k })
+      this.userStore.setRole(k)
+    },
+    switchRole() {
+      this.userStore.switchRole()
+    },
+    goReco(it) {
+      trackEvent('feature_click', 'home', { feature: 'role_reco_' + it.name })
+      if (it.tab) uni.switchTab({ url: '/pages/' + it.tab + '/index' })
+      else if (it.route) uni.navigateTo({ url: it.route })
+    },
+    goOnboardStep(s) {
+      this.userStore.completeOnboardStep(s.key)
+      trackEvent('feature_click', 'home', { feature: 'onboard_' + s.key })
+      uni.navigateTo({ url: s.route })
+    },
     goTodo(t) {
       if (!t || !t.route) { this.go('mot'); return }
       // 客户档案是 tabBar 页，走 store.focusClientId
@@ -615,4 +709,73 @@ export default {
 .fb-entry:active { background: #f7f4ef; }
 .fb-entry-t { font-size: 13px; color: var(--text-secondary, #555); }
 .fb-entry-a { font-size: 16px; color: var(--text-tertiary, #9a9a9a); }
+
+/* ========== V3.13 角色认领徽标 ========== */
+.role-badge {
+  display: flex; align-items: center; gap: 6px;
+  margin: 10px 14px 0; padding: 8px 12px;
+  background: #fff; border: 1px solid #e7e0d4; border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.role-badge:active { background: #f7f4ef; }
+.rb-ico { font-size: 15px; }
+.rb-label { font-size: 13px; font-weight: 700; color: #2b2b2b; flex: 1; }
+.rb-edit { font-size: 12px; color: #c8956d; font-weight: 600; }
+
+/* ========== V3.13 角色定制推荐 / 三步引导 ========== */
+.role-rec { margin: 12px 14px 0; }
+.rr-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.rr-title { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+.rr-sub { font-size: 11px; color: #c8956d; }
+.rr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rr-item {
+  background: linear-gradient(135deg, #3d5a3e 0%, #2f4a30 100%);
+  border-radius: 12px; padding: 12px 10px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.rr-item:active { opacity: .9; }
+.rr-ico { font-size: 20px; }
+.rr-name { font-size: 13px; font-weight: 700; color: #fff; }
+.rr-desc { font-size: 10px; color: rgba(255,255,255,.72); }
+.rr-steps { display: flex; gap: 8px; }
+.rr-step {
+  flex: 1; background: #fff; border: 1px solid #e7e0d4; border-radius: 12px;
+  padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.rr-step:active { background: #f7f4ef; }
+.rr-num {
+  width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: #fff; background: #c46a3a;
+}
+.rr-num.done { background: #3d5a3e; }
+.rr-step .rr-ico { font-size: 20px; }
+.rr-name { font-size: 12px; font-weight: 700; color: #2b2b2b; }
+.rr-desc { font-size: 10px; color: #999; text-align: center; }
+
+/* ========== V3.13 角色认领浮层 ========== */
+.role-mask {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(0,0,0,.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 24px;
+}
+.role-card {
+  width: 100%; max-width: 340px;
+  background: #fff; border-radius: 18px; padding: 22px 18px 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.25);
+}
+.rc-title { font-size: 19px; font-weight: 800; color: #1a1a1a; text-align: center; }
+.rc-sub { font-size: 12px; color: #8a837a; text-align: center; margin-top: 6px; margin-bottom: 18px; }
+.rc-roles { display: flex; flex-direction: column; gap: 10px; }
+.rc-role {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  background: #faf8f5; border: 1px solid #ece6db; border-radius: 14px;
+  padding: 13px 15px;
+}
+.rc-role:active { background: #f0ece4; border-color: #3d5a3e; }
+.rc-ico { font-size: 24px; }
+.rc-name { font-size: 16px; font-weight: 800; color: #2b2b2b; }
+.rc-desc { font-size: 11.5px; color: #8a837a; line-height: 1.5; }
 </style>

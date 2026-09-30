@@ -56,6 +56,9 @@ export const useUserStore = defineStore('user', {
     // 答题统计
     quizStats: { total: 0, correct: 0, streak: 0, lastAnswerDate: null },
     _initialized: false, // 首次 initFromStorage 完成标记（页面 onShow 兜底 seed 须等它，避免与 App 200ms 延迟 init 竞态导致重复塞示例）
+    // ===== V3.13 升级：角色分流 + 三步引导养成 =====
+    role: null, // 角色认领：'broker'（经纪人）| 'manager'（管理者）| 'newbie'（新用户）| null（未认领）
+    onboardingSteps: { assess: false, knowledge: false, curate: false }, // 新用户三步引导进度：测评→知识库→策展引擎
   }),
 
   getters: {
@@ -75,6 +78,11 @@ export const useUserStore = defineStore('user', {
     // 任务是否真实完成（积分领取校验）
     isDone(state) {
       return (key) => !!state.doneFlags[key]
+    },
+    // 新用户三步引导已完成步数（0-3）
+    onboardDoneCount(state) {
+      const s = state.onboardingSteps || {}
+      return (s.assess ? 1 : 0) + (s.knowledge ? 1 : 0) + (s.curate ? 1 : 0)
     },
   },
 
@@ -115,6 +123,9 @@ export const useUserStore = defineStore('user', {
       this._set('fs_done_flags', JSON.stringify(this.doneFlags))
       this._set('fs_shares', this.shares)
       this._set('fs_seeded', this.seeded)
+      // V3.13 角色分流 + 三步引导
+      this._set('fs_role', this.role)
+      this._set('fs_onboarding', JSON.stringify(this.onboardingSteps))
     },
 
     async login() {
@@ -170,6 +181,9 @@ export const useUserStore = defineStore('user', {
       this.doneFlags = this._getJSON('fs_done_flags', {})
       this.shares = this._get('fs_shares', 0) || 0
       this.seeded = this._get('fs_seeded', false) || false
+      // V3.13 角色分流 + 三步引导
+      this.role = this._get('fs_role', null)
+      this.onboardingSteps = this._getJSON('fs_onboarding', { assess: false, knowledge: false, curate: false })
       // 仅当 storage 从未写过 clients（真正首次启动）才兜底 seed；
       // 用户清空/删光后 clients=[] 但 key 已存在，不重新塞回，空态真实可达。
       if (!clientsKeyExists && this.clients.length === 0) this.seedClients()
@@ -649,6 +663,29 @@ export const useUserStore = defineStore('user', {
         this.quizStats.streak = 0
       }
       this.quizStats.lastAnswerDate = today
+      this._persist()
+    },
+
+    // ============ V3.13 角色分流 + 三步引导养成 ============
+
+    /** 角色认领（首次启动 / 可重选） */
+    setRole(role) {
+      const valid = ['broker', 'manager', 'newbie']
+      if (!valid.includes(role)) return
+      this.role = role
+      this._persist()
+    },
+
+    /** 重置角色（保留三步引导进度，重新认领） */
+    switchRole() {
+      this.role = null
+      this._persist()
+    },
+
+    /** 完成新用户三步引导的某一步（assess/knowledge/curate） */
+    completeOnboardStep(step) {
+      if (!this.onboardingSteps) this.onboardingSteps = { assess: false, knowledge: false, curate: false }
+      this.onboardingSteps[step] = true
       this._persist()
     },
   },
