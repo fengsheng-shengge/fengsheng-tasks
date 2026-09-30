@@ -59,6 +59,43 @@ jobs:
             echo "  $page → HTTP $CODE"
           done
 
+  data-consistency:
+    name: 数据一致性校验（知识库映射差集，非阻塞）
+    runs-on: ubuntu-latest
+    needs: deploy
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: 检查 broker_toolkit 与 entries 映射差集
+        run: |
+          python3 - <<'PY'
+          import json
+          try:
+              entries = json.load(open('data/entries.json'))
+              d = json.load(open('data/broker_toolkit.json'))
+          except FileNotFoundError as e:
+              print(f'⚠ 缺少数据文件: {e}（跳过校验，不阻断部署）')
+              raise SystemExit(0)
+          entries = entries if isinstance(entries, list) else entries.get('entries', [])
+          tt = d['toolTypes']
+          existing = set(d.get('entries', {}).keys()) if isinstance(d.get('entries'), dict) else set()
+          slot = set()
+          for v in tt.values():
+              slot.update(v.get('entryIds') or [])
+          pure = [e for e in entries if e.get('entryType') in tt
+                  and e.get('id') and e['id'] not in existing and e['id'] not in slot]
+          print(f'entries 基线: {len(entries)} 条')
+          print(f'broker_toolkit 槽位映射: {len(slot|existing)} 条')
+          if pure:
+              print(f'⚠ 存在 {len(pure)} 条“纯漏映射”未补齐，请运行 scripts/backfill_broker_toolkit.py --apply')
+              from collections import Counter
+              print('  分布:', dict(Counter(e['entryType'] for e in pure)))
+          else:
+              print('✓ 无纯漏映射，数据一致')
+          PY
+
   notify:
     name: 部署通知
     needs: [deploy, verify]
