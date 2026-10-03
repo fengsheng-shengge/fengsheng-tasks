@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>需求挖掘提问卡 · 风声助手</title>
+<style>
+  :root{
+    --green:#3D5A3E; --orange:#C46A3A; --cream:#F7F4EF;
+    --ink:#2B2B2B; --sub:#6B6B6B; --line:#E6E0D6;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--cream);color:var(--ink);padding:20px 14px 60px;}
+  .wrap{max-width:720px;margin:0 auto;}
+  header{text-align:center;margin-bottom:18px;}
+  header h1{font-size:22px;color:var(--green);letter-spacing:1px;}
+  header p{font-size:13px;color:var(--sub);margin-top:6px;}
+  .tagline{display:inline-block;background:var(--green);color:#fff;font-size:12px;padding:4px 12px;border-radius:20px;margin-top:8px;}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;}
+  .card h2{font-size:16px;color:var(--green);display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+  .card .badge{font-size:11px;padding:2px 8px;border-radius:10px;color:#fff;}
+  .b-spin{background:#C46A3A;} .b-gap{background:#3D5A3E;} .b-sander{background:#5B7A9E;}
+  .card .intro{font-size:12.5px;color:var(--sub);margin-bottom:10px;line-height:1.6;}
+  .q{background:var(--cream);border-left:3px solid var(--orange);border-radius:8px;padding:9px 11px;margin-bottom:8px;}
+  .q .qt{font-size:13.5px;font-weight:600;}
+  .q .qs{font-size:11.5px;color:var(--sub);margin-top:3px;}
+  .q .dim{display:inline-block;font-size:10.5px;background:#fff;border:1px solid var(--orange);color:var(--orange);border-radius:10px;padding:1px 7px;margin-top:5px;margin-right:4px;}
+  .q.s4 .dim{background:#fff;border-color:var(--green);color:var(--green);}
+
+  .pivot{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;}
+  .pivot h2{font-size:16px;color:var(--green);margin-bottom:10px;}
+  .pivot table{width:100%;border-collapse:collapse;font-size:12px;}
+  .pivot th{background:var(--green);color:#fff;padding:7px 8px;text-align:left;font-weight:600;}
+  .pivot td{border-bottom:1px solid var(--line);padding:7px 8px;vertical-align:top;}
+  .pivot td.h{font-weight:600;color:var(--green);white-space:nowrap;}
+
+  .tips{background:#fff;border:1px dashed var(--orange);border-radius:14px;padding:16px;margin-bottom:14px;}
+  .tips h2{font-size:15px;color:var(--orange);margin-bottom:8px;}
+  .tips li{font-size:12.5px;line-height:1.8;margin-left:16px;color:#444;}
+
+  .foot{text-align:center;font-size:11px;color:#aaa;margin-top:10px;}
+  @media print{
+    body{background:#fff;padding:0;}
+    .card,.pivot,.tips{break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>📋 需求挖掘提问卡</h1>
+    <p>见客户前，带上这一张卡 · 边问边打分 · 答案直接进雷达图</p>
+    <span class="tagline">SPIN × Gap × 痛点漏斗 → 风声七维</span>
+  </header>
+
+  <!-- 模块一：SPIN -->
+  <div class="card">
+    <h2><span class="badge b-spin">① SPIN</span> 由浅入深四层问</h2>
+    <p class="intro">从"现在怎么住"问到"不解决会失去什么"，让客户自己说出痛点有多痛。S 别多问，3 个就够，能查的先查。</p>
+
+    <div class="q">
+      <div class="qt">S · 现状 — "现在住得怎么样？每天通勤大概多久？"</div>
+      <div class="qs">摸清底数，别堆问题，3 个打住。</div>
+      <span class="dim">conv 便利</span><span class="dim">safety 安全</span>
+    </div>
+
+    <div class="q">
+      <div class="qt">P · 问题 — "现在最不满意的是什么？最想改的是哪一点？"</div>
+      <div class="qs">打开话题，记下原话——这就是雷达图的权重依据。</div>
+      <span class="dim">任意维度 · 取客户原话</span>
+    </div>
+
+    <div class="q">
+      <div class="qt">I · 影响 — "如果继续这样住下去，半年后会怎样？/家里谁来承担这个麻烦？"</div>
+      <div class="qs">关键一步：把"不满意"放大成"代价"。客户自己算出的代价，才叫真实需求。</div>
+      <span class="dim">放大到对应维度</span>
+    </div>
+
+    <div class="q">
+      <div class="qt">N · 收益 — "如果这些问题都解决了，生活会是怎样？你最想看到哪点改变？"</div>
+      <div class="qs">让客户亲口说出理想状态——这句话以后就是你的讲房主线。</div>
+      <span class="dim">锁定最优先维度</span>
+    </div>
+  </div>
+
+  <!-- 模块二：Gap -->
+  <div class="card">
+    <h2><span class="badge b-gap">② Gap</span> 现在 ↔ 未来，量出差距</h2>
+    <p class="intro">差距越大，越该现在买。关键是帮客户把"现在"和"想要的"都说具体，才能量出这个洞有多深。</p>
+
+    <div class="q">
+      <div class="qt">现在状态 — "现在住的地方，哪三件事你最受不了？"</div>
+      <div class="qs">落到 2-3 个具体痛点，写在纸上。</div>
+      <span class="dim">现状清单</span>
+    </div>
+
+    <div class="q">
+      <div class="qt">未来状态 — "如果换个地方，你希望三件事变成什么样？"</div>
+      <div class="qs">让目标"可测量"：通勤多少分钟、孩子上学多远、月供占收入几成。</div>
+      <span class="dim">目标清单</span>
+    </div>
+
+    <div class="q">
+      <div class="qt">不动的代价 — "如果一年内不换，继续这样住，会失去什么？"</div>
+      <div class="qs">把差距换算成代价——这是不做决策的隐形成本。</div>
+      <span class="dim">urgency 紧迫度</span>
+    </div>
+
+    <div class="q">
+      <div class="qt">时机 — "为什么是现在想换？最近发生了什么？"</div>
+      <div class="qs">找触发点：孩子要上学 / 工作调动 / 收入变化 / 家庭人口变化。</div>
+      <span class="dim">trigger 触发点</span>
+    </div>
+  </div>
+
+  <!-- 模块三：Sandler -->
+  <div class="card">
+    <h2><span class="badge b-sander">③ 痛点漏斗</span> 问到最底层</h2>
+    <p class="intro">80% 的经纪人停在第一层。往下问，才能找到真正的决定人、真正的顾虑。</p>
+
+    <div class="q">
+      <div class="qt">表层 — "买这套房，你最担心什么？"</div>
+      <div class="qs">先收下表面答案，别急着解释。</div>
+      <span class="dim">记录表面顾虑</span>
+    </div>
+
+    <div class="q">
+      <div class="qt">业务层 — "这个担心，会影响你哪方面？（预算/家庭/工作/孩子）"</div>
+      <div class="qs">把担心和具体代价连起来。</div>
+      <span class="dim">econ 经济</span><span class="dim">family 家庭</span>
+    </div>
+
+    <div class="q">
+      <div class="qt">个人层 — "这件事定不下来，最着急的是谁？/如果这次没选对，对你意味着什么？"</div>
+      <div class="qs">找到真正的决策人和情绪压力源——这才是推动成交的力。</div>
+      <span class="dim">决策人识别</span>
+    </div>
+  </div>
+
+  <!-- 打分速查表 -->
+  <div class="pivot">
+    <h2>🗺 问完 → 怎么打分进雷达图</h2>
+    <table>
+      <tr><th>客户的回答</th><th>对应七维</th><th>分值参考</th></tr>
+      <tr><td class="h">主动提起 3 次以上 / 语气激动</td><td>对应维度</td><td>80-100（极度在意）</td></tr>
+      <tr><td class="h">主动提起 1-2 次 / 有具体期待</td><td>对应维度</td><td>60-80（很在意）</td></tr>
+      <tr><td class="h">问到时才提 / 说"还行"</td><td>对应维度</td><td>40-60（在意但非核心）</td></tr>
+      <tr><td class="h">只提现实约束 / 未提</td><td>对应维度</td><td>20-40（次要）</td></tr>
+      <tr><td class="h">明确说"无所谓"</td><td>对应维度</td><td>0-20（不在意）</td></tr>
+    </table>
+  </div>
+
+  <!-- 八类标签判定锚点 -->
+  <div class="pivot">
+    <h2>🏷 八类标签怎么判</h2>
+    <table>
+      <tr><th>客户的回答线索</th><th>标签</th></tr>
+      <tr><td>天天通勤 / 张口闭口地铁、时间</td><td class="h">通勤敏感型</td></tr>
+      <tr><td>人生首套房 / 关注月供、预算</td><td class="h">首次置业型</td></tr>
+      <tr><td>为孩子学区 / 接送距离、托管</td><td class="h">有娃家庭型 / 陪读求学型</td></tr>
+      <tr><td>换房改善 / 看采光空间楼层</td><td class="h">改善置换型</td></tr>
+      <tr><td>为父母养老 / 电梯医疗</td><td class="h">养老宜居型</td></tr>
+      <tr><td>关注涨幅租金 / 板块规划</td><td class="h">投资增值型</td></tr>
+      <tr><td>只问价格 / 砍价议价</td><td class="h">纯价格敏感型</td></tr>
+    </table>
+  </div>
+
+  <!-- 小贴士 -->
+  <div class="tips">
+    <h2>💡 三条铁律</h2>
+    <ul>
+      <li><b>让客户讲 60% 以上。</b>你问完就闭嘴，停顿等一等，第二句答案才是真话。</li>
+      <li><b>记原话，不翻译。</b>"我老婆怕吵"→ 记"怕吵"，别记"对舒适度要求高"。</li>
+      <li><b>不急着给方案。</b>没问清之前不推荐房源，问完一轮再说"我帮你捋一下"。</li>
+    </ul>
+  </div>
+
+  <div class="foot">风声助手 · 需求挖掘提问卡 v1 · 见客户前打印一张</div>
+</div>
+</body>
+</html>

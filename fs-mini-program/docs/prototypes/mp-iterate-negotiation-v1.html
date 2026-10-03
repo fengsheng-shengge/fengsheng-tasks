@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MOT④ 谈判策略报告</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f7f4ef; font-family: -apple-system, 'PingFang SC', sans-serif; padding-bottom: 100px; }
+
+  /* === 顶部 === */
+  .top-bar {
+    background: linear-gradient(135deg, #3d5a3e 0%, #2a3f2b 100%);
+    color: #fff; padding: 18px 20px 20px;
+    position: relative; overflow: hidden;
+  }
+  .top-bar::before {
+    content: ''; position: absolute; right: -20px; top: -20px;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .top-bar::after {
+    content: ''; position: absolute; right: 30px; bottom: -30px;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .brand { font-size: 12px; opacity: 0.7; letter-spacing: 1px; margin-bottom: 4px; }
+  .page-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .page-sub { font-size: 12px; opacity: 0.7; }
+
+  /* === 进度条 === */
+  .progress-bar {
+    background: #fff; padding: 14px 20px; display: flex;
+    gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    border-bottom: 1px solid #ede9e1;
+  }
+  .pg-step { display: flex; flex-direction: column; align-items: center; min-width: 56px; position: relative; }
+  .pg-step:not(:last-child)::after {
+    content: ''; position: absolute; top: 9px; left: calc(50% + 12px);
+    width: calc(100% - 24px); height: 2px; background: #e0dbd2;
+  }
+  .pg-step.done:not(:last-child)::after { background: #3d5a3e; }
+  .pg-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #e0dbd2; color: #fff; font-size: 10px;
+    display: flex; align-items: center; justify-content: center; z-index: 1;
+    margin-bottom: 5px;
+  }
+  .pg-step.done .pg-dot { background: #3d5a3e; }
+  .pg-step.active .pg-dot { background: #c46a3a; box-shadow: 0 0 0 3px rgba(196,106,58,0.2); }
+  .pg-label { font-size: 10px; color: #8a837a; text-align: center; white-space: nowrap; }
+  .pg-step.active .pg-label { color: #c46a3a; font-weight: 600; }
+
+  /* === 通用卡片 === */
+  .card { background: #fff; border-radius: 12px; margin: 16px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .card-title { font-size: 15px; font-weight: 700; color: #2a2a2a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card-title .tag { background: #ede9e1; color: #8a837a; font-size: 11px; font-weight: 400; padding: 2px 8px; border-radius: 20px; }
+
+  /* === 客户锚定 === */
+  .client-bar {
+    background: #fff; margin: 16px 16px 0; border-radius: 12px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .cb-av { width: 40px; height: 40px; border-radius: 50%; background: #3d5a3e; color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .cb-body { flex: 1; }
+  .cb-name { font-size: 15px; font-weight: 700; color: #2a2a2a; }
+  .cb-meta { font-size: 12px; color: #8a837a; margin-top: 2px; }
+  .cb-tag { background: #e8f4e9; color: #3d5a3e; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+
+  /* === 房源标的卡 === */
+  .prop-card {
+    background: #fff; border-radius: 12px; margin: 16px; padding: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border-left: 4px solid #c46a3a;
+  }
+  .prop-name { font-size: 15px; font-weight: 700; color: #2a2a2a; margin-bottom: 4px; }
+  .prop-addr { font-size: 12px; color: #8a837a; margin-bottom: 8px; }
+  .prop-price { font-size: 20px; font-weight: 700; color: #c46a3a; }
+  .prop-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .meta-chip { background: #f7f4ef; color: #5a5046; font-size: 12px; padding: 3px 10px; border-radius: 20px; }
+
+  /* === 谈判四维 === */
+  .neg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .neg-item {
+    background: #f7f4ef; border-radius: 10px; padding: 14px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .neg-icon { font-size: 24px; }
+  .neg-label { font-size: 12px; color: #8a837a; }
+  .neg-val { font-size: 18px; font-weight: 700; color: #2a2a2a; }
+  .neg-val.hi { color: #3d5a3e; }
+  .neg-val.mid { color: #c46a3a; }
+  .neg-val.lo { color: #888; }
+
+  /* === 价格博弈 === */
+  .price-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .price-lbl { font-size: 13px; color: #5a5046; min-width: 80px; }
+  .price-val { font-size: 16px; font-weight: 700; color: #2a2a2a; }
+  .price-bar-wrap { background: #ede9e1; border-radius: 6px; height: 8px; flex: 1; overflow: hidden; }
+  .price-bar-fill { height: 100%; border-radius: 6px; background: #c46a3a; transition: width 0.3s; }
+  .price-bar-fill.grn { background: #3d5a3e; }
+  .price-bar-fill.red { background: #c0392b; }
+
+  /* === 筹码卡片 === */
+  .chip-item { background: #f7f4ef; border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; }
+  .chip-icon { width: 32px; height: 32px; border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .chip-body { flex: 1; }
+  .chip-title { font-size: 14px; font-weight: 600; color: #2a2a2a; margin-bottom: 3px; }
+  .chip-desc { font-size: 12px; color: #8a837a; line-height: 1.5; }
+  .chip-power { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+  .chip-power.hi { background: #e8f4e9; color: #3d5a3e; }
+  .chip-power.md { background: #fef3e8; color: #c46a3a; }
+  .chip-power.lo { background: #f5f5f5; color: #888; }
+
+  /* === 立场分析 === */
+  .stance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stance-card { border-radius: 10px; padding: 14px; }
+  .stance-card.buyer { background: #e8f4e9; }
+  .stance-card.seller { background: #fef3e8; }
+  .stance-card.agent { background: #f0f4ff; }
+  .stance-role { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .stance-card.buyer .stance-role { color: #3d5a3e; }
+  .stance-card.seller .stance-role { color: #c46a3a; }
+  .stance-card.agent .stance-role { color: #2f6fb0; }
+  .stance-pos { font-size: 13px; color: #2a2a2a; line-height: 1.5; font-weight: 500; }
+
+  /* === 策略推荐 === */
+  .strategy-item {
+    border: 1.5px solid #ede9e1; border-radius: 10px; padding: 14px; margin-bottom: 12px;
+    display: flex; gap: 12px; align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+  .strategy-item.recommended { border-color: #3d5a3e; background: #f7fbf8; }
+  .strategy-num { width: 24px; height: 24px; border-radius: 50%; background: #ede9e1; color: #8a837a; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .strategy-item.recommended .strategy-num { background: #3d5a3e; color: #fff; }
+  .strategy-body { flex: 1; }
+  .strategy-title { font-size: 14px; font-weight: 600; color: #2a2a2a; margin-bottom: 4px; }
+  .strategy-desc { font-size: 12px; color: #8a837a; line-height: 1.5; }
+  .strategy-rec { font-size: 11px; color: #3d5a3e; font-weight: 600; margin-top: 4px; }
+
+  /* === 话术卡片 === */
+  .tips-card {
+    background: linear-gradient(135deg, #3d5a3e, #2a3f2b);
+    border-radius: 12px; margin: 16px; padding: 18px; color: #fff;
+  }
+  .tips-hd { font-size: 13px; opacity: 0.8; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .tip-line { background: rgba(255,255,255,0.12); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; line-height: 1.6; }
+  .tip-line:last-child { margin-bottom: 0; }
+  .tip-phase { font-size: 11px; opacity: 0.7; margin-bottom: 3px; }
+
+  /* === 底部按钮 === */
+  .btm-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff; padding: 12px 20px 28px;
+    display: flex; gap: 10px; align-items: center;
+    border-top: 1px solid #ede9e1;
+    z-index: 100;
+  }
+  .btn-outline { flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid #3d5a3e; color: #3d5a3e; background: #fff; font-size: 14px; font-weight: 600; text-align: center; }
+  .btn-primary { flex: 2; padding: 12px; border-radius: 10px; background: #3d5a3e; color: #fff; font-size: 14px; font-weight: 600; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- 顶部 -->
+<div class="top-bar">
+  <div class="brand">风声 · 房源提案报告</div>
+  <div class="page-title">MOT④ 谈判策略报告</div>
+  <div class="page-sub">绑定提案 · 制定谈判策略 · 预判各方立场</div>
+</div>
+
+<!-- 进度条 -->
+<div class="progress-bar">
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">建档</div></div>
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">洞察</div></div>
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">提案</div></div>
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">带看</div></div>
+  <div class="pg-step active"><div class="pg-dot">5</div><div class="pg-label">谈判</div></div>
+  <div class="pg-step"><div class="pg-dot">6</div><div class="pg-label">成交</div></div>
+  <div class="pg-step"><div class="pg-dot">7</div><div class="pg-label">维护</div></div>
+</div>
+
+<!-- 客户锚定 -->
+<div class="client-bar">
+  <div class="cb-av">张</div>
+  <div class="cb-body">
+    <div class="cb-name">张先生</div>
+    <div class="cb-meta">改善置换型 · 带看已完成 · 意向较明确</div>
+  </div>
+  <div class="cb-tag">谈判中</div>
+</div>
+
+<!-- 房源标的 -->
+<div class="prop-card">
+  <div class="prop-name">东方绿洲·揽庭 3栋1202</div>
+  <div class="prop-addr">浦东新区·金桥板块·地铁6/12号线400米</div>
+  <div class="prop-price">¥ 6,850,000</div>
+  <div class="prop-meta">
+    <span class="meta-chip">128㎡</span>
+    <span class="meta-chip">3室2厅</span>
+    <span class="meta-chip">中楼层/共26层</span>
+    <span class="meta-chip">南北通透</span>
+  </div>
+</div>
+
+<!-- 谈判四维 -->
+<div class="card">
+  <div class="card-title">📊 谈判四维分析</div>
+  <div class="neg-grid">
+    <div class="neg-item">
+      <div class="neg-icon">💰</div>
+      <div class="neg-label">客户底价</div>
+      <div class="neg-val mid">¥660万</div>
+    </div>
+    <div class="neg-item">
+      <div class="neg-icon">📈</div>
+      <div class="neg-label">挂牌价格</div>
+      <div class="neg-val hi">¥685万</div>
+    </div>
+    <div class="neg-item">
+      <div class="neg-icon">⬇️</div>
+      <div class="neg-label">让价空间</div>
+      <div class="neg-val lo">约¥15万（2.2%）</div>
+    </div>
+    <div class="neg-item">
+      <div class="neg-icon">🎯</div>
+      <div class="neg-label">成交概率</div>
+      <div class="neg-val hi">78%</div>
+    </div>
+  </div>
+</div>
+
+<!-- 价格博弈带 -->
+<div class="card">
+  <div class="card-title">💰 价格博弈带</div>
+  <div class="price-row">
+    <div class="price-lbl">客户出价</div>
+    <div class="price-val">¥655万</div>
+    <div class="price-bar-wrap"><div class="price-bar-fill" style="width:20%"></div></div>
+  </div>
+  <div class="price-row">
+    <div class="price-lbl">底价红线</div>
+    <div class="price-val">¥660万</div>
+    <div class="price-bar-wrap"><div class="price-bar-fill grn" style="width:40%"></div></div>
+  </div>
+  <div class="price-row">
+    <div class="price-lbl">挂牌价格</div>
+    <div class="price-val">¥685万</div>
+    <div class="price-bar-wrap"><div class="price-bar-fill red" style="width:100%"></div></div>
+  </div>
+  <div class="price-row">
+    <div class="price-lbl">报价空间</div>
+    <div class="price-val">¥665-670万</div>
+    <div class="price-bar-wrap"><div class="price-bar-fill" style="width:55%"></div></div>
+  </div>
+  <div style="background:#fef3e8;border-radius:8px;padding:10px 12px;margin-top:12px;font-size:12px;color:#5a5046;line-height:1.6">
+    ⚠️ <b>建议策略：</b>首次报价¥668万，保留¥5万空间。客户底价¥660万在让价空间内，可适时释放优惠促成。
+  </div>
+</div>
+
+<!-- 谈判筹码 -->
+<div class="card">
+  <div class="card-title">🎴 我方谈判筹码 <span class="tag">4项可用</span></div>
+
+  <div class="chip-item">
+    <div class="chip-icon">🏦</div>
+    <div class="chip-body">
+      <div class="chip-title">贷款资质优秀</div>
+      <div class="chip-desc">客户有稳定流水，首付六成，可两周内放款，对卖家有吸引力</div>
+    </div>
+    <div class="chip-power hi">强筹码</div>
+  </div>
+
+  <div class="chip-item">
+    <div class="chip-icon">📅</div>
+    <div class="chip-body">
+      <div class="chip-title">时间节点配合</div>
+      <div class="chip-desc">客户不急，但同类户型近期有成交，价格参照近¥672万</div>
+    </div>
+    <div class="chip-power md">中筹码</div>
+  </div>
+
+  <div class="chip-item">
+    <div class="chip-icon">🔧</div>
+    <div class="chip-body">
+      <div class="chip-title">附赠可谈项</div>
+      <div class="chip-desc">家具家电、部分装修折价约¥8万，可作为价格让步的交换筹码</div>
+    </div>
+    <div class="chip-power md">中筹码</div>
+  </div>
+
+  <div class="chip-item">
+    <div class="chip-icon">📋</div>
+    <div class="chip-body">
+      <div class="chip-title">市场参照压力</div>
+      <div class="chip-desc">同小区同户型近期成交价¥672万，可作为锚点拉回卖家心理预期</div>
+    </div>
+    <div class="chip-power lo">辅助项</div>
+  </div>
+</div>
+
+<!-- 各方立场 -->
+<div class="card">
+  <div class="card-title">🧭 各方立场分析</div>
+  <div class="stance-grid">
+    <div class="stance-card buyer">
+      <div class="stance-role">买方（张先生）</div>
+      <div class="stance-pos">目标¥660万以下，付款快，不愿为装修溢价买单，犹豫楼层是否值得加价。</div>
+    </div>
+    <div class="stance-card seller">
+      <div class="stance-role">卖方（业主）</div>
+      <div class="stance-pos">挂牌¥685万，底价¥670万，坚持不低于¥668万，对市场预期仍偏高。</div>
+    </div>
+    <div class="stance-card agent">
+      <div class="stance-role">经纪人立场</div>
+      <div class="stance-pos">居中协调，避免僵局。核心：¥668万以内均可接受，引导双方各让一步。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 策略推荐 -->
+<div class="card">
+  <div class="card-title">🎯 推荐谈判策略</div>
+
+  <div class="strategy-item recommended">
+    <div class="strategy-num">1</div>
+    <div class="strategy-body">
+      <div class="strategy-title">先放空间，再拉锯战</div>
+      <div class="strategy-desc">首次报价¥668万（低于挂牌¥17万），释放诚意信号，观察卖家反馈后再决定是否降至¥665万。</div>
+      <div class="strategy-rec">⭐ 推荐首选策略</div>
+    </div>
+  </div>
+
+  <div class="strategy-item">
+    <div class="strategy-num">2</div>
+    <div class="strategy-body">
+      <div class="strategy-title">条件置换法</div>
+      <div class="strategy-desc">用付款周期快（两周）置换价格优惠，告知卖家："我们不走商业贷款，节省您一个月等待时间"。</div>
+    </div>
+  </div>
+
+  <div class="strategy-item">
+    <div class="strategy-num">3</div>
+    <div class="strategy-body">
+      <div class="strategy-title">锚点参照法</div>
+      <div class="strategy-desc">用近期成交价¥672万做锚点，引导卖家接受"比市价低4万"的¥668万，而非死盯挂牌价。</div>
+    </div>
+  </div>
+
+  <div class="strategy-item">
+    <div class="strategy-num">4</div>
+    <div class="strategy-body">
+      <div class="strategy-title">红脸白脸法</div>
+      <div class="strategy-desc">经纪人扮演白脸（帮客户说话），私下联系卖家说"客户很想成交但预算有限"，给双方台阶下。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 话术卡片 -->
+<div class="tips-card">
+  <div class="tips-hd">🗣 五秘诀话术 · 谈判场景</div>
+  <div class="tip-line">
+    <div class="tip-phase">① 开场破冰</div>
+    "王先生，感谢您今天配合。张先生是诚意买家，首付六成，贷款资质非常好，整个付款流程会非常顺畅。"
+  </div>
+  <div class="tip-line">
+    <div class="tip-phase">② 锚点参照</div>
+    "同小区3栋的成交价是672万，我给您看的这套楼层稍低，668万其实已经是诚意价了。"
+  </div>
+  <div class="tip-line">
+    <div class="tip-phase">③ 条件置换</div>
+    "我们两周就能放款，对您来说比等三个月商业贷款客户要省心很多，这部分价值您看能不能在价格上给我们一些空间？"
+  </div>
+  <div class="tip-line">
+    <div class="tip-phase">④ 限时逼定</div>
+    "这套房子我很想让张先生拿下，他也很喜欢，但价格超预算的话确实没办法。我跟您争取到周五，您看能不能给个痛快话？"
+  </div>
+  <div class="tip-line">
+    <div class="tip-phase">⑤ 收尾锁定</div>
+    "好的，那就定在668万。我这边让客户明天把定金打过来，您这边准备好产证和钥匙，我们约下周一签合同？"
+  </div>
+</div>
+
+<!-- 备注 -->
+<div class="card" style="margin-bottom:120px">
+  <div class="card-title">📝 谈判记录（经纪人填写）</div>
+  <textarea style="width:100%;border:1.5px solid #ede9e1;border-radius:8px;padding:12px;font-size:13px;color:#2a2a2a;resize:none;height:100px;font-family:inherit" placeholder="记录本次谈判的关键节点、价格变化、双方表态..."></textarea>
+</div>
+
+<!-- 底部按钮 -->
+<div class="btm-bar">
+  <div class="btn-outline">存草稿</div>
+  <div class="btn-primary">谈判完成 → 成交签约</div>
+</div>
+
+</body>
+</html>
