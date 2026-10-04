@@ -506,6 +506,8 @@ export default {
         scores: scores, total: this.resScore_a
       })
       this.userStore.markDone('assess')
+      // ★ 修复：正常走测评流程完成后，点亮新用户三步引导第 1 步（否则只有点三步卡才亮，违背预期）
+      this.userStore.completeOnboardStep('assess')
       this.userStore.earnPoints(8, '完成品质测评')
       setTimeout(() => this.drawRadarA(), 300)
     },
