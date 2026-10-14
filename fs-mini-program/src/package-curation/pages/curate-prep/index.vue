@@ -327,6 +327,7 @@
           <view class="say-title">{{ s.title }}</view>
           <view class="say-point">{{ s.point }}</view>
           <view v-if="s.detail" class="say-detail">{{ s.detail }}</view>
+          <view v-if="s.ownerBenefit" class="say-owner">💼 {{ s.ownerBenefit }}</view>
           <view :class="['ref', s.hasLegal ? 'ref-ok' : 'ref-wait']">
             <text v-if="s.hasLegal">真实法源 ✓ {{ s.legalRef }}</text>
             <text v-else>经验要点 · 依据整理中</text>
@@ -1001,6 +1002,7 @@ export default {
 .say-title { font-size: 14px; font-weight: 700; color: #2b2b2b; }
 .say-point { font-size: 13px; color: #444; margin-top: 4px; line-height: 1.55; }
 .say-detail { font-size: 12px; color: #8a837a; margin-top: 4px; line-height: 1.5; }
+.say-owner { font-size: 12px; color: #2f6fb0; margin-top: 4px; line-height: 1.5; font-weight: 600; }
 .ref { font-size: 11px; margin-top: 6px; padding: 4px 8px; border-radius: 6px; line-height: 1.4; }
 .ref-ok { background: #eef3ec; color: #3d5a3e; }
 .ref-wait { background: #f3f0ea; color: #8a837a; }

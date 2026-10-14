@@ -71,6 +71,7 @@ function normalizeEntry(apiEntry) {
     detail: apiEntry.def || '',
     legalRef: apiEntry.legalRef || '',
     consumerBenefit: apiEntry.consumerBenefit || '',
+    ownerBenefit: apiEntry.ownerBenefit || '',
     tags: apiEntry.tags || {},
     scene: apiEntry.sceneDomain || '',
     domain: apiEntry.domain || '',
@@ -325,6 +326,7 @@ function generateCurationFromEntries(input, entriesByGroup) {
     detail: (x.e.cp && x.e.cp.slice(0, 2).join('；')) || '',
     legalRef: isRealLegal(x.e.legalRef) ? x.e.legalRef : null,
     hasLegal: isRealLegal(x.e.legalRef),
+    ownerBenefit: (x.e.ownerBenefit && String(x.e.ownerBenefit).trim()) ? x.e.ownerBenefit : null,
     entryId: x.e.id
   }))
 
