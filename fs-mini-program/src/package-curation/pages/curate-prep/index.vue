@@ -7,6 +7,65 @@
         <view class="h-sub">输入客户当下情况，秒出专属「说 / 带 / 问 + 见后跟进」，每条依据来自真实字典。</view>
       </view>
 
+      <!-- ★ V3.14 新增：速记模式入口（化繁为简） -->
+      <view class="quick-mode-card" @tap="toggleQuickMode">
+        <view class="qm-left">
+          <text class="qm-ico">⚡</text>
+          <view class="qm-body">
+            <text class="qm-title">速记模式</text>
+            <text class="qm-sub">随便说几句，系统帮你推理框架</text>
+          </view>
+        </view>
+        <text class="qm-arrow">{{ quickMode ? '✕ 关闭' : '开启 ›' }}</text>
+      </view>
+
+      <!-- ★ V3.14 速记模式内容 -->
+      <block v-if="quickMode">
+        <view class="card quick-card">
+          <view class="label">📝 速记客户情况</view>
+          <textarea class="inp" v-model="quickNotes" placeholder="如：首付200万，三口之家，想买三房，在南山科技园上班，首套房，有点纠结买新房还是二手房……" maxlength="200" style="min-height:80px"></textarea>
+          <view class="qn-count">{{ (quickNotes||'').length }}/200</view>
+        </view>
+        <view class="qn-infer" v-if="quickNotes && quickNotes.length >= 10" @tap="inferFromNotes">
+          <text class="qi-btn">🔮 智能推理 ››</text>
+          <text class="qi-hint">点击后系统将分析上述描述并推荐框架</text>
+        </view>
+
+        <!-- 推理结果预览（点选确认即可） -->
+        <view class="infer-result" v-if="inferredResult">
+          <view class="ir-head">🎯 推理结论（请确认或修改）</view>
+          <view class="ir-section">
+            <text class="ir-label">人生阶段</text>
+            <view class="ir-chips">
+              <view v-for="g in axisGroups" :key="g.type" :class="['ir-chip', { on: inferredResult.axisType === g.type }]" @tap="inferredResult.axisType = g.type; axisType = g.type; axisNodeKey = ''">
+                {{ g.label }}
+              </view>
+            </view>
+            <view class="ir-nodes" v-if="inferredResult.axisType">
+              <view v-for="n in getNodesForAxis(inferredResult.axisType)" :key="n.key" :class="['ir-chip small', { on: inferredResult.axisNodeKey === n.key }]" @tap="inferredResult.axisNodeKey = n.key; axisNodeKey = n.key">
+                {{ n.name }}
+              </view>
+            </view>
+          </view>
+          <view class="ir-section" v-if="inferredResult.dims && inferredResult.dims.length">
+            <text class="ir-label">七维关注</text>
+            <view class="ir-chips">
+              <view v-for="d in dimensions" :key="d.key" :class="['ir-chip', { on: inferredResult.dims.includes(d.key) }]" @tap="toggleInferredDim(d.key)">{{ d.name }}</view>
+            </view>
+          </view>
+          <view class="ir-section" v-if="inferredResult.types && inferredResult.types.length">
+            <text class="ir-label">客户类型</text>
+            <view class="ir-chips">
+              <view v-for="t in clientTypes" :key="t.key" :class="['ir-chip', { on: inferredResult.types.includes(t.key) }]" @tap="toggleInferredType(t.key)">{{ t.label }}</view>
+            </view>
+          </view>
+          <view class="ir-confirm" @tap="confirmInferred">✓ 确认以上框架</view>
+        </view>
+      </block>
+
+      <!-- 经典五步模式（默认） -->
+      <block v-if="!quickMode">
+
       <view class="card">
         <view class="label">① 人生双纵轴 · 当前阶段</view>
         <view class="seg">
@@ -24,18 +83,159 @@
         </view>
       </view>
 
+      <!-- ★ V2.6 新增：洞察分值录入 -->
+      <view class="card" v-if="selectedDims.length">
+        <view class="label">★ ③ 住得好七维 · 权重分值（决定雷达图）</view>
+        <view class="insight-tip">为已选维度打分数，0=不在意，100=极度在意</view>
+        <view v-for="d in selectedDimsWithNames" :key="d.key" class="score-row">
+          <text class="score-name">{{ d.name }}</text>
+          <view class="score-stars">
+            <text v-for="s in [20,40,60,80,100]" :key="s" :class="['star', { on: insightScores[d.key] >= s }]" @tap="setScore(d.key, s)">★</text>
+          </view>
+          <text class="score-val">{{ insightScores[d.key] || 0 }}分</text>
+        </view>
+      </view>
+
+      <!-- ★ V2.6 新增：八类客户标签 + LTRUST -->
+      <view class="card" v-if="selectedDims.length">
+        <view class="label">★ ④ 客户类型 · 八分法（待确认）</view>
+        <view class="insight-tip">系统推荐初判，可多选确认后锁定</view>
+        <view class="type-tags">
+          <view v-for="t in clientTypes" :key="t.key" :class="['type-tag', { on: selectedTypes.includes(t.key) }]" @tap="toggleType(t.key)">{{ t.label }}</view>
+        </view>
+        <view class="ltrust-row">
+          <view class="label" style="margin-bottom:8px">★ ⑤ LTRUST 优先维度（选最高优先）</view>
+          <view class="type-tags">
+            <view v-for="l in ltrustOptions" :key="l.key" :class="['type-tag', l.key, { on: selectedLtrust === l.key }]" @tap="selectedLtrust = l.key">{{ l.label }}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- ★ V3.5 深层动因洞察模块（折叠） -->
+      <view class="card deep-insight-card" v-if="!quickMode">
+        <view class="deep-header" @tap="showDeepInsight = !showDeepInsight">
+          <view class="label" style="margin-bottom:0">💡 深层动因洞察 <text class="deep-badge" v-if="hasDeepInsight">已填</text></view>
+          <text class="deep-arrow">{{ showDeepInsight ? '▲' : '▼' }}</text>
+        </view>
+        <view class="deep-tip" v-if="!showDeepInsight">展开填写：触发动因 / 内心矛盾 / 底线与让步 · 经纪人内部使用</view>
+
+        <block v-if="showDeepInsight">
+          <!-- ① 触发动因 -->
+          <view class="deep-section">
+            <view class="ds-label">① 触发动因 <text class="ds-hint">最近什么事件促使您现在考虑买房/租房？</text></view>
+            <view class="ds-grid">
+              <view v-for="t in triggerEventOpts" :key="t.key"
+                :class="['ds-tag', 'ds-trigger', { on: triggerEvents.includes(t.key) }]"
+                @tap="toggleTag(triggerEvents, t.key)">{{ t.label }}</view>
+            </view>
+            <input class="deep-remark" v-model="triggerRemark" placeholder="客户原话补充（选填），如：客户说旧租约下月到期" />
+          </view>
+
+          <!-- ② 核心矛盾 -->
+          <view class="deep-section">
+            <view class="ds-label">② 内心矛盾 <text class="ds-hint">客户最纠结、最难取舍的是什么？</text></view>
+            <textarea class="deep-conflict" v-model="customerConflict" placeholder="如：想要好学区但预算卡得紧，可以接受老破小；纠结通勤和面积之间的取舍……" maxlength="120"></textarea>
+          </view>
+
+          <!-- ③ 不可妥协底线 -->
+          <view class="deep-section">
+            <view class="ds-label">③ 不可妥协底线 <text class="ds-hint" style="color:#c0392b">红色·绝不退让</text></view>
+            <view class="ds-grid">
+              <view v-for="b in hardBottomOpts" :key="b.key"
+                :class="['ds-tag', 'ds-bottom', { on: hardBottomLines.includes(b.key) }]"
+                @tap="toggleTag(hardBottomLines, b.key)">{{ b.label }}</view>
+            </view>
+          </view>
+
+          <!-- ④ 可妥协让步项 -->
+          <view class="deep-section">
+            <view class="ds-label">④ 可妥协让步项 <text class="ds-hint" style="color:#27ae60">绿色·可以牺牲</text></view>
+            <view class="ds-grid">
+              <view v-for="f in flexibleOpts" :key="f.key"
+                :class="['ds-tag', 'ds-flex', { on: flexibleItems.includes(f.key) }]"
+                @tap="toggleTag(flexibleItems, f.key)">{{ f.label }}</view>
+            </view>
+          </view>
+
+          <!-- ★ V3.7 新增：⑤ 顾虑清单（痛苦与顾虑） -->
+          <view class="deep-section">
+            <view class="ds-label">⑤ 客户顾虑 <text class="ds-hint">客户心里担心但嘴上不一定说的，勾出来帮你见后跟进时更有针对性</text></view>
+            <view class="ds-grid">
+              <view v-for="r in riskOpts" :key="r.key"
+                :class="['ds-tag', 'ds-risk', { on: riskItems.includes(r.key) }]"
+                @tap="toggleTag(riskItems, r.key)">{{ r.label }}</view>
+            </view>
+          </view>
+
+          <!-- ★ V3.7 新增：⑥ 决策人立场 -->
+          <view class="deep-section">
+            <view class="ds-label">⑥ 决策人立场 <text class="ds-hint">谁参与决策？每人最看重什么？家庭内部不统一是带看失败的常见原因</text></view>
+            <view v-for="(dm, idx) in decisionMakerStances" :key="idx" class="dm-row">
+              <input class="dm-name" v-model="dm.name" placeholder="姓名/关系，如：丈夫、婆婆" />
+              <view class="dm-stances">
+                <view v-for="s in stanceTypeOpts" :key="s.key"
+                  :class="['dm-stance', { on: dm.stanceType === s.key }]"
+                  @tap="dm.stanceType = (dm.stanceType === s.key ? '' : s.key)">{{ s.label }}</view>
+              </view>
+              <input class="dm-concern" v-model="dm.concern" placeholder="补充备注（选填）" />
+              <text class="dm-del" @tap="decisionMakerStances.splice(idx, 1)">✕</text>
+            </view>
+            <view class="dm-add" @tap="decisionMakerStances.push({name:'',stanceType:'',concern:''})">+ 添加决策人</view>
+          </view>
+
+          <!-- ★ V3.7 新增：⑦ 理想生活画面 -->
+          <view class="deep-section">
+            <view class="ds-label">⑦ 理想生活画面 <text class="ds-hint">「买完房之后，理想的一天是什么样的？」</text></view>
+            <textarea class="deep-conflict" v-model="lifeVision" placeholder="描述客户向往的生活：比如下班接孩子走十分钟回家，周末在阳台喝茶，老人在客厅看电视……帮客户把向往的画面说具体，提案时才有代入感" maxlength="120"></textarea>
+          </view>
+        </block>
+      </view>
+
       <view class="card">
-        <view class="label">③ 一句自由诉求（选填）</view>
+        <view class="label">⑤ 一句自由诉求（选填）</view>
         <textarea class="ta" v-model="freeText" placeholder="如：800万改善三房，学区还是居住品质纠结" maxlength="120"></textarea>
       </view>
 
+      </block><!-- / !quickMode -->
+
       <view v-if="clientName" class="client-bar">已关联客户：{{ clientName }}（准备结果将存入其认知卡）</view>
 
-      <view class="hint">依据来自真实字典 decoder / see / nego，绝不编造；缺失依据诚实标注「依据整理中」。</view>
-      <view v-if="loadError" class="err-msg">{{ loadError }}</view>
-      <button class="btn-main" @tap="gen" :disabled="loading">
-        {{ loading ? '⏳ 策展中...' : '⚡ 生成见面参谋' }}
-      </button>
+      <view class="page-bottom">
+        <view class="hint">依据来自真实字典 decoder / see / nego，绝不编造；缺失依据诚实标注「依据整理中」。</view>
+        <view v-if="loadError" class="err-msg">{{ loadError }}</view>
+        <button class="btn-main" @tap="gen" :disabled="loading">
+          {{ loading ? '⏳ 策展中...' : '⚡ 生成见面参谋' }}
+        </button>
+      </view>
+
+      <!-- V3.5 复述确认弹层 -->
+      <view v-if="showConfirm" class="overlay active">
+        <view class="ov-nav">
+          <button class="back" @tap="showConfirm = false">‹ 返回</button>
+          <view><view style="font-size:17px;font-weight:700">需求复述确认</view><view class="sub">和客户对齐后再生成策展</view></view>
+        </view>
+        <scroll-view class="ovcontent" scroll-y="true">
+          <view class="confirm-tip">请与客户确认以下需求描述，无误后点击「确认并生成」</view>
+          <textarea class="confirm-ta" v-model="confirmText" maxlength="300"></textarea>
+          <view class="confirm-badges" v-if="triggerEvents.length || hardBottomLines.length">
+            <view class="cb-section" v-if="triggerEvents.length">
+              <text class="cb-title">触发：</text>
+              <text class="cb-val">{{ triggerEvents.map(k => _triggerLabel(k)).filter(Boolean).join('、') }}</text>
+            </view>
+            <view class="cb-section" v-if="hardBottomLines.length">
+              <text class="cb-title" style="color:#c0392b">底线：</text>
+              <text class="cb-val" style="color:#c0392b">{{ hardBottomLines.map(k => _bottomLabel(k)).filter(Boolean).join('、') }}</text>
+            </view>
+          </view>
+          <view class="confirm-hint">
+            <text>💡 可直接复制这段话微信发给客户确认，或当面复述。确认无误后生成策展包。</text>
+          </view>
+        </scroll-view>
+        <view class="ov-foot">
+          <button class="btn-line foot-cancel" @tap="showConfirm = false">返回修改</button>
+          <button class="btn-green foot-save" @tap="doGenerate">✓ 确认并生成策展</button>
+        </view>
+      </view>
     </block>
 
     <!-- 结果态 -->
@@ -47,6 +247,67 @@
         </view>
         <view class="honesty">{{ result.honesty.note }}</view>
       </view>
+
+      <!-- ★ V3.8 作战结论卡：把策展翻译成「针对这位客户该怎么干」 -->
+      <view class="battle-card" v-if="battleCard">
+        <view class="bc-head">
+          <view class="bc-title">🎯 作战结论卡</view>
+          <view class="bc-client" v-if="clientName">{{ clientName }}</view>
+        </view>
+
+        <view class="bc-summary">{{ battleCard.summary }}</view>
+
+        <view class="bc-block">
+          <view class="bc-block-title bc-prio">① 优先讲 · 对这位客户</view>
+          <view v-for="(p, i) in battleCard.priorities" :key="'p' + i" class="bc-item">
+            <text class="bc-num">{{ i + 1 }}</text>
+            <view class="bc-text">
+              <view class="bc-item-t">{{ p.title }}</view>
+              <view class="bc-item-s">{{ p.point }}</view>
+            </view>
+          </view>
+        </view>
+
+        <view class="bc-block">
+          <view class="bc-block-title bc-bring">② 带看重点</view>
+          <view v-for="(b, i) in battleCard.bringFocus" :key="'b' + i" class="bc-item">
+            <text class="bc-num">{{ i + 1 }}</text>
+            <view class="bc-text">
+              <view class="bc-item-t">{{ b.title }}</view>
+              <view class="bc-item-s">{{ b.benefit }}</view>
+            </view>
+          </view>
+        </view>
+
+        <view class="bc-block">
+          <view class="bc-block-title bc-ask">③ 必问问题</view>
+          <view v-for="(a, i) in battleCard.askQuestions" :key="'a' + i" class="bc-item">
+            <text class="bc-num">{{ i + 1 }}</text>
+            <view class="bc-text"><view class="bc-item-t">{{ a.q }}</view></view>
+          </view>
+        </view>
+
+        <view class="bc-risk">
+          <view class="bc-risk-t">⚠️ 风险预警</view>
+          <view class="bc-risk-s">{{ battleCard.riskWarn }}</view>
+        </view>
+
+        <view class="bc-next">
+          <view class="bc-next-t">下一步动作</view>
+          <view class="bc-next-s">{{ battleCard.nextAction }}</view>
+        </view>
+      </view>
+
+      <!-- ★ V2.6 洞察确认闸门 -->
+      <view v-if="hasInsightData && !insightConfirmed" class="insight-confirm-bar">
+        <view class="icb-title">📋 洞察数据已录入</view>
+        <view class="icb-sub">{{ confirmedTypeCount }}个客户标签 · {{ confirmedScoreCount }}个七维权重</view>
+        <view class="icb-actions">
+          <button class="btn-confirm" @tap="goInsightReport">→ 查看洞察报告</button>
+          <button class="btn-edit" @tap="insightConfirmed = true">确认洞察 ✓</button>
+        </view>
+      </view>
+      <view v-if="insightConfirmed" class="insight-ok-bar">✅ 洞察已确认 · 锁定提案闸门</view>
 
       <!-- 三段式时间轴 -->
       <view class="timeline">
@@ -86,7 +347,9 @@
       <!-- 问 -->
       <view class="sec">
         <view class="sec-h"><text class="em">❓</text>③ 该问的（必问 · 探需求）</view>
-        <view v-for="(a, i) in result.ask" :key="i" class="ask-item">{{ a.q }}</view>
+        <view v-for="(a, i) in result.ask" :key="i" class="ask-item">
+          {{ a.q }}
+        </view>
         <view v-if="!result.ask.length" class="empty-mini">暂无必问条目</view>
       </view>
 
@@ -111,6 +374,7 @@
 <script>
 import { AXIS_GROUPS, DIMENSIONS, generateCurationAsync } from '../../engine.js'
 import { useUserStore } from '../../../store/user'
+import { trackPageview } from '../../../utils/tracker'
 
 export default {
   data() {
@@ -120,7 +384,104 @@ export default {
       axisType: 'buy',
       axisNodeKey: 'improve',
       selectedDims: [],
-      freeText: '',
+      // ★ V2.6 洞察录入
+      insightScores: {},   // { safety: 80, transit: 60, ... }
+      selectedTypes: [],   // ['commuter', 'first_home']
+      selectedLtrust: '',   // 'safety' | 'transit' | 'economy' | 'beauty'
+      assessSource: '',    // ★ V3.13 分值来源：引导问诊 / 品质测评
+      assessTotal: 0,      // ★ V3.13 七维总分
+      insightConfirmed: false,
+      // ★ V3.5 深层动因洞察
+      showDeepInsight: false,   // 展开态
+      triggerEvents: [],        // ['family_birth','family_marriage','external_expiry',...]
+      triggerRemark: '',        // 触发事件补充描述
+      customerConflict: '',      // 客户内心矛盾（自由文本）
+      hardBottomLines: [],      // 底线标签 ['school','metro','budget']
+      flexibleItems: [],        // 可让步项 ['area','decoration','age']
+      showConfirm: false,       // 复述确认弹层
+      confirmText: '',          // 复述文案（可编辑）
+      pendingResult: null,      // 确认后暂存策展结果
+      // ★ 八类 + LTRUST 选项
+      // V3.5 深层洞察选项
+      triggerEventOpts: [
+        { key: 'family_birth', label: '👶 家庭添丁' },
+        { key: 'family_marriage', label: '💍 新婚' },
+        { key: 'family_elder', label: '👴 老人同住' },
+        { key: 'family_school', label: '🏫 子女入学' },
+        { key: 'external_expiry', label: '📅 原租约到期' },
+        { key: 'external_transfer', label: '🏢 工作调动' },
+        { key: 'external_commute', label: '🚇 通勤无法忍受' },
+        { key: 'external_defect', label: '🏠 现有房屋缺陷' },
+        { key: 'time_school', label: '📋 入学落户节点' },
+        { key: 'time_limit', label: '⏰ 置换窗口期' },
+        { key: 'time_other', label: '📌 其他时间压力' },
+      ],
+      hardBottomOpts: [
+        { key: 'school', label: '学区资质' },
+        { key: 'metro', label: '地铁距离' },
+        { key: 'budget', label: '总价上限' },
+        { key: 'floor', label: '楼层要求' },
+        { key: 'orientation', label: '朝向' },
+        { key: 'elevator', label: '必须有电梯' },
+        { key: 'noise', label: '噪音控制' },
+        { key: 'title', label: '产权清晰' },
+      ],
+      flexibleOpts: [
+        { key: 'area', label: '面积' },
+        { key: 'decoration', label: '装修标准' },
+        { key: 'ratio', label: '梯户比' },
+        { key: 'age', label: '楼龄' },
+        { key: 'quality', label: '小区品质' },
+        { key: 'orientation', label: '朝向' },
+        { key: 'parking', label: '车位' },
+      ],
+      clientTypes: [
+        { key: 'commuter',    label: '通勤敏感型' },
+        { key: 'first_home',  label: '首次置业型' },
+        { key: 'family_kid',  label: '有娃家庭型' },
+        { key: 'improve',     label: '改善置换型' },
+        { key: 'elder',       label: '养老宜居型' },
+        { key: 'invest',      label: '投资增值型' },
+        { key: 'study',       label: '陪读求学型' },
+        { key: 'price',       label: '纯价格敏感型' }
+      ],
+      ltrustOptions: [
+        { key: 'safety',  label: '🔴 物质安全' },
+        { key: 'transit', label: '🟡 便利通勤' },
+        { key: 'economy', label: '🟢 经济评估' },
+        { key: 'beauty',  label: '🔵 美观升级' }
+      ],
+      // ★ V3.7 新增：顾虑清单（第四层痛苦与顾虑）
+      riskItems: [],          // ['fear_expensive','fear_family','fear_policy']
+      riskOpts: [
+        { key: 'fear_expensive', label: '💸 怕买贵' },
+        { key: 'fear_mortgage',  label: '🏦 怕月供压力' },
+        { key: 'fear_devalue',   label: '📉 怕后期贬值' },
+        { key: 'fear_family',    label: '👥 怕家人意见不统一' },
+        { key: 'fear_policy',    label: '📋 怕学区政策变动' },
+        { key: 'fear_delivery',  label: '🔑 怕交房时间不确定' },
+        { key: 'fear_liquidity', label: '🔄 怕流通性差' },
+        { key: 'fear_quality',   label: '🏗️ 怕质量/维权风险' },
+      ],
+      // ★ V3.7 新增：决策人立场（第五层决策链）
+      decisionMakerStances: [], // [{name, stanceType, concern}]
+      stanceTypeOpts: [
+        { key: 'commute',   label: '看重通勤' },
+        { key: 'school',    label: '看重学区' },
+        { key: 'budget',    label: '看重预算' },
+        { key: 'floor',     label: '看重楼层/朝向' },
+        { key: 'quality',   label: '看重品质/面积' },
+        { key: 'safety',    label: '看重安全/产权' },
+        { key: 'other',     label: '其他诉求' },
+      ],
+      // ★ V3.7 新增：理想生活画面（第三层目标与渴望）
+      lifeVision: '',
+
+      // ★ V3.14 速记模式
+      quickMode: false,
+      quickNotes: '',
+      inferredResult: null,  // { axisType, axisNodeKey, dims, types }
+
       clientId: null,
       clientName: '',
       result: null,
@@ -134,9 +495,122 @@ export default {
       const g = AXIS_GROUPS.find(x => x.type === this.axisType)
       return g ? g.nodes : []
     },
-    userStore() { return useUserStore() }
+    userStore() { return useUserStore() },
+    // ★ V2.6
+    selectedDimsWithNames() {
+      return this.selectedDims.map(k => {
+        const d = DIMENSIONS.find(x => x.key === k)
+        return { key: k, name: d ? d.name : k }
+      })
+    },
+    hasInsightData() {
+      return this.selectedDims.length > 0
+    },
+    confirmedTypeCount() { return this.selectedTypes.length },
+    // V3.5 复述文案（自动生成预览）
+    autoConfirmText() {
+      const clientName = this.clientName || '客户'
+      const g = this.axisGroups.find(x => x.type === this.axisType)
+      const node = (g && g.nodes) ? g.nodes.find(n => n.key === this.axisNodeKey) : null
+      const axis = node ? node.name : ''
+      const triggers = this.triggerEvents.map(k => this._triggerLabel(k)).filter(Boolean)
+      const conflict = this.customerConflict.trim()
+      const bottoms = this.hardBottomLines.map(k => this._bottomLabel(k)).filter(Boolean)
+      const flexes = this.flexibleItems.map(k => this._flexLabel(k)).filter(Boolean)
+      let text = `根据与${clientName}的沟通，${clientName}`
+      if (triggers.length) text += `因为【${triggers.join('、')}】`
+      text += `打算${this.axisType === 'buy' ? '购房' : '租房'}`
+      if (axis) text += `（${axis}）`
+      if (conflict) text += `；比较纠结：${conflict}`
+      if (bottoms.length) text += `；底线：${bottoms.join('、')}必须满足`
+      if (flexes.length) text += `；${flexes.join('、')}可以适当妥协`
+      text += '。'
+      if (this.triggerRemark.trim()) text += ` 客户原话：${this.triggerRemark.trim()}`
+      return text
+    },
+    hasDeepInsight() {
+      return this.triggerEvents.length > 0 || this.customerConflict.trim() ||
+             this.hardBottomLines.length > 0 || this.flexibleItems.length > 0 ||
+             this.triggerRemark.trim() || this.riskItems.length > 0 ||
+             this.decisionMakerStances.length > 0 || this.lifeVision.trim()
+    },
+    confirmedScoreCount() {
+      return Object.keys(this.insightScores).filter(k => this.insightScores[k] > 0).length
+    },
+    // ★ V3.8 作战结论卡：基于策展结果 + 深层洞察 + 测评分值，翻译成「这单怎么干」
+    battleCard() {
+      if (!this.result) return null
+      const r = this.result
+      const nodeLabel = (this.axisGroups.find(g => g.type === this.axisType) || {}).label || ''
+      const nodeName = this.axisNodeKey
+      const nodeNameLabel = this._nodeNameLabel(this.axisNodeKey)
+      const isBuy = this.axisType === 'buy'
+
+      // —— 一句话客户总结论 ——
+      const triggerStr = this.triggerEvents.map(k => this._triggerLabel(k)).filter(Boolean).join('+')
+      const bottomStr = this.hardBottomLines.map(k => this._bottomLabel(k)).filter(Boolean)
+      const flexStr = this.flexibleItems.map(k => this._flexLabel(k)).filter(Boolean)
+      const riskStr = this.riskItems.map(k => this._riskLabel(k)).filter(Boolean)
+      const topType = this.selectedTypes[0]
+      const topTypeLabel = (this.clientTypes.find(t => t.key === topType) || {}).label || ''
+      const summaryParts = []
+      if (topTypeLabel) summaryParts.push(topTypeLabel)
+      if (triggerStr) summaryParts.push(triggerStr + '触发')
+      summaryParts.push(isBuy ? '核心诉求' : '核心诉求')
+      let summary = summaryParts.join(' · ')
+      if (bottomStr.length) summary += '；底线：' + bottomStr.slice(0, 3).join('、') + '必须满足'
+      if (riskStr.length) summary += '；顾虑：' + riskStr.slice(0, 2).join('、')
+      if (this.customerConflict) summary += '；纠结：' + this.customerConflict
+      if (!summary) summary = '尚未录入深层动因，可先完成测评与洞察补充后获得更精准的结论'
+
+      // —— 优先讲：把「说」翻译成对这位客户该强调的点 ——
+      const priorities = (r.say || []).slice(0, 3).map(s => ({
+        title: s.title,
+        point: s.point
+      }))
+
+      // —— 带看重点：取「带」+ 底线/让步项做排序依据 ——
+      const bringFocus = (r.bring || []).slice(0, 3).map(b => ({ title: b.title, benefit: b.benefit }))
+
+      // —— 必问问题：取「问」前 3 ——
+      const askQuestions = (r.ask || []).slice(0, 3).map(a => ({ q: a.q }))
+
+      // —— 风险预警：底线 × 让步/顾虑冲突 ——
+      let riskWarn = ''
+      if (this.customerConflict) {
+        riskWarn = '客户内心存在矛盾（' + this.customerConflict + '）——带看前先与客户对齐优先级，避免现场摇摆'
+      } else if (bottomStr.length && flexStr.length) {
+        riskWarn = '底线（' + bottomStr.slice(0, 2).join('、') + '）与可让步（' + flexStr.slice(0, 2).join('、') + '）需提前确认优先级，避免带看时两头不讨好'
+      } else if (riskStr.length) {
+        riskWarn = '客户顾虑（' + riskStr.slice(0, 2).join('、') + '）需在带看中主动回应，用真实数据打消'
+      } else {
+        riskWarn = '建议带看前补录「深层动因洞察」，风险提示将更精准'
+      }
+
+      // —— 下一步动作 ——
+      let nextAction = ''
+      if (isBuy) {
+        nextAction = '本周内按「' + (bottomStr[0] || '核心诉求') + '」优先条件，锁定 3 套房源并约看'
+      } else {
+        nextAction = '本周内按「' + (flexStr[0] || '预算') + '」范围整理 3 个候选房源，约时间看房'
+      }
+      if (this.lifeVision) nextAction += '；带看时用「' + this.lifeVision.slice(0, 20) + '…」帮客户把理想画面说具体'
+
+      return {
+        summary,
+        priorities,
+        bringFocus,
+        askQuestions,
+        riskWarn,
+        nextAction,
+        nodeLabel,
+        nodeNameLabel,
+        axisType: this.axisType
+      }
+    }
   },
   onLoad(options) {
+    trackPageview('curate-prep')
     if (options && options.clientId) {
       this.clientId = options.clientId
       const c = this.userStore.getClient(options.clientId)
@@ -152,10 +626,158 @@ export default {
         else if (stage.indexOf('租') >= 0) this.axisNodeKey = 'start'
         else if (this.axisType === 'rent') this.axisNodeKey = 'start'
         if (c.note) this.freeText = c.note
+
+        // ★ V3.13 关键重构：从诊断问诊预填洞察数据（不经手经纪人重复录入）
+        // 诊断完成后 lifecycle.insightData 已包含 scores / types / ltrust / assessSource
+        if (options.source === 'diagnostic' && c.lifecycle && c.lifecycle.insightData) {
+          const id = c.lifecycle.insightData
+          if (id.scores && Object.keys(id.scores).length > 0) {
+            // 七维分值预填
+            this.insightScores = { ...id.scores }
+            // 七维维度预勾选（★ V3.14.3 兼容诊断数据的 key 命名差异：
+            // diagnosticData 用 transit/school/livability，curate-prep DIMENSIONS 用 conv/...
+            // 加映射并过滤掉 DIMENSIONS 不存在的维度）
+            const dimKeyMap = { transit: 'conv', school: 'econ', livability: 'comfort' }
+            const validDimKeys = DIMENSIONS.map(d => d.key)
+            const scoreKeys = Object.keys(id.scores)
+              .map(k => dimKeyMap[k] || k)            // transit→conv 等映射
+              .filter(k => validDimKeys.includes(k))  // 只保留 DIMENSIONS 中存在的
+              .filter((v, i, arr) => arr.indexOf(v) === i) // 去重
+            this.selectedDims = scoreKeys.length > 0 ? scoreKeys : []
+            // 客户类型预填（已由 diagnostic 自动推导）
+            if (id.types && id.types.length) {
+              this.selectedTypes = [...id.types]
+            }
+            // LTRUST 优先维度预填
+            if (id.ltrust) {
+              this.selectedLtrust = id.ltrust
+            }
+            // 来源标注
+            this.assessSource = id.assessSource || '引导问诊'
+            this.assessTotal = id.assessTotal || 0
+          }
+        } else if (c.lifecycle && c.lifecycle.insightData) {
+          // ★ V3.14.4 非诊断来源但有洞察数据：也从 lifecycle.insightData 预填
+          const id = c.lifecycle.insightData
+          if (id.dims && id.dims.length) {
+            const dimKeyMap = { transit: 'conv', school: 'econ', livability: 'comfort' }
+            const validDimKeys = DIMENSIONS.map(d => d.key)
+            const scoreKeys = id.dims
+              .map(k => dimKeyMap[k] || k)
+              .filter(k => validDimKeys.includes(k))
+            this.selectedDims = scoreKeys
+          }
+          if (id.types && id.types.length) this.selectedTypes = [...id.types]
+          if (id.ltrust) this.selectedLtrust = id.ltrust
+          if (id.scores) this.insightScores = { ...id.scores }
+          this.assessSource = id.assessSource || ''
+          this.assessTotal = id.assessTotal || 0
+        }
       }
     }
   },
   methods: {
+    // ★ V3.14 速记模式
+    toggleQuickMode() {
+      this.quickMode = !this.quickMode
+      if (!this.quickMode) {
+        // 关闭时清空推理结果
+        this.inferredResult = null
+        this.quickNotes = ''
+      }
+    },
+    getNodesForAxis(axisType) {
+      const g = AXIS_GROUPS.find(x => x.type === axisType)
+      return g ? g.nodes : []
+    },
+    inferFromNotes() {
+      const text = (this.quickNotes || '').trim()
+      if (text.length < 10) return
+      const note = text.toLowerCase()
+      const result = { axisType: 'buy', axisNodeKey: 'improve', dims: [], types: [] }
+
+      // —— 推断人生阶段轴线 ——
+      if (/租约.*到期|租房|租金|换房|房东|续租/.test(note)) result.axisType = 'rent'
+      else result.axisType = 'buy'
+
+      // —— 推断节点 ——
+      const nodeMap = {
+        first_home: 'first',
+        improve: 'improve',
+        upgrade: 'improve',
+        置换: 'improve',
+        改善: 'improve',
+        投资: 'invest',
+        学区: 'school',
+        上学: 'school',
+        陪读: 'school',
+        养老: 'elder',
+        退休: 'elder',
+      }
+      for (const [kw, node] of Object.entries(nodeMap)) {
+        if (note.includes(kw)) { result.axisNodeKey = node; break }
+      }
+
+      // —— 推断七维 ——
+      const dimMap = {
+        安全: 'safety', 产权: 'safety', 查封: 'safety', 烂尾: 'safety',
+        地铁: 'transit', 通勤: 'transit', 交通: 'transit', 上班: 'transit',
+        通勤: 'transit',
+        升值: 'value', 投资: 'value', 保值: 'value', 回报: 'value', 租金: 'value',
+        学区: 'school', 学校: 'school', 入学: 'school', 落户: 'school',
+        环境: 'livability', 安静: 'livability', 朝向: 'livability', 采光: 'livability', 户型: 'livability',
+        品质: 'quality', 园林: 'quality', 物业: 'quality', 品牌: 'quality',
+        面积: 'family', 三房: 'family', 两房: 'family', 四房: 'family', 房间: 'family',
+      }
+      const foundDims = new Set()
+      for (const [kw, dim] of Object.entries(dimMap)) {
+        if (note.includes(kw)) foundDims.add(dim)
+      }
+      if (foundDims.size === 0) foundDims.add('safety')
+      result.dims = [...foundDims]
+
+      // —— 推断客户类型 ——
+      const typeMap = [
+        { keys: ['首套', '第一套', '刚需', '没买过', '第一次买房'], type: 'first_home' },
+        { keys: ['改善', '置换', '升级', '换大', '更大', '品质升级'], type: 'improve' },
+        { keys: ['投资', '保值', '租金回报', '出租', '增值'], type: 'invest' },
+        { keys: ['学区', '上学', '陪读', '入学'], type: 'study' },
+        { keys: ['通勤', '地铁', '上班', '交通便利'], type: 'commuter' },
+        { keys: ['三口', '四口', '有孩子', '小孩', '娃', '家庭'], type: 'family_kid' },
+        { keys: ['养老', '退休', '老人'], type: 'elder' },
+      ]
+      for (const { keys, type } of typeMap) {
+        if (keys.some(k => note.includes(k))) { result.types.push(type); break }
+      }
+      if (result.types.length === 0) result.types.push('first_home')
+
+      // 同步到主表单
+      this.axisType = result.axisType
+      this.axisNodeKey = result.axisNodeKey
+      this.inferredResult = result
+      uni.showToast({ title: '已推理框架，请确认', icon: 'none' })
+    },
+    toggleInferredDim(key) {
+      const i = this.inferredResult.dims.indexOf(key)
+      if (i >= 0) this.inferredResult.dims.splice(i, 1)
+      else this.inferredResult.dims.push(key)
+    },
+    toggleInferredType(key) {
+      const i = this.inferredResult.types.indexOf(key)
+      if (i >= 0) this.inferredResult.types.splice(i, 1)
+      else this.inferredResult.types.push(key)
+    },
+    confirmInferred() {
+      if (!this.inferredResult) return
+      const ir = this.inferredResult
+      this.selectedDims = [...(ir.dims || [])]
+      this.selectedTypes = [...(ir.types || [])]
+      this.quickNotes = ''
+      this.inferredResult = null
+      this.quickMode = false
+      uni.showToast({ title: '框架已锁定，可继续录入', icon: 'success' })
+    },
+
     pickAxis(type) {
       this.axisType = type
       // 切换纵轴时，节点默认回到该线的第一个
@@ -166,25 +788,123 @@ export default {
       const i = this.selectedDims.indexOf(key)
       if (i >= 0) this.selectedDims.splice(i, 1)
       else this.selectedDims.push(key)
+      // 切换维度时重置分数
+      if (i < 0 && !this.insightScores[key]) {
+        this.insightScores[key] = 0
+      }
+    },
+    // ★ V2.6 洞察录入
+    toggleType(key) {
+      const i = this.selectedTypes.indexOf(key)
+      if (i >= 0) this.selectedTypes.splice(i, 1)
+      else this.selectedTypes.push(key)
+    },
+    setScore(key, score) {
+      // 点击已选分值 = 取消
+      this.insightScores[key] = this.insightScores[key] === score ? 0 : score
+    },
+    goInsightReport() {
+      if (!this.clientId) {
+        uni.showToast({ title: '请先关联客户', icon: 'none' })
+        return
+      }
+      const insightData = {
+        axisType: this.axisType,
+        axisNodeKey: this.axisNodeKey,
+        dims: this.selectedDims,
+        scores: { ...this.insightScores },
+        types: [...this.selectedTypes],
+        ltrust: this.selectedLtrust,
+        assessSource: this.assessSource,   // ★ V3.13 分值来源
+        assessTotal: this.assessTotal,     // ★ V3.13 七维总分
+        freeText: this.freeText,
+        axisLabel: this.result ? this.result.axisLabel : '',
+        dimensionLabels: this.result ? this.result.dimensionLabels : []
+      }
+      // 先存数据
+      this.userStore.saveInsightData(this.clientId, insightData)
+      this.userStore.markDone('insight')
+      this.userStore.earnPoints(15, '完成洞察录入')
+      // 再跳转
+      uni.navigateTo({ url: '/package-mot/pages/insight/index?clientId=' + this.clientId + '&from=curate' })
+    },
+    confirmInsight() {
+      if (!this.clientId) return
+      this.userStore.confirmInsight(this.clientId)
+      this.insightConfirmed = true
+      uni.showToast({ title: '洞察已确认 ✓', icon: 'none' })
     },
     gen() {
+      // V3.5：有深层洞察时，先弹出确认层
+      if (this.hasDeepInsight && !this.showConfirm) {
+        this.confirmText = this.autoConfirmText
+        this.showConfirm = true
+        return
+      }
+      // 有深层洞察但用户点「确认」后的实际生成
+      this.doGenerate()
+    },
+    doGenerate() {
       this.loading = true
       this.loadError = ''
       generateCurationAsync({
         axisType: this.axisType,
         axisNodeKey: this.axisNodeKey,
         dimensions: this.selectedDims,
-        freeText: this.freeText
+        freeText: this.freeText,
+        // ★ V3.6+V3.7 深层洞察全参数
+        triggerEvents: this.triggerEvents,
+        triggerRemark: this.triggerRemark,
+        customerConflict: this.customerConflict,
+        hardBottomLines: this.hardBottomLines,
+        flexibleItems: this.flexibleItems,
+        // V3.7 新增
+        riskItems: this.riskItems,
+        decisionMakerStances: this.decisionMakerStances,
+        lifeVision: this.lifeVision,
       }).then(res => {
         this.result = res
         this.savedTip = ''
         this.loading = false
-        uni.pageScrollTo({ scrollTop: 0, duration: 200 })
+        this.showConfirm = false
+        uni.pageScrollTo && uni.pageScrollTo({ scrollTop: 0, duration: 200 }) // 仅在结果页滚动回顶，不影响输入态
       }).catch(err => {
         console.error('[curation] generate failed:', err)
         this.loadError = '生成失败，请检查网络后重试'
         this.loading = false
       })
+    },
+    // V3.5 深层洞察辅助
+    _triggerLabel(k) {
+      return { family_birth: '家庭添丁', family_marriage: '新婚', family_elder: '老人同住',
+               family_school: '子女入学', external_expiry: '原租约到期', external_transfer: '工作调动',
+               external_commute: '通勤无法忍受', external_defect: '现有房屋缺陷',
+               time_school: '入学落户节点', time_limit: '置换窗口期', time_other: '其他时间压力' }[k] || ''
+    },
+    _bottomLabel(k) {
+      return { school: '学区资质', metro: '地铁距离', budget: '总价上限', floor: '楼层要求',
+               orientation: '朝向', elevator: '必须有电梯', noise: '噪音控制', title: '产权清晰' }[k] || ''
+    },
+    _flexLabel(k) {
+      return { area: '面积', decoration: '装修标准', ratio: '梯户比', age: '楼龄',
+               quality: '小区品质', orientation: '朝向', parking: '车位' }[k] || ''
+    },
+    _riskLabel(k) {
+      return { fear_expensive: '怕买贵', fear_mortgage: '怕月供', fear_devalue: '怕贬值',
+               fear_family: '怕家人意见不合', fear_policy: '怕政策变动', fear_delivery: '怕交房不确定',
+               fear_liquidity: '怕流通性差', fear_quality: '怕质量维权' }[k] || ''
+    },
+    _nodeNameLabel(k) {
+      for (const g of this.axisGroups) {
+        const n = (g.nodes || []).find(x => x.key === k)
+        if (n) return n.name
+      }
+      return ''
+    },
+    toggleTag(arr, key) {
+      const i = arr.indexOf(key)
+      if (i >= 0) arr.splice(i, 1)
+      else arr.push(key)
     },
     save() {
       if (!this.clientId) {
@@ -201,12 +921,40 @@ export default {
         followThemes,
         freeText: this.freeText
       })
+      // ★ V2.6 洞察数据写入 client lifecycle（如果用户已填）
+      if (this.hasInsightData) {
+        this.userStore.saveInsightData(this.clientId, {
+          axisType: this.axisType,
+          axisNodeKey: this.axisNodeKey,
+          dims: this.selectedDims,
+          scores: { ...this.insightScores },
+          types: [...this.selectedTypes],
+          ltrust: this.selectedLtrust,
+          freeText: this.freeText,
+          axisLabel: this.result.axisLabel,
+          dimensionLabels: this.result.dimensionLabels,
+          // V3.5 深层洞察
+          triggerEvents: [...this.triggerEvents],
+          triggerRemark: this.triggerRemark,
+          customerConflict: this.customerConflict,
+          hardBottomLines: [...this.hardBottomLines],
+          flexibleItems: [...this.flexibleItems],
+          // V3.7 新增
+          riskItems: [...this.riskItems],
+          decisionMakerStances: JSON.parse(JSON.stringify(this.decisionMakerStances)),
+          lifeVision: this.lifeVision,
+          confirmText: this.confirmText,
+          insightConfirmed: this.insightConfirmed,
+        })
+        this.userStore.markDone('insight')
+        this.userStore.earnPoints(15, '完成洞察录入')
+      }
       // 联动既有经营记录（时间线 + 记忆点 + 信任积分）
       this.userStore.addTimelineEvent(this.clientId, { type: '策展', summary: '见面参谋生成（' + this.result.axisLabel + ' · ' + this.result.say.length + ' 说 / ' + this.result.followups.length + ' 见后跟进）' })
       this.userStore.addMemoryPoint(this.clientId, '专业准备：基于真实字典生成见面参谋，每条可点开依据')
       this.userStore.markDone('curate')
       this.userStore.earnPoints(10, '完成见面参谋')
-      this.savedTip = '已存入「' + this.clientName + '」的认知卡 · 信任积分 +10'
+      this.savedTip = '已存入「' + this.clientName + '」的认知卡 · 信任积分 +10' + (this.hasInsightData ? ' · 洞察数据 +15' : '')
       uni.showToast({ title: '已存入客户认知卡', icon: 'none' })
     }
   }
@@ -214,7 +962,7 @@ export default {
 </script>
 
 <style scoped>
-.page { padding: 14px; background: #f7f4ef; min-height: 100vh; box-sizing: border-box; }
+.page { height: 100vh; padding: 14px; padding-bottom: calc(14px + 80px + env(safe-area-inset-bottom)); background: #f7f4ef; box-sizing: border-box; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .hero { background: linear-gradient(135deg, #3d5a3e 0%, #2f4730 100%); border-radius: 16px; padding: 18px 16px; margin-bottom: 14px; }
 .h-title { color: #fff; font-size: 20px; font-weight: 700; }
 .h-sub { color: rgba(255,255,255,0.85); font-size: 13px; line-height: 1.6; margin-top: 6px; }
@@ -232,7 +980,8 @@ export default {
 .ta { width: 100%; height: 72px; background: #f7f4ef; border-radius: 10px; padding: 10px; font-size: 14px; box-sizing: border-box; color: #2b2b2b; }
 .client-bar { background: #eef3ec; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #3d5a3e; margin-bottom: 10px; }
 .hint { font-size: 11px; color: #C8956D; background: #fbf6ee; padding: 8px 10px; border-radius: 8px; margin-bottom: 12px; line-height: 1.5; }
-.btn-main { background: #c46a3a; color: #fff; border-radius: 12px; padding: 13px; font-size: 15px; font-weight: 700; }
+.page-bottom { position: fixed; bottom: 0; left: 0; right: 0; background: #f7f4ef; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); z-index: 10; border-top: 1px solid #efe9dd; }
+.btn-main { background: #c46a3a; color: #fff; border-radius: 12px; padding: 13px; font-size: 15px; font-weight: 700; margin-top: 8px; }
 .btn-line { background: #fff; color: #c46a3a; border: 1px solid #e7d3c2; border-radius: 12px; padding: 12px; font-size: 14px; margin-top: 8px; }
 .result-head { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 12px; border: 1px solid #efe9dd; }
 .rh-axis { font-size: 16px; font-weight: 700; color: #2b2b2b; }
@@ -269,4 +1018,128 @@ export default {
 .saved-tip { text-align: center; font-size: 12px; color: #3d5a3e; margin-top: 10px; }
 .err-msg { background: #fff0f0; color: #c0392b; padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px; text-align: center; }
 .btn-main:disabled { opacity: 0.6; }
+
+/* V3.5 深层动因洞察 */
+.deep-insight-card { padding-bottom: 6px; }
+.deep-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; }
+.deep-arrow { font-size: 13px; color: #8a837a; }
+.deep-badge { background: #c46a3a; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-left: 6px; font-weight: 400; }
+.deep-tip { font-size: 11px; color: #C8956D; background: #fbf6ee; padding: 6px 10px; border-radius: 8px; margin-top: 6px; line-height: 1.5; }
+.deep-section { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e7e0d4; }
+.deep-section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.ds-label { font-size: 13px; font-weight: 700; color: #3d5a3e; margin-bottom: 8px; display: block; }
+.ds-hint { font-size: 11px; font-weight: 400; color: #8a837a; margin-left: 4px; }
+.ds-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+.ds-tag { padding: 5px 10px; border-radius: 16px; font-size: 12px; border: 1.5px solid #e7e0d4; color: #555; background: #f7f4ef; }
+.ds-tag.on { font-weight: 700; }
+.ds-trigger.on { background: #fff8e8; border-color: #c8956d; color: #c46a3a; }
+.ds-bottom.on { background: #fff0f0; border-color: #c0392b; color: #c0392b; }
+.ds-flex.on { background: #eef6ef; border-color: #27ae60; color: #27ae60; }
+.ds-risk.on { background: #fff3e0; border-color: #e67e22; color: #e67e22; }
+.deep-remark { background: #f7f4ef; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #555; margin-top: 6px; width: 100%; box-sizing: border-box; }
+.deep-conflict { width: 100%; height: 70px; background: #f7f4ef; border-radius: 10px; padding: 8px 10px; font-size: 13px; color: #2b2b2b; box-sizing: border-box; margin-top: 6px; }
+
+/* V3.7 决策人立场 */
+.dm-row { background: #f7f4ef; border-radius: 10px; padding: 10px; margin-bottom: 8px; position: relative; }
+.dm-name { background: #fff; border-radius: 8px; padding: 6px 10px; font-size: 13px; color: #2b2b2b; width: 100%; box-sizing: border-box; margin-bottom: 6px; }
+.dm-stances { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.dm-stance { padding: 4px 9px; border-radius: 14px; font-size: 11px; color: #8a837a; border: 1.5px solid #e0d9cc; background: #fff; }
+.dm-stance.on { background: #3d5a3e; color: #fff; border-color: #3d5a3e; font-weight: 700; }
+.dm-concern { background: #fff; border-radius: 8px; padding: 5px 10px; font-size: 12px; color: #555; width: 100%; box-sizing: border-box; }
+.dm-del { position: absolute; top: 8px; right: 10px; color: #c0392b; font-size: 16px; line-height: 1; }
+.dm-add { color: #3d5a3e; font-size: 13px; padding: 8px 0; text-align: center; border: 1.5px dashed #c8d4c4; border-radius: 10px; margin-top: 4px; }
+
+/* V3.5 复述确认弹层 */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; display: flex; align-items: flex-end; }
+.overlay.active { display: flex; }
+.ov-nav { background: #3d5a3e; color: #fff; display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+.back { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 8px; padding: 6px 14px; font-size: 14px; }
+.sub { font-size: 12px; opacity: 0.75; }
+.ovcontent { height: 0; flex: 1; background: #f7f4ef; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px 14px 60px; }
+.confirm-tip { background: #fff8e8; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #c46a3a; margin-bottom: 12px; line-height: 1.5; }
+.confirm-ta { width: 100%; height: 130px; background: #fff; border-radius: 10px; padding: 12px; font-size: 14px; color: #2b2b2b; box-sizing: border-box; line-height: 1.6; margin-bottom: 12px; }
+.confirm-badges { background: #fff; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; }
+.cb-section { display: flex; gap: 6px; margin-bottom: 4px; font-size: 12px; }
+.cb-section:last-child { margin-bottom: 0; }
+.cb-title { font-weight: 700; color: #3d5a3e; flex-shrink: 0; }
+.cb-val { color: #555; }
+.confirm-hint { background: #eef3ec; border-radius: 10px; padding: 10px 12px; font-size: 12px; color: #3d5a3e; line-height: 1.5; }
+.ov-foot { background: #fff; display: flex; gap: 10px; padding: 12px 14px; border-top: 1px solid #e7e0d4; }
+.btn-green { background: #3d5a3e; color: #fff; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 700; }
+.foot-cancel { flex: 1; }
+.foot-save { flex: 2; }
+.btn-green.foot-save { background: #3d5a3e; }
+
+
+/* ★ V3.14 速记模式 */
+.quick-mode-card { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #fff8e8, #fff3d6); border: 1.5px solid #f0d070; border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; cursor: pointer; }
+.qm-left { display: flex; align-items: center; gap: 10px; }
+.qm-ico { font-size: 22px; }
+.qm-body { display: flex; flex-direction: column; }
+.qm-title { font-size: 14px; font-weight: 700; color: #8a6000; }
+.qm-sub { font-size: 11px; color: #b08000; margin-top: 2px; }
+.qm-arrow { font-size: 13px; color: #c89a00; font-weight: 700; }
+.quick-card .inp { width: 100%; min-height: 80px; background: #fffef8; border: 1.5px solid #f0d070; border-radius: 10px; padding: 10px; font-size: 13px; color: #333; resize: none; box-sizing: border-box; }
+.qn-count { font-size: 10px; color: #b08000; text-align: right; margin-top: 4px; }
+.qn-infer { background: #fff8e8; border: 1.5px dashed #f0d070; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.qi-btn { font-size: 13px; font-weight: 700; color: #c89a00; }
+.qi-hint { font-size: 11px; color: #b08000; }
+.infer-result { background: #fff; border: 1.5px solid #f0d070; border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+.ir-head { font-size: 13px; font-weight: 700; color: #8a6000; margin-bottom: 12px; }
+.ir-section { margin-bottom: 12px; }
+.ir-label { display: block; font-size: 11px; color: #8a837a; margin-bottom: 6px; }
+.ir-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ir-chip { font-size: 12px; padding: 5px 10px; border-radius: 999px; border: 1.5px solid #ede5d6; color: #555; cursor: pointer; background: #f7f4ef; }
+.ir-chip.small { font-size: 11px; padding: 4px 8px; }
+.ir-chip.on { background: #3d5a3e; border-color: #3d5a3e; color: #fff; }
+.ir-nodes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.ir-confirm { text-align: center; background: #3d5a3e; color: #fff; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 700; margin-top: 10px; cursor: pointer; }
+
+/* ★ V2.6 洞察录入 */
+.insight-tip { font-size: 11px; color: #8a837a; margin-bottom: 10px; }
+.score-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px dashed #eee; }
+.score-row:last-child { border-bottom: none; }
+.score-name { font-size: 13px; color: #2b2b2b; width: 56px; flex-shrink: 0; }
+.score-stars { display: flex; gap: 2px; flex: 1; }
+.star { font-size: 16px; color: #ddd; transition: color 0.1s; }
+.star.on { color: #c46a3a; }
+.score-val { font-size: 11px; color: #c46a3a; width: 30px; text-align: right; flex-shrink: 0; }
+.type-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.type-tag { padding: 5px 11px; border-radius: 20px; font-size: 12px; color: #3d5a3e; border: 1.5px solid #3d5a3e; background: #fff; }
+.type-tag.on { background: #c46a3a; color: #fff; border-color: #c46a3a; }
+.type-tag.safety.on { background: #c0392b; border-color: #c0392b; }
+.type-tag.transit.on { background: #e67e22; border-color: #e67e22; }
+.type-tag.economy.on { background: #27ae60; border-color: #27ae60; }
+.type-tag.beauty.on { background: #2980b9; border-color: #2980b9; }
+.ltrust-row { margin-top: 12px; }
+.insight-confirm-bar { background: #fff8e8; border-radius: 14px; padding: 14px; margin-bottom: 12px; border: 1.5px solid #f0d090; }
+.icb-title { font-size: 14px; font-weight: 700; color: #c46a3a; }
+.icb-sub { font-size: 11px; color: #8a837a; margin: 4px 0 10px; }
+.icb-actions { display: flex; gap: 8px; }
+.btn-confirm { flex: 2; background: #c46a3a; color: #fff; border-radius: 10px; padding: 10px; font-size: 14px; font-weight: 700; }
+.btn-edit { flex: 1; background: #fff; color: #3d5a3e; border: 1.5px solid #3d5a3e; border-radius: 10px; padding: 10px; font-size: 14px; font-weight: 700; }
+.insight-ok-bar { background: #eef3ec; color: #3d5a3e; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 700; margin-bottom: 12px; text-align: center; }
+
+/* ★ V3.8 作战结论卡 */
+.battle-card { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 12px; border: 2px solid #3d5a3e; }
+.bc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.bc-title { font-size: 16px; font-weight: 800; color: #3d5a3e; }
+.bc-client { font-size: 12px; color: #8a837a; background: #f0ece2; padding: 2px 8px; border-radius: 10px; }
+.bc-summary { background: #eef3ec; border-left: 4px solid #3d5a3e; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #2b2b2b; line-height: 1.6; margin-bottom: 12px; }
+.bc-block { margin-bottom: 12px; }
+.bc-block-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.bc-prio { color: #3b6d11; }
+.bc-bring { color: #185fa5; }
+.bc-ask { color: #854f0b; }
+.bc-item { display: flex; gap: 8px; padding: 5px 0; }
+.bc-num { width: 18px; height: 18px; border-radius: 50%; background: #f0ece2; color: #555; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.bc-text { flex: 1; }
+.bc-item-t { font-size: 13px; font-weight: 600; color: #2b2b2b; line-height: 1.5; }
+.bc-item-s { font-size: 12px; color: #8a837a; line-height: 1.5; margin-top: 1px; }
+.bc-risk { background: #fff0f0; border: 1px solid #f0c8c8; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; }
+.bc-risk-t { font-size: 13px; font-weight: 700; color: #c0392b; margin-bottom: 4px; }
+.bc-risk-s { font-size: 12px; color: #a33; line-height: 1.5; }
+.bc-next { background: #3d5a3e; border-radius: 10px; padding: 10px 12px; }
+.bc-next-t { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 4px; }
+.bc-next-s { font-size: 13px; color: #fff; line-height: 1.5; }
 </style>

@@ -46,7 +46,7 @@ export const useUserStore = defineStore('user', {
     favorites: [], // [entryId, ...]
     contributions: [], // [{type, entryId, status, timestamp}]
     // ===== V2.1.1a 新增：客户档案 / 策展库 / 测评 / 任务完成态 =====
-    clients: [], // [{id, surname, name, rel, stage, pkey, persona, status, asset, level, addr, note, seed, followups[], timeline[], memoryPoints[]}]
+    clients: [], // [{id, surname, name, rel, stage, pkey, persona, status, asset, level, addr, note, seed, followups[], timeline[], memoryPoints[], lifecycle, reports[]}]
     seeded: false, // 首次启动是否已写入示例客户（避免用户删光后又被重新塞回示例）
     focusClientId: null, // V2.7：首页「今日跟进」直达客户详情（tabBar 页无法 URL 带参，改走 store）
     curatings: [], // [{id, clientId, t, s, ts}]
@@ -185,7 +185,7 @@ export const useUserStore = defineStore('user', {
         { surname: '王', name: '王女士（房东）', rel: '房东', stage: '租住线 / 业主侧', pkey: 'blue', persona: '🔵 关系导向', status: '跟进中', asset: '委托出租，定价跟进待办', level: 'B', addr: '', note: '空置45天委托出租', seed: true },
         { surname: '陈', name: '陈同学（租客）', rel: '租客', stage: '租住线 / ②改善', pkey: 'green', persona: '🟢 理智型', status: '跟进中', asset: '工作调动，租住改善中', level: 'C', addr: '', note: '工作调动近地铁', seed: true }
       ]
-      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c, followups: c.followups || [], timeline: c.timeline || [], memoryPoints: c.memoryPoints || [], cognition: c.cognition || { log: [] } }))
+      this.clients = seed.map(c => ({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), ...c, followups: c.followups || [], timeline: c.timeline || [], memoryPoints: c.memoryPoints || [], cognition: c.cognition || { log: [] }, lifecycle: { currentStep: 1, step1CompletedAt: Date.now(), step2Confirmed: false, step3Confirmed: false, step4CompletedAt: null, step5CompletedAt: null, step6CompletedAt: null, step7CompletedAt: null }, reports: [] }))
       this.seeded = true
       this._persist()
     },
@@ -239,7 +239,7 @@ export const useUserStore = defineStore('user', {
 
     /** 新建客户 */
     addClient(c) {
-      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] }, ...c }
+      const client = { id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), seed: false, followups: [], timeline: [], memoryPoints: [], cognition: { log: [] }, lifecycle: { currentStep: 1, step1CompletedAt: Date.now(), step2Confirmed: false, step3Confirmed: false, step4CompletedAt: null, step5CompletedAt: null, step6CompletedAt: null, step7CompletedAt: null }, reports: [], ...c }
       this.clients.unshift(client)
       this._persist()
       return client
@@ -342,11 +342,38 @@ export const useUserStore = defineStore('user', {
     },
 
     /** 新增一次测评记录 */
-    addAssessment() {
-      const item = { id: 'as_' + Date.now(), ts: Date.now() }
+    addAssessment(payload = {}) {
+      const item = { id: 'as_' + Date.now(), ts: Date.now(), ...payload }
       this.assessments.unshift(item)
       this._persist()
       return item
+    },
+
+    /** ★ V3.7.2 测评结果应用到客户洞察报告
+     * 住得好测评的 7 维 key（safety/health/conv/econ/comfort/beauty/free）
+     * 与洞察报告 DIMENSIONS 完全一致，可直接写入 insightData.scores
+     */
+    applyAssessmentToClient(clientId, payload) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !payload || !payload.scores) return false
+      if (!c.lifecycle) c.lifecycle = {}
+      if (!c.lifecycle.insightData) c.lifecycle.insightData = {}
+      // 七维分值直接覆盖写入（key 对齐）
+      c.lifecycle.insightData.scores = Object.assign({}, c.lifecycle.insightData.scores || {}, payload.scores)
+      // 标记来源，供洞察报告页展示「分值来自测评」
+      c.lifecycle.insightData.assessSource = payload.title || '品质测评'
+      c.lifecycle.insightData.assessTotal = payload.total || 0
+      c.lifecycle.insightData.assessAt = Date.now()
+      // 关联一条测评记录（带 clientId，可追溯）
+      this.assessments.unshift({
+        id: 'as_' + Date.now(), ts: Date.now(),
+        type: payload.type || 'a', title: payload.title || '',
+        scores: payload.scores || {}, total: payload.total || 0,
+        clientId
+      })
+      this.addTimelineEvent(clientId, { type: '测评', summary: '住得好测评结果已同步到需求洞察' })
+      this._persist()
+      return true
     },
 
     /** 分享次数 +1（案例分享任务） */
@@ -361,6 +388,247 @@ export const useUserStore = defineStore('user', {
       this.doneFlags[key] = true
       this._persist()
       return true
+    },
+
+    // ============ MOT 服务流程 ============
+
+    /** 确认洞察（闸门一）：step2Confirmed=true，解锁 MOT② */
+    confirmInsight(clientId) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c) return
+      if (!c.lifecycle) c.lifecycle = {}
+      c.lifecycle.step2Confirmed = true
+      // ★ V3.7.3 推进当前步骤：确认洞察后 currentStep 从 1 → 2
+      if ((c.lifecycle.currentStep || 1) < 2) c.lifecycle.currentStep = 2
+      // 追加 insight 报告引用
+      if (!c.reports) c.reports = []
+      c.reports.push({
+        type: 'insight',
+        engine: 'insight-v1',
+        reportNo: 'IN-' + this._todayStr() + '-' + String(c.reports.filter(r => r.type === 'insight').length + 1).padStart(3, '0'),
+        version: 1,
+        confirmed: true,
+        createdAt: Date.now()
+      })
+      this.addTimelineEvent(clientId, { type: 'MOT①', summary: '需求洞察已确认，进入房源提案阶段' })
+      this.earnPoints(15, '确认洞察报告')
+      this._persist()
+    },
+
+    /** 确认提案（闸门二），pathA=经纪人确认 / pathB=客户确认 */
+    confirmProposal(clientId, path = 'A') {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !c.lifecycle) return
+      const prog = c.reports.find(r => r.type === 'proposal')
+      if (prog) {
+        if (path === 'A') prog.agentConfirmed = true
+        else prog.clientConfirmed = true
+        if (prog.agentConfirmed && prog.clientConfirmed) {
+          prog.confirmed = true
+          c.lifecycle.step3Confirmed = true
+          this.addTimelineEvent(clientId, { type: 'MOT②', summary: '房源提案已双方确认，进入带看分析阶段' })
+          this.earnPoints(20, '提案双方确认')
+        }
+      } else {
+        // 无现存提案，创建新条目
+        if (!c.reports) c.reports = []
+        c.reports.push({
+          type: 'proposal',
+          engine: 'proposal-v1',
+          reportNo: 'PR-' + this._todayStr() + '-001',
+          version: 1,
+          [path === 'A' ? 'agentConfirmed' : 'clientConfirmed']: true,
+          confirmed: false,
+          createdAt: Date.now()
+        })
+      }
+      this._persist()
+    },
+
+    /** 完成带看分析（MOT③）：step4CompletedAt + 追加报告引用 */
+    completeShowing(clientId, showingData) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !c.lifecycle) return
+      c.lifecycle.step4CompletedAt = Date.now()
+      if (c.lifecycle.currentStep < 4) c.lifecycle.currentStep = 4
+      if (!c.reports) c.reports = []
+      c.reports.push({
+        type: 'showing',
+        engine: 'showing-v1',
+        reportNo: 'SH-' + this._todayStr() + '-' + String(c.reports.filter(r => r.type === 'showing').length + 1).padStart(3, '0'),
+        version: 1,
+        confirmed: false,
+        createdAt: Date.now(),
+        data: showingData || {}
+      })
+      this.addTimelineEvent(clientId, { type: 'MOT③', summary: '带看分析已完成' })
+      this.earnPoints(10, '完成带看分析')
+      this._persist()
+    },
+
+    /** 完成谈判斡旋（MOT④） */
+    completeNegotiation(clientId, data) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !c.lifecycle) return
+      c.lifecycle.step5CompletedAt = Date.now()
+      if (c.lifecycle.currentStep < 5) c.lifecycle.currentStep = 5
+      if (!c.reports) c.reports = []
+      c.reports.push({
+        type: 'negotiation',
+        engine: 'negotiation-v1',
+        reportNo: 'NG-' + this._todayStr() + '-' + String(c.reports.filter(r => r.type === 'negotiation').length + 1).padStart(3, '0'),
+        version: 1,
+        confirmed: false,
+        createdAt: Date.now(),
+        data: data || {}
+      })
+      this.addTimelineEvent(clientId, { type: 'MOT④', summary: '谈判斡旋记录已保存' })
+      this.earnPoints(10, '完成谈判斡旋')
+      this._persist()
+    },
+
+    /** 完成成交售后（MOT⑤） */
+    completeDeal(clientId, data) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !c.lifecycle) return
+      c.lifecycle.step6CompletedAt = Date.now()
+      if (c.lifecycle.currentStep < 6) c.lifecycle.currentStep = 6
+      c.lifecycle.dealtAt = Date.now()
+      if (!c.reports) c.reports = []
+      c.reports.push({
+        type: 'deal',
+        engine: 'deal-v1',
+        reportNo: 'DL-' + this._todayStr() + '-' + String(c.reports.filter(r => r.type === 'deal').length + 1).padStart(3, '0'),
+        version: 1,
+        confirmed: false,
+        createdAt: Date.now(),
+        data: data || {}
+      })
+      this.addTimelineEvent(clientId, { type: 'MOT⑤', summary: '成交售后已登记' })
+      this.earnPoints(20, '完成成交售后')
+      this._persist()
+    },
+
+    /** 完成持续维护（MOT⑥） */
+    completeMaintain(clientId, data) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !c.lifecycle) return
+      c.lifecycle.step7CompletedAt = Date.now()
+      if (c.lifecycle.currentStep < 7) c.lifecycle.currentStep = 7
+      if (!c.reports) c.reports = []
+      c.reports.push({
+        type: 'maintain',
+        engine: 'maintain-v1',
+        reportNo: 'MT-' + this._todayStr() + '-' + String(c.reports.filter(r => r.type === 'maintain').length + 1).padStart(3, '0'),
+        version: 1,
+        confirmed: false,
+        createdAt: Date.now(),
+        data: data || {}
+      })
+      this.addTimelineEvent(clientId, { type: 'MOT⑥', summary: '持续维护记录已保存' })
+      this.earnPoints(10, '完成持续维护')
+      this._persist()
+    },
+
+    /** 完成提案报告（MOT②）：写入 proposal 数据 + 追加报告引用（兼容 confirmProposal 的闸门） */
+    completeProposal(clientId, proposalData) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c) return
+      if (!c.lifecycle) c.lifecycle = {}
+      // 先落草稿到洞察扩展数据（与 saveDraft 一致，供回读）
+      const prev = c.lifecycle.insightData || {}
+      c.lifecycle.insightData = { ...prev, proposalData: proposalData || {}, proposalAt: Date.now() }
+      // 追加/更新 proposal 报告引用
+      if (!c.reports) c.reports = []
+      let prog = c.reports.find(r => r.type === 'proposal')
+      if (prog) {
+        prog.data = proposalData || {}
+        prog.updatedAt = Date.now()
+      } else {
+        c.reports.push({
+          type: 'proposal',
+          engine: 'proposal-v1',
+          reportNo: 'PR-' + this._todayStr() + '-' + String(c.reports.filter(r => r.type === 'proposal').length + 1).padStart(3, '0'),
+          version: 1,
+          confirmed: false,
+          createdAt: Date.now(),
+          data: proposalData || {}
+        })
+      }
+      if (c.lifecycle.currentStep < 3) c.lifecycle.currentStep = 3
+      this.addTimelineEvent(clientId, { type: 'MOT②', summary: '房源提案报告已生成' })
+      this.earnPoints(10, '生成提案报告')
+      this._persist()
+    },
+
+    /** 获取客户当前 insight 报告（最近的） */
+    getInsightReport(clientId) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !c.reports) return null
+      const list = c.reports.filter(r => r.type === 'insight').sort((a, b) => b.createdAt - a.createdAt)
+      return list[0] || null
+    },
+
+    /** 获取客户当前带看报告 */
+    getShowingReport(clientId) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !c.reports) return null
+      const list = c.reports.filter(r => r.type === 'showing').sort((a, b) => b.createdAt - a.createdAt)
+      return list[0] || null
+    },
+
+    /** 获取客户提案报告 */
+    getProposalReport(clientId) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c || !c.reports) return null
+      const list = c.reports.filter(r => r.type === 'proposal').sort((a, b) => b.createdAt - a.createdAt)
+      return list[0] || null
+    },
+
+    /** 保存洞察报告扩展数据（七维分值 / 客户类型 / LTRUST） */
+    saveInsightData(clientId, data) {
+      const c = this.clients.find(x => x.id === clientId)
+      if (!c) return
+      // ★ V2.6 修复：统一写入 lifecycle.insightData，兼容 curate-prep 字段名
+      if (!c.lifecycle) c.lifecycle = {}
+      const prev = c.lifecycle.insightData || {}
+      const newScores = data.scores || data.dimensionScores || prev.scores || {}
+      c.lifecycle.insightData = {
+        dims:       data.dims || Object.keys(newScores),
+        scores:     newScores,
+        types:      data.types      || data.customerType    || [],
+        ltrust:     data.ltrust     || data.ltrustMatrix    || null,
+        axisType:   data.axisType   || null,
+        axisNodeKey:data.axisNodeKey|| null,
+        savedAt:    Date.now(),
+        // ★ V3.7.2 保留测评来源标注（防止类型勾选等编辑时被覆盖丢失）
+        assessSource: (data.assessSource !== undefined) ? data.assessSource : (prev.assessSource || ''),
+        assessTotal:  (data.assessTotal !== undefined)  ? data.assessTotal  : (prev.assessTotal || 0),
+        assessAt:     (data.assessAt !== undefined)     ? data.assessAt     : (prev.assessAt || null),
+        // ★ V3.5 深层洞察
+        triggerEvents:    data.triggerEvents    || prev.triggerEvents    || [],
+        triggerRemark:   data.triggerRemark   || prev.triggerRemark   || '',
+        customerConflict: data.customerConflict || prev.customerConflict || '',
+        hardBottomLines: data.hardBottomLines || prev.hardBottomLines || [],
+        flexibleItems:    data.flexibleItems   || prev.flexibleItems   || [],
+        confirmText:     data.confirmText     || prev.confirmText     || '',
+        insightConfirmed: data.insightConfirmed || prev.insightConfirmed || false,
+        // V3.7 新增
+        riskItems:            data.riskItems            || prev.riskItems            || [],
+        decisionMakerStances: data.decisionMakerStances || prev.decisionMakerStances || [],
+        lifeVision:           data.lifeVision           || prev.lifeVision           || '',
+      }
+      // 兼容旧格式写入 cognition（向后兼容 insight 页降级路径）
+      if (!c.cognition) c.cognition = {}
+      c.cognition.dimensionScores = newScores
+      c.cognition.customerType    = data.types  || data.customerType    || c.cognition.customerType    || []
+      c.cognition.ltrustMatrix    = data.ltrust || data.ltrustMatrix    || c.cognition.ltrustMatrix    || null
+      this._persist()
+    },
+
+    _todayStr() {
+      const d = new Date()
+      return d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0')
     },
 
     // ============ 答题统计 ============

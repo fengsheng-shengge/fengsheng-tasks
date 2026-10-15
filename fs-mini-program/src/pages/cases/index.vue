@@ -59,6 +59,7 @@
 import { casesData, earnTasks } from '../../utils/v4data.js'
 import { copyLink } from '../../utils/share.js'
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return {
@@ -76,6 +77,7 @@ export default {
       return this.cases.filter(c => (this.role === 'all' || c.role === this.role) && (this.scene === 'all' || c.scene === this.scene))
     }
   },
+  onShow() { trackPageview('cases') },
   methods: {
     setRole(r) { this.role = r },
     setScene(s) { this.scene = s },

@@ -1,28 +1,31 @@
 <template>
   <view class="page">
     <view class="knowledge-banner">
-      <view><text style="font-size:18px;font-weight:700">风声知识底座</text></view>
-      <view style="font-size:12px;opacity:.85;line-height:1.5;margin-top:6px">词典 · 测评 · 案例，随时查阅（真实口径，非估算）</view>
+      <view><text style="font-size:18px;font-weight:700">风声·服务方案库</text></view>
+      <view style="font-size:12px;opacity:.85;line-height:1.5;margin-top:6px">客户问题直接给结论与处理办法，照做即可服务到位（真实口径，非估算）</view>
     </view>
 
     <!-- 三模块分段切换 -->
     <view class="kg-tabs">
-      <view class="kg-tab" :class="{ on: mod === 'dict' }" @tap="setMod('dict')">业务词典</view>
+      <view class="kg-tab" :class="{ on: mod === 'dict' }" @tap="setMod('dict')">服务方案</view>
       <view class="kg-tab" :class="{ on: mod === 'assess' }" @tap="setMod('assess')">品质测评</view>
       <view class="kg-tab" :class="{ on: mod === 'cases' }" @tap="setMod('cases')">案例灵感</view>
     </view>
 
-    <!-- 模块一：业务词典 -->
+    <!-- 模块一：服务方案（原业务词典，改为结论性解决方案输出） -->
     <view v-if="mod === 'dict'">
-      <view class="section-header"><text class="section-title">业务词典</text><text class="section-more">7 域 104 条</text></view>
+      <view class="dict-search" @tap="goDictSearch">
+        <text class="ds-icon">🔍</text><text class="ds-ph">搜客户问题，直接给方案（共 {{ dictTotal }} 个）</text>
+      </view>
+      <view class="section-header"><text class="section-title">按服务场景查方案</text><text class="section-more">{{ dictDomains.length }} 个场景</text></view>
       <view class="dict-grid">
-        <view class="dict-card" v-for="(d, i) in domains" :key="i" @tap="toast(d.name + ' ' + d.count + '（模拟）')">
+        <view class="dict-card" v-for="(d, i) in dictDomains" :key="i" @tap="goDomain(d)">
           <view class="dict-icon">{{ d.icon }}</view>
           <view class="dict-name">{{ d.name }}</view>
-          <view class="dict-count">{{ d.count }}</view>
+          <view class="dict-count">{{ d.count }} 个方案</view>
         </view>
       </view>
-      <view class="icp">词条口径经全量核对（#111）<view>数据校对 5 步链路 · 禁止凭印象</view></view>
+      <view class="icp">每个方案含直接结论与处理办法，依据法源可追溯<view>引证必保留 · 依据整理中会诚实标注</view></view>
     </view>
 
     <!-- 模块二：品质测评 -->
@@ -65,13 +68,16 @@
 </template>
 
 <script>
-import { knowledgeDomains, casesData } from '../../utils/v4data.js'
+import { casesData } from '../../utils/v4data.js'
+import { DICT_DOMAINS, DICT_TOTAL } from '../../utils/dict.js'
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return {
       mod: 'dict',
-      domains: knowledgeDomains,
+      dictDomains: DICT_DOMAINS,
+      dictTotal: DICT_TOTAL,
       caseList: casesData.map(c => ({ ...c, _open: false }))
     }
   },
@@ -83,10 +89,13 @@ export default {
   methods: {
     setMod(m) { this.mod = m },
     toast(m) { uni.showToast({ title: m, icon: 'none' }) },
-    goAssess() { uni.navigateTo({ url: '/pages/assess/index' }) },
+    goAssess(phase) { uni.navigateTo({ url: '/pages/assess/index' + (phase ? '?phase=' + phase : '') }) },
     goCases() { uni.navigateTo({ url: '/pages/cases/index' }) },
-    toggleCase(c) { c._open = !c._open }
-  }
+    toggleCase(c) { c._open = !c._open },
+    goDomain(d) { uni.navigateTo({ url: '/pages/knowledge/domain?domain=' + encodeURIComponent(d.key) + '&name=' + encodeURIComponent(d.name) }) },
+    goDictSearch() { uni.navigateTo({ url: '/pages/knowledge/domain' }) }
+  },
+  onShow() { trackPageview('knowledge') }
 }
 </script>
 
@@ -109,4 +118,16 @@ export default {
 .kg-case-full .blk-b { font-size:12.5px; color:#555; line-height:1.6; }
 .kg-case-foot { margin-top:6px; }
 .kg-case-openbtn { font-size:12px; color:#c46a3a; font-weight:700; }
+
+/* 业务词典：搜索框 + 域网格 */
+.dict-search { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #e7e0d4; border-radius: 999px; padding: 10px 14px; margin-bottom: 12px; }
+.ds-icon { font-size: 15px; }
+.ds-ph { font-size: 13px; color: #999; }
+.dict-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.dict-card { width: calc((100% - 20px) / 3); background: #fff; border: 1px solid #e7e0d4; border-radius: 12px; padding: 12px 10px; box-sizing: border-box; }
+.dict-card:active { background: #f7f4ef; }
+.dict-icon { font-size: 22px; }
+.dict-name { font-size: 13px; font-weight: 700; color: #2b2b2b; margin-top: 6px; line-height: 1.3; }
+.dict-count { font-size: 11px; color: #999; margin-top: 3px; }
+.icp { font-size: 11px; color: #bbb; text-align: center; margin-top: 14px; line-height: 1.6; }
 </style>

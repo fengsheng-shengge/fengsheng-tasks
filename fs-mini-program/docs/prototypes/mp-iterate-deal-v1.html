@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MOT⑤ 成交交付报告</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f7f4ef; font-family: -apple-system, 'PingFang SC', sans-serif; padding-bottom: 100px; }
+
+  /* === 顶部 === */
+  .top-bar {
+    background: linear-gradient(135deg, #2f6fb0 0%, #1a4a80 100%);
+    color: #fff; padding: 18px 20px 20px;
+    position: relative; overflow: hidden;
+  }
+  .top-bar::before {
+    content: ''; position: absolute; right: -20px; top: -20px;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .brand { font-size: 12px; opacity: 0.7; letter-spacing: 1px; margin-bottom: 4px; }
+  .page-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .page-sub { font-size: 12px; opacity: 0.7; }
+
+  /* === 进度条 === */
+  .progress-bar {
+    background: #fff; padding: 14px 20px; display: flex;
+    gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    border-bottom: 1px solid #ede9e1;
+  }
+  .pg-step { display: flex; flex-direction: column; align-items: center; min-width: 56px; position: relative; }
+  .pg-step:not(:last-child)::after {
+    content: ''; position: absolute; top: 9px; left: calc(50% + 12px);
+    width: calc(100% - 24px); height: 2px; background: #e0dbd2;
+  }
+  .pg-step.done:not(:last-child)::after { background: #2f6fb0; }
+  .pg-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #e0dbd2; color: #fff; font-size: 10px;
+    display: flex; align-items: center; justify-content: center; z-index: 1;
+    margin-bottom: 5px;
+  }
+  .pg-step.done .pg-dot { background: #2f6fb0; }
+  .pg-step.active .pg-dot { background: #2f6fb0; box-shadow: 0 0 0 3px rgba(47,111,176,0.2); }
+  .pg-label { font-size: 10px; color: #8a837a; text-align: center; white-space: nowrap; }
+  .pg-step.active .pg-label { color: #2f6fb0; font-weight: 600; }
+
+  /* === 通用卡片 === */
+  .card { background: #fff; border-radius: 12px; margin: 16px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .card-title { font-size: 15px; font-weight: 700; color: #2a2a2a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card-title .tag { background: #ede9e1; color: #8a837a; font-size: 11px; font-weight: 400; padding: 2px 8px; border-radius: 20px; }
+
+  /* === 成交徽章 === */
+  .deal-badge {
+    background: linear-gradient(135deg, #2f6fb0, #1a4a80);
+    color: #fff; border-radius: 12px; margin: 16px; padding: 20px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .deal-badge::before {
+    content: ''; position: absolute; top: -30px; right: -30px;
+    width: 100px; height: 100px; border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+  }
+  .deal-icon { font-size: 48px; margin-bottom: 8px; }
+  .deal-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .deal-sub { font-size: 13px; opacity: 0.8; }
+  .deal-price { font-size: 28px; font-weight: 700; margin: 12px 0; letter-spacing: -0.5px; }
+
+  /* === 签约清单 === */
+  .check-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f0ece6; }
+  .check-item:last-child { border-bottom: none; }
+  .check-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .check-icon.done { background: #e8f4e9; color: #3d5a3e; }
+  .check-icon.pending { background: #fef3e8; color: #c46a3a; }
+  .check-icon.wait { background: #f0f4ff; color: #2f6fb0; }
+  .check-body { flex: 1; }
+  .check-title { font-size: 14px; font-weight: 600; color: #2a2a2a; }
+  .check-desc { font-size: 12px; color: #8a837a; margin-top: 2px; }
+  .check-status { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; }
+  .check-status.done { background: #e8f4e9; color: #3d5a3e; }
+  .check-status.pending { background: #fef3e8; color: #c46a3a; }
+  .check-status.wait { background: #f0f4ff; color: #2f6fb0; }
+
+  /* === 售后清单 === */
+  .task-item { background: #f7f4ef; border-radius: 10px; padding: 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; }
+  .task-icon { width: 32px; height: 32px; border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .task-body { flex: 1; }
+  .task-title { font-size: 14px; font-weight: 600; color: #2a2a2a; margin-bottom: 3px; }
+  .task-desc { font-size: 12px; color: #8a837a; line-height: 1.5; }
+  .task-owner { font-size: 11px; color: #2f6fb0; font-weight: 600; margin-top: 4px; }
+  .task-deadline { font-size: 11px; color: #8a837a; margin-top: 2px; }
+  .task-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #e0dbd2; flex-shrink: 0; margin-top: 4px; }
+  .task-check.done { background: #3d5a3e; border-color: #3d5a3e; }
+
+  /* === 满意度 === */
+  .score-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0ece6; }
+  .score-row:last-child { border-bottom: none; }
+  .score-lbl { font-size: 13px; color: #5a5046; }
+  .stars { display: flex; gap: 4px; }
+  .star { font-size: 18px; color: #e0dbd2; }
+  .star.on { color: #f5a623; }
+  .score-val { font-size: 13px; color: #8a837a; min-width: 30px; text-align: right; }
+
+  /* === 客户锚定 === */
+  .client-bar {
+    background: #fff; margin: 16px 16px 0; border-radius: 12px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .cb-av { width: 40px; height: 40px; border-radius: 50%; background: #2f6fb0; color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .cb-body { flex: 1; }
+  .cb-name { font-size: 15px; font-weight: 700; color: #2a2a2a; }
+  .cb-meta { font-size: 12px; color: #8a837a; margin-top: 2px; }
+  .cb-tag { background: #e8f4e9; color: #3d5a3e; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+
+  /* === 底部按钮 === */
+  .btm-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff; padding: 12px 20px 28px;
+    display: flex; gap: 10px; align-items: center;
+    border-top: 1px solid #ede9e1;
+    z-index: 100;
+  }
+  .btn-outline { flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid #2f6fb0; color: #2f6fb0; background: #fff; font-size: 14px; font-weight: 600; text-align: center; }
+  .btn-primary { flex: 2; padding: 12px; border-radius: 10px; background: #2f6fb0; color: #fff; font-size: 14px; font-weight: 600; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- 顶部 -->
+<div class="top-bar">
+  <div class="brand">风声 · 服务全览报告</div>
+  <div class="page-title">MOT⑤ 成交交付报告</div>
+  <div class="page-sub">签约确认 · 售后清单 · 满意度记录</div>
+</div>
+
+<!-- 进度条 -->
+<div class="progress-bar">
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">建档</div></div>
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">洞察</div></div>
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">提案</div></div>
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">带看</div></div>
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">谈判</div></div>
+  <div class="pg-step active"><div class="pg-dot">6</div><div class="pg-label">成交</div></div>
+  <div class="pg-step"><div class="pg-dot">7</div><div class="pg-label">维护</div></div>
+</div>
+
+<!-- 成交徽章 -->
+<div class="deal-badge">
+  <div class="deal-icon">🎉</div>
+  <div class="deal-title">恭喜成交！</div>
+  <div class="deal-sub">东方绿洲·揽庭 3栋1202</div>
+  <div class="deal-price">¥ 6,680,000</div>
+  <div class="deal-sub">签约日期：2026年9月1日 · 预计过户：9月15日</div>
+</div>
+
+<!-- 客户锚定 -->
+<div class="client-bar">
+  <div class="cb-av">张</div>
+  <div class="cb-body">
+    <div class="cb-name">张先生</div>
+    <div class="cb-meta">改善置换型 · 成交价¥668万 · 贷款客户</div>
+  </div>
+  <div class="cb-tag">已签约</div>
+</div>
+
+<!-- 签约清单 -->
+<div class="card">
+  <div class="card-title">📋 签约完成清单</div>
+
+  <div class="check-item">
+    <div class="check-icon done">✓</div>
+    <div class="check-body">
+      <div class="check-title">定金已付</div>
+      <div class="check-desc">金额¥20万，收款账户已确认</div>
+    </div>
+    <div class="check-status done">已完成</div>
+  </div>
+
+  <div class="check-item">
+    <div class="check-icon done">✓</div>
+    <div class="check-body">
+      <div class="check-title">买卖合同签署</div>
+      <div class="check-desc">双方签字，第三联已交付客户</div>
+    </div>
+    <div class="check-status done">已完成</div>
+  </div>
+
+  <div class="check-item">
+    <div class="check-icon pending">⏳</div>
+    <div class="check-body">
+      <div class="check-title">贷款预审批</div>
+      <div class="check-desc">商贷+公积金组合贷，预审批通过</div>
+    </div>
+    <div class="check-status pending">进行中</div>
+  </div>
+
+  <div class="check-item">
+    <div class="check-icon wait">📝</div>
+    <div class="check-body">
+      <div class="check-title">过户预约</div>
+      <div class="check-desc">9月15日 浦东交易中心，预约号已出</div>
+    </div>
+    <div class="check-status wait">待过户</div>
+  </div>
+
+  <div class="check-item">
+    <div class="check-icon wait">🔑</div>
+    <div class="check-body">
+      <div class="check-title">交房确认</div>
+      <div class="check-desc">预计10月1日前交房，含家具清点</div>
+    </div>
+    <div class="check-status wait">待确认</div>
+  </div>
+</div>
+
+<!-- 售后清单 -->
+<div class="card">
+  <div class="card-title">🔧 售后跟进清单 <span class="tag">5项 · 经纪人主导</span></div>
+
+  <div class="task-item">
+    <div class="task-icon">🏦</div>
+    <div class="task-body">
+      <div class="task-title">贷款进度跟踪</div>
+      <div class="task-desc">跟进银行审批，预计5个工作日出批复。提醒客户准备保险等补充材料。</div>
+      <div class="task-owner">👤 经纪人主导</div>
+      <div class="task-deadline">⏰ 截止：9月10日</div>
+    </div>
+    <div class="task-check"></div>
+  </div>
+
+  <div class="task-item">
+    <div class="task-icon">📋</div>
+    <div class="task-body">
+      <div class="task-title">过户材料准备</div>
+      <div class="task-desc">提前告知客户需携带：身份证、户口本、婚姻证明、征信报告、收入证明等。</div>
+      <div class="task-owner">👤 经纪人主导</div>
+      <div class="task-deadline">⏰ 截止：9月12日</div>
+    </div>
+    <div class="task-check"></div>
+  </div>
+
+  <div class="task-item">
+    <div class="task-icon">🔍</div>
+    <div class="task-body">
+      <div class="task-title">房屋核验</div>
+      <div class="task-desc">核实房屋抵押情况、查封记录、户籍占用情况，确保无异常后再过户。</div>
+      <div class="task-owner">👤 经纪人主导</div>
+      <div class="task-deadline">⏰ 截止：9月8日</div>
+    </div>
+    <div class="task-check done"></div>
+  </div>
+
+  <div class="task-item">
+    <div class="task-icon">📞</div>
+    <div class="task-body">
+      <div class="task-title">卖家交房协调</div>
+      <div class="task-desc">确认卖家腾房时间、户口迁出时间、附赠家具清单。协调10月1日交接。</div>
+      <div class="task-owner">👤 经纪人主导</div>
+      <div class="task-deadline">⏰ 截止：9月20日</div>
+    </div>
+    <div class="task-check"></div>
+  </div>
+
+  <div class="task-item">
+    <div class="task-icon">🎁</div>
+    <div class="task-body">
+      <div class="task-title">乔迁礼包</div>
+      <div class="task-desc">发送风声专属乔迁礼（智能门锁/甲醛检测/家政保洁三选一），增强好感度。</div>
+      <div class="task-owner">👤 经纪人主导</div>
+      <div class="task-deadline">⏰ 截止：10月5日</div>
+    </div>
+    <div class="task-check"></div>
+  </div>
+</div>
+
+<!-- 满意度 -->
+<div class="card">
+  <div class="card-title">⭐ 客户满意度（签约后请客户评分）</div>
+
+  <div class="score-row">
+    <div class="score-lbl">整体服务体验</div>
+    <div class="stars">
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+    </div>
+    <div class="score-val">5.0</div>
+  </div>
+  <div class="score-row">
+    <div class="score-lbl">专业程度</div>
+    <div class="stars">
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+    </div>
+    <div class="score-val">5.0</div>
+  </div>
+  <div class="score-row">
+    <div class="score-lbl">需求理解</div>
+    <div class="stars">
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star">★</span>
+    </div>
+    <div class="score-val">4.0</div>
+  </div>
+  <div class="score-row">
+    <div class="score-lbl">响应速度</div>
+    <div class="stars">
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+    </div>
+    <div class="score-val">5.0</div>
+  </div>
+  <div class="score-row">
+    <div class="score-lbl">价格谈判</div>
+    <div class="stars">
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+      <span class="star on">★</span>
+    </div>
+    <div class="score-val">5.0</div>
+  </div>
+
+  <div style="background:#f7f4ef;border-radius:8px;padding:12px;margin-top:12px;font-size:12px;color:#5a5046;line-height:1.6">
+    <b>客户留言：</b>"小李非常专业，整个过程都很透明，特别是贷款和过户的时间节点帮我把控得非常好，推荐！"
+  </div>
+</div>
+
+<!-- 底部按钮 -->
+<div class="btm-bar">
+  <div class="btn-outline">存草稿</div>
+  <div class="btn-primary">成交完成 → 进入维护</div>
+</div>
+
+</body>
+</html>

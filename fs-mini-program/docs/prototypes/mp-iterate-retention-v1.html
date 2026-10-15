@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MOT⑥ 客户经营报告</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f7f4ef; font-family: -apple-system, 'PingFang SC', sans-serif; padding-bottom: 100px; }
+
+  /* === 顶部 === */
+  .top-bar {
+    background: linear-gradient(135deg, #7f8c8d 0%, #5a6568 100%);
+    color: #fff; padding: 18px 20px 20px;
+    position: relative; overflow: hidden;
+  }
+  .top-bar::before {
+    content: ''; position: absolute; right: -20px; top: -20px;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .brand { font-size: 12px; opacity: 0.7; letter-spacing: 1px; margin-bottom: 4px; }
+  .page-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .page-sub { font-size: 12px; opacity: 0.7; }
+
+  /* === 进度条 === */
+  .progress-bar {
+    background: #fff; padding: 14px 20px; display: flex;
+    gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    border-bottom: 1px solid #ede9e1;
+  }
+  .pg-step { display: flex; flex-direction: column; align-items: center; min-width: 56px; position: relative; }
+  .pg-step:not(:last-child)::after {
+    content: ''; position: absolute; top: 9px; left: calc(50% + 12px);
+    width: calc(100% - 24px); height: 2px; background: #e0dbd2;
+  }
+  .pg-step.done:not(:last-child)::after { background: #7f8c8d; }
+  .pg-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #e0dbd2; color: #fff; font-size: 10px;
+    display: flex; align-items: center; justify-content: center; z-index: 1;
+    margin-bottom: 5px;
+  }
+  .pg-step.done .pg-dot { background: #7f8c8d; }
+  .pg-step.active .pg-dot { background: #7f8c8d; box-shadow: 0 0 0 3px rgba(127,140,141,0.2); }
+  .pg-label { font-size: 10px; color: #8a837a; text-align: center; white-space: nowrap; }
+  .pg-step.active .pg-label { color: #7f8c8d; font-weight: 600; }
+
+  /* === 通用卡片 === */
+  .card { background: #fff; border-radius: 12px; margin: 16px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .card-title { font-size: 15px; font-weight: 700; color: #2a2a2a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card-title .tag { background: #ede9e1; color: #8a837a; font-size: 11px; font-weight: 400; padding: 2px 8px; border-radius: 20px; }
+
+  /* === 客户锚定 === */
+  .client-bar {
+    background: #fff; margin: 16px 16px 0; border-radius: 12px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .cb-av { width: 40px; height: 40px; border-radius: 50%; background: #7f8c8d; color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .cb-body { flex: 1; }
+  .cb-name { font-size: 15px; font-weight: 700; color: #2a2a2a; }
+  .cb-meta { font-size: 12px; color: #8a837a; margin-top: 2px; }
+  .cb-tag { background: #e8f4e9; color: #3d5a3e; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+
+  /* === 健康度仪表 === */
+  .health-ring {
+    display: flex; align-items: center; gap: 20px; margin-bottom: 16px;
+  }
+  .ring-wrap { position: relative; width: 80px; height: 80px; flex-shrink: 0; }
+  .ring-svg { width: 80px; height: 80px; transform: rotate(-90deg); }
+  .ring-track { fill: none; stroke: #ede9e1; stroke-width: 8; }
+  .ring-fill { fill: none; stroke: #3d5a3e; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.5s; }
+  .ring-fill.warn { stroke: #f5a623; }
+  .ring-fill.danger { stroke: #c0392b; }
+  .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring-score { font-size: 20px; font-weight: 700; color: #2a2a2a; }
+  .ring-label { font-size: 10px; color: #8a837a; }
+  .health-info { flex: 1; }
+  .health-title { font-size: 16px; font-weight: 700; color: #2a2a2a; margin-bottom: 6px; }
+  .health-sub { font-size: 12px; color: #8a837a; line-height: 1.6; }
+  .health-sub .hi { color: #3d5a3e; font-weight: 600; }
+  .health-sub .warn { color: #f5a623; font-weight: 600; }
+
+  /* === 关键指标 === */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+  .kpi-item { background: #f7f4ef; border-radius: 10px; padding: 12px 8px; text-align: center; }
+  .kpi-num { font-size: 22px; font-weight: 700; color: #2a2a2a; }
+  .kpi-unit { font-size: 10px; color: #8a837a; display: block; margin-top: 2px; }
+  .kpi-label { font-size: 10px; color: #8a837a; margin-top: 4px; }
+
+  /* === 联系记录 === */
+  .timeline { position: relative; }
+  .tl-item { display: flex; gap: 14px; padding-bottom: 18px; position: relative; }
+  .tl-item:not(:last-child)::before {
+    content: ''; position: absolute; left: 11px; top: 28px; bottom: 0;
+    width: 2px; background: #ede9e1;
+  }
+  .tl-dot { width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 2px solid #e0dbd2; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; z-index: 1; }
+  .tl-dot.active { border-color: #3d5a3e; background: #e8f4e9; }
+  .tl-body { flex: 1; }
+  .tl-date { font-size: 11px; color: #8a837a; margin-bottom: 3px; }
+  .tl-title { font-size: 14px; font-weight: 600; color: #2a2a2a; margin-bottom: 3px; }
+  .tl-desc { font-size: 12px; color: #5a5046; line-height: 1.5; background: #f7f4ef; border-radius: 8px; padding: 8px 10px; }
+  .tl-tag { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-top: 4px; }
+  .tl-tag.call { background: #e8f4e9; color: #3d5a3e; }
+  .tl-tag.visit { background: #f0f4ff; color: #2f6fb0; }
+  .tl-tag.msg { background: #fef3e8; color: #c46a3a; }
+  .tl-tag.refer { background: #f5e8f5; color: #8e44ad; }
+
+  /* === 转介绍 === */
+  .refer-card { background: linear-gradient(135deg, #3d5a3e, #2a3f2b); border-radius: 12px; margin: 16px; padding: 18px; color: #fff; }
+  .refer-hd { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .refer-icon { font-size: 28px; }
+  .refer-title { font-size: 15px; font-weight: 700; }
+  .refer-sub { font-size: 12px; opacity: 0.8; }
+  .refer-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .refer-stat { background: rgba(255,255,255,0.12); border-radius: 8px; padding: 10px; text-align: center; }
+  .refer-stat-num { font-size: 20px; font-weight: 700; }
+  .refer-stat-lbl { font-size: 10px; opacity: 0.7; margin-top: 2px; }
+  .refer-btn { background: rgba(255,255,255,0.2); border: 1.5px solid rgba(255,255,255,0.4); border-radius: 8px; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .refer-btn:hover { background: rgba(255,255,255,0.3); }
+
+  /* === 推荐行动 === */
+  .action-item { background: #f7f4ef; border-radius: 10px; padding: 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; }
+  .action-pri { width: 24px; height: 24px; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .action-pri.p1 { background: #c0392b; color: #fff; }
+  .action-pri.p2 { background: #f5a623; color: #fff; }
+  .action-pri.p3 { background: #3d5a3e; color: #fff; }
+  .action-body { flex: 1; }
+  .action-title { font-size: 14px; font-weight: 600; color: #2a2a2a; margin-bottom: 4px; }
+  .action-desc { font-size: 12px; color: #8a837a; line-height: 1.5; }
+  .action-due { font-size: 11px; color: #c46a3a; font-weight: 600; margin-top: 4px; }
+
+  /* === 底部按钮 === */
+  .btm-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff; padding: 12px 20px 28px;
+    display: flex; gap: 10px; align-items: center;
+    border-top: 1px solid #ede9e1;
+    z-index: 100;
+  }
+  .btn-outline { flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid #7f8c8d; color: #7f8c8d; background: #fff; font-size: 14px; font-weight: 600; text-align: center; }
+  .btn-primary { flex: 2; padding: 12px; border-radius: 10px; background: #7f8c8d; color: #fff; font-size: 14px; font-weight: 600; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- 顶部 -->
+<div class="top-bar">
+  <div class="brand">风声 · 服务全览报告</div>
+  <div class="page-title">MOT⑥ 客户经营报告</div>
+  <div class="page-sub">健康度追踪 · 联系记录 · 转介绍激活</div>
+</div>
+
+<!-- 进度条 -->
+<div class="progress-bar">
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">建档</div></div>
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">洞察</div></div>
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">提案</div></div>
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">带看</div></div>
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">谈判</div></div>
+  <div class="pg-step done"><div class="pg-dot">✓</div><div class="pg-label">成交</div></div>
+  <div class="pg-step active"><div class="pg-dot">7</div><div class="pg-label">维护</div></div>
+</div>
+
+<!-- 客户锚定 -->
+<div class="client-bar">
+  <div class="cb-av">张</div>
+  <div class="cb-body">
+    <div class="cb-name">张先生</div>
+    <div class="cb-meta">改善置换型 · 已成交 · 东方绿洲 3栋1202 · ¥668万</div>
+  </div>
+  <div class="cb-tag">已入住</div>
+</div>
+
+<!-- 客户健康度 -->
+<div class="card">
+  <div class="card-title">❤️ 客户健康度 <span class="tag">综合评分</span></div>
+
+  <div class="health-ring">
+    <div class="ring-wrap">
+      <svg class="ring-svg" viewBox="0 0 80 80">
+        <circle class="ring-track" cx="40" cy="40" r="32"/>
+        <circle class="ring-fill" cx="40" cy="40" r="32"
+          stroke-dasharray="201" stroke-dashoffset="60"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-score">82</div>
+        <div class="ring-label">健康</div>
+      </div>
+    </div>
+    <div class="health-info">
+      <div class="health-title">客户关系良好</div>
+      <div class="health-sub">
+        最后联系 <span class="hi">12天前</span> · 建议本周联系<br>
+        转介绍意向 <span class="hi">较高</span> · 乔迁礼包已发送<br>
+        <span class="warn">⚠️ 装修阶段提醒尚未触发</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-item">
+      <div class="kpi-num">3</div>
+      <div class="kpi-label">联系次数</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-num">1</div>
+      <div class="kpi-label">转介绍</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-num">95</div>
+      <div class="kpi-label">满意度</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-num">12</div>
+      <div class="kpi-label">未联系天</div>
+    </div>
+  </div>
+</div>
+
+<!-- 联系记录 -->
+<div class="card">
+  <div class="card-title">📞 联系记录 <span class="tag">最近6条</span></div>
+
+  <div class="timeline">
+
+    <div class="tl-item">
+      <div class="tl-dot active">📞</div>
+      <div class="tl-body">
+        <div class="tl-date">2026年8月20日 · 通话 8分钟</div>
+        <div class="tl-title">乔迁回访</div>
+        <div class="tl-desc">客户已入住一周，反馈小区物业服务好，对整体满意。询问是否需要窗帘推荐，答应推荐装修师傅。</div>
+        <span class="tl-tag call">电话回访</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot active">🔑</div>
+      <div class="tl-body">
+        <div class="tl-date">2026年9月28日 · 现场</div>
+        <div class="tl-title">交房确认</div>
+        <div class="tl-desc">双方现场清点家具，钥匙、门禁卡、遥控器全部交付。发现热水器有异响，答应协调物业维修。</div>
+        <span class="tl-tag visit">现场交接</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot">💬</div>
+      <div class="tl-body">
+        <div class="tl-date">2026年8月15日 · 微信</div>
+        <div class="tl-title">乔迁礼包送达</div>
+        <div class="tl-desc">发送甲醛检测服务预约链接，客户回复感谢，表达了想介绍朋友买房的意向。</div>
+        <span class="tl-tag msg">微信消息</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot">🔑</div>
+      <div class="tl-body">
+        <div class="tl-date">2026年9月1日 · 签约</div>
+        <div class="tl-title">签约完成</div>
+        <div class="tl-desc">买卖双方顺利完成签约，定金¥20万已收，过户预约9月15日。</div>
+        <span class="tl-tag visit">签约</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot">🤝</div>
+      <div class="tl-body">
+        <div class="tl-date">2026年8月28日 · 微信</div>
+        <div class="tl-title">转介绍意向激活</div>
+        <div class="tl-desc">客户提到同事最近在看房，有需求，但尚未给联系方式。答应整理资料后发给他。</div>
+        <span class="tl-tag refer">转介绍线索</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 转介绍激活 -->
+<div class="refer-card">
+  <div class="refer-hd">
+    <div class="refer-icon">🎁</div>
+    <div>
+      <div class="refer-title">转介绍激励计划</div>
+      <div class="refer-sub">每介绍1位成交客户，奖励¥2000或等价服务</div>
+    </div>
+  </div>
+  <div class="refer-stats">
+    <div class="refer-stat">
+      <div class="refer-stat-num">1</div>
+      <div class="refer-stat-lbl">已介绍</div>
+    </div>
+    <div class="refer-stat">
+      <div class="refer-stat-num">0</div>
+      <div class="refer-stat-lbl">已成交</div>
+    </div>
+    <div class="refer-stat">
+      <div class="refer-stat-num">¥0</div>
+      <div class="refer-stat-lbl">已奖励</div>
+    </div>
+  </div>
+  <div class="refer-btn">📱 请张先生推荐朋友</div>
+</div>
+
+<!-- 推荐行动 -->
+<div class="card" style="margin-bottom:120px">
+  <div class="card-title">🎯 推荐下一步行动 <span class="tag">按优先级排序</span></div>
+
+  <div class="action-item">
+    <div class="action-pri p1">P1</div>
+    <div class="action-body">
+      <div class="action-title">装修阶段提醒</div>
+      <div class="action-desc">客户已进入装修期，主动推荐合作装修公司，并发送装修注意事项清单（如改水电、承重墙识别等），增强专业信任。</div>
+      <div class="action-due">⏰ 建议联系时间：本周内</div>
+    </div>
+  </div>
+
+  <div class="action-item">
+    <div class="action-pri p2">P2</div>
+    <div class="action-body">
+      <div class="action-title">跟进转介绍线索</div>
+      <div class="action-desc">张先生提到有同事在看房，主动发一份新房项目的简介，问是否方便推荐认识。把"意向"变成"联系方式"。</div>
+      <div class="action-due">⏰ 建议联系时间：3天内</div>
+    </div>
+  </div>
+
+  <div class="action-item">
+    <div class="action-pri p3">P3</div>
+    <div class="action-body">
+      <div class="action-title">节庆短信/礼物</div>
+      <div class="action-desc">中秋节将至，发送节日祝福短信（不群发，结合乔迁话题），可附带小礼品（如月饼礼盒），保持温度。</div>
+      <div class="action-due">⏰ 建议发送时间：节前3天</div>
+    </div>
+  </div>
+</div>
+
+<!-- 底部按钮 -->
+<div class="btm-bar">
+  <div class="btn-outline">新建客户</div>
+  <div class="btn-primary">记录本次联系</div>
+</div>
+
+</body>
+</html>
