@@ -124,6 +124,23 @@ async function fetchCurationEntries() {
     }
   }
 
+  // ===== 补齐 API 未部署的策展域（学区教育/业主出售/房东出租）=====
+  // 线上 API 暂只 serve 签约前/签约中/OWN/职业成长/签约后 5 个域；
+  // 策展三场景依赖的另 3 个域（静态同源数据中有、API 暂无），
+  // 用静态数据补齐并按 id 去重——后端将来部署这些域后，API 数据自动优先、不重复。
+  const seenIds = new Set(
+    [...grouped.decoder, ...grouped.see, ...grouped.nego].map(e => e.id)
+  )
+  const apiMissingScenes = ['学区教育', '业主出售', '房东出租']
+  for (const grp of ['decoder', 'see', 'nego']) {
+    for (const e of (ENTRIES[grp] || [])) {
+      if (apiMissingScenes.includes(e.scene) && !seenIds.has(e.id)) {
+        grouped[grp].push(e)
+        seenIds.add(e.id)
+      }
+    }
+  }
+
   return grouped
 }
 

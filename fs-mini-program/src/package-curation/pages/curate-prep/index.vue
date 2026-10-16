@@ -333,6 +333,7 @@
             <text v-else>经验要点 · 依据整理中</text>
           </view>
         </view>
+        <view v-if="!result.say.length" class="empty-mini">暂无强相关条目，建议结合实勘补充</view>
       </view>
 
       <!-- 带 -->
