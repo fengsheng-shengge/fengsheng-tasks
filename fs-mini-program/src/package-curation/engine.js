@@ -131,7 +131,7 @@ async function fetchCurationEntries() {
   const seenIds = new Set(
     [...grouped.decoder, ...grouped.see, ...grouped.nego].map(e => e.id)
   )
-  const apiMissingScenes = ['学区教育', '业主出售', '房东出租']
+  const apiMissingScenes = ['学区教育', '业主出售', '房东出租', '租住']
   for (const grp of ['decoder', 'see', 'nego']) {
     for (const e of (ENTRIES[grp] || [])) {
       if (apiMissingScenes.includes(e.scene) && !seenIds.has(e.id)) {
@@ -315,9 +315,10 @@ function generateCurationFromEntries(input, entriesByGroup) {
         else if (inCore) score += 2
         else if (inBody) score += 1
       })
-      // 客户类型匹配（不匹配大幅降权，但不直接丢弃）
+      // 客户类型匹配（不匹配大幅降权，匹配则加权，让租住线优先租客、购房线优先买家）
       const eCt = (e.tags && e.tags.clientType) || []
       if (eCt.length && !eCt.includes(ct)) score *= 0.15
+      else if (eCt.length && eCt.includes(ct)) score *= 1.5
       // 见前阶段（签约前/需求确认）轻微加权
       const stage = (e.tags && e.tags.stage) || ''
       if (String(stage).includes('pre') || (e.domain || '').includes('签约前')) score += 0.5
