@@ -97,6 +97,8 @@ tbody tr:hover{background:rgba(61,90,62,0.03)}
 tbody tr{cursor:pointer;transition:background .15s}
 .col-name{font-weight:600;color:var(--ink);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .col-answer{max-width:300px;color:var(--ink-soft);font-size:12px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.col-answer .col-q{color:var(--p);font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.col-answer .col-a{color:var(--ink-soft);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
 .col-layer{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;white-space:nowrap}
 .col-layer.dao{background:rgba(61,90,62,0.08);color:var(--layer-dao)}
 .col-layer.fa{background:rgba(196,106,58,0.08);color:var(--layer-fa)}
@@ -250,7 +252,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
           <th data-sort="severity" style="width:9%">风险等级 <span class="sort-arrow">↕</span></th>
           <th style="width:8%">层级</th>
           <th style="width:10%">类型</th>
-          <th style="width:44%">一句话回答</th>
+          <th style="width:38%">问题与回答</th>
         </tr>
       </thead>
       <tbody id="tableBody">
@@ -634,7 +636,10 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
         '<td><span class="col-sev ' + escapeHtml(e.severity || '') + '">' + escapeHtml(severityLabels[e.severity] || e.severity || '') + '</span></td>' +
         '<td><span class="col-layer ' + escapeHtml(layer) + '">' + escapeHtml(layerLabels[layer] || layer || '') + '</span></td>' +
         '<td><span class="col-type">' + escapeHtml(entryTypeLabels[e.entryType] || e.entryType || '') + '</span></td>' +
-        '<td class="col-answer">' + escapeHtml(e.oneLineAnswer || '') + '</td>' +
+        '<td class="col-answer">' +
+          (e.consumerQ ? '<div class="col-q">' + escapeHtml(e.consumerQ) + '</div>' : '') +
+          (e.oneLineAnswer ? '<div class="col-a">' + escapeHtml(e.oneLineAnswer) + '</div>' : '') +
+        '</td>' +
         '</tr>';
     });
     tbody.innerHTML = html;
