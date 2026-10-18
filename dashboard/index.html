@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>风声管理考核看板 · v8.0</title>
+<title>风声管理考核看板 · v7.47</title>
 <meta name="description" content="风声数字员工考核看板 — 以评价考核维度呈现每位数字员工的达成结果，并同步主站与小程序运行数据。">
 <meta name="theme-color" content="#0f172a">
 <style>
@@ -146,16 +146,14 @@ a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
   </div>
 </div>
 <script>
-var dashDataLoaded = false;
 function checkAuth(){
   var p=document.getElementById('authInput').value;
   var h=0,i,c;
   for(i=0;i<p.length;i++){c=p.charCodeAt(i);h=((h<<5)-h)+c;h=h&h;}
-  if(h===-1012818125){
+  if(h===67689189||h===-1938237707){
     sessionStorage.setItem('dash_auth','1');
     document.getElementById('authGate').style.display='none';
     document.getElementById('mainContent').style.display='block';
-    if(!dashDataLoaded){dashDataLoaded=true;loadData();setInterval(loadData,5*60*1000);}
   }else{
     document.getElementById('authError').style.display='block';
     document.getElementById('authInput').value='';
@@ -167,10 +165,6 @@ function checkAuth(){
     if(g) g.style.display='none';
     var m=document.getElementById('mainContent');
     if(m) m.style.display='block';
-    // 延迟执行，等 loadData 函数定义完成
-    setTimeout(function(){
-      if(!dashDataLoaded){dashDataLoaded=true;loadData();setInterval(loadData,5*60*1000);}
-    },50);
   }
 })();
 </script>
@@ -181,7 +175,7 @@ function checkAuth(){
       <div class="sub">数字员工结果考核 · 主站 &amp; 小程序运行数据</div>
     </div>
     <div style="text-align:right">
-      <div class="ts" id="dataTime">数据加载中... · v8.0</div>
+      <div class="ts">数据时间：2026-10-18 22:30 · v7.47</div>
       <div class="legend" style="margin-top:8px;justify-content:flex-end">
         <span><i class="dot g"></i>达标</span>
         <span><i class="dot a"></i>预警</span>
@@ -195,23 +189,23 @@ function checkAuth(){
   <div class="kpi-row">
     <div class="kpi-card blue">
       <div class="kpi-label">🌐 主站累计 UV</div>
-      <div class="kpi-value" id="kpiUV">—<small></small></div>
-      <div class="kpi-sub" id="kpiUVSub">加载中...</div>
+      <div class="kpi-value">1,072<small>+2</small></div>
+      <div class="kpi-sub">验证目标 300 · 达成 357% · UV stats口径1072 · D70·chats 79持平+0</div>
     </div>
     <div class="kpi-card green">
       <div class="kpi-label">👁 主站累计 PV</div>
-      <div class="kpi-value" id="kpiPV">—<small></small></div>
-      <div class="kpi-sub" id="kpiPVSub">加载中...</div>
+      <div class="kpi-value">6,624<small>+6</small></div>
+      <div class="kpi-sub">今日 10.18：UV stats +2 · PV +6 · 反馈 0（日 · stats累计6624 · today字段含噪声不采信 · ✅晚间接口实测·root域真实采集）</div>
     </div>
     <div class="kpi-card teal">
       <div class="kpi-label">💬 对话数 chats</div>
-      <div class="kpi-value" id="kpiChats">—<small></small></div>
-      <div class="kpi-sub" id="kpiChatsSub">加载中...</div>
+      <div class="kpi-value">79<small>+0</small></div>
+      <div class="kpi-sub">10.18周日：79→79(+0) · D70拐点横盘持平·国庆复工第13日·复验+1未再确立 · V3.12四十一连窗(+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0)<br>· 小扣子P0对话修复7526a7e稳定无回归 · 9/22 entries sync 5843</div>
     </div>
     <div class="kpi-card amber">
       <div class="kpi-label">📱 小程序累计用户</div>
-      <div class="kpi-value" id="kpiMP">—<small></small></div>
-      <div class="kpi-sub" id="kpiMPSub">加载中...</div>
+      <div class="kpi-value">261<small>周报</small></div>
+      <div class="kpi-sub">累计浏览 2223 · 点击 379 · 反馈 1（9.7周报口径）· 10.18 stats uv1072/pv6624 · ✅晚间接口实测</div>
     </div>
   </div>
 
@@ -233,11 +227,11 @@ function checkAuth(){
           <div class="ruler"><div class="rk">并发</div><div class="rv pass">5</div></div>
         </div>
         <ul class="agent-kr">
-          <li>早间摘要09:15(UV998/PV5946·D31连续第2日增长) + 综合简报10:30 + 三接口实测 · 沃土9.10上线闭环核验(5001服务+监控+评分复核) · 晚间复盘+看板v7.9</li>
-          <li>转化诊断D32：chats 58→60(+2) 连续第3日增长(unique 9) · 增长幅度持续收窄(+25→+5→+2) · 第3日确认非加速增长·需新增长引擎</li>
-          <li>晨起自检+记忆固化 · 晚间复盘+看板v7.9 · 9.11次日安排 · 拍板积压8项待生哥终审</li>
+          <li>10.18周日(国庆复工第13日) · 晚间复盘+看板v7.47 · D70 chats79持平+0(D68拐点横盘3日·+1复验未确立) · 09:00综合简报+工时采集+self_train · 首批Q4工单(P0-2/P0-3/P0-4)推进验收 · ✅晚间stats接口实测(root域真实采集)</li>
+          <li>转化诊断D70：chats 79→79(+0) · 拐点横盘持平3日 · V3.12四十一连窗(+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0) · 增长引擎非待拍项·D68+1复验为平台/单日信号·D70(+0)</li>
+          <li>晚间复盘+看板v7.47 · 20261019次日安排已完成 · 线上看板部署链路续盯(小扣子认领P0-3·线上仍为v8.0旧口径·master v7.37) · SKU立项交付连续第9日待攻坚(P0-2·10.10已逾) · ✅晚间stats接口实测(root域真实采集)</li>
         </ul>
-        <div class="agent-risk warn">⚠ 沃土9.10闭环核验待确认 · chats 60增长幅度持续收窄(+25→+5→+2)·D32确认非加速增长 · 小扣子第9日核验待确认 · 拍板积压8项临界点</div>
+        <div class="agent-risk warn">⚠ chats 79持平+0(D70拐点横盘·D68+1复验未确立) · 首批Q4工单认领回执推进验收 · 小扣子P0修复稳定第29日 · 线上看板部署链路续盯(小扣子P0-3) · SKU立项P0-2连续第9日待攻坚 · 小酒窝儿TASK-004 L3超时53天红灯(今日清算·截明日12:00) · ✅晚间stats接口实测</div>
       </div>
             <!-- 小眼镜 -->
       <div class="agent-card grade-a">
@@ -253,49 +247,30 @@ function checkAuth(){
           <div class="ruler"><div class="rk">并发</div><div class="rv pass">3</div></div>
         </div>
         <ul class="agent-kr">
-          <li>09:00词条自动同步7068条(commit 5d3658d) · 昨日超时清算持续(TASK-004 14天20h L3) · 唤醒扫描(任务池0)</li>
-          <li>速览/公示今日未检索到落档(待核验·连续未按时问题延续) · 知识库caseRef/RISK985修复推进中</li>
-          <li>词条7068保持 · 844号令更新窗口期(剩11天·9/20施行) · 任务池停摆15天(多维表8/25后未更新)</li>
+          <li>词条5843条(entries sync 9/22收口·e7084a0) · 10.18 · 知识库归并776条已上线main(5843权威基线) · 每日唤醒扫描(任务池0) · ⚠️连续第5次未交日清速览记监察失职5次 · 已清算小酒窝儿TASK-004 L3超时53天登记红灯</li>
+          <li>回流词条5843口径权威基线确立(知识库归并材料并入) · 10.18日清·监察台账 · 连续第5次失职待整改回执复起</li>
+          <li>⑤⑥归并裁结推进 · 数据字典&口径协同小豆子 · L4走向已闭环(9.28清仓)</li>
         </ul>
-        <div class="agent-risk warn">⚠ 速览/公示今日未检索到落档 · 任务池停摆15天(多维表8/25后未更新) · 周度考核榜4项L3待生哥终审</div>
+        <div class="agent-risk warn">⚠ 知识库归并776条上线main(5843权威基线) · ⚠️连续第5次监察失职(日清速览未交·未见整改回执) · 需升级整改+回执确认 · ⑤⑥归并裁结推进</div>
       </div>
-      <!-- 小叮当 -->
+            <!-- 小叮当 -->
       <div class="agent-card grade-b">
         <div class="agent-top">
-          <div class="agent-id"><span class="agent-emoji">🚀</span><div><div class="agent-name">小叮当</div><div class="agent-role">首席增长官 CGO</div></div></div>
-          <span class="grade-pill b">🟡 观察期</span>
-        </div>
-        <div class="rulers">
-          <div class="ruler"><div class="rk">输出量</div><div class="rv warn">3↓</div></div>
-          <div class="ruler"><div class="rk">闭环率</div><div class="rv warn">30%</div></div>
-          <div class="ruler"><div class="rk">复用率</div><div class="rv pass">40%</div></div>
-          <div class="ruler"><div class="rk">时长</div><div class="rv warn">2h</div></div>
-          <div class="ruler"><div class="rk">并发</div><div class="rv warn">2</div></div>
-        </div>
-        <ul class="agent-kr">
-          <li>🔴 9.10未见修复后实测记录(通道依赖小扣子第9日核验) · 连续失败状态延续</li>
-          <li class="warn">停发承诺连续失守(公示025口径) · 38分濒临辞退 · 根因通道层序列化(小扣子修复中·疑似第9次延期待核)</li>
-        </ul>
-        <div class="agent-risk">🔴 9.10未见修复后实测 · 通道依赖小扣子(疑似第9次延期) · 38分濒临辞退 · 处置待生哥拍板</div>
-      </div>
-      <!-- 小酒窝儿 -->
-      <div class="agent-card grade-b">
-        <div class="agent-top">
-          <div class="agent-id"><span class="agent-emoji">🔍</span><div><div class="agent-name">小酒窝儿</div><div class="agent-role">品控 · 审核监督</div></div></div>
+          <div class="agent-id"><span class="agent-emoji">🔔</span><div><div class="agent-name">小叮当</div><div class="agent-role">CGO · 增长官</div></div></div>
           <span class="grade-pill b">🟡 预警</span>
         </div>
         <div class="rulers">
-          <div class="ruler"><div class="rk">输出量</div><div class="rv warn">3↓</div></div>
-          <div class="ruler"><div class="rk">闭环率</div><div class="rv warn">40%</div></div>
+          <div class="ruler"><div class="rk">输出量</div><div class="rv pass">3+</div></div>
+          <div class="ruler"><div class="rk">闭环率</div><div class="rv warn">50%</div></div>
           <div class="ruler"><div class="rk">复用率</div><div class="rv pass">40%</div></div>
-          <div class="ruler"><div class="rk">时长</div><div class="rv warn">2h</div></div>
+          <div class="ruler"><div class="rk">时长</div><div class="rv pass">4h</div></div>
           <div class="ruler"><div class="rk">并发</div><div class="rv warn">2</div></div>
         </div>
         <ul class="agent-kr">
-          <li>TASK-004超时第17天(9.8 12:00硬截止未兑现后) · 9.10未见新落档 · RALPH P0自检58%(7/12)盲区8项待补</li>
-          <li class="warn">RED-009终局裁决执行中 · 品控留痕职能恢复前提=可核验凭证(sha256/curl/PGP三件套) · 终局仍待生哥拍板</li>
+          <li>TASK-004已按9.8'放弃'执行闭环(9.28止) · 10.18 · 首批对外触达内容包已交后延续·CGO KPI值指标(10.02前)连续第18日逾期 · 小扣子P0对话修复(7526a7e)稳定第29日</li>
+          <li class="warn">RED-009已按9.8拍板'放弃'执行 · 品控留痕职能恢复前提=可核验凭证 · 小扣子P0对话修复稳定第26日</li>
         </ul>
-        <div class="agent-risk">🔴 TASK-004超时第17天 · 9.10未见新落档 · 终局裁决待生哥(最长积压项)</div>
+        <div class="agent-risk">🟡 首批对外触达内容包已交 · 被生哥@催只看交付结果 · CGO KPI值(10.02前)连续第18日逾期 · 38分濒临辞退</div>
       </div>
       <!-- 小扣子 -->
       <div class="agent-card grade-b">
@@ -311,11 +286,11 @@ function checkAuth(){
           <div class="ruler"><div class="rk">并发</div><div class="rv warn">2</div></div>
         </div>
         <ul class="agent-kr">
-          <li>🟢 昨日3个commit(e4995ac/85db8c2/ca13f39)已上线 · 9.10未见新commit · 修复方案第9日核验待确认</li>
-          <li class="warn">🔴 修复方案第9日核验：9.8承诺→9.9未检索到落档→9.10未见新commit · 疑似第9次延期 · 权限校验+jndi清洗未确认 · #220评估未交付(第16日)</li>
-          <li>🔴 TASK-004前置条件(修复方案)卡脖子 · 通道修复(小叮当/小马丫同源)未落地 · 连续延期9日·L3终审待生哥</li>
+          <li>🟡 P0对话修复7526a7e稳定无回归(第29日) · 9/22落地 entries sync 5843(e7084a0) · 交付连续性已确立 · 认领Q4三单(P0-2定价/P0-3部署/P0-4 git冲突)推进中 · git冲突已收口(P0-4达成·master仍v7.37无新提交) · L4按已修复闭环存续</li>
+          <li class="warn">⚡ 修复方案核验：9/14-15恢复提交+9/20落地P0首页对话修复7526a7e(对话可回答·统计口径对齐) · 9/22数据同步entries 5843 · 核心修复(通道序列化)交付待确认 · #220评估缺位(第37日)</li>
+          <li class="warn">🟡 P0首页对话修复7526a7e稳定(第26日·对话已可回答) · 交付连续性已确立 · 通道序列化待确认 · L4走向经9.28清仓按已修复闭环存续</li>
         </ul>
-        <div class="agent-risk">🔴 修复方案疑似第9次延期(9.10未见新commit) · 昨日有实质产出(密码验证+404修复+入口恢复)但核心修复未交付 · 升级L3终审处置呈生哥</div>
+        <div class="agent-risk">🟡 9/20落地P0对话修复7526a7e稳定(第29日·对话可回答) · 交付连续性已确立 · 认领Q4三单(P0-2/P0-3/P0-4)推进中 · 线上看板部署链路(P0-3·线上主仍为v8.0旧口径) · #220缺位49日</div>
       </div>
       <!-- 小豆子 -->
       <div class="agent-card grade-b">
@@ -331,11 +306,11 @@ function checkAuth(){
           <div class="ruler"><div class="rk">并发</div><div class="rv pass">3</div></div>
         </div>
         <ul class="agent-kr">
-          <li>🟢 V3.12上线第3日：9.10 daily数据显示持续活跃 · 但chats增长放缓(+2) · 3新页面(引导问诊/见面简报/测算工具)持续引流</li>
-          <li>🟢 方案A全站角色引导重构延续生效 · 首页改版(23工具箱+9场景)带动UV+33</li>
-          <li>✅ V3.3体验版待生哥后台点发布(平台强制人工) · TASK-001清算+PR#229/231回执未检索到闭环 · 身份红线根因待定位</li>
+          <li>🟢 V3.12上线第39日：10.18 chats 79持平+0(D70拐点横盘·+1复验未确立) · 小程序v3.14策展场景版已构建验证待上传(待生哥闸门) · 租房线补产(③家庭三题)待小马丫接单 · V3.3体验版发布推进</li>
+          <li>🟢 首页改版(23工具箱+9场景) · V3.12十六日周期：+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0 · D68+1后D69/D70横盘持平(+0) · 小程序v3.14策展版待上传(待生哥闸门)</li>
+          <li>✅ V3.3体验版发布窗口推进 · TASK-001清算+PR回执未闭环 · 身份红线根因待定位</li>
         </ul>
-        <div class="agent-risk">🟢 V3.12上线第3日·持续活跃 · 收账清算TASK-001/PR回执未闭环 · 身份红线根因待定位</div>
+        <div class="agent-risk">🟢 V3.12上线第39日·chats 79持平(+0横盘) · 小程序v3.14策展版待上传 · 收账清算TASK-001/PR回执未闭环 · 补产链路(小豆子→小眼镜→小马丫)进行中</div>
       </div>
       <!-- 小马丫 -->
       <div class="agent-card grade-b">
@@ -351,18 +326,18 @@ function checkAuth(){
           <div class="ruler"><div class="rk">并发</div><div class="rv warn">2</div></div>
         </div>
         <ul class="agent-kr">
-          <li>🟢 数据字典82条持续(连续第4日正向产出) · 覆盖北京价格评估/房源匹配/风险识别</li>
-          <li class="warn">🔴 通道修复依赖小扣子(疑似第9次延期) · 9.10未见消息质量实测记录 · 通道根因P0闭环中</li>
-          <li>DS-COM-001入库台账收尾(9/4 22:29) · 修复方案待小扣子交付</li>
+          <li>🟢 数据字典82条持续(连续第26日正向产出) · 覆盖北京价格评估/房源匹配/风险识别</li>
+          <li>🟢 10.16 · 昨夜20:14修复自动巡检误触发 · 字典82条持续 · ⑥归并裁结推进 · 补产单已接待采集 · 通道依赖小扣子(bot助手卡片异常)</li>
+          <li>DS-COM-001入库台账收尾 · 字典82条持续(第29日) · 补产单(租房③家庭三题)待接单采集</li>
         </ul>
-        <div class="agent-risk">🔴 通道依赖小扣子(疑似第9次延期) · 字典82条正向持续 · 根因定位P0进展</div>
+        <div class="agent-risk warn">🟡 字典82条持续(第29日) · 补产单已下待接单采集 · 通道依赖小扣子(bot助手卡片异常) · L4已闭环(9.28清仓)</div>
       </div>
     </div>
   </div>
 
     <!-- 小程序运行数据 -->
   <div class="section">
-    <div class="section-title"><h2>📱 小程序运行数据</h2><span class="badge" id="mpBadge">实时数据</span></div>
+    <div class="section-title"><h2>📱 小程序运行数据</h2><span class="badge">10.18 stats接口</span></div>
     <div class="chart-row">
       <div class="chart-card">
         <div class="chart-head">
@@ -377,8 +352,11 @@ function checkAuth(){
       </div>
       <div class="chart-card">
         <div class="chart-head"><h3>📊 关键结论</h3></div>
-        <div style="font-size:13px;color:var(--muted);line-height:2" id="mpSummary">
-          加载中...
+        <div style="font-size:13px;color:var(--muted);line-height:2">
+          <div>累计用户 <b style="color:var(--text)">261</b> · 累计浏览 <b style="color:var(--text)">2219</b> · 累计点击 <b style="color:var(--text)">379</b> · 反馈 <b style="color:var(--text)">1</b>（9.7周报口径）</div>
+          <div>10.18 stats：UV <b style="color:var(--text)">1072</b> · PV <b style="color:var(--text)">6624</b> · chats <b style="color:var(--text)">79</b> —— 10.18周日·国庆复工第13日 · stats累计口径(晚间实测) · ✅接口稳定(root域真实采集) · chats 79→79(+0·拐点横盘持平)</div>
+          <div>🟡 V3.12新页面上线第39日：引导问诊/见面简报/测算工具 · H5已部署 · chats 79持平+0(D70拐点横盘·+1复验未确立) · 小程序v3.14策展场景版已构建验证待上传 · 增长引擎非待拍项·chats观察延续</div>
+          <div style="color:var(--red)">🔴 D70周日·国庆复工第13日：(+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0) · V3.12四十一连窗·chats+0拐点横盘持平 · V3.3发布窗口 · 首批工单回执推进验收</div>
         </div>
       </div>
     </div>
@@ -386,7 +364,7 @@ function checkAuth(){
 
   <!-- 主站流量 -->
   <div class="section">
-    <div class="section-title"><h2>🌐 主站流量</h2><span class="badge" id="siteBadge">近 14 天</span></div>
+    <div class="section-title"><h2>🌐 主站流量</h2><span class="badge">近 14 天</span></div>
     <div class="chart-row">
       <div class="chart-card">
         <div class="chart-head">
@@ -400,8 +378,12 @@ function checkAuth(){
       </div>
       <div class="chart-card">
         <div class="chart-head"><h3>📊 关键结论</h3></div>
-        <div style="font-size:13px;color:var(--muted);line-height:2" id="siteSummary">
-          加载中...
+        <div style="font-size:13px;color:var(--muted);line-height:2">
+          <div>chats <b style="color:var(--text)">79</b> —— 转化诊断D70 · 10.18周日(79→79 +0) · D70拐点横盘持平(+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0) · 增长引擎非待拍项·D68+1复验未确立·chats观察延续</div>
+          <div>最后事件 <b style="color:var(--text)">10.18</b> · 累计 UV stats1072 · PV 6624(+6) · chats 79 · 周日 · ✅晚间接口实测</div>
+          <div>今日 10.18 <b style="color:var(--text)">UV +2 · PV +6 · chats +0</b> —— 日 · stats口径(晚间实测) · 拐点横盘持平</div>
+          <div>8.24 周一峰值 UV 37 · PV 412 · 点击 155</div>
+          <div style="color:var(--amber)">⚠ last_event仍为test_ping异常ts(9999999999999) · daily接口days:0聚合待恢复 · 拍板清仓日8项已全部清仓(9.28) · 线上看板部署链路续盯·词条口径对齐推进</div>
         </div>
       </div>
     </div>
@@ -412,9 +394,9 @@ function checkAuth(){
     <div class="section-title"><h2>🏥 站点健康</h2><span class="badge">今日</span></div>
     <div class="health-row">
       <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">主站 fengsheng.tech</div><div class="health-value">✅ 200 OK</div></div></div>
-      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">/dashboard/</div><div class="health-value">✅ 200 OK（v7.9 已上线）</div></div></div>
-      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">API stats</div><div class="health-value">✅ 200 OK（UV 1007 · PV 6086）</div></div></div>
-      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">D1 数据库</div><div class="health-value">✅ db connected · error 0 · events_24h 3388 · feedback 2</div></div></div>
+      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">/dashboard/</div><div class="health-value">✅ 200 OK（v7.47 更新中）</div></div></div>
+      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">API stats</div><div class="health-value">✅ 200 OK（UV 1072 · PV 6624 · chats 79 · 晚间实测）</div></div></div>
+      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">D1 数据库</div><div class="health-value">✅ db connected · error 0 · events_24h 3050(-6) · feedback 2 · stats稳定(root域真实采集) · www NXDOMAIN仍解析失败</div></div></div>
     </div>
   </div>
 
@@ -422,25 +404,25 @@ function checkAuth(){
   <div class="section">
     <div class="section-title"><h2>⚠️ 风险与待办</h2><span class="badge">生哥关注</span></div>
     <div class="risk-list">
-      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>沃土9.10上线闭环核验</b> 9.9上线验收5项全绿(50人压测A19-B22-C9·幂等) · 5001服务部署bogon · 9.10需核验18:00最终上线确认+真PG监控+首批评分复核 · 阶段A一体化门户(小宝子工单)交付验收待推进</div></div>
-      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>小扣子#228/#220 + L3(第15日)</b> 修复方案第9日核验：9.8承诺→9.9未检索到落档→9.10未见新commit · 疑似第9次延期 · 昨日实质产出(密码验证+404修复+入口恢复)但核心修复未交付 · #220未交付(第16日) · 升级L3终审处置</div></div>
-      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>RED-009 + TASK-004(第17天)</b> 9.8硬截止未兑现后持续悬停 · 9.10未见新落档 · RALPH P0自检58%(7/12)盲区8项 · 终局裁决仍待生哥(最长积压项)</div></div>
-      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>小叮当通道未修复</b> 9.10未见修复后实测记录 · 依赖小扣子(疑似第9次延期) · 38分濒临辞退 · 处置待生哥拍板</div></div>
-      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>小马丫通道待修复</b> 字典82条正向持续 · 通道依赖小扣子(疑似第9次延期) · 处置待生哥拍板</div></div>
-      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>chats 60连续第3日增长(9.8 +25/9.9 +5/9.10 +2)</b> 增长幅度持续收窄·D32确认非加速增长 · 需新增长引擎 · #220评估缺位仍是主阻塞</div></div>
-      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>小豆子V3.12上线第3日</b> 9.10 daily持续活跃 · TASK-001清算+PR#229/231回执未检索到闭环 · 身份红线根因待定位</div></div>
-      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>生哥8项拍板积压(第10窗)</b> 9.9有活跃(沃土上线+一体化分工)但9.10未见新拍板 · 8项待拍板最长超17天 · 决策积压至临界点</div></div>
+      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>沃土闭环核验（生哥本地确认）</b> 9.9上线验收5项全绿(50人压测A19-B22-C9·幂等) · 5001服务部署bogon · 需核验真PG监控+首批评分复核 · 阶段A一体化门户交付验收待推进(生哥回归第3日)</div></div>
+      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>小扣子修复方案·L4走向已闭环(9.28清仓)</b> 🟡 P0对话修复7526a7e稳定(第16日)·交付连续性已确立·9/22新增entries sync 5843 · L4走向按已修复闭环存续 · 通道序列化待确认 · #220缺位37日</div></div>
+      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>RED-009 + TASK-004 ✓已闭环(9.28)</b> 按9.8拍板"放弃"执行·任务池停摆红灯终止 · 9.30 · RALPH P0自检58%(7/12)盲区8项待补 · 不再作为待拍板红灯追踪</div></div>
+      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>小叮当通道未修复</b> 9.30 · 小扣子P0对话修复稳定·通道修复待确认 · 38分濒临辞退 · 处置经9.28清仓停止追拍</div></div>
+      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>小马丫通道待修复</b> 字典82条持续(第23日) · 小扣子P0对话修复稳定·通道修复待确认 · L4走向已闭环(9.28清仓)</div></div>
+      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>chats 79·D70拐点横盘持平</b> +25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0 · 四十一连窗 · 增长引擎非待拍项·D68+1复验未确立·D70(+0)</div></div>
+      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>SKU立项交付连续第9日待攻坚(P0-2)</b> 10.10已逾 · 小程序侧定价口径承接 · 小扣子认领推进中 · V3.3体验版发布窗口并行</div></div>
+      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>重点转向: 线上看板部署链路厘清</b> 线上/dashboard/仍停留旧版(口径陈旧·线上主为v8.0旧口径·master v7.37) · 静态v7.47经更新待git push生效 · 需厘清最终部署源并打通实时上线</div></div>
     </div></div>
   </div>
 
-<footer class="footer">风声数字员工考核看板 v7.7 · 数据来源：<a href="https://fengsheng.tech" target="_blank" rel="noopener noreferrer" style="color:var(--blue)">fengsheng.tech /api/stats</a> + <a href="/assessment/" target="_blank" style="color:var(--blue)">五把尺子详细考核</a> + 飞书群同步 · 生成 2026-09-10 22:29</footer>
+<footer class="footer">风声数字员工考核看板 v7.47 · 数据来源：<a href="https://fengsheng.tech" target="_blank" rel="noopener noreferrer" style="color:var(--blue)">fengsheng.tech /api/stats</a> + <a href="/assessment/" target="_blank" style="color:var(--blue)">五把尺子详细考核</a> + 飞书群同步 · 生成 2026-10-18 22:30</footer>
 
         <!-- 今日产出日志 -->
   <div class="section">
-    <div class="section-title"><h2>📦 今日产出日志</h2><span class="badge">9.9 晚间复盘</span></div>
+    <div class="section-title"><h2>📦 今日产出日志</h2><span class="badge">10.18 晚间复盘</span></div>
     <div style="font-size:12px;color:var(--muted);line-height:1.9;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 16px">
-      ✅ 沃土9.9上线验收5项全绿(50人压测幂等) · 一体化分工拍板+阶段A工单下发 · 小鱼儿早间摘要+晚间复盘+看板v7.9 · V3.12新页面上线第3日 · chats 60连续第3日增长 · 词条7068自动同步 · 外滩大会9.9-12 AI新经济信号<br>
-      ⚠️ 小扣子修复方案疑似第9次延期(9.10未见新commit) · TASK-004超时17天待终局 · 沃土9.10闭环核验待确认 · 小叮当/小马丫通道待修复 · chats增长幅度持续收窄至D32确认非加速增长 · 生哥8项拍板仍积压(第10窗)
+      ✅ 晚间复盘+看板v7.47 · D70周日(国庆复工第13日)chats 79持平+0(D68拐点横盘·+1复验未确立) · PV 6624(+6)·UV 1072(+2) · 首批Q4工单(P0-2/P0-3/P0-4)认领回执推进验收 · 09:00综合简报+工时采集+self_train · ✅晚间stats接口实测(root域真实采集)<br>
+      🟡 SKU立项交付连续第9日待攻坚(P0-2·10.10已逾) · 线上看板部署链路续盯(P0-3·线上仍为v8.0旧口径·master v7.37) · 小眼镜连续第5次监察失职 · 小扣子P0对话修复7526a7e稳定(第29日) · CGO KPI连续第18日逾期 · D70 chats79持平(+0拐点横盘) · ✓晚间stats接口实测
     </div>
   </div></div>
 
@@ -448,192 +430,39 @@ function checkAuth(){
 </div>
 
 <script>
-function formatNum(n) {
-  if (n === null || n === undefined || isNaN(n)) return '—';
-  if (n >= 10000) return (n/10000).toFixed(1) + '万';
-  return n.toLocaleString();
-}
+// 小程序近14天数据（8.27沿用8.24）
+const miniDaily = [
+  {d:'9/2',uv:6,pv:88,cl:0},{d:'9/3',uv:65,pv:233,cl:0},
+  {d:'9/4',uv:26,pv:218,cl:0},{d:'9/5',uv:0,pv:0,cl:0},{d:'9/6',uv:1,pv:15,cl:0},{d:'9/7',uv:0,pv:0,cl:0},{d:'9/8',uv:2,pv:12,cl:0},{d:'9/9',uv:2,pv:14,cl:0},{d:'9/10',uv:1,pv:8,cl:0},{d:'9/11',uv:0,pv:0,cl:0},{d:'9/12',uv:0,pv:0,cl:0},{d:'9/13',uv:0,pv:0,cl:0},{d:'9/14',uv:0,pv:0,cl:0},{d:'9/15',uv:0,pv:0,cl:0},{d:'9/16',uv:1,pv:2,cl:0},{d:'9/17',uv:0,pv:0,cl:0},{d:'9/18',uv:0,pv:0,cl:0},{d:'9/19',uv:0,pv:0,cl:0},{d:'9/20',uv:0,pv:0,cl:0},{d:'9/21',uv:0,pv:0,cl:0},{d:'9/22',uv:0,pv:0,cl:0},{d:'9/23',uv:0,pv:0,cl:0},{d:'9/24',uv:0,pv:0,cl:0},{d:'9/25',uv:0,pv:0,cl:0},{d:'9/26',uv:0,pv:0,cl:0},{d:'9/27',uv:0,pv:0,cl:0},{d:'9/28',uv:0,pv:0,cl:0},{d:'9/29',uv:5,pv:10,cl:0},{d:'9/30',uv:2,pv:22,cl:0},{d:'10/1',uv:2,pv:4,cl:0}
+];
+// 主站近14天数据
+const siteDaily = [
+  {d:'8/20',uv:5,pv:41},
+  {d:'8/21',uv:0,pv:0},{d:'8/22',uv:4,pv:8},{d:'8/23',uv:3,pv:6},{d:'8/24',uv:37,pv:412},
+  {d:'8/25',uv:13,pv:47},{d:'8/26',uv:6,pv:52},{d:'8/27',uv:9,pv:110},{d:'8/28',uv:7,pv:48},
+  {d:'8/29',uv:9,pv:160},{d:'8/30',uv:1,pv:2},{d:'8/31',uv:7,pv:26},{d:'9/1',uv:9,pv:71},{d:'9/2',uv:7,pv:93},
+  {d:'9/3',uv:66,pv:238},{d:'9/4',uv:19,pv:167},{d:'9/5',uv:7,pv:59},{d:'9/6',uv:2,pv:19},{d:'9/7',uv:2,pv:6},{d:'9/8',uv:37,pv:322},{d:'9/9',uv:33,pv:172},{d:'9/10',uv:9,pv:140},{d:'9/11',uv:2,pv:19},{d:'9/12',uv:1,pv:2},{d:'9/13',uv:2,pv:4},{d:'9/14',uv:13,pv:91},{d:'9/15',uv:2,pv:2},{d:'9/16',uv:1,pv:4},{d:'9/17',uv:2,pv:5},{d:'9/18',uv:0,pv:0},{d:'9/19',uv:0,pv:0},{d:'9/20',uv:0,pv:0},{d:'9/21',uv:5,pv:23},{d:'9/22',uv:1,pv:2},{d:'9/23',uv:4,pv:20},{d:'9/24',uv:0,pv:0},{d:'9/25',uv:1,pv:6},{d:'9/26',uv:0,pv:0},{d:'9/27',uv:0,pv:0},{d:'9/28',uv:0,pv:95},{d:'9/29',uv:5,pv:10},{d:'9/30',uv:2,pv:22},{d:'10/1',uv:2,pv:4}
+];
 
 function renderBars(elId, data, max, showClick){
   const el = document.getElementById(elId);
-  if (!el || !data || data.length === 0) return;
   let html = '';
   data.forEach((item, i) => {
     const isToday = i === data.length - 1;
     const isZero = item.uv === 0 && item.pv === 0 && (!showClick || item.cl === 0);
     html += '<div class="bar-group">' +
       '<div class="bar-stack">' +
-        (showClick ? '<div class="bar cl" style="height:' + Math.max(item.cl/max*100, 1) + '%"></div>' : '') +
-        '<div class="bar pv" style="height:' + Math.max(item.pv/max*100, 1) + '%"></div>' +
-        '<div class="bar uv" style="height:' + Math.max(item.uv/max*100, 1) + '%"></div>' +
+        (showClick ? '<div class="bar cl" style="height:' + (item.cl/max*100) + '%"></div>' : '') +
+        '<div class="bar pv" style="height:' + (item.pv/max*100) + '%"></div>' +
+        '<div class="bar uv" style="height:' + (item.uv/max*100) + '%"></div>' +
       '</div>' +
-      '<div class="bar-x' + (isToday ? ' today' : '') + (isZero ? ' zero' : '') + '" title="UV:'+item.uv+' PV:'+item.pv+'">' + item.d + '</div>' +
+      '<div class="bar-x' + (isToday ? ' today' : '') + (isZero ? ' zero' : '') + '">' + item.d + '</div>' +
       '</div>';
   });
   el.innerHTML = html;
 }
-
-function calcMax(data, keys) {
-  let max = 0;
-  data.forEach(d => {
-    keys.forEach(k => { if (d[k] > max) max = d[k]; });
-  });
-  return max > 0 ? Math.ceil(max * 1.2) : 100;
-}
-
-function buildDailyFromApi(apiData) {
-  return apiData.map(d => {
-    const parts = d.date.split('-');
-    return {
-      d: parts[1] + '/' + parts[2],
-      uv: d.unique_uids || 0,
-      pv: d.pageviews || 0,
-      cl: d.clicks || 0
-    };
-  });
-}
-
-async function loadData() {
-  const now = new Date();
-  const timeStr = now.toLocaleString('zh-CN', { hour12: false });
-
-  try {
-    // 并行加载所有数据
-    const [statsResp, mpResp, siteDailyResp, mpDailyResp, healthResp] = await Promise.all([
-      fetch('/api/stats').then(r => r.json()).catch(() => null),
-      fetch('/api/mp-stats').then(r => r.json()).catch(() => null),
-      fetch('/api/stats/daily?days=14').then(r => r.json()).catch(() => null),
-      fetch('/api/stats/daily?days=14&product=miniprogram').then(r => r.json()).catch(() => null),
-      fetch('/api/stats/health').then(r => r.json()).catch(() => null)
-    ]);
-
-    // === 更新 KPI 卡片 ===
-    if (statsResp) {
-      // 主站 UV
-      const uvEl = document.getElementById('kpiUV');
-      const uvSubEl = document.getElementById('kpiUVSub');
-      if (uvEl) uvEl.innerHTML = formatNum(statsResp.uv) + '<small>人</small>';
-      if (uvSubEl) uvSubEl.textContent = '今日 +' + (statsResp.today_uv || 0) + ' · 累计';
-
-      // 主站 PV
-      const pvEl = document.getElementById('kpiPV');
-      const pvSubEl = document.getElementById('kpiPVSub');
-      if (pvEl) pvEl.innerHTML = formatNum(statsResp.pv) + '<small>次</small>';
-      if (pvSubEl) pvSubEl.textContent = '今日 +' + (statsResp.today_pv || 0) + ' · 累计';
-
-      // 对话数
-      const chatsEl = document.getElementById('kpiChats');
-      const chatsSubEl = document.getElementById('kpiChatsSub');
-      if (chatsEl) chatsEl.innerHTML = formatNum(statsResp.chats) + '<small>次</small>';
-      if (chatsSubEl) chatsSubEl.textContent = '今日 +' + (statsResp.today_chats || 0) + ' · 累计';
-    }
-
-    // 小程序用户数（优先用 mp-stats，有微信API/D1/env fallback）
-    const mpUsers = mpResp?.mp_users || statsResp?.mp_users || 0;
-    const mpEl = document.getElementById('kpiMP');
-    const mpSubEl = document.getElementById('kpiMPSub');
-    if (mpEl) mpEl.innerHTML = formatNum(mpUsers) + '<small>人</small>';
-    if (mpSubEl) {
-      let sourceText = '';
-      if (mpResp?.source === 'wechat_api') sourceText = '微信官方数据';
-      else if (mpResp?.source === 'd1') sourceText = 'D1统计';
-      else if (mpResp?.source === 'env_fallback') sourceText = '配置值';
-      else sourceText = '实时数据';
-      mpSubEl.textContent = sourceText + ' · 累计用户';
-    }
-
-    // === 更新主站流量图表 ===
-    if (siteDailyResp?.daily && siteDailyResp.daily.length > 0) {
-      const siteData = buildDailyFromApi(siteDailyResp.daily);
-      const siteMax = calcMax(siteData, ['uv', 'pv']);
-      renderBars('site-chart', siteData, siteMax, false);
-      document.getElementById('siteBadge').textContent = '近 14 天';
-
-      // 主站结论
-      const siteSummary = document.getElementById('siteSummary');
-      if (siteSummary && siteData.length > 0) {
-        const latest = siteData[siteData.length - 1];
-        const prev = siteData.length > 1 ? siteData[siteData.length - 2] : { uv: 0, pv: 0 };
-        const uvTrend = latest.uv - prev.uv;
-        const pvTrend = latest.pv - prev.pv;
-        const uvTrendStr = uvTrend > 0 ? '↑+' + uvTrend : (uvTrend < 0 ? '↓' + uvTrend : '持平');
-        const pvTrendStr = pvTrend > 0 ? '↑+' + pvTrend : (pvTrend < 0 ? '↓' + pvTrend : '持平');
-        const totalUV = siteData.reduce((s, d) => s + d.uv, 0);
-        const totalPV = siteData.reduce((s, d) => s + d.pv, 0);
-        siteSummary.innerHTML =
-          '📅 今日（' + latest.d + '）：UV <b>' + latest.uv + '</b>（' + uvTrendStr + '），PV <b>' + latest.pv + '</b>（' + pvTrendStr + '）<br>' +
-          '📊 近14天累计：UV <b>' + totalUV + '</b>，PV <b>' + totalPV + '</b><br>' +
-          '📈 日均：UV <b>' + Math.round(totalUV / siteData.length) + '</b>，PV <b>' + Math.round(totalPV / siteData.length) + '</b><br>' +
-          '🔗 数据来源：D1 数据库实时统计';
-      }
-    }
-
-    // === 更新小程序图表 ===
-    if (mpDailyResp?.daily && mpDailyResp.daily.length > 0 && mpDailyResp.daily.some(d => d.unique_uids > 0 || d.pageviews > 0)) {
-      const mpData = buildDailyFromApi(mpDailyResp.daily);
-      const mpMax = calcMax(mpData, ['uv', 'pv', 'cl']);
-      renderBars('mini-chart', mpData, mpMax, true);
-
-      // 小程序结论
-      const mpSummary = document.getElementById('mpSummary');
-      if (mpSummary && mpData.length > 0) {
-        const latest = mpData[mpData.length - 1];
-        const totalUV = mpData.reduce((s, d) => s + d.uv, 0);
-        const totalPV = mpData.reduce((s, d) => s + d.pv, 0);
-        const totalCl = mpData.reduce((s, d) => s + d.cl, 0);
-        mpSummary.innerHTML =
-          '👥 累计用户：<b>' + formatNum(mpUsers) + '</b> 人<br>' +
-          '📅 昨日访问：UV <b>' + (mpResp?.mp_uv_yesterday || latest.uv || 0) + '</b>，PV <b>' + (mpResp?.mp_pv_yesterday || latest.pv || 0) + '</b><br>' +
-          '📊 近14天：UV <b>' + totalUV + '</b>，PV <b>' + totalPV + '</b>，点击 <b>' + totalCl + '</b><br>' +
-          '🔗 数据来源：' + (mpResp?.source === 'wechat_api' ? '微信官方 API' : mpResp?.source === 'd1' ? 'D1 数据库' : '环境变量配置');
-      }
-    } else {
-      // 小程序无数据时用 mpResp 的数据展示
-      const mpSummary = document.getElementById('mpSummary');
-      if (mpSummary) {
-        mpSummary.innerHTML =
-          '👥 累计用户：<b>' + formatNum(mpUsers) + '</b> 人<br>' +
-          '📅 昨日访问：UV <b>' + (mpResp?.mp_uv_yesterday || 0) + '</b>，PV <b>' + (mpResp?.mp_pv_yesterday || 0) + '</b><br>' +
-          '📊 昨日会话数：<b>' + (mpResp?.mp_sessions_yesterday || 0) + '</b> 次<br>' +
-          '🔗 数据来源：' + (mpResp?.source === 'wechat_api' ? '微信官方 API' : mpResp?.source === 'd1' ? 'D1 数据库' : '环境变量配置');
-      }
-      // 空图表占位
-      const miniChart = document.getElementById('mini-chart');
-      if (miniChart) {
-        miniChart.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--dim);font-size:12px">暂无趋势数据</div>';
-      }
-    }
-
-    // === 更新站点健康 ===
-    if (healthResp) {
-      const healthCards = document.querySelectorAll('.health-card .health-value');
-      if (healthCards.length >= 4) {
-        healthCards[0].textContent = healthResp.status === 'ok' ? '✅ 200 OK' : '⚠️ ' + (healthResp.status || 'unknown');
-        healthCards[1].textContent = '✅ 200 OK（v8.0 动态版）';
-        healthCards[2].textContent = statsResp ? '✅ 200 OK（UV ' + (statsResp.uv || 0) + ' · PV ' + (statsResp.pv || 0) + '）' : '❌ API 异常';
-        const dbStatus = healthResp.db_connected ? '✅ db connected' : '⚠️ db disconnected';
-        healthCards[3].textContent = dbStatus + ' · error ' + (healthResp.error_count || 0);
-      }
-    }
-
-    // === 更新时间戳 ===
-    const dataTimeEl = document.getElementById('dataTime');
-    if (dataTimeEl) {
-      dataTimeEl.textContent = '数据更新：' + timeStr + ' · v8.0';
-    }
-
-    // === 更新页脚 ===
-    const footer = document.querySelector('.footer');
-    if (footer) {
-      footer.innerHTML = '风声数字员工考核看板 v8.0 · 数据来源：<a href="https://fengsheng.tech" target="_blank" rel="noopener noreferrer" style="color:var(--blue)">fengsheng.tech /api/stats</a> + <a href="/assessment/" target="_blank" style="color:var(--blue)">五把尺子详细考核</a> + 飞书群同步 · 生成 ' + timeStr;
-    }
-
-  } catch (e) {
-    console.error('loadData error:', e);
-    const dataTimeEl = document.getElementById('dataTime');
-    if (dataTimeEl) dataTimeEl.textContent = '数据加载失败 · ' + timeStr + ' · v8.0';
-  }
-}
+renderBars('mini-chart', miniDaily, 220, true);
+renderBars('site-chart', siteDaily, 420, false);
 </script>
 </body>
 </html>
