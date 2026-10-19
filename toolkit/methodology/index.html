@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>方法论技能包 · 把隐性实战蒸馏成拿来就能用的工具 · 风声</title>
+<meta name="description" content="风声把沉淀的方法论做成可分发、可上架的 Skill：管理层汇报定稿法、商业定位聚焦法、方法论蒸馏四问，三个技能均已发布上线并通过真实功能验证。">
+<style>
+:root{--bg:#f7f4ef;--bg2:#e8e4d9;--card:#fff;--p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--accent:#c46a3a;--accent-l:#e89060;--dk:#1a1a1a;--tx:#555;--ts:#7a8478;--td:#a8b0a6;--r:10px;--line:rgba(61,90,62,.10)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--p);text-decoration:none}
+
+/* 导航 */
+.nav{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 5%;background:linear-gradient(135deg,#3d5a3e 0%,#2c4430 100%);color:#fff;position:sticky;top:0;z-index:100}
+.nav-l{display:flex;align-items:center;gap:8px;font-size:13px}
+.nav-l a{color:rgba(255,255,255,.72)}
+.nav-l a:hover{color:#fff}
+.nav-l .sep{opacity:.3}
+.nav-l .cur{color:rgba(255,255,255,.9);font-weight:600}
+.nav-r{font-size:13px}
+.nav-r a{color:rgba(255,255,255,.72)}
+.nav-r a:hover{color:#fff}
+
+/* 封面 */
+.cover{text-align:center;padding:72px 5% 56px;background:linear-gradient(180deg,rgba(61,90,62,.07) 0%,transparent 100%);border-bottom:1px solid var(--line)}
+.cover .badge{display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(61,90,62,.1);color:var(--p);font-size:12px;font-weight:600;margin-bottom:16px;letter-spacing:1px}
+.cover h1{font-size:clamp(26px,4vw,38px);font-weight:800;color:var(--p-d);line-height:1.32;margin-bottom:14px}
+.cover h1 em{font-style:normal;color:var(--accent)}
+.cover .sub{font-size:clamp(14px,1.8vw,16px);color:var(--ts);max-width:640px;margin:0 auto 22px;line-height:1.75}
+.cover .meta{font-size:13px;color:var(--td);display:flex;gap:22px;justify-content:center;flex-wrap:wrap}
+.cover .meta span{display:flex;align-items:center;gap:5px}
+
+/* 内容区 */
+.content{max-width:960px;margin:0 auto;padding:52px 5% 60px}
+.content h2{font-size:clamp(18px,2.3vw,23px);color:var(--p-d);margin:46px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--bg2);display:flex;align-items:center;gap:9px}
+.content h2:first-of-type{margin-top:0}
+.lead{font-size:14px;color:var(--tx);line-height:1.85;margin-bottom:14px}
+
+/* 定位框 */
+.pitch{background:rgba(61,90,62,.06);border-radius:var(--r);padding:20px 24px;border-left:4px solid var(--p);margin:16px 0 6px}
+.pitch p{font-size:14px;color:var(--p-d);margin:0;line-height:1.8}
+.pitch b{color:var(--accent)}
+
+/* 技能卡片 */
+.skill-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(236px,1fr));gap:14px;margin-top:18px}
+.skill-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;box-shadow:0 1px 6px rgba(44,68,48,.04);transition:all .25s}
+.skill-card:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(44,68,48,.10);border-color:rgba(60,80,50,.22)}
+.sc-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.sc-ico{width:42px;height:42px;border-radius:11px;background:rgba(61,90,62,.08);display:grid;place-items:center;font-size:22px;flex-shrink:0}
+.sc-name{font-size:16px;font-weight:800;color:var(--dk);line-height:1.3}
+.sc-id{font-size:11px;color:var(--td);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin-top:2px}
+.sc-one{font-size:13px;font-weight:700;color:var(--p);line-height:1.6;margin-bottom:12px}
+.io{background:var(--bg);border-radius:8px;padding:10px 12px;margin-bottom:12px}
+.io-row{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.5}
+.io-row .io-in{color:var(--ts)}
+.io-row .io-arrow{color:var(--accent);font-weight:700}
+.io-row .io-out{color:var(--p-d);font-weight:700}
+.sc-scene{font-size:12px;color:var(--ts);line-height:1.6;margin-bottom:8px}
+.sc-scene b{color:var(--dk);font-weight:700}
+.sc-value{font-size:12px;color:var(--accent);font-weight:700;line-height:1.6;margin-top:auto;padding-top:10px;border-top:1px dashed var(--bg2)}
+.sc-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pill{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(94,126,92,.12);color:var(--p)}
+
+/* 案例 */
+.case-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-top:8px}
+.case-card .cc-title{font-size:15px;font-weight:800;color:var(--p-d);margin-bottom:4px}
+.case-card .cc-meta{font-size:12px;color:var(--td);margin-bottom:12px}
+.case-card ul{list-style:none;padding:0}
+.case-card li{font-size:13px;color:var(--tx);line-height:1.8;padding-left:20px;position:relative;margin-bottom:6px}
+.case-card li::before{content:"›";position:absolute;left:6px;color:var(--accent);font-weight:700}
+.case-note{font-size:12px;color:var(--td);margin-top:12px;line-height:1.7}
+
+/* 价值表 */
+.vtable{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:16px}
+.vtable th{background:rgba(61,90,62,.07);color:var(--p-d);font-size:12px;font-weight:800;text-align:left;padding:12px 16px}
+.vtable td{font-size:13px;color:var(--tx);padding:13px 16px;border-top:1px solid var(--line);line-height:1.7;vertical-align:top}
+.vtable td:first-child{font-weight:700;color:var(--dk);white-space:nowrap}
+.vtable-wrap{overflow-x:auto}
+
+/* 闭环条 */
+.loop{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:44px;padding:20px;background:rgba(61,90,62,.06);border-radius:var(--r)}
+.loop .step{font-size:12px;font-weight:700;color:var(--p-d);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:6px 14px}
+.loop .arr{color:var(--accent);font-weight:700;font-size:14px}
+
+/* 页脚 */
+.footer{text-align:center;padding:22px 5%;color:var(--td);font-size:12px;border-top:1px solid rgba(0,0,0,.04);background:var(--card);line-height:1.9}
+
+@media(max-width:640px){
+  .cover{padding:44px 5% 34px}
+  .content{padding:34px 5% 44px}
+  .skill-card{padding:18px}
+  .vtable td:first-child{white-space:normal}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-l">
+    <a href="/">← 首页</a>
+    <span class="sep">|</span>
+    <a href="/toolkit/">方法论工具包</a>
+    <span class="sep">|</span>
+    <span class="cur">方法论技能包</span>
+  </div>
+  <div class="nav-r"><a href="/skills/">Skill 工具箱 →</a></div>
+</div>
+
+<!-- 封面 -->
+<div class="cover">
+  <div class="badge">🧠 风声 · 方法论技能包 v1.0</div>
+  <h1>把「隐性实战」蒸馏成<br><em>拿来就能用的工具</em></h1>
+  <p class="sub">风声把沉淀的方法论做成<b>可分发、可上架的 Skill</b>——三个技能均已发布上线，并通过真实功能验证。</p>
+  <div class="meta">
+    <span>📅 2026-10-16</span>
+    <span>📦 3 个可分发 Skill</span>
+    <span>✅ 均已发布上线 · 可调用</span>
+  </div>
+</div>
+
+<!-- 内容区 -->
+<div class="content">
+
+  <h2>🎯 这是什么</h2>
+  <p class="lead">方法论如果只躺在文档里，就只是"能查到的方法论"。风声做的是把团队沉淀的实战方法论，按标准工艺做成<strong>每一个都能被调用、被复用的 Skill</strong>，让经验从"看得见"变成"用得上"。</p>
+  <div class="pitch">
+    <p>把团队沉淀的实战方法论，做成可分发、可调用的 Skill。<br>让「<b>能查到的方法论</b>」变成「<b>拿来就能用的工具</b>」。</p>
+  </div>
+
+  <h2>🧰 三个技能</h2>
+  <div class="skill-grid">
+
+    <!-- 卡片 1 -->
+    <div class="skill-card">
+      <div class="sc-head">
+        <div class="sc-ico">📄</div>
+        <div>
+          <div class="sc-name">管理层汇报定稿法</div>
+          <div class="sc-id">executive-report</div>
+        </div>
+      </div>
+      <div class="sc-one">把素材堆收成可面呈拍板的汇报</div>
+      <div class="io">
+        <div class="io-row"><span class="io-in">零散素材 / 多版本文档</span><span class="io-arrow">→</span><span class="io-out">11 节可拍板汇报 + 最小决策包</span></div>
+      </div>
+      <div class="sc-scene"><b>适用场景</b>：向上汇报、方案定稿、要资源 / 要决策的场合</div>
+      <div class="sc-value">💡 告别"汇报被问倒"，一次面呈即拍板</div>
+      <div class="sc-foot"><span class="pill">已发布 · 可加载调用</span></div>
+    </div>
+
+    <!-- 卡片 2 -->
+    <div class="skill-card">
+      <div class="sc-head">
+        <div class="sc-ico">🎯</div>
+        <div>
+          <div class="sc-name">商业定位聚焦法</div>
+          <div class="sc-id">business-positioning</div>
+        </div>
+      </div>
+      <div class="sc-one">从"什么都想做"收成"只做谁、不做谁"</div>
+      <div class="io">
+        <div class="io-row"><span class="io-in">模糊产品想法</span><span class="io-arrow">→</span><span class="io-out">锚点表 + 边界表 + 一句话定位</span></div>
+      </div>
+      <div class="sc-scene"><b>适用场景</b>：新业务 / 新产品立项开篇</div>
+      <div class="sc-value">💡 定位聚焦，避免精力发散、什么都做却没做透</div>
+      <div class="sc-foot"><span class="pill">已发布 · 可加载调用</span></div>
+    </div>
+
+    <!-- 卡片 3 -->
+    <div class="skill-card">
+      <div class="sc-head">
+        <div class="sc-ico">🧪</div>
+        <div>
+          <div class="sc-name">方法论蒸馏四问</div>
+          <div class="sc-id">method-distill</div>
+        </div>
+      </div>
+      <div class="sc-one">把实战经验蒸馏成可复用资产</div>
+      <div class="io">
+        <div class="io-row"><span class="io-in">任务复盘 / 经历</span><span class="io-arrow">→</span><span class="io-out">可复用、可外输的蒸馏卡</span></div>
+      </div>
+      <div class="sc-scene"><b>适用场景</b>：每次策划 / 方案 / 复盘 / 评估 / 研究类任务交付后</div>
+      <div class="sc-value">💡 任务交付不再是终点，经验沉淀得进、找得到、可复用</div>
+      <div class="sc-foot"><span class="pill">已发布 · 可加载调用</span></div>
+    </div>
+
+  </div>
+
+  <h2>🔄 效果展示</h2>
+  <div class="case-card">
+    <div class="cc-title">商业定位聚焦法 · 银居通定位重构</div>
+    <div class="cc-meta">真实跑通案例 · 2026-10-15</div>
+    <ul>
+      <li>用「有产权 / 在核心区 / 决策人本人 / 有变现意愿」四个<strong>缺一不可</strong>的锚点钉死目标客群；</li>
+      <li>再用「✅ 只做 / ❌ 暂不做」边界表，把"不做什么"写清——边界即护城河；</li>
+      <li>客群从"模糊的老人"收窄到"有自主权的业主老人"后，商业主线由"谨慎照顾"转为"资产盘活"。</li>
+    </ul>
+    <div class="case-note">其余两个技能同样附有真实跑通案例。</div>
+  </div>
+
+  <h2>💡 每个技能解决什么</h2>
+  <div class="vtable-wrap">
+    <table class="vtable">
+      <thead>
+        <tr><th>技能</th><th>痛点</th><th>给用户的价值</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>管理层汇报定稿法</td><td>素材散、版本多，汇报被追问就慌</td><td>收成 11 节结构 + 最小决策包，面呈一次即拍板</td></tr>
+        <tr><td>商业定位聚焦法</td><td>什么都想做，精力发散</td><td>逼问"谁不符合条件"，写出"不做谁"才叫聚焦</td></tr>
+        <tr><td>方法论蒸馏四问</td><td>任务做完就结束，经验流失</td><td>4 问成卡，隐性实战变可复用 / 可外输资产</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="loop">
+    <span class="step">沉淀方法论</span><span class="arr">→</span>
+    <span class="step">做成可调用的 Skill</span><span class="arr">→</span>
+    <span class="step">交付给需要用的人</span>
+  </div>
+
+</div>
+
+<div class="footer">
+  风声 · 居住服务 AI 基础设施<br>
+  © 2026 · <a href="https://beian.miit.gov.cn/" target="_blank" style="color:inherit;text-decoration:none">京ICP备2026044043号</a>
+</div>
+
+<script src="/tracker.js" async></script>
+</body>
+</html>

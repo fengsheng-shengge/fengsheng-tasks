@@ -3712,7 +3712,7 @@ export default {
         '/s1-report', '/scene', '/search', '/shuowenjiedao', '/skills', '/standard', '/survey',
         '/terms', '/showing-report', '/dict', '/decode',
         '/agreement', '/okr', '/docs', '/toolkit', '/knowledge/quiz',
-        '/knowledge/quiz/',
+        '/knowledge/quiz/', '/toolkit/methodology', '/toolkit/methodology/',
         '/breeder/', '/care-test/', '/about/', '/agent-academy/', '/curation/', '/dashboard-manager/', '/purchase/', '/toolkit/',
         '/clients/', '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
         '/assessment/', '/s1-report/', '/showing-report/', '/agent-assessment/',
