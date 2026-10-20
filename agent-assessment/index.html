@@ -1,0 +1,497 @@
+<!-- 数字员工考核统计 · 基于五把尺子框架 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>数字员工考核统计 · 五把尺子 · 风声</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#f7f4ef; --bg2:#e8e4d9; --card:#fff; --card-h:#f5f1ec;
+  --border:rgba(80,90,70,.09); --border-h:rgba(60,80,50,.2);
+  --p:#3d5a3e; --p-d:#2c4430; --p-l:#7a9a7c; --p-bg:rgba(61,90,62,.05);
+  --fire:#c46a3a; --fire-l:#d89060; --charcoal:#3a3a38; --dk:#1a1a1a;
+  --tx:#555; --ts:#7a8478; --td:#a8b0a6; --brand:#2C5F3A; --brand-light:#4a8a5c;
+  --accent:#E8742C; --green:#22c55e; --greenbg:rgba(34,197,94,.12);
+  --amber:#f59e0b; --amberbg:rgba(245,158,11,.12);
+  --red:#ef4444; --redbg:rgba(239,68,68,.12);
+  --blue:#3b82f6; --bluebg:rgba(59,130,246,.12);
+  --r:8px; --r2:12px;
+}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;
+  background:var(--bg);color:var(--tx);line-height:1.6;-webkit-font-smoothing:antialiased;
+  min-height:100vh;margin:0;padding:0 0 60px}
+.nav{position:sticky;top:0;z-index:100;background:var(--bg);
+  padding:12px 16px 8px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.nav a{text-decoration:none;color:var(--brand);font-size:17px;font-weight:700;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.nav a:hover{color:var(--brand-light)}
+.nav-title{flex:1;font-size:17px;font-weight:800;color:var(--dk);text-align:center;letter-spacing:.5px}
+.nav-sub{font-size:11px;color:var(--ts);font-weight:400;letter-spacing:0}
+.page{max-width:1200px;margin:0 auto;padding:0 12px}
+.hero{padding:24px 0 16px;text-align:center}
+.hero h1{font-size:24px;font-weight:800;color:var(--dk);margin-bottom:6px}
+.hero p{font-size:13px;color:var(--ts);max-width:700px;margin:0 auto;line-height:1.7}
+.tagline{display:inline-flex;gap:4px;background:rgba(61,90,62,.06);border:1px solid rgba(61,90,62,.12);border-radius:16px;padding:3px 12px;font-size:10px;font-weight:700;color:var(--p-d);letter-spacing:1px;margin-bottom:10px}
+
+/* 尺子概述 */
+.ruler-intro{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0}
+.ruler-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:14px}
+.ruler-card h3{font-size:14px;font-weight:700;color:var(--dk);margin:0 0 6px}
+.ruler-card p{font-size:12px;color:var(--ts);margin:0;line-height:1.5}
+
+/* 员工评分表 */
+.section{margin:20px 0}
+.section-title{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.section-title h2{font-size:17px;font-weight:700;margin:0;color:var(--dk)}
+.section-title .badge{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600;background:var(--bluebg);color:#93c5fd}
+
+/* 员工表格 */
+.assessment-table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.assessment-table thead{background:var(--card-h)}
+.assessment-table th{padding:10px 8px;font-size:11px;font-weight:700;color:var(--p-d);text-align:center;border-bottom:1px solid var(--border)}
+.assessment-table td{padding:8px 6px;border-bottom:1px solid var(--border);font-size:12px;text-align:center}
+.assessment-table .name-col{text-align:left;padding-left:12px}
+.assessment-table .name-cell{text-align:left}
+.assessment-table .name-cell .name{font-weight:700;color:var(--dk);font-size:13px}
+.assessment-table .name-cell .role{font-size:10px;color:var(--ts);margin-top:2px}
+.score-pass{color:var(--green);font-weight:700}
+.score-warn{color:var(--amber);font-weight:700}
+.score-fail{color:var(--red);font-weight:700}
+.grade-a{color:var(--green)} .grade-b{color:var(--amber)} .grade-c{color:var(--red)}
+
+/* 总分柱状图 */
+.chart-container{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin:16px 0}
+.chart-container h3{font-size:14px;font-weight:700;color:var(--dk);margin:0 0 12px}
+.total-chart{display:flex;align-items:end;gap:8px;height:180px;padding:10px 0}
+.total-bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}
+.total-bar-fill{width:100%;border-radius:4px 4px 0 0;transition:height .3s}
+.total-bar-label{font-size:10px;color:var(--ts);text-align:center;line-height:1.2}
+.total-bar-score{font-size:11px;font-weight:700;color:var(--dk);margin-top:2px}
+
+/* 计算工具 */
+.calc-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin:16px 0}
+.calc-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0}
+.calc-item{display:flex;flex-direction:column;gap:4px}
+.calc-item label{font-size:12px;color:var(--ts)}
+.calc-item input{padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;background:var(--card)}
+.calc-item input:focus{outline:none;border-color:var(--brand)}
+.calc-result{background:var(--p-bg);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;margin:16px 0}
+.calc-result h4{font-size:13px;font-weight:700;color:var(--dk);margin:0 0 8px}
+.calc-result-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:12px}
+.calc-result-value{font-weight:700}
+
+/* 说明 */
+.notes{background:var(--p-bg);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;margin:20px 0}
+.notes h4{font-size:13px;font-weight:700;color:var(--dk);margin:0 0 8px}
+.notes ul{margin:0;padding-left:20px}
+.notes li{font-size:12px;color:var(--tx);margin:4px 0}
+
+/* 响应式 */
+@media(max-width:1100px){.assessment-table{font-size:11px}}
+@media(max-width:768px){
+  .ruler-intro{grid-template-columns:repeat(2,1fr)}
+  .calc-row{grid-template-columns:repeat(2,1fr)}
+  .total-chart{gap:4px}
+  .assessment-table{font-size:10px}
+  .assessment-table th,.assessment-table td{padding:6px 4px}
+}
+@media(max-width:640px){
+  .page{padding:0 8px}
+  .ruler-intro{grid-template-columns:1fr}
+  .calc-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="/dashboard/">‹ 管理看板</a>
+  <div class="nav-title">数字员工考核 <span class="nav-sub">五把尺子 · 每日统计打分</span></div>
+</div>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="tagline">基于瑞泊五把尺子框架</div>
+    <h1>📏 五把尺子 · 数字员工考核</h1>
+    <p>依据《瑞泊Agent硅基员工落地方法论》第八章度量体系，对 6 名数字员工进行每日统计和周度打分，量化产出质量与团队健康度</p>
+  </div>
+
+  <!-- 五把尺子概述 -->
+  <div class="ruler-intro">
+    <div class="ruler-card">
+      <h3>1️⃣ 输出量</h3>
+      <p>实际交付的<strong>成品数</strong>，不含中间对话/讨论。防止"忙了一整天但没产出"。</p>
+    </div>
+    <div class="ruler-card">
+      <h3>2️⃣ 任务复杂度</h3>
+      <p>任务的<strong>独立闭环程度</strong>——能不能从需求到交付自己走完。区分"打下手"和"能扛活"。</p>
+    </div>
+    <div class="ruler-card">
+      <h3>3️⃣ 技能复用</h3>
+      <p>交付物是否<strong>标准化、可复现、有模板</strong>。区分"一次性手工"和"流程化生产"。</p>
+    </div>
+    <div class="ruler-card">
+      <h3>4️⃣ 运行时长</h3>
+      <p>每周<strong>自动触发的有效工作时长</strong>（非等待/闲聊）。量化"替你省了多少人时"。</p>
+    </div>
+    <div class="ruler-card">
+      <h3>5️⃣ 并发度</h3>
+      <p>同一周内<strong>并行推进的独立任务数</strong>。量化"一个人管几个硅基员工"。</p>
+    </div>
+  </div>
+
+  <!-- 本周考核评分 -->
+  <div class="section">
+    <div class="section-title"><h2>📋 本周考核评分</h2><span class="badge">2026-09-08 · 数据同步自管理看板</span></div>
+    <table class="assessment-table" id="assessment-table">
+      <thead>
+        <tr>
+          <th class="name-col">员工</th>
+          <th>角色</th>
+          <th>输出量</th>
+          <th>复杂度</th>
+          <th>复用率</th>
+          <th>时长</th>
+          <th>并发</th>
+          <th>总分</th>
+          <th>评级</th>
+        </tr>
+      </thead>
+      <tbody id="assessment-body">
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 总分对比图 -->
+  <div class="chart-container">
+    <h3>📊 总分对比</h3>
+    <div class="total-chart" id="total-chart">
+    </div>
+  </div>
+
+  <!-- 评分计算器 -->
+  <div class="calc-card">
+    <h3>🧮 评分计算器（单员工）</h3>
+    <p style="font-size:12px;color:var(--ts);margin:0 0 12px">根据五把尺子达标标准计算得分，每尺满分 20 分，总分 100 分。</p>
+
+    <div class="calc-row">
+      <div class="calc-item">
+        <label>输出量（达标线 ≥5）</label>
+        <input type="number" id="input-output" min="0" max="20" value="8" placeholder="实际产出数">
+      </div>
+      <div class="calc-item">
+        <label>任务复杂度 %（达标线 ≥50%）</label>
+        <input type="number" id="input-complexity" min="0" max="100" value="60" placeholder="独立闭环率 %">
+      </div>
+      <div class="calc-item">
+        <label>技能复用率 %（达标线 ≥50%）</label>
+        <input type="number" id="input-reuse" min="0" max="100" value="60" placeholder="模板复用率 %">
+      </div>
+    </div>
+    <div class="calc-row">
+      <div class="calc-item">
+        <label>运行时长 h/周（达标线 ≥4h）</label>
+        <input type="number" id="input-duration" min="0" max="20" step="0.5" value="6" placeholder="有效工时 小时/周">
+      </div>
+      <div class="calc-item">
+        <label>并发任务数（达标线 ≥1）</label>
+        <input type="number" id="input-concurrency" min="0" max="10" value="2" placeholder="并行任务数">
+      </div>
+      <div class="calc-item">
+        <label>奖惩加减分</label>
+        <input type="number" id="input-bonus" min="-50" max="50" step="1" value="0" placeholder="+加分 -扣分">
+      </div>
+    </div>
+
+    <div class="calc-result">
+      <h4>📈 计算结果</h4>
+      <div class="calc-result-row">
+        <span>输出量得分：</span>
+        <span class="calc-result-value" id="result-output">-</span>
+      </div>
+      <div class="calc-result-row">
+        <span>任务复杂度得分：</span>
+        <span class="calc-result-value" id="result-complexity">-</span>
+      </div>
+      <div class="calc-result-row">
+        <span>技能复用得分：</span>
+        <span class="calc-result-value" id="result-reuse">-</span>
+      </div>
+      <div class="calc-result-row">
+        <span>运行时长得分：</span>
+        <span class="calc-result-value" id="result-duration">-</span>
+      </div>
+      <div class="calc-result-row">
+        <span>并发度得分：</span>
+        <span class="calc-result-value" id="result-concurrency">-</span>
+      </div>
+      <div class="calc-result-row" style="border-top:1px solid var(--border);padding-top:6px;margin-top:6px">
+        <span><strong>最终总分（含奖惩）：</strong></span>
+        <span class="calc-result-value" id="result-total"><strong>-</strong></span>
+      </div>
+      <div class="calc-result-row" style="margin-top:4px">
+        <span><strong>评级：</strong></span>
+        <span class="calc-result-value" id="result-grade">-</span>
+      </div>
+    </div>
+
+    <button class="btn-main" id="calc-btn" onclick="calculate()" style="display:block;width:100%;padding:12px;border-radius:var(--r);font-size:14px;font-weight:700;border:none;background:var(--brand);color:#fff;cursor:pointer">重新计算</button>
+  </div>
+
+  <!-- 考核规则说明 -->
+  <div class="notes">
+    <h4>📖 考核规则说明</h4>
+    <ul>
+      <li><strong>评分方式：</strong>每把尺子满分 20 分，总分 100 分。达标线及以上得满分，线性插值递减，0→0分。</li>
+      <li><strong>评级标准：</strong>90-100 = 🟢 优秀 · 70-89 = 🟡 正常 · 50-69 = 🟠 警告 · 30-49 = 🔴 严重警告 · &lt;30 = ⚫ 停权</li>
+      <li><strong>考核节奏：</strong>每日自动统计数据，每周五汇总打分更新看板，每月首日管理者审批。</li>
+      <li><strong>数据来源：</strong>GitHub commits + Issue 状态 + 飞书群消息 + 人工标记成品/半成品。</li>
+      <li><strong>核心原则：</strong>规则在前，处罚在后；对事不对人；递进不跳级；可申诉；记录永久留痕。</li>
+    </ul>
+  </div>
+
+  <footer style="text-align:center;padding:24px 0 0;font-size:11px;color:var(--ts);border-top:1px solid var(--border);margin-top:30px">
+    风声数字员工考核系统 · 基于五把尺子框架 · v1.0 · 2026-09-08
+  </footer>
+
+</div>
+
+<script>
+// ============================================================
+// 五把尺子考核数据（同步自管理看板 2026-09-08）
+// ============================================================
+
+const ASSESSMENT_DATA = [
+  {
+    name: '统筹调度',
+    role: '总指挥 · 战略副手',
+    emoji: '🧭',
+    output: { value: 8, pass: true },
+    complexity: { value: 80, isPercent: true, pass: true },
+    reuse: { value: 60, isPercent: true, pass: true },
+    duration: { value: 8, pass: true },
+    concurrency: { value: 5, pass: true },
+    bonus: 0,
+  },
+  {
+    name: '知识架构师',
+    role: '知识架构师 · 监察官',
+    emoji: '📚',
+    output: { value: 10, pass: true },
+    complexity: { value: 70, isPercent: true, pass: true },
+    reuse: { value: 50, isPercent: true, pass: true },
+    duration: { value: 6, pass: true },
+    concurrency: { value: 3, pass: true },
+    bonus: -1,
+  },
+  {
+    name: '网站端开发',
+    role: '技术开发 · 网站端',
+    emoji: '🏗️',
+    output: { value: 2, pass: false },
+    complexity: { value: 50, isPercent: true, pass: true },
+    reuse: { value: 40, isPercent: true, pass: false },
+    duration: { value: 4, pass: true },
+    concurrency: { value: 2, pass: true },
+    bonus: -10,
+  },
+  {
+    name: '品控审核',
+    role: '品控 · 审核监督',
+    emoji: '✅',
+    output: { value: 3, pass: false },
+    complexity: { value: 40, isPercent: true, pass: false },
+    reuse: { value: 40, isPercent: true, pass: false },
+    duration: { value: 2, pass: false },
+    concurrency: { value: 2, pass: true },
+    bonus: -5,
+  },
+  {
+    name: '小程序端产品',
+    role: '产品 PM · 小程序端',
+    emoji: '📱',
+    output: { value: 2, pass: false },
+    complexity: { value: 50, isPercent: true, pass: true },
+    reuse: { value: 40, isPercent: true, pass: false },
+    duration: { value: 2, pass: false },
+    concurrency: { value: 2, pass: true },
+    bonus: 0,
+  },
+  {
+    name: '内容采集',
+    role: '内容营销 · 采集官',
+    emoji: '🗂️',
+    output: { value: 3, pass: true },
+    complexity: { value: 50, isPercent: true, pass: true },
+    reuse: { value: 40, isPercent: true, pass: false },
+    duration: { value: 4, pass: true },
+    concurrency: { value: 2, pass: true },
+    bonus: 0,
+  },
+  {
+    name: '增长官',
+    role: '首席增长官 · CGO',
+    emoji: '📈',
+    output: { value: 3, pass: false },
+    complexity: { value: 30, isPercent: true, pass: false },
+    reuse: { value: 40, isPercent: true, pass: false },
+    duration: { value: 2, pass: false },
+    concurrency: { value: 2, pass: true },
+    bonus: -11,
+  },
+];
+
+// 达标线（来自考核标准文档）
+const STANDARDS = {
+  output: { min: 5, full: 10, maxScore: 20 },
+  complexity: { min: 40, full: 80, maxScore: 20 },
+  reuse: { min: 40, full: 90, maxScore: 20 },
+  duration: { min: 2, full: 8, maxScore: 20 },
+  concurrency: { min: 1, full: 4, maxScore: 20 },
+};
+
+// 评级颜色
+const GRADE_COLORS = {
+  'A': 'var(--green)',
+  'B': 'var(--amber)',
+  'C': 'var(--red)',
+  'D': 'var(--red)',
+  'E': '#333',
+};
+
+// 评级标准
+function getGrade(total) {
+  if (total >= 90) return { code: 'A', text: '🟢 优秀' };
+  if (total >= 70) return { code: 'B', text: '🟡 正常' };
+  if (total >= 50) return { code: 'C', text: '🟠 警告' };
+  if (total >= 30) return { code: 'D', text: '🔴 严重警告' };
+  return { code: 'E', text: '⚫ 停权' };
+}
+
+// 计算单尺得分
+function calcScore(value, min, full, maxScore) {
+  if (value >= full) return maxScore;
+  if (value <= 0) return 0;
+  // 线性插值
+  return Math.round((value - min) / (full - min) * maxScore);
+}
+
+// 计算总分
+function calculateTotal(data) {
+  const s1 = calcScore(data.output.value, STANDARDS.output.min, STANDARDS.output.full, STANDARDS.output.maxScore);
+  const s2 = calcScore(data.complexity.value, STANDARDS.complexity.min, STANDARDS.complexity.full, STANDARDS.complexity.maxScore);
+  const s3 = calcScore(data.reuse.value, STANDARDS.reuse.min, STANDARDS.reuse.full, STANDARDS.reuse.maxScore);
+  const s4 = calcScore(data.duration.value, STANDARDS.duration.min, STANDARDS.duration.full, STANDARDS.duration.maxScore);
+  const s5 = calcScore(data.concurrency.value, STANDARDS.concurrency.min, STANDARDS.concurrency.full, STANDARDS.concurrency.maxScore);
+  const total = s1 + s2 + s3 + s4 + s5 + (data.bonus || 0);
+  return {
+    output: s1, complexity: s2, reuse: s3, duration: s4, concurrency: s5,
+    total: Math.max(0, Math.min(100, total)),
+  };
+}
+
+// 渲染表格
+function renderTable() {
+  const tbody = document.getElementById('assessment-body');
+  let html = '';
+  ASSESSMENT_DATA.forEach(d => {
+    const scores = calculateTotal(d);
+    const grade = getGrade(scores.total);
+    const passClass = v => v.pass ? 'score-pass' : v.value >= (STANDARDS[Object.keys(STANDARDS).find(k => STANDARDS[k] === v)].min) ? 'score-warn' : 'score-fail';
+    html += `
+      <tr>
+        <td class="name-cell">
+          <div class="name">${d.emoji} ${d.name}</div>
+          <div class="role">${d.role}</div>
+        </td>
+        <td>${d.role}</td>
+        <td class="${passClass(d.output)}">${d.output.value}</td>
+        <td class="${passClass(d.complexity)}">${d.complexity.value}${d.complexity.isPercent?'%':''}</td>
+        <td class="${passClass(d.reuse)}">${d.reuse.value}${d.reuse.isPercent?'%':''}</td>
+        <td class="${passClass(d.duration)}">${d.duration.value}h</td>
+        <td class="${passClass(d.concurrency)}">${d.concurrency.value}</td>
+        <td style="font-weight:700" class="${grade.code === 'A' ? 'score-pass' : grade.code === 'B' ? 'score-warn' : 'score-fail'}">${scores.total}</td>
+        <td class="grade-${grade.code}">${grade.text}</td>
+      </tr>
+    `;
+  });
+  tbody.innerHTML = html;
+}
+
+// 渲染总分对比图
+function renderTotalChart() {
+  const container = document.getElementById('total-chart');
+  let html = '';
+  const sorted = [...ASSESSMENT_DATA].sort((a,b) => {
+    const ta = calculateTotal(a).total;
+    const tb = calculateTotal(b).total;
+    return tb - ta;
+  });
+  sorted.forEach(d => {
+    const scores = calculateTotal(d);
+    const height = scores.total; // 0-100 → 百分比
+    const color = getGrade(scores.total).code;
+    const colorMap = {A:'var(--green)', B:'var(--amber)', C:'var(--red)', D:'var(--red)', E:'#333'};
+    html += `
+      <div class="total-bar">
+        <div class="total-bar-fill" style="height:${height}%;background:${colorMap[color]}"></div>
+        <div class="total-bar-score">${scores.total}</div>
+        <div class="total-bar-label">${d.name}</div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+// 计算器逻辑
+function calculate() {
+  const output = parseInt(document.getElementById('input-output').value) || 0;
+  const complexity = parseInt(document.getElementById('input-complexity').value) || 0;
+  const reuse = parseInt(document.getElementById('input-reuse').value) || 0;
+  const duration = parseFloat(document.getElementById('input-duration').value) || 0;
+  const concurrency = parseInt(document.getElementById('input-concurrency').value) || 0;
+  const bonus = parseInt(document.getElementById('input-bonus').value) || 0;
+
+  const s1 = calcScore(output, STANDARDS.output.min, STANDARDS.output.full, STANDARDS.output.maxScore);
+  const s2 = calcScore(complexity, STANDARDS.complexity.min, STANDARDS.complexity.full, STANDARDS.complexity.maxScore);
+  const s3 = calcScore(reuse, STANDARDS.reuse.min, STANDARDS.reuse.full, STANDARDS.reuse.maxScore);
+  const s4 = calcScore(duration, STANDARDS.duration.min, STANDARDS.duration.full, STANDARDS.duration.maxScore);
+  const s5 = calcScore(concurrency, STANDARDS.concurrency.min, STANDARDS.concurrency.full, STANDARDS.concurrency.maxScore);
+  const total = Math.max(0, Math.min(100, s1 + s2 + s3 + s4 + s5 + bonus));
+  const grade = getGrade(total);
+
+  document.getElementById('result-output').textContent = s1 + '/20';
+  document.getElementById('result-complexity').textContent = s2 + '/20';
+  document.getElementById('result-reuse').textContent = s3 + '/20';
+  document.getElementById('result-duration').textContent = s4 + '/20';
+  document.getElementById('result-concurrency').textContent = s5 + '/20';
+  document.getElementById('result-total').innerHTML = `<strong>${total}/100</strong>`;
+  document.getElementById('result-grade').textContent = grade.text;
+}
+
+// 初始化计算器默认值
+function initCalculator() {
+  calculate();
+}
+
+// 页面加载
+window.addEventListener('load', () => {
+  renderTable();
+  renderTotalChart();
+  initCalculator();
+});
+
+// 绑定计算按钮
+document.getElementById('calc-btn').addEventListener('click', calculate);
+
+// 输入变更自动计算
+['input-output','input-complexity','input-reuse','input-duration','input-concurrency','input-bonus'].forEach(id => {
+  document.getElementById(id).addEventListener('input', calculate);
+});
+</script>
+</body>
+</html>

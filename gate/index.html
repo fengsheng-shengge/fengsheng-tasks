@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>内部访问 · 风声</title>
+<style>
+:root{--bg:#f7f4ef;--card:#fff;--border:rgba(80,90,70,.12);--brand:#2C5F3A;--brand-l:#4a8a5c;--tx:#555;--dk:#1a1a1a;--ts:#7a8478;--err:#c0392b}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Microsoft YaHei","PingFang SC",-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;line-height:1.6}
+.card{width:100%;max-width:360px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 28px;text-align:center}
+.badge{display:inline-block;font-size:11px;font-weight:700;color:var(--brand);background:rgba(44,95,58,.07);border:1px solid rgba(44,95,58,.16);border-radius:20px;padding:4px 14px;margin-bottom:16px}
+h1{font-size:22px;font-weight:800;color:var(--dk);margin-bottom:8px}
+p.sub{font-size:13px;color:var(--ts);margin-bottom:22px}
+form{display:flex;flex-direction:column;gap:12px}
+input{width:100%;padding:12px 14px;font-size:15px;font-family:inherit;border:1.5px solid var(--border);border-radius:10px;background:#fff;color:var(--dk);outline:none;transition:border-color .2s}
+input:focus{border-color:var(--brand)}
+button{padding:12px 14px;font-size:15px;font-weight:700;font-family:inherit;color:#fff;background:var(--brand);border:none;border-radius:10px;cursor:pointer;transition:background .2s}
+button:hover{background:var(--brand-l)}
+button:disabled{opacity:.6;cursor:not-allowed}
+.msg{min-height:20px;margin-top:12px;font-size:13px;color:var(--err)}
+.back{display:inline-block;margin-top:18px;font-size:12px;color:var(--ts);text-decoration:none}
+.back:hover{color:var(--brand)}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="badge">内部页面</div>
+  <h1>内部访问</h1>
+  <p class="sub">此页面仅供内部使用，请输入访问口令。</p>
+  <form id="gateForm">
+    <input id="pass" type="password" placeholder="访问口令" autocomplete="current-password" required>
+    <button type="submit" id="submitBtn">进入</button>
+  </form>
+  <div class="msg" id="msg"></div>
+  <a class="back" href="/">← 返回首页</a>
+</main>
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var next = params.get('next') || '/';
+  if (next.charAt(0) !== '/' || next.charAt(1) === '/') next = '/';
+  var form = document.getElementById('gateForm');
+  var input = document.getElementById('pass');
+  var btn = document.getElementById('submitBtn');
+  var msg = document.getElementById('msg');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    msg.textContent = '';
+    btn.disabled = true;
+    fetch('/api/internal-gate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pass: input.value })
+    }).then(function (r) {
+      return r.json().then(function (j) { return { status: r.status, body: j }; });
+    }).then(function (res) {
+      btn.disabled = false;
+      if (res.status === 200 && res.body && res.body.ok) {
+        location.href = next;
+      } else {
+        msg.textContent = (res.body && res.body.error) || '口令不正确';
+      }
+    }).catch(function () {
+      btn.disabled = false;
+      msg.textContent = '网络异常，请稍后重试';
+    });
+  });
+})();
+</script>
+</body>
+</html>

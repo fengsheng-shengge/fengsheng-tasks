@@ -643,7 +643,7 @@ function base64urlToArrayBuffer(b64u) {
   return bytes;
 }
 
-async function generateToken(openid, env) {
+async function generateToken(openid, env, ttlSeconds = 86400 * 7) {
   const secret = env.JWT_SECRET;
   if (!secret) throw new Error('JWT_SECRET not configured');
   const header = base64urlEncode(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
@@ -651,7 +651,7 @@ async function generateToken(openid, env) {
   const payload = base64urlEncode(JSON.stringify({
     openid,
     iat: now,
-    exp: now + 86400 * 7,
+    exp: now + ttlSeconds,
     jti: crypto.randomUUID ? crypto.randomUUID() : openid + '_' + now,
   }));
   const encoder = new TextEncoder();
@@ -1553,12 +1553,43 @@ async function handleAdminAgents(request, env) {
   return jsonResponse({
     ok: true,
     agents: [
-      { id: 'xiaoyu', name: '小鱼儿', role: '产品运营', status: 'active' },
-      { id: 'xiaodou', name: '小豆子', role: '技术开发', status: 'active' },
-      { id: 'xiaojiu', name: '小酒窝儿', role: '设计评审', status: 'active' },
-      { id: 'xiaoke', name: '小扣子', role: '底层执行', status: 'active' },
+      { id: 'xiaoyu', name: '统筹调度', role: '产品运营', status: 'active' },
+      { id: 'xiaodou', name: '小程序端产品', role: '技术开发', status: 'active' },
+      { id: 'xiaojiu', name: '品控审核', role: '设计评审', status: 'active' },
+      { id: 'xiaoke', name: '网站端开发', role: '底层执行', status: 'active' },
     ],
   });
+}
+
+// ============================================================
+//  内部页访问门禁（P0 收口）：口令换取签名 Cookie
+// ============================================================
+async function handleInternalGate(request, env) {
+  if (request.method !== 'POST') return jsonResponse({ ok: false, error: 'method not allowed' }, 405);
+  try {
+    const body = await parseBodyJson(request);
+    const pass = body && body.pass ? String(body.pass) : '';
+    const expected = env.INTERNAL_GATE_TOKEN || env.DASHBOARD_TOKEN;
+    if (!expected) {
+      console.error('INTERNAL_GATE_TOKEN / DASHBOARD_TOKEN not configured');
+      return jsonResponse({ ok: false, error: 'server config error' }, 500);
+    }
+    if (!pass || pass !== expected) {
+      return jsonResponse({ ok: false, error: '口令不正确' }, 401);
+    }
+    const token = await generateToken('internal', env, 43200);
+    return new Response(JSON.stringify({ ok: true }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Set-Cookie': `fs_internal=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=43200`,
+        'Cache-Control': 'no-store',
+      },
+    });
+  } catch (e) {
+    console.error('InternalGate error:', e);
+    return jsonResponse({ ok: false, error: e.message }, 500);
+  }
 }
 
 async function handlePartnerIntent(request, env) {
@@ -3385,15 +3416,13 @@ export default {
     }
 
     // Trailing-slash redirects
-    const trailingSlashRedirects = ['/knowledge', '/mentor', '/ip-design', '/reply', '/assessment', '/breeder', '/s1-report', '/partner', '/care-test', '/quality-test'];
+    const trailingSlashRedirects = ['/knowledge', '/mentor', '/ip-design', '/reply', '/assessment', '/agent-assessment', '/breeder', '/s1-report', '/partner', '/care-test', '/quality-test'];
     if (trailingSlashRedirects.includes(path)) {
       return Response.redirect(`https://fengsheng.tech${path}/`, 301);
     }
 
     // Path rewrites (alias routes → actual content path)
     const pathRewrites = {
-      '/agent-assessment': '/assessment/',
-      '/agent-assessment/': '/assessment/',
       '/showing-report': '/s1-report/',
       '/showing-report/': '/s1-report/',
     };
@@ -3508,6 +3537,9 @@ export default {
 
     // Admin agents
     if (path === '/api/admin/agents') return handleAdminAgents(request);
+
+    // Internal gate（口令 → 签名 Cookie）
+    if (path === '/api/internal-gate') return handleInternalGate(request, env);
 
     // Partner intent
     if (path === '/api/partner-intent') return handlePartnerIntent(request, env);
@@ -3701,6 +3733,26 @@ export default {
       return new Response('Not Found', { status: 404, headers: { 'Content-Type': 'text/plain' } });
     }
 
+    // ===== 内部页访问门禁：无有效 Cookie 则跳转口令页 =====
+    const PROTECTED_PAGES = new Set([
+      '/dashboard', '/dashboard/', '/agent-assessment', '/agent-assessment/',
+      '/management', '/management/',
+    ]);
+    if (PROTECTED_PAGES.has(decodedPath)) {
+      const cookieHeader = request.headers.get('Cookie') || '';
+      const gm = cookieHeader.match(/(?:^|;\s*)fs_internal=([^;]+)/);
+      let gateOk = false;
+      if (gm) {
+        try {
+          const payload = await verifyToken(decodeURIComponent(gm[1]), env);
+          if (payload && payload.openid === 'internal') gateOk = true;
+        } catch (e) { /* 无效 Cookie 视为未登录 */ }
+      }
+      if (!gateOk) {
+        return Response.redirect(`https://fengsheng.tech/gate?next=${encodeURIComponent(decodedPath)}`, 302);
+      }
+    }
+
     // All other requests → static assets (with security headers)
     let assetResp;
     try {
@@ -3743,6 +3795,7 @@ export default {
         '/terms', '/showing-report', '/dict', '/decode',
         '/agreement', '/okr', '/docs', '/toolkit', '/knowledge/quiz',
         '/knowledge/quiz/', '/toolkit/methodology', '/toolkit/methodology/',
+        '/gate', '/gate/',
         '/breeder/', '/care-test/', '/about/', '/agent-academy/', '/curation/', '/dashboard-manager/', '/purchase/', '/toolkit/',
         '/clients/', '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
         '/assessment/', '/s1-report/', '/showing-report/', '/agent-assessment/',
