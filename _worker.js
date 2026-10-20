@@ -3660,7 +3660,7 @@ export default {
     }
 
     // Block direct access to data files — use API endpoints instead
-    if (path === '/data/entries.json' || path.startsWith('/data/domains/')) {
+    if (path.startsWith('/data/')) {
       return jsonResponse({
         error: 'Direct file access forbidden',
         hint: 'Use /api/entries?domain=xxx&limit=50 for paginated results (supports clientType/stage/layer filters & groupBy)',
@@ -3669,6 +3669,23 @@ export default {
         entry: 'Use /api/entry?id=ENTRY_ID for entry detail with resolved relatedEntries',
         docs: 'Use /api/knowledge-stats for domain statistics',
       }, 403);
+    }
+
+    // Block internal documents — Pages deploys the whole repo root, so internal
+    // notes/specs/memory would otherwise be publicly readable (P0 fix 2026.10.20)
+    let decodedPath = path;
+    try { decodedPath = decodeURIComponent(path); } catch (e) { /* keep raw path */ }
+    const INTERNAL_PREFIXES = [
+      '/.github/', '/docs/', '/风声管理/', '/工单/', '/知识底座生产/', '/小马丫交接区/',
+      '/ralph_memory/', '/org-rules/', '/outputs/', '/prototype/', '/migrations/', '/ops/',
+      '/fs-mini-program/', '/fengsheng-conversion-rca-20260812/', '/fengsheng-ops-report-20260812/',
+    ];
+    const INTERNAL_FILES = new Set([
+      '/MEMORY_PACKAGE.md', '/ENV_VARS.md', '/README.md',
+      '/DEPLOY_TIMESTAMP', '/DEPLOY_TRIGGER', '/.deploy-trigger', '/.gitattributes',
+    ]);
+    if (INTERNAL_PREFIXES.some((p) => decodedPath.startsWith(p)) || INTERNAL_FILES.has(decodedPath)) {
+      return new Response('Not Found', { status: 404, headers: { 'Content-Type': 'text/plain' } });
     }
 
     // All other requests → static assets (with security headers)
