@@ -278,7 +278,7 @@ export default {
         ],
         manager: [
           { ico: '💡', name: '案例灵感', desc: '实战经验参考', tab: 'cases' },
-          { ico: '📚', name: '知识库', desc: '13 域真实方案', tab: 'knowledge' },
+          { ico: '📚', name: '知识库', desc: '26 域真实方案', tab: 'knowledge' },
           { ico: '🧮', name: '测算工具', desc: '月租/月供预算', route: '/pages/calculator/index' },
           { ico: '🏠', name: '居住测评', desc: '摸清客户画像', route: '/pages/assess/index' }
         ]

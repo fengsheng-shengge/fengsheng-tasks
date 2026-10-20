@@ -5,25 +5,25 @@
 // import.meta.env.DEV 仅 dev server 为 true；build 产物中恒为 false → 生产一律用完整域名，不受影响
 export const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) ? '' : 'https://fengsheng.tech'
 
-// 13 域（key = 后端 domain 字段值，count = manifest.counts）
+// 13 个导航域（key = 后端 domain 字段值；覆盖权威 v3 共 26 域 / 5843 条；count = 各域 API 实时 total）
 // 英文域 key（CAR/OWN/SNG/trade）为历史遗留的细分域，name 依据其 subScene 内容命名，不合并、不丢数据。
 export const DICT_DOMAINS = [
-  { key: '签约前', icon: '🔍', name: '签约前', count: 829 },
-  { key: '签约中', icon: '📝', name: '签约中', count: 389 },
+  { key: '签约前', icon: '🔍', name: '签约前', count: 1222 },
+  { key: '签约中', icon: '📝', name: '签约中', count: 394 },
   { key: 'SNG', icon: '💰', name: '贷款税费保险', count: 274 },
-  { key: '签约后', icon: '🔐', name: '签约后', count: 688 },
-  { key: '居住中', icon: '🏠', name: '居住中', count: 463 },
+  { key: '签约后', icon: '🔐', name: '签约后', count: 693 },
+  { key: '居住中', icon: '🏠', name: '居住中', count: 731 },
   { key: '退租出售', icon: '🔁', name: '退租出售', count: 250 },
-  { key: '资产持有与运营', icon: '📈', name: '资产运营', count: 631 },
-  { key: '业主', icon: '👤', name: '业主服务', count: 340 },
+  { key: '资产持有与运营', icon: '📈', name: '资产运营', count: 657 },
+  { key: '业主', icon: '👤', name: '业主服务', count: 418 },
   { key: 'OWN', icon: '🗂️', name: '业主出租出售', count: 174 },
   { key: '职业成长', icon: '🎓', name: '职业成长', count: 431 },
   { key: 'CAR', icon: '📚', name: '经纪人考试成长', count: 243 },
   { key: 'trade', icon: '🤝', name: '谈判带看解码', count: 265 },
-  { key: '跨域通用', icon: '🌐', name: '跨域通用', count: 90 }
+  { key: '跨域通用', icon: '🌐', name: '跨域通用', count: 91 }
 ]
 
-export const DICT_TOTAL = DICT_DOMAINS.reduce((s, d) => s + d.count, 0) // 5067
+export const DICT_TOTAL = DICT_DOMAINS.reduce((s, d) => s + d.count, 0) // 5843（v3 基线）
 
 // 真实法源判定（与策展引擎 R2 边界一致）：非空且非「待补充/待核/无/—」且长度≥4
 export function isRealLegal(ref) {
