@@ -869,5 +869,49 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
   init();
 })();
 </script>
+<!-- fs-module-guide -->
+<style>
+.fs-guide-fab{position:fixed;right:18px;bottom:18px;z-index:9998;display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border:none;border-radius:24px;background:#3d5a3e;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 6px 20px rgba(44,68,48,.28);transition:transform .2s,background .2s}
+.fs-guide-fab:hover{background:#2c4430;transform:translateY(-2px)}
+.fs-guide-mask{position:fixed;inset:0;z-index:9998;background:rgba(20,28,20,.42);opacity:0;pointer-events:none;transition:opacity .25s}
+.fs-guide-mask.show{opacity:1;pointer-events:auto}
+.fs-guide-panel{position:fixed;z-index:9999;top:0;right:0;height:100%;width:min(420px,92vw);background:#fbf9f5;box-shadow:-8px 0 32px rgba(0,0,0,.18);transform:translateX(102%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.fs-guide-panel.show{transform:translateX(0)}
+.fs-guide-head{display:flex;align-items:center;gap:10px;padding:18px 20px;border-bottom:1px solid rgba(80,90,70,.12);background:linear-gradient(135deg,#3d5a3e,#2c4430);color:#fff}
+.fs-guide-head .t{font-size:16px;font-weight:800}
+.fs-guide-head .s{font-size:11px;opacity:.8;margin-top:2px}
+.fs-guide-close{margin-left:auto;background:rgba(255,255,255,.14);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;line-height:1;flex:0 0 auto}
+.fs-guide-close:hover{background:rgba(255,255,255,.26)}
+.fs-guide-body{padding:20px;overflow-y:auto;font-size:14px;color:#4a4a48;line-height:1.85}
+.fs-guide-body h4{margin:0 0 6px;font-size:13px;color:#2c4430;letter-spacing:.5px}
+.fs-guide-body h4::before{content:"\25AE";color:#c46a3a;margin-right:5px}
+.fs-guide-body p{margin:0 0 16px}
+.fs-guide-steps{counter-reset:g;list-style:none;margin:0 0 16px;padding:0}
+.fs-guide-steps li{position:relative;padding-left:32px;margin-bottom:10px}
+.fs-guide-steps li::before{counter-increment:g;content:counter(g);position:absolute;left:0;top:1px;width:22px;height:22px;border-radius:50%;background:#3d5a3e;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.fs-guide-tip{background:rgba(196,106,58,.08);border-left:3px solid #c46a3a;border-radius:6px;padding:10px 12px;font-size:12.5px;color:#8a5a3a;line-height:1.7}
+@media(max-width:640px){.fs-guide-fab{padding:9px 13px;font-size:12px;right:12px;bottom:12px}}
+</style>
+<button class="fs-guide-fab" id="fsGuideFab" type="button" aria-label="使用指南">❔ 使用指南</button>
+<div class="fs-guide-mask" id="fsGuideMask"></div>
+<aside class="fs-guide-panel" id="fsGuidePanel" role="dialog" aria-modal="true" aria-label="模块使用指南" aria-hidden="true">
+  <div class="fs-guide-head">
+    <div><div class="t">使用指南</div><div class="s">「搜索」是什么 · 怎么用</div></div>
+    <button class="fs-guide-close" id="fsGuideClose" type="button" aria-label="关闭">✕</button>
+  </div>
+  <div class="fs-guide-body">
+    <h4>这是什么</h4>
+    <p>全站加权搜索入口，一次检索覆盖知识底座、词典、场景等多个模块，结果高亮匹配。</p>
+    <h4>能帮你解决什么</h4>
+    <p>不确定内容在哪个模块时，一次搜全站，不用来回切页面。</p>
+    <h4>怎么用（3 步）</h4>
+    <ol class="fs-guide-steps"><li>输入关键词；</li><li>查看高亮匹配结果；</li><li>点击进入对应词条或页面。</li></ol>
+    <div class="fs-guide-tip">💡 搜不到时，换个口语说法再试。</div>
+  </div>
+</aside>
+<script>
+(function(){var f=document.getElementById('fsGuideFab'),m=document.getElementById('fsGuideMask'),p=document.getElementById('fsGuidePanel'),c=document.getElementById('fsGuideClose');if(!f||!p)return;function o(){p.classList.add('show');m.classList.add('show');p.setAttribute('aria-hidden','false');c.focus()}function x(){p.classList.remove('show');m.classList.remove('show');p.setAttribute('aria-hidden','true')}f.addEventListener('click',o);m.addEventListener('click',x);c.addEventListener('click',x);document.addEventListener('keydown',function(e){if(e.key==='Escape')x()})})();
+</script>
+<!-- /fs-module-guide -->
 </body>
 </html>
