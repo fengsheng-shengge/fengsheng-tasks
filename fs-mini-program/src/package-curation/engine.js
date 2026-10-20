@@ -1,43 +1,81 @@
 // V3.0 策展引擎（见面参谋）· 确定性检索增强 · 不依赖 LLM
 // 铁律：依据真不幻觉 —— 仅对真实 legalRef 挂依据徽标；缺失条目诚实标注；绝不编造。
 // V3.1：支持动态 API 数据（generateCurationAsync），静态数据作为降级兜底
+// V3.8：领域配置解耦 —— 轴/节点/维度/跟进话术迁至 config/curation.config.js。
+//      引擎只保留「与领域无关」的检索与生成逻辑，新增领域（资产运营/家装/特殊居住）
+//      仅需改配置文件、不再改引擎代码，实现架构规划要求的「底层通用、上层替换」。
 import ENTRIES from './data/entries_slim.js'
+import {
+  AXIS_GROUPS as _AXIS_GROUPS,
+  DIMENSIONS as _DIMENSIONS,
+  DOMAIN_DIMENSIONS as _DOMAIN_DIMENSIONS,
+  FOLLOWUP_PLAYBOOKS as _FOLLOWUP_PLAYBOOKS,
+  DIMENSION_FOLLOWUPS as _DIMENSION_FOLLOWUPS,
+  DEFAULT_FOLLOWUPS as _DEFAULT_FOLLOWUPS
+} from './config/curation.config.js'
 
 const API_BASE = 'https://fengsheng.tech'
 
-// ===== 双纵轴节点（购5 / 租4）与检索关键词 =====
-export const AXIS_GROUPS = [
-  {
-    type: 'buy', label: '购房线', clientType: 'buyer',
-    nodes: [
-      { key: 'first', name: '① 首套', kw: ['首套', '首次', '刚需', '新房', '第一次买房', '结婚', '婚房'] },
-      { key: 'improve', name: '② 改善', kw: ['改善', '换房', '置换', '卖旧买新', '换大', '二套', '卖一买一'] },
-      { key: 'edu', name: '③ 教育', kw: ['学区', '入学', '教育', '上学', '划片', '学位', '孩子'] },
-      { key: 'upgrade', name: '④ 升级', kw: ['升级', '品质', '置换', '资产', '换房', '豪宅'] },
-      { key: 'elder', name: '⑤ 适老', kw: ['适老', '养老', '老人', '父母', '无障碍', '电梯'] }
-    ]
-  },
-  {
-    type: 'rent', label: '租住线', clientType: 'tenant',
-    nodes: [
-      { key: 'start', name: '① 起步', kw: ['租房', '首次租房', '租', '合租', '预算', '上班'] },
-      { key: 'rimprove', name: '② 改善', kw: ['租住改善', '换租', '改善租', '更大', '独立'] },
-      { key: 'family', name: '③ 家庭', kw: ['家庭', '孩子', '学区', '陪读', '户型'] },
-      { key: 'quality', name: '④ 品质', kw: ['品质', '装修', '社区', '服务', '安静'] }
-    ]
-  }
-]
+// ===== 运行时配置（默认取自配置文件，可被 registerDomain / applyConfig 覆盖）=====
+// 之所以再包一层可变引用：Phase 2 起支持按领域热注册轴线，无需重新构建即可扩展。
+const _config = {
+  axisGroups: _AXIS_GROUPS,
+  dimensions: [..._DIMENSIONS, ..._DOMAIN_DIMENSIONS],
+  followupPlaybooks: _FOLLOWUP_PLAYBOOKS,
+  dimensionFollowups: _DIMENSION_FOLLOWUPS,
+  defaultFollowups: _DEFAULT_FOLLOWUPS,
+  // 线上 API 尚未部署、需用静态同源数据补齐的策展域（数据兜底，非领域知识）
+  staticFallbackScenes: ['学区教育', '业主出售', '房东出租', '租住']
+}
 
-// ===== 住得好七维 与检索关键词 =====
-export const DIMENSIONS = [
-  { key: 'safety', name: '物质安全', kw: ['产权', '安全', '物业', '隔音', '消防', '质量'] },
-  { key: 'health', name: '健康', kw: ['采光', '通风', '噪音', '环境', '甲醛', '绿化', '空气'] },
-  { key: 'conv', name: '便利', kw: ['通勤', '地铁', '配套', '商圈', '学校', '医院', '交通'] },
-  { key: 'econ', name: '经济', kw: ['预算', '价格', '税费', '成本', '月供', '首付', '划算', '费用'] },
-  { key: 'comfort', name: '舒适', kw: ['户型', '朝向', '采光', '楼层', '空间', '通风'] },
-  { key: 'beauty', name: '美观', kw: ['装修', '风格', '颜值', '设计', '外观'] },
-  { key: 'free', name: '自在', kw: ['邻里', '社区', '安静', '氛围', '自在'] }
-]
+// 兼容既有导出名（页面直接 import { AXIS_GROUPS, DIMENSIONS }）
+export const AXIS_GROUPS = _config.axisGroups
+export const DIMENSIONS = _config.dimensions
+
+/**
+ * 注册一个新领域轴线（Phase 2 资产运营 / Phase 3 家装 走此入口）。
+ * @param {{type:string,label:string,clientType:string,nodes:Array<{key,name,kw,followups?}>}} group
+ * @param {{playbooks?:object, dimensionFollowups?:object, scenes?:string[]}} [opts]
+ * @returns {{ok:boolean, axisLabel?:string, issues?:string[]}}
+ */
+export function registerDomain(group, opts = {}) {
+  const issues = []
+  if (!group || !group.type || !group.label || !group.clientType) {
+    return { ok: false, issues: ['group 必须含 type / label / clientType'] }
+  }
+  if (!Array.isArray(group.nodes) || group.nodes.length === 0) {
+    return { ok: false, issues: [`领域「${group.type}」未提供 nodes`] }
+  }
+  if (_config.axisGroups.some(g => g.type === group.type)) {
+    return { ok: false, issues: [`领域「${group.type}」已注册，请勿重复`] }
+  }
+  const existingKeys = new Set()
+  _config.axisGroups.forEach(g => (g.nodes || []).forEach(n => existingKeys.add(n.key)))
+  group.nodes.forEach(n => {
+    if (!n.key || !n.name) issues.push('node 缺 key / name')
+    if (!Array.isArray(n.kw) || !n.kw.length) issues.push(`节点「${n.key}」kw 为空`)
+    if (existingKeys.has(n.key)) issues.push(`节点 key「${n.key}」与既有轴重复`)
+  })
+
+  _config.axisGroups = [..._config.axisGroups, group]
+  if (opts.playbooks) _config.followupPlaybooks = { ..._config.followupPlaybooks, ...opts.playbooks }
+  if (opts.dimensionFollowups) _config.dimensionFollowups = { ..._config.dimensionFollowups, ...opts.dimensionFollowups }
+  if (Array.isArray(opts.scenes) && opts.scenes.length) {
+    _config.staticFallbackScenes = [...new Set([..._config.staticFallbackScenes, ...opts.scenes])]
+  }
+  return { ok: issues.length === 0, axisLabel: group.label + ' · ' + (group.nodes[0] ? group.nodes[0].name : ''), issues }
+}
+
+/** 读取当前生效配置（调试 / 校验用） */
+export function getCurationConfig() {
+  return {
+    axisGroups: _config.axisGroups,
+    dimensions: _config.dimensions,
+    followupPlaybooks: _config.followupPlaybooks,
+    dimensionFollowups: _config.dimensionFollowups,
+    staticFallbackScenes: _config.staticFallbackScenes
+  }
+}
 
 // ===== 工具：真实法源判定（R2 边界）=====
 function isRealLegal(ref) {
@@ -126,12 +164,14 @@ async function fetchCurationEntries() {
 
   // ===== 补齐 API 未部署的策展域（学区教育/业主出售/房东出租/租住）=====
   // 线上 API 已 serve 签约前/签约中/OWN/职业成长/签约后/居住中/退租出售 7 个域；
-  // 策展三场景依赖的另 4 个域（学区教育/业主出售/房东出租/租住，静态同源数据中有、API 暂无），
-  // 用静态数据补齐并按 id 去重——后端将来部署这些域后，API 数据自动优先、不重复。
+  // 策展依赖的另几个域（静态同源数据中有、API 暂无），用静态数据补齐并按 id 去重
+  // ——后端将来部署这些域后，API 数据自动优先、不重复。
+  // 域清单来自配置（config/curation.config.js / _config.staticFallbackScenes），
+  // 新领域上线时走 registerDomain({ scenes }) 追加，无需改本引擎。
   const seenIds = new Set(
     [...grouped.decoder, ...grouped.see, ...grouped.nego].map(e => e.id)
   )
-  const apiMissingScenes = ['学区教育', '业主出售', '房东出租', '租住']
+  const apiMissingScenes = _config.staticFallbackScenes
   for (const grp of ['decoder', 'see', 'nego']) {
     for (const e of (ENTRIES[grp] || [])) {
       if (apiMissingScenes.includes(e.scene) && !seenIds.has(e.id)) {
@@ -286,14 +326,14 @@ function generateCurationFromEntries(input, entriesByGroup) {
     decisionMakerStances = [],
     lifeVision = ''
   } = input || {}
-  const group = AXIS_GROUPS.find(g => g.type === axisType) || AXIS_GROUPS[0]
+  const group = _config.axisGroups.find(g => g.type === axisType) || _config.axisGroups[0]
   const node = group.nodes.find(n => n.key === axisNodeKey) || group.nodes[0]
   const ct = group.clientType
 
   // 1) 检索词集合
   const qKw = new Set([...node.kw])
   dimensions.forEach(dk => {
-    const d = DIMENSIONS.find(x => x.key === dk)
+    const d = _config.dimensions.find(x => x.key === dk)
     if (d) d.kw.forEach(k => qKw.add(k))
   })
   const freeTokens = tokenize(freeText)
@@ -389,7 +429,7 @@ function generateCurationFromEntries(input, entriesByGroup) {
 
   return {
     axisLabel: group.label + ' · ' + node.name,
-    dimensionLabels: dimensions.map(dk => (DIMENSIONS.find(d => d.key === dk) || {}).name).filter(Boolean),
+    dimensionLabels: dimensions.map(dk => (_config.dimensions.find(d => d.key === dk) || {}).name).filter(Boolean),
     freeText,
     say: enriched.say,
     bring,
@@ -401,26 +441,19 @@ function generateCurationFromEntries(input, entriesByGroup) {
 }
 
 // 见后跟进：按节点 + 维度生成，语言用「见后跟进/持续关怀」，禁用钩子/策略/转化
+// V3.8：话术剧本已迁至 config/curation.config.js（DOMAIN_FOLLOWUP_PLAYBOOKS / DIMENSION_FOLLOWUPS），
+//      扩领域时增配置项即可，本函数不再持有领域相关硬编码。
 function buildFollowups(node, dimensions) {
-  const map = {
-    first: [{ theme: '资格核验', text: '3 天内跟进购房资格与贷款额度测算，帮客户锁定真实预算' },
-            { theme: '区域筛选', text: '持续关怀：按通勤与学区优先级，整理 2–3 个候选板块' }],
-    improve: [{ theme: '旧房处置', text: '跟进现住房处置进度（在售/已售），衔接换房节奏' },
-              { theme: '低密盘带看', text: '下周带看同板块低密改善盘，对比得房率与物业档次' }],
-    edu: [{ theme: '划片公示', text: '开学季前帮盯目标校划片公示，第一时间同步客户' },
-           { theme: '学位核实', text: '持续关怀：核实落户年限要求，避免政策误读' }],
-    upgrade: [{ theme: '资产配置', text: '跟进置换后的资产结构，提供持有成本测算' }],
-    elder: [{ theme: '适老改造', text: '跟进无障碍与电梯需求，整理适老改造要点' }],
-    start: [{ theme: '预算对齐', text: '跟进可接受租金区间，缩小候选范围' }],
-    rimprove: [{ theme: '换租节奏', text: '跟进租约到期时间，提前规划换租' }],
-    family: [{ theme: '户型匹配', text: '持续关怀：按家庭结构推荐合适户型与楼层' }],
-    quality: [{ theme: '社区服务', text: '跟进对物业与社区服务的真实体验反馈' }]
-  }
-  const base = map[node.key] || [{ theme: '持续关怀', text: '见面后 1–2 天做轻量跟进，确认客户还有哪些顾虑' }]
+  // 话术来源优先级：节点内联 followups > 剧本表 followupPlaybooks > 全领域兜底
+  const base = (Array.isArray(node.followups) && node.followups.length)
+    ? node.followups
+    : (_config.followupPlaybooks[node.key] || _config.defaultFollowups)
   // 维度补充（经济/学区相关关怀）
   const dimText = []
-  if (dimensions.includes('econ')) dimText.push({ theme: '费用透明', text: '持续关怀：整理本次交易全部成本清单，避免隐性支出' })
-  if (dimensions.includes('conv')) dimText.push({ theme: '通勤实测', text: '见后跟进：提供早晚高峰通勤实测，增强决策依据' })
+  dimensions.forEach(dk => {
+    const add = _config.dimensionFollowups[dk]
+    if (Array.isArray(add)) dimText.push(...add)
+  })
   return base.concat(dimText).slice(0, 4)
 }
 
