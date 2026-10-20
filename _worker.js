@@ -3403,6 +3403,19 @@ export default {
       return env.ASSETS.fetch(rewriteReq);
     }
 
+    // 重复/遗留页收敛（P0）：根级 .html 旧路由 301 到目录式规范路由
+    const legacyPageRedirects = {
+      '/privacy.html': '/privacy/',
+      '/terms.html': '/terms/',
+      '/agreement': '/terms/',
+      '/agreement/': '/terms/',
+      '/agreement.html': '/terms/',
+      '/assessment.html': '/quality-test/',
+    };
+    if (legacyPageRedirects[path]) {
+      return Response.redirect(`https://fengsheng.tech${legacyPageRedirects[path]}`, 301);
+    }
+
     // ===== API Routes =====
 
     // Health check
