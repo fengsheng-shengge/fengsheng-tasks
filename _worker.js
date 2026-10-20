@@ -643,8 +643,8 @@ function base64urlToArrayBuffer(b64u) {
   return bytes;
 }
 
-async function generateToken(openid, env, ttlSeconds = 86400 * 7) {
-  const secret = env.JWT_SECRET;
+async function generateToken(openid, env, ttlSeconds = 86400 * 7, secretOverride) {
+  const secret = secretOverride || env.JWT_SECRET;
   if (!secret) throw new Error('JWT_SECRET not configured');
   const header = base64urlEncode(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const now = Math.floor(Date.now() / 1000);
@@ -664,8 +664,8 @@ async function generateToken(openid, env, ttlSeconds = 86400 * 7) {
   return `${header}.${payload}.${sig}`;
 }
 
-async function verifyToken(token, env) {
-  const secret = env.JWT_SECRET;
+async function verifyToken(token, env, secretOverride) {
+  const secret = secretOverride || env.JWT_SECRET;
   if (!secret) return null;
   try {
     const parts = token.split('.');
@@ -686,6 +686,18 @@ async function verifyToken(token, env) {
     if (payload.exp && payload.exp < now) return null;
     return payload;
   } catch { return null; }
+}
+
+// 门禁 Cookie 专用签名密钥：由口令派生（key separation），无需额外配置 JWT_SECRET
+async function deriveGateSecret(env) {
+  const base = env.INTERNAL_GATE_TOKEN || env.DASHBOARD_TOKEN;
+  if (!base) return null;
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw', enc.encode(base), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode('fs_internal_gate_v1'));
+  return arrayBufferToBase64url(sig);
 }
 
 // ============================================================
@@ -1570,14 +1582,15 @@ async function handleInternalGate(request, env) {
     const body = await parseBodyJson(request);
     const pass = body && body.pass ? String(body.pass) : '';
     const expected = env.INTERNAL_GATE_TOKEN || env.DASHBOARD_TOKEN;
-    if (!expected) {
+    const gateSecret = await deriveGateSecret(env);
+    if (!expected || !gateSecret) {
       console.error('INTERNAL_GATE_TOKEN / DASHBOARD_TOKEN not configured');
       return jsonResponse({ ok: false, error: 'server config error' }, 500);
     }
     if (!pass || pass !== expected) {
       return jsonResponse({ ok: false, error: '口令不正确' }, 401);
     }
-    const token = await generateToken('internal', env, 43200);
+    const token = await generateToken('internal', env, 43200, gateSecret);
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: {
@@ -3744,7 +3757,10 @@ export default {
       let gateOk = false;
       if (gm) {
         try {
-          const payload = await verifyToken(decodeURIComponent(gm[1]), env);
+          const gateSecret = await deriveGateSecret(env);
+          const payload = gateSecret
+            ? await verifyToken(decodeURIComponent(gm[1]), env, gateSecret)
+            : null;
           if (payload && payload.openid === 'internal') gateOk = true;
         } catch (e) { /* 无效 Cookie 视为未登录 */ }
       }
