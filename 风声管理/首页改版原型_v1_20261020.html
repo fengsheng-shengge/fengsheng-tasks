@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>首页改版原型 v1 · 任务导航 | 风声</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{
+  --bg:#f7f4ef;--bg2:#e8e4d9;--card:#fff;--border:rgba(80,90,70,.12);--border-h:rgba(60,80,50,.28);
+  --brand:#2C5F3A;--brand-light:#4a8a5c;--accent:#E8742C;--wood:#c8956d;
+  --dk:#1a1a1a;--tx:#555;--ts:#7a8478;--td:#a8b0a6;
+  --r:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px 64px}
+
+/* 原型标识条 */
+.proto-bar{background:#2b2b28;color:#e8e4d9;font-size:12px;text-align:center;padding:7px 16px;letter-spacing:.3px}
+.proto-bar strong{color:#f5a623}
+
+/* 顶部导航 */
+.nav{display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 4px}
+.nav .logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:var(--brand);letter-spacing:1px}
+.nav .logo svg{width:22px;height:22px}
+.nav .navlinks{display:flex;gap:18px;font-size:13px;color:var(--ts)}
+.nav .navlinks a{color:var(--ts);text-decoration:none}
+.nav .navlinks a:hover{color:var(--brand)}
+
+/* Hero */
+.hero{text-align:center;padding:34px 0 18px}
+.hero .tag{display:inline-block;font-size:11px;font-weight:700;color:var(--brand);background:rgba(44,95,58,.07);border:1px solid rgba(44,95,58,.14);border-radius:20px;padding:4px 14px;margin-bottom:14px}
+.hero h1{font-size:34px;font-weight:800;color:var(--dk);line-height:1.25;letter-spacing:.5px}
+.hero h1 .hl{color:var(--brand)}
+.hero p{font-size:15px;color:var(--tx);margin-top:10px;max-width:560px;margin-left:auto;margin-right:auto}
+
+/* 角色 Tab */
+.tabs{display:flex;gap:10px;justify-content:center;margin:22px 0 6px;flex-wrap:wrap}
+.tab{display:flex;flex-direction:column;gap:1px;align-items:flex-start;padding:11px 20px;border-radius:12px;border:2px solid var(--border);background:var(--card);cursor:pointer;transition:all .2s;font-family:inherit;text-align:left}
+.tab:hover{border-color:var(--brand);transform:translateY(-2px)}
+.tab.on{background:var(--brand);border-color:var(--brand);box-shadow:0 6px 18px rgba(44,95,58,.22)}
+.tab .t-main{font-size:14px;font-weight:800;color:var(--ts)}
+.tab .t-sub{font-size:10px;color:var(--td)}
+.tab.on .t-main{color:#fff}
+.tab.on .t-sub{color:rgba(255,255,255,.78)}
+
+/* 面板 */
+.panel{display:none;padding-top:20px}
+.panel.on{display:block}
+.layer-label{font-size:11px;font-weight:800;letter-spacing:1px;color:var(--td);margin:0 2px 10px;text-transform:uppercase}
+
+/* 第一层：黄金主任务 */
+.golden{display:flex;align-items:center;gap:20px;background:linear-gradient(135deg,#3d5a3e 0%,#2c4430 100%);color:#fff;border-radius:18px;padding:26px 28px;margin-bottom:22px;cursor:pointer;transition:all .22s;position:relative;overflow:hidden}
+.golden:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(44,68,48,.28)}
+.golden::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,255,255,.14),transparent 70%);border-radius:50%}
+.golden .g-icon{font-size:40px;flex-shrink:0}
+.golden .g-body{flex:1;min-width:0;position:relative;z-index:1}
+.golden .g-kicker{font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.72);margin-bottom:5px}
+.golden .g-title{font-size:22px;font-weight:800;line-height:1.25;margin-bottom:6px}
+.golden .g-desc{font-size:13px;color:rgba(255,255,255,.85);line-height:1.55}
+.golden .g-cta{flex-shrink:0;font-size:13px;font-weight:700;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);border-radius:10px;padding:10px 16px;white-space:nowrap;position:relative;z-index:1}
+
+/* 第二层：次任务 */
+.subs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:26px}
+.sub{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:8px}
+.sub:hover{border-color:var(--border-h);transform:translateY(-2px);box-shadow:0 6px 18px rgba(60,50,40,.08)}
+.sub .s-top{display:flex;align-items:center;gap:10px}
+.sub .s-icon{font-size:24px}
+.sub .s-title{font-size:16px;font-weight:800;color:var(--dk)}
+.sub .s-desc{font-size:12.5px;color:var(--ts);line-height:1.55}
+.sub .s-foot{font-size:11.5px;font-weight:700;color:var(--brand);margin-top:2px}
+.sub .s-badge{font-size:10px;font-weight:700;color:var(--accent);background:rgba(232,116,44,.1);border-radius:6px;padding:2px 7px;margin-left:auto}
+
+/* 第三层：全部工具 */
+.alltools{border-top:1px dashed var(--border);padding-top:18px}
+.alltools summary{cursor:pointer;font-size:13px;font-weight:800;color:var(--ts);list-style:none;display:flex;align-items:center;gap:8px;padding:4px 2px}
+.alltools summary::-webkit-details-marker{display:none}
+.alltools summary .chev{transition:transform .2s;font-size:11px;color:var(--td)}
+.alltools[open] summary .chev{transform:rotate(90deg)}
+.alltools .hint{font-size:11px;color:var(--td);font-weight:500;margin-left:auto}
+.grp{margin-top:16px}
+.grp-label{font-size:10.5px;font-weight:800;letter-spacing:.5px;color:var(--brand);margin:0 0 8px 2px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.gitem{display:flex;flex-direction:column;gap:3px;padding:13px 10px;border-radius:11px;border:1px solid var(--border);background:var(--card);text-decoration:none;color:inherit;transition:all .18s;text-align:center}
+.gitem:hover{transform:translateY(-2px);border-color:var(--border-h);box-shadow:0 3px 12px rgba(60,50,40,.07)}
+.gitem .gi-icon{font-size:19px;line-height:1}
+.gitem .gi-name{font-size:11px;font-weight:700;color:var(--dk)}
+.gitem .gi-desc{font-size:9.5px;color:var(--td);line-height:1.3}
+.gitem .lock{font-size:9px;color:var(--accent);font-weight:700}
+
+/* 新用户三步 */
+.steps{display:flex;flex-direction:column;gap:12px;margin-bottom:26px}
+.step{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:18px 20px;transition:all .2s}
+.step:hover{border-color:var(--border-h)}
+.step .n{width:34px;height:34px;border-radius:50%;background:rgba(44,95,58,.08);color:var(--brand);font-weight:800;display:grid;place-items:center;flex-shrink:0;font-size:15px}
+.step .b{flex:1;min-width:0}
+.step .b .t{font-size:15.5px;font-weight:800;color:var(--dk);margin-bottom:3px}
+.step .b .d{font-size:12.5px;color:var(--ts)}
+.step .go{align-self:center;font-size:12px;font-weight:700;color:#fff;background:var(--brand);border-radius:8px;padding:8px 15px;white-space:nowrap}
+
+/* 数据带 */
+.band{margin-top:34px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 22px}
+.band .b-title{font-size:13px;font-weight:800;color:var(--dk);margin-bottom:4px}
+.band .b-sub{font-size:11.5px;color:var(--td);margin-bottom:18px}
+.band .b-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.bnum{text-align:center}
+.bnum .n{font-size:27px;font-weight:900;color:var(--brand);line-height:1.05}
+.bnum .n small{font-size:15px}
+.bnum .l{font-size:11px;color:var(--ts);margin-top:3px}
+.band .b-note{margin-top:16px;font-size:10.5px;color:var(--td);border-top:1px dashed var(--border);padding-top:12px}
+
+/* 底部 */
+.foot{text-align:center;margin-top:36px;font-size:11.5px;color:var(--td);line-height:1.9}
+
+@media(max-width:720px){
+  .hero h1{font-size:25px}
+  .tabs{gap:7px}
+  .tab{padding:9px 13px;flex:1}
+  .golden{flex-direction:column;align-items:flex-start;gap:12px;padding:22px}
+  .golden .g-icon{font-size:32px}
+  .golden .g-title{font-size:19px}
+  .golden .g-cta{align-self:stretch;text-align:center}
+  .subs{grid-template-columns:1fr}
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .band .b-row{grid-template-columns:repeat(2,1fr);gap:18px}
+}
+</style>
+</head>
+<body>
+
+<div class="proto-bar">🧪 首页改版原型 v1（<strong>示意稿</strong>·非线上页面）｜ 结构：1 黄金主任务 + 2 次任务 + 底部全部工具</div>
+
+<div class="wrap">
+
+  <div class="nav">
+    <div class="logo">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 10C3 10 7 6 10 6C13 6 17 10 17 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 10C3 10 7 14 10 14C13 14 17 10 17 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/><path d="M6 10C6 10 8.5 8 10 8C11.5 8 14 10 14 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/></svg>
+      风声
+    </div>
+    <div class="navlinks">
+      <a href="#">知识库</a>
+      <a href="#">工具箱</a>
+      <a href="#">关于</a>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="tag">居住服务者的专业基础设施</div>
+    <h1>先选你的角色，<br>只看到<span class="hl">此刻该做的事</span></h1>
+    <p>不再让同一角色的 5-6 张场景卡和 12 项工具等权摊开。这里只留 1 条主路径 + 2 条常用路径，其余收进底部。</p>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-p="agent">
+      <span class="t-main">我是经纪人</span>
+      <span class="t-sub">接客户 · 练专业 · 回消息</span>
+    </button>
+    <button class="tab" data-p="manager">
+      <span class="t-main">我是管理者</span>
+      <span class="t-sub">搭数字员工团队</span>
+    </button>
+    <button class="tab" data-p="newbie">
+      <span class="t-main">我是新用户</span>
+      <span class="t-sub">3 步看懂我能提效什么</span>
+    </button>
+  </div>
+
+  <!-- ============ 经纪人 ============ -->
+  <div class="panel on" id="p-agent">
+    <div class="layer-label">这一屏，先干最要紧的事</div>
+
+    <!-- 第一层：黄金主任务 -->
+    <div class="golden">
+      <div class="g-icon">📋</div>
+      <div class="g-body">
+        <div class="g-kicker">黄金主任务</div>
+        <div class="g-title">接一个客户，生成全生命周期方案</div>
+        <div class="g-desc">输入客户情况 → 策展引擎自动检索知识底座 → 输出可发给客户的沟通方案与推进节奏。</div>
+      </div>
+      <div class="g-cta">开始策展 →</div>
+    </div>
+
+    <!-- 第二层：次任务 -->
+    <div class="layer-label">顺手要做的事</div>
+    <div class="subs">
+      <div class="sub">
+        <div class="s-top"><span class="s-icon">📚</span><span class="s-title">练专业</span></div>
+        <div class="s-desc">按业务模块和场景刷知识、做掌握度测评，专挑你最薄的那块补。</div>
+        <div class="s-foot">知识库 × 掌握度测评 →</div>
+      </div>
+      <div class="sub">
+        <div class="s-top"><span class="s-icon">💬</span><span class="s-title">回消息</span><span class="s-badge">即时</span></div>
+        <div class="s-desc">客户提的问题拿不准，直接问 AI 助手，或用话术库找个稳妥的说法。</div>
+        <div class="s-foot">AI 助手 × 话术库 →</div>
+      </div>
+    </div>
+
+    <!-- 第三层：全部工具 -->
+    <details class="alltools">
+      <summary><span class="chev">▸</span>全部工具<span class="hint">按任务分组，这里才是"工具超市"</span></summary>
+      <div class="grp">
+        <div class="grp-label">服务客户</div>
+        <div class="grid">
+          <a class="gitem"><span class="gi-icon">👥</span><span class="gi-name">客户管理</span><span class="gi-desc">客户档案</span></a>
+          <a class="gitem"><span class="gi-icon">📊</span><span class="gi-name">带看报告</span><span class="gi-desc">数据报告</span></a>
+          <a class="gitem"><span class="gi-icon">🎯</span><span class="gi-name">场景</span><span class="gi-desc">76 场景</span></a>
+          <a class="gitem"><span class="gi-icon">🔓</span><span class="gi-name">解码器</span><span class="gi-desc">场景分析</span></a>
+        </div>
+      </div>
+      <div class="grp">
+        <div class="grp-label">专业提升</div>
+        <div class="grid">
+          <a class="gitem"><span class="gi-icon">📖</span><span class="gi-name">知识库</span><span class="gi-desc">全量词条</span></a>
+          <a class="gitem"><span class="gi-icon">📕</span><span class="gi-name">词典</span><span class="gi-desc">术语查询</span></a>
+          <a class="gitem"><span class="gi-icon">🧑‍🏫</span><span class="gi-name">导师</span><span class="gi-desc">AI 指导</span></a>
+          <a class="gitem"><span class="gi-icon">🌱</span><span class="gi-name">培育</span><span class="gi-desc">成长计划</span></a>
+        </div>
+      </div>
+      <div class="grp">
+        <div class="grp-label">效率与沉淀</div>
+        <div class="grid">
+          <a class="gitem"><span class="gi-icon">🔎</span><span class="gi-name">搜索</span><span class="gi-desc">全局搜索</span></a>
+          <a class="gitem"><span class="gi-icon">⭐</span><span class="gi-name">收藏</span><span class="gi-desc">我的收藏</span></a>
+          <a class="gitem"><span class="gi-icon">🕘</span><span class="gi-name">历史</span><span class="gi-desc">使用记录</span></a>
+          <a class="gitem"><span class="gi-icon">🎨</span><span class="gi-name">形象设计</span><span class="gi-desc">个人 IP</span></a>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ============ 管理者 ============ -->
+  <div class="panel" id="p-manager">
+    <div class="layer-label">这一屏，先看团队的整体产出</div>
+
+    <div class="golden">
+      <div class="g-icon">🧠</div>
+      <div class="g-body">
+        <div class="g-kicker">黄金主任务</div>
+        <div class="g-title">搭建自己的数字员工团队</div>
+        <div class="g-desc">从岗位设计 → 分工协作 → 上线运行 → 考核评分，一套方法把团队产能数字化，看得见每个岗位的产出。</div>
+      </div>
+      <div class="g-cta">进智能体学院 →</div>
+    </div>
+
+    <div class="layer-label">日常要看的两块屏</div>
+    <div class="subs">
+      <div class="sub">
+        <div class="s-top"><span class="s-icon">📊</span><span class="s-title">我的数字员工看板</span></div>
+        <div class="s-desc">岗位分布、产出统计、评分排名一屏总览，看团队今天干了多少活。</div>
+        <div class="s-foot">打开团队看板 →</div>
+      </div>
+      <div class="sub">
+        <div class="s-top"><span class="s-icon">🏅</span><span class="s-title">五把尺子考核</span><span class="s-badge">🔒 内部</span></div>
+        <div class="s-desc">工作量 / 复杂度 / 复用 / 运行 / 并发五维打分，作为绩效与调优依据。</div>
+        <div class="s-foot">进入考核 →</div>
+      </div>
+    </div>
+
+    <details class="alltools">
+      <summary><span class="chev">▸</span>全部工具<span class="hint">含内部页与团队沉淀</span></summary>
+      <div class="grp">
+        <div class="grp-label">运营监控</div>
+        <div class="grid">
+          <a class="gitem"><span class="gi-icon">📈</span><span class="gi-name">运营数据看板</span><span class="lock">🔒 内部</span></a>
+          <a class="gitem"><span class="gi-icon">📊</span><span class="gi-name">数字员工看板</span><span class="gi-desc">团队总览</span></a>
+          <a class="gitem"><span class="gi-icon">🏅</span><span class="gi-name">五把尺子考核</span><span class="lock">🔒 内部</span></a>
+          <a class="gitem"><span class="gi-icon">📦</span><span class="gi-name">方法论工具包</span><span class="gi-desc">报告下载</span></a>
+        </div>
+      </div>
+      <div class="grp">
+        <div class="grp-label">数字员工建设</div>
+        <div class="grid">
+          <a class="gitem"><span class="gi-icon">🧠</span><span class="gi-name">智能体学院</span><span class="gi-desc">训练方法</span></a>
+          <a class="gitem"><span class="gi-icon">👥</span><span class="gi-name">岗位职责模板</span><span class="gi-desc">直接套用</span></a>
+          <a class="gitem"><span class="gi-icon">🤝</span><span class="gi-name">协作方法论</span><span class="gi-desc">多人协作</span></a>
+          <a class="gitem"><span class="gi-icon">📚</span><span class="gi-name">成功案例</span><span class="gi-desc">参考学习</span></a>
+        </div>
+      </div>
+      <div class="grp">
+        <div class="grp-label">团队沉淀</div>
+        <div class="grid">
+          <a class="gitem"><span class="gi-icon">📄</span><span class="gi-name">汇报定稿法</span><span class="gi-desc">凝练·取舍</span></a>
+          <a class="gitem"><span class="gi-icon">🎯</span><span class="gi-name">定位聚焦法</span><span class="gi-desc">聚焦定位</span></a>
+          <a class="gitem"><span class="gi-icon">🧪</span><span class="gi-name">蒸馏四问</span><span class="gi-desc">经验成方法</span></a>
+          <a class="gitem"><span class="gi-icon">📞</span><span class="gi-name">咨询辅导</span><span class="gi-desc">预约线下</span></a>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ============ 新用户 ============ -->
+  <div class="panel" id="p-newbie">
+    <div class="layer-label">跟着走，3 步就懂风声能替你干什么</div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="n">1</div>
+        <div class="b">
+          <div class="t">测一测你的专业水平</div>
+          <div class="d">花 3 分钟做一次能力测评，拿到一份能看出短板的报告——不注册也能看结果。</div>
+        </div>
+        <div class="go">开始测评 →</div>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <div class="b">
+          <div class="t">逛一逛知识底座</div>
+          <div class="d">5,843 条专业词条、76 个场景、13 个知识域，按业务模块和场景组织，先随便翻翻找感觉。</div>
+        </div>
+        <div class="go">打开知识库 →</div>
+      </div>
+      <div class="step">
+        <div class="n">3</div>
+        <div class="b">
+          <div class="t">生成你的第一份客户方案</div>
+          <div class="d">随便填一个客户的简单情况，看策展引擎怎么把知识变成一份能直接发给客户的方案。</div>
+        </div>
+        <div class="go">试试策展 →</div>
+      </div>
+    </div>
+
+    <details class="alltools">
+      <summary><span class="chev">▸</span>还想了解什么<span class="hint">完整工具清单</span></summary>
+      <div class="grp">
+        <div class="grid">
+          <a class="gitem"><span class="gi-icon">🔍</span><span class="gi-name">品质测评</span><span class="gi-desc">专业水平</span></a>
+          <a class="gitem"><span class="gi-icon">📖</span><span class="gi-name">知识库</span><span class="gi-desc">基础学习</span></a>
+          <a class="gitem"><span class="gi-icon">📋</span><span class="gi-name">策展引擎</span><span class="gi-desc">客户报告</span></a>
+          <a class="gitem"><span class="gi-icon">🎓</span><span class="gi-name">沃土计划</span><span class="gi-desc">校园实训</span></a>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ============ 数据带（不编造结果数据：真实现状 + 明确标注的未来目标） ============ -->
+  <div class="band">
+    <div class="b-title">🎯 上线目标</div>
+    <div class="b-sub">以下为产品上线后要达成的结果目标，<strong>非当前实绩</strong></div>
+    <div class="b-row">
+      <div class="bnum"><div class="n">1,000<small>+</small></div><div class="l">累计生成客户报告<br>（上线12个月目标）</div></div>
+      <div class="bnum"><div class="n">500<small>+</small></div><div class="l">服务居住服务者<br>（目标）</div></div>
+      <div class="bnum"><div class="n">80<small>%</small></div><div class="l">方案采纳率<br>（目标值 ≥）</div></div>
+      <div class="bnum"><div class="n">4.8<small>分</small></div><div class="l">使用满意度<br>（目标值，5分制）</div></div>
+    </div>
+    <div class="b-note">📌 当前真实沉淀（可核对）：<strong>5,843 条专业词条 · 76 个业务场景 · 13 个知识域 · 6 个数字员工</strong>　｜　来源：风声知识底座 v2.3，更新于 2026-10-15。<br>目标达成情况以实际运营数据为准，达成后同步更新到此区。</div>
+  </div>
+
+  <div class="foot">
+    风声 · 居住服务者的专业基础设施<br>
+    此页为首页改版结构原型，仅用于评审信息架构与视觉层级，不代表最终文案与线上实现。
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var tabs = document.querySelectorAll('#tabs .tab');
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      tabs.forEach(function(x){ x.classList.remove('on'); });
+      t.classList.add('on');
+      document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('on'); });
+      var target = document.getElementById('p-' + t.dataset.p);
+      if (target) target.classList.add('on');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+})();
+</script>
+</body>
+</html>

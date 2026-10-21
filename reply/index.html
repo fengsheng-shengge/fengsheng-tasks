@@ -17,14 +17,14 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"快回·客户解码器","url":"https://fengsheng.tech/reply/","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"description":"帮房产经纪人看到客户行为背后的真实原因，8大场景×道法术三层解码"}</script>
 <style>
 :root{
-  --bg:#f7f4ef;--bg2:#e8e4d9;--card:#fff;--card-h:#faf8f5;
-  --border:rgba(80,90,70,.09);--border-h:rgba(60,80,50,.2);
-  --p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--p-bg:rgba(61,90,62,.06);
-  --fire:#c46a3a;--fire-l:#d89060;--fire-bg:rgba(196,106,58,.06);
+  --bg:#f7f5f0;--bg2:#e6ede7;--card:#fff;--card-h:#faf8f5;
+  --border:rgba(26,61,36,.09);--border-h:rgba(26,61,36,.2);
+  --p:#1a3d24;--p-d:#12291a;--p-l:#6b8f70;--p-bg:rgba(26,61,36,.06);
+  --fire:#1a3d24;--fire-l:#12291a;--fire-bg:rgba(201,169,98,.06);
   --charcoal:#3a3a38;
   --dk:#1a1a1a;--tx:#555555;--ts:#7a8478;--td:#a8b0a6;
   --dao:#6d5a3e;--dao-bg:rgba(109,90,62,.08);
-  --fa:#3d5a3e;--fa-bg:rgba(61,90,62,.06);
+  --fa:#1a3d24;--fa-bg:rgba(26,61,36,.06);
   --shu:#c46a3a;--shu-bg:rgba(196,106,58,.06);
   --r:10px;--shadow:0 1px 4px rgba(30,42,31,.06);
 }
@@ -42,7 +42,7 @@ a{color:var(--fire);text-decoration:none}
 
 /* Hero */
 .hero{padding:36px 8% 24px;text-align:center;background:linear-gradient(180deg,var(--p-bg) 0%,transparent 100%)}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--p-d);background:var(--p-bg);border:1px solid rgba(61,90,62,.12);border-radius:16px;padding:4px 12px;margin-bottom:14px;letter-spacing:2px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--p-d);background:var(--p-bg);border:1px solid rgba(26,61,36,.12);border-radius:16px;padding:4px 12px;margin-bottom:14px;letter-spacing:2px}
 .hero-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--p-l);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .hero h1{font-size:28px;font-weight:800;color:var(--dk);letter-spacing:-.3px;line-height:1.3;margin-bottom:8px}
@@ -63,7 +63,7 @@ a{color:var(--fire);text-decoration:none}
 .section-title{font-size:16px;font-weight:800;color:var(--dk)}
 .scenes{padding:0 8%;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:28px}
 .scene-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 14px;cursor:pointer;transition:all .25s;position:relative;box-shadow:var(--shadow)}
-.scene-card:hover{border-color:var(--fire);box-shadow:0 2px 12px rgba(196,106,58,.1)}
+.scene-card:hover{border-color:var(--fire);box-shadow:0 2px 12px rgba(201,169,98,.1)}
 .scene-card:active{transform:scale(.97)}
 .scene-card.active{border-color:var(--fire);background:var(--fire-bg)}
 .scene-card .icon{font-size:24px;margin-bottom:6px}
@@ -113,7 +113,7 @@ a{color:var(--fire);text-decoration:none}
 .script-bubble .copy-btn.copied{color:var(--fa);border-color:var(--fa)}
 
 /* 分支 */
-.branch{margin-top:6px;padding:8px 10px;background:var(--p-bg);border-radius:6px;border:1px solid rgba(61,90,62,.1)}
+.branch{margin-top:6px;padding:8px 10px;background:var(--p-bg);border-radius:6px;border:1px solid rgba(26,61,36,.1)}
 .branch .branch-label{font-size:10px;color:var(--p);font-weight:700;margin-bottom:3px}
 .branch .branch-text{font-size:12px;color:var(--ts);line-height:1.6}
 
@@ -121,7 +121,7 @@ a{color:var(--fire);text-decoration:none}
 .bottom-cta{position:fixed;bottom:0;left:0;right:0;padding:10px 16px;background:rgba(247,244,239,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;gap:8px;z-index:50}
 .bottom-cta .btn{flex:1;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit}
 .bottom-cta .btn:active{transform:scale(.96)}
-.bottom-cta .btn.primary{background:var(--fire);color:#fff;box-shadow:0 3px 10px rgba(196,106,58,.3)}
+.bottom-cta .btn.primary{background:var(--fire);color:#fff;box-shadow:0 3px 10px rgba(201,169,98,.3)}
 .bottom-cta .btn.secondary{background:var(--card);color:var(--p-d);border:1px solid var(--border)}
 
 /* Toast */
@@ -132,7 +132,7 @@ a{color:var(--fire);text-decoration:none}
 .more-tools{padding:0 8% 24px}
 .tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tool-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 14px;transition:all .25s;text-decoration:none;display:block;box-shadow:var(--shadow)}
-.tool-card:hover{border-color:var(--p);box-shadow:0 2px 12px rgba(61,90,62,.1)}
+.tool-card:hover{border-color:var(--p);box-shadow:0 2px 12px rgba(26,61,36,.1)}
 .tool-card:active{transform:scale(.97)}
 .tool-icon{font-size:24px;margin-bottom:6px}
 .tool-name{font-size:14px;font-weight:700;color:var(--dk);margin-bottom:2px}
@@ -657,11 +657,11 @@ function track(action,label){
 }
 track('page_view','reply_index');
 </script>
-  <div style="max-width:640px;margin:0 auto;padding:16px 20px;background:rgba(196,106,58,.04);border-radius:8px;border:1px solid rgba(196,106,58,.12);font-size:11px;color:#888;line-height:1.7;text-align:center">
+  <div style="max-width:640px;margin:0 auto;padding:16px 20px;background:rgba(201,169,98,.04);border-radius:8px;border:1px solid rgba(201,169,98,.12);font-size:11px;color:#888;line-height:1.7;text-align:center">
     ⚠️ 免责声明：本工具提供的回复建议基于AI生成，仅供参考，不构成专业建议。用户应自行判断并承担使用结果的全部责任。
   </div>
 
-<div class="page-footer" style="text-align:center;padding:16px;border-top:1px solid rgba(80,90,70,.09);font-size:10px;color:#7a8478;line-height:1.8">🌬️ 风声 · 通过独立价值获得尊重<br>© 2026 fengsheng.tech · <a href="https://beian.miit.gov.cn/" target="_blank" style="color:inherit;text-decoration:none">京ICP备2026044043号</a></div>
+<div class="page-footer" style="text-align:center;padding:16px;border-top:1px solid rgba(26,61,36,.09);font-size:10px;color:#7a8478;line-height:1.8">🌬️ 风声 · 通过独立价值获得尊重<br>© 2026 fengsheng.tech · <a href="https://beian.miit.gov.cn/" target="_blank" style="color:inherit;text-decoration:none">京ICP备2026044043号</a></div>
 <script src="/tracker.js" async></script>
 </body>
 </html>

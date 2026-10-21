@@ -7,10 +7,10 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" async></script>
 <style>
-:root{--bg:#f7f4ef;--bg2:#e8e4d9;--card:#ffffff;--border:rgba(80,90,70,.09);
---p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--fire:#c46a3a;--fire-l:#d89060;
+:root{--bg:#f7f5f0;--bg2:#e6ede7;--card:#ffffff;--border:rgba(26,61,36,.09);
+--p:#1a3d24;--p-d:#12291a;--p-l:#6b8f70;--fire:#1a3d24;--fire-l:#6f5626;
 --dk:#1a1a1a;--tx:#555555;--ts:#7a8478;--r:8px;
---safe:#5e7e5c;--health:#6d8f55;--neat:#3d5a3e;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e}
+--safe:#3a6346;--health:#4c7352;--neat:#1a3d24;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e}
 *{margin:0;padding:0;box-sizing:border-box}
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;
@@ -35,7 +35,7 @@ cursor:pointer;border:none;transition:all .2s}
 .welcome-sub{font-size:18px;color:var(--ts);margin-bottom:32px}
 .welcome-desc{max-width:480px;text-align:center;margin-bottom:40px;line-height:1.8;color:var(--tx)}
 .welcome-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;
-color:var(--p-d);background:rgba(61,90,62,.06);border:1px solid rgba(61,90,62,.12);
+color:var(--p-d);background:rgba(26,61,36,.06);border:1px solid rgba(26,61,36,.12);
 border-radius:16px;padding:4px 14px;margin-bottom:20px;letter-spacing:2px}
 .welcome-meta{font-size:13px;color:var(--ts);margin-top:24px}
 
@@ -46,7 +46,7 @@ border-radius:16px;padding:4px 14px;margin-bottom:20px;letter-spacing:2px}
 .role-card{background:var(--card);border:2px solid var(--border);border-radius:12px;
 padding:20px 16px;cursor:pointer;transition:all .2s;text-align:center}
 .role-card:hover{border-color:var(--p-l);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.06)}
-.role-card.selected{border-color:var(--p);background:rgba(61,90,62,.04);box-shadow:0 0 0 3px rgba(61,90,62,.12)}
+.role-card.selected{border-color:var(--p);background:rgba(26,61,36,.04);box-shadow:0 0 0 3px rgba(26,61,36,.12)}
 .role-icon{font-size:28px;margin-bottom:8px}
 .role-name{font-size:14px;font-weight:600;color:var(--dk)}
 .role-tag{font-size:11px;color:var(--ts);margin-top:4px}
@@ -64,9 +64,9 @@ padding:3px 10px;border-radius:12px;margin-bottom:16px;letter-spacing:1px}
 .option-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
 .option-item{background:var(--card);border:2px solid var(--border);border-radius:10px;
 padding:14px 16px;cursor:pointer;transition:all .15s;font-size:14px;line-height:1.6;color:var(--tx)}
-.option-item:hover{border-color:var(--p-l);background:rgba(61,90,62,.02)}
-.option-item.selected{border-color:var(--p);background:rgba(61,90,62,.06);color:var(--dk);font-weight:500}
-.option-item.multi-selected{border-color:var(--p);background:rgba(61,90,62,.06)}
+.option-item:hover{border-color:var(--p-l);background:rgba(26,61,36,.02)}
+.option-item.selected{border-color:var(--p);background:rgba(26,61,36,.06);color:var(--dk);font-weight:500}
+.option-item.multi-selected{border-color:var(--p);background:rgba(26,61,36,.06)}
 .option-label{font-weight:700;color:var(--p);margin-right:8px}
 
 /* 报告 */
@@ -81,7 +81,7 @@ padding-left:12px;border-left:3px solid var(--p)}
 .report-score-big{font-size:64px;font-weight:800;color:var(--p);line-height:1}
 .report-score-label{font-size:14px;color:var(--ts);margin-top:4px}
 .report-verdict{font-size:16px;font-weight:600;color:var(--fire);margin:12px 0;line-height:1.6}
-.report-sentence{font-size:14px;color:var(--tx);line-height:1.8;background:rgba(196,106,58,.04);
+.report-sentence{font-size:14px;color:var(--tx);line-height:1.8;background:rgba(201,169,98,.04);
 border-left:3px solid var(--fire);padding:12px 16px;border-radius:0 8px 8px 0}
 
 /* 三层 */
@@ -144,17 +144,17 @@ border-radius:50%;animation:spin .8s linear infinite}
 }
 
 /* 游戏化+即时反馈 */
-.progress-bar-wrap{background:var(--bg2,#e8e4d9);border-radius:12px;height:8px;margin:8px 0 16px;overflow:hidden}
-.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--p,#3d5a3e),var(--fire,#c46a3a));border-radius:12px;transition:width .4s ease}
-.instant-feedback{position:fixed;top:20%;left:50%;transform:translateX(-50%);background:rgba(61,90,62,.95);color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;text-align:center;max-width:80%}
+.progress-bar-wrap{background:var(--bg2,#e6ede7);border-radius:12px;height:8px;margin:8px 0 16px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--p), var(--p-light));border-radius:12px;transition:width .4s ease}
+.instant-feedback{position:fixed;top:20%;left:50%;transform:translateX(-50%);background:rgba(26,61,36,.95);color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;text-align:center;max-width:80%}
 .instant-feedback.show{opacity:1}
-.achievement-popup{position:fixed;bottom:20%;left:50%;transform:translateX(-50%) scale(.8);background:linear-gradient(135deg,#3d5a3e,#5a8a4e);color:#fff;padding:16px 24px;border-radius:16px;font-size:13px;z-index:9999;opacity:0;transition:all .4s;pointer-events:none;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.achievement-popup{position:fixed;bottom:20%;left:50%;transform:translateX(-50%) scale(.8);background:linear-gradient(135deg,#1a3d24,#5a8a4e);color:#fff;padding:16px 24px;border-radius:16px;font-size:13px;z-index:9999;opacity:0;transition:all .4s;pointer-events:none;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.2)}
 .achievement-popup.show{opacity:1;transform:translateX(-50%) scale(1)}
 .achievement-popup .ach-icon{font-size:32px;margin-bottom:4px}
 .achievement-popup .ach-title{font-size:15px;font-weight:800}
 .achievement-popup .ach-desc{font-size:11px;opacity:.85;margin-top:2px}
 .question-counter{font-size:12px;color:var(--td,#888);text-align:center;margin-bottom:4px}
-.question-counter span{font-weight:800;color:var(--p,#3d5a3e)}
+.question-counter span{font-weight:800;color:var(--p,#1a3d24)}
 
 </style>
 <meta property="og:title" content="六维品质测评 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/assessment/"><meta name="twitter:card" content="summary_large_image"></head>
@@ -226,9 +226,9 @@ const ROLES = [
 ];
 
 const DIM_META = {
-  safe:{icon:'🔒',name:'安全',color:'#5e7e5c'},
-  health:{icon:'💚',name:'健康',color:'#6d8f55'},
-  neat:{icon:'🧹',name:'整洁',color:'#3d5a3e'},
+  safe:{icon:'🔒',name:'安全',color:'#3a6346'},
+  health:{icon:'💚',name:'健康',color:'#4c7352'},
+  neat:{icon:'🧹',name:'整洁',color:'#1a3d24'},
   warm:{icon:'🏠',name:'温暖',color:'#c46a3a'},
   beauty:{icon:'🎨',name:'美观',color:'#7e6a90'},
   cozy:{icon:'☕',name:'惬意',color:'#4e7e8e'}
@@ -243,7 +243,7 @@ const QUESTIONS = [
     scene:'客户说："6楼没电梯，我妈腿不好..."',
     text:'客户这句话，核心关切属于哪个维度？',
     dimLabel:'安全·共情·L1 听出来',
-    dimColor:'#5e7e5c',
+    dimColor:'#3a6346',
     multi:false,
     options:[
       {label:'A',text:'惬意——楼层高不方便',score:4},
@@ -258,7 +258,7 @@ const QUESTIONS = [
     scene:'同样一句"6楼没电梯"——对哪种客户影响最大？',
     text:'',
     dimLabel:'安全·共情·L2 掂出来',
-    dimColor:'#5e7e5c',
+    dimColor:'#3a6346',
     multi:false,
     options:[
       {label:'A',text:'30岁独居上班族',score:2},
@@ -273,7 +273,7 @@ const QUESTIONS = [
     scene:'客户反复问"产权清楚吗？有没有抵押？会不会被查封？"',
     text:'他为什么反复确认？这对他意味着什么？',
     dimLabel:'安全·共情·L2 掂出来',
-    dimColor:'#5e7e5c',
+    dimColor:'#3a6346',
     multi:false,
     options:[
       {label:'A',text:'他只是谨慎，不用太在意',score:2},
@@ -288,7 +288,7 @@ const QUESTIONS = [
     scene:'客户看了半天房，说"总觉得不太踏实"',
     text:'你怎么帮他明确不安的具体来源？',
     dimLabel:'安全·共情·L3 引出来',
-    dimColor:'#5e7e5c',
+    dimColor:'#3a6346',
     multi:false,
     options:[
       {label:'A',text:'"这小区挺安全的，有门禁有监控"',score:2},
@@ -303,7 +303,7 @@ const QUESTIONS = [
     scene:'客户说："这味儿闻着不舒服"',
     text:'这背后是哪个维度的关切？',
     dimLabel:'健康·共情·L1 听出来',
-    dimColor:'#6d8f55',
+    dimColor:'#4c7352',
     multi:false,
     options:[
       {label:'A',text:'整洁——房间不干净',score:4},
@@ -318,7 +318,7 @@ const QUESTIONS = [
     scene:'带看时客户提到"小孩刚3岁"，你带看的是新装修的房子',
     text:'客户没直说，但他心里在想什么？',
     dimLabel:'健康·共情·L2 掂出来',
-    dimColor:'#6d8f55',
+    dimColor:'#4c7352',
     multi:false,
     options:[
       {label:'A',text:'小孩喜欢什么样的房间',score:2},
@@ -333,7 +333,7 @@ const QUESTIONS = [
     scene:'客户说："厨房油渍这么厚...卫生间地漏反味"',
     text:'客户在表达什么维度的关切？',
     dimLabel:'整洁·共情·L1 听出来',
-    dimColor:'#3d5a3e',
+    dimColor:'#1a3d24',
     multi:false,
     options:[
       {label:'A',text:'健康——油渍发霉有害',score:7},
@@ -348,7 +348,7 @@ const QUESTIONS = [
     scene:'客户看了几套房，说"总觉得这些房子住着不够干净"，但又说不出来具体哪不干净',
     text:'你怎么帮他明确？',
     dimLabel:'整洁·共情·L3 引出来',
-    dimColor:'#3d5a3e',
+    dimColor:'#1a3d24',
     multi:false,
     options:[
       {label:'A',text:'"老小区都这样，您重新装修就好了"',score:2},
@@ -484,7 +484,7 @@ const QUESTIONS = [
     scene:'客户问："这房子有没有被查封？有没有抵押？"',
     text:'你怎么帮客户确认？',
     dimLabel:'安全·决策',
-    dimColor:'#5e7e5c',
+    dimColor:'#3a6346',
     multi:false,
     options:[
       {label:'A',text:'"房东说没问题，您放心"',score:2},
@@ -499,7 +499,7 @@ const QUESTIONS = [
     scene:'带看时发现消防通道被杂物堵死，客户没注意到',
     text:'你怎么处理？',
     dimLabel:'安全·决策',
-    dimColor:'#5e7e5c',
+    dimColor:'#3a6346',
     multi:false,
     options:[
       {label:'A',text:'不说，客户没问就不提',score:2},
@@ -514,7 +514,7 @@ const QUESTIONS = [
     scene:'带看时，客户指着卫生间墙角发霉的痕迹说"这能住吗"',
     text:'你怎么回应？',
     dimLabel:'健康·决策',
-    dimColor:'#6d8f55',
+    dimColor:'#4c7352',
     multi:false,
     options:[
       {label:'A',text:'"老小区都这样，擦擦就行了"',score:2},
@@ -529,7 +529,7 @@ const QUESTIONS = [
     scene:'客户问："临街的房子会不会太吵？"',
     text:'你怎么帮他判断？',
     dimLabel:'健康·决策',
-    dimColor:'#6d8f55',
+    dimColor:'#4c7352',
     multi:false,
     options:[
       {label:'A',text:'"装个双层玻璃就好了"',score:4},
@@ -544,7 +544,7 @@ const QUESTIONS = [
     scene:'客户问："这房子新装修的，甲醛超不超标？"',
     text:'你怎么回答？',
     dimLabel:'健康·决策',
-    dimColor:'#6d8f55',
+    dimColor:'#4c7352',
     multi:false,
     options:[
       {label:'A',text:'"装修完都这样，通通风就好了"',score:2},
@@ -559,7 +559,7 @@ const QUESTIONS = [
     scene:'客户说："卫生间地漏反味，受不了"',
     text:'你怎么帮他解决？',
     dimLabel:'整洁·决策',
-    dimColor:'#3d5a3e',
+    dimColor:'#1a3d24',
     multi:false,
     options:[
       {label:'A',text:'"换个防臭地漏就行，几十块钱"',score:7},
@@ -574,7 +574,7 @@ const QUESTIONS = [
     scene:'客户说："楼道灯坏了好几盏没人修，电梯里脏得下不去脚"',
     text:'你怎么评估和回应？',
     dimLabel:'整洁·决策',
-    dimColor:'#3d5a3e',
+    dimColor:'#1a3d24',
     multi:false,
     options:[
       {label:'A',text:'"跟物业反映一下"',score:4},
@@ -1043,9 +1043,9 @@ function generateReport() {
         shape: 'polygon',
         splitNumber: 4,
         axisName: {color: '#555', fontSize: 12},
-        splitLine: {lineStyle: {color: '#e8e4d9'}},
-        splitArea: {areaStyle: {color: ['rgba(61,90,62,.02)','rgba(61,90,62,.04)']}},
-        axisLine: {lineStyle: {color: '#e8e4d9'}}
+        splitLine: {lineStyle: {color: '#e6ede7'}},
+        splitArea: {areaStyle: {color: ['rgba(26,61,36,.02)','rgba(26,61,36,.04)']}},
+        axisLine: {lineStyle: {color: '#e6ede7'}}
       },
       series: [{
         type: 'radar',
@@ -1053,15 +1053,15 @@ function generateReport() {
           {
             value: dims.map(d => empathyScores[d]),
             name: '共情（你懂不懂客户）',
-            lineStyle: {color: '#3d5a3e', width: 2},
-            areaStyle: {color: 'rgba(61,90,62,.15)'},
-            itemStyle: {color: '#3d5a3e'}
+            lineStyle: {color: '#1a3d24', width: 2},
+            areaStyle: {color: 'rgba(26,61,36,.15)'},
+            itemStyle: {color: '#1a3d24'}
           },
           {
             value: dims.map(d => decisionScores[d]),
             name: '决策（你帮不帮得了客户）',
             lineStyle: {color: '#c46a3a', width: 2},
-            areaStyle: {color: 'rgba(196,106,58,.12)'},
+            areaStyle: {color: 'rgba(201,169,98,.12)'},
             itemStyle: {color: '#c46a3a'}
           }
         ]
@@ -1253,7 +1253,7 @@ window.addEventListener("beforeunload", function() {
 })();
 </script>
 
-      <div style="margin-top:12px;padding:12px;background:rgba(196,106,58,.04);border-radius:6px;border:1px solid rgba(196,106,58,.12);font-size:11px;color:#888;line-height:1.7;text-align:center">
+      <div style="margin-top:12px;padding:12px;background:rgba(201,169,98,.04);border-radius:6px;border:1px solid rgba(201,169,98,.12);font-size:11px;color:#888;line-height:1.7;text-align:center">
         ⚠️ 免责声明：本测评结果基于算法生成，可能存在偏差，仅供参考。用户应自行判断并承担使用结果的全部责任。
       </div>
 <div class="page-footer" style="text-align:center;padding:20px;border-top:1px solid #e0e0e0;margin-top:30px;font-size:12px;color:#999">
@@ -1269,7 +1269,7 @@ function sendFeedback(type){
   track("feedback",{feedback:type});
   document.querySelectorAll(".feedback-btn").forEach(function(b){b.classList.remove("active")});
   event.target.classList.add("active");
-  event.target.style.background="#3d5a3e";event.target.style.color="#fff";event.target.style.borderColor="#3d5a3e";
+  event.target.style.background="#1a3d24";event.target.style.color="#fff";event.target.style.borderColor="#1a3d24";
   alert(type==="👍"?"感谢认可！💪":"收到！我们会持续改进 🙏");
 }
 </script>

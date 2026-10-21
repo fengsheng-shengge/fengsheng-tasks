@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>风声网站优化路线图 PRD v1.0</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f3ee;
+    color: #333;
+    line-height: 1.7;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 32px; }
+
+  h1 { font-size: 28px; color: #2d5a3d; margin-bottom: 8px; }
+  .subtitle { color: #888; font-size: 14px; margin-bottom: 40px; }
+
+  h2 {
+    font-size: 22px;
+    color: #222;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #2d5a3d;
+  }
+  h3 { font-size: 17px; color: #2d5a3d; margin: 24px 0 12px; }
+
+  .section-desc {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #2d5a3d;
+    font-size: 14px;
+    color: #555;
+  }
+
+  /* 需求卡片 */
+  .req-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 16px;
+    border: 1px solid #eae7de;
+  }
+  .req-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .req-id {
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    background: #2d5a3d;
+    padding: 3px 10px;
+    border-radius: 6px;
+    margin-right: 10px;
+  }
+  .req-title { font-size: 17px; font-weight: 600; color: #222; }
+  .req-meta {
+    font-size: 12px;
+    color: #888;
+    display: flex;
+    gap: 16px;
+  }
+  .req-meta span { white-space: nowrap; }
+  .priority {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .p0 { background: #fde8e8; color: #c0392b; }
+  .p1 { background: #fef3e2; color: #e67e22; }
+  .p2 { background: #e8f0e9; color: #2d5a3d; }
+
+  .req-body { font-size: 14px; color: #555; }
+  .req-body p { margin-bottom: 8px; }
+  .req-body strong { color: #333; }
+
+  .acceptance {
+    background: #f9f8f4;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 13px;
+  }
+  .acceptance-title {
+    font-weight: 600;
+    color: #2d5a3d;
+    margin-bottom: 6px;
+  }
+  .acceptance ul { margin-left: 20px; }
+  .acceptance li { margin-bottom: 4px; color: #555; }
+
+  /* 路线图总览表 */
+  .timeline-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px 0;
+    font-size: 13px;
+  }
+  .timeline-table th {
+    background: #2d5a3d;
+    color: #fff;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 500;
+  }
+  .timeline-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0ede5;
+  }
+  .timeline-table tr:last-child td { border-bottom: none; }
+
+  /* 概览卡片 */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .overview-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border-top: 4px solid #2d5a3d;
+  }
+  .overview-card.p0-card { border-top-color: #c0392b; }
+  .overview-card.p1-card { border-top-color: #e67e22; }
+  .overview-card.p2-card { border-top-color: #2d5a3d; }
+  .overview-num { font-size: 28px; font-weight: 700; color: #222; }
+  .overview-label { font-size: 13px; color: #888; margin-top: 4px; }
+  .overview-time { font-size: 12px; color: #aaa; margin-top: 8px; }
+
+  .note-box {
+    background: #fff8e6;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 24px 0;
+    font-size: 13px;
+    color: #856404;
+  }
+  .note-box strong { color: #664d03; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>风声网站优化路线图 PRD</h1>
+  <div class="subtitle">版本 v1.0 · 2026-10-20 · 基于全站40页面盘点 + 架构师/资本双视角分析</div>
+
+  <!-- 一、概述 -->
+  <h2>一、项目概述</h2>
+
+  <div class="section-desc">
+    <strong>背景：</strong>风声·居住决策底座当前已具备扎实的知识底座（5843词条/76场景/13知识域）和成熟的视觉设计质感，但存在"信息架构平铺化、转化路径断裂、知识与工具两张皮"三大结构性问题。<br><br>
+    <strong>目标：</strong>用三个阶段的迭代，把站点从"工具罗列型知识库"升级为"任务驱动型、有信任证据、能产生付费闭环的专业服务平台"。<br><br>
+    <strong>范围：</strong>首页重构、清理占位页、信任资产建设、转化路径打通、用户体系、知识→决策闭环。
+  </div>
+
+  <!-- 总览 -->
+  <h3>三阶段总览</h3>
+  <div class="overview-grid">
+    <div class="overview-card p0-card">
+      <div class="overview-num">P0 · 止血</div>
+      <div class="overview-label">架构严谨性修复</div>
+      <div class="overview-time">1-3 天 · 立即可做</div>
+    </div>
+    <div class="overview-card p1-card">
+      <div class="overview-num">P1 · 建信任</div>
+      <div class="overview-label">转化闭环起步</div>
+      <div class="overview-time">1-2 周 · 本周启动</div>
+    </div>
+    <div class="overview-card p2-card">
+      <div class="overview-num">P2 · 打穿闭环</div>
+      <div class="overview-label">知识→决策生成</div>
+      <div class="overview-time">1-3 月 · 战略投入</div>
+    </div>
+  </div>
+
+  <!-- 二、P0 止血项 -->
+  <h2>二、P0 · 止血项（1-3天）</h2>
+  <div class="section-desc">
+    目标：消除用户踩空页面的体验裂痕，把首页从"工具超市"改成"任务导航"。这阶段不做新功能，只做结构修复——但对信任的影响立竿见影。
+  </div>
+
+  <!-- P0-01 -->
+  <div class="req-card">
+    <div class="req-header">
+      <div>
+        <span class="req-id">P0-01</span>
+        <span class="req-title">清理"建设中"占位页与重复页面</span>
+      </div>
+      <div class="req-meta">
+        <span class="priority p0">P0</span>
+        <span>预估：0.5天</span>
+      </div>
+    </div>
+    <div class="req-body">
+      <p><strong>问题（2026-10-20 全站实测复核）：</strong>此前盘点的 about/terms/privacy 占位页、根级 .html 重复页、s1-report 无 title 均已完成收敛，不再是问题。当前真实待修的是<strong>路由冲突</strong>：<code>_redirects</code> 仍把 <code>/agent-assessment</code> 200 改写到 <code>/assessment/</code>，导致内部「五把尺子考核」URL 实际显示公开能力测评页；另有 <code>_worker.js</code> 与 <code>_redirects</code> 双份重定向规则（其中 <code>/assessment.html → /quality-test/</code> 语义错指），以及 5 个"测评"页命名互串、<code>/decode/*</code> 与 <code>/dict/*</code> 别名重写指错。详见《P0-01+P0-02 细化设计》。</p>
+      <p><strong>动作：</strong></p>
+      <p>① 修路由冲突：删除 <code>_redirects</code> 中 <code>/agent-assessment → /assessment/</code> 两条 200 改写，交回目录式路由；<br>
+      ② 重定向收敛为单一事实源，<code>/assessment.html</code> 改指 <code>/assessment/</code>；<br>
+      ③ 统一"测评"命名（<code>/care-test/</code> 一律称"关怀测评"，"品质测评"专属 <code>/quality-test/</code>）；<br>
+      ④ 修正别名重写 <code>/decode/* → /decoder/</code>、<code>/dict/* → /dictionary/</code>；<br>
+      ⑤ 清理卡片级占位：三处"居住服务业务字典·即将上线"统一成一个口径。</p>
+    </div>
+    <div class="acceptance">
+      <div class="acceptance-title">✅ 验收标准</div>
+      <ul>
+        <li><code>curl -I /agent-assessment/</code> 返回内部「五把尺子考核」页，不再是公开能力测评页</li>
+        <li><code>curl -I /assessment.html</code> 返回 301 → <code>/assessment/</code></li>
+        <li>全站正文 grep「建设中」为 0；「即将上线」仅出现在明确的对外路线图处且带说明</li>
+        <li>首页「关怀测评」标签与 <code>/care-test/</code> 页标题一致，"品质测评"不再同时指两个页面</li>
+        <li><code>/decode/*</code>、<code>/dict/*</code> 别名与实际页面同源</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- P0-02 -->
+  <div class="req-card">
+    <div class="req-header">
+      <div>
+        <span class="req-id">P0-02</span>
+        <span class="req-title">首页信息架构重构：从工具宫格→任务路径</span>
+      </div>
+      <div class="req-meta">
+        <span class="priority p0">P0</span>
+        <span>预估：2天</span>
+      </div>
+    </div>
+    <div class="req-body">
+      <p><strong>问题（2026-10-20 实测复核）：</strong>首页已具备角色 Tab 与按任务分组的工具区，三 Tab 内容确实不同；真正的问题是<strong>层级缺失</strong>——每个角色 5-6 张场景卡 + 12 项工具卡片尺寸权重几乎相同，没有黄金焦点，用户仍需自己判断"先点哪个"。</p>
+      <p><strong>动作：</strong>按配套的《首页改版原型v1》实施——</p>
+      <p>① 首屏只放<strong>1个最高频主任务大卡</strong>（接到客户→策展引擎），用绿色边框+大尺寸；<br>
+      ② 下方并排<strong>2个次任务卡</strong>（提升专业→知识库 / 回复客户→AI对话）；<br>
+      ③ 完整工具区收到底部，改为次要视觉层级（默认折叠）；<br>
+      ④ 三个角色Tab切换后，主/次任务卡同步替换（沿用现有 switchRole，本次只改层级、不改内容来源）。</p>
+    </div>
+    <div class="acceptance">
+      <div class="acceptance-title">✅ 验收标准</div>
+      <ul>
+        <li>首屏（滚动前）视线落点在主任务大卡上，不再是12个等大宫格</li>
+        <li>经纪人/管理者/新用户三个Tab切换后，主标题、主任务卡完全不同</li>
+        <li>完整工具列表仍可从首页找到，但视觉权重明显降低</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- P0-03 -->
+  <div class="req-card">
+    <div class="req-header">
+      <div>
+        <span class="req-id">P0-03</span>
+        <span class="req-title">首屏视觉层级拉开：数据区换血</span>
+      </div>
+      <div class="req-meta">
+        <span class="priority p0">P0</span>
+        <span>预估：0.5天</span>
+      </div>
+    </div>
+    <div class="req-body">
+      <p><strong>问题：</strong>现有数据区"5843词条/76场景/13知识域/6数字员工"全是自证规模数字，用户感知不到"这对我有什么用"。</p>
+      <p><strong>动作：</strong>把数据区拆成"真实现状 + 明确目标"两层，<strong>不编造结果数据</strong>：</p>
+      <p><strong>① 真实现状（可核对）</strong>：保留知识底座的真实存量——5,843 条专业词条 · 76 个业务场景 · 13 个知识域 · 6 个数字员工，标注来源与更新日期（来源：风声知识底座 v2.3，更新于 2026-10-15）；<br>
+      <strong>② 结果目标（明确标注为"目标"）</strong>：累计生成客户报告（上线 12 个月目标 1,000+ 份）· 服务居住服务者（目标 500+ 位）· 方案采纳率（目标 ≥80%）· 使用满意度（目标 ≥4.8 分）；<br>
+      <strong>③ 23 年行业方法论沉淀</strong>（创始人背书，真实可核对）；<br>
+      <strong>④ 补一句"目标达成后同步更新"</strong>，避免把目标误读为实绩。</p>
+    </div>
+    <div class="acceptance">
+      <div class="acceptance-title">✅ 验收标准</div>
+      <ul>
+        <li>数据区至少2项是"结果类指标"（不是规模类），且<strong>全部标注为"目标"并写明目标周期</strong></li>
+        <li>真实存量数字（词条/场景/知识域）保留，标注口径来源与更新日期，避免"自说自话"</li>
+        <li><strong>无真实结果数据时不得编造</strong>：不得用虚构数字冒充实绩，结果类一律以"目标"呈现</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 三、P1 信任与转化 -->
+  <h2>三、P1 · 信任与转化层（1-2周）</h2>
+  <div class="section-desc">
+    目标：让用户从"觉得不错"走到"愿意试→愿意留→愿意付费"。这阶段是商业闭环的起步，也是资本看"能不能独立存活"的关键证据。
+  </div>
+
+  <!-- P1-01 -->
+  <div class="req-card">
+    <div class="req-header">
+      <div>
+        <span class="req-id">P1-01</span>
+        <span class="req-title">首页新增"信任证据区"</span>
+      </div>
+      <div class="req-meta">
+        <span class="priority p1">P1</span>
+        <span>预估：2天</span>
+      </div>
+    </div>
+    <div class="req-body">
+      <p><strong>问题：</strong>一个给居住服务者的专业平台，首页没有任何"凭什么信你"的第三方证据。</p>
+      <p><strong>动作：</strong>在首页数据区下方，新增一个横向滚动的证据区：</p>
+      <p>① 2-3条真实服务者证言（姓名/城市/从业年限 + 一句话评价）<br>
+      ② 1-2个成功案例摘要（用了风声后，效率提升X% / 成交周期缩短X天）<br>
+      ③ 创始人背书区（23年行业经历，照片+一句话定位）<br>
+      ④ 如有行业合作/媒体报道，放logo墙</p>
+    </div>
+    <div class="acceptance">
+      <div class="acceptance-title">✅ 验收标准</div>
+      <ul>
+        <li>首页至少出现2条带姓名和城市的真实用户证言</li>
+        <li>有1个可量化的"用了之后怎么样"的案例</li>
+        <li>创始人背书区不超过3行字，有照片（或专业头像）</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- P1-02 -->
+  <div class="req-card">
+    <div class="req-header">
+      <div>
+        <span class="req-id">P1-02</span>
+        <span class="req-title">打通 partner→purchase→survey 转化路径</span>
+      </div>
+      <div class="req-meta">
+        <span class="priority p1">P1</span>
+        <span>预估：3天</span>
+      </div>
+    </div>
+    <div class="req-body">
+      <p><strong>问题：</strong>合作页、咨询页、调研页已存在，但首页和知识库页没有任何转化引导。0→1的商业闭环在页面层是断的。</p>
+      <p><strong>动作：</strong></p>
+      <p>① 在知识库页面底部，埋一个"深度咨询/定制化方案"的CTA卡片<br>
+      ② 策展引擎生成完报告后，引导"预约1对1解读"（purchase页）<br>
+      ③ 新用户3分钟体验结束后，引导"填写调研问卷，获取完整报告"（survey页）<br>
+      ④ 每个转化入口都有明确的"用户能得到什么"，不是干巴巴的"联系我们"</p>
+    </div>
+    <div class="acceptance">
+      <div class="acceptance-title">✅ 验收标准</div>
+      <ul>
+        <li>知识库页底部有转化CTA，点击率可统计</li>
+        <li>策展引擎结果页有下一步引导（不是看完就走）</li>
+        <li>三个转化页（partner/purchase/survey）的内容不是"建设中"，有实质信息</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- P1-03 -->
+  <div class="req-card">
+    <div class="req-header">
+      <div>
+        <span class="req-id">P1-03</span>
+        <span class="req-title">轻量用户体系：登录 + 收藏/历史云端同步</span>
+      </div>
+      <div class="req-meta">
+        <span class="priority p1">P1</span>
+        <span>预估：4天</span>
+      </div>
+    </div>
+    <div class="req-body">
+      <p><strong>问题：</strong>目前收藏/历史/测评结果都存在浏览器本地，换设备就丢。这对工具型产品是硬伤——用户数据是留存的根基，也是未来免费/付费分层的前提。</p>
+      <p><strong>动作：</strong></p>
+      <p>① 接入微信扫码登录（最轻量，B端用户无感知）<br>
+      ② 收藏的词条、历史生成的报告、测评结果，全部云端保存<br>
+      ③ 登录后，首页根据用户使用历史，推荐"你常用的3个工具"<br>
+      ④ 暂不做付费墙，先把用户体系建起来</p>
+    </div>
+    <div class="acceptance">
+      <div class="acceptance-title">✅ 验收标准</div>
+      <ul>
+        <li>微信扫码可登录，登录后收藏/历史在另一台设备上能看到</li>
+        <li>未登录状态下，核心功能（查词条、生成报告）仍可用，但结果不保存</li>
+        <li>有简单的用户中心页面（查看历史、管理收藏）</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- P1-04 -->
+  <div class="req-card">
+    <div class="req-header">
+      <div>
+        <span class="req-id">P1-04</span>
+        <span class="req-title">SEO title 与 meta description 重写</span>
+      </div>
+      <div class="req-meta">
+        <span class="priority p1">P1</span>
+        <span>预估：1天</span>
+      </div>
+    </div>
+    <div class="req-body">
+      <p><strong>问题：</strong>当前title是"风声·居住决策底座 | 通过独立价值赢得尊严"——这是品牌slogan，不是用户搜索词。经纪人不会搜"居住决策底座"，他们搜"二手房话术""买房注意事项""房产知识"。</p>
+      <p><strong>动作：</strong></p>
+      <p>① 首页title改为："房产经纪人知识库_专业话术与客户服务工具 - 风声"<br>
+      ② 每个功能页的title，用用户搜索词命名（如"二手房客户跟进话术_买房全周期报告生成 - 风声"）<br>
+      ③ 每页补meta description，包含核心关键词</p>
+    </div>
+    <div class="acceptance">
+      <div class="acceptance-title">✅ 验收标准</div>
+      <ul>
+        <li>首页title包含至少1个用户高频搜索词</li>
+        <li>抽查5个核心功能页，title不是品牌slogan，而是功能描述</li>
+        <li>Google/百度站长平台可收录（提交sitemap）</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 四、P2 知识→决策闭环 -->
+  <h2>四、P2 · 知识→决策闭环（1-3月）</h2>
+  <div class="section-desc">
+    目标：从"内容平台"升维到"能力工具"。这是资本真正愿意买单的那一步——不是5843条词条，而是"输入客户信息→输出可直接用的方案"的生成闭环。
+  </div>
+
+  <!-- P2-01 -->
+  <div class="req-card">
+    <div class="req-header">
+      <div>
+        <span class="req-id">P2-01</span>
+        <span class="req-title">策展引擎打穿 L2：从"客户信息"到"全周期报告"</span>
+      </div>
+      <div class="req-meta">
+        <span class="priority p2">P2</span>
+        <span>预估：2周</span>
+      </div>
+    </div>
+    <div class="req-body">
+      <p><strong>问题：</strong>策展引擎已有雏形，但和知识库是"两张皮"——没有调用5843条词条的知识积累，生成质量受限。</p>
+      <p><strong>动作：</strong></p>
+      <p>① 策展引擎的生成逻辑，接入知识库检索（RAG）——不是套模板，而是基于真实行业知识生成<br>
+      ② 报告结构标准化：客户画像 → 需求分析 → 匹配建议 → 跟进策略 → 话术建议<br>
+      ③ 生成完报告后，每个段落都标注"参考了哪个知识域/词条"（可溯源，增强信任）<br>
+      ④ 经纪人可以对报告打分（采纳/不采纳），数据反哺优化生成质量</p>
+    </div>
+    <div class="acceptance">
+      <div class="acceptance-title">✅ 验收标准</div>
+      <ul>
+        <li>输入客户基本信息（预算/区域/需求），30秒内生成一份结构完整的全周期报告</li>
+        <li>报告不是通用模板，能根据不同客户类型（首套/改善/投资）差异化生成</li>
+        <li>报告每章可溯源到知识库的具体内容</li>
+        <li>有"采纳率"统计，采纳率作为产品优化的核心指标</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- P2-02 -->
+  <div class="req-card">
+    <div class="req-header">
+      <div>
+        <span class="req-id">P2-02</span>
+        <span class="req-title">数字员工从"静态展示"到"真跑起来"（L3）</span>
+      </div>
+      <div class="req-meta">
+        <span class="priority p2">P2</span>
+        <span>预估：1月</span>
+      </div>
+    </div>
+    <div class="req-body">
+      <p><strong>问题：</strong>6个数字员工目前只是列出来，没有实际跑业务。资本真正买单的是L3——持续跟进客户的陪伴式数字员工，而不是L1的一次性查询工具。</p>
+      <p><strong>动作：</strong></p>
+      <p>① 先选1个数字员工做MVP："话术员Agent"——客户在微信/IM里问了问题，Agent自动基于知识库生成专业回复建议，经纪人一键发送<br>
+      ② 再做"策展员Agent"——客户档案更新后，自动生成跟进建议/阶段报告<br>
+      ③ 管理者后台能看到每个数字员工的运行数据（处理了多少任务、采纳率多少）<br>
+      ④ 这是订阅制付费的核心钩子——"数字员工替你干活"比"知识库查询"值钱10倍</p>
+    </div>
+    <div class="acceptance">
+      <div class="acceptance-title">✅ 验收标准</div>
+      <ul>
+        <li>至少1个数字员工能端到端跑通（从接收任务→生成结果→经纪人采纳）</li>
+        <li>管理者后台能看到数字员工的运行数据看板</li>
+        <li>有明确的"免费额度/付费升级"边界（如：每月免费生成3份报告，超出付费）</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- P2-03 -->
+  <div class="req-card">
+    <div class="req-header">
+      <div>
+        <span class="req-id">P2-03</span>
+        <span class="req-title">数据飞轮：用户画像→精准推荐→越用越懂你</span>
+      </div>
+      <div class="req-meta">
+        <span class="priority p2">P2</span>
+        <span>预估：1月</span>
+      </div>
+    </div>
+    <div class="req-body">
+      <p><strong>问题：</strong>没有用户体系，就没有"越用越懂你"，资本最看重的复购/留存逻辑就不存在。</p>
+      <p><strong>动作：</strong></p>
+      <p>① 基于用户的使用行为（常查的词条、常生成的报告类型、常服务的客户类型），建立用户画像<br>
+      ② 首页个性化推荐："你常遇到投资型客户，推荐你看这3个场景的话术"<br>
+      ③ 生成的报告/回复，根据用户历史偏好自动调整风格（如：有的经纪人喜欢简洁，有的喜欢详细）<br>
+      ④ 这是"留存护城河"——用得越久，迁移成本越高</p>
+    </div>
+    <div class="acceptance">
+      <div class="acceptance-title">✅ 验收标准</div>
+      <ul>
+        <li>登录用户的首页，推荐内容与未登录用户不同（基于行为数据）</li>
+        <li>有"你的常用工具/最近使用"区域，减少找工具的时间</li>
+        <li>次月留存率可统计（这是核心增长指标）</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 五、排期总览 -->
+  <h2>五、排期总览</h2>
+
+  <table class="timeline-table">
+    <thead>
+      <tr>
+        <th>阶段</th>
+        <th>需求</th>
+        <th>预估工时</th>
+        <th>依赖</th>
+        <th>核心价值</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td rowspan="3"><strong>P0 · 止血</strong><br>第1周</td>
+        <td>P0-01 清理占位页</td>
+        <td>0.5天</td>
+        <td>无</td>
+        <td>信任底线</td>
+      </tr>
+      <tr>
+        <td>P0-02 首页重构</td>
+        <td>2天</td>
+        <td>无</td>
+        <td>信息架构</td>
+      </tr>
+      <tr>
+        <td>P0-03 数据区换血</td>
+        <td>0.5天</td>
+        <td>P0-02</td>
+        <td>信任感知</td>
+      </tr>
+      <tr>
+        <td rowspan="4"><strong>P1 · 建信任</strong><br>第2-3周</td>
+        <td>P1-01 信任证据区</td>
+        <td>2天</td>
+        <td>P0-02</td>
+        <td>转化前提</td>
+      </tr>
+      <tr>
+        <td>P1-02 转化路径打通</td>
+        <td>3天</td>
+        <td>P1-01</td>
+        <td>商业闭环</td>
+      </tr>
+      <tr>
+        <td>P1-03 轻量用户体系</td>
+        <td>4天</td>
+        <td>无</td>
+        <td>留存根基</td>
+      </tr>
+      <tr>
+        <td>P1-04 SEO重写</td>
+        <td>1天</td>
+        <td>无</td>
+        <td>自然流量</td>
+      </tr>
+      <tr>
+        <td rowspan="3"><strong>P2 · 打穿闭环</strong><br>第2-4月</td>
+        <td>P2-01 策展引擎L2</td>
+        <td>2周</td>
+        <td>知识库成熟</td>
+        <td>核心价值</td>
+      </tr>
+      <tr>
+        <td>P2-02 数字员工L3</td>
+        <td>1月</td>
+        <td>P2-01 + 用户体系</td>
+        <td>订阅付费</td>
+      </tr>
+      <tr>
+        <td>P2-03 数据飞轮</td>
+        <td>1月</td>
+        <td>P1-03 + P2-02</td>
+        <td>留存护城河</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 关键指标 -->
+  <h2>六、关键成功指标（北极星）</h2>
+
+  <div class="section-desc">
+    <strong>P0 阶段（第1周末）：</strong><br>
+    - 首页跳出率降低（因为用户知道该点哪了）<br>
+    - 无占位页，所有页面有实质内容<br><br>
+    <strong>P1 阶段（第3周末）：</strong><br>
+    - 注册用户数（冷启动种子用户）<br>
+    - 策展引擎生成报告数 / 采纳率<br>
+    - 转化CTA点击率（至少有流量进purchase/survey页）<br><br>
+    <strong>P2 阶段（第4月末）：</strong><br>
+    - <strong>北极星指标：付费用户数 / 月度经常性收入（MRR）</strong><br>
+    - 次月留存率（数字员工用得越久，留存越高）<br>
+    - 报告采纳率（生成质量的核心指标）
+  </div>
+
+  <div class="note-box">
+    <strong>💡 给创始人的一句话建议：</strong><br>
+    P0和P1可以马上启动，1-3周内就能看到效果。P2是战略投入，但也是真正构建壁垒的地方——不要急于求成，先把策展引擎的L2跑通，验证"知识→报告"的生成质量，再投入做数字员工L3。节奏上，第1月止血+建信任，第2月打穿L2，第3月启动L3。
+  </div>
+
+</div>
+
+</body>
+</html>

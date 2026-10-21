@@ -1,0 +1,680 @@
+<!--
+===============================================================================
+  风声·聚满匠星云 首页 站内升级版 v1 · 2026-10-21
+  给小扣子的开发基准文件
+
+  说明：
+  1. 本文件是 v1.1 参考实现，含全部实际改动
+  2. 小扣子的任务：对照本文件，把改动迁移到 fengsheng-tasks/index.html
+  3. 所有色值/间距/圆角在 :root 变量里，直接改变量即可
+  4. 禁止改动：全局导航 fs-nav.js、领域 Tab 切换逻辑、角色三切换、所有真实链接、今日知识/AI对话/反馈
+
+  上位依据：
+  - PRD v1.1：/风声管理/优化路线图PRD_v1.0_20261020.html
+  - 产品设计 v1.1：.uploads/092b1f83-3aba-44f0-be0f-8d8469479bec__!DOCTYPE....txt
+  - 开发对接文档：fengsheng-tasks/docs/首页聚满匠星云升级_开发对接文档_v1_给小扣子_20261021.md
+===============================================================================
+-->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>风声·聚满匠星云 | 服务者工作台</title>
+<!-- 
+  开发说明：
+  1. 本文件是服务者工作台首页的完整开发版
+  2. 所有色值、间距、圆角都定义在 :root CSS变量里，直接改这里就能调主题
+  3. 组件全部用语义化class命名，开发可以直接拆成Vue/React组件
+  4. 所有交互状态（hover/active/disabled）都已实现
+-->
+<style>
+  /* ========== VI设计系统 - CSS变量 ========== */
+  :root {
+    /* 主色 - 深墨绿（真人动作色） */
+    --primary: #1a3d24;
+    --primary-light: #2d5a3d;
+    --primary-dark: #12291a;
+    --primary-bg: #e8f0e9;
+
+    /* 点缀色 - 匠星金（AI产出色） */
+    --gold: #c9a962;
+    --gold-light: #d4b876;
+    --gold-bg: #faf5ea;
+
+    /* 中性色 */
+    --ink: #1a1a1a;
+    --body: #555;
+    --muted: #999;
+    --line: #e8e4da;
+    --bg: #f7f5f0;
+    --card: #ffffff;
+
+    /* 功能色 */
+    --danger: #c0392b;
+    --danger-bg: #fdecea;
+    --warning: #e67e22;
+    --warning-bg: #fef3e2;
+    --success: #27ae60;
+    --success-bg: #e8f5e9;
+
+    /* 间距系统 - 4px基准 */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+
+    /* 圆角 */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  /* ========== 顶部导航 ========== */
+  .top-nav {
+    background: var(--bg);
+    padding: var(--space-md) var(--space-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .logo-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-left: var(--space-xs);
+    font-weight: 400;
+  }
+  .user-area {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    font-size: 14px;
+    color: var(--body);
+  }
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    background: var(--gold-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  /* ========== 领域Tab通栏 ========== */
+  .domain-tabs {
+    background: var(--primary);
+    padding: 0 var(--space-xl);
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    height: 56px;
+  }
+  .domain-tab {
+    color: rgba(255,255,255,0.6);
+    font-size: 15px;
+    cursor: pointer;
+    padding: 16px 0;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+  .domain-tab:hover {
+    color: rgba(255,255,255,0.85);
+  }
+  .domain-tab.active {
+    color: #fff;
+    border-bottom-color: var(--gold);
+    font-weight: 600;
+  }
+  .domain-tag {
+    font-size: 10px;
+    background: rgba(255,255,255,0.15);
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* ========== 主内容区 ========== */
+  .main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-xl);
+  }
+
+  /* ========== 角色选择器 ========== */
+  .role-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+  .role-label {
+    font-size: 15px;
+    color: var(--body);
+  }
+  .role-btn {
+    padding: 10px 28px;
+    border-radius: 24px;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .role-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .role-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    font-weight: 500;
+  }
+
+  /* ========== 问候语 ========== */
+  .greeting {
+    margin-bottom: var(--space-xl);
+  }
+  .greeting h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: var(--space-sm);
+  }
+  .greeting p {
+    font-size: 15px;
+    color: var(--body);
+  }
+  .greeting strong {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  /* ========== 黄金主任务卡 ========== */
+  .hero-card {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl);
+    margin-bottom: var(--space-lg);
+    position: relative;
+    overflow: hidden;
+    border: 2px solid var(--gold);
+    box-shadow: 0 8px 32px rgba(26,61,36,0.2);
+  }
+  .hero-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(ellipse, rgba(201,169,98,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--gold);
+    color: var(--primary-dark);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+  }
+  .hero-subtitle {
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
+    margin-bottom: var(--space-md);
+  }
+  .hero-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: var(--space-md);
+    letter-spacing: -0.5px;
+  }
+  .hero-desc {
+    font-size: 16px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+    margin-bottom: var(--space-2xl);
+    max-width: 600px;
+  }
+  .hero-actions {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+  }
+  .btn-primary-gold {
+    background: var(--gold);
+    color: var(--primary-dark);
+    padding: 14px 32px;
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(201,169,98,0.3);
+  }
+  .btn-primary-gold:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+  .btn-outline-white {
+    background: transparent;
+    color: #fff;
+    padding: 14px 32px;
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-weight: 500;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-outline-white:hover {
+    border-color: rgba(255,255,255,0.6);
+  }
+  .hero-footer {
+    position: absolute;
+    bottom: var(--space-xl);
+    right: var(--space-2xl);
+    color: rgba(255,255,255,0.4);
+    font-size: 13px;
+  }
+
+  /* ========== 次任务卡 ========== */
+  .sub-tasks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+  .sub-task-card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .sub-task-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+  .sub-task-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-bg);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: var(--space-md);
+  }
+  .sub-task-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+  }
+  .sub-task-desc {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  /* ========== 七环节成长闭环 ========== */
+  .loop-section {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-lg);
+    border: 1px solid var(--line);
+  }
+  .loop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+  }
+  .loop-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .loop-progress {
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 500;
+  }
+  .loop-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .loop-step {
+    text-align: center;
+    flex: 1;
+  }
+  .loop-step-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #f0ede5;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin: 0 auto var(--space-sm);
+  }
+  .loop-step.done .loop-step-circle {
+    background: var(--primary-bg);
+    color: var(--primary);
+  }
+  .loop-step.active .loop-step-circle {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(26,61,36,0.15);
+  }
+  .loop-step-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--body);
+  }
+  .loop-step.done .loop-step-name { color: var(--primary); }
+  .loop-step.active .loop-step-name { color: var(--primary); }
+
+  /* ========== 数据信任区 ========== */
+  .trust-bar {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    text-align: center;
+    border: 1px solid var(--line);
+    margin-bottom: var(--space-lg);
+  }
+  .trust-num {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.5px;
+  }
+  .trust-num.gold { color: var(--gold); }
+  .trust-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: var(--space-xs);
+  }
+
+  /* ========== 底部工具区 ========== */
+  .tools-section {
+    margin-bottom: 60px;
+  }
+  .tools-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+  }
+  .tools-header h3 {
+    font-size: 15px;
+    color: var(--body);
+    font-weight: 600;
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-sm);
+  }
+  .tool-card {
+    background: var(--card);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-sm);
+    text-align: center;
+    border: 1px solid #f0ede5;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tool-card:hover {
+    border-color: var(--line);
+    background: #fafaf7;
+  }
+  .tool-icon { font-size: 24px; margin-bottom: var(--space-sm); }
+  .tool-name { font-size: 13px; font-weight: 500; }
+  .tool-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+  <!-- 顶部导航 -->
+  <div class="top-nav">
+    <div class="logo-area">
+      <div class="logo-icon">风</div>
+      <div>
+        <span class="logo-text">风声·聚满匠星云</span>
+        <span class="logo-sub">服务者工作台</span>
+      </div>
+    </div>
+    <div class="user-area">
+      <span>李师傅 · 买卖经纪人</span>
+      <div class="user-avatar">👤</div>
+    </div>
+  </div>
+
+  <!-- 领域Tab通栏 -->
+  <div class="domain-tabs">
+    <div class="domain-tab active">🏠 交易服务</div>
+    <div class="domain-tab">🔑 资产运营 <span class="domain-tag">即将</span></div>
+    <div class="domain-tab">🛠 家装服务 <span class="domain-tag">即将</span></div>
+    <div class="domain-tab">🌿 特殊居住 <span class="domain-tag">即将</span></div>
+  </div>
+
+  <!-- 主内容区 -->
+  <div class="main-content">
+
+    <!-- 角色选择 -->
+    <div class="role-selector">
+      <span class="role-label">我的角色：</span>
+      <div class="role-btn active">买卖经纪人</div>
+      <div class="role-btn" style="opacity: 0.5; cursor: not-allowed;">租赁经纪人 <span style="font-size: 10px; background: #f0ede5; padding: 1px 6px; border-radius: 8px; margin-left: 4px;">即将</span></div>
+      <div class="role-btn" style="opacity: 0.5; cursor: not-allowed;">门店管理者 <span style="font-size: 10px; background: #f0ede5; padding: 1px 6px; border-radius: 8px; margin-left: 4px;">即将</span></div>
+    </div>
+
+    <!-- 问候语 -->
+    <div class="greeting">
+      <h1>晚上好，李师傅</h1>
+      <p>你今天已生成 <strong>3</strong> 份方案，复核率 <strong>100%</strong>，继续保持。</p>
+    </div>
+
+    <!-- 黄金主任务卡 -->
+    <div class="hero-card">
+      <div class="hero-tag">◆ 黄金主任务</div>
+      <div class="hero-subtitle">此刻最该做的事 · 策展引擎 + 智能内容编辑器（P0核心）</div>
+      <div class="hero-title">刚接到新客户？<br>一键生成置业方案建议书</div>
+      <div class="hero-desc">
+        输入客户需求，AI帮你结构化梳理画像、匹配房源、测算税费贷款，你负责判断与终审。所有生成内容进入编辑器，复核后方可发送。
+      </div>
+      <div class="hero-actions">
+        <button class="btn-primary-gold">◆ 开始生成方案</button>
+        <button class="btn-outline-white">查看我的待办</button>
+      </div>
+      <div class="hero-footer">AI产出 · 真人复核 · 方可发送</div>
+    </div>
+
+    <!-- 次任务卡 -->
+    <div class="sub-tasks">
+      <div class="sub-task-card">
+        <div class="sub-task-icon">📚</div>
+        <div class="sub-task-title">提升专业能力</div>
+        <div class="sub-task-desc">测短板 → 学课程 → 练场景 → 考认证</div>
+      </div>
+      <div class="sub-task-card">
+        <div class="sub-task-icon">💬</div>
+        <div class="sub-task-title">回复客户消息</div>
+        <div class="sub-task-desc">AI对话 → 生成初稿 → 真人复核 → 发送</div>
+      </div>
+    </div>
+
+    <!-- 七环节成长闭环 -->
+    <div class="loop-section">
+      <div class="loop-header">
+        <div class="loop-title">🔄 我的能力成长闭环</div>
+        <div class="loop-progress">当前进度：已完成「测」，进入「学」</div>
+      </div>
+      <div class="loop-steps">
+        <div class="loop-step done">
+          <div class="loop-step-circle">📊</div>
+          <div class="loop-step-name">测</div>
+        </div>
+        <div class="loop-step active">
+          <div class="loop-step-circle">📚</div>
+          <div class="loop-step-name">学</div>
+        </div>
+        <div class="loop-step" style="opacity: 0.4;">
+          <div class="loop-step-circle">🎯</div>
+          <div class="loop-step-name">练 <span style="font-size: 9px; color: var(--muted);">即将</span></div>
+        </div>
+        <div class="loop-step" style="opacity: 0.4;">
+          <div class="loop-step-circle">📝</div>
+          <div class="loop-step-name">考 <span style="font-size: 9px; color: var(--muted);">即将</span></div>
+        </div>
+        <div class="loop-step" style="opacity: 0.4;">
+          <div class="loop-step-circle">⭐</div>
+          <div class="loop-step-name">评 <span style="font-size: 9px; color: var(--muted);">即将</span></div>
+        </div>
+        <div class="loop-step" style="opacity: 0.4;">
+          <div class="loop-step-circle">🤝</div>
+          <div class="loop-step-name">配 <span style="font-size: 9px; color: var(--muted);">即将</span></div>
+        </div>
+        <div class="loop-step" style="opacity: 0.4;">
+          <div class="loop-step-circle">💬</div>
+          <div class="loop-step-name">反馈 <span style="font-size: 9px; color: var(--muted);">即将</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数据信任区 -->
+    <div class="trust-bar">
+      <div>
+        <div class="trust-num">1,286</div>
+        <div class="trust-label">已生成客户报告</div>
+      </div>
+      <div>
+        <div class="trust-num">342</div>
+        <div class="trust-label">服务过的匠人</div>
+      </div>
+      <div>
+        <div class="trust-num">96%</div>
+        <div class="trust-label">报告采纳率</div>
+      </div>
+      <div>
+        <div class="trust-num gold">★★ 优秀级</div>
+        <div class="trust-label">匠星认证体系</div>
+      </div>
+    </div>
+    <div style="text-align: center; font-size: 11px; color: #ccc; margin-top: -12px; margin-bottom: 24px;">
+      * 以上为示例数据，上线前替换为真实统计
+    </div>
+
+    <!-- 底部工具区 -->
+    <div class="tools-section">
+      <div class="tools-header">
+        <h3>🧰 全部工具</h3>
+      </div>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-icon">👥</div>
+          <div class="tool-name">客户管理</div>
+          <div class="tool-sub">客户档案管理</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-icon">📊</div>
+          <div class="tool-name">带看报告</div>
+          <div class="tool-sub">带看数据报告</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-icon">📖</div>
+          <div class="tool-name">知识库</div>
+          <div class="tool-sub">5843条专业词条</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-icon">🔍</div>
+          <div class="tool-name">品质测评</div>
+          <div class="tool-sub">服务品质评估</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-icon">🎯</div>
+          <div class="tool-name">场景库</div>
+          <div class="tool-sub">76个服务场景</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-icon">👨‍🏫</div>
+          <div class="tool-name">AI导师</div>
+          <div class="tool-sub">一对一指导</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-icon">⭐</div>
+          <div class="tool-name">我的收藏</div>
+          <div class="tool-sub">常用词条/话术</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-icon">🕘</div>
+          <div class="tool-name">历史记录</div>
+          <div class="tool-sub">最近浏览/生成</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

@@ -3452,7 +3452,7 @@ export default {
       '/agreement': '/terms/',
       '/agreement/': '/terms/',
       '/agreement.html': '/terms/',
-      '/assessment.html': '/quality-test/',
+      '/assessment.html': '/assessment/',   // B2 修复 2026-10-20：收敛到公开能力测评页，原误指 /quality-test/
     };
     if (legacyPageRedirects[path]) {
       return Response.redirect(`https://fengsheng.tech${legacyPageRedirects[path]}`, 301);

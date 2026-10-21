@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>助手养成师 · 风声</title>
 <style>
-:root{--bg:#f7f4ef;--bg2:#e8e4d9;--dk:#1a1a1a;--p:#3d5a3e;--fire:#c46a3a;--orange:#f5a623;--ts:#555555;--td:#888;--card:#fff;--border:#e8e4d9;--border-h:#3d5a3e;--r:8px}
+:root{--bg:#f7f5f0;--bg2:#e6ede7;--dk:#1a1a1a;--p:#1a3d24;--fire:#1a3d24;--orange:#f5a623;--ts:#555555;--td:#888;--card:#fff;--border:#e6ede7;--border-h:#1a3d24;--r:8px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--dk);line-height:1.6;-webkit-font-smoothing:antialiased}
 .screen{display:none;padding:20px 16px;max-width:480px;margin:0 auto;min-height:100vh}
@@ -24,7 +24,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .mode-cards{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
 .mode-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .2s}
 .mode-card:active{transform:scale(.97)}
-.mode-card.selected{border-color:var(--p);background:rgba(61,90,62,.04)}
+.mode-card.selected{border-color:var(--p);background:rgba(26,61,36,.04)}
 .mode-card .mc-title{font-size:15px;font-weight:700;margin-bottom:4px}
 .mode-card .mc-desc{font-size:12px;color:var(--ts)}
 .mode-card .mc-tag{font-size:10px;color:var(--orange);font-weight:700;margin-top:6px}
@@ -43,12 +43,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .progress-fill{flex:1;height:4px;background:var(--bg2);border-radius:2px;margin:0 10px;overflow:hidden}
 .progress-fill span{display:block;height:100%;background:var(--p);border-radius:2px;transition:width .3s}
 .q-dimension{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;margin-bottom:12px}
-.q-scene{font-size:14px;color:var(--ts);margin-bottom:8px;padding:10px 12px;background:rgba(61,90,62,.04);border-radius:var(--r);line-height:1.6}
+.q-scene{font-size:14px;color:var(--ts);margin-bottom:8px;padding:10px 12px;background:rgba(26,61,36,.04);border-radius:var(--r);line-height:1.6}
 .q-text{font-size:16px;font-weight:700;margin-bottom:16px}
 .q-prompt{font-size:11px;color:var(--td);margin-bottom:10px}
 .option-item{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;font-size:14px;line-height:1.5}
 .option-item:active{transform:scale(.98)}
-.option-item.selected{border-color:var(--p);background:rgba(61,90,62,.06)}
+.option-item.selected{border-color:var(--p);background:rgba(26,61,36,.06)}
 .option-item.multi-selected{border-color:var(--orange);background:rgba(245,166,35,.06)}
 .option-label{font-weight:700;margin-right:6px}
 .text-input{width:100%;border:2px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:14px;font-family:inherit;background:var(--card);resize:none;transition:border-color .2s}
@@ -73,24 +73,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .step-num{width:20px;height:20px;border-radius:50%;background:var(--p);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
 .step-num.done{background:var(--p)}
 .step-num.skip{background:var(--bg2);color:var(--td)}
-.report-sentence{background:rgba(196,106,58,.08);border-left:3px solid var(--fire);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;font-size:14px;font-weight:600;color:var(--fire);margin:12px 0}
+.report-sentence{background:rgba(201,169,98,.08);border-left:3px solid var(--fire);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;font-size:14px;font-weight:600;color:var(--fire);margin:12px 0}
 .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 .tag{font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600}
-.tag-green{background:rgba(61,90,62,.08);color:var(--p)}
+.tag-green{background:rgba(26,61,36,.08);color:var(--p)}
 .tag-orange{background:rgba(245,166,35,.1);color:var(--orange)}
-.tag-red{background:rgba(196,106,58,.08);color:var(--fire)}
-.advice-box{background:rgba(61,90,62,.04);border-radius:var(--r);padding:12px;margin-top:8px}
+.tag-red{background:rgba(201,169,98,.08);color:var(--fire)}
+.advice-box{background:rgba(26,61,36,.04);border-radius:var(--r);padding:12px;margin-top:8px}
 .advice-box p{font-size:12px;color:var(--ts);margin-bottom:4px;line-height:1.6}
 .advice-box p:last-child{margin-bottom:0}
 .report-footer{text-align:center;margin-top:20px;font-size:11px;color:var(--td)}
 /* 顶部导航栏 */
 .top-nav{position:fixed;top:0;left:0;right:0;z-index:9999;
   display:flex;align-items:center;justify-content:space-between;
-  padding:10px 16px;background:var(--bg,#f7f4ef);
-  border-bottom:1px solid var(--border,rgba(80,90,70,.09));
+  padding:10px 16px;background:var(--bg,#f7f5f0);
+  border-bottom:1px solid var(--border,rgba(26,61,36,.09));
   box-shadow:0 1px 4px rgba(0,0,0,.04);height:48px;box-sizing:border-box}
 .top-nav .nav-home{display:flex;align-items:center;gap:6px;
-  font-size:15px;font-weight:600;color:var(--p,#3d5a3e);
+  font-size:15px;font-weight:600;color:var(--p,#1a3d24);
   text-decoration:none;cursor:pointer}
 .top-nav .nav-home:hover{opacity:.7}
 .top-nav .nav-brand{font-size:13px;color:var(--ts,#7a8478);letter-spacing:2px}
@@ -98,29 +98,29 @@ body{padding-top:48px!important}
 
 /* 版权+反馈 */
 .page-footer{text-align:center;padding:24px 16px;margin-top:32px;
-  border-top:1px solid var(--border,rgba(80,90,70,.09));
+  border-top:1px solid var(--border,rgba(26,61,36,.09));
   font-size:11px;color:var(--ts,#7a8478);line-height:1.8}
 .page-footer .copyright{margin-bottom:8px}
 .feedback-bar{display:flex;align-items:center;justify-content:center;
   gap:16px;margin-top:12px;padding:12px;background:var(--card,#fff);
-  border-radius:8px;border:1px solid var(--border,rgba(80,90,70,.09))}
+  border-radius:8px;border:1px solid var(--border,rgba(26,61,36,.09))}
 .feedback-bar span{font-size:13px;color:var(--tx,#555)}
 .feedback-btn{display:inline-flex;align-items:center;gap:4px;
   padding:6px 14px;border-radius:6px;border:1px solid var(--border);
-  background:var(--bg,#f7f4ef);cursor:pointer;font-size:13px;
+  background:var(--bg,#f7f5f0);cursor:pointer;font-size:13px;
   color:var(--tx,#555);transition:all .15s}
-.feedback-btn:hover{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
-.feedback-btn.active{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
+.feedback-btn:hover{background:var(--p,#1a3d24);color:#fff;border-color:var(--p)}
+.feedback-btn.active{background:var(--p,#1a3d24);color:#fff;border-color:var(--p)}
 
 
 /* 游戏化进度+鼓励 */
 .step-progress{display:flex;align-items:center;justify-content:center;gap:4px;margin:12px 0 20px}
-.step-dot{width:32px;height:32px;border-radius:50%;background:var(--bg2,#e8e4d9);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--td,#888);transition:all .3s}
-.step-dot.done{background:var(--p,#3d5a3e);color:#fff}
-.step-dot.current{background:var(--fire,#c46a3a);color:#fff;transform:scale(1.15);box-shadow:0 0 0 3px rgba(196,106,58,.2)}
+.step-dot{width:32px;height:32px;border-radius:50%;background:var(--bg2,#e6ede7);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--td,#888);transition:all .3s}
+.step-dot.done{background:var(--p,#1a3d24);color:#fff}
+.step-dot.current{background:var(--fire,#c9a962);color:#fff;transform:scale(1.15);box-shadow:0 0 0 3px rgba(201,169,98,.2)}
 .step-line{width:20px;height:2px;background:var(--border);transition:background .3s}
-.step-line.done{background:var(--p,#3d5a3e)}
-.encourage-msg{text-align:center;font-size:13px;color:var(--p,#3d5a3e);font-weight:600;margin:8px 0;padding:8px;background:rgba(61,90,62,.05);border-radius:8px;min-height:36px;transition:all .3s}
+.step-line.done{background:var(--p,#1a3d24)}
+.encourage-msg{text-align:center;font-size:13px;color:var(--p,#1a3d24);font-weight:600;margin:8px 0;padding:8px;background:rgba(26,61,36,.05);border-radius:8px;min-height:36px;transition:all .3s}
 
 </style>
 <meta property="og:title" content="助手养成师 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/breeder/"><meta name="twitter:card" content="summary_large_image"></head>
@@ -186,14 +186,14 @@ body{padding-top:48px!important}
 // ========== 题目 ==========
 const FULL_QUESTIONS = [
   // 第1步：给它身份（含ROI+铁律）
-  {id:0,step:1,stepName:'给它身份',type:'single',scene:'你希望助手帮你"赚"什么？',text:'不一定是钱——可能是省时间、多签单、少加班',dimLabel:'第1步·ROI目标',dimColor:'#3d5a3e',
+  {id:0,step:1,stepName:'给它身份',type:'single',scene:'你希望助手帮你"赚"什么？',text:'不一定是钱——可能是省时间、多签单、少加班',dimLabel:'第1步·ROI目标',dimColor:'#1a3d24',
     options:[
       {label:'A',text:'省时间——把重复的事交给助手',score:10,tag:'效率'},
       {label:'B',text:'多签单——助手帮我找客户写文案',score:10,tag:'业绩'},
       {label:'C',text:'少加班——自动化让我早点下班',score:10,tag:'生活'},
       {label:'D',text:'少犯错——助手帮我把关不翻车',score:8,tag:'安全'}
     ]},
-  {id:1,step:1,stepName:'给它身份',type:'multi',scene:'你想让助手帮你做哪些事？',text:'选2-3项最需要的',dimLabel:'第1步·需求定位',dimColor:'#3d5a3e',
+  {id:1,step:1,stepName:'给它身份',type:'multi',scene:'你想让助手帮你做哪些事？',text:'选2-3项最需要的',dimLabel:'第1步·需求定位',dimColor:'#1a3d24',
     options:[
       {label:'A',text:'每天自动整理信息发给我',score:10},
       {label:'B',text:'帮我写文案/报告',score:10},
@@ -202,14 +202,14 @@ const FULL_QUESTIONS = [
       {label:'E',text:'客户跟进和沟通',score:10},
       {label:'F',text:'其他',score:5}
     ]},
-  {id:2,step:1,stepName:'给它身份',type:'single',scene:'你希望助手是什么性格？',text:'选一个最接近的',dimLabel:'第1步·性格设定',dimColor:'#3d5a3e',
+  {id:2,step:1,stepName:'给它身份',type:'single',scene:'你希望助手是什么性格？',text:'选一个最接近的',dimLabel:'第1步·性格设定',dimColor:'#1a3d24',
     options:[
       {label:'A',text:'安静靠谱型——少说话多做事',score:10,tag:'靠谱'},
       {label:'B',text:'活泼创意型——想法多爱建议',score:10,tag:'创意'},
       {label:'C',text:'温和关怀型——提醒你关心你',score:10,tag:'关怀'},
       {label:'D',text:'干脆利落型——只给结论不废话',score:10,tag:'高效'}
     ]},
-  {id:3,step:1,stepName:'给它身份',type:'text',scene:'给助手起个名字吧',text:'就像给新同事取外号——叫着顺口、听着亲切就行',dimLabel:'第1步·命名',dimColor:'#3d5a3e',
+  {id:3,step:1,stepName:'给它身份',type:'text',scene:'给助手起个名字吧',text:'就像给新同事取外号——叫着顺口、听着亲切就行',dimLabel:'第1步·命名',dimColor:'#1a3d24',
     placeholder:'比如：小风、阿明、小房...'},
   {id:3.5,step:1,stepName:'给它身份',type:'multi',scene:'给助手定1-2条不可违反的铁律',text:'铁律=底线，每次启动最先看到的就是它',dimLabel:'第1步·铁律初定',dimColor:'#c46a3a',
     options:[
@@ -266,7 +266,7 @@ const FULL_QUESTIONS = [
       {label:'E',text:'还没想好',score:3}
     ]},
   // 第5步：写入灵魂
-  {id:10,step:5,stepName:'写入灵魂',type:'multi',scene:'你最希望助手记住哪些规矩？',text:'选2-3项',dimLabel:'第5步·行为准则',dimColor:'#3d5a3e',
+  {id:10,step:5,stepName:'写入灵魂',type:'multi',scene:'你最希望助手记住哪些规矩？',text:'选2-3项',dimLabel:'第5步·行为准则',dimColor:'#1a3d24',
     options:[
       {label:'A',text:'不确定的事先查清楚再回答，别瞎编',score:10},
       {label:'B',text:'我的私人信息不能告诉别人',score:10},
@@ -274,7 +274,7 @@ const FULL_QUESTIONS = [
       {label:'D',text:'主动帮我多想一步',score:8},
       {label:'E',text:'始终站在我的角度想问题',score:8}
     ]},
-  {id:11,step:5,stepName:'写入灵魂',type:'single',scene:'你最希望助手始终做到的一件事是？',text:'这是你们的"灵魂契约"',dimLabel:'第5步·灵魂契约',dimColor:'#3d5a3e',
+  {id:11,step:5,stepName:'写入灵魂',type:'single',scene:'你最希望助手始终做到的一件事是？',text:'这是你们的"灵魂契约"',dimLabel:'第5步·灵魂契约',dimColor:'#1a3d24',
     options:[
       {label:'A',text:'始终说实话，不忽悠我',score:10},
       {label:'B',text:'始终高效，别浪费时间',score:10},
@@ -544,17 +544,17 @@ function generateReport() {
     </div>
 
     
-<div style="margin-top:24px;padding:24px;background:rgba(61,90,62,.04);border-radius:8px;border:1px solid rgba(61,90,62,.12)">
+<div style="margin-top:24px;padding:24px;background:rgba(26,61,36,.04);border-radius:8px;border:1px solid rgba(26,61,36,.12)">
   <div style="font-size:17px;font-weight:700;color:#1a1a1a;margin-bottom:8px">🚀 下一步：去训练你的专属助手</div>
   <div style="font-size:14px;color:#555;line-height:1.7;margin-bottom:16px">
     你的培养方案已生成！按以下步骤训练你的专属助手：<br>
-    <strong>①</strong> 访问 <a href="/" style="color:#3d5a3e;font-weight:600">风声助手</a> 了解更多<br>
+    <strong>①</strong> 访问 <a href="/" style="color:#1a3d24;font-weight:600">风声助手</a> 了解更多<br>
     <strong>②</strong> 搜索安装「助手养成师」技能<br>
     <strong>③</strong> 按上方方案配置你的专属助手 → 开始训练
   </div>
   <a href="/"
      style="display:inline-flex;align-items:center;gap:6px;padding:12px 28px;
-     background:#3d5a3e;color:#fff;border-radius:8px;font-size:15px;font-weight:600;
+     background:#1a3d24;color:#fff;border-radius:8px;font-size:15px;font-weight:600;
      text-decoration:none">开始训练 →</a>
 </div>
 
@@ -690,29 +690,29 @@ function sendFeedback(type){
 })();
 </script>
 
-<div class="page-footer" style="text-align:center;padding:16px;border-top:1px solid rgba(80,90,70,.09);font-size:10px;color:#7a8478;line-height:1.8">🌬️ 风声 · 通过独立价值获得尊重<br>© 2026 fengsheng.tech · <a href="https://beian.miit.gov.cn/" target="_blank" style="color:inherit;text-decoration:none">京ICP备2026044043号</a></div>
+<div class="page-footer" style="text-align:center;padding:16px;border-top:1px solid rgba(26,61,36,.09);font-size:10px;color:#7a8478;line-height:1.8">🌬️ 风声 · 通过独立价值获得尊重<br>© 2026 fengsheng.tech · <a href="https://beian.miit.gov.cn/" target="_blank" style="color:inherit;text-decoration:none">京ICP备2026044043号</a></div>
 <script src="/tracker.js" async></script>
 <!-- fs-module-guide -->
 <style>
-.fs-guide-fab{position:fixed;right:18px;bottom:18px;z-index:9998;display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border:none;border-radius:24px;background:#3d5a3e;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 6px 20px rgba(44,68,48,.28);transition:transform .2s,background .2s}
-.fs-guide-fab:hover{background:#2c4430;transform:translateY(-2px)}
+.fs-guide-fab{position:fixed;right:18px;bottom:18px;z-index:9998;display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border:none;border-radius:24px;background:#1a3d24;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 6px 20px rgba(44,68,48,.28);transition:transform .2s,background .2s}
+.fs-guide-fab:hover{background:#12291a;transform:translateY(-2px)}
 .fs-guide-mask{position:fixed;inset:0;z-index:9998;background:rgba(20,28,20,.42);opacity:0;pointer-events:none;transition:opacity .25s}
 .fs-guide-mask.show{opacity:1;pointer-events:auto}
-.fs-guide-panel{position:fixed;z-index:9999;top:0;right:0;height:100%;width:min(420px,92vw);background:#fbf9f5;box-shadow:-8px 0 32px rgba(0,0,0,.18);transform:translateX(102%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.fs-guide-panel{position:fixed;z-index:9999;top:0;right:0;height:100%;width:min(420px,92vw);background:#faf8f3;box-shadow:-8px 0 32px rgba(0,0,0,.18);transform:translateX(102%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
 .fs-guide-panel.show{transform:translateX(0)}
-.fs-guide-head{display:flex;align-items:center;gap:10px;padding:18px 20px;border-bottom:1px solid rgba(80,90,70,.12);background:linear-gradient(135deg,#3d5a3e,#2c4430);color:#fff}
+.fs-guide-head{display:flex;align-items:center;gap:10px;padding:18px 20px;border-bottom:1px solid rgba(26,61,36,.12);background:linear-gradient(135deg,#1a3d24,#12291a);color:#fff}
 .fs-guide-head .t{font-size:16px;font-weight:800}
 .fs-guide-head .s{font-size:11px;opacity:.8;margin-top:2px}
 .fs-guide-close{margin-left:auto;background:rgba(255,255,255,.14);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;line-height:1;flex:0 0 auto}
 .fs-guide-close:hover{background:rgba(255,255,255,.26)}
 .fs-guide-body{padding:20px;overflow-y:auto;font-size:14px;color:#4a4a48;line-height:1.85}
-.fs-guide-body h4{margin:0 0 6px;font-size:13px;color:#2c4430;letter-spacing:.5px}
-.fs-guide-body h4::before{content:"\25AE";color:#c46a3a;margin-right:5px}
+.fs-guide-body h4{margin:0 0 6px;font-size:13px;color:#12291a;letter-spacing:.5px}
+.fs-guide-body h4::before{content:"\25AE";color:#8a6d2f;margin-right:5px}
 .fs-guide-body p{margin:0 0 16px}
 .fs-guide-steps{counter-reset:g;list-style:none;margin:0 0 16px;padding:0}
 .fs-guide-steps li{position:relative;padding-left:32px;margin-bottom:10px}
-.fs-guide-steps li::before{counter-increment:g;content:counter(g);position:absolute;left:0;top:1px;width:22px;height:22px;border-radius:50%;background:#3d5a3e;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.fs-guide-tip{background:rgba(196,106,58,.08);border-left:3px solid #c46a3a;border-radius:6px;padding:10px 12px;font-size:12.5px;color:#8a5a3a;line-height:1.7}
+.fs-guide-steps li::before{counter-increment:g;content:counter(g);position:absolute;left:0;top:1px;width:22px;height:22px;border-radius:50%;background:#1a3d24;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.fs-guide-tip{background:rgba(201,169,98,.08);border-left:3px solid #c9a962;border-radius:6px;padding:10px 12px;font-size:12.5px;color:#8a6d2f;line-height:1.7}
 @media(max-width:640px){.fs-guide-fab{padding:9px 13px;font-size:12px;right:12px;bottom:12px}}
 </style>
 <button class="fs-guide-fab" id="fsGuideFab" type="button" aria-label="使用指南">❔ 使用指南</button>

@@ -6,13 +6,13 @@
 <title>风声 · 帮服务者实现客户的美好居住</title>
 <style>
 :root{
-  --bg:#f7f4ef;--bg2:#e8e4d9;--card:#f7f4ef;--card-h:#f5f1ec;
-  --border:rgba(80,90,70,.09);--border-h:rgba(60,80,50,.2);
-  --p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--p-bg:rgba(61,90,62,.05);
-  --fire:#c46a3a;--fire-l:#d89060;--charcoal:#3a3a38;
+  --bg:#f7f5f0;--bg2:#e6ede7;--card:#f7f5f0;--card-h:#f0ece5;
+  --border:rgba(26,61,36,.09);--border-h:rgba(26,61,36,.2);
+  --p:#1a3d24;--p-d:#12291a;--p-l:#6b8f70;--p-bg:rgba(26,61,36,.05);
+  --fire:#1a3d24;--fire-l:#12291a;--charcoal:#3a3a38;
   --dk:#1a1a1a;--tx:#555555;--ts:#7a8478;--td:#a8b0a6;
-  --safe:#5e7e5c;--health:#6d8f55;--neat:#3d5a3e;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e;
-  --sc-body:#5e7e5c;--sc-mind:#6d8f55;--sc-dignity:#7e6a90;--sc-life:#4e7e8e;
+  --safe:#3a6346;--health:#4c7352;--neat:#1a3d24;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e;
+  --sc-body:#3a6346;--sc-mind:#4c7352;--sc-dignity:#7e6a90;--sc-life:#4e7e8e;
   --pathA:#c46a3a;--pathB:#4e7e8e;--pathC:#7e6a90;
   --r:8px;
 }
@@ -24,7 +24,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
 /* HERO */
 .hero{padding:120px 8% 40px;text-align:center}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--p-d);background:var(--p-bg);border:1px solid rgba(61,90,62,.12);border-radius:16px;padding:4px 12px;margin-bottom:16px;letter-spacing:2px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--p-d);background:var(--p-bg);border:1px solid rgba(26,61,36,.12);border-radius:16px;padding:4px 12px;margin-bottom:16px;letter-spacing:2px}
 .hero-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--p-l);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .hero h1{font-size:48px;font-weight:700;color:var(--dk);letter-spacing:1px;line-height:1.2}
@@ -51,7 +51,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .contra-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center}
 .contra-ico{font-size:28px;margin-bottom:6px}
 .contra-name{font-size:18px;font-weight:600;color:var(--dk);margin-bottom:4px}
-.contra-stat{font-size:36px;font-weight:900;background:linear-gradient(to right,#3d5a3e,#c46a3a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.contra-stat{font-size:36px;font-weight:900;background:linear-gradient(to right,#1a3d24, #2d5a3d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .contra-label{font-size:9px;color:var(--td);margin-top:2px}
 .contra-desc{font-size:10px;color:var(--ts);margin-top:6px;line-height:1.5}
 .contra-bridge{grid-column:1/-1;text-align:center;padding:8px;font-size:11px;color:var(--p-d);font-weight:600;line-height:1.6;background:var(--p-bg);border-radius:var(--r)}
@@ -73,7 +73,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .dim-one{color:var(--ts);font-size:10px}
 .dual-link{display:block;text-align:center;margin-top:10px;font-size:11px;font-weight:700;color:var(--p);text-decoration:none;padding:6px 0}
 .dual-link:active{opacity:.7}
-.dual-causal{grid-column:1/-1;text-align:center;padding:10px;font-size:11px;color:var(--fire);font-weight:700;line-height:1.6;background:rgba(196,106,58,.05);border-radius:var(--r)}
+.dual-causal{grid-column:1/-1;text-align:center;padding:10px;font-size:11px;color:var(--fire);font-weight:700;line-height:1.6;background:rgba(201,169,98,.05);border-radius:var(--r)}
 
 /* 三路径 */
 .path-section{padding:60px 8% 20px}
@@ -92,7 +92,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .path-earn.c{color:var(--pathC)}
 .path-who{font-size:9px;color:var(--ts);line-height:1.4;margin-bottom:8px}
 .path-btn{display:inline-block;padding:5px 12px;border-radius:12px;font-size:9px;font-weight:700;text-decoration:none;margin-top:auto}
-.path-btn.a{background:rgba(196,106,58,.08);color:var(--pathA)}
+.path-btn.a{background:rgba(201,169,98,.08);color:var(--pathA)}
 .path-btn.b{background:rgba(78,126,142,.08);color:var(--pathB)}
 .path-btn.c{background:rgba(126,106,144,.08);color:var(--pathC)}
 
@@ -106,7 +106,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .product-name{font-size:12px;font-weight:800;color:var(--dk);line-height:1.3}
 .product-stat{font-size:9px;color:var(--td);margin-top:1px}
 .product-action{margin-top:auto;padding-top:8px}
-.product-action a{display:inline-block;padding:4px 10px;border-radius:8px;font-size:9px;font-weight:700;text-decoration:none;background:rgba(61,90,62,.06);color:var(--p)}
+.product-action a{display:inline-block;padding:4px 10px;border-radius:8px;font-size:9px;font-weight:700;text-decoration:none;background:rgba(26,61,36,.06);color:var(--p)}
 .product-action a.live{background:rgba(94,126,92,.1);color:var(--safe)}
 .product-action a.soon{background:var(--bg2);color:var(--td)}
 
@@ -209,19 +209,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 }
 /* 版权+反馈 */
 .page-footer{text-align:center;padding:24px 16px;margin-top:32px;
-  border-top:1px solid var(--border,rgba(80,90,70,.09));
+  border-top:1px solid var(--border,rgba(26,61,36,.09));
   font-size:11px;color:var(--ts,#7a8478);line-height:1.8}
 .page-footer .copyright{margin-bottom:8px}
 .feedback-bar{display:flex;align-items:center;justify-content:center;
   gap:16px;margin-top:12px;padding:12px;background:var(--card,#fff);
-  border-radius:8px;border:1px solid var(--border,rgba(80,90,70,.09))}
+  border-radius:8px;border:1px solid var(--border,rgba(26,61,36,.09))}
 .feedback-bar span{font-size:13px;color:var(--tx,#555)}
 .feedback-btn{display:inline-flex;align-items:center;gap:4px;
   padding:6px 14px;border-radius:6px;border:1px solid var(--border);
-  background:var(--bg,#f7f4ef);cursor:pointer;font-size:13px;
+  background:var(--bg,#f7f5f0);cursor:pointer;font-size:13px;
   color:var(--tx,#555);transition:all .15s}
-.feedback-btn:hover{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
-.feedback-btn.active{background:var(--p,#3d5a3e);color:#fff;border-color:var(--p)}
+.feedback-btn:hover{background:var(--p,#1a3d24);color:#fff;border-color:var(--p)}
+.feedback-btn.active{background:var(--p,#1a3d24);color:#fff;border-color:var(--p)}
 
 </style>
 <meta property="og:title" content="管理看板 · 风声"><meta property="og:description" content="六维标准定义品质 + 四维关怀守护服务者 + 三条路径实现商业闭环"><meta property="og:image" content="https://fengsheng.tech/og-image.png"><meta property="og:url" content="https://fengsheng.tech/okr.html"><meta name="twitter:card" content="summary_large_image"></head>
@@ -374,7 +374,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
           <div class="product-stat">9大域·450+词条</div>
         </div>
       </div>
-      <div class="product-action"><a class="soon" href="/knowledge/">即将上线</a></div>
+      <div class="product-action"><span class="soon">规划中</span></div>
     </div>
     <div class="product-card">
       <div class="product-top">

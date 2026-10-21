@@ -1,7 +1,7 @@
 /showing-report/* /s1-report/ 200
-/showing-report /s1-report/ 200
-/dict/* /knowledge/ 200
-/decode/* /care-test/ 200
+/shining-report/* /s1-report/ 200
+/dict/* /dictionary/ 200
+/decode/* /decoder/ 200
 /breeder.html /breeder/ 301
 /care-test.html /care-test/ 301
 /quality-test.html /quality-test/ 301
@@ -12,22 +12,17 @@
 /MP_verify_*  /MP_verify_*  200
 # 策展引擎 — 全生命周期报告
 /curation /curation/ 200
-# 数字员工考核 — 五把尺子
+# 公开能力测评页（公开产品）
 /assessment /assessment/ 200
-/agent-assessment /assessment/ 200
-/agent-assessment/ /assessment/ 200
-# 管理者数字员工看板
+# 内部「五把尺子考核」/agent-assessment/：走目录式路由，不做改写（B1 修复 2026-10-20，原误改写到 /assessment/）
+# 管理者数字员工看板（面向门店管理者的公开产品 demo）
 /dashboard-manager /dashboard-manager/ 200
 # 购买流程（咨询引导）
 /purchase /purchase/ 200
 # 方法论工具包
 /toolkit /toolkit/ 200
-# 方法论技能包 — 小鱼儿交付的三个可分发 Skill 介绍落点
+# 方法论技能包 — 三个可分发 Skill 的介绍落点
 /toolkit/methodology /toolkit/methodology/ 200
 # 知识库掌握度测评 — 目录式页面，兼容无尾斜杠/无后缀两种访问
 /knowledge/quiz /knowledge/quiz/ 200
-# P0 重复页收敛：旧根级 .html 301 到目录式规范路由
-/privacy.html /privacy/ 301
-/agreement.html /terms/ 301
-/agreement /terms/ 301
-/assessment.html /quality-test/ 301
+# 遗留根级 .html 301 收敛（B2 修复 2026-10-20）：统一由 _worker.js legacyPageRedirects 处理，此处不再重复

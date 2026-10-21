@@ -20,15 +20,15 @@
 <style>
 /* ===== 品牌变量 ===== */
 :root{
-  --bg:#f7f4ef;--bg2:#e8e4d9;--card:#f7f4ef;--card-h:#f5f1ec;
-  --border:rgba(80,90,70,.09);--border-h:rgba(60,80,50,.2);
-  --p:#3d5a3e;--p-d:#2c4430;--p-l:#7a9a7c;--p-bg:rgba(61,90,62,.05);
-  --fire:#c46a3a;--fire-l:#d89060;--charcoal:#3a3a38;
+  --bg:#f7f5f0;--bg2:#e6ede7;--card:#f7f5f0;--card-h:#f0ece5;
+  --border:rgba(26,61,36,.09);--border-h:rgba(26,61,36,.2);
+  --p:#1a3d24;--p-d:#12291a;--p-l:#6b8f70;--p-bg:rgba(26,61,36,.05);
+  --fire:#1a3d24;--fire-l:#12291a;--charcoal:#3a3a38;
   --dk:#1a1a1a;--tx:#555555;--ts:#7a8478;--td:#a8b0a6;
-  --safe:#5e7c5c;--health:#6d8f55;--neat:#3d5a3e;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e;
-  --sc-body:#5e7c5c;--sc-mind:#6d8f55;--sc-dignity:#7e6a90;--sc-life:#4e7e8e;
+  --safe:#3a6346;--health:#4c7352;--neat:#1a3d24;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e;
+  --sc-body:#3a6346;--sc-mind:#4c7352;--sc-dignity:#7e6a90;--sc-life:#4e7e8e;
   --pathA:#c46a3a;--pathB:#4e7e8e;--pathC:#7e6a90;
-  --brand:#2C5F3A;--brand-light:#4a8a5c;--accent:#E8742C;
+  --brand:#1a3d24;--brand-light:#2d5a3d;--accent:#1a3d24;
   --wood:#c8956d;
   --r:4px;
 }
@@ -36,15 +36,28 @@
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
+/* ===== 领域 Tab 通栏（新 VI）===== */
+.domain-bar{background:linear-gradient(135deg,#1a3d24 0%,#12291a 100%)}
+.domain-bar-inner{max-width:560px;margin:0 auto;display:flex;padding:0 6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.domain-bar-inner::-webkit-scrollbar{display:none}
+.domain-tab{flex:1 0 auto;padding:14px 10px 12px;background:none;border:none;font-family:inherit;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.62);cursor:pointer;position:relative;white-space:nowrap;transition:color .2s;-webkit-tap-highlight-color:transparent}
+.domain-tab:hover{color:rgba(255,255,255,.88)}
+.domain-tab.active{color:#fff}
+.domain-tab.active::after{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:5px;width:26px;height:2.5px;border-radius:2px;background:#c9a962}
+.domain-context{max-width:560px;margin:14px auto 0;padding:0 8px;font-size:12px;line-height:1.7;color:var(--ts);text-align:center}
+.domain-context b{color:var(--p);font-weight:700}
+.domain-panel{display:none}
+.domain-panel.active{display:block}
+
 /* ===== 角色切换器 ===== */
 .role-guide{text-align:center;max-width:560px;margin:6px auto 2px;padding:0 8px}
 .role-guide .rg-title{font-size:22px;font-weight:800;color:var(--dk);letter-spacing:.5px;line-height:1.25}
 .role-guide .rg-sub{font-size:13px;color:var(--ts);margin-top:6px}
-.role-guide .rg-tag{display:inline-block;margin-top:10px;font-size:11px;font-weight:700;color:var(--brand);background:rgba(44,95,58,.07);border:1px solid rgba(44,95,58,.14);border-radius:20px;padding:4px 14px}
+.role-guide .rg-tag{display:inline-block;margin-top:10px;font-size:11px;font-weight:700;color:var(--brand);background:rgba(26,61,36,.07);border:1px solid rgba(26,61,36,.14);border-radius:20px;padding:4px 14px}
 .role-switcher{display:flex;gap:14px;justify-content:center;padding:16px 8% 6px;flex-wrap:wrap}
 .role-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:12px;border:2px solid var(--border);background:var(--card);font-size:14px;font-weight:700;color:var(--ts);cursor:pointer;transition:all .25s;font-family:inherit;-webkit-tap-highlight-color:transparent;text-align:left;line-height:1.3}
-.role-btn:hover{border-color:var(--brand);color:var(--brand);background:rgba(44,95,58,.04);transform:translateY(-2px)}
-.role-btn.active{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 5px 16px rgba(44,95,58,.24)}
+.role-btn:hover{border-color:var(--brand);color:var(--brand);background:rgba(26,61,36,.04);transform:translateY(-2px)}
+.role-btn.active{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 5px 16px rgba(26,61,36,.24)}
 .role-btn.active:hover{background:var(--brand-light);border-color:var(--brand-light)}
 .role-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .role-icon svg{width:20px;height:20px}
@@ -64,6 +77,32 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
 .scene-desc{font-size:12px;color:var(--ts)}
 .scene-arrow{font-size:16px;color:var(--td);flex-shrink:0;transition:transform .2s}
 .scene-card:hover .scene-arrow{transform:translateX(4px);color:var(--brand)}
+
+/* ===== 首页三层任务导航（P0-02）===== */
+.task-l1{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#1a3d24,#12291a);border:1.5px solid rgba(201,169,98,.55);border-radius:20px;padding:24px 26px;margin-bottom:12px;cursor:pointer;text-decoration:none;color:#fff;transition:all .25s;box-shadow:0 8px 32px rgba(26,61,36,.2)}
+.task-l1:hover{transform:translateY(-2px);box-shadow:0 12px 38px rgba(26,61,36,.28);border-color:rgba(201,169,98,.8)}
+.task-l1:active{transform:scale(.985)}
+.task-l1 .tl1-icon{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.14);display:grid;place-items:center;font-size:24px;flex-shrink:0}
+.task-l1 .tl1-body{flex:1;min-width:0}
+.task-l1 .tl1-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;color:#e3c98d;border:1px solid rgba(201,169,98,.5);border-radius:4px;padding:2px 7px;margin-bottom:6px}
+.task-l1 .tl1-kicker{font-size:11px;letter-spacing:.5px;opacity:.72;margin-bottom:4px}
+.task-l1 .tl1-title{font-size:19px;font-weight:800;margin-bottom:3px}
+.task-l1 .tl1-desc{font-size:12.5px;opacity:.82}
+.task-l1 .tl1-arrow{font-size:18px;opacity:.85;flex-shrink:0;transition:transform .2s}
+.task-l1:hover .tl1-arrow{transform:translateX(4px)}
+.task-l2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.task-l2 .scene-card{margin-bottom:0;flex-direction:column;align-items:flex-start;gap:10px;padding:16px 18px}
+.task-l2 .scene-card .scene-icon{width:36px;height:36px;font-size:18px}
+.task-l2 .scene-card .scene-title{font-size:14px}
+.task-l2 .scene-card .scene-arrow{display:none}
+.task-l3{margin-bottom:10px}
+.task-l3>summary{list-style:none;cursor:pointer;font-size:12.5px;color:var(--ts);padding:11px 16px;border:1px dashed var(--border);border-radius:12px;background:var(--card);display:flex;align-items:center;gap:8px;user-select:none;transition:all .2s}
+.task-l3>summary::-webkit-details-marker{display:none}
+.task-l3>summary::before{content:'▸';color:var(--td);transition:transform .2s}
+.task-l3[open]>summary::before{transform:rotate(90deg)}
+.task-l3[open]>summary{margin-bottom:10px;border-style:solid}
+.task-l3 .scene-card{margin-bottom:8px}
+.task-l3 .toolbox-section{padding-top:2px}
 
 /* ===== 快速工具箱 ===== */
 .toolbox-section{padding:14px 0 10px;max-width:560px;margin:0 auto}
@@ -90,7 +129,7 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
 #newbieProgressBar{letter-spacing:2px;font-size:14px}
 .newbie-steps{display:flex;flex-direction:column;gap:10px}
 .newbie-step{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;background:var(--card);border:1px solid var(--border);border-radius:14px;transition:all .2s}
-.newbie-step.done{background:rgba(44,95,58,.04);border-color:rgba(44,95,58,.15)}
+.newbie-step.done{background:rgba(26,61,36,.04);border-color:rgba(26,61,36,.15)}
 .newbie-step.done .step-status{color:var(--brand)}
 .newbie-step.done .step-title{color:var(--brand)}
 .step-status{font-size:20px;font-weight:700;color:var(--td);line-height:1;flex-shrink:0;margin-top:2px}
@@ -108,7 +147,7 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
   url('assets/images/hero-living-dimension.jpg') center/cover no-repeat;
   z-index:0;opacity:.3}
 .hero > *{position:relative;z-index:2}
-.hero-brand{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--brand);background:rgba(44,95,58,.06);border:1px solid rgba(44,95,58,.12);border-radius:20px;padding:6px 16px;margin-bottom:16px;letter-spacing:1px}
+.hero-brand{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--brand);background:rgba(26,61,36,.06);border:1px solid rgba(26,61,36,.12);border-radius:20px;padding:6px 16px;margin-bottom:16px;letter-spacing:1px}
 .hero h1{font-size:40px;font-weight:800;color:var(--dk);letter-spacing:1px;line-height:1.2}
 .hero h1 .highlight{color:var(--brand)}
 .hero-sub{font-size:16px;color:var(--tx);margin-top:8px;font-weight:500;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.5}
@@ -131,18 +170,18 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
 .daily-date{font-size:11px;color:var(--td);margin-left:auto}
 .daily-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
 .daily-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;transition:all .2s;cursor:pointer;text-decoration:none;color:inherit}
-.daily-item:hover{background:#fff;border-color:var(--p);transform:translateY(-1px);box-shadow:0 2px 8px rgba(61,90,62,.06)}
+.daily-item:hover{background:#fff;border-color:var(--p);transform:translateY(-1px);box-shadow:0 2px 8px rgba(26,61,36,.06)}
 .daily-item .di-reason{font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0;margin-top:2px}
-.daily-item .di-reason.hard{background:rgba(196,106,58,.12);color:var(--fire)}
-.daily-item .di-reason.core{background:rgba(61,90,62,.1);color:var(--p)}
+.daily-item .di-reason.hard{background:rgba(201,169,98,.12);color:var(--fire)}
+.daily-item .di-reason.core{background:rgba(26,61,36,.1);color:var(--p)}
 .daily-item .di-reason.qi{background:rgba(200,149,109,.12);color:var(--wood)}
 .daily-item .di-reason.law{background:rgba(107,95,168,.1);color:#7e6a90}
 .daily-item .di-body{flex:1;min-width:0}
 .daily-item .di-name{font-size:14px;font-weight:700;color:var(--dk);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px}
 .daily-item .di-answer{font-size:12px;color:var(--ts);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .daily-item .di-layer{font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;margin-top:4px;display:inline-block}
-.daily-item .di-layer.dao{background:rgba(61,90,62,.08);color:var(--p)}
-.daily-item .di-layer.fa{background:rgba(196,106,58,.08);color:var(--fire)}
+.daily-item .di-layer.dao{background:rgba(26,61,36,.08);color:var(--p)}
+.daily-item .di-layer.fa{background:rgba(201,169,98,.08);color:var(--fire)}
 .daily-item .di-layer.shu{background:rgba(107,95,168,.08);color:#7e6a90}
 .daily-item .di-layer.qi{background:rgba(200,149,109,.08);color:var(--wood)}
 .daily-loading{text-align:center;padding:20px;color:var(--td);font-size:13px}
@@ -158,8 +197,8 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
 .daily-more .daily-source strong{color:var(--p)}
 
 /* ===== 浮动聊天按钮 ===== */
-.chat-fab{position:fixed;bottom:28px;right:28px;z-index:9999;width:56px;height:56px;border-radius:50%;background:var(--p);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(61,90,62,.25);transition:all .3s;display:flex;align-items:center;justify-content:center;font-size:24px;-webkit-tap-highlight-color:transparent}
-.chat-fab:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(61,90,62,.35)}
+.chat-fab{position:fixed;bottom:28px;right:28px;z-index:9999;width:56px;height:56px;border-radius:50%;background:var(--p);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(26,61,36,.25);transition:all .3s;display:flex;align-items:center;justify-content:center;font-size:24px;-webkit-tap-highlight-color:transparent}
+.chat-fab:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(26,61,36,.35)}
 .chat-fab:active{transform:scale(.94)}
 .chat-fab-dot{position:absolute;top:0;right:0;width:12px;height:12px;background:var(--fire);border:2px solid #fff;border-radius:50%;animation:pulse 2s infinite}
 .chat-dialog{position:fixed;bottom:96px;right:28px;z-index:9998;width:360px;max-height:520px;background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.12);display:none;flex-direction:column;overflow:hidden;animation:chatIn .25s ease-out}
@@ -236,6 +275,10 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
   .scene-icon { width: 36px; height: 36px; font-size: 18px !important; }
   .scene-title { font-size: 14px !important; }
   .scene-desc { font-size: 12px !important; }
+  .task-l1 { padding: 18px 18px !important; gap: 12px !important; }
+  .task-l1 .tl1-icon { width: 40px !important; height: 40px !important; font-size: 20px !important; }
+  .task-l1 .tl1-title { font-size: 16px !important; }
+  .task-l2 { grid-template-columns: 1fr !important; }
   .toolbox-section { padding: 4px 0 20px !important; }
   .toolbox-grid { grid-template-columns: repeat(3,1fr) !important; gap: 5px !important; }
   .toolbox-item { padding: 10px 6px !important; }
@@ -272,6 +315,16 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
 <!-- 统一导航栏（fs-nav.js 注入） -->
 <div id="fs-nav-root"></div>
 
+<!-- ====== 领域 Tab 通栏 ====== -->
+<nav class="domain-bar" aria-label="领域切换">
+  <div class="domain-bar-inner">
+    <button class="domain-tab active" data-domain="trade" onclick="switchDomain('trade')">交易服务</button>
+    <button class="domain-tab" data-domain="asset" onclick="switchDomain('asset')">资产运营</button>
+    <button class="domain-tab" data-domain="decor" onclick="switchDomain('decor')">家装服务</button>
+    <button class="domain-tab" data-domain="special" onclick="switchDomain('special')">特殊居住</button>
+  </div>
+</nav>
+
 <div class="main">
 
 <!-- ====== 先价值后理念：一句话价值 + 三角色 ====== -->
@@ -297,6 +350,9 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
   </button>
 </div>
 
+<!-- ====== 领域说明（非交易领域显示） ====== -->
+<div class="domain-context" id="domainContext" style="display:none"></div>
+
 <!-- ====== HERO 区 ====== -->
 <div class="hero">
   <div class="hero-brand">🌬️ 风声</div>
@@ -315,188 +371,205 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
   <div class="stats-source">数据更新于 2026-10-15｜来源：风声知识底座 v2.3</div>
 </div>
 
+<!-- ====== 领域一 · 交易服务 ====== -->
+<div class="domain-panel active" id="domainTrade">
+
 <!-- ====== 经纪人模式内容 ====== -->
 <div class="role-content active" id="roleAgent">
   <div class="scene-section">
-    <div class="scene-card" onclick="location.href='/curation/'">
-      <div class="scene-icon">🏠</div>
-      <div class="scene-body">
-        <div class="scene-title">遇到一个买房/卖房客户</div>
-        <div class="scene-desc">策展引擎 → 生成全生命周期报告</div>
+    <!-- L1 · 黄金主任务 -->
+    <a class="task-l1" href="/curation/">
+      <div class="tl1-icon">🏠</div>
+      <div class="tl1-body">
+        <div class="tl1-badge">黄金主任务</div>
+        <div class="tl1-title">遇到一个买房/卖房客户</div>
+        <div class="tl1-desc">策展引擎 → 生成全生命周期报告</div>
       </div>
-      <div class="scene-arrow">→</div>
-    </div>
-    <div class="scene-card" onclick="location.href='/knowledge/'">
-      <div class="scene-icon">📚</div>
-      <div class="scene-body">
-        <div class="scene-title">想提升专业能力</div>
-        <div class="scene-desc">知识库 → 学习词条 → 居住服务品质测评</div>
-      </div>
-      <div class="scene-arrow">→</div>
-    </div>
-    <div class="scene-card" onclick="var f=document.querySelector('.chat-fab');if(f)f.click()">
-      <div class="scene-icon">💬</div>
-      <div class="scene-body">
-        <div class="scene-title">需要回复客户一个问题</div>
-        <div class="scene-desc">AI对话 → 直接提问</div>
-      </div>
-      <div class="scene-arrow">→</div>
-    </div>
-    <div class="scene-card" onclick="location.href='/clients/'">
-      <div class="scene-icon">📋</div>
-      <div class="scene-body">
-        <div class="scene-title">管理我的客户</div>
-        <div class="scene-desc">客户档案 → 查看/编辑客户信息</div>
-      </div>
-      <div class="scene-arrow">→</div>
-    </div>
-    <div class="scene-card" onclick="location.href=WOTU_URL">
-      <div class="scene-icon">🎓</div>
-      <div class="scene-body">
-        <div class="scene-title">沃土计划 · 校园实训</div>
-        <div class="scene-desc">人才评价交付系统 → 测学练考评</div>
-      </div>
-      <div class="scene-arrow">→</div>
-    </div>
-  </div>
+      <div class="tl1-arrow">→</div>
+    </a>
 
-  <!-- 完整工具清单：按任务分组 -->
-  <div class="toolbox-section">
-    <div class="toolbox-header">
-      <span class="toolbox-title">📦 完整工具清单</span>
-      <span class="toolbox-hint">按任务分组，点击进入</span>
-    </div>
-
-    <div class="toolbox-group">
-      <div class="toolbox-group-label">🎯 服务客户</div>
-      <div class="toolbox-grid">
-        <a href="/clients/" class="toolbox-item"><span class="tbi-icon">👥</span><span class="tbi-name">客户管理</span><span class="tbi-desc">客户档案管理</span></a>
-        <a href="/curation/" class="toolbox-item"><span class="tbi-icon">📋</span><span class="tbi-name">策展引擎</span><span class="tbi-desc">全生命周期报告</span></a>
-        <a href="/s1-report/" class="toolbox-item"><span class="tbi-icon">📊</span><span class="tbi-name">带看报告</span><span class="tbi-desc">带看数据报告</span></a>
+    <!-- L2 · 两个次任务 -->
+    <div class="task-l2">
+      <div class="scene-card" onclick="location.href='/knowledge/'">
+        <div class="scene-icon">📚</div>
+        <div class="scene-body">
+          <div class="scene-title">想提升专业能力</div>
+          <div class="scene-desc">知识库 → 学习词条 → 关怀测评</div>
+        </div>
+      </div>
+      <div class="scene-card" onclick="var f=document.querySelector('.chat-fab');if(f)f.click()">
+        <div class="scene-icon">💬</div>
+        <div class="scene-body">
+          <div class="scene-title">需要回复客户一个问题</div>
+          <div class="scene-desc">AI对话 → 直接提问</div>
+        </div>
       </div>
     </div>
 
-    <div class="toolbox-group">
-      <div class="toolbox-group-label">📚 专业提升</div>
-      <div class="toolbox-grid">
-        <a href="/knowledge/" class="toolbox-item"><span class="tbi-icon">📖</span><span class="tbi-name">知识库</span><span class="tbi-desc">5,843 条专业词条</span></a>
-        <a href="/dictionary/" class="toolbox-item"><span class="tbi-icon">📕</span><span class="tbi-name">词典</span><span class="tbi-desc">专业术语查询</span></a>
-        <a href="/care-test/" class="toolbox-item"><span class="tbi-icon">🔍</span><span class="tbi-name">品质测评</span><span class="tbi-desc">居住服务品质评估</span></a>
-        <a href="/scene/" class="toolbox-item"><span class="tbi-icon">🎯</span><span class="tbi-name">场景</span><span class="tbi-desc">76 个服务场景</span></a>
-        <a href="/mentor/" class="toolbox-item"><span class="tbi-icon">🧑‍🏫</span><span class="tbi-name">导师</span><span class="tbi-desc">AI 导师指导</span></a>
-      </div>
-    </div>
+    <!-- L3 · 全部工具（默认收起） -->
+    <details class="task-l3">
+      <summary>全部工具 · 按任务分组</summary>
 
-    <div class="toolbox-group">
-      <div class="toolbox-group-label">⚡ 效率工具</div>
-      <div class="toolbox-grid">
-        <a href="/decoder/" class="toolbox-item"><span class="tbi-icon">🔓</span><span class="tbi-name">解码器</span><span class="tbi-desc">场景解码分析</span></a>
-        <a href="/search/" class="toolbox-item"><span class="tbi-icon">🔎</span><span class="tbi-name">搜索</span><span class="tbi-desc">全局搜索</span></a>
-        <a href="/breeder/" class="toolbox-item"><span class="tbi-icon">🌱</span><span class="tbi-name">培育</span><span class="tbi-desc">能力成长计划</span></a>
-        <a href="/favorites/" class="toolbox-item"><span class="tbi-icon">⭐</span><span class="tbi-name">收藏</span><span class="tbi-desc">我的收藏</span></a>
+      <div class="scene-card" onclick="location.href='/clients/'">
+        <div class="scene-icon">📋</div>
+        <div class="scene-body">
+          <div class="scene-title">管理我的客户</div>
+          <div class="scene-desc">客户档案 → 查看/编辑客户信息</div>
+        </div>
+        <div class="scene-arrow">→</div>
       </div>
-    </div>
+      <div class="scene-card" onclick="location.href=WOTU_URL">
+        <div class="scene-icon">🎓</div>
+        <div class="scene-body">
+          <div class="scene-title">沃土计划 · 校园实训</div>
+          <div class="scene-desc">人才评价交付系统 → 测学练考评</div>
+        </div>
+        <div class="scene-arrow">→</div>
+      </div>
+
+      <div class="toolbox-section">
+        <div class="toolbox-group">
+          <div class="toolbox-group-label">🎯 服务客户</div>
+          <div class="toolbox-grid">
+            <a href="/clients/" class="toolbox-item"><span class="tbi-icon">👥</span><span class="tbi-name">客户管理</span><span class="tbi-desc">客户档案管理</span></a>
+            <a href="/curation/" class="toolbox-item"><span class="tbi-icon">📋</span><span class="tbi-name">策展引擎</span><span class="tbi-desc">全生命周期报告</span></a>
+            <a href="/s1-report/" class="toolbox-item"><span class="tbi-icon">📊</span><span class="tbi-name">带看报告</span><span class="tbi-desc">带看数据报告</span></a>
+          </div>
+        </div>
+
+        <div class="toolbox-group">
+          <div class="toolbox-group-label">📚 专业提升</div>
+          <div class="toolbox-grid">
+            <a href="/knowledge/" class="toolbox-item"><span class="tbi-icon">📖</span><span class="tbi-name">知识库</span><span class="tbi-desc">5,843 条专业词条</span></a>
+            <a href="/dictionary/" class="toolbox-item"><span class="tbi-icon">📕</span><span class="tbi-name">词典</span><span class="tbi-desc">专业术语查询</span></a>
+            <a href="/care-test/" class="toolbox-item"><span class="tbi-icon">🔍</span><span class="tbi-name">关怀测评</span><span class="tbi-desc">身心关怀状态自测</span></a>
+            <a href="/scene/" class="toolbox-item"><span class="tbi-icon">🎯</span><span class="tbi-name">场景</span><span class="tbi-desc">76 个服务场景</span></a>
+            <a href="/mentor/" class="toolbox-item"><span class="tbi-icon">🧑‍🏫</span><span class="tbi-name">导师</span><span class="tbi-desc">AI 导师指导</span></a>
+          </div>
+        </div>
+
+        <div class="toolbox-group">
+          <div class="toolbox-group-label">⚡ 效率工具</div>
+          <div class="toolbox-grid">
+            <a href="/decoder/" class="toolbox-item"><span class="tbi-icon">🔓</span><span class="tbi-name">解码器</span><span class="tbi-desc">场景解码分析</span></a>
+            <a href="/search/" class="toolbox-item"><span class="tbi-icon">🔎</span><span class="tbi-name">搜索</span><span class="tbi-desc">全局搜索</span></a>
+            <a href="/breeder/" class="toolbox-item"><span class="tbi-icon">🌱</span><span class="tbi-name">培育</span><span class="tbi-desc">能力成长计划</span></a>
+            <a href="/favorites/" class="toolbox-item"><span class="tbi-icon">⭐</span><span class="tbi-name">收藏</span><span class="tbi-desc">我的收藏</span></a>
+          </div>
+        </div>
+      </div>
+    </details>
   </div>
 </div>
 
 <!-- ====== 管理者模式内容 ====== -->
 <div class="role-content" id="roleManager" style="display:none">
   <div class="scene-section">
-    <div class="scene-card" onclick="location.href='/dashboard/'">
-      <div class="scene-icon">📈</div>
-      <div class="scene-body">
-        <div class="scene-title">运营数据看板</div>
-        <div class="scene-desc">主站流量 → 小程序数据 → 转化监控 → 健康检查</div>
+    <!-- L1 · 黄金主任务 -->
+    <a class="task-l1" href="/agent-academy/">
+      <div class="tl1-icon">🧠</div>
+      <div class="tl1-body">
+        <div class="tl1-badge">黄金主任务</div>
+        <div class="tl1-title">训练自己的数字员工</div>
+        <div class="tl1-desc">智能体学院 → 学习方法 → 分工 → 考核</div>
       </div>
-      <div class="scene-arrow">→</div>
-    </div>
-    <div class="scene-card" onclick="location.href='/agent-academy/'">
-      <div class="scene-icon">🧠</div>
-      <div class="scene-body">
-        <div class="scene-title">训练自己的数字员工</div>
-        <div class="scene-desc">智能体学院 → 学习方法 → 分工 → 考核</div>
-      </div>
-      <div class="scene-arrow">→</div>
-    </div>
-    <div class="scene-card" onclick="location.href='/dashboard-manager/'">
-      <div class="scene-icon">📊</div>
-      <div class="scene-body">
-        <div class="scene-title">我的数字员工看板</div>
-        <div class="scene-desc">岗位分布 → 产出统计 → 评分排名</div>
-      </div>
-      <div class="scene-arrow">→</div>
-    </div>
-    <div class="scene-card" onclick="location.href='/assessment/'">
-      <div class="scene-icon">🏅</div>
-      <div class="scene-body">
-        <div class="scene-title">数字员工五把尺子考核</div>
-        <div class="scene-desc">工作量 → 复杂度 → 复用 → 运行 → 并发</div>
-      </div>
-      <div class="scene-arrow">→</div>
-    </div>
-    <div class="scene-card" onclick="location.href='/toolkit/'">
-      <div class="scene-icon">📦</div>
-      <div class="scene-body">
-        <div class="scene-title">方法论工具包</div>
-        <div class="scene-desc">可下载/可打印的完整方法论报告</div>
-      </div>
-      <div class="scene-arrow">→</div>
-    </div>
-    <div class="scene-card" onclick="location.href='/agent-academy/#contact'">
-      <div class="scene-icon">📞</div>
-      <div class="scene-body">
-        <div class="scene-title">咨询落地辅导</div>
-        <div class="scene-desc">加微信 → 预约线下辅导</div>
-      </div>
-      <div class="scene-arrow">→</div>
-    </div>
-  </div>
+      <div class="tl1-arrow">→</div>
+    </a>
 
-  <div class="toolbox-section">
-    <div class="toolbox-header">
-      <span class="toolbox-title">📦 完整工具清单</span>
-      <span class="toolbox-hint">按任务分组，点击进入</span>
-    </div>
-
-    <div class="toolbox-group">
-      <div class="toolbox-group-label">📊 运营监控</div>
-      <div class="toolbox-grid">
-        <a href="/dashboard/" class="toolbox-item"><span class="tbi-icon">📈</span><span class="tbi-name">运营数据看板</span><span class="tbi-desc">🔒 内部 · 主站+小程序数据</span></a>
-        <a href="/dashboard-manager/" class="toolbox-item"><span class="tbi-icon">📊</span><span class="tbi-name">数字员工看板</span><span class="tbi-desc">我的团队总览</span></a>
-        <a href="/agent-assessment/" class="toolbox-item"><span class="tbi-icon">🏅</span><span class="tbi-name">五把尺子考核</span><span class="tbi-desc">🔒 内部 · 绩效评分</span></a>
+    <!-- L2 · 两个次任务 -->
+    <div class="task-l2">
+      <div class="scene-card" onclick="location.href='/dashboard-manager/'">
+        <div class="scene-icon">📊</div>
+        <div class="scene-body">
+          <div class="scene-title">我的数字员工看板</div>
+          <div class="scene-desc">岗位分布 → 产出统计 → 评分排名</div>
+        </div>
+      </div>
+      <div class="scene-card" onclick="location.href='/agent-assessment/'">
+        <div class="scene-icon">🏅</div>
+        <div class="scene-body">
+          <div class="scene-title">五把尺子考核 🔒</div>
+          <div class="scene-desc">工作量 → 复杂度 → 复用 → 运行 → 并发</div>
+        </div>
       </div>
     </div>
 
-    <div class="toolbox-group">
-      <div class="toolbox-group-label">🧠 数字员工建设</div>
-      <div class="toolbox-grid">
-        <a href="/agent-academy/" class="toolbox-item"><span class="tbi-icon">🧠</span><span class="tbi-name">智能体学院</span><span class="tbi-desc">训练方法教程</span></a>
-        <a href="/agent-academy/#lifecycle" class="toolbox-item"><span class="tbi-icon">👥</span><span class="tbi-name">岗位职责模板</span><span class="tbi-desc">直接套用</span></a>
-        <a href="/agent-academy/#lifecycle" class="toolbox-item"><span class="tbi-icon">🤝</span><span class="tbi-name">协作方法论</span><span class="tbi-desc">多人协作</span></a>
-      </div>
-    </div>
+    <!-- L3 · 全部工具（默认收起） -->
+    <details class="task-l3">
+      <summary>全部工具 · 运营监控 / 团队建设 / 落地沉淀</summary>
 
-    <div class="toolbox-group">
-      <div class="toolbox-group-label">📞 落地与沉淀</div>
-      <div class="toolbox-grid">
-        <a href="/toolkit/" class="toolbox-item"><span class="tbi-icon">📦</span><span class="tbi-name">方法论工具包</span><span class="tbi-desc">完整报告下载</span></a>
-        <a href="/agent-academy/#contact" class="toolbox-item"><span class="tbi-icon">📞</span><span class="tbi-name">咨询辅导</span><span class="tbi-desc">预约线下辅导</span></a>
-        <a href="/agent-academy/#examples" class="toolbox-item"><span class="tbi-icon">📚</span><span class="tbi-name">成功案例</span><span class="tbi-desc">参考学习</span></a>
-        <a href="#" onclick="location.href=WOTU_URL;return false;" class="toolbox-item"><span class="tbi-icon">🎓</span><span class="tbi-name">沃土计划</span><span class="tbi-desc">校园实训·人才评价交付</span></a>
+      <div class="scene-card" onclick="location.href='/dashboard/'">
+        <div class="scene-icon">📈</div>
+        <div class="scene-body">
+          <div class="scene-title">运营数据看板</div>
+          <div class="scene-desc">主站流量 → 小程序数据 → 转化监控 → 健康检查</div>
+        </div>
+        <div class="scene-arrow">→</div>
       </div>
-    </div>
-  </div>
+      <div class="scene-card" onclick="location.href='/toolkit/'">
+        <div class="scene-icon">📦</div>
+        <div class="scene-body">
+          <div class="scene-title">方法论工具包</div>
+          <div class="scene-desc">可下载/可打印的完整方法论报告</div>
+        </div>
+        <div class="scene-arrow">→</div>
+      </div>
+      <div class="scene-card" onclick="location.href='/agent-academy/#contact'">
+        <div class="scene-icon">📞</div>
+        <div class="scene-body">
+          <div class="scene-title">咨询落地辅导</div>
+          <div class="scene-desc">加微信 → 预约线下辅导</div>
+        </div>
+        <div class="scene-arrow">→</div>
+      </div>
 
-  <div class="toolbox-section">
-    <div class="toolbox-header">
-      <span class="toolbox-title">📚 方法论库 · 团队沉淀</span>
-      <span class="toolbox-hint">团队沉淀的实操方法论，点击了解</span>
-    </div>
-    <div class="toolbox-grid">
-      <a href="/toolkit/methodology/" class="toolbox-item"><span class="tbi-icon">📄</span><span class="tbi-name">管理层汇报定稿法</span><span class="tbi-desc">凝练·取舍·定稿的汇报方法论</span></a>
-      <a href="/toolkit/methodology/" class="toolbox-item"><span class="tbi-icon">🎯</span><span class="tbi-name">商业定位聚焦法</span><span class="tbi-desc">聚焦定位·明确目标的做事方法</span></a>
-      <a href="/toolkit/methodology/" class="toolbox-item"><span class="tbi-icon">🧪</span><span class="tbi-name">方法论蒸馏四问</span><span class="tbi-desc">四问蒸馏·把经验沉淀成方法</span></a>
-    </div>
+      <div class="toolbox-section">
+        <div class="toolbox-header">
+          <span class="toolbox-title">📦 完整工具清单</span>
+          <span class="toolbox-hint">按任务分组，点击进入</span>
+        </div>
+
+        <div class="toolbox-group">
+          <div class="toolbox-group-label">📊 运营监控</div>
+          <div class="toolbox-grid">
+            <a href="/dashboard/" class="toolbox-item"><span class="tbi-icon">📈</span><span class="tbi-name">运营数据看板</span><span class="tbi-desc">🔒 内部 · 主站+小程序数据</span></a>
+            <a href="/dashboard-manager/" class="toolbox-item"><span class="tbi-icon">📊</span><span class="tbi-name">数字员工看板</span><span class="tbi-desc">我的团队总览</span></a>
+            <a href="/agent-assessment/" class="toolbox-item"><span class="tbi-icon">🏅</span><span class="tbi-name">五把尺子考核</span><span class="tbi-desc">🔒 内部 · 绩效评分</span></a>
+          </div>
+        </div>
+
+        <div class="toolbox-group">
+          <div class="toolbox-group-label">🧠 数字员工建设</div>
+          <div class="toolbox-grid">
+            <a href="/agent-academy/" class="toolbox-item"><span class="tbi-icon">🧠</span><span class="tbi-name">智能体学院</span><span class="tbi-desc">训练方法教程</span></a>
+            <a href="/agent-academy/#lifecycle" class="toolbox-item"><span class="tbi-icon">👥</span><span class="tbi-name">岗位职责模板</span><span class="tbi-desc">直接套用</span></a>
+            <a href="/agent-academy/#lifecycle" class="toolbox-item"><span class="tbi-icon">🤝</span><span class="tbi-name">协作方法论</span><span class="tbi-desc">多人协作</span></a>
+          </div>
+        </div>
+
+        <div class="toolbox-group">
+          <div class="toolbox-group-label">📞 落地与沉淀</div>
+          <div class="toolbox-grid">
+            <a href="/toolkit/" class="toolbox-item"><span class="tbi-icon">📦</span><span class="tbi-name">方法论工具包</span><span class="tbi-desc">完整报告下载</span></a>
+            <a href="/agent-academy/#contact" class="toolbox-item"><span class="tbi-icon">📞</span><span class="tbi-name">咨询辅导</span><span class="tbi-desc">预约线下辅导</span></a>
+            <a href="/agent-academy/#examples" class="toolbox-item"><span class="tbi-icon">📚</span><span class="tbi-name">成功案例</span><span class="tbi-desc">参考学习</span></a>
+            <a href="#" onclick="location.href=WOTU_URL;return false;" class="toolbox-item"><span class="tbi-icon">🎓</span><span class="tbi-name">沃土计划</span><span class="tbi-desc">校园实训·人才评价交付</span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbox-section">
+        <div class="toolbox-header">
+          <span class="toolbox-title">📚 方法论库 · 团队沉淀</span>
+          <span class="toolbox-hint">团队沉淀的实操方法论，点击了解</span>
+        </div>
+        <div class="toolbox-grid">
+          <a href="/toolkit/methodology/" class="toolbox-item"><span class="tbi-icon">📄</span><span class="tbi-name">管理层汇报定稿法</span><span class="tbi-desc">凝练·取舍·定稿的汇报方法论</span></a>
+          <a href="/toolkit/methodology/" class="toolbox-item"><span class="tbi-icon">🎯</span><span class="tbi-name">商业定位聚焦法</span><span class="tbi-desc">聚焦定位·明确目标的做事方法</span></a>
+          <a href="/toolkit/methodology/" class="toolbox-item"><span class="tbi-icon">🧪</span><span class="tbi-name">方法论蒸馏四问</span><span class="tbi-desc">四问蒸馏·把经验沉淀成方法</span></a>
+        </div>
+      </div>
+    </details>
   </div>
 </div>
 
@@ -511,7 +584,7 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
       <div class="newbie-step" id="step1">
         <div class="step-status" id="step1Status">□</div>
         <div class="step-body">
-          <div class="step-title">完成品质测评</div>
+          <div class="step-title">完成关怀测评</div>
           <div class="step-desc">了解自己的专业水平，看看哪些地方需要提升</div>
           <div class="step-action"><a href="/care-test/" class="step-btn">开始测评 →</a></div>
         </div>
@@ -536,15 +609,146 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
   </div>
 
   <div class="newbie-recommend">
-    <div class="toolbox-header">
-      <span class="toolbox-title">💡 推荐了解</span>
+    <!-- L3 · 推荐了解（默认收起） -->
+    <details class="task-l3">
+      <summary>推荐了解 · 关怀测评 / 知识库 / 策展引擎 / 沃土计划</summary>
+      <div class="toolbox-grid">
+        <a href="/care-test/" class="toolbox-item"><span class="tbi-icon">🔍</span><span class="tbi-name">关怀测评</span><span class="tbi-desc">了解你的专业水平</span></a>
+        <a href="/knowledge/" class="toolbox-item"><span class="tbi-icon">📖</span><span class="tbi-name">知识库</span><span class="tbi-desc">学习基础知识</span></a>
+        <a href="/curation/" class="toolbox-item"><span class="tbi-icon">📋</span><span class="tbi-name">策展引擎</span><span class="tbi-desc">生成客户报告</span></a>
+        <a href="#" onclick="location.href=WOTU_URL;return false;" class="toolbox-item"><span class="tbi-icon">🎓</span><span class="tbi-name">沃土计划</span><span class="tbi-desc">校园实训·人才评价交付</span></a>
+      </div>
+    </details>
+  </div>
+</div>
+</div><!-- /domainTrade -->
+
+<!-- ====== 领域二 · 资产运营 ====== -->
+<div class="domain-panel" id="domainAsset">
+  <div class="scene-section">
+    <a class="task-l1" href="/knowledge/?domain=rental">
+      <div class="tl1-icon">🏢</div>
+      <div class="tl1-body">
+        <div class="tl1-badge">黄金主任务</div>
+        <div class="tl1-title">租赁托管与物业服务怎么做</div>
+        <div class="tl1-desc">知识底座 · 租赁管家 / 物业管家岗位词条</div>
+      </div>
+      <div class="tl1-arrow">→</div>
+    </a>
+
+    <div class="task-l2">
+      <div class="scene-card" onclick="location.href='/knowledge/?domain=property'">
+        <div class="scene-icon">🏠</div>
+        <div class="scene-body">
+          <div class="scene-title">物业管家怎么做</div>
+          <div class="scene-desc">知识底座 · 物业服务域词条</div>
+        </div>
+      </div>
+      <div class="scene-card" onclick="location.href='/dictionary/'">
+        <div class="scene-icon">📕</div>
+        <div class="scene-body">
+          <div class="scene-title">查一个专业术语</div>
+          <div class="scene-desc">词典 · 术语与口径查询</div>
+        </div>
+      </div>
     </div>
-    <div class="toolbox-grid">
-      <a href="/care-test/" class="toolbox-item"><span class="tbi-icon">🔍</span><span class="tbi-name">品质测评</span><span class="tbi-desc">了解你的专业水平</span></a>
-      <a href="/knowledge/" class="toolbox-item"><span class="tbi-icon">📖</span><span class="tbi-name">知识库</span><span class="tbi-desc">学习基础知识</span></a>
-      <a href="/curation/" class="toolbox-item"><span class="tbi-icon">📋</span><span class="tbi-name">策展引擎</span><span class="tbi-desc">生成客户报告</span></a>
-      <a href="#" onclick="location.href=WOTU_URL;return false;" class="toolbox-item"><span class="tbi-icon">🎓</span><span class="tbi-name">沃土计划</span><span class="tbi-desc">校园实训·人才评价交付</span></a>
+
+    <details class="task-l3">
+      <summary>通用工具 · 关怀测评 / 场景 / 导师 / 搜索</summary>
+      <div class="toolbox-grid">
+        <a href="/care-test/" class="toolbox-item"><span class="tbi-icon">🔍</span><span class="tbi-name">关怀测评</span><span class="tbi-desc">身心关怀状态自测</span></a>
+        <a href="/scene/" class="toolbox-item"><span class="tbi-icon">🎯</span><span class="tbi-name">场景</span><span class="tbi-desc">服务场景库</span></a>
+        <a href="/mentor/" class="toolbox-item"><span class="tbi-icon">🧑‍🏫</span><span class="tbi-name">导师</span><span class="tbi-desc">AI 导师指导</span></a>
+        <a href="/search/" class="toolbox-item"><span class="tbi-icon">🔎</span><span class="tbi-name">搜索</span><span class="tbi-desc">全局搜索</span></a>
+      </div>
+      <div class="domain-context" style="margin-top:10px">客户档案、策展引擎目前仅支持交易服务，资产运营专用工具仍在建设中。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ====== 领域三 · 家装服务 ====== -->
+<div class="domain-panel" id="domainDecor">
+  <div class="scene-section">
+    <a class="task-l1" href="/knowledge/?domain=decor">
+      <div class="tl1-icon">🪚</div>
+      <div class="tl1-body">
+        <div class="tl1-badge">黄金主任务</div>
+        <div class="tl1-title">整装设计与工程监理怎么做</div>
+        <div class="tl1-desc">知识底座 · 整装设计师 / 家装工程监理词条</div>
+      </div>
+      <div class="tl1-arrow">→</div>
+    </a>
+
+    <div class="task-l2">
+      <div class="scene-card" onclick="location.href='/knowledge/?domain=homekeep'">
+        <div class="scene-icon">🧹</div>
+        <div class="scene-body">
+          <div class="scene-title">家政与收纳怎么做</div>
+          <div class="scene-desc">知识底座 · 家政服务员 / 收纳整理师词条</div>
+        </div>
+      </div>
+      <div class="scene-card" onclick="location.href='/dictionary/'">
+        <div class="scene-icon">📕</div>
+        <div class="scene-body">
+          <div class="scene-title">查一个专业术语</div>
+          <div class="scene-desc">词典 · 术语与口径查询</div>
+        </div>
+      </div>
     </div>
+
+    <details class="task-l3">
+      <summary>通用工具 · 关怀测评 / 场景 / 导师 / 搜索</summary>
+      <div class="toolbox-grid">
+        <a href="/care-test/" class="toolbox-item"><span class="tbi-icon">🔍</span><span class="tbi-name">关怀测评</span><span class="tbi-desc">身心关怀状态自测</span></a>
+        <a href="/scene/" class="toolbox-item"><span class="tbi-icon">🎯</span><span class="tbi-name">场景</span><span class="tbi-desc">服务场景库</span></a>
+        <a href="/mentor/" class="toolbox-item"><span class="tbi-icon">🧑‍🏫</span><span class="tbi-name">导师</span><span class="tbi-desc">AI 导师指导</span></a>
+        <a href="/search/" class="toolbox-item"><span class="tbi-icon">🔎</span><span class="tbi-name">搜索</span><span class="tbi-desc">全局搜索</span></a>
+      </div>
+      <div class="domain-context" style="margin-top:10px">家装领域的报价、施工节点等专用工具仍在建设中。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ====== 领域四 · 特殊居住 ====== -->
+<div class="domain-panel" id="domainSpecial">
+  <div class="scene-section">
+    <a class="task-l1" href="/knowledge/?domain=elderly">
+      <div class="tl1-icon">👴</div>
+      <div class="tl1-body">
+        <div class="tl1-badge">黄金主任务</div>
+        <div class="tl1-title">适老服务怎么做</div>
+        <div class="tl1-desc">知识底座 · 适老服务师岗位词条</div>
+      </div>
+      <div class="tl1-arrow">→</div>
+    </a>
+
+    <div class="task-l2">
+      <div class="scene-card" onclick="location.href='/dictionary/'">
+        <div class="scene-icon">📕</div>
+        <div class="scene-body">
+          <div class="scene-title">查一个专业术语</div>
+          <div class="scene-desc">词典 · 术语与口径查询</div>
+        </div>
+      </div>
+      <div class="scene-card" onclick="location.href='/care-test/'">
+        <div class="scene-icon">🔍</div>
+        <div class="scene-body">
+          <div class="scene-title">先看看自己的状态</div>
+          <div class="scene-desc">关怀测评 · 身心关怀自测</div>
+        </div>
+      </div>
+    </div>
+
+    <details class="task-l3">
+      <summary>通用工具 · 场景 / 导师 / 搜索</summary>
+      <div class="toolbox-grid">
+        <a href="/scene/" class="toolbox-item"><span class="tbi-icon">🎯</span><span class="tbi-name">场景</span><span class="tbi-desc">服务场景库</span></a>
+        <a href="/mentor/" class="toolbox-item"><span class="tbi-icon">🧑‍🏫</span><span class="tbi-name">导师</span><span class="tbi-desc">AI 导师指导</span></a>
+        <a href="/search/" class="toolbox-item"><span class="tbi-icon">🔎</span><span class="tbi-name">搜索</span><span class="tbi-desc">全局搜索</span></a>
+        <a href="/care-test/" class="toolbox-item"><span class="tbi-icon">🔍</span><span class="tbi-name">关怀测评</span><span class="tbi-desc">身心关怀状态自测</span></a>
+      </div>
+      <div class="domain-context" style="margin-top:10px">适老改造评估等专用工具仍在建设中。</div>
+    </details>
   </div>
 </div>
 
@@ -609,22 +813,22 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
 
 <!-- 反馈组件样式 -->
 <style>
-.fs-feedback-widget{max-width:640px;margin:32px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(44,95,58,0.10);text-align:center;font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif}
-.fs-fb-title{font-size:17px;font-weight:700;color:#2C5F3A;margin-bottom:4px}
+.fs-feedback-widget{max-width:640px;margin:32px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(26,61,36,0.10);text-align:center;font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif}
+.fs-fb-title{font-size:17px;font-weight:700;color:#1a3d24;margin-bottom:4px}
 .fs-fb-subtitle{font-size:13px;color:#888;margin-bottom:16px}
 .fs-fb-stars{font-size:36px;margin-bottom:8px;user-select:none;display:flex;justify-content:center;gap:6px}
 .fs-star{cursor:pointer;color:#ddd;transition:color 0.2s,transform 0.15s;display:inline-block}
-.fs-star:hover,.fs-star.active{color:#E8742C;transform:scale(1.18)}
+.fs-star:hover,.fs-star.active{color:#8a6d2f;transform:scale(1.18)}
 .fs-fb-score-label{font-size:13px;color:#888;margin-bottom:16px;min-height:20px}
-.fs-fb-text{width:100%;min-height:64px;padding:10px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f4ef;resize:vertical;outline:none;box-sizing:border-box;margin-bottom:10px;font-family:inherit}
-.fs-fb-text:focus{border-color:#2C5F3A}
-.fs-fb-contact{width:100%;padding:9px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f4ef;outline:none;box-sizing:border-box;margin-bottom:14px;font-family:inherit}
-.fs-fb-contact:focus{border-color:#2C5F3A}
-.fs-fb-submit{width:100%;padding:12px 0;background:#2C5F3A;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:background 0.2s;font-family:inherit}
+.fs-fb-text{width:100%;min-height:64px;padding:10px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f5f0;resize:vertical;outline:none;box-sizing:border-box;margin-bottom:10px;font-family:inherit}
+.fs-fb-text:focus{border-color:#1a3d24}
+.fs-fb-contact{width:100%;padding:9px 12px;border:1px solid #e0d8c8;border-radius:10px;font-size:14px;color:#333;background:#f7f5f0;outline:none;box-sizing:border-box;margin-bottom:14px;font-family:inherit}
+.fs-fb-contact:focus{border-color:#1a3d24}
+.fs-fb-submit{width:100%;padding:12px 0;background:#1a3d24;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:background 0.2s;font-family:inherit}
 .fs-fb-submit:disabled{background:#b5a89a;cursor:not-allowed}
 .fs-fb-submit:not(:disabled):hover{background:#1e3d26}
 .fs-fb-result{margin-top:12px;font-size:14px;min-height:22px}
-.fs-fb-result.success{color:#2C5F3A}
+.fs-fb-result.success{color:#1a3d24}
 .fs-fb-result.error{color:#c0392b}
 @media(max-width:640px){.fs-feedback-widget{margin:20px 12px;padding:18px 14px}.fs-fb-stars{font-size:30px;gap:4px}}
 </style>
@@ -899,6 +1103,55 @@ var WOTU_URL = 'https://wotu.fengsheng.tech/login';
   window.switchRole = switchRole;
   switchRole(savedRole);
 
+  // ====== 领域切换逻辑 ======
+  var DOMAIN_KEY = 'fs_domain';
+  var DOMAIN_META = {
+    trade: {
+      title: '先选你的角色，<br>再看我们为你做了什么',
+      sub: '每一个角色，风声都给你一套从知识到工具的一站式方案。',
+      ctx: ''
+    },
+    asset: {
+      title: '资产运营<br>先把租赁与物业的知识补齐',
+      sub: '知识底座已收录租赁管家、物业管家两个岗位的专业词条与场景。',
+      ctx: '本领域已收录岗位：<b>租赁管家</b> · <b>物业管家</b>　专用运营工具仍在建设中'
+    },
+    decor: {
+      title: '家装服务<br>先把设计与交付的知识补齐',
+      sub: '知识底座已收录整装设计师、家装工程监理、家政服务员、收纳整理师四个岗位。',
+      ctx: '本领域已收录岗位：<b>整装设计师</b> · <b>家装工程监理</b> · <b>家政服务员</b> · <b>收纳整理师</b>'
+    },
+    special: {
+      title: '特殊居住<br>先把适老服务的知识补齐',
+      sub: '知识底座已收录适老服务师岗位的专业词条与场景。',
+      ctx: '本领域已收录岗位：<b>适老服务师</b>　专用评估工具仍在建设中'
+    }
+  };
+
+  function switchDomain(domain) {
+    document.querySelectorAll('.domain-tab').forEach(function(btn) {
+      btn.classList.toggle('active', btn.dataset.domain === domain);
+    });
+    document.querySelectorAll('.domain-panel').forEach(function(el) {
+      el.classList.toggle('active', el.id === 'domain' + domain.charAt(0).toUpperCase() + domain.slice(1));
+    });
+    var meta = DOMAIN_META[domain] || DOMAIN_META.trade;
+    var rgTitle = document.querySelector('.role-guide .rg-title');
+    var rgSub = document.querySelector('.role-guide .rg-sub');
+    var switcher = document.getElementById('roleSwitcher');
+    var ctx = document.getElementById('domainContext');
+    if (rgTitle) rgTitle.innerHTML = meta.title;
+    if (rgSub) rgSub.textContent = meta.sub;
+    if (switcher) switcher.style.display = domain === 'trade' ? '' : 'none';
+    if (ctx) {
+      ctx.style.display = domain === 'trade' ? 'none' : 'block';
+      ctx.innerHTML = meta.ctx;
+    }
+    localStorage.setItem(DOMAIN_KEY, domain);
+  }
+  window.switchDomain = switchDomain;
+  switchDomain(localStorage.getItem(DOMAIN_KEY) || 'trade');
+
   // 新用户进度
   var visited = {};
   try { visited = JSON.parse(localStorage.getItem(NEWBIE_KEY) || '{}'); } catch(e) {}
@@ -939,7 +1192,7 @@ var WOTU_URL = 'https://wotu.fengsheng.tech/login';
 
   var bar = document.createElement('div');
   bar.id = 'fs-nav-bar';
-  bar.style.cssText = 'display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 16px;background:linear-gradient(135deg,#3d5a3e 0%,#2c4430 100%);color:#fff;box-shadow:0 2px 12px rgba(44,68,48,.25);position:sticky;top:0;z-index:1000;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif';
+  bar.style.cssText = 'display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 16px;background:linear-gradient(135deg,#1a3d24 0%,#12291a 100%);color:#fff;box-shadow:0 2px 12px rgba(44,68,48,.25);position:sticky;top:0;z-index:1000;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif';
 
   bar.innerHTML = '<div style="display:flex;align-items:center;gap:4px;font-size:13px;overflow:hidden;flex-shrink:0">'
     + '<a href="/" style="color:rgba(255,255,255,.7);text-decoration:none;white-space:nowrap">首页</a>'
