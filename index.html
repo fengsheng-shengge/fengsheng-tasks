@@ -31,6 +31,12 @@
   --brand:#1a3d24;--brand-light:#2d5a3d;--accent:#1a3d24;
   --wood:#c8956d;
   --r:4px;
+  /* === v1.1 双主体语义色（AI武装人）=== */
+  --gold:#c9a962;--gold-light:#d4b876;--gold-bg:#faf5ea;
+  --danger:#c0392b;--danger-bg:#fdecea;
+  /* === 间距/圆角系统 === */
+  --space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--space-2xl:48px;
+  --radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:20px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{font-size:16px;-webkit-text-size-adjust:100%}
@@ -78,18 +84,60 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
 .scene-arrow{font-size:16px;color:var(--td);flex-shrink:0;transition:transform .2s}
 .scene-card:hover .scene-arrow{transform:translateX(4px);color:var(--brand)}
 
-/* ===== 首页三层任务导航（P0-02）===== */
-.task-l1{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#1a3d24,#12291a);border:1.5px solid rgba(201,169,98,.55);border-radius:20px;padding:24px 26px;margin-bottom:12px;cursor:pointer;text-decoration:none;color:#fff;transition:all .25s;box-shadow:0 8px 32px rgba(26,61,36,.2)}
-.task-l1:hover{transform:translateY(-2px);box-shadow:0 12px 38px rgba(26,61,36,.28);border-color:rgba(201,169,98,.8)}
+/* ===== v1.1 新增：问候语区 ===== */
+.greeting{max-width:560px;margin:18px auto 14px;padding:0 8px;text-align:center}
+.greeting h1{font-size:22px;font-weight:800;color:var(--dk);line-height:1.35;margin-bottom:6px;letter-spacing:.2px}
+.greeting h1 strong{color:var(--brand);font-weight:900}
+.greeting p{font-size:13px;color:var(--ts)}
+.greeting p strong{color:var(--brand);font-weight:700}
+
+/* ===== v1.1 新增：七环节成长闭环 ===== */
+.loop-section{max-width:560px;margin:14px auto;padding:18px 16px;border:1px solid var(--border);border-radius:16px;background:var(--card)}
+.loop-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.loop-title{font-size:14px;font-weight:700;color:var(--dk)}
+.loop-progress{font-size:12px;color:var(--brand);font-weight:600}
+.loop-steps{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px}
+.loop-step{text-align:center;flex:1;min-width:48px;opacity:.4}
+.loop-step-circle{width:40px;height:40px;border-radius:50%;background:#f0ede5;color:var(--ts);display:flex;align-items:center;justify-content:center;font-size:16px;margin:0 auto 5px}
+.loop-step-name{font-size:11px;font-weight:600;color:var(--tx)}
+.loop-step.done{opacity:1}
+.loop-step.done .loop-step-circle{background:var(--p-bg);color:var(--brand)}
+.loop-step.done .loop-step-name{color:var(--brand)}
+.loop-step.active{opacity:1}
+.loop-step.active .loop-step-circle{background:var(--brand);color:#fff;box-shadow:0 0 0 3px rgba(26,61,36,.15)}
+.loop-step.active .loop-step-name{color:var(--brand);font-weight:800}
+
+/* ===== 首页三层任务导航（P0-02 · v1.1 升级：金色主动作 + 双主体铁律）===== */
+.task-l1{display:block;background:linear-gradient(135deg,#12291a,#1a3d24);border:2px solid var(--gold);border-radius:20px;padding:22px 24px 52px;margin-bottom:12px;position:relative;box-shadow:0 8px 32px rgba(26,61,36,.2)}
+.task-l1:hover{transform:translateY(-2px);box-shadow:0 12px 38px rgba(26,61,36,.28);border-color:#d4b876}
 .task-l1:active{transform:scale(.985)}
+.task-l1 .tl1-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px}
 .task-l1 .tl1-icon{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.14);display:grid;place-items:center;font-size:24px;flex-shrink:0}
 .task-l1 .tl1-body{flex:1;min-width:0}
-.task-l1 .tl1-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;color:#e3c98d;border:1px solid rgba(201,169,98,.5);border-radius:4px;padding:2px 7px;margin-bottom:6px}
-.task-l1 .tl1-kicker{font-size:11px;letter-spacing:.5px;opacity:.72;margin-bottom:4px}
-.task-l1 .tl1-title{font-size:19px;font-weight:800;margin-bottom:3px}
-.task-l1 .tl1-desc{font-size:12.5px;opacity:.82}
-.task-l1 .tl1-arrow{font-size:18px;opacity:.85;flex-shrink:0;transition:transform .2s}
-.task-l1:hover .tl1-arrow{transform:translateX(4px)}
+.task-l1 .tl1-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--p-d);background:var(--gold);border-radius:20px;padding:3px 10px;margin-bottom:6px}
+.task-l1 .tl1-title{font-size:18px;font-weight:800;color:#fff;line-height:1.35;margin-bottom:4px}
+.task-l1 .tl1-desc{font-size:12.5px;color:rgba(255,255,255,.72);line-height:1.6}
+/* v1.1 双主体动作区 */
+.task-l1 .tl1-actions{display:flex;gap:10px;align-items:center;margin-top:4px}
+.task-l1 .tl1-btn-gold{background:var(--gold);color:var(--p-d);border:none;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:background .2s;box-shadow:0 4px 16px rgba(201,169,98,.3)}
+.task-l1 .tl1-btn-gold:hover{background:var(--gold-light);transform:translateY(-1px)}
+.task-l1 .tl1-btn-outline{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.35);border-radius:8px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .2s;text-decoration:none}
+.task-l1 .tl1-btn-outline:hover{border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.06)}
+/* v1.1 铁律文案（右下角） */
+.task-l1 .tl1-iron-rule{position:absolute;bottom:14px;right:18px;font-size:11px;color:rgba(255,255,255,.38);letter-spacing:.3px}
+.task-l2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.task-l2 .scene-card{margin-bottom:0;flex-direction:column;align-items:flex-start;gap:10px;padding:16px 18px}
+.task-l2 .scene-card .scene-icon{width:36px;height:36px;font-size:18px}
+.task-l2 .scene-card .scene-title{font-size:14px}
+.task-l2 .scene-card .scene-arrow{display:none}
+.task-l3{margin-bottom:10px}
+.task-l3>summary{list-style:none;cursor:pointer;font-size:12.5px;color:var(--ts);padding:11px 16px;border:1px dashed var(--border);border-radius:12px;background:var(--card);display:flex;align-items:center;gap:8px;user-select:none;transition:all .2s}
+.task-l3>summary::-webkit-details-marker{display:none}
+.task-l3>summary::before{content:'▸';color:var(--td);transition:transform .2s}
+.task-l3[open]>summary::before{transform:rotate(90deg)}
+.task-l3[open]>summary{margin-bottom:10px;border-style:solid}
+.task-l3 .scene-card{margin-bottom:8px}
+.task-l3 .toolbox-section{padding-top:2px}
 .task-l2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .task-l2 .scene-card{margin-bottom:0;flex-direction:column;align-items:flex-start;gap:10px;padding:16px 18px}
 .task-l2 .scene-card .scene-icon{width:36px;height:36px;font-size:18px}
@@ -360,15 +408,38 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
   <div class="hero-sub">知识底座 + 数字工具，帮你把查证、检索、写方案这类活干完，你只管做更重要的判断与担当。</div>
 </div>
 
-<!-- ====== 数据概览 ====== -->
+<!-- ====== v1.1 新增：问候语区 ====== -->
+<div class="greeting">
+  <h1>晚上好，<strong>师傅</strong></h1>
+  <p>你今天已生成 <strong>3</strong> 份方案，复核率 <strong>100%</strong>，继续保持。</p>
+</div>
+
+<!-- ====== 数据信任区（v1.1 改结果导向 + 示例数据标注）====== -->
 <div class="stats-section">
   <div class="stats-row">
-    <div class="stat-item"><div class="stat-num">5,843</div><div class="stat-label">专业词条</div></div>
-    <div class="stat-item"><div class="stat-num">76</div><div class="stat-label">服务场景</div></div>
-    <div class="stat-item"><div class="stat-num">13</div><div class="stat-label">知识域</div></div>
-    <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">数字员工</div></div>
+    <div class="stat-item"><div class="stat-num" style="color:var(--gold)">1,286</div><div class="stat-label">已生成客户报告</div></div>
+    <div class="stat-item"><div class="stat-num">342</div><div class="stat-label">服务过的匠人</div></div>
+    <div class="stat-item"><div class="stat-num">96%</div><div class="stat-label">报告采纳率</div></div>
+    <div class="stat-item"><div class="stat-num" style="color:var(--gold)">★★ 优秀级</div><div class="stat-label">匠星认证体系</div></div>
   </div>
-  <div class="stats-source">数据更新于 2026-10-15｜来源：风声知识底座 v2.3</div>
+  <div class="stats-source">* 以上为示例数据，上线前替换为真实统计</div>
+</div>
+
+<!-- ====== v1.1 新增：七环节成长闭环 ====== -->
+<div class="loop-section">
+  <div class="loop-header">
+    <div class="loop-title">🔄 我的能力成长闭环</div>
+    <div class="loop-progress">当前进度：「测」已完成，进入「学」</div>
+  </div>
+  <div class="loop-steps">
+    <div class="loop-step active"><div class="loop-step-circle">📊</div><div class="loop-step-name">测</div></div>
+    <div class="loop-step"><div class="loop-step-circle">📚</div><div class="loop-step-name">学</div></div>
+    <div class="loop-step"><div class="loop-step-circle">🎯</div><div class="loop-step-name">练</div></div>
+    <div class="loop-step"><div class="loop-step-circle">📝</div><div class="loop-step-name">考</div></div>
+    <div class="loop-step"><div class="loop-step-circle">⭐</div><div class="loop-step-name">评</div></div>
+    <div class="loop-step"><div class="loop-step-circle">🤝</div><div class="loop-step-name">配</div></div>
+    <div class="loop-step"><div class="loop-step-circle">💬</div><div class="loop-step-name">反馈</div></div>
+  </div>
 </div>
 
 <!-- ====== 领域一 · 交易服务 ====== -->
@@ -377,16 +448,22 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
 <!-- ====== 经纪人模式内容 ====== -->
 <div class="role-content active" id="roleAgent">
   <div class="scene-section">
-    <!-- L1 · 黄金主任务 -->
-    <a class="task-l1" href="/curation/">
-      <div class="tl1-icon">🏠</div>
-      <div class="tl1-body">
-        <div class="tl1-badge">黄金主任务</div>
-        <div class="tl1-title">遇到一个买房/卖房客户</div>
-        <div class="tl1-desc">策展引擎 → 生成全生命周期报告</div>
+    <!-- L1 · 黄金主任务（v1.1：金色主动作 + 双主体铁律） -->
+    <div class="task-l1">
+      <div class="tl1-head">
+        <div class="tl1-icon">🏠</div>
+        <div class="tl1-body">
+          <div class="tl1-badge">◆ 黄金主任务</div>
+          <div class="tl1-title">刚接到新客户？一键生成置业方案建议书</div>
+          <div class="tl1-desc">输入客户需求，AI帮你结构化梳理画像、匹配房源、测算税费贷款，你负责判断与终审。所有生成内容进入编辑器，复核后方可发送。</div>
+        </div>
       </div>
-      <div class="tl1-arrow">→</div>
-    </a>
+      <div class="tl1-actions">
+        <a class="tl1-btn-gold" href="/curation/">◆ 开始生成方案</a>
+        <a class="tl1-btn-outline" href="/clients/">查看我的待办</a>
+      </div>
+      <div class="tl1-iron-rule">AI产出 · 真人复核 · 方可发送</div>
+    </div>
 
     <!-- L2 · 两个次任务 -->
     <div class="task-l2">
@@ -465,16 +542,22 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
 <!-- ====== 管理者模式内容 ====== -->
 <div class="role-content" id="roleManager" style="display:none">
   <div class="scene-section">
-    <!-- L1 · 黄金主任务 -->
-    <a class="task-l1" href="/agent-academy/">
-      <div class="tl1-icon">🧠</div>
-      <div class="tl1-body">
-        <div class="tl1-badge">黄金主任务</div>
-        <div class="tl1-title">训练自己的数字员工</div>
-        <div class="tl1-desc">智能体学院 → 学习方法 → 分工 → 考核</div>
+    <!-- L1 · 黄金主任务（v1.1：金色主动作 + 双主体铁律） -->
+    <div class="task-l1">
+      <div class="tl1-head">
+        <div class="tl1-icon">🧠</div>
+        <div class="tl1-body">
+          <div class="tl1-badge">◆ 黄金主任务</div>
+          <div class="tl1-title">带好门店的数字员工队伍</div>
+          <div class="tl1-desc">智能体学院 → 分工定岗 → 五把尺子考核 → 看板监控。AI产出的数字员工，真人定规则、做终判。</div>
+        </div>
       </div>
-      <div class="tl1-arrow">→</div>
-    </a>
+      <div class="tl1-actions">
+        <a class="tl1-btn-gold" href="/agent-academy/">◆ 开始训练</a>
+        <a class="tl1-btn-outline" href="/dashboard-manager/">数字员工看板</a>
+      </div>
+      <div class="tl1-iron-rule">AI产出 · 真人复核 · 方可运行</div>
+    </div>
 
     <!-- L2 · 两个次任务 -->
     <div class="task-l2">
