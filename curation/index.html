@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>策展引擎 · 客户生命周期报告 · 风声</title>
 <style>
-:root{--bg:#f7f5f0;--bg2:#e6ede7;--card:#fff;--card-h:#f0ece5;--border:rgba(26,61,36,.09);--border-h:rgba(26,61,36,.2);--p:#1a3d24;--p-d:#12291a;--p-l:#6b8f70;--p-bg:rgba(26,61,36,.05);--fire:#1a3d24;--fire-l:#12291a;--charcoal:#3a3a38;--dk:#1a1a1a;--tx:#555;--ts:#7a8478;--td:#a8b0a6;--brand:#1a3d24;--brand-light:#2d5a3d;--accent:#1a3d24;--cozy:#4e7e8e;--health:#4c7352;--r:8px;--r2:12px;--safe:#3a6346;--health:#4c7352;--neat:#1a3d24;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e}
+:root{--bg:#f7f5f0;--bg2:#e6ede7;--card:#fff;--card-h:#f0ece5;--border:rgba(26,61,36,.09);--border-h:rgba(26,61,36,.2);--p:#1a3d24;--p-d:#12291a;--p-l:#6b8f70;--p-bg:rgba(26,61,36,.05);--fire:#1a3d24;--fire-l:#12291a;--charcoal:#3a3a38;--dk:#1a1a1a;--tx:#555;--ts:#7a8478;--td:#a8b0a6;--brand:#1a3d24;--brand-light:#2d5a3d;--accent:#1a3d24;--cozy:#4e7e8e;--health:#4c7352;--r:8px;--r2:12px;--gold:#c9a962;--gold-bg:#faf5ea;--danger:#c0392b;--danger-bg:#fdecea;--warn:#e67e22;--warn-bg:#fef3e2;--safe:#3a6346;--success:#27ae60;--health:#4c7352;--neat:#1a3d24;--warm:#c46a3a;--beauty:#7e6a90;--cozy:#4e7e8e}
 *{margin:0;padding:0;box-sizing:border-box}
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -126,6 +126,63 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 /* 工具提示 */
 .hint{font-size:11px;color:var(--td);margin:4px 0 8px;line-height:1.5}
 .client-bar{background:rgba(26,61,36,.04);border:1px solid rgba(26,61,36,.1);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--brand);margin:8px 0}
+
+/* ========== v1.1 复核工作流：AI初稿 + 风险分级 + 真人复核 ========== */
+/* 报告头部 AI 初稿标记 */
+.result-head.ai-draft{position:relative;background:var(--gold-bg);border:1px dashed var(--gold);border-radius:var(--r2);padding:38px 14px 14px
+.result-head.ai-draft::before{content:'◆ AI 初稿';position:absolute;top:-10px;left:12px;background:var(--gold);color:var(--p-d);font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:12px}
+.result-head.human-reviewed{position:relative;background:rgba(26,61,36,.06);border:1px solid var(--brand);border-radius:var(--r2);padding:38px 14px 14px
+.result-head.human-reviewed::before{content:'✓ 真人已审';position:absolute;top:-10px;left:12px;background:var(--brand);color:#fff;font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:12px}
+.iron-rule{font-size:11px;color:var(--ts);margin-top:8px;text-align:right;font-style:italic;letter-spacing:.3px}
+
+/* 风险分级条（插在 result-head 和 timeline 之间） */
+.risk-summary{display:flex;gap:10px;margin:10px 0 14px;flex-wrap:wrap}
+.risk-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:16px;font-size:11px;font-weight:700}
+.risk-chip.hard{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(192,57,43,.15)}
+.risk-chip.medium{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(230,126,34,.15)}
+.risk-chip.soft{background:rgba(26,61,36,.04);color:var(--brand);border:1px solid rgba(26,61,36,.1)}
+
+/* 条目风险分级 */
+.say-item.risk-hard{border:2px solid var(--danger);background:var(--danger-bg)}
+.say-item.risk-medium{border-left:3px solid var(--warn)}
+.bring-item.risk-hard{border:2px solid var(--danger);background:var(--danger-bg)}
+.bring-item.risk-medium{border-left:3px solid var(--warn)}
+.ask-item.risk-hard{border:2px solid var(--danger);background:var(--danger-bg)}
+.ask-item.risk-medium{border-left:3px solid var(--warn)}
+.followup-item.risk-hard{border:2px solid var(--danger);background:var(--danger-bg)}
+.followup-item.risk-medium{border-left:3px solid var(--warn)}
+
+/* 高风险强制展开 + 真人确认 */
+.risk-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px}
+.risk-badge.hard{background:var(--danger);color:#fff}
+.risk-badge.medium{background:var(--warn);color:#fff}
+.risk-confirm{margin-top:8px;padding:8px 12px;background:rgba(192,57,43,.06);border:1px dashed var(--danger);border-radius:6px;font-size:11px;color:var(--danger);display:flex;align-items:center;gap:8px}
+.risk-confirm input[type="checkbox"]{width:14px;height:14px;accent-color:var(--danger)}
+.risk-confirm label{font-size:11px;color:var(--danger);font-weight:600;cursor:pointer;flex:1}
+.risk-confirm.confirmed{background:rgba(39,174,96,.06);border-color:var(--success);color:var(--success)}
+.risk-confirm.confirmed label{color:var(--success)}
+
+/* 复核区 */
+.review-panel{margin-top:24px;padding:18px;border-radius:var(--r2);background:var(--card);border:2px solid var(--border)}
+.review-panel.human-reviewed{border-color:var(--brand);background:rgba(26,61,36,.04)}
+.review-panel h3{font-size:15px;font-weight:800;color:var(--dk);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.review-panel h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px var(--gold-bg)}
+.review-panel.human-reviewed h3 .dot{background:var(--brand);box-shadow:0 0 0 3px var(--p-bg)}
+.review-stat{display:flex;gap:16px;margin-bottom:14px;font-size:12px;color:var(--ts)}
+.review-stat b{color:var(--dk);font-weight:700}
+.review-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn-send{background:var(--brand);color:#fff;border:none;border-radius:var(--r);padding:11px 24px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;transition:all .2s}
+.btn-send:hover{background:var(--brand-light)}
+.btn-send:disabled{background:var(--td);cursor:not-allowed;opacity:.6}
+.btn-draft{background:transparent;color:var(--gold);border:1.5px solid var(--gold);border-radius:var(--r);padding:11px 24px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .2s;text-decoration:none}
+.btn-draft:hover{background:var(--gold-bg)}
+.review-status{font-size:11px;color:var(--ts);margin-left:auto;font-style:italic}
+
+/* 版本历史 */
+.version-bar{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);font-size:11px;color:var(--ts)}
+.version-chip{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:10px;background:var(--card-h);border:1px solid var(--border)}
+.version-chip.current{background:var(--p-bg);border-color:var(--brand);color:var(--brand);font-weight:700}
+.version-chip.ai{background:var(--gold-bg);border-color:var(--gold);color:var(--p-d)}
 </style>
 </head>
 <body>
@@ -212,6 +269,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
     <div class="sec" id="result-followup">
       <div class="sec-h"><span class="em">💌</span>④ 见后跟进 <span class="sec-count" id="followup-count"></span></div>
       <div id="followup-list"></div>
+    </div>
+
+    <!-- v1.1 复核工作流：真人确认后才能发送 -->
+    <div class="review-panel" id="reviewPanel">
+      <h3><span class="dot"></span>真人复核 · 逐条确认后才能发送给客户</h3>
+      <div class="review-stat">
+        <span>高风险 <b id="reviewHard">0</b> 项</span>
+        <span>中风险 <b id="reviewMedium">0</b> 项</span>
+        <span>未确认 <b id="reviewPending">0</b> 项</span>
+        <span style="margin-left:auto;color:var(--danger);font-size:11px" id="reviewHint">⚠️ 高风险项必须逐条勾选确认</span>
+      </div>
+      <div class="review-actions">
+        <button class="btn-send" id="btnSend" disabled onclick="publishReport()">◆ 发送给客户</button>
+        <a class="btn-draft" href="/knowledge/">📚 去知识库查更多词条</a>
+        <span class="review-status" id="reviewStatus">当前状态：AI 初稿（金色标记）</span>
+      </div>
+      <!-- 版本历史 -->
+      <div class="version-bar">
+        <span>📜 版本历史：</span>
+        <span class="version-chip ai">v1 · AI 初稿（生成时间自动记录）</span>
+        <span class="version-chip" id="verHumanChip" style="display:none">v2 · 真人已审</span>
+        <span class="version-chip current">当前：AI 初稿</span>
+      </div>
     </div>
 
     <button class="btn-line" onclick="resetForm()">← 修改条件重新生成</button>
@@ -371,7 +451,8 @@ function generateCurationFromEntries(input, entriesByGroup) {
     detail: (x.e.corePoint && x.e.corePoint.slice(0,2).join('；')) || '',
     legalRef: isRealLegal(x.e.legalRef) ? x.e.legalRef : null,
     hasLegal: isRealLegal(x.e.legalRef),
-    entryId: x.e.id
+    entryId: x.e.id,
+    severity: x.e.severity || "soft"
   }))
 
   // 4) 带
@@ -653,13 +734,38 @@ async function generate() {
 }
 
 function renderResult(result) {
-  // 头部
+  // ===== v1.1: AI 初稿标记 + 双主体铁律 =====
+  document.getElementById('result-head').classList.remove('human-reviewed')
+  document.getElementById('result-head').classList.add('ai-draft')
+  document.getElementById('reviewPanel').classList.remove('human-reviewed')
+  document.getElementById('verHumanChip').style.display = 'none'
+  document.querySelector('.version-chip.current').textContent = '当前：AI 初稿'
+  document.querySelector('.version-chip.current').className = 'version-chip current'
+
+  // 头部（金色角标 + 铁律文案）
+  var hardTotal = 0, medTotal = 0
+  var allItems = result.say.concat(result.bring).concat(result.ask.map(a=>({severity:'soft'}))).concat(result.followups.map(f=>({severity:'soft'})))
+  // 高风险关键词二次识别（针对 ask/followups 没 severity 的）
+  var hardKws = ['税费','贷款','合同','政策','法律','法规','违约','赔偿','监管','资格','限购','限购','首付','利率','抵押','监管','司法','判例','仲裁']
+  result.say.forEach(function(s){ if((s.severity||'')==='hard'||hardKws.some(function(k){return (s.title||'').indexOf(k)>=0})) hardTotal++; else if((s.severity||'')==='medium'||hardKws.some(function(k){return (s.title||'').indexOf(k)>=0&&s.severity!=='hard'})) medTotal++; })
+  result.bring.forEach(function(b){ if((b.severity||'')==='hard') hardTotal++; else if((b.severity||'')==='medium') medTotal++; })
+
   document.getElementById('result-head').innerHTML = `
     <div class="rh-axis">${escHtml(result.axisLabel)}</div>
     ${result.dimensionLabels.length ? '<div class="rh-dims">' + result.dimensionLabels.map(d => '<span class="dim-tag">' + escHtml(d) + '</span>').join('') + '</div>' : ''}
     ${result.freeText ? '<div style="font-size:12px;color:var(--ts);margin-top:6px">自由诉求：' + escHtml(result.freeText) + '</div>' : ''}
     <div class="honesty">${escHtml(result.honesty.note)}</div>
+    <div class="iron-rule">AI 初稿 · 真人复核 · 方可发送给客户（双主体铁律）</div>
   `
+
+  // 风险汇总条
+  var riskSummaryHtml = '<div class="risk-summary">'
+  if (hardTotal > 0) riskSummaryHtml += '<span class="risk-chip hard">⚠️ 高风险 ' + hardTotal + ' 项（必须逐条确认）</span>'
+  if (medTotal > 0)  riskSummaryHtml += '<span class="risk-chip medium">⚡ 中风险 ' + medTotal + ' 项</span>'
+  riskSummaryHtml += '<span class="risk-chip soft">✓ 低风险</span>'
+  riskSummaryHtml += '</div>'
+  // 插在 result-head 和 timeline 之间
+  document.getElementById('result-head').insertAdjacentHTML('afterend', riskSummaryHtml)
 
   // 时间轴
   document.getElementById('result-timeline').innerHTML = result.timeline.map(t => `
@@ -670,60 +776,173 @@ function renderResult(result) {
     </div>
   `).join('')
 
+  // ===== 风险判断辅助 =====
+  function riskClass(sev, titleOrQ) {
+    var s = (sev || '').toLowerCase()
+    if (s === 'hard') return 'risk-hard'
+    if (s === 'medium') return 'risk-medium'
+    // 兜底：关键词扫描
+    var text = (titleOrQ || '').toLowerCase()
+    if (hardKws.some(function(k){ return text.indexOf(k.toLowerCase())>=0 })) return 'risk-hard'
+    return ''
+  }
+  function riskBadge(sev, titleOrQ) {
+    var s = (sev || '').toLowerCase()
+    var text = (titleOrQ || '').toLowerCase()
+    if (s === 'hard' || hardKws.some(function(k){ return text.indexOf(k.toLowerCase())>=0 }))
+      return '<span class="risk-badge hard">高风险 ⚠</span>'
+    if (s === 'medium') return '<span class="risk-badge medium">中风险</span>'
+    return ''
+  }
+  function riskConfirm(sev, titleOrQ, idx, grpKey) {
+    var text = (titleOrQ || '').toLowerCase()
+    var isHard = (sev === 'hard') || hardKws.some(function(k){ return text.indexOf(k.toLowerCase())>=0 })
+    if (!isHard) return ''
+    var cbId = 'chk_' + grpKey + '_' + idx
+    return '<div class="risk-confirm" id="rc_' + grpKey + '_' + idx + '">' +
+      '<input type="checkbox" id="' + cbId + '" onchange="onRiskConfirm(this,' + (grpKey==='say'?'1':grpKey==='bring'?'2':grpKey==='ask'?'3':'4') + ',' + idx + ')">' +
+      '<label for="' + cbId + '">我已逐条真人确认此高风险条目内容与客户实际情况无误</label>' +
+      '</div>'
+  }
+
   // 说
-  const sayList = document.getElementById('say-list')
+  var sayList = document.getElementById('say-list')
   document.getElementById('say-count').textContent = result.say.length + ' 条'
   if (result.say.length > 0) {
-    sayList.innerHTML = result.say.map(s => `
-      <div class="say-item">
-        <div class="say-title">${escHtml(s.title)}</div>
-        <div class="say-point">${escHtml(s.point)}</div>
-        ${s.detail ? '<div class="say-detail">' + escHtml(s.detail) + '</div>' : ''}
-        <span class="ref ${s.hasLegal ? 'ref-ok' : 'ref-wait'}">
-          ${s.hasLegal ? '真实法源 ✓ ' + escHtml(s.legalRef) : '经验要点 · 依据整理中'}
-        </span>
-      </div>
-    `).join('')
+    sayList.innerHTML = result.say.map(function(s, i) {
+      var rc = riskClass(s.severity, s.title)
+      var rb = riskBadge(s.severity, s.title)
+      var confirmBox = riskConfirm(s.severity, s.title, i, 'say')
+      return '<div class="say-item ' + rc + '">' +
+        '<div class="say-title">' + escHtml(s.title) + rb + '</div>' +
+        '<div class="say-point">' + escHtml(s.point) + '</div>' +
+        (s.detail ? '<div class="say-detail">' + escHtml(s.detail) + '</div>' : '') +
+        '<span class="ref ' + (s.hasLegal ? 'ref-ok' : 'ref-wait') + '">' +
+          (s.hasLegal ? '真实法源 ✓ ' + escHtml(s.legalRef) : '经验要点 · 依据整理中') +
+        '</span>' + confirmBox +
+      '</div>'
+    }).join('')
   } else {
     sayList.innerHTML = '<div class="empty-mini">暂无强相关条目，建议结合你的专业判断补充</div>'
   }
 
   // 带
-  const bringList = document.getElementById('bring-list')
+  var bringList = document.getElementById('bring-list')
   document.getElementById('bring-count').textContent = result.bring.length + ' 条'
   if (result.bring.length > 0) {
-    bringList.innerHTML = result.bring.map(b => `
-      <div class="bring-item">
-        <div class="bring-title">${escHtml(b.title)}</div>
-        <div class="bring-benefit">${escHtml(b.benefit)}</div>
-      </div>
-    `).join('')
+    bringList.innerHTML = result.bring.map(function(b, i) {
+      var rc = riskClass(b.severity, b.title)
+      var rb = riskBadge(b.severity, b.title)
+      var confirmBox = riskConfirm(b.severity, b.title, i, 'bring')
+      return '<div class="bring-item ' + rc + '">' +
+        '<div class="bring-title">' + escHtml(b.title) + rb + '</div>' +
+        '<div class="bring-benefit">' + escHtml(b.benefit) + '</div>' + confirmBox +
+      '</div>'
+    }).join('')
   } else {
     bringList.innerHTML = '<div class="empty-mini">暂无强相关条目，建议结合实勘补充</div>'
   }
 
   // 问
-  const askList = document.getElementById('ask-list')
+  var askList = document.getElementById('ask-list')
   document.getElementById('ask-count').textContent = result.ask.length + ' 条'
   if (result.ask.length > 0) {
-    askList.innerHTML = result.ask.map(a => `<div class="ask-item">${escHtml(a.q)}</div>`).join('')
+    askList.innerHTML = result.ask.map(function(a, i) {
+      var rc = riskClass('', a.q)
+      var rb = riskBadge('', a.q)
+      var confirmBox = riskConfirm('', a.q, i, 'ask')
+      return '<div class="ask-item ' + rc + '">' + escHtml(a.q) + rb + confirmBox + '</div>'
+    }).join('')
   } else {
     askList.innerHTML = '<div class="empty-mini">暂无必问条目</div>'
   }
 
   // 跟
-  const followupList = document.getElementById('followup-list')
+  var followupList = document.getElementById('followup-list')
   document.getElementById('followup-count').textContent = result.followups.length + ' 条'
   if (result.followups.length > 0) {
-    followupList.innerHTML = result.followups.map(f => `
-      <div class="follow-item">
-        <div class="follow-theme">${escHtml(f.theme)}</div>
-        <div class="follow-text">${escHtml(f.text)}</div>
-      </div>
-    `).join('')
+    followupList.innerHTML = result.followups.map(function(f, i) {
+      var rc = riskClass('', f.theme + f.text)
+      var rb = riskBadge('', f.theme)
+      var confirmBox = riskConfirm('', f.theme, i, 'flw')
+      return '<div class="follow-item ' + rc + '">' +
+        '<div class="follow-theme">' + escHtml(f.theme) + rb + '</div>' +
+        '<div class="follow-text">' + escHtml(f.text) + '</div>' + confirmBox +
+      '</div>'
+    }).join('')
   } else {
     followupList.innerHTML = '<div class="empty-mini">暂无跟进建议</div>'
   }
+
+  // ===== 更新复核区统计 =====
+  document.getElementById('reviewHard').textContent = hardTotal
+  document.getElementById('reviewMedium').textContent = medTotal
+  // 状态归零：所有高风险 confirm 恢复未勾选
+  updateReviewStatus()
+}
+
+// ===== v1.1 复核工作流：状态切换 + 强制发送 =====
+function updateReviewStatus() {
+  var hardBoxes = document.querySelectorAll('.risk-confirm input[type=checkbox]')
+  var confirmed = 0
+  hardBoxes.forEach(function(cb){ if (cb.checked) confirmed++ })
+  var pending = hardBoxes.length - confirmed
+  document.getElementById('reviewPending').textContent = pending
+
+  var sendBtn = document.getElementById('btnSend')
+  var hintEl = document.getElementById('reviewHint')
+  var statusEl = document.getElementById('reviewStatus')
+
+  if (hardBoxes.length === 0) {
+    // 无高风险，直接可发
+    sendBtn.disabled = false
+    hintEl.textContent = '✓ 本次无高风险项，可直接发送'
+    hintEl.style.color = 'var(--brand)'
+  } else if (pending === 0) {
+    // 全部确认，可发 + 状态改为"真人已审"
+    sendBtn.disabled = false
+    hintEl.textContent = '✓ 所有高风险项已真人确认'
+    hintEl.style.color = 'var(--success)'
+    statusEl.textContent = '当前状态：真人已审（墨绿标记）'
+    // 切换颜色主题
+    document.getElementById('result-head').classList.remove('ai-draft')
+    document.getElementById('result-head').classList.add('human-reviewed')
+    document.getElementById('reviewPanel').classList.add('human-reviewed')
+    document.getElementById('verHumanChip').style.display = 'inline-flex'
+    document.querySelector('.version-chip.current').textContent = '当前：真人已审'
+    document.querySelector('.version-chip.current').className = 'version-chip current'
+  } else {
+    sendBtn.disabled = true
+    hintEl.textContent = '⚠️ 还有 ' + pending + ' 项高风险未确认'
+    hintEl.style.color = 'var(--danger)'
+    statusEl.textContent = '当前状态：AI 初稿（金色标记）'
+  }
+}
+
+function onRiskConfirm(cb, grpKey, idx) {
+  var confirmBox = document.getElementById('rc_' + (grpKey===1?'say':grpKey===2?'bring':grpKey===3?'ask':'flw') + '_' + idx)
+  if (confirmBox) {
+    if (cb.checked) confirmBox.classList.add('confirmed')
+    else confirmBox.classList.remove('confirmed')
+  }
+  updateReviewStatus()
+}
+
+function publishReport() {
+  var hardBoxes = document.querySelectorAll('.risk-confirm input[type=checkbox]')
+  var pending = 0
+  hardBoxes.forEach(function(cb){ if (!cb.checked) pending++ })
+  if (pending > 0) {
+    alert('还有 ' + pending + ' 项高风险内容未确认，请逐条勾选后再发送')
+    return
+  }
+  // 模拟发送成功（后续对接实际发送逻辑）
+  var btn = document.getElementById('btnSend')
+  btn.disabled = true
+  btn.textContent = '✓ 已发送给客户'
+  btn.style.background = 'var(--brand-light)'
+  document.getElementById('reviewStatus').textContent = '已发送 · ' + new Date().toLocaleString('zh-CN')
+  document.getElementById('reviewStatus').style.color = 'var(--brand)'
 }
 
 function resetForm() {
