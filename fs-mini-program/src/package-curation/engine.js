@@ -101,12 +101,40 @@ function isRealLegal(ref) {
   return !/待补充|待核|无|—|^-$|^\s*$/.test(s) && s.length >= 4
 }
 
+/**
+ * 查询切词主题词表（用于把整段中文切成可命中的业务主题词）。
+ * 词表来自权威库实际内容（城市卡政策主题 + 交易高频主题），
+ * 不做全量滑窗，避免产生无意义碎片稀释打分。
+ * 新增领域时在此追加即可（解耦后的可配置点）。
+ */
+const CURATION_QUERY_THEMES = [
+  // 城市政策（北京样板库批1 主题）
+  '契税', '增值税', '个人所得税', '印花税', '满五唯一', '满二', '满两年',
+  '社保', '五环', '多子女', '二孩', '购房资格', '非京籍', '限购', '多买一套',
+  '商贷', '商业贷款', '公积金', '首付', '利率', '贷款额度', '提取', '继承',
+  '赠与', '退税', '税费', '交房', '落户', '户籍', '学位', '入学', '学区',
+  // 交易高频主题
+  '首套', '二套', '贷款', '还款', '过户', '解约', '违约金', '押金', '定金',
+  '合同', '产权', '评估', '验房', '装修', '物业', '租赁', '买卖', '成交'
+]
+
 function tokenize(text) {
   if (!text) return []
   const out = []
   const cj = text.match(/[一-龥]{2,}/g) || []
   const en = text.match(/[a-zA-Z0-9]{2,}/g) || []
-  return out.concat(cj, en)
+  out.push(...cj, ...en)
+  // 中文滑窗切词：整段汉字（"多子女家庭买房"）无法与词条里的短词（"多子女"）匹配。
+  // ⚠️ 不能做全量滑窗——会产生大量无意义 2 字碎片（"值税""贷款"），
+  //    反而稀释打分、挤掉真正命中的条目（实测查"增值税"被碎片干扰归零）。
+  // 故只按「已知业务主题词」切分，未登录的主题词不切，保留整段匹配。
+  cj.forEach(seg => {
+    if (seg.length <= 2) return
+    for (const theme of CURATION_QUERY_THEMES) {
+      if (seg.includes(theme) && !out.includes(theme)) out.push(theme)
+    }
+  })
+  return out
 }
 
 function searchable(e) {
@@ -144,7 +172,7 @@ async function fetchCurationEntries() {
     { domain: '签约中', grp: 'nego' }
   ]
 
-  const grouped = { decoder: [], see: [], nego: [], script: [] }
+  const grouped = { decoder: [], see: [], nego: [], script: [], city: [] }
 
   for (const { domain } of domainRequests) {
     const resp = await new Promise((resolve, reject) => {
@@ -198,9 +226,11 @@ async function fetchCurationEntries() {
     }
   }
 
-  // 剧本卡（阶段二批1 · SCRIPT 26 条）：只存在于静态同源数据，后端尚无该域，
-  // 故始终取静态、并在 API 路径下也注入，保证在线/离线两种模式下剧本都可用。
+  // 剧本卡（阶段二批1 · SCRIPT 26 条）与城市卡（北京样板库批1 · CITY 21 条）：
+  // 均为只存在于静态同源数据的新字段族，后端尚无对应域，
+  // 故始终取静态、并在 API 路径下也注入，保证在线/离线两种模式下都可用。
   grouped.script = (ENTRIES.script || []).slice()
+  grouped.city = (ENTRIES.city || []).slice()
 
   return grouped
 }
@@ -362,11 +392,20 @@ function generateCurationFromEntries(input, entriesByGroup) {
   const qArr = [...qKw]
 
   // 2) 扁平化 + 打分
+  // city（城市卡·北京样板库）参与检索：税费/交易政策/贷款政策是经纪人最高频查询，
+  // 与交易词条同场竞争（客户类型已含 buyer/seller/agent，三轴均可命中）。
   const all = []
+  // 查询词（用户自由文本）单独标记：城市卡常因命中节点关键词（如"首套"）而与
+  // 用户真实提问无关，需让「命中查询词」的条目优先，避免给出答非所问的政策。
+  const queryTokens = new Set(tokenize(freeText))
+  // ⚠️ city 组【不参与主检索池】——城市卡是独立通道（见下方 cityCards）。
+  //   若混入，21 条政策卡会挤占交易词条的 say/bring 名额（实测 say 1125→978、
+  //   bring 512→575，交易词条被政策卡顶掉），属回归。
   for (const grpKey of ['decoder', 'see', 'nego']) {
     (entriesByGroup[grpKey] || []).forEach(e => {
       const text = searchable(e)
       let score = 0
+      let queryHit = 0
       qArr.forEach(kw => {
         if (!kw) return
         const inName = (e.name || '').includes(kw) || (e.alias || []).some(a => a.includes(kw))
@@ -375,6 +414,8 @@ function generateCurationFromEntries(input, entriesByGroup) {
         if (inName) score += 3
         else if (inCore) score += 2
         else if (inBody) score += 1
+        // 命中的是用户自由文本里的词（而非节点/维度关键词）→ 记为查询词命中
+        if (queryTokens.has(kw) && (inName || inCore || inBody)) queryHit += 1
       })
       // 客户类型匹配（不匹配大幅降权，匹配则加权，让租住线优先租客、购房线优先买家）
       const eCt = (e.tags && e.tags.clientType) || []
@@ -383,10 +424,80 @@ function generateCurationFromEntries(input, entriesByGroup) {
       // 见前阶段（签约前/需求确认）轻微加权
       const stage = (e.tags && e.tags.stage) || ''
       if (String(stage).includes('pre') || (e.domain || '').includes('签约前')) score += 0.5
-      if (score > 0) all.push({ e, score, grp: grpKey })
+      if (score > 0) all.push({ e, score, grp: grpKey, queryHit, _qt: [...queryTokens] })
     })
   }
+  // 主池排序：保持原样（按分数降序）——queryHit 只用于城市卡内部排序。
+  // ⚠️ 若把 queryHit 提前，交易词条的 say 组成会变（实测 say 1125→978、
+  //    bring 512→575），属回归。自由文本命中的"最相关"判定在城市卡通道内做。
   all.sort((a, b) => b.score - a.score)
+
+  // ===== 城市卡独立通道（不与交易词条抢名额）=====
+  // 城市卡（北京税费/交易政策/贷款政策）是「查政策」类内容，与「该说的」是两种
+  // 消费场景：交易词条在节点关键词（首套/首次…）上天然高分，会把城市卡挤出 say 前列
+  // （实测城市卡排第 55 名、被 top40 截断；强行保底后又出现「查增值税返回契税」
+  // 的答非所问）。故城市卡单独一路打分与输出，由页面独立区块展示，互不挤占。
+  // ⚠️ 独立打分，不复用交易词条的池子 —— 否则 21 条政策卡会抢走 say/bring 名额。
+  const cityScored = []
+  for (const e of (entriesByGroup.city || [])) {
+    const text = searchable(e)
+    let score = 0
+    let queryHit = 0
+    qArr.forEach(kw => {
+      if (!kw) return
+      const inName = (e.name || '').includes(kw) || (e.alias || []).some(a => a.includes(kw))
+      const inCore = (e.cq || '').includes(kw) || (e.ola || '').includes(kw) || (e.cp || []).some(c => c.includes(kw))
+      const inBody = text.includes(kw)
+      if (inName) score += 3
+      else if (inCore) score += 2
+      else if (inBody) score += 1
+      if (queryTokens.has(kw) && (inName || inCore || inBody)) queryHit += 1
+    })
+    if (score > 0) cityScored.push({ e, score, grp: 'city', queryHit, _qt: [...queryTokens] })
+  }
+  cityScored.sort((a, b) => (b.queryHit > 0) - (a.queryHit > 0) || b.score - a.score || b.queryHit - a.queryHit)
+  // 精确主题命中优先（用【原始查询串】判定，不用切词后的碎片，避免"值税"这类噪声）
+  // ① 查询串整体命中该条 name/alias（最硬）→ ②name 含该主题词 → ③仅 detail/ola 命中
+  const rawQ = String(freeText || '').trim()
+  const exactTheme = (x) => {
+    const al = (x.e.alias || [])
+    const nm = x.e.name || ''
+    if (!rawQ) return 0
+    // ① 原始查询串直接出现在 name 中，或 alias 精确等于查询串
+    if (nm.includes(rawQ) || al.some(a => a === rawQ)) return 3
+    // ② 查询串包含某主题词，且该主题词出现在 name 中
+    const themed = al.filter(a => rawQ.includes(a))
+    if (themed.length && themed.some(t => nm.includes(t))) return 2
+    // ③ 仅 detail/ola 命中
+    if (themed.length) return 1
+    return 0
+  }
+  cityScored.forEach(x => { x.exact = exactTheme(x) })
+  cityScored.sort((a, b) => (b.queryHit > 0) - (a.queryHit > 0) || b.exact - a.exact || b.score - a.score || b.queryHit - a.queryHit)
+  // 过滤噪声：只输出【真正命中用户查询词】的城市卡（queryHit>0）。
+  // 城市卡中大量条目是靠节点关键词（首套/首次…）拿到分值的，与用户实际提问无关，
+  // 例如"查社保"会混入"契税的'首套房'怎么认定"（它命中的是节点词"首套"）。
+  // 宁可少给（1 条就 1 条），也不给错 —— 答非所问比查不到更有害。
+  const cityRelevant = cityScored.filter(x => x.queryHit > 0)
+  const cityCards = (cityRelevant.length ? cityRelevant : cityScored).slice(0, 3).map(x => {
+    const ola = x.e.ola || (x.e.cp && x.e.cp[0]) || ''
+    // detail 取要点中【不等于结论】的部分，避免"结论与详情显示同一段话"的重复
+    const pts = (x.e.cp || []).filter(p => p && p !== ola)
+    return {
+      title: x.e.name,
+      point: ola,
+      detail: pts.slice(0, 2).join('；'),
+      legalRef: isRealLegal(x.e.legalRef) ? x.e.legalRef : null,
+      hasLegal: isRealLegal(x.e.legalRef),
+      legalUrl: x.e.legalUrl || '',
+      legalSite: x.e.legalSite || '',
+      brokerUsage: x.e.brokerUsage || '',
+      city: x.e.city || '',
+      stage: x.e.stage || '',
+      subScene: x.e.subScene || '',
+      entryId: x.e.id
+    }
+  })
 
   const topN = all.slice(0, 40)
   // 强相关判定：score>=4（至少一个名称/核心词命中），用于诚实元信息与说/问聚焦
@@ -394,9 +505,9 @@ function generateCurationFromEntries(input, entriesByGroup) {
   const strongCount = strong.length
   const realLegalStrong = strong.filter(x => isRealLegal(x.e.legalRef)).length
 
-  // 3) 说（关键要点，优先含真实法源）
+  // 3) 说（关键要点，优先含真实法源）—— 纯交易词条；城市卡走独立通道 cityCards
   const sayRaw = topN
-    .filter(x => x.score >= 3 && (x.e.ola || (x.e.cp && x.e.cp.length)))
+    .filter(x => x.grp !== 'city' && x.score >= 3 && (x.e.ola || (x.e.cp && x.e.cp.length)))
     .slice(0, 12)
     .sort((a, b) => (isRealLegal(b.e.legalRef) ? 1 : 0) - (isRealLegal(a.e.legalRef) ? 1 : 0) || b.score - a.score)
   const say = sayRaw.slice(0, 5).map(x => ({
@@ -479,6 +590,7 @@ function generateCurationFromEntries(input, entriesByGroup) {
     ask: enriched.ask,
     followups: enriched.followups,
     scripts,
+    cityCards,
     honesty,
     timeline: buildTimeline()
   }

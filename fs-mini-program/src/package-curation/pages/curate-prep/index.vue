@@ -358,6 +358,24 @@
         </view>
       </view>
 
+      <!-- 北京城市政策卡（北京样板库批1 · CITY 21 条，独立通道） -->
+      <view class="sec" v-if="result.cityCards && result.cityCards.length">
+        <view class="sec-h"><text class="em">🏙</text>北京现行政策口径（官网来源）</view>
+        <view v-for="(cc, i) in result.cityCards" :key="'cc' + i" class="citycard-item">
+          <view class="citycard-head">
+            <text class="citycard-badge">{{ cc.city }}·{{ cc.subScene }}</text>
+            <text class="citycard-title">{{ cc.title }}</text>
+          </view>
+          <view v-if="cc.point" class="citycard-point">{{ cc.point }}</view>
+          <view v-if="cc.detail" class="citycard-detail">{{ cc.detail }}</view>
+          <view v-if="cc.brokerUsage" class="citycard-usage">💼 怎么用：{{ cc.brokerUsage }}</view>
+          <view :class="['ref', cc.hasLegal ? 'ref-ok' : 'ref-wait']">
+            <text v-if="cc.hasLegal">官网来源 ✓ {{ cc.legalRef }}</text>
+            <text v-else>来源整理中</text>
+          </view>
+        </view>
+      </view>
+
       <!-- 带 -->
       <view class="sec">
         <view class="sec-h"><text class="em">🏠</text>② 该带的（看房 / 房源方向）</view>
@@ -1043,6 +1061,13 @@ export default {
 .script-no-t { font-size: 11px; font-weight: 700; color: #b04a3a; }
 .script-no-i { font-size: 12px; color: #8a5a4a; margin-top: 2px; line-height: 1.5; }
 .script-drill { font-size: 11.5px; color: #6b5f8a; margin-top: 7px; padding: 5px 8px; background: #f2eef8; border-radius: 6px; line-height: 1.5; }
+.citycard-item { background: #f4f8f6; border: 1px solid #d8e6e0; border-radius: 10px; padding: 11px 12px; margin-bottom: 10px; }
+.citycard-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.citycard-badge { font-size: 10px; color: #2f6b52; background: #e2f0e9; border-radius: 8px; padding: 2px 7px; }
+.citycard-title { font-size: 14px; font-weight: 700; color: #2b2b2b; }
+.citycard-point { font-size: 13px; color: #3a4a42; margin-top: 6px; line-height: 1.6; }
+.citycard-detail { font-size: 12px; color: #6b7a72; margin-top: 4px; line-height: 1.55; }
+.citycard-usage { font-size: 12px; color: #2f6fb0; margin-top: 5px; line-height: 1.5; font-weight: 600; }
 .ref { font-size: 11px; margin-top: 6px; padding: 4px 8px; border-radius: 6px; line-height: 1.4; }
 .ref-ok { background: #eef3ec; color: #3d5a3e; }
 .ref-wait { background: #f3f0ea; color: #8a837a; }
