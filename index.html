@@ -375,29 +375,6 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
 
 <div class="main">
 
-<!-- ====== 先价值后理念：一句话价值 + 三角色 ====== -->
-<div class="role-guide">
-  <div class="rg-tag">居住服务者的专业基础设施</div>
-  <div class="rg-title">先选你的角色，<br>再看我们为你做了什么</div>
-  <div class="rg-sub">每一个角色，风声都给你一套从知识到工具的一站式方案。</div>
-</div>
-
-<!-- ====== 角色切换器 ====== -->
-<div class="role-switcher" id="roleSwitcher">
-  <button class="role-btn active" data-role="agent" onclick="switchRole('agent')">
-    <span class="role-icon"><img src="/assets/icons/role-broker.svg" alt="经纪人" width="18" height="18"></span>
-    <span class="role-btn-col"><span class="role-label">我是经纪人</span><span class="role-val">带法源知识库，生成客户沟通方案</span></span>
-  </button>
-  <button class="role-btn" data-role="manager" onclick="switchRole('manager')">
-    <span class="role-icon"><img src="/assets/icons/role-manager.svg" alt="管理者" width="18" height="18"></span>
-    <span class="role-btn-col"><span class="role-label">我是管理者</span><span class="role-val">搭建团队数字员工，量化服务质量</span></span>
-  </button>
-  <button class="role-btn" data-role="newbie" onclick="switchRole('newbie')">
-    <span class="role-icon"><img src="/assets/icons/role-new.svg" alt="新用户" width="18" height="18"></span>
-    <span class="role-btn-col"><span class="role-label">我是新用户</span><span class="role-val">花3分钟，看看我能提成的价值</span></span>
-  </button>
-</div>
-
 <!-- ====== 领域说明（非交易领域显示） ====== -->
 <div class="domain-context" id="domainContext" style="display:none"></div>
 
@@ -1203,27 +1180,7 @@ var WOTU_URL = 'https://wotu.fengsheng.tech/login';
 </script>
 
 <script>
-// ====== 角色切换逻辑 ======
-(function() {
-  var ROLE_KEY = 'fs_role';
-  var NEWBIE_KEY = 'fs_newbie_progress';
-  var savedRole = localStorage.getItem(ROLE_KEY) || 'agent';
-
-  function switchRole(role) {
-    document.querySelectorAll('.role-btn').forEach(function(btn) {
-      btn.classList.toggle('active', btn.dataset.role === role);
-    });
-    document.querySelectorAll('.role-content').forEach(function(el) {
-      el.style.display = 'none';
-    });
-    var target = document.getElementById('role' + role.charAt(0).toUpperCase() + role.slice(1));
-    if (target) target.style.display = 'block';
-    localStorage.setItem(ROLE_KEY, role);
-  }
-  window.switchRole = switchRole;
-  switchRole(savedRole);
-
-  // ====== 动态读取 entries.json 计算各领域词条数 ======
+// ====== 动态读取 entries.json 计算各领域词条数 ======
   var DOMAIN_KWS = {
     asset:   ['租赁','物业','托管','租住','业主侧','资产持有与运营','房东出租'],
     decor:   ['装修','整装','家装','施工','家居','软装'],
@@ -1454,16 +1411,7 @@ var WOTU_URL = 'https://wotu.fengsheng.tech/login';
   bar.id = 'fs-nav-bar';
   bar.style.cssText = 'display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 16px;background:linear-gradient(135deg,#1a3d24 0%,#12291a 100%);color:#fff;box-shadow:0 2px 12px rgba(44,68,48,.25);position:sticky;top:0;z-index:1000;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif';
 
-  bar.innerHTML = '<div style="display:flex;align-items:center;gap:4px;font-size:13px;overflow:hidden;flex-shrink:0">'
-    + '<a href="/" style="color:rgba(255,255,255,.7);text-decoration:none;white-space:nowrap">首页</a>'
-    + '</div>'
-    + '<div style="flex:1;text-align:center;font-size:15px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 12px;letter-spacing:.5px">风声</div>'
-    + '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'
-    + '<button onclick="window.location.href=\'/?role=' + savedRole + '\'" style="display:inline-flex;align-items:center;gap:3px;padding:5px 10px;border-radius:6px;font-size:12px;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s">'
-    + '<img src="' + (roleIcons[savedRole] || '/assets/icons/role-broker.svg') + '" alt="" style="width:14px;height:14px;display:block">'
-    + '<span>' + (roleLabels[savedRole] || '经纪人模式') + '</span>'
-    + '</button>'
-    + '</div>';
+  bar.innerHTML = '<div style="flex:1;text-align:center;font-size:15px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 12px;letter-spacing:.5px">风声</div>';
 
   var root = document.getElementById('fs-nav-root');
   if (root) root.appendChild(bar);
