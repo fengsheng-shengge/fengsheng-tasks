@@ -197,6 +197,9 @@ a{color:inherit;text-decoration:none}
 .di-domain-count{font-size:12px;color:var(--p);font-weight:600;padding:2px 10px;background:rgba(26,61,36,0.10);border-radius:100px}
 .di-words{display:flex;flex-wrap:wrap;gap:6px}
 .di-word{font-size:12px;padding:5px 12px;border-radius:6px;background:white;border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:all .15s}
+.city-arch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.city-arch-grid .di-domain{background:white;border:1.5px solid var(--line);box-shadow:var(--shadow-sm);cursor:default}
+.city-arch-note{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;background:rgba(201,169,98,0.12);color:#8a6d2f;font-size:13px;font-weight:500;margin-top:14px}
 .di-word:hover{background:var(--p);color:white;border-color:var(--p)}
 
 /* ===== 岗位 ===== */
@@ -339,7 +342,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
     <a href="/academy/">学习成长</a>
   </div>
   <div class="fs-top-actions">
-    <span class="fs-top-city" onclick="alert('城市数据接入中，当前为默认配置')">📍 杭州 ▾</span>
+    <span class="fs-top-city" onclick="alert('当前以北京为样板城市，多城市数据接入中')">📍 北京 ▾</span>
     <span class="fs-top-avatar">👤</span>
   </div>
 </nav>
@@ -395,6 +398,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
       <span class="tip-chip" onclick="doSearch('安全')">安全</span>
       <span class="tip-chip" onclick="doSearch('服务者')">服务者</span>
       <span class="tip-chip" onclick="doSearch('六维')">六维</span>
+      <span class="tip-chip" style="background:var(--p);color:white;border-color:var(--p)" onclick="doSearch('北京')">🏙 北京政策</span>
       <span class="tip-chip" style="background:var(--p);color:white;border-color:var(--p)" onclick="location.href='/dictionary/'">七维筛选 →</span>
     </div>
   </div>
@@ -408,6 +412,21 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
     </div>
     <div class="quiz-entry-arrow">开始测评 →</div>
   </a>
+</section>
+
+<!-- 北京样板 · 城市知识架构 -->
+<section class="section" id="city-arch">
+  <div class="section-head">
+    <div>
+      <div class="section-tag">🏙 北京样板 · 城市知识架构</div>
+      <h2 class="section-title">底座调用北京知识体系</h2>
+      <p class="section-sub">城市词条按场景分层接入底座：税费计算 · 交易政策 · 贷款政策，每条含官方来源与核验日期</p>
+      <span class="city-arch-note">📍 当前以北京为样板城市，多城市数据接入中</span>
+    </div>
+  </div>
+  <div class="city-arch-grid" id="cityArchGrid">
+    <div class="di-domain" style="cursor:default"><div class="di-domain-desc">⏳ 正在加载北京知识架构…</div></div>
+  </div>
 </section>
 
 <!-- 四柱核心 -->
@@ -847,6 +866,7 @@ const DOMAIN_CONFIG = {
   'OWN':     { icon:'🏢', title:'OWN · 业主专域', desc:'业主侧专项词条' },
   'trade':   { icon:'💼', title:'交易 · 专项',  desc:'交易场景专项词条' },
   'CAR':     { icon:'🚗', title:'CAR · 资产',   desc:'资产相关专项词条' },
+  '城市数据': { icon:'🏙', title:'城市数据 · 北京样板', desc:'北京税费 / 交易政策 / 贷款政策，官方来源核验' },
 };
 
 // businessDomains 将从 entries.json 动态构建
@@ -1053,9 +1073,9 @@ function openEntry(entryId){
   // entries.json字段映射: name→title, 无icon→用getDomainIcon
   const entryIcon = data.icon || getDomainIcon(data.domain) || '📄';
   const entryTitle = data.title || data.name || data.id;
-  const entryDef = data.def || '';
+  const entryDef = data.def || data.detail || data.oneLineAnswer || '';
   const entryConsumer = data.consumer || data.consumerQ || '';
-  const entryServicer = data.servicer || data.posSpeech || '';
+  const entryServicer = data.servicer || data.posSpeech || data.brokerUsage || '';
   showEntry({icon:entryIcon, title:entryTitle, id:data.id||entryId, def:entryDef, consumer:entryConsumer, servicer:entryServicer});
 }
 
@@ -1348,11 +1368,40 @@ document.addEventListener('click',e=>{
 document.getElementById('entryModal').addEventListener('click',e=>{if(e.target.id==='entryModal')closeEntry()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeEntry()});
 
+/* ===== 北京样板 · 城市知识架构 ===== */
+async function loadCityArch(){
+  const grid=document.getElementById('cityArchGrid');
+  if(!grid) return;
+  try{
+    const resp=await fetch('/api/entries?'+new URLSearchParams({domain:'城市数据',groupBy:'subScene',limit:'200'}));
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    const data=await resp.json();
+    const entries=data.entries||[];
+    entries.forEach(e=>{ allEntriesMap[e.id]=e; });
+    if(!entries.length){ grid.innerHTML='<div class="di-domain" style="cursor:default"><div class="di-domain-desc">城市知识词条加载中，稍后刷新</div></div>'; return; }
+    const groups={};
+    entries.forEach(e=>{ const k=e.subScene||'未分类'; (groups[k]=groups[k]||[]).push(e); });
+    const SUB_ICONS={'税费计算':'🧾','交易政策':'📜','贷款政策':'🏦'};
+    grid.innerHTML=Object.keys(groups).map(k=>{
+      const items=groups[k];
+      const count=(data.groups&&data.groups[k])||items.length;
+      return '<div class="di-domain" style="cursor:default">' +
+        '<div class="di-domain-head"><span class="di-domain-icon">'+(SUB_ICONS[k]||'🏙')+'</span><span class="di-domain-name">'+escapeHtml(k)+'</span><span class="di-domain-count">'+count+' 条</span></div>' +
+        '<div class="di-words">'+items.map(e=>'<span class="di-word" data-entry="'+escapeHtml(e.id)+'">'+escapeHtml(e.name||e.id)+'</span>').join('')+'</div>' +
+      '</div>';
+    }).join('');
+  }catch(e){
+    console.warn('北京知识架构加载失败',e);
+    grid.innerHTML='<div class="di-domain" style="cursor:default"><div class="di-domain-desc">城市知识词条加载失败，请稍后刷新</div></div>';
+  }
+}
+
 /* ===== Init ===== */
 renderDomains();
 loadEntriesData();  // 动态从 /api/knowledge-stats 加载 (按需加载模式)
 renderRoles();
 renderQualityCards();
+loadCityArch();     // 北京样板城市知识架构
 </script>
   <!-- 全站数据追踪器 -->
   <script src="/tracker.js" async></script>
