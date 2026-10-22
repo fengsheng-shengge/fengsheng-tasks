@@ -183,7 +183,45 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .version-chip{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:10px;background:var(--card-h);border:1px solid var(--border)}
 .version-chip.current{background:var(--p-bg);border-color:var(--brand);color:var(--brand);font-weight:700}
 .version-chip.ai{background:var(--gold-bg);border-color:var(--gold);color:var(--p-d)}
-</style>
+
+/* ========== v1.1 驭AI三级交互 ========== */
+.jy-panel{margin-top:16px;padding:14px;border-radius:var(--r2);background:linear-gradient(135deg,var(--gold-bg) 0%,rgba(201,169,98,.08) 100%);border:1.5px dashed var(--gold);position:relative}
+.jy-panel::before{content:'◆ 驭AI精调（真人已审后）';position:absolute;top:-11px;left:14px;background:var(--gold);color:var(--p-d);font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 11px;border-radius:12px}
+.jy-hint{font-size:11px;color:var(--p-d);margin-bottom:10px;font-style:italic;line-height:1.6}
+.jy-hint strong{color:var(--p-d)}
+.jy-btns{display:flex;gap:8px;flex-wrap:wrap}
+.jy-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:var(--r);border:1.5px solid var(--gold);background:#fff;color:var(--p-d);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;flex:1;min-width:140px;text-align:left}
+.jy-btn:hover{background:var(--gold-bg);transform:translateY(-1px);box-shadow:0 2px 8px rgba(201,169,98,.2)}
+.jy-btn.disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.jy-btn .jy-icon{font-size:16px}
+.jy-btn .jy-meta{display:flex;flex-direction:column}
+.jy-btn .jy-meta .jy-title{font-weight:700;font-size:12px;color:var(--p-d)}
+.jy-btn .jy-meta .jy-sub{font-size:10px;color:var(--ts);font-weight:400}
+.jy-iter-bar{margin-top:12px;padding:10px 14px;background:rgba(26,61,36,.04);border-radius:var(--r);font-size:11px;color:var(--brand);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.jy-iter-bar .iter-dot{width:6px;height:6px;border-radius:50%;background:var(--brand)}
+.jy-iter-bar .iter-count{font-weight:700;font-size:14px;color:var(--dk)}
+.jy-iter-bar .iter-label{color:var(--ts)}
+.feedback-modal{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
+.feedback-modal.show{display:flex}
+.feedback-box{background:var(--card);border-radius:var(--r2);padding:24px;max-width:420px;width:100%;box-shadow:0 20px 48px rgba(0,0,0,.15)}
+.feedback-box h4{font-size:16px;font-weight:800;color:var(--dk);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.feedback-box textarea{width:100%;min-height:100px;padding:10px;border:1px solid var(--border);border-radius:var(--r);font-family:inherit;font-size:13px;resize:vertical;margin:10px 0}
+.feedback-box .fb-actions{display:flex;gap:8px;justify-content:flex-end}
+.feedback-box button{padding:8px 18px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:inherit}
+.fb-submit{background:var(--brand);color:#fff}
+.fb-cancel{background:var(--card-h);color:var(--tx)}
+.jy-bar{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#1a3d24 0%,#12291a 100%);color:#fff;z-index:100;transform:translateY(100%);transition:transform .3s}
+.jy-bar.show{transform:translateY(0)}
+.jy-bar-inner{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:8px 12px}
+.jy-bar .star-badge{display:flex;align-items:center;gap:2px;font-size:11px;font-weight:700;color:var(--gold)}
+.jy-bar .jy-rank{font-size:12px;font-weight:700;color:#fff}
+.jy-bar .jy-desc{font-size:10px;color:rgba(255,255,255,.6);flex:1}
+.jy-bar .jy-pct{font-size:10px;color:rgba(255,255,255,.7);text-align:right}
+.jy-bar .jy-pct b{color:var(--gold);font-size:13px;font-weight:800}
+.jy-bar-toggle{position:fixed;bottom:12px;right:12px;z-index:101;background:var(--gold);color:var(--p-d);border:none;border-radius:20px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.2);display:none}
+.jy-bar-toggle.show{display:block}
+
+</style></style>
 </head>
 <body>
 
@@ -286,7 +324,54 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
         <span class="review-status" id="reviewStatus">当前状态：AI 初稿（金色标记）</span>
       </div>
       <!-- 版本历史 -->
-      <div class="version-bar">
+      
+      <!-- v1.1 驭AI三级交互面板（真人复核通过后解锁）-->
+      <div class="jy-panel" id="jyPanel" style="display:none">
+        <div class="jy-hint"><strong>驭AI三级交互：</strong>合格「会用AI」→ 优秀「善审AI」→ 卓越「能养AI」。下面三个按钮，是你拿到 AI 初稿后可以迭代提升的快捷方式。</div>
+        <div class="jy-btns">
+          <button class="jy-btn" id="jyBtnBasic" onclick="jyRefine('basic')">
+            <span class="jy-icon">🥉</span>
+            <span class="jy-meta">
+              <span class="jy-title">基础润色 · 合格级</span>
+              <span class="jy-sub">让 AI 再优化一遍措辞与结构</span>
+            </span>
+          </button>
+          <button class="jy-btn" id="jyBtnBatch" onclick="jyRefine('batch')">
+            <span class="jy-icon">🥈</span>
+            <span class="jy-meta">
+              <span class="jy-title">批量精调 · 优秀级</span>
+              <span class="jy-sub">逐段落优化 → 对齐专业标杆话术</span>
+            </span>
+          </button>
+          <button class="jy-btn" id="jyBtnFeed" onclick="openFeedbackModal()">
+            <span class="jy-icon">🥇</span>
+            <span class="jy-meta">
+              <span class="jy-title">反哺知识库 · 卓越级</span>
+              <span class="jy-sub">把 AI 初稿的问题反馈进知识底座</span>
+            </span>
+          </button>
+        </div>
+        <div class="jy-iter-bar" id="jyIterBar" style="display:none">
+          <span class="iter-dot"></span>
+          <span>本次已驭AI迭代 <span class="iter-count" id="jyIterCount">0</span> 次</span>
+          <span class="iter-label">每次迭代自动对比改动，保留历史版本</span>
+        </div>
+      </div>
+
+      <!-- 反哺知识库弹窗 -->
+      <div class="feedback-modal" id="feedbackModal">
+        <div class="feedback-box">
+          <h4>🥇 卓越级反哺 · 把问题反馈给知识底座</h4>
+          <div style="font-size:12px;color:var(--ts);margin-bottom:6px">你在本次策展中发现了 AI 初稿的错误/遗漏/不准之处，请记录下来。后续知识底座会据此迭代。</div>
+          <textarea id="feedbackText" placeholder="比如：entry CAR-CMP-001 的「承诺包过户」案例在 2023 年民法典修正案后判决标准有变化……"></textarea>
+          <div class="fb-actions">
+            <button class="fb-cancel" onclick="closeFeedbackModal()">取消</button>
+            <button class="fb-submit" onclick="submitFeedback()">✓ 提交反哺</button>
+          </div>
+        </div>
+      </div>
+
+<div class="version-bar">
         <span>📜 版本历史：</span>
         <span class="version-chip ai">v1 · AI 初稿（生成时间自动记录）</span>
         <span class="version-chip" id="verHumanChip" style="display:none">v2 · 真人已审</span>
@@ -943,6 +1028,8 @@ function publishReport() {
   btn.style.background = 'var(--brand-light)'
   document.getElementById('reviewStatus').textContent = '已发送 · ' + new Date().toLocaleString('zh-CN')
   document.getElementById('reviewStatus').style.color = 'var(--brand)'
+  // 解锁驭AI精调面板
+  onHumanReviewed()
 }
 
 function resetForm() {
@@ -1015,7 +1102,144 @@ init()
 </aside>
 <script>
 (function(){var f=document.getElementById('fsGuideFab'),m=document.getElementById('fsGuideMask'),p=document.getElementById('fsGuidePanel'),c=document.getElementById('fsGuideClose');if(!f||!p)return;function o(){p.classList.add('show');m.classList.add('show');p.setAttribute('aria-hidden','false');c.focus()}function x(){p.classList.remove('show');m.classList.remove('show');p.setAttribute('aria-hidden','true')}f.addEventListener('click',o);m.addEventListener('click',x);c.addEventListener('click',x);document.addEventListener('keydown',function(e){if(e.key==='Escape')x()})})();
+
+// ====== v1.1 驭AI三级交互逻辑 ======
+var jyIterCount = 0;
+
+function jyRefine(level) {
+  // 三种级别模拟不同程度的精调（实际对接后端时换成 fetch API）
+  var panels = {
+    basic: '🥉 基础润色已触发：AI 正在重新润色措辞、统一专业风格、检查标点……',
+    batch: '🥈 批量精调已触发：逐段落对齐行业标杆话术、对比真实判例、标注可迭代项……',
+  };
+  var msg = panels[level];
+  if (msg) {
+    jyIterCount++;
+    document.getElementById('jyIterBar').style.display = 'flex';
+    document.getElementById('jyIterCount').textContent = jyIterCount;
+    // 模拟效果：say 区域标题加一个"润色中"标记
+    var sayTitle = document.querySelector('#say-list .say-title');
+    if (sayTitle) {
+      var tag = document.createElement('span');
+      tag.textContent = ' · AI 润色 #' + jyIterCount;
+      tag.style.fontSize = '10px';
+      tag.style.color = 'var(--gold)';
+      tag.style.fontWeight = '700';
+      sayTitle.appendChild(tag);
+    }
+    // 快速 toast
+    showJyToast(msg);
+    // 保存到 localStorage（模拟版本历史）
+    var key = 'jy_history_' + (state.axisNodeKey || 'default');
+    var hist = JSON.parse(localStorage.getItem(key) || '[]');
+    hist.push({ t: Date.now(), level: level, iter: jyIterCount });
+    localStorage.setItem(key, JSON.stringify(hist.slice(-10)));
+  }
+}
+
+function showJyToast(msg) {
+  var t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--p);color:#fff;padding:10px 20px;border-radius:var(--r);font-size:12px;z-index:1000;box-shadow:0 4px 16px rgba(0,0,0,.2);opacity:0;transition:opacity .2s';
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity = '1' }, 10);
+  setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove() }, 200) }, 2000);
+}
+
+function openFeedbackModal() {
+  document.getElementById('feedbackModal').classList.add('show');
+  document.getElementById('feedbackText').focus();
+}
+function closeFeedbackModal() {
+  document.getElementById('feedbackModal').classList.remove('show');
+}
+function submitFeedback() {
+  var text = document.getElementById('feedbackText').value.trim();
+  if (!text) { alert('请填写反馈内容'); return }
+  var key = 'jy_feedbacks_' + (state.axisNodeKey || 'default');
+  var fb = JSON.parse(localStorage.getItem(key) || '[]');
+  fb.push({ t: Date.now(), text: text, entries: state.domain || '签约前' });
+  localStorage.setItem(key, JSON.stringify(fb));
+  closeFeedbackModal();
+  document.getElementById('feedbackText').value = '';
+  showJyToast('✓ 反哺已记录（卓越级专属），下次知识库迭代时会纳入');
+}
+
+// ====== 驭AI面板解锁逻辑（真人复核通过后显示）======
+function onHumanReviewed() {
+  document.getElementById('jyPanel').style.display = 'block';
+  // 重置迭代计数
+  jyIterCount = 0;
+  document.getElementById('jyIterBar').style.display = 'none';
+}
+// 在 updateReviewStatus 里调用（全部确认后）
+var _origUpdateReviewStatus = updateReviewStatus;
+updateReviewStatus = function() {
+  _origUpdateReviewStatus();
+  var hardBoxes = document.querySelectorAll('.risk-confirm input[type=checkbox]');
+  var allConfirmed = hardBoxes.length > 0 && Array.from(hardBoxes).every(function(cb){ return cb.checked });
+  if (hardBoxes.length === 0 || allConfirmed) {
+    onHumanReviewed();
+  }
+};
+
+// ====== v1.1 底部驾驭力常驻 bar ======
+function renderJyBar() {
+  var bar = document.getElementById('jyBar');
+  var toggle = document.getElementById('jyBarToggle');
+  if (!bar) return;
+  // 从 localStorage 读用户驭AI等级（模拟后端）
+  var user = JSON.parse(localStorage.getItem('jy_user') || '{"star":3,"rank":"优秀","score":72}');
+  var stars = '★'.repeat(user.star) + '☆'.repeat(5 - user.star);
+  bar.innerHTML = `
+    <div class="jy-bar-inner">
+      <div class="star-badge">${stars}</div>
+      <div class="jy-rank">${user.rank}</div>
+      <div class="jy-desc">驭AI等级：${user.rank}「${user.star<=1?'会用AI':user.star<=3?'善审AI':'能养AI'}」</div>
+      <div class="jy-pct">驾驭力 <b>${user.score}</b>/100</div>
+    </div>
+  `;
+}
+// 只在 curation 页面常驻（其他页面后续推广）
+document.addEventListener('DOMContentLoaded', renderJyBar);
+
 </script>
 <!-- /fs-module-guide -->
+
+<!-- v1.1 底部驾驭力常驻 bar -->
+<button class="jy-bar-toggle show" id="jyBarToggle" onclick="document.getElementById('jyBar').classList.toggle('show');this.style.display='none'">📊 驾驭力</button>
+<div class="jy-bar" id="jyBar"></div>
+<script>
+  // 点击外部收起 bar
+  document.addEventListener('click', function(e){
+    var bar = document.getElementById('jyBar');
+    var toggle = document.getElementById('jyBarToggle');
+    if (bar && !bar.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
+      bar.classList.remove('show');
+      toggle.style.display = 'block';
+    }
+  });
+  // 首次访问弹出引导
+  if (!localStorage.getItem('jy_bar_seen')) {
+    setTimeout(function(){
+      document.getElementById('jyBar').classList.add('show');
+      document.getElementById('jyBarToggle').style.display = 'none';
+      localStorage.setItem('jy_bar_seen', '1');
+    }, 2500);
+  }
+  // 模拟更新驾驭力分数（每次生成报告 +5 分）
+  var _origGenerate = generate;
+  generate = async function() {
+    var result = await _origGenerate();
+    var user = JSON.parse(localStorage.getItem('jy_user') || '{"star":3,"rank":"优秀","score":72}');
+    user.score = Math.min(100, user.score + 5);
+    if (user.score >= 85 && user.star < 4) { user.star = 4; user.rank = '优秀'; }
+    if (user.score >= 95 && user.star < 5) { user.star = 5; user.rank = '卓越'; }
+    localStorage.setItem('jy_user', JSON.stringify(user));
+    renderJyBar();
+    return result;
+  };
+</script>
+
 </body>
 </html>
