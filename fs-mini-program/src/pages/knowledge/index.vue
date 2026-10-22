@@ -22,7 +22,7 @@
         <view class="dict-card" v-for="(d, i) in dictDomains" :key="i" @tap="goDomain(d)">
           <view class="dict-icon">{{ d.icon }}</view>
           <view class="dict-name">{{ d.name }}</view>
-          <view class="dict-count">{{ d.count }} 个方案</view>
+          <view class="dict-count">{{ d.count === null ? '…' : d.count }} 个方案</view>
         </view>
       </view>
       <view class="icp">每个方案含直接结论与处理办法，依据法源可追溯<view>引证必保留 · 依据整理中会诚实标注</view></view>
@@ -69,15 +69,16 @@
 
 <script>
 import { casesData } from '../../utils/v4data.js'
-import { DICT_DOMAINS, DICT_TOTAL } from '../../utils/dict.js'
+import { DICT_DOMAINS, fetchDictCounts } from '../../utils/dict.js'
 import { useUserStore } from '../../store/user'
 import { trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return {
       mod: 'dict',
-      dictDomains: DICT_DOMAINS,
-      dictTotal: DICT_TOTAL,
+      dictDomains: DICT_DOMAINS.map(d => ({ ...d })),
+      dictTotal: 0,
+      dictLoading: true,
       caseList: casesData.map(c => ({ ...c, _open: false }))
     }
   },
@@ -93,9 +94,28 @@ export default {
     goCases() { uni.navigateTo({ url: '/pages/cases/index' }) },
     toggleCase(c) { c._open = !c._open },
     goDomain(d) { uni.navigateTo({ url: '/pages/knowledge/domain?domain=' + encodeURIComponent(d.key) + '&name=' + encodeURIComponent(d.name) }) },
-    goDictSearch() { uni.navigateTo({ url: '/pages/knowledge/domain' }) }
+    goDictSearch() { uni.navigateTo({ url: '/pages/knowledge/domain' }) },
+    // 运行时向 API 实拉各域真实条数与总数：后端部署新版本主库后自动跟随，
+    // 前端不落死数字，避免「文案条数 ≠ 实际可达条数」的口径矛盾。
+    async loadDictCounts() {
+      this.dictLoading = true
+      try {
+        const r = await fetchDictCounts()
+        this.dictDomains = r.domains
+        this.dictTotal = r.total
+      } catch (e) {
+        // 后端不可达：保持 count=null，模板显示 '…'，不展示错误数字
+        this.dictDomains = DICT_DOMAINS.map(d => ({ ...d }))
+        this.dictTotal = 0
+      } finally {
+        this.dictLoading = false
+      }
+    }
   },
-  onShow() { trackPageview('knowledge') }
+  onShow() {
+    trackPageview('knowledge')
+    this.loadDictCounts()
+  }
 }
 </script>
 

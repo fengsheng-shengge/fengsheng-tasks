@@ -67,6 +67,23 @@ export function registerDomain(group, opts = {}) {
 }
 
 /** 读取当前生效配置（调试 / 校验用） */
+// ===== 业主侧价值「模板化」识别 =====
+// 权威库 2026-10-22 批次回填的 400 条 ownerBenefit 为同一模板套用
+// （"经纪人在「X」场景可离线调用：直接给出判定口径…"），非手写具体价值。
+// 同页出现多条会一字不差 → 展示层过滤，不显示雷同模板句（内容侧另行补写）。
+// 仅识别这一条已知模板，不误伤手写文案。
+const OWNER_BENEFIT_TEMPLATE = /^经纪人在「[^」]*」场景可离线调用：直接给出判定口径与实操落点，见客户即用、控风险，减少查证与误判$/
+function isTemplateOwnerBenefit(v) {
+  return !!v && OWNER_BENEFIT_TEMPLATE.test(String(v).trim())
+}
+
+/** 业主侧价值：空 → null；模板套用句 → null（展示层不显示雷同文案）；真实手写 → 原值 */
+function displayOwnerBenefit(v) {
+  if (!v || !String(v).trim()) return null
+  if (isTemplateOwnerBenefit(v)) return null
+  return String(v).trim()
+}
+
 export function getCurationConfig() {
   return {
     axisGroups: _config.axisGroups,
@@ -127,7 +144,7 @@ async function fetchCurationEntries() {
     { domain: '签约中', grp: 'nego' }
   ]
 
-  const grouped = { decoder: [], see: [], nego: [] }
+  const grouped = { decoder: [], see: [], nego: [], script: [] }
 
   for (const { domain } of domainRequests) {
     const resp = await new Promise((resolve, reject) => {
@@ -180,6 +197,10 @@ async function fetchCurationEntries() {
       }
     }
   }
+
+  // 剧本卡（阶段二批1 · SCRIPT 26 条）：只存在于静态同源数据，后端尚无该域，
+  // 故始终取静态、并在 API 路径下也注入，保证在线/离线两种模式下剧本都可用。
+  grouped.script = (ENTRIES.script || []).slice()
 
   return grouped
 }
@@ -384,7 +405,7 @@ function generateCurationFromEntries(input, entriesByGroup) {
     detail: (x.e.cp && x.e.cp.slice(0, 2).join('；')) || '',
     legalRef: isRealLegal(x.e.legalRef) ? x.e.legalRef : null,
     hasLegal: isRealLegal(x.e.legalRef),
-    ownerBenefit: (x.e.ownerBenefit && String(x.e.ownerBenefit).trim()) ? x.e.ownerBenefit : null,
+    ownerBenefit: displayOwnerBenefit(x.e.ownerBenefit),
     entryId: x.e.id
   }))
 
@@ -427,6 +448,28 @@ function generateCurationFromEntries(input, entriesByGroup) {
       : ('基于真实字典命中 ' + strongCount + ' 条强相关（其中 ' + realLegalStrong + ' 条含真实法源）')
   }
 
+  // 2.5) 剧本卡挂载（阶段二批1 · SCRIPT 26 条）
+  // 剧本卡是「话术脚本」形态（scriptText/taboos/aiDrill），与知识词条不同，
+  // 不参与关键词打分（无 cq/ola/cp/detail），而是按 MOT 场景 + 节点匹配后
+  // 挂到策展结果，作为「标准话术 / 禁忌 / AI陪练」供经纪人直接照读。
+  const scriptPool = entriesByGroup.script || ENTRIES.script || []
+  const matchedScripts = scriptPool.filter(s => {
+    const nodes = (s.tags && s.tags.nodes) || []
+    return nodes.includes(node.key)
+  })
+  const scripts = matchedScripts.slice(0, 3).map(s => ({
+    id: s.id,
+    name: s.name,
+    mot: s.mot,
+    scene: s.scene,
+    branch: s.branch,
+    scriptText: s.scriptText,
+    keyPoints: s.keyPoints || [],
+    taboos: s.taboos || [],
+    aiDrill: s.aiDrill || '',
+    abilityRef: s.abilityRef || ''
+  }))
+
   return {
     axisLabel: group.label + ' · ' + node.name,
     dimensionLabels: dimensions.map(dk => (_config.dimensions.find(d => d.key === dk) || {}).name).filter(Boolean),
@@ -435,6 +478,7 @@ function generateCurationFromEntries(input, entriesByGroup) {
     bring,
     ask: enriched.ask,
     followups: enriched.followups,
+    scripts,
     honesty,
     timeline: buildTimeline()
   }

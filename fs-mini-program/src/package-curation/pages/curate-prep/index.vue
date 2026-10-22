@@ -336,6 +336,28 @@
         <view v-if="!result.say.length" class="empty-mini">暂无强相关条目，建议结合实勘补充</view>
       </view>
 
+      <!-- 标准话术剧本（阶段二批1 · SCRIPT 26 条，按 MOT 场景挂载） -->
+      <view class="sec" v-if="result.scripts && result.scripts.length">
+        <view class="sec-h"><text class="em">🎬</text>标准话术（照着说 · 含禁忌）</view>
+        <view v-for="(sc, i) in result.scripts" :key="'sc' + i" class="script-item">
+          <view class="script-head">
+            <text class="script-mot">{{ sc.mot }}</text>
+            <text class="script-name">{{ sc.name }}</text>
+          </view>
+          <view v-if="sc.branch" class="script-branch">场景：{{ sc.branch }}</view>
+          <view class="script-text">{{ sc.scriptText }}</view>
+          <view v-if="sc.keyPoints && sc.keyPoints.length" class="script-kp">
+            <view class="script-kp-t">要点</view>
+            <view v-for="(k, ki) in sc.keyPoints" :key="'k' + ki" class="script-kp-i">· {{ k }}</view>
+          </view>
+          <view v-if="sc.taboos && sc.taboos.length" class="script-no">
+            <view class="script-no-t">禁忌</view>
+            <view v-for="(t, ti) in sc.taboos" :key="'t' + ti" class="script-no-i">✕ {{ t }}</view>
+          </view>
+          <view v-if="sc.aiDrill" class="script-drill">🤖 {{ sc.aiDrill }}</view>
+        </view>
+      </view>
+
       <!-- 带 -->
       <view class="sec">
         <view class="sec-h"><text class="em">🏠</text>② 该带的（看房 / 房源方向）</view>
@@ -386,6 +408,10 @@ export default {
       axisType: 'buy',
       axisNodeKey: 'improve',
       selectedDims: [],
+      // 自由文本需求描述（模板 textarea v-model 绑定；此前未在 data 中声明，
+      // 触发 Vue 渲染告警 "Property freeText was accessed during render but is not defined"，
+      // 并中断结果区渲染 —— 属既有真 bug，此处补齐）
+      freeText: '',
       // ★ V2.6 洞察录入
       insightScores: {},   // { safety: 80, transit: 60, ... }
       selectedTypes: [],   // ['commuter', 'first_home']
@@ -1004,6 +1030,19 @@ export default {
 .say-point { font-size: 13px; color: #444; margin-top: 4px; line-height: 1.55; }
 .say-detail { font-size: 12px; color: #8a837a; margin-top: 4px; line-height: 1.5; }
 .say-owner { font-size: 12px; color: #2f6fb0; margin-top: 4px; line-height: 1.5; font-weight: 600; }
+.script-item { background: #fdf8ef; border: 1px solid #efe3cc; border-radius: 10px; padding: 11px 12px; margin-bottom: 10px; }
+.script-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.script-mot { font-size: 10px; color: #b07a2e; background: #f6ecd9; border-radius: 8px; padding: 2px 7px; }
+.script-name { font-size: 14px; font-weight: 700; color: #2b2b2b; }
+.script-branch { font-size: 11px; color: #a09689; margin-top: 4px; }
+.script-text { font-size: 13px; color: #4a4238; margin-top: 6px; line-height: 1.65; white-space: pre-wrap; }
+.script-kp { margin-top: 7px; }
+.script-kp-t { font-size: 11px; font-weight: 700; color: #3d5a3e; }
+.script-kp-i { font-size: 12px; color: #5b5348; margin-top: 2px; line-height: 1.5; }
+.script-no { margin-top: 7px; }
+.script-no-t { font-size: 11px; font-weight: 700; color: #b04a3a; }
+.script-no-i { font-size: 12px; color: #8a5a4a; margin-top: 2px; line-height: 1.5; }
+.script-drill { font-size: 11.5px; color: #6b5f8a; margin-top: 7px; padding: 5px 8px; background: #f2eef8; border-radius: 6px; line-height: 1.5; }
 .ref { font-size: 11px; margin-top: 6px; padding: 4px 8px; border-radius: 6px; line-height: 1.4; }
 .ref-ok { background: #eef3ec; color: #3d5a3e; }
 .ref-wait { background: #f3f0ea; color: #8a837a; }

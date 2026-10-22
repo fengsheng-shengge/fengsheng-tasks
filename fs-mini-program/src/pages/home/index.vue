@@ -46,7 +46,7 @@
         <text class="qs-ico">🎯</text><text class="qs-name">见面参谋</text><text class="qs-desc">秒出作战结论</text>
       </view>
       <view class="qs-item" @tap="goQuick('search')">
-        <text class="qs-ico">🔍</text><text class="qs-name">查服务方案</text><text class="qs-desc">5000+ 真实方案</text>
+        <text class="qs-ico">🔍</text><text class="qs-name">查服务方案</text><text class="qs-desc">{{ dictTotal ? dictTotal + ' 真实方案' : '真实方案' }}</text>
       </view>
     </view>
 
@@ -252,7 +252,7 @@
 </template>
 
 <script>
-import { DICT_DOMAINS, DICT_TOTAL } from '../../utils/dict.js'
+import { DICT_DOMAINS, fetchDictCounts } from '../../utils/dict.js'
 import { useUserStore } from '../../store/user'
 import { trackPageview, trackEvent } from '../../utils/tracker'
 import hero1 from '@/static/hero1.png'
@@ -274,11 +274,11 @@ export default {
           { ico: '👥', name: '客户档案', desc: '建档与需求记录', tab: 'clients' },
           { ico: '🎯', name: '见面参谋', desc: '秒出作战结论', route: '/package-curation/pages/curate-prep/index' },
           { ico: '📄', name: '需求洞察', desc: '七维画像报告', tab: 'clients' },
-          { ico: '🔍', name: '查服务方案', desc: '5000+ 真实方案', route: '/pages/knowledge/domain' }
+          { ico: '🔍', name: '查服务方案', desc: '真实方案库', route: '/pages/knowledge/domain' }
         ],
         manager: [
           { ico: '💡', name: '案例灵感', desc: '实战经验参考', tab: 'cases' },
-          { ico: '📚', name: '知识库', desc: '26 域真实方案', tab: 'knowledge' },
+          { ico: '📚', name: '知识库', desc: '真实方案库', tab: 'knowledge' },
           { ico: '🧮', name: '测算工具', desc: '月租/月供预算', route: '/pages/calculator/index' },
           { ico: '🏠', name: '居住测评', desc: '摸清客户画像', route: '/pages/assess/index' }
         ]
@@ -288,8 +288,8 @@ export default {
         { key: 'knowledge', ico: '📚', name: '知识库', desc: '按场景查真实方案', route: '/pages/knowledge/domain' },
         { key: 'curate', ico: '🎯', name: '策展引擎', desc: '见面参谋出结论', route: '/package-curation/pages/curate-prep/index' }
       ],
-      dictDomains: DICT_DOMAINS,
-      dictTotal: DICT_TOTAL,
+      dictDomains: DICT_DOMAINS.map(d => ({ ...d })),
+      dictTotal: 0,
       fbShow: false,
       heroIdx: 0,
       lifeSteps: [
@@ -375,6 +375,12 @@ export default {
       })
       return todos.slice(0, 3)
     }
+  },
+  onLoad() {
+    // 运行时实拉知识库真实条数（后端部署新版本主库后自动跟随，不写死数字）
+    fetchDictCounts()
+      .then(r => { this.dictTotal = r.total; this.dictDomains = r.domains })
+      .catch(() => { /* 后端不可达：保持不展示具体数字，不编造 */ })
   },
   methods: {
     onHero(e) {
