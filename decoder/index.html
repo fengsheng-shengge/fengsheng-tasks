@@ -145,20 +145,40 @@ textarea#clientText::placeholder{color:var(--ink-3)}
   textarea#clientText{min-height:100px}
 }
 </style>
+<style>
+/* 统一全站顶栏/页脚（开发包 v1.0 规范） */
+.fs-top-nav{position:sticky;top:0;z-index:100;background:var(--bg,#f7f5f0);border-bottom:1px solid var(--border,#e8e4da);padding:10px 32px;display:flex;align-items:center;gap:20px}
+.fs-top-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.fs-top-mark{width:30px;height:30px;background:#1a3d24;color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.fs-top-name{font-size:14px;font-weight:700;color:#1a3d24;white-space:nowrap}
+.fs-top-links{display:flex;gap:14px;font-size:13px;flex-wrap:wrap;flex:1;justify-content:center}
+.fs-top-links a{color:#555;text-decoration:none;white-space:nowrap}
+.fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
+.fs-top-actions{display:flex;align-items:center;gap:10px;font-size:13px;flex-shrink:0}
+.fs-top-city{cursor:pointer;color:#555;white-space:nowrap}
+.fs-top-avatar{width:30px;height:30px;background:#faf5ea;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px}
+.fs-page-footer{text-align:center;padding:24px 16px;font-size:12px;color:#7a8478;line-height:1.8;border-top:1px solid rgba(26,61,36,.09)}
+.fs-page-footer a{color:inherit}
+@media(max-width:960px){.fs-top-links{display:none}.fs-top-city{display:none}}
+</style>
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <div class="brand"><span class="brand-mark">🌬️</span> 风声</div>
-    <div class="nav-links">
-      <a href="/">首页</a>
-      <a href="/knowledge/">知识底座</a>
-      <a href="/mentor/">开单导师</a>
-      <a href="/ip-design/">IP设计</a>
-      <a href="/reply/">快回</a>
-      <a class="active" href="/decoder/">解码</a>
-    </div>
+<nav class="fs-top-nav">
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声·聚满匠星云</span></a>
+  <div class="fs-top-links">
+    <a href="/">首页</a>
+    <a href="/workspace/">工作台</a>
+    <a href="/clients/">客户管理</a>
+    <a href="/knowledge/">知识底座</a>
+    <a href="/curation/">策展引擎</a>
+    <a class="active" href="/decoder/">话术解码</a>
+    <a href="/care-test/">能力测评</a>
+    <a href="/academy/">学习成长</a>
+  </div>
+  <div class="fs-top-actions">
+    <span class="fs-top-city" onclick="alert('城市数据接入中，当前为默认配置')">📍 杭州 ▾</span>
+    <span class="fs-top-avatar">👤</span>
   </div>
 </nav>
 
@@ -253,11 +273,8 @@ textarea#clientText::placeholder{color:var(--ink-3)}
     ⚠️ 免责声明：本工具提供的解码分析基于AI生成，仅供参考，不构成专业建议。用户应自行判断并承担使用结果的全部责任。
   </div>
 <footer class="footer">
-  <div class="brand-line">🌬️ 风声 · 帮助服务者贴近消费者的认知</div>
+  <div class="brand-line">🌬️ 风声·聚满匠星云 · 通过独立价值赢得尊严</div>
   <div>品牌定位:<b>帮助服务者用独立价值获得尊重</b></div>
-  <div style="margin-top:10px">
-    <a href="/">首页</a>·<a href="/reply/">快回</a>·<a href="/mentor/">开单导师</a>·<a href="/knowledge/">知识底座</a>·<a href="/ip-design/">IP设计</a>
-  </div>
   <div style="margin-top:8px;color:var(--ink-3);font-size:11px">© 2026 风声 fengsheng.tech · 备案号 <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:inherit">京ICP备2026044043号</a></div>
 </footer>
 
