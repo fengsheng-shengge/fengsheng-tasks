@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>服务者工作台 | 风声·聚满匠星云</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #1a3d24;
+    --primary-light: #2d5a3d;
+    --primary-dark: #12291a;
+    --primary-bg: #e8f0e9;
+    --gold: #c9a962;
+    --gold-bg: #faf5ea;
+    --ink: #1a1a1a;
+    --body: #555;
+    --muted: #999;
+    --line: #e8e4da;
+    --bg: #f7f5f0;
+    --card: #ffffff;
+    --warning: #e67e22;
+    --success: #27ae60;
+  }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  /* 顶栏 */
+  .top-nav {
+    background: var(--bg);
+    padding: 12px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+  }
+  .logo-area { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--primary); color: #fff;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .logo-text { font-size: 15px; font-weight: 700; color: var(--primary); }
+  .nav-links { display: flex; gap: 20px; font-size: 13px; }
+  .nav-links a { color: var(--body); text-decoration: none; }
+  .nav-links a.active { color: var(--primary); font-weight: 600; }
+  .nav-actions { display: flex; gap: 12px; align-items: center; font-size: 13px; }
+  .city-selector { cursor: pointer; color: var(--body); }
+  .avatar {
+    width: 32px; height: 32px;
+    background: var(--gold-bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  /* 领域Tab */
+  .domain-tabs {
+    background: var(--primary);
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 44px;
+  }
+  .domain-tab {
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    padding: 12px 0;
+    border-bottom: 2px solid transparent;
+  }
+  .domain-tab.active {
+    color: #fff;
+    border-bottom-color: var(--gold);
+    font-weight: 600;
+  }
+  .domain-tag {
+    font-size: 10px;
+    background: rgba(255,255,255,0.15);
+    padding: 2px 6px;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.5);
+    margin-left: 4px;
+  }
+
+  /* 主内容 */
+  .main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 48px;
+  }
+
+  /* 1. 问题入口（最核心） */
+  .search-section {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  }
+  .search-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .search-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .search-box {
+    display: flex;
+    gap: 10px;
+  }
+  .search-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus {
+    border-color: var(--primary);
+  }
+  .search-btn {
+    background: var(--primary);
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .hot-questions {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .hot-questions span {
+    display: inline-block;
+    background: var(--bg);
+    padding: 4px 12px;
+    border-radius: 16px;
+    margin-right: 6px;
+    margin-top: 6px;
+    cursor: pointer;
+    color: var(--body);
+  }
+  .hot-questions span:hover {
+    background: var(--primary-bg);
+    color: var(--primary);
+  }
+
+  /* 卡片通用 */
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 20px 24px;
+    border: 1px solid var(--line);
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: var(--primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-title-sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* 能力画像维度标签 */
+  .dim-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .dim-chip {
+    background: var(--bg);
+    border: 1px solid #f0ede5;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--body);
+  }
+  .dim-chip b {
+    display: block;
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .ability-empty {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--gold-bg);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--body);
+    line-height: 1.6;
+  }
+  .btn-gold {
+    background: var(--gold);
+    color: var(--primary-dark);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    white-space: nowrap;
+    margin-left: 16px;
+  }
+
+  /* 成长进度 */
+  .progress-section {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    border-radius: 14px;
+    padding: 20px 28px;
+    margin-bottom: 20px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .progress-left {
+    flex: 1;
+  }
+  .progress-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 6px;
+  }
+  .progress-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 3px;
+    width: 0;
+    transition: width 0.6s ease;
+  }
+  .progress-detail {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+  }
+  .progress-right {
+    text-align: center;
+    margin-left: 24px;
+  }
+  .progress-num {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .progress-num-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* 底部工具入口 */
+  .tools-section {
+    margin-bottom: 40px;
+  }
+  .tools-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--body);
+    margin-bottom: 10px;
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .tool-card {
+    background: var(--card);
+    border-radius: 10px;
+    padding: 14px 10px;
+    text-align: center;
+    border: 1px solid #f0ede5;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--ink);
+    display: block;
+  }
+  .tool-card:hover {
+    border-color: var(--line);
+  }
+  .tool-icon { font-size: 20px; margin-bottom: 4px; }
+  .tool-name { font-size: 12px; font-weight: 500; }
+  .tool-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .footer-note {
+    text-align: center;
+    padding: 32px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- 顶栏 -->
+  <div class="top-nav">
+    <div class="logo-area">
+      <div class="logo-icon">风</div>
+      <span class="logo-text">风声·聚满匠星云</span>
+    </div>
+    <div class="nav-links">
+      <a href="/">首页</a>
+      <a href="/workspace/" class="active">工作台</a>
+      <a href="/clients/">客户管理</a>
+      <a href="/knowledge/">知识底座</a>
+      <a href="/curation/">策展引擎</a>
+      <a href="/decoder/">话术解码</a>
+      <a href="/care-test/">能力测评</a>
+      <a href="/academy/">学习成长</a>
+    </div>
+    <div class="nav-actions">
+      <span class="city-selector" onclick="alert('城市数据接入中，当前为默认配置')">📍 杭州 ▾</span>
+      <div class="avatar">👤</div>
+    </div>
+  </div>
+
+  <!-- 领域Tab -->
+  <div class="domain-tabs">
+    <div class="domain-tab active">🏠 交易服务</div>
+    <div class="domain-tab">🔑 资产运营 <span class="domain-tag">即将</span></div>
+    <div class="domain-tab">🛠 家装服务 <span class="domain-tag">即将</span></div>
+    <div class="domain-tab">🌿 特殊居住 <span class="domain-tag">即将</span></div>
+  </div>
+
+  <!-- 主内容 -->
+  <div class="main">
+
+    <!-- 1. 问题入口（最核心） -->
+    <div class="search-section">
+      <div class="search-title">碰到服务客户的困惑了？</div>
+      <div class="search-subtitle">税费、贷款、政策、沟通话术——直接搜，查真实业务词条</div>
+      <div class="search-box">
+        <input type="text" id="askInput" class="search-input" placeholder="比如：首套房契税怎么算？客户嫌贵怎么回？">
+        <button class="search-btn" id="askBtn">搜一下</button>
+      </div>
+      <div class="hot-questions">
+        🔥 热门问题：
+        <span>首套房契税税率</span>
+        <span>公积金贷款额度</span>
+        <span>客户砍价怎么应对</span>
+        <span>带看后怎么跟进</span>
+      </div>
+    </div>
+
+    <!-- 2. 能力画像：6阶段 + 1贯穿维度（分数来自测评，未测不虚构） -->
+    <div class="card">
+      <div class="card-title">
+        📊 我的能力画像
+        <span class="card-title-sub">按客户生命周期对标：获客→洞察→方案→谈判→履约→复购</span>
+      </div>
+
+      <!-- 评价标准依据 -->
+      <div style="background: var(--gold-bg); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 12px; color: var(--body); line-height: 1.7;">
+        <strong style="color: var(--primary);">📐 评价标准依据（五源提炼）：</strong>
+        ① 国家职业标准（房地产经纪专业人员资格考试科目）
+        ② 世界技能大赛（零售赛项核心能力）
+        ③ 行业最佳实践（头部平台头部经纪人能力萃取）
+        ④ 消费者反馈（真实客户评价）
+        ⑤ 本地城市数据（本地交易政策/税费/贷款/商圈成交）
+      </div>
+
+      <div class="dim-grid">
+        <div class="dim-chip"><b>① 获客触达</b>个人品牌 / 形象 / 渠道</div>
+        <div class="dim-chip"><b>② 需求洞察</b>客户画像 / 共情 / 场景</div>
+        <div class="dim-chip"><b>③ 专业方案</b>知识 / 匹配 / 税费贷款</div>
+        <div class="dim-chip"><b>④ 带看谈判</b>表达 / 沟通 / 异议处理</div>
+        <div class="dim-chip"><b>⑤ 交易履约</b>流程 / 合同 / 风险</div>
+        <div class="dim-chip"><b>⑥ 售后复购</b>服务 / 关怀 / 转介绍</div>
+        <div class="dim-chip"><b>⟡ 数字化协同</b>贯穿全周期：AI工具/复核/反馈</div>
+        <div class="dim-chip" style="background: var(--primary-bg); border-color: var(--primary-bg);"><b style="color: var(--primary);">7 个维度</b>测评后生成分数与差距</div>
+      </div>
+
+      <div class="ability-empty">
+        <span>完成一次能力测评，系统按这 7 个维度给你打分，并指出最大差距。</span>
+        <a href="/care-test/" class="btn-gold">去做测评 →</a>
+      </div>
+    </div>
+
+    <!-- 3. 成长进度（数据来自 jy_user：策展页同一份本地记录） -->
+    <div class="progress-section">
+      <div class="progress-left">
+        <div class="progress-label">驭AI认证进度</div>
+        <div class="progress-title" id="rankTitle">加载中…</div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill" id="scoreFill"></div>
+        </div>
+        <div class="progress-detail">
+          分数来自你的测评与AI复核使用记录
+        </div>
+      </div>
+      <div class="progress-right">
+        <div class="progress-num" id="scoreNum">—</div>
+        <div class="progress-num-label">驾驭力分</div>
+      </div>
+    </div>
+
+    <!-- 4. 底部工具入口 -->
+    <div class="tools-section">
+      <div class="tools-title">🧰 常用工具</div>
+      <div class="tools-grid">
+        <a href="/curation/" class="tool-card">
+          <div class="tool-icon">⚡</div>
+          <div class="tool-name">策展引擎</div>
+          <div class="tool-sub">一键生成方案</div>
+        </a>
+        <a href="/knowledge/" class="tool-card">
+          <div class="tool-icon">📖</div>
+          <div class="tool-name">知识底座</div>
+          <div class="tool-sub"><span data-count="entries">—</span>条词条</div>
+        </a>
+        <a href="/decoder/" class="tool-card">
+          <div class="tool-icon">💬</div>
+          <div class="tool-name">话术解码器</div>
+          <div class="tool-sub">客户问题怎么答</div>
+        </a>
+        <a href="/care-test/" class="tool-card">
+          <div class="tool-icon">📊</div>
+          <div class="tool-name">我的测评</div>
+          <div class="tool-sub">能力报告</div>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer-note">
+    风声·聚满匠星云 · 经纪人工作台 · AI产出，真人复核<br>
+    © 2026 fengsheng.tech
+  </div>
+
+<script>
+  // 搜索 → 真实词条搜索页
+  (function(){
+    var input = document.getElementById('askInput');
+    var btn = document.getElementById('askBtn');
+    function go(){
+      var q = input.value.trim();
+      if (!q) { input.focus(); return; }
+      location.href = '/search/?q=' + encodeURIComponent(q);
+    }
+    btn.addEventListener('click', go);
+    input.addEventListener('keydown', function(e){ if (e.key === 'Enter') go(); });
+    document.querySelectorAll('.hot-questions span').forEach(function(el){
+      el.addEventListener('click', function(){
+        input.value = el.textContent;
+        go();
+      });
+    });
+  })();
+
+  // 成长进度：接 jy_user（与策展页同一份 localStorage 记录）
+  (function(){
+    var user;
+    try { user = JSON.parse(localStorage.getItem('jy_user') || 'null'); } catch(e) { user = null; }
+    if (!user) {
+      document.getElementById('rankTitle').textContent = '完成测评与策展复核后解锁';
+      document.getElementById('scoreNum').textContent = '—';
+      return;
+    }
+    var score = Math.max(0, Math.min(100, Number(user.score) || 0));
+    document.getElementById('rankTitle').textContent =
+      (user.rank || '未评级') + '（' + (user.star || 0) + '星）';
+    document.getElementById('scoreFill').style.width = score + '%';
+    document.getElementById('scoreNum').textContent = score;
+  })();
+
+  // 知识底座词条数：真实 entries.json 计数
+  (function(){
+    fetch('/data/entries.json')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var total = 0;
+        if (Array.isArray(data)) { total = data.length; }
+        else if (data && typeof data === 'object') {
+          for (var k in data) { if (Array.isArray(data[k])) total += data[k].length; }
+        }
+        document.querySelectorAll('[data-count="entries"]').forEach(function(el){
+          el.textContent = total ? total.toLocaleString() : '—';
+        });
+      })
+      .catch(function(){});
+  })();
+</script>
+
+</body>
+</html>

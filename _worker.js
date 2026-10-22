@@ -3429,7 +3429,7 @@ export default {
     }
 
     // Trailing-slash redirects
-    const trailingSlashRedirects = ['/knowledge', '/mentor', '/ip-design', '/reply', '/assessment', '/agent-assessment', '/breeder', '/s1-report', '/partner', '/care-test', '/quality-test'];
+    const trailingSlashRedirects = ['/knowledge', '/mentor', '/ip-design', '/reply', '/assessment', '/agent-assessment', '/breeder', '/s1-report', '/partner', '/care-test', '/quality-test', '/workspace'];
     if (trailingSlashRedirects.includes(path)) {
       return Response.redirect(`https://fengsheng.tech${path}/`, 301);
     }
@@ -3438,6 +3438,9 @@ export default {
     const pathRewrites = {
       '/showing-report': '/s1-report/',
       '/showing-report/': '/s1-report/',
+      // 学习成长导航别名 → 现有智能体学院（开发包 v1.0 路由对齐）
+      '/academy': '/agent-academy/',
+      '/academy/': '/agent-academy/',
     };
     if (pathRewrites[path]) {
       const rewriteUrl = new URL(pathRewrites[path], request.url);
@@ -3808,7 +3811,7 @@ export default {
         '/ip-design', '/knowledge', '/management',
         '/mentor', '/partner', '/privacy', '/purchase', '/quality-test', '/reply',
         '/s1-report', '/scene', '/search', '/shuowenjiedao', '/skills', '/standard', '/survey',
-        '/terms', '/showing-report', '/dict', '/decode',
+        '/terms', '/showing-report', '/dict', '/decode', '/workspace/',
         '/agreement', '/okr', '/docs', '/toolkit', '/knowledge/quiz',
         '/knowledge/quiz/', '/toolkit/methodology', '/toolkit/methodology/',
         '/gate', '/gate/',
