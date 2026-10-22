@@ -1047,6 +1047,11 @@ function resetForm() {
   document.getElementById('result-area').style.display = 'none'
   document.getElementById('error-bar').style.display = 'none'
   window.scrollTo({ top: 0, behavior: 'smooth' })
+  // 重置驭AI面板状态
+  var jp = document.getElementById('jyPanel'); if (jp) jp.style.display = 'none'
+  var rh = document.getElementById('result-head'); if (rh) { rh.classList.remove('human-reviewed'); rh.classList.add('ai-draft') }
+  var rp = document.getElementById('reviewPanel'); if (rp) rp.classList.remove('human-reviewed')
+  jyIterCount = 0
 }
 
 function escHtml(s) {
