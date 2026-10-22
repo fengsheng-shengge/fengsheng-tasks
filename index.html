@@ -409,36 +409,39 @@ body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue"
 </div>
 
 <!-- ====== v1.1 新增：问候语区 ====== -->
-<div class="greeting">
-  <h1>晚上好，<strong>师傅</strong></h1>
-  <p>你今天已生成 <strong>3</strong> 份方案，复核率 <strong>100%</strong>，继续保持。</p>
+<div class="greeting" id="greetingBox">
+  <h1 id="greetingH1">晚上好，<strong>你</strong></h1>
+  <p id="greetingSub">欢迎回到风声工作台。</p>
 </div>
 
-<!-- ====== 数据信任区（v1.1 改结果导向 + 示例数据标注）====== -->
+<!-- ====== 数据信任区（v1.1 全真实数据，无虚构）====== -->
 <div class="stats-section">
   <div class="stats-row">
-    <div class="stat-item"><div class="stat-num" style="color:var(--gold)">1,286</div><div class="stat-label">已生成客户报告</div></div>
-    <div class="stat-item"><div class="stat-num">342</div><div class="stat-label">服务过的匠人</div></div>
-    <div class="stat-item"><div class="stat-num">96%</div><div class="stat-label">报告采纳率</div></div>
-    <div class="stat-item"><div class="stat-num" style="color:var(--gold)">★★ 优秀级</div><div class="stat-label">匠星认证体系</div></div>
+    <div class="stat-item"><div class="stat-num" style="color:var(--gold)" id="statTotal">—</div><div class="stat-label">知识底座总词条</div></div>
+    <div class="stat-item"><div class="stat-num" id="statDomain">—</div><div class="stat-label">当前领域词条</div></div>
+    <div class="stat-item"><div class="stat-num" id="statJyScore">—</div><div class="stat-label">驭AI驾驭力</div></div>
+    <div class="stat-item"><div class="stat-num" style="color:var(--gold)" id="statJyRank">—</div><div class="stat-label">驭AI等级</div></div>
   </div>
-  <div class="stats-source">* 以上为示例数据，上线前替换为真实统计</div>
 </div>
 
-<!-- ====== v1.1 新增：七环节成长闭环 ====== -->
+<!-- ====== v1.1：七环节成长闭环（可交互，localStorage 持久化）====== -->
 <div class="loop-section">
   <div class="loop-header">
     <div class="loop-title">🔄 我的能力成长闭环</div>
-    <div class="loop-progress">当前进度：「测」已完成，进入「学」</div>
+    <div class="loop-progress" id="loopProgress">点击环节标记已完成，进度自动更新</div>
   </div>
-  <div class="loop-steps">
-    <div class="loop-step active"><div class="loop-step-circle">📊</div><div class="loop-step-name">测</div></div>
-    <div class="loop-step"><div class="loop-step-circle">📚</div><div class="loop-step-name">学</div></div>
-    <div class="loop-step"><div class="loop-step-circle">🎯</div><div class="loop-step-name">练</div></div>
-    <div class="loop-step"><div class="loop-step-circle">📝</div><div class="loop-step-name">考</div></div>
-    <div class="loop-step"><div class="loop-step-circle">⭐</div><div class="loop-step-name">评</div></div>
-    <div class="loop-step"><div class="loop-step-circle">🤝</div><div class="loop-step-name">配</div></div>
-    <div class="loop-step"><div class="loop-step-circle">💬</div><div class="loop-step-name">反馈</div></div>
+  <div class="loop-steps" id="loopSteps">
+    <div class="loop-step" data-step="测" onclick="toggleLoopStep(this)"><div class="loop-step-circle">📊</div><div class="loop-step-name">测</div><div class="loop-step-check">✓</div></div>
+    <div class="loop-step" data-step="学" onclick="toggleLoopStep(this)"><div class="loop-step-circle">📚</div><div class="loop-step-name">学</div><div class="loop-step-check">✓</div></div>
+    <div class="loop-step" data-step="练" onclick="toggleLoopStep(this)"><div class="loop-step-circle">🎯</div><div class="loop-step-name">练</div><div class="loop-step-check">✓</div></div>
+    <div class="loop-step" data-step="考" onclick="toggleLoopStep(this)"><div class="loop-step-circle">📝</div><div class="loop-step-name">考</div><div class="loop-step-check">✓</div></div>
+    <div class="loop-step" data-step="评" onclick="toggleLoopStep(this)"><div class="loop-step-circle">⭐</div><div class="loop-step-name">评</div><div class="loop-step-check">✓</div></div>
+    <div class="loop-step" data-step="配" onclick="toggleLoopStep(this)"><div class="loop-step-circle">🤝</div><div class="loop-step-name">配</div><div class="loop-step-check">✓</div></div>
+    <div class="loop-step" data-step="反馈" onclick="toggleLoopStep(this)"><div class="loop-step-circle">💬</div><div class="loop-step-name">反馈</div><div class="loop-step-check">✓</div></div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button style="font-size:11px;color:var(--ts);background:none;border:1px solid var(--border);border-radius:12px;padding:3px 10px;cursor:pointer" onclick="resetLoop()">重置</button>
+    <span style="font-size:10px;color:var(--td);align-self:center">点击环节标记已完成，数据存本地</span>
   </div>
 </div>
 
@@ -1250,14 +1253,115 @@ var WOTU_URL = 'https://wotu.fengsheng.tech/login';
   fetch('/data/entries.json')
     .then(function(r) { return r.json(); })
     .then(function(entries) {
-      injectCounts({
+      var counts = {
         asset:   countDomain(entries, 'asset'),
         decor:   countDomain(entries, 'decor'),
         special: countDomain(entries, 'special'),
-        trade:   countDomain(entries, 'trade')
-      });
+        trade:   countDomain(entries, 'trade'),
+        total:   entries.length
+      };
+      injectCounts(counts);
+      // 同步给数据信任区用
+      try { localStorage.setItem('entries_stats', JSON.stringify(counts)); } catch(e){}
     })
     .catch(function(err) { /* 静态页面或本地无 data 目录时静默降级 */ });
+
+  // ====== v1.1 问候语：动态时间 + 真实称呼 ======
+  (function initGreeting() {
+    var h = new Date().getHours();
+    var tOfDay = h < 6 ? '夜深了' : h < 11 ? '早上好' : h < 14 ? '中午好' : h < 18 ? '下午好' : '晚上好';
+    // 称呼：角色名（localStorage）或通用"你"
+    var role = localStorage.getItem('fs_role_name') || '你';
+    var el = document.getElementById('greetingH1');
+    if (el) el.innerHTML = tOfDay + '，<strong>' + role + '</strong>';
+    // 副标题：真实数据或引导文案
+    var subEl = document.getElementById('greetingSub');
+    if (subEl) {
+      var jyUser = JSON.parse(localStorage.getItem('jy_user') || 'null');
+      if (jyUser && jyUser.score > 0) {
+        subEl.innerHTML = '你的驭AI驾驭力 <strong>' + jyUser.score + '</strong>/100（' + jyUser.rank + '），点击「驭AI精调」继续提升。';
+      } else {
+        subEl.innerHTML = '欢迎回到风声工作台，先选领域开始今天的工作。';
+      }
+    }
+  })();
+
+  // ====== v1.1 数据信任区：注入真实数字 ======
+  (function initTrustData() {
+    var totalEl = document.getElementById('statTotal');
+    var domEl = document.getElementById('statDomain');
+    var jyScoreEl = document.getElementById('statJyScore');
+    var jyRankEl = document.getElementById('statJyRank');
+    // 从 fetch 结果读——如果已加载就直接用，没加载等一下
+    function tryInject() {
+      try {
+        var store = JSON.parse(localStorage.getItem('entries_stats') || 'null');
+        if (store) {
+          if (totalEl) totalEl.textContent = store.total.toLocaleString();
+          // 当前领域词条数：看哪个 tab 是 active
+          var activeTab = document.querySelector('.domain-tab.active');
+          var keyMap = { asset:'asset', decor:'decor', special:'special', trade:'trade' };
+          var domainKey = activeTab ? keyMap[activeTab.dataset.domain] : 'asset';
+          if (domEl && store[domainKey]) domEl.textContent = store[domainKey];
+        }
+        // 驭AI数据
+        var jy = JSON.parse(localStorage.getItem('jy_user') || '{"score":0,"rank":"未评级","star":0}');
+        if (jyScoreEl) jyScoreEl.textContent = jy.score + '/100';
+        if (jyRankEl) jyRankEl.textContent = jy.rank;
+      } catch(e) { /* 静默 */ }
+    }
+    tryInject();
+    // 领域切换时也注入
+    var tabs = document.querySelectorAll('.domain-tab');
+    tabs.forEach(function(t){ t.addEventListener('click', tryInject) });
+  })();
+
+  // ====== v1.1 七环节成长闭环：可交互 localStorage ======
+  (function initLoopSteps() {
+    var box = JSON.parse(localStorage.getItem('fs_loop_progress') || '{"测":true,"学":false,"练":false,"考":false,"评":false,"配":false,"反馈":false}');
+    var steps = document.querySelectorAll('.loop-step');
+    var doneCount = 0;
+    steps.forEach(function(s) {
+      var stepName = s.dataset.step;
+      if (box[stepName]) { s.classList.add('active'); doneCount++; }
+    });
+    var progressEl = document.getElementById('loopProgress');
+    if (progressEl) progressEl.textContent = '已完成 ' + doneCount + '/7 · 继续点下一个环节';
+  })();
+
+  window.toggleLoopStep = function(el) {
+    el.classList.toggle('active');
+    var stepName = el.dataset.step;
+    var box = JSON.parse(localStorage.getItem('fs_loop_progress') || '{}');
+    box[stepName] = el.classList.contains('active');
+    localStorage.setItem('fs_loop_progress', JSON.stringify(box));
+    // 更新进度
+    var done = Object.values(box).filter(Boolean).length;
+    var progressEl = document.getElementById('loopProgress');
+    if (progressEl) progressEl.textContent = '已完成 ' + done + '/7 · ' + (done < 7 ? '继续点下一个环节' : '🎉 七环节全部完成！');
+  };
+  window.resetLoop = function() {
+    localStorage.removeItem('fs_loop_progress');
+    document.querySelectorAll('.loop-step').forEach(function(s){ s.classList.remove('active') });
+    document.getElementById('loopProgress').textContent = '点击环节标记已完成，进度自动更新';
+  };
+
+  // 领域切换时更新 statDomain 数字
+  (function bindDomainSwitch() {
+    document.querySelectorAll('.domain-tab').forEach(function(tab){
+      tab.addEventListener('click', function(){
+        setTimeout(function(){
+          var store = JSON.parse(localStorage.getItem('entries_stats') || 'null');
+          if (store) {
+            var keyMap = { asset:'asset', decor:'decor', special:'special', trade:'trade' };
+            var dk = keyMap[tab.dataset.domain] || 'asset';
+            var domEl = document.getElementById('statDomain');
+            if (domEl && store[dk]) domEl.textContent = store[dk];
+          }
+        }, 100);
+      });
+    });
+  })();
 
   // ====== 领域切换逻辑 ======
   var DOMAIN_KEY = 'fs_domain';
