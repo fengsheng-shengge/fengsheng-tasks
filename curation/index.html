@@ -130,9 +130,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 /* ========== v1.1 复核工作流：AI初稿 + 风险分级 + 真人复核 ========== */
 /* 报告头部 AI 初稿标记 */
 .result-head.ai-draft{position:relative;background:var(--gold-bg);border:1px dashed var(--gold);border-radius:var(--r2);padding:38px 14px 14px
-.result-head.ai-draft::before{content:'◆ AI 初稿';position:absolute;top:-10px;left:12px;background:var(--gold);color:var(--p-d);font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:12px}
+.result-head.ai-draft::before{
+}content:'◆ AI 初稿';position:absolute;top:-10px;left:12px;background:var(--gold);color:var(--p-d);font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:12px}
 .result-head.human-reviewed{position:relative;background:rgba(26,61,36,.06);border:1px solid var(--brand);border-radius:var(--r2);padding:38px 14px 14px
-.result-head.human-reviewed::before{content:'✓ 真人已审';position:absolute;top:-10px;left:12px;background:var(--brand);color:#fff;font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:12px}
+.result-head.human-reviewed::before
+}{content:'✓ 真人已审';position:absolute;top:-10px;left:12px;background:var(--brand);color:#fff;font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:12px}
 .iron-rule{font-size:11px;color:var(--ts);margin-top:8px;text-align:right;font-style:italic;letter-spacing:.3px}
 
 /* 风险分级条（插在 result-head 和 timeline 之间） */
@@ -962,6 +964,15 @@ function renderResult(result) {
   // ===== 更新复核区统计 =====
   document.getElementById('reviewHard').textContent = hardTotal
   document.getElementById('reviewMedium').textContent = medTotal
+  // 状态归零
+  var hardBoxes = document.querySelectorAll('.risk-confirm input[type=checkbox]')
+  document.getElementById('reviewPending').textContent = hardBoxes.length
+  // jyPanel 默认隐藏，等真人复核通过再显示
+  document.getElementById('jyPanel').style.display = 'none'
+  // 同步 human-reviewed 状态切换到 result-head
+  document.getElementById('result-head').classList.remove('human-reviewed')
+  document.getElementById('result-head').classList.add('ai-draft')
+  document.getElementById('reviewMedium').textContent = medTotal
   // 状态归零：所有高风险 confirm 恢复未勾选
   updateReviewStatus()
 }
@@ -1171,6 +1182,12 @@ function onHumanReviewed() {
   // 重置迭代计数
   jyIterCount = 0;
   document.getElementById('jyIterBar').style.display = 'none';
+  // 同步切换 result-head：金色 AI 初稿 → 墨绿真人已审
+  var rh = document.getElementById('result-head');
+  if (rh) { rh.classList.remove('ai-draft'); rh.classList.add('human-reviewed'); }
+  // 复核面板边框也变
+  var rp = document.getElementById('reviewPanel');
+  if (rp) rp.classList.add('human-reviewed');
 }
 // 在 updateReviewStatus 里调用（全部确认后）
 var _origUpdateReviewStatus = updateReviewStatus;
