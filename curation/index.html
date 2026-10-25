@@ -460,7 +460,8 @@ const DIMENSIONS = [
 
 // 生命周期域映射（用于策展数据加载）
 const DOMAIN_LIFECYCLE = [
-  '签约前','签约中','签约后','居住中','退租出售','业主','资产持有与运营','职业成长','跨域通用'
+  '签约前','签约中','签约后','居住中','退租出售','业主','资产持有与运营','职业成长','跨域通用',
+  '工具模板','资产运营','家装服务','后市场','特殊居住'
 ]
 
 // 子场景映射到策展分组（全生命周期 9 域）
@@ -480,7 +481,16 @@ const DOMAIN_GROUP_MAP = {
              nego: ['出售管理'] },
   '职业成长': { decoder: ['资格考试','职业发展','成长发展','考试考证'],
              see: ['合规','合规经营','专业技能'], nego: [] },
-  '跨域通用': { decoder: ['通用基础'], see: [], nego: [] }
+  '跨域通用': { decoder: ['通用基础'], see: [], nego: [] },
+  '工具模板': { decoder: ['数字化协同','获客','需求洞察','专业方案','带看谈判','交易履约','售后复购'],
+               see: [], nego: [] },
+  '资产运营': { decoder: ['资管经理','租房管家','资产运营'],
+               see: [], nego: [] },
+  '家装服务': { decoder: ['设计师','项目经理','四大工种','家装服务'],
+               see: [], nego: [] },
+  '后市场': { decoder: ['房屋维修','家政保洁','家电维修','后市场'],
+             see: [], nego: [] },
+  '特殊居住': { decoder: ['特殊居住'], see: [], nego: [] }
 }
 const DEFAULT_GROUP = { decoder: [], see: [], nego: [] }
 
@@ -730,7 +740,12 @@ function renderLifecycleGrid() {
     { icon: '🏢', name: '业主', key: '业主' },
     { icon: '💰', name: '资产持有与运营', key: '资产持有与运营' },
     { icon: '📈', name: '职业成长', key: '职业成长' },
-    { icon: '🔗', name: '跨域通用', key: '跨域通用' }
+    { icon: '🔗', name: '跨域通用', key: '跨域通用' },
+    { icon: '🧰', name: '工具模板', key: '工具模板' },
+    { icon: '🏘', name: '资产运营', key: '资产运营' },
+    { icon: '🔨', name: '家装服务', key: '家装服务' },
+    { icon: '🔧', name: '后市场', key: '后市场' },
+    { icon: '🧓', name: '特殊居住', key: '特殊居住' }
   ]
   el.innerHTML = stages.map(s => `<div class="lc-card" onclick="selectDomain('${s.key}')"><div class="lc-icon">${s.icon}</div><div class="lc-name">${s.name}</div><div class="lc-count">${state.manifest && state.manifest.counts ? (state.manifest.counts[s.key]||'—') + ' 词条' : ''}</div></div>`).join('')
 }
