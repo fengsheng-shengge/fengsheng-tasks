@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>风声 · 知识底座</title>
-<meta name="description" content="风声知识底座 · 文化/使命/愿景/价值观 · 美好居住三层 · 6135词条 · — · 9岗位45能力点 · 单文件零依赖">
+<meta name="description" content="风声知识底座 · 文化/使命/愿景/价值观 · 美好居住三层 · — · 9岗位45能力点 · 单文件零依赖">
 <style>
 :root {
   --p: #1a3d24;
@@ -188,6 +188,19 @@ a{color:inherit;text-decoration:none}
 .mapping-table .td-tag.fire{background:rgba(201,169,98,0.1);color:var(--fire)}
 
 /* ===== 业务域 ===== */
+
+/* 5 板块折叠卡 */
+.kb-block{margin-bottom:18px;border-radius:14px;border:1.5px solid var(--line);background:white;overflow:hidden;box-shadow:var(--shadow-sm)}
+.kb-block-head{display:flex;align-items:center;gap:16px;padding:18px 22px;background:linear-gradient(135deg,rgba(26,61,36,0.04),rgba(201,169,98,0.06));cursor:pointer;user-select:none;transition:background .2s}
+.kb-block-head:hover{background:linear-gradient(135deg,rgba(26,61,36,0.08),rgba(201,169,98,0.1))}
+.kb-block-title{font-size:18px;font-weight:700;color:var(--p);flex-shrink:0}
+.kb-block-sub{font-size:12px;color:var(--ink-soft);flex:1}
+.kb-block-meta{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.kb-total{font-size:14px;color:var(--p);font-weight:600;background:rgba(26,61,36,0.08);padding:4px 12px;border-radius:100px}
+.kb-arrow{font-size:11px;color:var(--ink-soft);transition:transform .2s}
+.kb-block-body{padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.kb-kind-cap{display:inline-block;font-size:10px;color:white;background:#c9a962;padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:600;vertical-align:middle}
+
 .di-domains{display:flex;flex-direction:column;gap:12px}
 .di-domain{background:var(--cream);border-radius:12px;padding:16px 20px;transition:all .15s;cursor:pointer}
 .di-domain:hover{background:rgba(26,61,36,0.05)}
@@ -499,7 +512,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
           <div class="product-card">
             <div class="pc-icon">📚</div>
             <div class="pc-name">知识底座（核心资产）</div>
-            <div class="pc-desc">9岗位 × 13域 × 双线 × 三层 —— 底层资产，不是产品。所有产品从这里长出来。</div>
+            <div class="pc-desc">9 岗位 × 39 业务域 —— 底层资产，不是产品。所有产品从这里长出来。</div>
             <div class="pc-status">基石</div>
           </div>
         </div>
@@ -767,7 +780,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
     <div>
       <div class="section-tag" id="dictSectionTag">📖 业务字典 · 8域词条</div>
       <h2 class="section-title">全量词条索引</h2>
-      <p class="section-sub" id="dictSectionSub">—大业务域 · 6135 词条逐步补全中 · 每条词条含定义+正反话术+消费者问题+服务者回答</p>
+      <p class="section-sub" id="dictSectionSub">—大业务域 · — 词条逐步补全中 · 每条词条含定义+正反话术+消费者问题+服务者回答</p>
     </div>
     <a href="/dictionary/" class="section-more-btn">查看全部 →</a>
     <div id="dictVerifyBadge" style="font-size:11px;padding:4px 10px;border-radius:4px;background:var(--fire);color:white;font-weight:600"></div>
@@ -1003,14 +1016,64 @@ function updateDomainStats(){
 function renderDomains(){
   const el=document.getElementById('domainsList');
   if(!el) return;
-  el.innerHTML=businessDomains.map(d=>{
-    const chips=[
-      ...d.sample_words.map((w,i)=>'<span class="di-word" data-entry="'+d.sample_ids[i]+'">'+w+'</span>'),
-      (d.more_count>0 ? '<span class="di-word" data-entry="DOMAIN-'+d.code+'">+ '+d.more_count+' 条</span>' : '')
-    ].join('');
-    return '<div class="di-domain" data-entry="DOMAIN-'+d.code+'" style="cursor:pointer"><div class="di-domain-head"><span class="di-domain-icon">'+d.icon+'</span><span class="di-domain-name">'+d.title+'</span><span class="di-domain-count">'+d.count+' 条</span></div><div class="di-domain-desc" style="font-size:12px;color:var(--ink-soft);margin-bottom:10px">'+d.desc+'</div><div class="di-words">'+chips+'</div></div>';
-  }).join('');
+
+  // 按 ALL_BLOCKS 分组
+  const domainMap = {};
+  businessDomains.forEach(d => { domainMap[d.code] = d; });
+
+  let html = '';
+  ALL_BLOCKS.forEach(block => {
+    const blockDomains = Object.keys(block.domains)
+      .map(dname => domainMap[dname])
+      .filter(Boolean);
+
+    // 板块卡头
+    html += '<div class="kb-block" data-block="'+block.key+'">';
+    html += '  <div class="kb-block-head" onclick="toggleBlock(this)">';
+    html += '    <div class="kb-block-title">'+block.title+'</div>';
+    html += '    <div class="kb-block-sub">'+block.desc+'</div>';
+    html += '    <div class="kb-block-meta"><span class="kb-total">'+(block.total||0)+' 条</span><span class="kb-arrow">▼</span></div>';
+    html += '  </div>';
+    html += '  <div class="kb-block-body" style="display:block">';
+
+    // 二级域卡
+    blockDomains.forEach(d => {
+      const blockIcon = block.domains[d.code]?.icon || '📄';
+      const chips = [
+        ...(d.sample_words||[]).map((w,i)=>'<span class="di-word" data-entry="'+(d.sample_ids?.[i]||'')+'">'+w+'</span>'),
+        ((d.more_count||0)>0 ? '<span class="di-word">+ '+d.more_count+'</span>' : '')
+      ].join('');
+      const kindTag = block.domains[d.code]?.kind === 'cap'
+        ? '<span class="kb-kind-cap">新</span>'
+        : '';
+      html += '<div class="di-domain" data-entry="DOMAIN-'+d.code+'" style="cursor:pointer">';
+      html += '  <div class="di-domain-head">';
+      html += '    <span class="di-domain-icon">'+blockIcon+'</span>';
+      html += '    <span class="di-domain-name">'+d.title+kindTag+'</span>';
+      html += '    <span class="di-domain-count">'+d.count+'</span>';
+      html += '  </div>';
+      if(d.desc) html += '  <div class="di-domain-desc" style="font-size:12px;color:var(--ink-soft);margin-bottom:10px">'+d.desc+'</div>';
+      if(chips) html += '  <div class="di-words">'+chips+'</div>';
+      html += '</div>';
+    });
+
+    html += '  </div>';
+    html += '</div>';
+  });
+
+  el.innerHTML = html;
   updateDomainStats();
+}
+function toggleBlock(head){
+  const body = head.nextElementSibling;
+  const arrow = head.querySelector('.kb-arrow');
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    arrow.textContent = '▼';
+  } else {
+    body.style.display = 'none';
+    arrow.textContent = '▶';
+  }
 }
 
 function renderRoles(){
