@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>风声 · 知识底座</title>
-<meta name="description" content="风声知识底座 · 文化/使命/愿景/价值观 · 美好居住三层 · 6135词条 · 34业务域 · 9岗位45能力点 · 单文件零依赖">
+<meta name="description" content="风声知识底座 · 文化/使命/愿景/价值观 · 美好居住三层 · 6135词条 · — · 9岗位45能力点 · 单文件零依赖">
 <style>
 :root {
   --p: #1a3d24;
@@ -767,7 +767,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
     <div>
       <div class="section-tag" id="dictSectionTag">📖 业务字典 · 8域词条</div>
       <h2 class="section-title">全量词条索引</h2>
-      <p class="section-sub" id="dictSectionSub">34大业务域 · 6135 词条逐步补全中 · 每条词条含定义+正反话术+消费者问题+服务者回答</p>
+      <p class="section-sub" id="dictSectionSub">—大业务域 · 6135 词条逐步补全中 · 每条词条含定义+正反话术+消费者问题+服务者回答</p>
     </div>
     <a href="/dictionary/" class="section-more-btn">查看全部 →</a>
     <div id="dictVerifyBadge" style="font-size:11px;padding:4px 10px;border-radius:4px;background:var(--fire);color:white;font-weight:600"></div>
@@ -801,7 +801,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
       <a href="/dictionary/" class="guide-card" style="border-top:3px solid var(--wood)">
         <div class="guide-icon">📚</div>
         <div class="guide-name">全量词典 · FABE卡片</div>
-        <div class="guide-desc">核心资产 · 七维筛选 · 6135条词条 · FABE知识卡片格式。所有产品从这里长出来。</div>
+        <div class="guide-desc">核心资产 · 七维筛选 · —词条 · FABE知识卡片格式。所有产品从这里长出来。</div>
       </a>
     </div>
   </div>
@@ -852,22 +852,28 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
 
 /* ===== 数据层 ===== */
 // 域配置：从 entries.json 动态生成，此处仅定义图标和展示名
-const DOMAIN_CONFIG = {
-  '签约前':  { icon:'🔍', title:'签约前',      desc:'需求确认、客户解码、带看准备' },
-  '签约中':  { icon:'📝', title:'签约中',      desc:'谈判斡旋、合同条款、交易流程' },
-  '签约后':  { icon:'✅', title:'签约后',      desc:'交房验收、售后跟进、关系维护' },
-  '居住中':  { icon:'🏠', title:'居住中',      desc:'居住品质、日常服务、社区生活' },
-  '退租出售': { icon:'🚪', title:'退租出售',    desc:'退租交接、房源出售、资产处置' },
-  '业主':    { icon:'👤', title:'业主服务',    desc:'业主委托、资产管理、收益优化' },
-  '资产持有与运营': { icon:'📊', title:'资产持有与运营', desc:'资产配置、运营管理、价值提升' },
-  '职业成长': { icon:'📈', title:'职业成长',    desc:'能力提升、职业规划、行业认知' },
-  '跨域通用': { icon:'🔗', title:'跨域通用',    desc:'跨场景通用知识、基础能力' },
-  'SNG':     { icon:'🎵', title:'SNG · 场景词条', desc:'特定场景专项词条' },
-  'OWN':     { icon:'🏢', title:'OWN · 业主专域', desc:'业主侧专项词条' },
-  'trade':   { icon:'💼', title:'交易 · 专项',  desc:'交易场景专项词条' },
-  'CAR':     { icon:'🚗', title:'CAR · 资产',   desc:'资产相关专项词条' },
-  '城市数据': { icon:'🏙', title:'城市数据 · 北京样板', desc:'北京税费 / 交易政策 / 贷款政策，官方来源核验' },
-};
+const BLOCK_TOOL = { key:'tool', title:'🧰 工具模板', desc:`经纪人能力外挂——从带看到谈判到成交的全套工具+模板+SOP`, domains:{
+  '工具模板':{icon:'🧰',kind:'cap'},'职业成长':{icon:'📈',kind:'main'},'岗位体系':{icon:'👥',kind:'main'},'素养域':{icon:'🎯',kind:'main'},
+  '场景剧本':{icon:'🎬',kind:'main'},'跨域通用':{icon:'🔗',kind:'main'},'能力画像':{icon:'📊',kind:'main'},'能力测评':{icon:'📝',kind:'main'},
+  '谈判斡旋':{icon:'🤝',kind:'main'},'带看服务':{icon:'🚪',kind:'main'},'客户解码':{icon:'🔑',kind:'main'}
+}};
+const BLOCK_ASSET = { key:'asset', title:'🏘 资产运营', desc:`从签约到持有到出售——交易全流程 + 居住品质 + 市场数据`, domains:{
+  '资产运营':{icon:'🏘',kind:'cap'},'签约前':{icon:'🔍',kind:'main'},'签约中':{icon:'📝',kind:'main'},'签约后':{icon:'✅',kind:'main'},
+  '资产持有与运营':{icon:'📊',kind:'main'},'居住中':{icon:'🏠',kind:'main'},'业主':{icon:'👤',kind:'main'},'业主侧':{icon:'👥',kind:'main'},
+  '业主出售':{icon:'🏷',kind:'main'},'房东出租':{icon:'🔑',kind:'main'},'退租出售':{icon:'🚪',kind:'main'},'购房':{icon:'🏡',kind:'main'},
+  '租住':{icon:'🛏',kind:'main'},'租房':{icon:'🔐',kind:'main'},'法规政策':{icon:'⚖️',kind:'main'},'学区教育':{icon:'🎓',kind:'main'},
+  '城市数据':{icon:'🏙',kind:'main'},'市场数据-二手房':{icon:'📉',kind:'main'},'市场数据-租赁':{icon:'📈',kind:'main'},
+  '市场数据-头部企业':{icon:'🏢',kind:'main'},'市场数据-房贷':{icon:'🏦',kind:'main'},'市场数据-宏观':{icon:'🌐',kind:'main'},
+  '市场数据-新兴赛道':{icon:'✨',kind:'main'},'市场数据-物业':{icon:'🏛',kind:'main'},'匠星认证':{icon:'⭐',kind:'main'}
+}};
+const BLOCK_DECOR = { key:'decor', title:'🛠 家装服务', desc:`室内设计·家装施工·项目经理·四大工种——从毛坯到精装`, domains:{'家装服务':{icon:'🛠',kind:'cap'}} };
+const BLOCK_AFTER = { key:'after', title:'🔧 后市场', desc:`房屋维修·家政保洁·家电维修——住进去之后的事`, domains:{'后市场':{icon:'🔧',kind:'cap'}} };
+const BLOCK_SPEC  = { key:'spec',  title:'🌿 特殊居住', desc:`适老·育儿·残障·长照——特殊人群的居住需求`, domains:{'特殊居住':{icon:'🌿',kind:'cap'}} };
+
+const ALL_BLOCKS = [BLOCK_TOOL, BLOCK_ASSET, BLOCK_DECOR, BLOCK_AFTER, BLOCK_SPEC];
+const DOMAIN_TO_BLOCK = {};
+ALL_BLOCKS.forEach(b => Object.keys(b.domains).forEach(d => DOMAIN_TO_BLOCK[d] = b.key));
+
 
 // businessDomains 将从 entries.json 动态构建
 let businessDomains = [];
@@ -930,17 +936,11 @@ let totalDomains = 0;    // 实际域数量
 
 // 域→图标映射(entries.json无icon字段,从DOMAIN_CONFIG查)
 function getDomainIcon(domain){
-  const cfg = DOMAIN_CONFIG[domain];
-  return cfg ? cfg.icon : '📄';
+  for(const b of ALL_BLOCKS){ if(b.domains[domain]) return b.domains[domain].icon; }
+  return '📄';
 }
-function getDomainTitle(domain){
-  const cfg = DOMAIN_CONFIG[domain];
-  return cfg ? cfg.title : domain;
-}
-function getDomainDesc(domain){
-  const cfg = DOMAIN_CONFIG[domain];
-  return cfg ? cfg.desc : '';
-}
+function getDomainTitle(domain){ return domain; }
+function getDomainDesc(domain){ return ''; }
 
 /* ===== 动态词条计数 ===== */
 async function loadEntriesData(){
@@ -950,6 +950,14 @@ async function loadEntriesData(){
     if(!resp.ok) return;
     const data=await resp.json();
 
+
+    // 板块计数：把 domains 按 ALL_BLOCKS 归类
+    const domainCountMap = {};
+    data.domains.forEach(d => domainCountMap[d.domain] = d.count);
+    ALL_BLOCKS.forEach(b => {
+      b.total = Object.keys(b.domains).reduce((s,d) => s + (domainCountMap[d]||0), 0);
+    });
+    window.__ALL_BLOCKS = ALL_BLOCKS;
     // Build businessDomains from manifest
     businessDomains = data.domains.map(d=>{
       const cfg = DOMAIN_CONFIG[d.domain] || { icon:'📄', title:d.domain, desc:'' };
@@ -1439,7 +1447,7 @@ loadCityArch();     // 北京样板城市知识架构
   </div>
   <div class="fs-guide-body">
     <h4>这是什么</h4>
-    <p>风声知识底座，收录 6,135 条居住服务专业词条，覆盖 34 个业务域、78+ 个服务场景，按「道·法·术·器」分层组织，是全站内容的地基。</p>
+    <p>风声知识底座，收录 — 条居住服务专业词条，覆盖 34 个业务域、78+ 个服务场景，按「道·法·术·器」分层组织，是全站内容的地基。</p>
     <h4>能帮你解决什么</h4>
     <p>遇到拿不准的概念、术语或场景表达时，快速查到标准说法，把“凭感觉说”变成“有据可依”。</p>
     <h4>怎么用（4 步）</h4>
