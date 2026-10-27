@@ -1932,12 +1932,8 @@ async function handleEntries(request, env, ctx) {
 }
 
 async function handleKnowledgeStats(request, env, ctx) {
-  const cache = caches.default;
-  const cacheKey = new Request('https://cache.local/v4/api/knowledge-stats');
-  const cached = await cache.match(cacheKey);
-  if (cached) return cached;
-
-  // Use manifest only — no need to load all entries
+  // 注意：不再走 caches.default 全局缓存，避免与 entries 接口数据不一致
+  // 只依赖 loadManifest 内部的 10min 内存缓存，与 /api/entries 保持同步
   const manifest = await loadManifest(env);
   if (!manifest) {
     return jsonResponse({ total_entries: 0, total_domains: 0, domains: [], updated: new Date().toISOString() });
@@ -1971,11 +1967,10 @@ async function handleKnowledgeStats(request, env, ctx) {
     domains,
     updated: new Date().toISOString(),
   });
-  const cachedResp = new Response(resp.body, resp);
-  cachedResp.headers.set('Cache-Control', 'public, max-age=600, s-maxage=1800');
-  addETag(cachedResp, await computeEntriesETag(env));
-  if (ctx) ctx.waitUntil(cache.put(cacheKey, cachedResp.clone()));
-  return cachedResp;
+  // 客户端 5min 缓存，Cloudflare 边缘不缓存（与 entries 保持同步）
+  resp.headers.set('Cache-Control', 'public, max-age=300, s-maxage=0');
+  addETag(resp, await computeEntriesETag(env));
+  return resp;
 }
 
 // Server-side search (issue #215): search across all domains
