@@ -3716,7 +3716,8 @@ export default {
     }
 
     // Block direct access to data files — use API endpoints instead
-    if (path.startsWith('/data/')) {
+    // EXCEPTION: /data/v3/ 是 v3 测学练考评数据层，允许 care-test / scene / question-map 前端直接加载
+    if (path.startsWith('/data/') && !path.startsWith('/data/v3/')) {
       return jsonResponse({
         error: 'Direct file access forbidden',
         hint: 'Use /api/entries?domain=xxx&limit=50 for paginated results (supports clientType/stage/layer filters & groupBy)',
