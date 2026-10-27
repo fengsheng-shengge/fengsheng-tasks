@@ -80,6 +80,42 @@
     border-bottom-color: var(--gold);
     font-weight: 600;
   }
+  /* ===== 岗位选择器 ===== */
+  .position-bar {
+    background: white;
+    border-bottom: 1px solid var(--line);
+    padding: 14px 48px;
+    display: none; /* 默认隐藏，JS 控制 */
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .position-bar.visible { display: flex; animation: fadeIn 0.3s ease; }
+  .position-bar-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-right: 4px;
+    font-weight: 500;
+  }
+  .position-pill {
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    background: #f5f3ec;
+    color: var(--body);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .position-pill:hover { background: var(--primary-bg); color: var(--primary); }
+  .position-pill.active {
+    background: var(--gold-bg);
+    color: var(--primary);
+    border-color: var(--gold);
+    font-weight: 600;
+  }
+
   .domain-tag {
     font-size: 10px;
     background: rgba(255,255,255,0.15);
@@ -404,11 +440,18 @@
   </div>
 
   <!-- 领域Tab -->
-  <div class="domain-tabs">
-    <div class="domain-tab active">🏠 交易服务</div>
-    <div class="domain-tab">🔑 资产运营 <span class="domain-tag">即将</span></div>
-    <div class="domain-tab">🛠 家装服务 <span class="domain-tag">即将</span></div>
-    <div class="domain-tab">🌿 特殊居住 <span class="domain-tag">即将</span></div>
+  <div class="domain-tabs" id="domain-tabs">
+    <div class="domain-tab active" data-domain="TRANSACTION" data-phase="NOW">🏠 交易服务</div>
+    <div class="domain-tab" data-domain="ASSET" data-phase="P2">🔑 资产运营 <span class="domain-tag">即将</span></div>
+    <div class="domain-tab" data-domain="DECOR" data-phase="P2">🛠 家装服务 <span class="domain-tag">即将</span></div>
+    <div class="domain-tab" data-domain="AFTER" data-phase="P2">🔧 后市场服务 <span class="domain-tag">即将</span></div>
+    <div class="domain-tab" data-domain="SPECIAL" data-phase="P3">🌿 特殊居住 <span class="domain-tag">即将</span></div>
+  </div>
+
+  <!-- 岗位选择器（选了板块后出现） -->
+  <div class="position-bar" id="position-bar">
+    <span class="position-bar-label">选择岗位：</span>
+    <div id="position-pills"></div>
   </div>
 
   <!-- 主内容 -->
@@ -494,10 +537,16 @@
     <div class="ability-section">
       <div class="ability-header">
         <div class="ability-title">📊 你的能力画像</div>
-        <div class="ability-go-btn">去做测评 →</div>
+        <a id="ability-go-btn" class="ability-go-btn" href="/care-test/">去做测评 →</a>
       </div>
       <div class="ability-subtitle">按客户服务全流程的7个维度，帮你看清哪里强、哪里弱、该补什么</div>
       
+      <div class="ability-grid" id="ability-grid">
+        <!-- JS 根据选中的板块+岗位动态渲染 -->
+      </div>
+
+      <!-- 兜底：默认买卖经纪人（JS 加载失败时显示） -->
+      <noscript>
       <div class="ability-grid">
         <div class="ability-card">
           <div class="ability-card-name">① 获客触达</div>
@@ -536,8 +585,12 @@
         </div>
       </div>
 
-      <div class="ability-tip">
-        <strong>💡 还没测评？</strong>10分钟出你的能力报告——告诉你7个维度各多少分，最大的短板是什么，该先补什么。
+      </div>
+      </noscript>
+
+      <!-- 测评引导（JS 动态改文案） -->
+      <div class="ability-tip" id="ability-tip">
+        <strong id="ability-tip-emoji">💡</strong> <span id="ability-tip-text">10分钟出你的能力报告——告诉你7个维度各多少分，最大的短板是什么，该先补什么。</span>
       </div>
     </div>
 
@@ -589,6 +642,133 @@
   </div>
 
   <!-- 底部 -->
+  <!-- 能力模型切换 JS -->
+  <script>
+  (function(){
+    "use strict";
+
+    var DOM_KEY = "fs_workspace_domain";
+    var POS_KEY = "fs_workspace_position";
+    var modelData = null;
+
+    // 1. 加载维度模型
+    fetch("/data/v3/dimensions_multi.json")
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(data){
+        if(!data) return;
+        modelData = data;
+        init();
+      })
+      .catch(function(){});
+
+    function init(){
+      var tabs = document.querySelectorAll("#domain-tabs .domain-tab");
+      var positionBar = document.getElementById("position-bar");
+      var pills = document.getElementById("position-pills");
+      var grid = document.getElementById("ability-grid");
+      var tipText = document.getElementById("ability-tip-text");
+      var goBtn = document.getElementById("ability-go-btn");
+
+      // 恢复上次选择
+      var savedDomain = localStorage.getItem(DOM_KEY) || "TRANSACTION";
+      var savedPosition = localStorage.getItem(POS_KEY);
+
+      // 绑定板块切换
+      tabs.forEach(function(tab){
+        tab.addEventListener("click", function(){
+          var phase = this.getAttribute("data-phase");
+          var domain = this.getAttribute("data-domain");
+          if(phase !== "NOW"){
+            // Phase 2/3 板块：显示即将提示，仍然允许点（做预览）
+            // 但岗位选择器里标记"即将开放"
+          }
+          // 切换 active
+          tabs.forEach(function(t){ t.classList.remove("active"); });
+          this.classList.add("active");
+          localStorage.setItem(DOM_KEY, domain);
+          // 板块变了，清除岗位选择
+          localStorage.removeItem(POS_KEY);
+          savedPosition = null;
+          renderDomain(domain);
+        });
+      });
+
+      // 初始渲染 savedDomain
+      // 先把 tab 切到 savedDomain
+      tabs.forEach(function(t){
+        if(t.getAttribute("data-domain") === savedDomain) t.classList.add("active");
+        else t.classList.remove("active");
+      });
+      renderDomain(savedDomain);
+    }
+
+    function renderDomain(domainId){
+      var domain = modelData.domains[domainId];
+      var pills = document.getElementById("position-pills");
+      var positionBar = document.getElementById("position-bar");
+      var grid = document.getElementById("ability-grid");
+      var tipText = document.getElementById("ability-tip-text");
+      var goBtn = document.getElementById("ability-go-btn");
+
+      if(!domain) return;
+
+      // 渲染岗位 pills
+      pills.innerHTML = "";
+      domain.positions.forEach(function(pos){
+        var pill = document.createElement("div");
+        pill.className = "position-pill";
+        pill.setAttribute("data-position", pos.position_id);
+        pill.textContent = pos.position_name;
+        pill.addEventListener("click", function(){
+          localStorage.setItem(POS_KEY, pos.position_id);
+          // 切换 pills active
+          pills.querySelectorAll(".position-pill").forEach(function(p){
+            p.classList.remove("active");
+          });
+          pill.classList.add("active");
+          renderPosition(domainId, pos);
+        });
+        pills.appendChild(pill);
+      });
+      positionBar.classList.add("visible");
+
+      // 默认选第一个岗位（或恢复）
+      var savedPos = localStorage.getItem(POS_KEY);
+      var target = domain.positions.find(function(p){ return p.position_id === savedPos; }) || domain.positions[0];
+      // 高亮 pill
+      pills.querySelectorAll(".position-pill").forEach(function(p){
+        if(p.getAttribute("data-position") === target.position_id) p.classList.add("active");
+      });
+      renderPosition(domainId, target);
+    }
+
+    function renderPosition(domainId, position){
+      var grid = document.getElementById("ability-grid");
+      var tipText = document.getElementById("ability-tip-text");
+      var goBtn = document.getElementById("ability-go-btn");
+
+      // 渲染 7 维度卡
+      grid.innerHTML = "";
+      position.dimensions.forEach(function(dim){
+        var weight = Math.round(dim.weight * 100);
+        var card = document.createElement("div");
+        card.className = "ability-card" + (dim.dim_key === "DIGITAL" ? " ability-card-full" : "");
+        card.innerHTML =
+          '<div class="ability-card-name">' + dim.dim_icon + " " + dim.dim_name + '</div>' +
+          '<div class="ability-card-desc">' + dim.dim_desc + '</div>' +
+          '<div class="ability-card-count">📋 ' + dim.standard_count + '条能力标准 · 权重 ' + weight + '%</div>';
+        grid.appendChild(card);
+      });
+
+      // 更新测评引导文案
+      var domainName = modelData.domains[domainId].domain_name;
+      tipText.textContent = "针对「" + domainName + "·" + position.position_name + "」" +
+        "的7维度专项测评——10分钟出能力报告，告诉你哪里强哪里弱，该先补什么。";
+      goBtn.href = "/care-test/?domain=" + domainId + "&position=" + position.position_id;
+    }
+  })();
+  </script>
+
   <div class="footer-note">
     风声·聚满匠星云 · 经纪人能力外挂辅助系统<br>
     © 2026 fengsheng.tech

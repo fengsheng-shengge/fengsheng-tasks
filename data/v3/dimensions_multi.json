@@ -1,0 +1,980 @@
+{
+  "version": "v3.0-multi",
+  "updated_at": "2026-10-27",
+  "frame": {
+    "dim_count": 7,
+    "frame_name": "服务者7维能力通用框架",
+    "frame_desc": "获客触达 → 需求洞察 → 专业方案 → 带看谈判 → 交易履约 → 售后复购 → 数字化协同。通用框架 + 岗位权重/标准 = 快速复制。"
+  },
+  "domains": {
+    "TRANSACTION": {
+      "domain_id": "TRANSACTION",
+      "domain_name": "交易服务",
+      "domain_icon": "🏠",
+      "phase": "NOW",
+      "description": "买卖/租赁/新房全流程服务",
+      "positions": [
+        {
+          "position_id": "BROKER",
+          "position_name": "买卖经纪人",
+          "total_weight": 1.0,
+          "dimensions": [
+            {
+              "dim_id": 1,
+              "dim_key": "ACQUISITION",
+              "dim_name": "获客触达",
+              "dim_icon": "📣",
+              "dim_desc": "个人品牌打造、渠道获客、房源端客源端开发",
+              "weight": 0.15,
+              "standard_count": 15,
+              "standard_range": "CAP-TRANS-001~015"
+            },
+            {
+              "dim_id": 2,
+              "dim_key": "INSIGHT",
+              "dim_name": "需求洞察",
+              "dim_icon": "👁️",
+              "dim_desc": "购房动机洞察、家庭结构判断、预算隐含信息",
+              "weight": 0.15,
+              "standard_count": 15,
+              "standard_range": "CAP-TRANS-016~030"
+            },
+            {
+              "dim_id": 3,
+              "dim_key": "SOLUTION",
+              "dim_name": "专业方案",
+              "dim_icon": "📐",
+              "dim_desc": "税费贷款测算、房源策展、学区/政策匹配",
+              "weight": 0.2,
+              "standard_count": 25,
+              "standard_range": "CAP-TRANS-031~055"
+            },
+            {
+              "dim_id": 4,
+              "dim_key": "NEGOTIATION",
+              "dim_name": "带看谈判",
+              "dim_icon": "💬",
+              "dim_desc": "带看讲解、异议处理、价格谈判斡旋",
+              "weight": 0.2,
+              "standard_count": 20,
+              "standard_range": "CAP-TRANS-056~075"
+            },
+            {
+              "dim_id": 5,
+              "dim_key": "FULFILLMENT",
+              "dim_name": "交易履约",
+              "dim_icon": "📝",
+              "dim_desc": "交易全流程把控、合同风险、过户交接",
+              "weight": 0.15,
+              "standard_count": 20,
+              "standard_range": "CAP-TRANS-076~095"
+            },
+            {
+              "dim_id": 6,
+              "dim_key": "AFTERSALE",
+              "dim_name": "售后复购",
+              "dim_icon": "🤝",
+              "dim_desc": "售后跟进、复购引导、转介绍激励",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-TRANS-096~105"
+            },
+            {
+              "dim_id": 7,
+              "dim_key": "DIGITAL",
+              "dim_name": "数字化协同",
+              "dim_icon": "🤖",
+              "dim_desc": "AI工具、数据复核、反馈迭代",
+              "weight": 0.05,
+              "standard_count": 5,
+              "standard_range": "CAP-TRANS-106~110"
+            }
+          ]
+        },
+        {
+          "position_id": "NEW_HOME",
+          "position_name": "新房顾问",
+          "total_weight": 1.0,
+          "dimensions": [
+            {
+              "dim_id": 1,
+              "dim_key": "ACQUISITION",
+              "dim_name": "获客触达",
+              "dim_icon": "📣",
+              "dim_desc": "渠道拓客、圈层营销、样板间带看邀约",
+              "weight": 0.2,
+              "standard_count": 15,
+              "standard_range": "CAP-TRANS-001~015"
+            },
+            {
+              "dim_id": 2,
+              "dim_key": "INSIGHT",
+              "dim_name": "需求洞察",
+              "dim_icon": "👁️",
+              "dim_desc": "首次置业 vs 改善需求、投资属性判断",
+              "weight": 0.1,
+              "standard_count": 15,
+              "standard_range": "CAP-TRANS-016~030"
+            },
+            {
+              "dim_id": 3,
+              "dim_key": "SOLUTION",
+              "dim_name": "专业方案",
+              "dim_icon": "📐",
+              "dim_desc": "楼盘对比、首付贷款测算、政策解读",
+              "weight": 0.25,
+              "standard_count": 25,
+              "standard_range": "CAP-TRANS-031~055"
+            },
+            {
+              "dim_id": 4,
+              "dim_key": "NEGOTIATION",
+              "dim_name": "带看谈判",
+              "dim_icon": "💬",
+              "dim_desc": "楼盘价值呈现、价格谈判、房源锁定",
+              "weight": 0.15,
+              "standard_count": 20,
+              "standard_range": "CAP-TRANS-056~075"
+            },
+            {
+              "dim_id": 5,
+              "dim_key": "FULFILLMENT",
+              "dim_name": "交易履约",
+              "dim_icon": "📝",
+              "dim_desc": "认购签约、贷款协助、交房跟进",
+              "weight": 0.1,
+              "standard_count": 20,
+              "standard_range": "CAP-TRANS-076~095"
+            },
+            {
+              "dim_id": 6,
+              "dim_key": "AFTERSALE",
+              "dim_name": "售后复购",
+              "dim_icon": "🤝",
+              "dim_desc": "主动关怀、复购引导、转介绍",
+              "weight": 0.15,
+              "standard_count": 10,
+              "standard_range": "CAP-TRANS-096~105"
+            },
+            {
+              "dim_id": 7,
+              "dim_key": "DIGITAL",
+              "dim_name": "数字化协同",
+              "dim_icon": "🤖",
+              "dim_desc": "AI工具、数据复核、反馈迭代",
+              "weight": 0.05,
+              "standard_count": 5,
+              "standard_range": "CAP-TRANS-106~110"
+            }
+          ]
+        },
+        {
+          "position_id": "LEASE",
+          "position_name": "租赁管家",
+          "total_weight": 1.0,
+          "dimensions": [
+            {
+              "dim_id": 1,
+              "dim_key": "ACQUISITION",
+              "dim_name": "获客触达",
+              "dim_icon": "📣",
+              "dim_desc": "业主端委托拓展、租客端获客",
+              "weight": 0.15,
+              "standard_count": 15,
+              "standard_range": "CAP-TRANS-001~015"
+            },
+            {
+              "dim_id": 2,
+              "dim_key": "INSIGHT",
+              "dim_name": "需求洞察",
+              "dim_icon": "👁️",
+              "dim_desc": "租房需求画像、租期规划、合租/整租判断",
+              "weight": 0.2,
+              "standard_count": 15,
+              "standard_range": "CAP-TRANS-016~030"
+            },
+            {
+              "dim_id": 3,
+              "dim_key": "SOLUTION",
+              "dim_name": "专业方案",
+              "dim_icon": "📐",
+              "dim_desc": "租金定价、周边配套匹配、租赁政策",
+              "weight": 0.15,
+              "standard_count": 25,
+              "standard_range": "CAP-TRANS-031~055"
+            },
+            {
+              "dim_id": 4,
+              "dim_key": "NEGOTIATION",
+              "dim_name": "带看谈判",
+              "dim_icon": "💬",
+              "dim_desc": "租金谈判、押金约定、合同条款协商",
+              "weight": 0.15,
+              "standard_count": 20,
+              "standard_range": "CAP-TRANS-056~075"
+            },
+            {
+              "dim_id": 5,
+              "dim_key": "FULFILLMENT",
+              "dim_name": "交易履约",
+              "dim_icon": "📝",
+              "dim_desc": "签约交接、维修协调、退租处理",
+              "weight": 0.15,
+              "standard_count": 20,
+              "standard_range": "CAP-TRANS-076~095"
+            },
+            {
+              "dim_id": 6,
+              "dim_key": "AFTERSALE",
+              "dim_name": "售后复购",
+              "dim_icon": "🤝",
+              "dim_desc": "续租维护、转租服务、业主转介绍",
+              "weight": 0.15,
+              "standard_count": 10,
+              "standard_range": "CAP-TRANS-096~105"
+            },
+            {
+              "dim_id": 7,
+              "dim_key": "DIGITAL",
+              "dim_name": "数字化协同",
+              "dim_icon": "🤖",
+              "dim_desc": "AI工具、数据复核、反馈迭代",
+              "weight": 0.05,
+              "standard_count": 5,
+              "standard_range": "CAP-TRANS-106~110"
+            }
+          ]
+        }
+      ]
+    },
+    "ASSET": {
+      "domain_id": "ASSET",
+      "domain_name": "资产运营",
+      "domain_icon": "🔑",
+      "phase": "P2",
+      "description": "持有后出租管理与增值运营",
+      "positions": [
+        {
+          "position_id": "PM",
+          "position_name": "资管经理",
+          "total_weight": 1.0,
+          "dimensions": [
+            {
+              "dim_id": 1,
+              "dim_key": "ACQUISITION",
+              "dim_name": "获客触达",
+              "dim_icon": "📣",
+              "dim_desc": "业主端资产委托拓展",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-ASSET-001~010"
+            },
+            {
+              "dim_id": 2,
+              "dim_key": "INSIGHT",
+              "dim_name": "需求洞察",
+              "dim_icon": "👁️",
+              "dim_desc": "资产诊断、租客画像、空置原因分析",
+              "weight": 0.15,
+              "standard_count": 15,
+              "standard_range": "CAP-ASSET-011~025"
+            },
+            {
+              "dim_id": 3,
+              "dim_key": "SOLUTION",
+              "dim_name": "专业方案",
+              "dim_icon": "📐",
+              "dim_desc": "租金定价模型、装修建议、运营方案",
+              "weight": 0.25,
+              "standard_count": 20,
+              "standard_range": "CAP-ASSET-026~045"
+            },
+            {
+              "dim_id": 4,
+              "dim_key": "NEGOTIATION",
+              "dim_name": "带看谈判",
+              "dim_icon": "💬",
+              "dim_desc": "表达沟通、异议处理、价格博弈",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-ASSET-046~055"
+            },
+            {
+              "dim_id": 5,
+              "dim_key": "FULFILLMENT",
+              "dim_name": "交易履约",
+              "dim_icon": "📝",
+              "dim_desc": "租约管理、维修调度、财务报表",
+              "weight": 0.2,
+              "standard_count": 20,
+              "standard_range": "CAP-ASSET-056~075"
+            },
+            {
+              "dim_id": 6,
+              "dim_key": "AFTERSALE",
+              "dim_name": "售后复购",
+              "dim_icon": "🤝",
+              "dim_desc": "主动关怀、复购引导、转介绍",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-ASSET-076~085"
+            },
+            {
+              "dim_id": 7,
+              "dim_key": "DIGITAL",
+              "dim_name": "数字化协同",
+              "dim_icon": "🤖",
+              "dim_desc": "AI工具、数据复核、反馈迭代",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-ASSET-086~095"
+            }
+          ]
+        },
+        {
+          "position_id": "LANDLORD",
+          "position_name": "租赁管家",
+          "total_weight": 1.0,
+          "dimensions": [
+            {
+              "dim_id": 1,
+              "dim_key": "ACQUISITION",
+              "dim_name": "获客触达",
+              "dim_icon": "📣",
+              "dim_desc": "个人品牌、职业形象、渠道获客",
+              "weight": 0.15,
+              "standard_count": 10,
+              "standard_range": "CAP-ASSET-001~010"
+            },
+            {
+              "dim_id": 2,
+              "dim_key": "INSIGHT",
+              "dim_name": "需求洞察",
+              "dim_icon": "👁️",
+              "dim_desc": "租客筛选、信用背调、纠纷预判",
+              "weight": 0.15,
+              "standard_count": 15,
+              "standard_range": "CAP-ASSET-011~025"
+            },
+            {
+              "dim_id": 3,
+              "dim_key": "SOLUTION",
+              "dim_name": "专业方案",
+              "dim_icon": "📐",
+              "dim_desc": "出租定价、空置控制策略",
+              "weight": 0.2,
+              "standard_count": 20,
+              "standard_range": "CAP-ASSET-026~045"
+            },
+            {
+              "dim_id": 4,
+              "dim_key": "NEGOTIATION",
+              "dim_name": "带看谈判",
+              "dim_icon": "💬",
+              "dim_desc": "表达沟通、异议处理、价格博弈",
+              "weight": 0.15,
+              "standard_count": 10,
+              "standard_range": "CAP-ASSET-046~055"
+            },
+            {
+              "dim_id": 5,
+              "dim_key": "FULFILLMENT",
+              "dim_name": "交易履约",
+              "dim_icon": "📝",
+              "dim_desc": "租赁合同、押金管理、维修责任",
+              "weight": 0.2,
+              "standard_count": 20,
+              "standard_range": "CAP-ASSET-056~075"
+            },
+            {
+              "dim_id": 6,
+              "dim_key": "AFTERSALE",
+              "dim_name": "售后复购",
+              "dim_icon": "🤝",
+              "dim_desc": "主动关怀、复购引导、转介绍",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-ASSET-076~085"
+            },
+            {
+              "dim_id": 7,
+              "dim_key": "DIGITAL",
+              "dim_name": "数字化协同",
+              "dim_icon": "🤖",
+              "dim_desc": "AI工具、数据复核、反馈迭代",
+              "weight": 0.05,
+              "standard_count": 10,
+              "standard_range": "CAP-ASSET-086~095"
+            }
+          ]
+        }
+      ]
+    },
+    "DECOR": {
+      "domain_id": "DECOR",
+      "domain_name": "家装服务",
+      "domain_icon": "🛠",
+      "phase": "P2",
+      "description": "设计/施工/安装全流程",
+      "positions": [
+        {
+          "position_id": "DESIGNER",
+          "position_name": "室内设计师",
+          "total_weight": 1.0,
+          "dimensions": [
+            {
+              "dim_id": 1,
+              "dim_key": "ACQUISITION",
+              "dim_name": "获客触达",
+              "dim_icon": "📣",
+              "dim_desc": "个人品牌、案例营销、装修渠道获客",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-DECOR-001~010"
+            },
+            {
+              "dim_id": 2,
+              "dim_key": "INSIGHT",
+              "dim_name": "需求洞察",
+              "dim_icon": "👁️",
+              "dim_desc": "生活方式洞察、功能需求、审美偏好",
+              "weight": 0.2,
+              "standard_count": 15,
+              "standard_range": "CAP-DECOR-011~025"
+            },
+            {
+              "dim_id": 3,
+              "dim_key": "SOLUTION",
+              "dim_name": "专业方案",
+              "dim_icon": "📐",
+              "dim_desc": "空间规划、材料选型、预算分配",
+              "weight": 0.25,
+              "standard_count": 25,
+              "standard_range": "CAP-DECOR-026~050"
+            },
+            {
+              "dim_id": 4,
+              "dim_key": "NEGOTIATION",
+              "dim_name": "带看谈判",
+              "dim_icon": "💬",
+              "dim_desc": "方案呈现、材料商议价、客户沟通",
+              "weight": 0.15,
+              "standard_count": 15,
+              "standard_range": "CAP-DECOR-051~065"
+            },
+            {
+              "dim_id": 5,
+              "dim_key": "FULFILLMENT",
+              "dim_name": "交易履约",
+              "dim_icon": "📝",
+              "dim_desc": "施工对接、进度管理、验收标准",
+              "weight": 0.15,
+              "standard_count": 25,
+              "standard_range": "CAP-DECOR-066~090"
+            },
+            {
+              "dim_id": 6,
+              "dim_key": "AFTERSALE",
+              "dim_name": "售后复购",
+              "dim_icon": "🤝",
+              "dim_desc": "主动关怀、复购引导、转介绍",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-DECOR-091~100"
+            },
+            {
+              "dim_id": 7,
+              "dim_key": "DIGITAL",
+              "dim_name": "数字化协同",
+              "dim_icon": "🤖",
+              "dim_desc": "AI工具、数据复核、反馈迭代",
+              "weight": 0.05,
+              "standard_count": 5,
+              "standard_range": "CAP-DECOR-101~105"
+            }
+          ]
+        },
+        {
+          "position_id": "PM_DECOR",
+          "position_name": "项目经理",
+          "total_weight": 1.0,
+          "dimensions": [
+            {
+              "dim_id": 1,
+              "dim_key": "ACQUISITION",
+              "dim_name": "获客触达",
+              "dim_icon": "📣",
+              "dim_desc": "个人品牌、职业形象、渠道获客",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-DECOR-001~010"
+            },
+            {
+              "dim_id": 2,
+              "dim_key": "INSIGHT",
+              "dim_name": "需求洞察",
+              "dim_icon": "👁️",
+              "dim_desc": "客户画像、共情理解、场景判断",
+              "weight": 0.1,
+              "standard_count": 15,
+              "standard_range": "CAP-DECOR-011~025"
+            },
+            {
+              "dim_id": 3,
+              "dim_key": "SOLUTION",
+              "dim_name": "专业方案",
+              "dim_icon": "📐",
+              "dim_desc": "施工方案、材料采购、工艺标准",
+              "weight": 0.2,
+              "standard_count": 25,
+              "standard_range": "CAP-DECOR-026~050"
+            },
+            {
+              "dim_id": 4,
+              "dim_key": "NEGOTIATION",
+              "dim_name": "带看谈判",
+              "dim_icon": "💬",
+              "dim_desc": "工人协调、变更洽谈、成本控制",
+              "weight": 0.15,
+              "standard_count": 15,
+              "standard_range": "CAP-DECOR-051~065"
+            },
+            {
+              "dim_id": 5,
+              "dim_key": "FULFILLMENT",
+              "dim_name": "交易履约",
+              "dim_icon": "📝",
+              "dim_desc": "施工进度、质量验收、安全管理",
+              "weight": 0.3,
+              "standard_count": 25,
+              "standard_range": "CAP-DECOR-066~090"
+            },
+            {
+              "dim_id": 6,
+              "dim_key": "AFTERSALE",
+              "dim_name": "售后复购",
+              "dim_icon": "🤝",
+              "dim_desc": "主动关怀、复购引导、转介绍",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-DECOR-091~100"
+            },
+            {
+              "dim_id": 7,
+              "dim_key": "DIGITAL",
+              "dim_name": "数字化协同",
+              "dim_icon": "🤖",
+              "dim_desc": "AI工具、数据复核、反馈迭代",
+              "weight": 0.05,
+              "standard_count": 5,
+              "standard_range": "CAP-DECOR-101~105"
+            }
+          ]
+        },
+        {
+          "position_id": "CRAFTSMAN",
+          "position_name": "安装师傅",
+          "total_weight": 1.0,
+          "dimensions": [
+            {
+              "dim_id": 1,
+              "dim_key": "ACQUISITION",
+              "dim_name": "获客触达",
+              "dim_icon": "📣",
+              "dim_desc": "口碑建设、师傅圈推荐、平台接单",
+              "weight": 0.15,
+              "standard_count": 10,
+              "standard_range": "CAP-DECOR-001~010"
+            },
+            {
+              "dim_id": 2,
+              "dim_key": "INSIGHT",
+              "dim_name": "需求洞察",
+              "dim_icon": "👁️",
+              "dim_desc": "客户画像、共情理解、场景判断",
+              "weight": 0.1,
+              "standard_count": 15,
+              "standard_range": "CAP-DECOR-011~025"
+            },
+            {
+              "dim_id": 3,
+              "dim_key": "SOLUTION",
+              "dim_name": "专业方案",
+              "dim_icon": "📐",
+              "dim_desc": "问题诊断、材料选择、工艺标准",
+              "weight": 0.2,
+              "standard_count": 25,
+              "standard_range": "CAP-DECOR-026~050"
+            },
+            {
+              "dim_id": 4,
+              "dim_key": "NEGOTIATION",
+              "dim_name": "带看谈判",
+              "dim_icon": "💬",
+              "dim_desc": "表达沟通、异议处理、价格博弈",
+              "weight": 0.1,
+              "standard_count": 15,
+              "standard_range": "CAP-DECOR-051~065"
+            },
+            {
+              "dim_id": 5,
+              "dim_key": "FULFILLMENT",
+              "dim_name": "交易履约",
+              "dim_icon": "📝",
+              "dim_desc": "施工安全、质量保证、工期履约",
+              "weight": 0.3,
+              "standard_count": 25,
+              "standard_range": "CAP-DECOR-066~090"
+            },
+            {
+              "dim_id": 6,
+              "dim_key": "AFTERSALE",
+              "dim_name": "售后复购",
+              "dim_icon": "🤝",
+              "dim_desc": "主动关怀、复购引导、转介绍",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-DECOR-091~100"
+            },
+            {
+              "dim_id": 7,
+              "dim_key": "DIGITAL",
+              "dim_name": "数字化协同",
+              "dim_icon": "🤖",
+              "dim_desc": "AI工具、数据复核、反馈迭代",
+              "weight": 0.05,
+              "standard_count": 5,
+              "standard_range": "CAP-DECOR-101~105"
+            }
+          ]
+        }
+      ]
+    },
+    "AFTER": {
+      "domain_id": "AFTER",
+      "domain_name": "后市场服务",
+      "domain_icon": "🔧",
+      "phase": "P2",
+      "description": "维修/保洁/家电等住后服务",
+      "positions": [
+        {
+          "position_id": "REPAIR",
+          "position_name": "维修师傅",
+          "total_weight": 1.0,
+          "dimensions": [
+            {
+              "dim_id": 1,
+              "dim_key": "ACQUISITION",
+              "dim_name": "获客触达",
+              "dim_icon": "📣",
+              "dim_desc": "社区口碑、平台派单承接",
+              "weight": 0.15,
+              "standard_count": 15,
+              "standard_range": "CAP-AFTER-001~015"
+            },
+            {
+              "dim_id": 2,
+              "dim_key": "INSIGHT",
+              "dim_name": "需求洞察",
+              "dim_icon": "👁️",
+              "dim_desc": "故障诊断、用户诉求理解",
+              "weight": 0.1,
+              "standard_count": 15,
+              "standard_range": "CAP-AFTER-016~030"
+            },
+            {
+              "dim_id": 3,
+              "dim_key": "SOLUTION",
+              "dim_name": "专业方案",
+              "dim_icon": "📐",
+              "dim_desc": "维修方案、备品备件选择",
+              "weight": 0.2,
+              "standard_count": 20,
+              "standard_range": "CAP-AFTER-031~050"
+            },
+            {
+              "dim_id": 4,
+              "dim_key": "NEGOTIATION",
+              "dim_name": "带看谈判",
+              "dim_icon": "💬",
+              "dim_desc": "表达沟通、异议处理、价格博弈",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-AFTER-051~060"
+            },
+            {
+              "dim_id": 5,
+              "dim_key": "FULFILLMENT",
+              "dim_name": "交易履约",
+              "dim_icon": "📝",
+              "dim_desc": "上门时效、收费透明、质保承诺",
+              "weight": 0.3,
+              "standard_count": 25,
+              "standard_range": "CAP-AFTER-061~085"
+            },
+            {
+              "dim_id": 6,
+              "dim_key": "AFTERSALE",
+              "dim_name": "售后复购",
+              "dim_icon": "🤝",
+              "dim_desc": "主动关怀、复购引导、转介绍",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-AFTER-086~095"
+            },
+            {
+              "dim_id": 7,
+              "dim_key": "DIGITAL",
+              "dim_name": "数字化协同",
+              "dim_icon": "🤖",
+              "dim_desc": "AI工具、数据复核、反馈迭代",
+              "weight": 0.05,
+              "standard_count": 5,
+              "standard_range": "CAP-AFTER-096~100"
+            }
+          ]
+        },
+        {
+          "position_id": "CLEANER",
+          "position_name": "家政保洁",
+          "total_weight": 1.0,
+          "dimensions": [
+            {
+              "dim_id": 1,
+              "dim_key": "ACQUISITION",
+              "dim_name": "获客触达",
+              "dim_icon": "📣",
+              "dim_desc": "小区口碑、长单转化",
+              "weight": 0.2,
+              "standard_count": 15,
+              "standard_range": "CAP-AFTER-001~015"
+            },
+            {
+              "dim_id": 2,
+              "dim_key": "INSIGHT",
+              "dim_name": "需求洞察",
+              "dim_icon": "👁️",
+              "dim_desc": "家庭情况观察、敏感区域识别",
+              "weight": 0.15,
+              "standard_count": 15,
+              "standard_range": "CAP-AFTER-016~030"
+            },
+            {
+              "dim_id": 3,
+              "dim_key": "SOLUTION",
+              "dim_name": "专业方案",
+              "dim_icon": "📐",
+              "dim_desc": "知识匹配、方案策展、专业测算",
+              "weight": 0.15,
+              "standard_count": 20,
+              "standard_range": "CAP-AFTER-031~050"
+            },
+            {
+              "dim_id": 4,
+              "dim_key": "NEGOTIATION",
+              "dim_name": "带看谈判",
+              "dim_icon": "💬",
+              "dim_desc": "表达沟通、异议处理、价格博弈",
+              "weight": 0.15,
+              "standard_count": 10,
+              "standard_range": "CAP-AFTER-051~060"
+            },
+            {
+              "dim_id": 5,
+              "dim_key": "FULFILLMENT",
+              "dim_name": "交易履约",
+              "dim_icon": "📝",
+              "dim_desc": "服务规范、保密意识、标准作业",
+              "weight": 0.2,
+              "standard_count": 25,
+              "standard_range": "CAP-AFTER-061~085"
+            },
+            {
+              "dim_id": 6,
+              "dim_key": "AFTERSALE",
+              "dim_name": "售后复购",
+              "dim_icon": "🤝",
+              "dim_desc": "主动关怀、复购引导、转介绍",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-AFTER-086~095"
+            },
+            {
+              "dim_id": 7,
+              "dim_key": "DIGITAL",
+              "dim_name": "数字化协同",
+              "dim_icon": "🤖",
+              "dim_desc": "AI工具、数据复核、反馈迭代",
+              "weight": 0.05,
+              "standard_count": 5,
+              "standard_range": "CAP-AFTER-096~100"
+            }
+          ]
+        }
+      ]
+    },
+    "SPECIAL": {
+      "domain_id": "SPECIAL",
+      "domain_name": "特殊居住",
+      "domain_icon": "🌿",
+      "phase": "P3",
+      "description": "适老/旅居/无障碍等特殊需求",
+      "positions": [
+        {
+          "position_id": "ELDER",
+          "position_name": "适老顾问",
+          "total_weight": 1.0,
+          "dimensions": [
+            {
+              "dim_id": 1,
+              "dim_key": "ACQUISITION",
+              "dim_name": "获客触达",
+              "dim_icon": "📣",
+              "dim_desc": "社区养老机构合作、子女端获客",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-SPEC-001~010"
+            },
+            {
+              "dim_id": 2,
+              "dim_key": "INSIGHT",
+              "dim_name": "需求洞察",
+              "dim_icon": "👁️",
+              "dim_desc": "老人身体评估、心理需求、家庭照护能力",
+              "weight": 0.25,
+              "standard_count": 20,
+              "standard_range": "CAP-SPEC-011~030"
+            },
+            {
+              "dim_id": 3,
+              "dim_key": "SOLUTION",
+              "dim_name": "专业方案",
+              "dim_icon": "📐",
+              "dim_desc": "适老化改造方案、养老社区选择",
+              "weight": 0.25,
+              "standard_count": 25,
+              "standard_range": "CAP-SPEC-031~055"
+            },
+            {
+              "dim_id": 4,
+              "dim_key": "NEGOTIATION",
+              "dim_name": "带看谈判",
+              "dim_icon": "💬",
+              "dim_desc": "方案沟通、家属意见协调、价格谈判",
+              "weight": 0.15,
+              "standard_count": 15,
+              "standard_range": "CAP-SPEC-056~070"
+            },
+            {
+              "dim_id": 5,
+              "dim_key": "FULFILLMENT",
+              "dim_name": "交易履约",
+              "dim_icon": "📝",
+              "dim_desc": "流程把控、合规风控、全程指导",
+              "weight": 0.15,
+              "standard_count": 15,
+              "standard_range": "CAP-SPEC-071~085"
+            },
+            {
+              "dim_id": 6,
+              "dim_key": "AFTERSALE",
+              "dim_name": "售后复购",
+              "dim_icon": "🤝",
+              "dim_desc": "主动关怀、复购引导、转介绍",
+              "weight": 0.05,
+              "standard_count": 10,
+              "standard_range": "CAP-SPEC-086~095"
+            },
+            {
+              "dim_id": 7,
+              "dim_key": "DIGITAL",
+              "dim_name": "数字化协同",
+              "dim_icon": "🤖",
+              "dim_desc": "AI工具、数据复核、反馈迭代",
+              "weight": 0.05,
+              "standard_count": 5,
+              "standard_range": "CAP-SPEC-096~100"
+            }
+          ]
+        },
+        {
+          "position_id": "TRAVEL",
+          "position_name": "旅居顾问",
+          "total_weight": 1.0,
+          "dimensions": [
+            {
+              "dim_id": 1,
+              "dim_key": "ACQUISITION",
+              "dim_name": "获客触达",
+              "dim_icon": "📣",
+              "dim_desc": "文旅资源渠道、高端客群获客",
+              "weight": 0.2,
+              "standard_count": 10,
+              "standard_range": "CAP-SPEC-001~010"
+            },
+            {
+              "dim_id": 2,
+              "dim_key": "INSIGHT",
+              "dim_name": "需求洞察",
+              "dim_icon": "👁️",
+              "dim_desc": "旅居动机、健康状况、预算范围",
+              "weight": 0.15,
+              "standard_count": 20,
+              "standard_range": "CAP-SPEC-011~030"
+            },
+            {
+              "dim_id": 3,
+              "dim_key": "SOLUTION",
+              "dim_name": "专业方案",
+              "dim_icon": "📐",
+              "dim_desc": "旅居目的地匹配、医疗配套评估",
+              "weight": 0.25,
+              "standard_count": 25,
+              "standard_range": "CAP-SPEC-031~055"
+            },
+            {
+              "dim_id": 4,
+              "dim_key": "NEGOTIATION",
+              "dim_name": "带看谈判",
+              "dim_icon": "💬",
+              "dim_desc": "表达沟通、异议处理、价格博弈",
+              "weight": 0.15,
+              "standard_count": 15,
+              "standard_range": "CAP-SPEC-056~070"
+            },
+            {
+              "dim_id": 5,
+              "dim_key": "FULFILLMENT",
+              "dim_name": "交易履约",
+              "dim_icon": "📝",
+              "dim_desc": "流程把控、合规风控、全程指导",
+              "weight": 0.1,
+              "standard_count": 15,
+              "standard_range": "CAP-SPEC-071~085"
+            },
+            {
+              "dim_id": 6,
+              "dim_key": "AFTERSALE",
+              "dim_name": "售后复购",
+              "dim_icon": "🤝",
+              "dim_desc": "主动关怀、复购引导、转介绍",
+              "weight": 0.1,
+              "standard_count": 10,
+              "standard_range": "CAP-SPEC-086~095"
+            },
+            {
+              "dim_id": 7,
+              "dim_key": "DIGITAL",
+              "dim_name": "数字化协同",
+              "dim_icon": "🤖",
+              "dim_desc": "AI工具、数据复核、反馈迭代",
+              "weight": 0.05,
+              "standard_count": 5,
+              "standard_range": "CAP-SPEC-096~100"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
