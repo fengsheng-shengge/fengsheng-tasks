@@ -508,14 +508,14 @@
           // entries.json 可能是 {asset: [...], decor: [...], ...} 结构
           for (var k in data) { if (Array.isArray(data[k])) total += data[k].length; }
         }
-        if (total === 0) { total = 6365; } // 兜底
+        if (total === 0) { total = 6135; } // 兜底
         document.querySelectorAll('[data-count="entries"]').forEach(function(el){
           el.textContent = total.toLocaleString();
         });
       })
       .catch(function(){
         document.querySelectorAll('[data-count="entries"]').forEach(function(el){
-          el.textContent = '6365';
+          el.textContent = '6135';
         });
       });
   })();
