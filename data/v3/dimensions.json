@@ -1,0 +1,94 @@
+{
+  "version": "v3.0",
+  "updated_at": "2026-10-27",
+  "position_id": "BROKER",
+  "position_name": "买卖经纪人",
+  "dimensions": [
+    {
+      "dim_id": 1,
+      "dim_key": "ACQUISITION",
+      "dim_name": "获客触达",
+      "dim_icon": "📣",
+      "dim_desc": "个人品牌、职业形象、渠道获客",
+      "weight": 0.15,
+      "standard_count": 30,
+      "standard_range": "CAP-SKILL-001~030",
+      "knowledge_tags": ["获客", "渠道", "个人品牌", "朋友圈", "驻守"]
+    },
+    {
+      "dim_id": 2,
+      "dim_key": "INSIGHT",
+      "dim_name": "需求洞察",
+      "dim_icon": "👁️",
+      "dim_desc": "客户画像、共情理解、场景判断",
+      "weight": 0.15,
+      "standard_count": 25,
+      "standard_range": "CAP-SKILL-031~055",
+      "knowledge_tags": ["需求", "客户心理", "共情", "提问", "意向判断"]
+    },
+    {
+      "dim_id": 3,
+      "dim_key": "SOLUTION",
+      "dim_name": "专业方案",
+      "dim_icon": "📐",
+      "dim_desc": "知识匹配、房源策展、税费贷款",
+      "weight": 0.20,
+      "standard_count": 35,
+      "standard_range": "CAP-SKILL-056~090",
+      "knowledge_tags": ["税费", "贷款", "房源匹配", "政策", "专业知识"]
+    },
+    {
+      "dim_id": 4,
+      "dim_key": "NEGOTIATION",
+      "dim_name": "带看谈判",
+      "dim_icon": "💬",
+      "dim_desc": "表达沟通、异议处理、价格谈判",
+      "weight": 0.20,
+      "standard_count": 35,
+      "standard_range": "CAP-SKILL-091~125",
+      "knowledge_tags": ["带看", "谈判", "异议处理", "话术", "价格"]
+    },
+    {
+      "dim_id": 5,
+      "dim_key": "FULFILLMENT",
+      "dim_name": "交易履约",
+      "dim_icon": "📝",
+      "dim_desc": "流程把控、合同风险、全程指导",
+      "weight": 0.15,
+      "standard_count": 30,
+      "standard_range": "CAP-SKILL-126~155",
+      "knowledge_tags": ["签约", "网签", "过户", "资金监管", "合同"]
+    },
+    {
+      "dim_id": 6,
+      "dim_key": "AFTER_SALE",
+      "dim_name": "售后复购",
+      "dim_icon": "🤝",
+      "dim_desc": "主动关怀、复购引导、转介绍",
+      "weight": 0.10,
+      "standard_count": 25,
+      "standard_range": "CAP-SKILL-156~180",
+      "knowledge_tags": ["售后", "回访", "转介绍", "老客户维护"]
+    },
+    {
+      "dim_id": 7,
+      "dim_key": "DIGITAL",
+      "dim_name": "数字化协同",
+      "dim_icon": "🤖",
+      "dim_desc": "AI工具使用、数据复核、反馈迭代",
+      "weight": 0.05,
+      "standard_count": 20,
+      "standard_range": "CAP-SKILL-181~200",
+      "knowledge_tags": ["AI", "工具", "效率", "数字化"]
+    }
+  ],
+  "score_formula": {
+    "total": "测评成绩 × 30% + 学习完成度 × 20% + 练习表现 × 20% + 考核通过 × 20% + 客户反馈 × 10%",
+    "v1_simplified": "测评成绩 × 60% + 自测 × 40%",
+    "note": "v1先简化，用localStorage存测评结果，客户反馈10%先拿掉，等Phase 2雇主端再加"
+  },
+  "anti_feedback": {
+    "logic": "测完→找到得分最低的2个维度→每个维度推1门核心课+3个场景练习→下一轮测评针对性出题",
+    "trigger": "每次测评完成后自动触发"
+  }
+}
