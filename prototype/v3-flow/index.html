@@ -3,1287 +3,1446 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>风声·聚满匠星云 | 产品原型 v3.0 · 闭环样板</title>
+<title>风声·聚满匠星云 · 服务者工作台 · v3.0 原型</title>
 <style>
-/* ============ 双主体语义色 ============ */
+/* ===== Design Tokens ===== */
 :root {
-  --green: #1a3d24;
-  --green-light: #2d5a3d;
-  --green-bg: #e8f0e9;
-  --gold: #c9a962;
-  --gold-bg: #faf5ea;
-  --ink: #1a1a1a;
-  --body: #555;
-  --muted: #999;
-  --line: #e8e4da;
-  --bg: #f7f5f0;
+  /* dual-subject semantic colors — preserved from brand system */
+  --ink-1: #1a1a1a;
+  --ink-2: #2d2d2d;
+  --ink-3: #555;
+  --ink-4: #8a8a8a;
+  --ink-5: #b5b5b5;
+  --ink-6: #e5e3dd;
+  --surface: #fafaf8;
+  --surface-2: #f4f3ef;
   --card: #ffffff;
-  --danger: #c0392b;
+  --border: #eceae4;
+
+  /* primary (human / merchant action) */
+  --primary: #1a3d24;
+  --primary-hover: #245533;
+  --primary-bg: #eef2ef;
+
+  /* gold (AI deliverable / capability standard) */
+  --gold: #b8943c;
+  --gold-soft: #d4b876;
+  --gold-bg: #faf5ea;
+  --gold-line: #e8dcbc;
+
+  --danger: #b9392f;
+  --danger-bg: #faf0ef;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+html { background: var(--surface); }
 body {
-  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: var(--bg);
-  color: var(--ink);
-  line-height: 1.6;
+  font-family: var(--font-sans);
+  color: var(--ink-2);
+  line-height: 1.55;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "tnum", "ss01";
 }
 
-/* ============ 原型壳 ============ */
-.prototype-shell {
-  display: flex;
-  min-height: 100vh;
-}
+/* ===== Layout shell ===== */
+.shell { display: flex; min-height: 100vh; }
 
-/* 左侧导航 */
-.states-nav {
-  width: 240px;
-  background: var(--green);
-  color: rgba(255,255,255,0.85);
-  padding: 32px 0;
+/* Left nav */
+.nav {
+  width: 220px;
+  background: var(--ink-1);
+  color: rgba(255,255,255,0.6);
   flex-shrink: 0;
   position: sticky;
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  padding: 24px 0;
+  border-right: 1px solid rgba(255,255,255,0.06);
 }
-.states-nav .brand {
-  padding: 0 24px 32px;
-  border-bottom: 1px solid rgba(255,255,255,0.15);
-  margin-bottom: 24px;
+.nav-brand {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 20px;
 }
-.states-nav .brand-mark {
-  width: 40px; height: 40px;
+.nav-brand-mark {
+  width: 32px; height: 32px;
   background: var(--gold);
-  color: var(--green);
-  font-weight: 800; font-size: 20px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-1);
+  font-weight: 800; font-size: 14px;
+  border-radius: var(--radius-sm);
+  display: grid; place-items: center;
   margin-bottom: 10px;
+  letter-spacing: -0.02em;
 }
-.states-nav .brand-name { font-weight: 700; font-size: 15px; }
-.states-nav .brand-sub { font-size: 11px; opacity: 0.6; margin-top: 2px; }
+.nav-brand-name { font-weight: 700; font-size: 14px; color: #fff; letter-spacing: 0.01em; }
+.nav-brand-sub { font-size: 11px; opacity: 0.4; margin-top: 2px; }
 
-.states-nav h3 {
-  font-size: 11px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.08em;
-  opacity: 0.5; padding: 0 24px; margin-bottom: 10px;
+.nav-section-label {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.35;
+  padding: 0 20px;
+  margin-bottom: 8px;
 }
-.state-item {
-  padding: 10px 24px;
-  cursor: pointer;
+.nav-item {
+  padding: 9px 20px;
   font-size: 13px;
-  display: flex; align-items: center; gap: 10px;
-  transition: background 0.2s;
-  border-left: 3px solid transparent;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+  display: flex; gap: 10px; align-items: center;
 }
-.state-item:hover { background: rgba(255,255,255,0.08); }
-.state-item.active {
-  background: rgba(201,169,98,0.15);
+.nav-item:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.85); }
+.nav-item.active {
+  background: rgba(184,148,60,0.08);
   border-left-color: var(--gold);
-  color: var(--gold);
+  color: #fff;
 }
-.state-num {
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.15);
+.nav-item .num {
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.08);
   font-size: 10px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
+  display: grid; place-items: center;
   flex-shrink: 0;
 }
-.state-item.active .state-num { background: var(--gold); color: var(--green); }
+.nav-item.active .num { background: var(--gold); color: var(--ink-1); }
 
-/* 右侧舞台 */
-.stage {
-  flex: 1;
-  padding: 0;
-}
-.stage-content {
-  display: none;
-  animation: fadeSlide 0.4s ease;
-}
-.stage-content.active { display: block; }
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Stage */
+.stage { flex: 1; min-width: 0; }
+.panel { display: none; }
+.panel.active { display: block; animation: fadeIn 0.35s cubic-bezier(0.4,0,0.2,1); }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ============ 工作台共用样式 ============ */
-.ws-top-nav {
-  background: var(--bg);
-  padding: 14px 48px;
-  display: flex; justify-content: space-between; align-items: center;
-  border-bottom: 1px solid var(--line);
-  position: sticky; top: 0; z-index: 100;
+/* ===== Top bar ===== */
+.topbar {
+  background: var(--surface);
+  padding: 0 56px;
+  height: 56px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
 }
-.ws-logo { display: flex; align-items: center; gap: 12px; }
-.ws-logo-icon {
-  width: 30px; height: 30px;
-  background: var(--green); color: #fff;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 13px;
+.topbar-left, .topbar-right { display: flex; gap: 24px; align-items: center; }
+.topbar-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: 13px; color: var(--primary);
 }
-.ws-logo-text { font-weight: 700; color: var(--green); font-size: 14px; }
-.ws-nav { display: flex; gap: 22px; font-size: 13px; }
-.ws-nav a { color: var(--body); text-decoration: none; }
-.ws-nav a.active { color: var(--green); font-weight: 600; }
-.ws-right { display: flex; gap: 16px; align-items: center; font-size: 13px; color: var(--body); }
+.topbar-logo-mark {
+  width: 24px; height: 24px;
+  background: var(--primary); color: #fff;
+  border-radius: 5px;
+  display: grid; place-items: center;
+  font-weight: 800; font-size: 11px;
+}
+.topbar-nav { display: flex; gap: 22px; }
+.topbar-nav a {
+  font-size: 13px; color: var(--ink-3); text-decoration: none;
+  padding: 4px 0; border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.topbar-nav a.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 500; }
+.topbar-right { font-size: 12px; color: var(--ink-4); }
 
-.ws-domain-bar {
-  background: var(--green);
-  display: flex; padding: 0 48px;
+.domainbar {
+  background: var(--surface-2);
+  padding: 0 56px;
+  height: 44px;
+  display: flex; align-items: center;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
 }
-.ws-domain-tab {
-  padding: 14px 20px;
-  color: rgba(255,255,255,0.7);
-  font-size: 13px; font-weight: 500;
+.domainbar-tab {
+  padding: 11px 16px;
+  font-size: 13px;
+  color: var(--ink-3);
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: all 0.2s;
+  transition: all 0.15s;
 }
-.ws-domain-tab.active {
-  color: var(--gold);
-  border-bottom-color: var(--gold);
-  font-weight: 600;
-}
-.ws-domain-tag {
+.domainbar-tab.active { color: var(--ink-1); font-weight: 600; border-bottom-color: var(--gold); }
+.domainbar-tab .tag {
   margin-left: 6px;
   font-size: 10px;
-  background: rgba(255,255,255,0.15);
-  padding: 1px 6px; border-radius: 8px;
+  background: var(--border);
+  color: var(--ink-4);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 400;
 }
 
-.ws-pos-bar {
-  background: white;
-  border-bottom: 1px solid var(--line);
-  padding: 12px 48px;
-  display: flex; gap: 8px; align-items: center;
+.posbar {
+  background: var(--surface);
+  padding: 0 56px;
+  height: 40px;
+  display: flex; align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
 }
-.ws-pos-label { font-size: 12px; color: var(--muted); margin-right: 4px; }
-.ws-pos-pill {
-  padding: 5px 14px;
-  border-radius: 14px;
-  font-size: 12px; font-weight: 500;
-  background: #f5f3ec; color: var(--body);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.ws-pos-pill:hover { background: var(--green-bg); color: var(--green); }
-.ws-pos-pill.active {
-  background: var(--gold-bg);
-  color: var(--green);
-  border: 1px solid var(--gold);
-  font-weight: 600;
-}
-
-/* ============ 核心区：搜索 ============ */
-.ws-main { padding: 48px; max-width: 960px; margin: 0 auto; }
-
-.search-hero { margin-bottom: 40px; }
-.search-hi {
-  font-size: 14px; color: var(--muted); margin-bottom: 4px;
-}
-.search-title {
-  font-size: 28px; font-weight: 700; color: var(--ink);
-  margin-bottom: 24px;
-  line-height: 1.3;
-}
-.search-title strong { color: var(--green); }
-
-.search-box {
-  display: flex;
-  border: 2px solid var(--line);
-  border-radius: 14px;
-  overflow: hidden;
-  background: white;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.search-box:focus-within {
-  border-color: var(--green);
-  box-shadow: 0 0 0 4px var(--green-bg);
-}
-.search-input {
-  flex: 1;
-  padding: 18px 22px;
-  border: none; outline: none;
-  font-size: 16px;
+.posbar-label { font-size: 11px; color: var(--ink-4); margin-right: 2px; letter-spacing: 0.04em; text-transform: uppercase; }
+.posbar-pill {
+  padding: 3px 12px;
+  font-size: 12px;
+  color: var(--ink-3);
   background: transparent;
-}
-.search-input::placeholder { color: var(--muted); }
-.search-btn {
-  padding: 18px 32px;
-  background: var(--green);
-  color: white;
-  border: none;
-  font-size: 14px; font-weight: 600;
+  border-radius: 20px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.15s;
 }
-.search-btn:hover { background: var(--green-light); }
+.posbar-pill:hover { background: var(--surface-2); color: var(--ink-1); }
+.posbar-pill.active { background: var(--primary-bg); color: var(--primary); font-weight: 600; }
+
+/* ===== Main ===== */
+.main { padding: 40px 56px 80px; max-width: 920px; }
+
+/* ===== State 1: default / search ===== */
+.search-block { margin-bottom: 40px; }
+.search-hello {
+  font-size: 13px; color: var(--ink-4);
+  margin-bottom: 12px;
+}
+.search-headline {
+  font-size: 26px; font-weight: 700; color: var(--ink-1);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  margin-bottom: 28px;
+}
+.search-headline em {
+  font-style: normal;
+  color: var(--primary);
+}
+.search-field {
+  display: flex;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-field:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-bg);
+}
+.search-field input {
+  flex: 1;
+  padding: 16px 20px;
+  border: none; outline: none;
+  font-size: 15px;
+  background: transparent;
+  color: var(--ink-1);
+}
+.search-field input::placeholder { color: var(--ink-5); }
+.search-submit {
+  padding: 0 28px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background 0.15s;
+}
+.search-submit:hover { background: var(--primary-hover); }
 
 .hot-row {
-  margin-top: 16px;
-  display: flex; flex-wrap: wrap; gap: 8px;
-  align-items: center;
+  margin-top: 14px;
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
 }
-.hot-label { font-size: 12px; color: var(--muted); margin-right: 4px; }
+.hot-label {
+  font-size: 11px; color: var(--ink-4);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  margin-right: 4px;
+}
 .hot-chip {
   font-size: 12px;
-  padding: 5px 12px;
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  color: var(--body);
+  padding: 4px 11px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.hot-chip:hover { border-color: var(--ink-3); color: var(--ink-1); }
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 8px;
+}
+.quick-cell {
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s;
 }
-.hot-chip:hover {
-  border-color: var(--gold);
-  color: var(--green);
+.quick-cell:hover {
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+.quick-cell-label {
+  font-size: 12px; font-weight: 600; color: var(--ink-1);
+  margin-bottom: 3px;
+}
+.quick-cell-sub {
+  font-size: 11px; color: var(--ink-4);
 }
 
-/* ============ 结果面板（搜出来后展开）============ */
-.result-panel {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid var(--line);
+/* ===== State 2: search result ===== */
+.result-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(26,61,36,0.06);
 }
 
-.result-header {
-  background: var(--gold-bg);
+/* Result locator (capability match) */
+.locator {
   padding: 20px 24px;
-  border-bottom: 1px solid var(--line);
-  display: flex; gap: 14px; align-items: flex-start;
+  border-bottom: 1px solid var(--border);
+  background: var(--gold-bg);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
 }
-.result-header-badge {
-  width: 36px; height: 36px;
-  background: var(--green); color: var(--gold);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
+.locator-badge {
+  width: 32px; height: 32px;
+  background: var(--primary);
+  border-radius: var(--radius-sm);
+  display: grid; place-items: center;
+  color: var(--gold);
+  font-size: 14px;
   flex-shrink: 0;
 }
-.result-header-content { flex: 1; }
-.result-loc-label {
-  font-size: 11px; color: var(--muted);
+.locator-label {
+  font-size: 11px; color: var(--ink-4);
   text-transform: uppercase; letter-spacing: 0.06em;
   margin-bottom: 4px;
 }
-.result-loc {
-  font-size: 16px; font-weight: 700; color: var(--green);
-  margin-bottom: 2px;
+.locator-title {
+  font-size: 15px; font-weight: 700; color: var(--ink-1);
+  margin-bottom: 4px;
 }
-.result-skill {
-  font-size: 12px; color: var(--body);
-  font-family: "SF Mono", Menlo, monospace;
+.locator-title .dim { color: var(--primary); }
+.locator-ref {
+  font-size: 12px; color: var(--ink-4);
+  font-family: var(--font-mono);
+}
+.locator-ref .cap {
+  color: var(--ink-2);
+  background: var(--gold);
+  color: var(--ink-1);
+  padding: 1px 7px;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0;
 }
 
 .result-body { padding: 24px; }
-.result-section-title {
-  font-size: 12px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.08em;
-  color: var(--muted);
-  margin-bottom: 12px;
-  display: flex; align-items: center; gap: 8px;
-}
-.result-section-title::before {
-  content: ''; width: 16px; height: 2px;
-  background: var(--gold); border-radius: 2px;
-}
 
-.solution-steps {
-  margin-bottom: 28px;
-}
-.solution-step {
-  display: flex; gap: 14px;
-  padding: 14px 16px;
-  background: var(--bg);
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-.solution-step-num {
-  width: 22px; height: 22px;
-  background: var(--gold); color: var(--green);
-  border-radius: 50%;
-  font-size: 12px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.solution-step-content { font-size: 14px; color: var(--ink); line-height: 1.7; }
-.solution-step-content em {
-  background: var(--gold-bg);
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-style: normal;
-  color: var(--green);
-}
-
-.tools-row {
-  margin-bottom: 28px;
-  display: flex; gap: 8px; flex-wrap: wrap;
-}
-.tool-chip {
-  padding: 6px 14px;
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  font-size: 12px; color: var(--body);
-  cursor: pointer;
-}
-.tool-chip:hover { border-color: var(--green); color: var(--green); }
-
-/* 引导测评区（面板核心动作） */
-.hook-box {
-  background: var(--green);
-  border-radius: 12px;
-  padding: 22px 24px;
-  margin-bottom: 12px;
-  color: white;
-}
-.hook-box-top {
-  display: flex; justify-content: space-between; align-items: center;
+.section-head {
+  display: flex; align-items: center; gap: 10px;
   margin-bottom: 14px;
 }
-.hook-box-title {
-  font-size: 14px; font-weight: 600;
-  opacity: 0.9;
-}
-.hook-box-score {
-  font-size: 12px;
-  background: rgba(255,255,255,0.15);
-  padding: 3px 10px; border-radius: 10px;
-  opacity: 0.85;
-}
-.hook-box-prompt {
-  font-size: 15px;
-  opacity: 0.95;
-  margin-bottom: 16px;
-  line-height: 1.6;
-}
-.hook-box-action {
-  display: flex; gap: 12px;
-}
-.hook-primary {
-  padding: 11px 22px;
+.section-head-bar {
+  width: 3px; height: 14px;
   background: var(--gold);
-  color: var(--green);
-  border: none;
-  border-radius: 8px;
-  font-size: 14px; font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.2s;
+  border-radius: 2px;
+  flex-shrink: 0;
 }
-.hook-primary:hover { transform: translateY(-1px); }
-.hook-secondary {
-  padding: 11px 22px;
-  background: transparent;
-  color: rgba(255,255,255,0.85);
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 8px;
-  font-size: 14px; font-weight: 500;
-  cursor: pointer;
+.section-head-text {
+  font-size: 13px; font-weight: 600; color: var(--ink-1);
+}
+.section-head-meta {
+  font-size: 11px; color: var(--ink-4);
+  margin-left: auto;
 }
 
-.hook-learn-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+/* Speech variants — the real deliverable */
+.speech-variant {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  position: relative;
 }
-.hook-learn-item {
-  display: flex; gap: 10px; align-items: center;
-  padding: 12px 14px;
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.hook-learn-item:hover {
-  border-color: var(--green);
-  background: var(--green-bg);
-}
-.hook-learn-emoji { font-size: 18px; }
-.hook-learn-text { font-size: 12px; color: var(--body); }
-.hook-learn-text strong { color: var(--green); font-size: 13px; display: block; margin-bottom: 1px; }
-
-/* ============ 专项 5 题小测（展开后）============ */
-.quiz-panel {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  margin-top: 16px;
-  overflow: hidden;
-}
-.quiz-panel-header {
-  background: var(--green-bg);
-  padding: 16px 24px;
+.speech-variant-head {
   display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
 }
-.quiz-panel-title { font-weight: 600; color: var(--green); font-size: 14px; }
-.quiz-panel-meta { font-size: 12px; color: var(--body); }
-
-.quiz-q { padding: 20px 24px; border-bottom: 1px solid var(--line); }
-.quiz-q-num {
-  font-size: 11px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.06em;
-  color: var(--muted);
-  margin-bottom: 8px;
+.speech-variant-label {
+  font-size: 12px; font-weight: 600;
+  color: var(--ink-1);
 }
-.quiz-q-text {
-  font-size: 15px; color: var(--ink); margin-bottom: 14px; line-height: 1.6;
+.speech-variant-tag {
+  font-size: 10px;
+  color: var(--primary);
+  background: var(--primary-bg);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: 500;
 }
-.quiz-options { display: flex; flex-direction: column; gap: 8px; }
-.quiz-option {
-  padding: 12px 16px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
+.speech-variant-body {
   font-size: 13px;
+  line-height: 1.75;
+  color: var(--ink-2);
+  background: var(--card);
+  border-left: 3px solid var(--gold);
+  padding: 12px 14px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-family: var(--font-sans);
+}
+.speech-variant-copy {
+  position: absolute;
+  bottom: 16px; right: 18px;
+  font-size: 11px; font-weight: 500;
+  color: var(--primary);
+  background: var(--primary-bg);
+  border: none;
+  padding: 5px 12px;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.15s;
-  background: white;
-  text-align: left;
-  color: var(--ink);
-  line-height: 1.5;
 }
-.quiz-option:hover { border-color: var(--green); }
-.quiz-option.selected {
-  border-color: var(--green);
-  background: var(--green-bg);
-}
-.quiz-option.correct {
-  border-color: var(--gold);
-  background: var(--gold-bg);
-}
-.quiz-option.wrong {
-  border-color: var(--danger);
-  background: #fdecea;
-}
+.speech-variant-copy:hover { background: var(--primary); color: #fff; }
+.speech-variant-copy.copied { color: var(--primary); background: var(--primary-bg); }
 
-.quiz-panel-actions {
-  padding: 16px 24px;
-  display: flex; gap: 10px; justify-content: flex-end;
-}
-.btn {
-  padding: 11px 22px;
-  border-radius: 8px;
-  font-size: 14px; font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s;
-}
-.btn-primary { background: var(--green); color: white; }
-.btn-primary:hover { background: var(--green-light); }
-.btn-secondary {
-  background: white;
-  color: var(--green);
-  border: 1px solid var(--green);
-}
-.btn-gold { background: var(--gold); color: var(--green); }
-.btn-gold:hover { transform: translateY(-1px); }
+.speech-list { margin-bottom: 28px; }
 
-/* ============ 测完报告（小测版）============ */
-.report-panel {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  margin-top: 16px;
+/* Tools + Knowledge — secondary resources */
+.secondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   overflow: hidden;
+  margin-bottom: 28px;
 }
-.report-header {
-  padding: 32px 24px;
-  text-align: center;
-  background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
-  color: white;
+.secondary-col {
+  padding: 18px 20px;
 }
-.report-score { font-size: 64px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
-.report-level { font-size: 16px; opacity: 0.9; margin-bottom: 14px; }
-.report-comparison {
-  font-size: 12px; opacity: 0.75;
-}
-.report-comparison .better { color: var(--gold); font-weight: 600; }
-.report-comparison .worse { color: rgba(255,255,255,0.5); }
-
-.report-body { padding: 24px; }
-
-/* 雷达图 */
-.radar-wrap {
-  display: flex; justify-content: center;
-  margin: 8px 0 24px;
-}
-.radar-wrap svg { width: 280px; height: 280px; }
-
-/* 强弱分析 */
-.strength-row {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 16px; margin-bottom: 24px;
-}
-.strength-card {
-  padding: 16px; border-radius: 12px;
-}
-.strength-card.good { background: var(--green-bg); border: 1px solid rgba(26,61,36,0.15); }
-.strength-card.bad { background: #fdecea; border: 1px solid rgba(192,57,43,0.15); }
-.strength-card-label {
+.secondary-col:first-child { border-right: 1px solid var(--border); }
+.secondary-title {
   font-size: 11px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.06em;
-  margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-4);
+  margin-bottom: 10px;
 }
-.strength-card.good .strength-card-label { color: var(--green); }
-.strength-card.bad .strength-card-label { color: var(--danger); }
-.strength-card-main { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-.strength-card-sub { font-size: 12px; color: var(--body); }
-
-/* 下一步引导 */
-.next-steps-title {
-  font-size: 13px; font-weight: 700;
-  color: var(--green);
-  margin-bottom: 12px;
+.secondary-item {
+  font-size: 13px;
+  color: var(--ink-2);
+  padding: 5px 0;
+  cursor: pointer;
+  transition: color 0.15s;
   display: flex; align-items: center; gap: 8px;
 }
-.next-steps-title::before {
-  content: '⚡';
+.secondary-item:hover { color: var(--primary); }
+.secondary-item-arrow {
+  color: var(--ink-5);
+  font-size: 10px;
+  transition: transform 0.15s;
+}
+.secondary-item:hover .secondary-item-arrow { color: var(--primary); transform: translateX(2px); }
+
+/* Principles (dry methodology — present minimally) */
+.principles {
+  border: 1px dashed var(--ink-6);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 28px;
+  background: var(--surface);
+}
+.principles-title {
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-4);
+  margin-bottom: 8px;
+}
+.principles-list {
+  list-style: none;
+  counter-reset: p;
+}
+.principles-list li {
+  font-size: 13px;
+  color: var(--ink-3);
+  padding: 3px 0 3px 22px;
+  position: relative;
+}
+.principles-list li::before {
+  counter-increment: p;
+  content: counter(p);
+  position: absolute; left: 0;
+  width: 16px; height: 16px;
+  background: transparent;
+  border: 1px solid var(--ink-6);
+  border-radius: 50%;
+  font-size: 9px;
+  display: grid; place-items: center;
+  color: var(--ink-4);
+  font-weight: 700;
+}
+
+/* Soft hook — capability assessment (last, not first) */
+.hook-soft {
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+  padding: 20px 22px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.hook-soft-emoji {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.hook-soft-copy {
+  flex: 1;
+}
+.hook-soft-title {
+  font-size: 14px; font-weight: 600; color: var(--ink-1);
+  margin-bottom: 3px;
+}
+.hook-soft-desc {
+  font-size: 12px; color: var(--ink-4);
+}
+.hook-soft-cta {
+  padding: 10px 20px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.hook-soft-cta:hover { background: var(--primary-hover); }
+
+/* ===== State 3: quiz ===== */
+.quiz-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.quiz-head {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.quiz-head-title { font-size: 14px; font-weight: 600; color: var(--ink-1); }
+.quiz-head-meta {
+  font-size: 12px; color: var(--ink-4);
+  font-family: var(--font-mono);
+}
+.quiz-body { padding: 24px; }
+.quiz-q {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.quiz-q:last-of-type { border-bottom: none; }
+.quiz-q-num {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-5);
+  margin-bottom: 10px;
+}
+.quiz-q-text {
+  font-size: 15px;
+  color: var(--ink-1);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.quiz-opts { display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  text-align: left;
+  padding: 12px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all 0.12s;
+  line-height: 1.6;
+}
+.quiz-opt:hover { border-color: var(--ink-3); background: var(--surface); }
+.quiz-opt.selected {
+  border-color: var(--primary);
+  background: var(--primary-bg);
+  color: var(--primary);
+  font-weight: 500;
+}
+.quiz-opt.correct { border-color: var(--gold); background: var(--gold-bg); }
+.quiz-opt.wrong { border-color: var(--danger); background: var(--danger-bg); }
+.quiz-foot {
+  padding: 16px 24px;
+  display: flex; justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.btn {
+  padding: 10px 22px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: none;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.btn-pri { background: var(--primary); color: #fff; }
+.btn-pri:hover { background: var(--primary-hover); }
+.btn-sec {
+  background: transparent; color: var(--primary);
+  border: 1px solid var(--border);
+}
+.btn-sec:hover { border-color: var(--primary); }
+
+/* ===== State 4: report ===== */
+.report-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.report-head {
+  padding: 32px 32px 28px;
+  background: linear-gradient(135deg, var(--primary) 0%, #24482b 100%);
+  color: #fff;
+  text-align: center;
+  position: relative;
+}
+.report-score {
+  font-size: 72px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+.report-level {
+  font-size: 15px;
+  opacity: 0.9;
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+.report-compare {
+  font-size: 12px;
+  opacity: 0.65;
+  letter-spacing: 0.01em;
+}
+.report-compare .up { color: var(--gold); font-weight: 600; }
+.report-compare .down { opacity: 0.5; }
+
+.report-body { padding: 28px 32px 32px; }
+
+.insight-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.insight-card {
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+.insight-card.good { background: var(--primary-bg); border-color: rgba(26,61,36,0.12); }
+.insight-card.bad { background: var(--danger-bg); border-color: rgba(185,57,47,0.1); }
+.insight-card-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.insight-card.good .insight-card-label { color: var(--primary); }
+.insight-card.bad .insight-card-label { color: var(--danger); }
+.insight-card-main {
+  font-size: 14px; font-weight: 700; color: var(--ink-1);
+  margin-bottom: 3px;
+}
+.insight-card-sub { font-size: 12px; color: var(--ink-3); }
+
+/* Radar */
+.radar-block {
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+.radar-title {
+  font-size: 13px; font-weight: 600; color: var(--ink-1);
+  margin-bottom: 16px;
+}
+.radar-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+.radar-wrap svg { width: 260px; height: 260px; flex-shrink: 0; }
+.radar-legend {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  padding-top: 8px;
+}
+.radar-legend-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  padding: 4px 0;
+}
+.radar-legend-name { color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
+.radar-legend-name .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
+.radar-legend-score {
+  font-weight: 700; color: var(--ink-1);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.radar-legend-score.low { color: var(--danger); }
+
+/* Next steps */
+.next-block-title {
+  font-size: 13px; font-weight: 600; color: var(--ink-1);
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
 }
 .next-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
-.next-card {
+.next-cell {
+  display: flex; gap: 14px;
   padding: 14px 16px;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: white;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s;
-  display: flex; gap: 12px; align-items: flex-start;
+  transition: all 0.15s;
 }
-.next-card:hover {
-  border-color: var(--green);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(26,61,36,0.08);
+.next-cell:hover {
+  border-color: var(--primary);
+  background: var(--primary-bg);
 }
-.next-card-emoji { font-size: 20px; flex-shrink: 0; }
-.next-card-text strong { font-size: 13px; color: var(--ink); display: block; margin-bottom: 2px; }
-.next-card-text span { font-size: 12px; color: var(--muted); }
-
-.next-full-btn {
-  display: block;
-  width: 100%;
-  text-align: center;
-  padding: 14px;
-  background: var(--green-bg);
-  color: var(--green);
-  border-radius: 10px;
+.next-cell-emoji { font-size: 18px; flex-shrink: 0; }
+.next-cell-title {
+  font-size: 13px; font-weight: 600; color: var(--ink-1);
+  margin-bottom: 3px;
+}
+.next-cell:hover .next-cell-title { color: var(--primary); }
+.next-cell-desc { font-size: 11px; color: var(--ink-4); line-height: 1.5; }
+.next-full {
+  display: block; text-align: center;
+  padding: 12px;
+  background: var(--primary-bg);
+  color: var(--primary);
   font-size: 13px; font-weight: 600;
-  cursor: pointer;
+  border-radius: var(--radius-md);
   text-decoration: none;
-  transition: all 0.2s;
+  transition: all 0.15s;
+  border: 1px solid transparent;
 }
-.next-full-btn:hover { background: #dde8de; }
+.next-full:hover { background: #dde8de; border-color: var(--primary); }
 
-/* ============ 工作台首页（无搜索时的默认状态）============ */
-.ws-default-cards {
+/* ===== State 5: domain/role switch ===== */
+.switch-block { margin-bottom: 32px; }
+.switch-headline {
+  font-size: 20px; font-weight: 700; color: var(--ink-1);
+  margin-bottom: 6px;
+}
+.switch-sub { font-size: 13px; color: var(--ink-4); margin-bottom: 24px; }
+
+.dim-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-top: 32px;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
-.quick-card {
-  padding: 16px;
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
+.dim-card {
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
 }
-.quick-card:hover {
-  border-color: var(--gold);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(201,169,98,0.15);
+.dim-card.full { grid-column: span 2; border-style: dashed; }
+.dim-card-top {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 4px;
 }
-.quick-card-emoji { font-size: 22px; margin-bottom: 8px; }
-.quick-card-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
-.quick-card-desc { font-size: 11px; color: var(--muted); }
+.dim-card-name { font-size: 13px; font-weight: 600; color: var(--ink-1); }
+.dim-card-weight {
+  font-size: 13px; font-weight: 700; color: var(--gold);
+  font-family: var(--font-mono);
+}
+.dim-card-desc { font-size: 12px; color: var(--ink-4); }
 
-/* 以后再来问候条 */
-.greet-bar {
-  background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
-  padding: 22px 28px;
-  border-radius: 16px;
-  color: white;
-  margin-bottom: 32px;
+/* ===== State 6: return / come back ===== */
+.return-greet {
+  padding: 28px 32px;
+  background: linear-gradient(135deg, var(--primary) 0%, #2d5a3d 100%);
+  border-radius: var(--radius-lg);
+  color: #fff;
+  margin-bottom: 36px;
   position: relative;
   overflow: hidden;
 }
-.greet-bar::after {
+.return-greet::after {
   content: '';
-  position: absolute; right: -20px; bottom: -20px;
-  width: 120px; height: 120px;
+  position: absolute;
+  right: -40px; bottom: -40px;
+  width: 200px; height: 200px;
   border-radius: 50%;
   background: var(--gold);
-  opacity: 0.1;
+  opacity: 0.08;
 }
-.greet-hi { font-size: 14px; opacity: 0.75; margin-bottom: 4px; }
-.greet-main {
-  font-size: 20px; font-weight: 700;
-  margin-bottom: 4px;
-}
-.greet-sub { font-size: 13px; opacity: 0.85; }
-.greet-badge {
-  display: inline-block;
-  margin-left: 8px;
-  background: var(--gold);
-  color: var(--green);
-  padding: 2px 10px;
-  border-radius: 10px;
-  font-size: 11px; font-weight: 700;
-}
-
-/* ============ 底部说明 ============ */
-.prototype-foot {
-  padding: 32px 48px;
-  text-align: center;
+.return-hi {
   font-size: 12px;
-  color: var(--muted);
-  border-top: 1px solid var(--line);
-  margin-top: 48px;
+  opacity: 0.6;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
 }
-
-/* ============ 状态指示器（顶部）============ */
-.flow-indicator {
-  position: fixed;
-  bottom: 24px;
-  left: 270px;
-  right: 24px;
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 12px 20px;
-  display: flex; justify-content: center; align-items: center; gap: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  z-index: 200;
+.return-main {
+  font-size: 20px; font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
 }
-.flow-step {
-  font-size: 11px; font-weight: 600;
-  padding: 4px 10px;
+.return-sub {
+  font-size: 13px; opacity: 0.8;
+}
+.return-sub .badge {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--ink-1);
+  font-size: 11px; font-weight: 700;
+  padding: 1px 8px;
   border-radius: 10px;
-  background: var(--bg);
-  color: var(--muted);
+  margin-left: 6px;
+  vertical-align: middle;
 }
-.flow-step.done { background: var(--gold-bg); color: var(--green); }
-.flow-arrow { font-size: 14px; color: var(--muted); }
+.return-sub .weak {
+  color: var(--gold); font-weight: 500;
+}
 
-/* 全局过渡 */
-.fade-in { animation: fadeSlide 0.3s ease; }
+.dim-score-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.dim-score-cell {
+  padding: 14px 6px;
+  background: var(--surface);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+.dim-score-cell.low {
+  background: var(--gold-bg);
+  border-color: var(--gold-line);
+}
+.dim-score-num {
+  font-size: 22px; font-weight: 800; color: var(--ink-1);
+  line-height: 1;
+  margin-bottom: 3px;
+  font-family: var(--font-mono);
+}
+.dim-score-cell.low .dim-score-num { color: var(--primary); }
+.dim-score-label {
+  font-size: 10px; color: var(--ink-4);
+}
+
+/* ===== Footer ===== */
+.foot {
+  padding: 32px 56px;
+  text-align: center;
+  font-size: 11px; color: var(--ink-5);
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+  letter-spacing: 0.03em;
+}
 </style>
 </head>
 <body>
 
-<div class="prototype-shell">
+<div class="shell">
 
-<!-- ============ 左侧状态导航 ============ -->
-<aside class="states-nav">
-  <div class="brand">
-    <div class="brand-mark">风</div>
-    <div class="brand-name">聚满匠星云</div>
-    <div class="brand-sub">产品原型 v3.0 · 闭环样板</div>
-  </div>
-
-  <h3>完整流程演示</h3>
-  <div class="state-item active" data-state="default">
-    <div class="state-num">1</div>
-    <div>工作台 · 默认状态</div>
-  </div>
-  <div class="state-item" data-state="searched">
-    <div class="state-num">2</div>
-    <div>搜问题 · 看到方案</div>
-  </div>
-  <div class="state-item" data-state="testing">
-    <div class="state-num">3</div>
-    <div>专项小测 · 5 题进行中</div>
-  </div>
-  <div class="state-item" data-state="done">
-    <div class="state-num">4</div>
-    <div>测完 · 雷达图 + 下一步</div>
+<!-- ========== Left nav ========== -->
+<aside class="nav">
+  <div class="nav-brand">
+    <div class="nav-brand-mark">风</div>
+    <div class="nav-brand-name">聚满匠星云</div>
+    <div class="nav-brand-sub">服务者工作台 · v3.0 原型</div>
   </div>
 
-  <h3 style="margin-top:24px;">其他状态</h3>
-  <div class="state-item" data-state="domain-switch">
-    <div class="state-num">⇄</div>
-    <div>切换板块 / 岗位</div>
+  <div class="nav-section-label">核心流程</div>
+  <div class="nav-item active" data-state="default">
+    <div class="num">1</div><div>工作台默认 · 搜索</div>
   </div>
-  <div class="state-item" data-state="return">
-    <div class="state-num">↻</div>
-    <div>以后再来 · 二次访问</div>
+  <div class="nav-item" data-state="result">
+    <div class="num">2</div><div>搜完 · 话术 / 工具</div>
+  </div>
+  <div class="nav-item" data-state="quiz">
+    <div class="num">3</div><div>专项小测 · 5 题</div>
+  </div>
+  <div class="nav-item" data-state="report">
+    <div class="num">4</div><div>测评报告 · 下一步</div>
+  </div>
+
+  <div class="nav-section-label">其他状态</div>
+  <div class="nav-item" data-state="switch">
+    <div class="num">⇄</div><div>板块 · 岗位切换</div>
+  </div>
+  <div class="nav-item" data-state="return">
+    <div class="num">↻</div><div>二次访问 · 以后再来</div>
   </div>
 </aside>
 
-<!-- ============ 右侧舞台 ============ -->
+<!-- ========== Stage ========== -->
 <div class="stage">
 
-  <!-- ============== 顶部导航（所有状态共用）============== -->
-  <div class="ws-top-nav">
-    <div class="ws-logo">
-      <div class="ws-logo-icon">风</div>
-      <div class="ws-logo-text">风声·聚满匠星云</div>
+  <!-- Top bar (shared) -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">
+        <div class="topbar-logo-mark">风</div>
+        <span>风声 · 聚满匠星云</span>
+      </div>
+      <nav class="topbar-nav">
+        <a href="#" onclick="return false">首页</a>
+        <a href="#" onclick="return false" class="active">工作台</a>
+        <a href="#" onclick="return false">客户管理</a>
+        <a href="#" onclick="return false">知识底座</a>
+        <a href="#" onclick="return false">策展引擎</a>
+        <a href="#" onclick="return false">能力测评</a>
+      </nav>
     </div>
-    <nav class="ws-nav">
-      <a href="#" onclick="return false">首页</a>
-      <a href="#" onclick="return false" class="active">工作台</a>
-      <a href="#" onclick="return false">客户管理</a>
-      <a href="#" onclick="return false">知识底座</a>
-      <a href="#" onclick="return false">策展引擎</a>
-      <a href="#" onclick="return false">能力测评</a>
-    </nav>
-    <div class="ws-right">
-      <span>📍 北京</span>
+    <div class="topbar-right">
+      <span>📍 北京 · 朝阳</span>
       <span>👤 李师傅</span>
     </div>
   </div>
-  <div class="ws-domain-bar">
-    <div class="ws-domain-tab active">🏠 交易服务</div>
-    <div class="ws-domain-tab">🔑 资产运营 <span class="ws-domain-tag">Phase 2</span></div>
-    <div class="ws-domain-tab">🛠 家装服务 <span class="ws-domain-tag">Phase 2</span></div>
-    <div class="ws-domain-tab">🌿 特殊居住 <span class="ws-domain-tag">Phase 3</span></div>
-  </div>
-  <div class="ws-pos-bar">
-    <span class="ws-pos-label">岗位：</span>
-    <div class="ws-pos-pill active">买卖经纪人</div>
-    <div class="ws-pos-pill">新房顾问</div>
-    <div class="ws-pos-pill">租赁管家</div>
+
+  <div class="domainbar">
+    <div class="domainbar-tab active">🏠 交易服务</div>
+    <div class="domainbar-tab">🔑 资产运营 <span class="tag">Phase 2</span></div>
+    <div class="domainbar-tab">🛠 家装服务 <span class="tag">Phase 2</span></div>
+    <div class="domainbar-tab">🌿 特殊居住 <span class="tag">Phase 3</span></div>
   </div>
 
-  <!-- ============== 状态 1：工作台默认 ============== -->
-  <div class="stage-content active" id="state-default">
-    <div class="ws-main">
-      <div class="search-hero">
-        <div class="search-hi">下午好，李师傅 · 买卖经纪人 · 北京</div>
-        <h1 class="search-title">遇到客户服务难题了？<br><strong>直接搜，给你专业答案</strong></h1>
-        <div class="search-box">
-          <input class="search-input" type="text" placeholder="比如：客户说太贵了怎么办？首套房契税多少？客户嫌楼层低..." value="" />
-          <button class="search-btn" onclick="switchState('searched')">搜一下</button>
+  <div class="posbar">
+    <span class="posbar-label">Position</span>
+    <div class="posbar-pill active">买卖经纪人</div>
+    <div class="posbar-pill">新房顾问</div>
+    <div class="posbar-pill">租赁管家</div>
+  </div>
+
+  <!-- ===== State 1: default ===== -->
+  <div class="panel active" id="state-default">
+    <div class="main">
+      <div class="search-block">
+        <div class="search-hello">下午好，李师傅 · 买卖经纪人 · 北京</div>
+        <h1 class="search-headline">遇到客户服务难题了？<br>搜一下，<em>现在就能用</em>。</h1>
+        <div class="search-field">
+          <input type="text" placeholder="客户说太贵了怎么办？首套房契税多少？公积金能贷多少？" />
+          <button class="search-submit" onclick="switchState('result')">搜索</button>
         </div>
         <div class="hot-row">
-          <span class="hot-label">🔥 热门：</span>
-          <span class="hot-chip" onclick="switchState('searched')">客户说太贵了怎么办</span>
-          <span class="hot-chip">首套房契税多少</span>
+          <span class="hot-label">Common</span>
+          <span class="hot-chip" onclick="switchState('result')">客户说太贵了怎么办</span>
+          <span class="hot-chip">首套房契税计算</span>
           <span class="hot-chip">公积金贷款额度</span>
-          <span class="hot-chip">带看后怎么跟进</span>
+          <span class="hot-chip">客户说"回去商量"</span>
           <span class="hot-chip">二手房税费明细</span>
           <span class="hot-chip">限购政策查询</span>
         </div>
       </div>
 
-      <h3 style="font-size:13px;font-weight:700;color:var(--green);margin:32px 0 12px;">📌 按你的服务全流程找方法</h3>
-      <div class="ws-default-cards">
-        <div class="quick-card">
-          <div class="quick-card-emoji">🚶</div>
-          <div class="quick-card-title">带看前</div>
-          <div class="quick-card-desc">准备清单、房源资料包</div>
+      <div style="font-size:12px;font-weight:600;color:var(--ink-4);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px;">按服务流程找方法</div>
+      <div class="quick-grid">
+        <div class="quick-cell">
+          <div class="quick-cell-label">带看前</div>
+          <div class="quick-cell-sub">准备清单 · 房源资料包</div>
         </div>
-        <div class="quick-card">
-          <div class="quick-card-emoji">💬</div>
-          <div class="quick-card-title">谈判中</div>
-          <div class="quick-card-desc">砍价话术、异议处理</div>
+        <div class="quick-cell">
+          <div class="quick-cell-label">谈判中</div>
+          <div class="quick-cell-sub">议价话术 · 异议处理</div>
         </div>
-        <div class="quick-card">
-          <div class="quick-card-emoji">✍️</div>
-          <div class="quick-card-title">签约前</div>
-          <div class="quick-card-desc">风险清单、税费计算</div>
+        <div class="quick-cell">
+          <div class="quick-cell-label">签约前</div>
+          <div class="quick-cell-sub">风险清单 · 税费计算</div>
         </div>
-        <div class="quick-card">
-          <div class="quick-card-emoji">📊</div>
-          <div class="quick-card-title">测测能力</div>
-          <div class="quick-card-desc">7 维画像 · 10 分钟</div>
-        </div>
-        <div class="quick-card">
-          <div class="quick-card-emoji">🎭</div>
-          <div class="quick-card-title">场景练习</div>
-          <div class="quick-card-desc">AI 模拟客户 · 21 场景</div>
-        </div>
-        <div class="quick-card">
-          <div class="quick-card-emoji">📚</div>
-          <div class="quick-card-title">学习中心</div>
-          <div class="quick-card-desc">7 门核心课 + 外部推荐</div>
-        </div>
-        <div class="quick-card">
-          <div class="quick-card-emoji">📖</div>
-          <div class="quick-card-title">知识底座</div>
-          <div class="quick-card-desc">6365 条词条 · 39 域</div>
-        </div>
-        <div class="quick-card">
-          <div class="quick-card-emoji">⚡</div>
-          <div class="quick-card-title">策展引擎</div>
-          <div class="quick-card-desc">AI 生成房源方案</div>
+        <div class="quick-cell">
+          <div class="quick-cell-label">能力诊断</div>
+          <div class="quick-cell-sub">7 维画像 · 10 分钟</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ============== 状态 2：搜完有答案 ============== -->
-  <div class="stage-content" id="state-searched">
-    <div class="ws-main">
-      <div class="search-hero" style="margin-bottom:20px;">
-        <div class="search-hi">下午好，李师傅 · 买卖经纪人 · 北京</div>
-        <h1 class="search-title">遇到客户服务难题了？<br><strong>直接搜，给你专业答案</strong></h1>
-        <div class="search-box">
-          <input class="search-input" type="text" value="客户说太贵了怎么办" readonly />
-          <button class="search-btn">搜一下</button>
+  <!-- ===== State 2: result ===== -->
+  <div class="panel" id="state-result">
+    <div class="main">
+      <div class="search-block" style="margin-bottom:24px;">
+        <div class="search-hello">下午好，李师傅 · 买卖经纪人 · 北京</div>
+        <div class="search-field">
+          <input type="text" value="客户说太贵了怎么办" readonly />
+          <button class="search-submit">搜索</button>
         </div>
       </div>
 
-      <div class="result-panel fade-in">
-        <!-- 定位区 -->
-        <div class="result-header">
-          <div class="result-header-badge">💬</div>
-          <div class="result-header-content">
-            <div class="result-loc-label">🎯 自动定位到</div>
-            <div class="result-loc">带看谈判 · 异议处理能力</div>
-            <div class="result-skill">CAP-SKILL-101 · 客户异议处理标准</div>
+      <div class="result-card">
+        <!-- locator -->
+        <div class="locator">
+          <div class="locator-badge">🎯</div>
+          <div>
+            <div class="locator-label">Capability Match</div>
+            <div class="locator-title">定位到 <span class="dim">带看谈判</span> · 异议处理</div>
+            <div class="locator-ref"><span class="cap">CAP-SKILL-101</span> 客户异议处理 · 标准能力条目</div>
           </div>
         </div>
 
         <div class="result-body">
-          <!-- 解决方案 -->
-          <div class="result-section-title">💡 三步法解决方案</div>
-          <div class="solution-steps">
-            <div class="solution-step">
-              <div class="solution-step-num">1</div>
-              <div class="solution-step-content"><em>先共情</em>："我理解您的感受，这个价格确实不低，换我我也会纠结。"</div>
+          <!-- Primary: speech variants -->
+          <div class="section-head">
+            <div class="section-head-bar"></div>
+            <div class="section-head-text">现在能发的话术（复制即用）</div>
+            <div class="section-head-meta">3 个版本 · 按客户类型</div>
+          </div>
+          <div class="speech-list">
+            <div class="speech-variant">
+              <div class="speech-variant-head">
+                <div class="speech-variant-label">版本 A · 理性客户</div>
+                <div class="speech-variant-tag">讲数据 · 讲对比</div>
+              </div>
+              <div class="speech-variant-body">
+                "李哥您说的隔壁 480 万我也了解过，但那套在 6 楼没电梯、朝北、满五唯一还差 2 个月。这套在中间楼层、南北通透、业主急售价格已经让了 15 万。您看要不咱约业主当面再谈谈？"
+              </div>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓';this.classList.add('copied')">一键复制</button>
             </div>
-            <div class="solution-step">
-              <div class="solution-step-num">2</div>
-              <div class="solution-step-content"><em>给数据</em>："不过这个小区这个户型，最近成交的 3 套都在 510 万以上，而且楼层还没这个好。"</div>
+
+            <div class="speech-variant">
+              <div class="speech-variant-head">
+                <div class="speech-variant-label">版本 B · 感性客户</div>
+                <div class="speech-variant-tag">先共情 · 再引导</div>
+              </div>
+              <div class="speech-variant-body">
+                "李哥我特别理解您的感受，520 万确实不是小数。这几天带您看下来，感觉您对这套房子是真心喜欢的，是不是主要是价格这块儿有点犹豫？您跟我说个实在数，我拼尽全力帮您争取。"
+              </div>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓';this.classList.add('copied')">一键复制</button>
             </div>
-            <div class="solution-step">
-              <div class="solution-step-num">3</div>
-              <div class="solution-step-content"><em>再提问</em>："您主要是觉得哪方面贵？是总价超预算了，还是觉得这个房子不值这个价？我帮您看看有没有什么办法。"</div>
+
+            <div class="speech-variant">
+              <div class="speech-variant-head">
+                <div class="speech-variant-label">版本 C · 爱面子客户</div>
+                <div class="speech-variant-tag">给台阶 · 降焦虑</div>
+              </div>
+              <div class="speech-variant-body">
+                "李哥我跟您说句实在的，这价格真不贵——这套是整个小区性价比最高的一套了。您能看中这套眼光真不错。这样，您今天给个痛快话，我帮您跟业主砍到 510 万，差的那 10 万我来贴点，咱就把合同签了。"
+              </div>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓';this.classList.add('copied')">一键复制</button>
             </div>
           </div>
 
-          <!-- 相关工具 -->
-          <div class="result-section-title">🛠️ 相关工具</div>
-          <div class="tools-row">
-            <span class="tool-chip">异议处理36招 →</span>
-            <span class="tool-chip">带看话术模板 →</span>
-            <span class="tool-chip">小区成交记录 →</span>
+          <!-- Secondary: tools + knowledge -->
+          <div class="section-head">
+            <div class="section-head-bar"></div>
+            <div class="section-head-text">相关工具 · 知识点</div>
+          </div>
+          <div class="secondary">
+            <div class="secondary-col">
+              <div class="secondary-title">Tools</div>
+              <div class="secondary-item">📎 异议处理 36 招 <span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">📊 小区近 3 个月成交记录 <span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">📝 带看话术模板库（23 套）<span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">🧮 议价计算器 <span class="secondary-item-arrow">→</span></div>
+            </div>
+            <div class="secondary-col">
+              <div class="secondary-title">Knowledge</div>
+              <div class="secondary-item">📖 议价心理学：为什么客户说"贵"？ <span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">📖 数据谈判法：用成交记录说话 <span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">📖 如何识别客户的真实预算 <span class="secondary-item-arrow">→</span></div>
+            </div>
           </div>
 
-          <!-- 引导测评（核心动作） -->
-          <div class="hook-box">
-            <div class="hook-box-top">
-              <div class="hook-box-title">📊 你的"带看谈判"测过吗？</div>
-              <div class="hook-box-score">TOP 20% 门槛 80 分</div>
-            </div>
-            <div class="hook-box-prompt">
-              专项 5 道情景题 · 测你的异议处理真实水平 · 2 分钟出结果 · 对标 top 1%
-            </div>
-            <div class="hook-box-action">
-              <button class="hook-primary" onclick="switchState('testing')">▶ 开始 5 题专项测</button>
-              <button class="hook-secondary">不，先给我完整 35 题 →</button>
-            </div>
+          <!-- Minimal principles (dry methodology, de-prioritized) -->
+          <div class="principles">
+            <div class="principles-title">Principle · 异议应对三步法</div>
+            <ol class="principles-list">
+              <li>先共情，接住客户情绪，不让他觉得你在推销</li>
+              <li>给数据，用同小区/同户型/同楼层的近期成交记录说话</li>
+              <li>再提问，引导客户说出真实顾虑（是真缺钱？还是觉得不值？）</li>
+            </ol>
           </div>
 
-          <!-- 其他引导 -->
-          <div class="result-section-title" style="margin-top:20px;">或者你想先</div>
-          <div class="hook-learn-row">
-            <div class="hook-learn-item">
-              <div class="hook-learn-emoji">📚</div>
-              <div class="hook-learn-text"><strong>去学</strong>《带看谈判入门》90分钟 · 核心课</div>
+          <!-- Soft hook for assessment — last, not first -->
+          <div class="hook-soft">
+            <div class="hook-soft-emoji">🧩</div>
+            <div class="hook-soft-copy">
+              <div class="hook-soft-title">经常遇到这类异议？</div>
+              <div class="hook-soft-desc">花 2 分钟测一下你的带看谈判能力，5 道专项情景题 · 对标 TOP 10% 经纪人</div>
             </div>
-            <div class="hook-learn-item">
-              <div class="hook-learn-emoji">🎭</div>
-              <div class="hook-learn-text"><strong>去练</strong>客户挑楼层毛病，其实是嫌贵 · AI模拟</div>
-            </div>
+            <button class="hook-soft-cta" onclick="switchState('quiz')">专项 5 题 →</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ============== 状态 3：专项小测 ============== -->
-  <div class="stage-content" id="state-testing">
-    <div class="ws-main">
-      <div class="search-hero" style="margin-bottom:20px;">
-        <h1 class="search-title" style="font-size:22px;">💬 带看谈判 · 专项 5 题小测</h1>
-        <div style="font-size:13px;color:var(--muted);">来自：客户说太贵了怎么办 · 异议处理能力</div>
+  <!-- ===== State 3: quiz ===== -->
+  <div class="panel" id="state-quiz">
+    <div class="main">
+      <div class="search-block" style="margin-bottom:24px;">
+        <div class="search-hello">带看谈判 · 异议处理专项</div>
+        <div class="search-headline" style="font-size:20px;margin-bottom:0;">专项能力测评 · 5 道情景题</div>
       </div>
 
-      <div class="quiz-panel fade-in">
-        <div class="quiz-panel-header">
-          <div class="quiz-panel-title">📊 带看谈判 · 异议处理专项</div>
-          <div class="quiz-panel-meta">第 3 / 5 题 · 情景判断题</div>
+      <div class="quiz-wrap">
+        <div class="quiz-head">
+          <div class="quiz-head-title">💬 带看谈判 · 异议处理专项</div>
+          <div class="quiz-head-meta">3 / 5 · scenario</div>
         </div>
+        <div class="quiz-body">
 
-        <div class="quiz-q">
-          <div class="quiz-q-num">Question 3 · 情景判断</div>
-          <div class="quiz-q-text">带客户看完房，客户说："这个房子我挺喜欢的，但是价格有点贵，我再考虑考虑。"你怎么回？</div>
-          <div class="quiz-options">
-            <button class="quiz-option">A. 好的，那您慢慢考虑，想好了联系我</button>
-            <button class="quiz-option selected" style="border-color:var(--green);background:var(--green-bg);">B. 理解您的感受，这个价格确实不低。不过这个小区最近3套都在510万以上...您主要觉得哪方面贵？</button>
-            <button class="quiz-option">C. 不贵的，这个价格在这个片区已经很便宜了</button>
-            <button class="quiz-option">D. 那您觉得多少钱合适？我去跟业主谈</button>
+          <div class="quiz-q">
+            <div class="quiz-q-num">Question 3 · Scenario Judgment</div>
+            <div class="quiz-q-text">带客户看完房，客户说："这个房子我挺喜欢的，但是价格有点贵，我再考虑考虑。"你怎么回？</div>
+            <div class="quiz-opts">
+              <button class="quiz-opt">A. 好的，那您慢慢考虑，想好了联系我</button>
+              <button class="quiz-opt selected">B. 理解您的感受，这个价格确实不低。不过这个小区最近 3 套都在 510 万以上，而且楼层还没这个好。您主要觉得哪方面贵？</button>
+              <button class="quiz-opt">C. 不贵的，这个价格在这个片区已经很便宜了</button>
+              <button class="quiz-opt">D. 那您觉得多少钱合适？我去跟业主谈</button>
+            </div>
           </div>
-        </div>
 
-        <!-- 其他 4 题折叠（小测模式下的进度示意） -->
-        <div class="quiz-q" style="opacity:0.3; padding:14px 24px; font-size:12px;">
-          <div class="quiz-q-num">Question 1 ✅ 已答</div>
-          <div style="color:var(--green);">客户说"随便看看" → 先共情 → 轻提问引导</div>
-        </div>
-        <div class="quiz-q" style="opacity:0.3; padding:14px 24px; font-size:12px;">
-          <div class="quiz-q-num">Question 2 ✅ 已答</div>
-          <div style="color:var(--green);">带看中客户打断你 → 立即停，转客户关心的点</div>
-        </div>
-        <div class="quiz-q" style="opacity:0.3; padding:14px 24px; font-size:12px;">
-          <div class="quiz-q-num">Question 4 ⏳ 等答</div>
-          <div>假设"客户回去商量"，真实顾虑是什么？</div>
-        </div>
-        <div class="quiz-q" style="opacity:0.3; padding:14px 24px; font-size:12px;">
-          <div class="quiz-q-num">Question 5 ⏳ 等答</div>
-          <div>假设客户要"再看看"，怎么推进？</div>
-        </div>
+          <div class="quiz-q" style="opacity:0.4;">
+            <div class="quiz-q-num">Question 1 · ✅</div>
+            <div class="quiz-q-text" style="font-size:13px;margin-bottom:0;">客户说"随便看看" → 先共情 → 建立专业形象 → 轻提问</div>
+          </div>
+          <div class="quiz-q" style="opacity:0.4;">
+            <div class="quiz-q-num">Question 2 · ✅</div>
+            <div class="quiz-q-text" style="font-size:13px;margin-bottom:0;">带看中客户打断你 → 立即停，转客户关心的点</div>
+          </div>
+          <div class="quiz-q" style="opacity:0.25;">
+            <div class="quiz-q-num">Question 4 · Pending</div>
+            <div class="quiz-q-text" style="font-size:13px;margin-bottom:0;">客户说"我回去商量"——真实顾虑是什么？</div>
+          </div>
+          <div class="quiz-q" style="opacity:0.25;">
+            <div class="quiz-q-num">Question 5 · Pending</div>
+            <div class="quiz-q-text" style="font-size:13px;margin-bottom:0;">如何推进"再看看"的客户？</div>
+          </div>
 
-        <div class="quiz-panel-actions">
-          <button class="btn btn-secondary">上一题</button>
-          <button class="btn btn-primary" onclick="switchState('done')">完成测 →</button>
         </div>
-      </div>
-
-      <!-- 顶部流程提示 -->
-      <div style="margin-top:16px;text-align:center;font-size:12px;color:var(--muted);">
-        🔄 测完后会自动推荐对应的学习 / 场景 / 考核入口 · 也可以跳过直接看完整 35 题全量画像
+        <div class="quiz-foot">
+          <button class="btn btn-sec">上一题</button>
+          <button class="btn btn-pri" onclick="switchState('report')">提交测 →</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ============== 状态 4：测完出报告 ============== -->
-  <div class="stage-content" id="state-done">
-    <div class="ws-main">
-      <div class="search-hero" style="margin-bottom:20px;">
-        <h1 class="search-title" style="font-size:22px;">🎉 带看谈判 · 专项测评报告</h1>
-        <div style="font-size:13px;color:var(--muted);">买卖经纪人 · 北京 · 异议处理专项</div>
+  <!-- ===== State 4: report ===== -->
+  <div class="panel" id="state-report">
+    <div class="main">
+      <div class="search-block" style="margin-bottom:24px;">
+        <div class="search-hello">带看谈判 · 异议处理专项 · 测评报告</div>
+        <div class="search-headline" style="font-size:20px;margin-bottom:0;">带看谈判 · 专项测评报告</div>
       </div>
 
-      <!-- 分数头 -->
-      <div class="report-panel fade-in">
-        <div class="report-header">
+      <div class="report-wrap">
+        <div class="report-head">
           <div class="report-score">78</div>
           <div class="report-level">B+ · 中上，可进一步精进</div>
-          <div class="report-comparison">
-            <span class="better">↑ 比 42% 经纪人好</span> · 
-            <span class="worse">↓ 低于 TOP 10% 门槛 2 分</span>
+          <div class="report-compare">
+            <span class="up">↑ 比 42% 经纪人好</span> · <span class="down">↓ 距 TOP 10% 门槛差 2 分</span>
           </div>
         </div>
 
         <div class="report-body">
-          <!-- 强弱 -->
-          <div class="strength-row">
-            <div class="strength-card good">
-              <div class="strength-card-label">✅ 你的优势</div>
-              <div class="strength-card-main">先共情 → 专业 → 再提问</div>
-              <div class="strength-card-sub">能跳出客户的表层问题，用三步法引导</div>
+          <!-- insights -->
+          <div class="insight-row">
+            <div class="insight-card good">
+              <div class="insight-card-label">Strength</div>
+              <div class="insight-card-main">先共情 → 给数据 → 再提问</div>
+              <div class="insight-card-sub">能跳出客户的表层问题，用三步法引导真实顾虑</div>
             </div>
-            <div class="strength-card bad">
-              <div class="strength-card-label">⚠️ 还可以精进</div>
-              <div class="strength-card-main">有时太急着给数据</div>
-              <div class="strength-card-sub">客户还没共情到位就上硬信息，容易让客户觉得在推销</div>
+            <div class="insight-card bad">
+              <div class="insight-card-label">To Improve</div>
+              <div class="insight-card-main">有时太急着上硬数据</div>
+              <div class="insight-card-sub">客户还没共情到位就上成交记录，容易让客户觉得在推销</div>
             </div>
           </div>
 
-          <!-- 完整 7 维雷达（从全量画像） -->
-          <div class="result-section-title">📊 你的完整 7 维（上次全量测评：82 分）</div>
-          <div class="radar-wrap">
-            <svg viewBox="0 0 280 280">
-              <!-- 背景网 -->
-              <g opacity="0.15">
-                <polygon points="140,40 230,110 210,220 140,240 70,220 50,110"/>
-                <polygon points="140,75 205,125 190,205 140,220 90,205 75,125"/>
-                <polygon points="140,110 180,140 170,190 140,200 110,190 100,140"/>
-              </g>
-              <!-- 7 维轴 -->
-              <g stroke="#ddd" stroke-width="1">
-                <line x1="140" y1="140" x2="140" y2="40"/>
-                <line x1="140" y1="140" x2="230" y2="110"/>
-                <line x1="140" y1="140" x2="210" y2="220"/>
-                <line x1="140" y1="140" x2="140" y2="240"/>
-                <line x1="140" y1="140" x2="70" y2="220"/>
-                <line x1="140" y1="140" x2="50" y2="110"/>
-                <line x1="140" y1="140" x2="100" y2="40"/>
-              </g>
-              <!-- 数据区 -->
-              <polygon points="140,52 218,110 198,210 140,228 82,210 62,110 100,58"
-                fill="rgba(201,169,98,0.25)" stroke="#c9a962" stroke-width="2"/>
-              <!-- 点 -->
-              <circle cx="140" cy="52" r="4" fill="#c9a962"/>
-              <circle cx="218" cy="110" r="4" fill="#c9a962"/>
-              <circle cx="198" cy="210" r="4" fill="#c9a962"/>
-              <circle cx="140" cy="228" r="4" fill="#c9a962"/>
-              <circle cx="82" cy="210" r="4" fill="#c9a962"/>
-              <circle cx="62" cy="110" r="4" fill="#c9a962"/>
-              <circle cx="100" cy="58" r="4" fill="#c9a962"/>
-              <!-- 标签 -->
-              <text x="140" y="30" text-anchor="middle" font-size="11" fill="#555">📣 获客触达 85</text>
-              <text x="245" y="105" text-anchor="start" font-size="11" fill="#555">👁️ 需求洞察 93</text>
-              <text x="225" y="230" text-anchor="start" font-size="11" fill="#1a3d24" font-weight="600">💬 带看谈判 78 ⚡</text>
-              <text x="140" y="260" text-anchor="middle" font-size="11" fill="#555">📝 交易履约 92</text>
-              <text x="55" y="230" text-anchor="end" font-size="11" fill="#555">🤝 售后复购 88</text>
-              <text x="35" y="105" text-anchor="end" font-size="11" fill="#555">📐 专业方案 86</text>
-              <text x="100" y="28" text-anchor="middle" font-size="11" fill="#555">🤖 数字化协同 75</text>
-            </svg>
+          <!-- radar (7-dimension from full profile) -->
+          <div class="radar-block">
+            <div class="radar-title">综合 7 维能力画像（上次全量测评 · 82 分）</div>
+            <div class="radar-wrap">
+              <svg viewBox="0 0 260 260">
+                <g opacity="0.12" stroke="#999" stroke-width="1" fill="none">
+                  <polygon points="130,30 218,98 200,200 130,220 60,200 42,98"/>
+                  <polygon points="130,60 195,110 182,185 130,200 78,185 65,110"/>
+                  <polygon points="130,90 172,122 164,170 130,180 96,170 88,122"/>
+                </g>
+                <g stroke="#ddd" stroke-width="1">
+                  <line x1="130" y1="130" x2="130" y2="30"/>
+                  <line x1="130" y1="130" x2="218" y2="98"/>
+                  <line x1="130" y1="130" x2="200" y2="200"/>
+                  <line x1="130" y1="130" x2="130" y2="220"/>
+                  <line x1="130" y1="130" x2="60" y2="200"/>
+                  <line x1="130" y1="130" x2="42" y2="98"/>
+                </g>
+                <polygon points="130,46 205,100 188,186 130,202 72,186 55,100"
+                  fill="rgba(184,148,60,0.22)" stroke="#b8943c" stroke-width="2"/>
+                <g fill="#b8943c">
+                  <circle cx="130" cy="46" r="3.5"/>
+                  <circle cx="205" cy="100" r="3.5"/>
+                  <circle cx="188" cy="186" r="3.5"/>
+                  <circle cx="130" cy="202" r="3.5"/>
+                  <circle cx="72" cy="186" r="3.5"/>
+                  <circle cx="55" cy="100" r="3.5"/>
+                </g>
+              </svg>
+              <div class="radar-legend">
+                <div class="radar-legend-item"><span class="radar-legend-name"><span class="dot" style="background:#1a3d24"></span>需求洞察</span><span class="radar-legend-score">93</span></div>
+                <div class="radar-legend-item"><span class="radar-legend-name"><span class="dot"></span>获客触达</span><span class="radar-legend-score">85</span></div>
+                <div class="radar-legend-item"><span class="radar-legend-name"><span class="dot"></span>专业方案</span><span class="radar-legend-score">86</span></div>
+                <div class="radar-legend-item"><span class="radar-legend-name"><span class="dot" style="background:#b9392f"></span>带看谈判</span><span class="radar-legend-score low">78 ⚡</span></div>
+                <div class="radar-legend-item"><span class="radar-legend-name"><span class="dot" style="background:#1a3d24"></span>交易履约</span><span class="radar-legend-score">92</span></div>
+                <div class="radar-legend-item"><span class="radar-legend-name"><span class="dot"></span>售后复购</span><span class="radar-legend-score">88</span></div>
+                <div class="radar-legend-item" style="grid-column:span 2;"><span class="radar-legend-name"><span class="dot"></span>数字化协同</span><span class="radar-legend-score">75</span></div>
+              </div>
+            </div>
           </div>
 
-          <!-- 下一步 -->
-          <div class="next-steps-title">⚡ 现在，你可以这样继续</div>
+          <!-- next steps -->
+          <div class="next-block-title">⚡ 现在，你可以这样继续</div>
           <div class="next-grid">
-            <div class="next-card" onclick="alert('跳转到场景练习')">
-              <div class="next-card-emoji">🎭</div>
-              <div class="next-card-text">
-                <strong>去练这个场景</strong>
-                <span>客户挑楼层毛病，其实是嫌贵 · AI模拟对话 · 约 5 分钟</span>
+            <div class="next-cell" onclick="alert('跳 /scene/4')">
+              <div class="next-cell-emoji">🎭</div>
+              <div>
+                <div class="next-cell-title">场景练习 · AI 模拟客户</div>
+                <div class="next-cell-desc">客户挑楼层毛病其实是嫌贵 · 约 5 分钟对话</div>
               </div>
             </div>
-            <div class="next-card" onclick="alert('跳转到学习中心')">
-              <div class="next-card-emoji">📚</div>
-              <div class="next-card-text">
-                <strong>去学核心课</strong>
-                <span>《带看谈判入门》· 90 分钟 · 3-4 节 · 配套小测</span>
+            <div class="next-cell" onclick="alert('跳 /agent-academy/')">
+              <div class="next-cell-emoji">📚</div>
+              <div>
+                <div class="next-cell-title">核心课 · 《带看谈判入门》</div>
+                <div class="next-cell-desc">90 分钟 · 3-4 节 · 配套课后小测</div>
               </div>
             </div>
-            <div class="next-card" onclick="alert('跳转到专项考核')">
-              <div class="next-card-emoji">📝</div>
-              <div class="next-card-text">
-                <strong>去考 10 道专项</strong>
-                <span>学完练完，验证你是不是真掌握了 · 通过线 80 分</span>
+            <div class="next-cell" onclick="alert('跳专项考核')">
+              <div class="next-cell-emoji">📝</div>
+              <div>
+                <div class="next-cell-title">专项考核 · 10 道题</div>
+                <div class="next-cell-desc">学完练完验证 · 通过线 80 分</div>
               </div>
             </div>
-            <div class="next-card" onclick="switchState('searched')">
-              <div class="next-card-emoji">🔍</div>
-              <div class="next-card-text">
-                <strong>搜别的问题</strong>
-                <span>遇到新难题？继续搜，循环提升</span>
+            <div class="next-cell" onclick="switchState('result')">
+              <div class="next-cell-emoji">🔍</div>
+              <div>
+                <div class="next-cell-title">搜别的问题</div>
+                <div class="next-cell-desc">遇到新难题？继续搜，循环提升</div>
               </div>
             </div>
           </div>
-
-          <a class="next-full-btn" href="#" onclick="switchState('default');return false;">📊 回去做完整 35 题全量测评 → 更新你的 7 维综合画像</a>
+          <a class="next-full" href="#" onclick="switchState('default');return false;">📊 回去做完整 35 题全量测评 → 更新 7 维综合画像</a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ============== 状态 5：板块/岗位切换 ============== -->
-  <div class="stage-content" id="state-domain-switch">
-    <div class="ws-main">
-      <div class="search-hero">
-        <h1 class="search-title" style="font-size:22px;">多岗位能力模型 · 实时切换</h1>
-        <div style="font-size:13px;color:var(--muted);">切换板块 → 切换岗位 → 7 维权重/描述/能力标准 全跟着变</div>
-      </div>
+  <!-- ===== State 5: switch ===== -->
+  <div class="panel" id="state-switch">
+    <div class="main">
+      <div class="switch-block">
+        <div class="switch-headline">多岗位能力模型</div>
+        <div class="switch-sub">当前：🏠 交易服务 · 买卖经纪人 · 7 维权重如下。切换板块或岗位时，权重/描述/能力标准自动适配。</div>
 
-      <div class="result-panel">
-        <div class="result-header" style="background:var(--green-bg);">
-          <div class="result-header-badge">🟢</div>
-          <div class="result-header-content">
-            <div class="result-loc-label">当前板块</div>
-            <div class="result-loc" style="color:var(--green);">🏠 交易服务</div>
+        <div class="dim-grid">
+          <div class="dim-card">
+            <div class="dim-card-top"><div class="dim-card-name">📣 获客触达</div><div class="dim-card-weight">15%</div></div>
+            <div class="dim-card-desc">个人品牌 · 渠道获客 · 形象塑造</div>
           </div>
-        </div>
-
-        <div class="result-body">
-          <div class="result-section-title">📋 这个板块有哪些岗位</div>
-          <div style="display:flex;gap:10px;margin-bottom:28px;">
-            <div class="ws-pos-pill active">买卖经纪人</div>
-            <div class="ws-pos-pill">新房顾问</div>
-            <div class="ws-pos-pill">租赁管家</div>
+          <div class="dim-card">
+            <div class="dim-card-top"><div class="dim-card-name">👁️ 需求洞察</div><div class="dim-card-weight">15%</div></div>
+            <div class="dim-card-desc">客户画像 · 共情理解 · 场景判断</div>
           </div>
-
-          <div class="result-section-title">📊 7 维能力卡（岗位切换时动态变）</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
-            <div style="padding:14px;border:1px solid var(--line);border-radius:10px;background:white;">
-              <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;">📣 获客触达 · <span style="color:var(--gold);">15%</span></div>
-              <div style="font-size:11px;color:var(--muted);">个人品牌、职业形象、渠道获客</div>
-            </div>
-            <div style="padding:14px;border:1px solid var(--line);border-radius:10px;background:white;">
-              <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;">👁️ 需求洞察 · <span style="color:var(--gold);">15%</span></div>
-              <div style="font-size:11px;color:var(--muted);">客户画像、共情理解、场景判断</div>
-            </div>
-            <div style="padding:14px;border:1px solid var(--line);border-radius:10px;background:white;">
-              <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;">📐 专业方案 · <span style="color:var(--gold);">20%</span></div>
-              <div style="font-size:11px;color:var(--muted);">知识匹配、房源策展、税费贷款</div>
-            </div>
-            <div style="padding:14px;border:1px solid var(--line);border-radius:10px;background:white;">
-              <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;">💬 带看谈判 · <span style="color:var(--gold);">20%</span></div>
-              <div style="font-size:11px;color:var(--muted);">表达沟通、异议处理、价格谈判</div>
-            </div>
-            <div style="padding:14px;border:1px solid var(--line);border-radius:10px;background:white;">
-              <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;">📝 交易履约 · <span style="color:var(--gold);">15%</span></div>
-              <div style="font-size:11px;color:var(--muted);">流程把控、合同风险、全程指导</div>
-            </div>
-            <div style="padding:14px;border:1px solid var(--line);border-radius:10px;background:white;">
-              <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;">🤝 售后复购 · <span style="color:var(--gold);">10%</span></div>
-              <div style="font-size:11px;color:var(--muted);">主动关怀、复购引导、转介绍</div>
-            </div>
+          <div class="dim-card">
+            <div class="dim-card-top"><div class="dim-card-name">📐 专业方案</div><div class="dim-card-weight">20%</div></div>
+            <div class="dim-card-desc">知识匹配 · 房源策展 · 税费贷款</div>
           </div>
-
-          <div style="padding:14px;border:1px dashed var(--line);border-radius:10px;background:#fafafa;text-align:center;">
-            <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">🤖 数字化协同 · 5%（贯穿全周期，满宽卡）</div>
-            <div style="font-size:11px;color:var(--muted);">AI工具使用、数据复核、反馈迭代</div>
+          <div class="dim-card">
+            <div class="dim-card-top"><div class="dim-card-name">💬 带看谈判</div><div class="dim-card-weight">20%</div></div>
+            <div class="dim-card-desc">表达沟通 · 异议处理 · 价格谈判</div>
+          </div>
+          <div class="dim-card">
+            <div class="dim-card-top"><div class="dim-card-name">📝 交易履约</div><div class="dim-card-weight">15%</div></div>
+            <div class="dim-card-desc">流程把控 · 合同风险 · 全程指导</div>
+          </div>
+          <div class="dim-card">
+            <div class="dim-card-top"><div class="dim-card-name">🤝 售后复购</div><div class="dim-card-weight">10%</div></div>
+            <div class="dim-card-desc">主动关怀 · 复购引导 · 转介绍</div>
+          </div>
+          <div class="dim-card full">
+            <div class="dim-card-top"><div class="dim-card-name">🤖 数字化协同（贯穿全周期）</div><div class="dim-card-weight">5%</div></div>
+            <div class="dim-card-desc">AI 工具使用 · 数据复核 · 反馈迭代 · 满宽卡</div>
           </div>
         </div>
       </div>
 
-      <div class="result-panel" style="margin-top:24px;border-color:var(--gold);">
-        <div class="result-body">
-          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
-            <div style="flex:1;padding:14px;background:var(--gold-bg);border-radius:10px;border:1px solid var(--gold);">
-              <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px;">📌 Phase 1</div>
-              <div style="font-size:13px;color:var(--ink);">共用 quiz_v3.json 一套 35 题 · 权重/描述/岗位名随选择变</div>
-            </div>
-            <div style="flex:1;padding:14px;background:var(--bg);border-radius:10px;">
-              <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;">⏳ Phase 2</div>
-              <div style="font-size:13px;color:var(--body);">每个岗位独立 35 题 · 新增岗位=写 JSON + 填内容</div>
-            </div>
-          </div>
-          <div style="font-size:12px;color:var(--muted);">
-            ✅ 数据结构已预留：<code style="background:var(--bg);padding:1px 4px;border-radius:3px;">/data/v3/quiz_{position_id}.json</code> 优先读岗位专属，不存在 fallback 到 quiz.json
-          </div>
-        </div>
+      <div class="principles" style="border-style:solid;">
+        <div class="principles-title">Implementation Plan · 多岗位题库策略</div>
+        <ol class="principles-list">
+          <li><strong>Phase 1</strong>：交易服务 3 岗位（买卖 / 新房 / 租赁）共用 quiz_v3.json 一套 35 题，切换仅影响权重/描述/岗位名</li>
+          <li><strong>Phase 2</strong>：为每个岗位生成独立 35 题（quiz_BROKER.json / quiz_NEW_HOME.json / quiz_RENT.json），care-test 优先读岗位专属，不存在则 fallback</li>
+          <li><strong>新增岗位</strong> = 写一份 JSON 配置（dimensions + quiz + practice_scenes + question_map），无需改代码</li>
+        </ol>
       </div>
     </div>
   </div>
 
-  <!-- ============== 状态 6：以后再来（二次访问）============== -->
-  <div class="stage-content" id="state-return">
-    <div class="ws-main">
-      <div class="greet-bar">
-        <div class="greet-hi">晚上好，李师傅</div>
-        <div class="greet-main">买卖经纪人 · 北京 · 上次测评综合 <strong>82 分</strong> <span class="greet-badge">7 天前测的</span></div>
-        <div class="greet-sub">
-          你的短板：💬 带看谈判 78 分（低于 TOP 10% 门槛 2 分）· 
-          继续练 → 场景「客户挑楼层毛病，其实是嫌贵」
+  <!-- ===== State 6: return ===== -->
+  <div class="panel" id="state-return">
+    <div class="main">
+      <div class="return-greet">
+        <div class="return-hi">Good evening</div>
+        <div class="return-main">李师傅 · 买卖经纪人 · 北京</div>
+        <div class="return-sub">
+          上次测评综合 <strong style="color:var(--gold);">82 分</strong> <span class="badge">7 天前</span>
+          · 你的待提升维度：<span class="weak">带看谈判 78 分</span>
         </div>
       </div>
 
-      <div class="search-hero">
-        <h1 class="search-title" style="font-size:22px;">今天想做什么？</h1>
-        <div class="search-box">
-          <input class="search-input" type="text" placeholder="继续搜问题..." />
-          <button class="search-btn">搜一下</button>
+      <div class="search-block" style="margin-bottom:28px;">
+        <div class="search-headline" style="font-size:20px;margin-bottom:18px;">今天想做什么？</div>
+        <div class="search-field">
+          <input type="text" placeholder="继续搜问题..." />
+          <button class="search-submit">搜索</button>
         </div>
       </div>
 
-      <div class="result-panel fade-in">
-        <div class="result-body">
-          <div class="result-section-title">📌 你的能力总览</div>
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:28px;">
-            <div style="text-align:center;padding:14px 6px;background:var(--bg);border-radius:10px;">
-              <div style="font-size:18px;margin-bottom:4px;">📣</div>
-              <div style="font-size:18px;font-weight:700;color:var(--green);">85</div>
-              <div style="font-size:10px;color:var(--muted);">获客触达</div>
-            </div>
-            <div style="text-align:center;padding:14px 6px;background:var(--bg);border-radius:10px;">
-              <div style="font-size:18px;margin-bottom:4px;">👁️</div>
-              <div style="font-size:18px;font-weight:700;color:var(--green);">93</div>
-              <div style="font-size:10px;color:var(--muted);">需求洞察</div>
-            </div>
-            <div style="text-align:center;padding:14px 6px;background:var(--bg);border-radius:10px;">
-              <div style="font-size:18px;margin-bottom:4px;">📐</div>
-              <div style="font-size:18px;font-weight:700;color:var(--green);">86</div>
-              <div style="font-size:10px;color:var(--muted);">专业方案</div>
-            </div>
-            <div style="text-align:center;padding:14px 6px;background:var(--gold-bg);border-radius:10px;border:1px solid var(--gold);">
-              <div style="font-size:18px;margin-bottom:4px;">💬</div>
-              <div style="font-size:18px;font-weight:700;color:var(--green);">78 ⚡</div>
-              <div style="font-size:10px;color:var(--green);font-weight:600;">带看谈判 · 短板</div>
-            </div>
-            <div style="text-align:center;padding:14px 6px;background:var(--bg);border-radius:10px;">
-              <div style="font-size:18px;margin-bottom:4px;">📝</div>
-              <div style="font-size:18px;font-weight:700;color:var(--green);">92</div>
-              <div style="font-size:10px;color:var(--muted);">交易履约</div>
-            </div>
-            <div style="text-align:center;padding:14px 6px;background:var(--bg);border-radius:10px;">
-              <div style="font-size:18px;margin-bottom:4px;">🤝</div>
-              <div style="font-size:18px;font-weight:700;color:var(--green);">88</div>
-              <div style="font-size:10px;color:var(--muted);">售后复购</div>
-            </div>
-            <div style="text-align:center;padding:14px 6px;background:var(--bg);border-radius:10px;">
-              <div style="font-size:18px;margin-bottom:4px;">🤖</div>
-              <div style="font-size:18px;font-weight:700;color:var(--green);">75</div>
-              <div style="font-size:10px;color:var(--muted);">数字化协同</div>
-            </div>
+      <div style="font-size:12px;font-weight:600;color:var(--ink-4);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:16px;">你的 7 维能力分布 · 最近一次全量测评</div>
+      <div class="dim-score-grid">
+        <div class="dim-score-cell">
+          <div class="dim-score-num">93</div>
+          <div class="dim-score-label">需求洞察</div>
+        </div>
+        <div class="dim-score-cell">
+          <div class="dim-score-num">92</div>
+          <div class="dim-score-label">交易履约</div>
+        </div>
+        <div class="dim-score-cell">
+          <div class="dim-score-num">88</div>
+          <div class="dim-score-label">售后复购</div>
+        </div>
+        <div class="dim-score-cell">
+          <div class="dim-score-num">86</div>
+          <div class="dim-score-label">专业方案</div>
+        </div>
+        <div class="dim-score-cell">
+          <div class="dim-score-num">85</div>
+          <div class="dim-score-label">获客触达</div>
+        </div>
+        <div class="dim-score-cell low">
+          <div class="dim-score-num">78</div>
+          <div class="dim-score-label">带看谈判 ⚡</div>
+        </div>
+        <div class="dim-score-cell">
+          <div class="dim-score-num">75</div>
+          <div class="dim-score-label">数字化协同</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div class="section-head-bar"></div>
+        <div class="section-head-text">继续提升你的带看谈判</div>
+        <div class="section-head-meta">7 天前测的 · 距 TOP 10% 差 2 分</div>
+      </div>
+      <div class="next-grid">
+        <div class="next-cell">
+          <div class="next-cell-emoji">🎭</div>
+          <div>
+            <div class="next-cell-title">场景练习</div>
+            <div class="next-cell-desc">客户挑楼层毛病其实是嫌贵 · AI 模拟对话</div>
           </div>
-
-          <div class="result-section-title">⚡ 继续提升你的短板</div>
-          <div class="next-grid">
-            <div class="next-card">
-              <div class="next-card-emoji">🎭</div>
-              <div class="next-card-text">
-                <strong>场景练习 · 带看谈判</strong>
-                <span>客户挑楼层毛病，其实是嫌贵 · AI 模拟对话</span>
-              </div>
-            </div>
-            <div class="next-card">
-              <div class="next-card-emoji">📚</div>
-              <div class="next-card-text">
-                <strong>核心课 · 带看谈判入门</strong>
-                <span>90 分钟 · 3-4 节 · 配套小测</span>
-              </div>
-            </div>
-            <div class="next-card">
-              <div class="next-card-emoji">📝</div>
-              <div class="next-card-text">
-                <strong>专项考核 · 10 道题</strong>
-                <span>学完练完 · 验证是否掌握</span>
-              </div>
-            </div>
-            <div class="next-card">
-              <div class="next-card-emoji">🔄</div>
-              <div class="next-card-text">
-                <strong>重新测全量 35 题</strong>
-                <span>看看进步了多少 · 更新综合画像</span>
-              </div>
-            </div>
+        </div>
+        <div class="next-cell">
+          <div class="next-cell-emoji">📚</div>
+          <div>
+            <div class="next-cell-title">核心课</div>
+            <div class="next-cell-desc">《带看谈判入门》· 90 分钟 · 3-4 节</div>
+          </div>
+        </div>
+        <div class="next-cell">
+          <div class="next-cell-emoji">📝</div>
+          <div>
+            <div class="next-cell-title">专项考核</div>
+            <div class="next-cell-desc">10 道题 · 学完练完验证是否掌握</div>
+          </div>
+        </div>
+        <div class="next-cell">
+          <div class="next-cell-emoji">🔄</div>
+          <div>
+            <div class="next-cell-title">重新测全量 35 题</div>
+            <div class="next-cell-desc">看看进步了多少 · 更新综合画像</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="prototype-foot">
-    风声·聚满匠星云 · 产品原型 v3.0 · 闭环样板 · 点击左侧状态切换查看完整流程
-  </div>
+  <div class="foot">风声 · 聚满匠星云 · 服务者工作台 v3.0 原型 · 仅做交互演示，不影响生产</div>
+
 </div>
-
-<!-- 底部流程指示器 -->
-<div class="flow-indicator">
-  <span class="flow-step done">① 搜问题</span>
-  <span class="flow-arrow">→</span>
-  <span class="flow-step done">② 看方案</span>
-  <span class="flow-arrow">→</span>
-  <span class="flow-step done">③ 测短板</span>
-  <span class="flow-arrow">→</span>
-  <span class="flow-step done">④ 出报告</span>
-  <span class="flow-arrow">→</span>
-  <span class="flow-step done">⑤ 下一步引导</span>
 </div>
 
 <script>
-// 左侧状态切换
-document.querySelectorAll('.state-item').forEach(function(item) {
-  item.addEventListener('click', function() {
+document.querySelectorAll('.nav-item').forEach(function(it) {
+  it.addEventListener('click', function() {
     switchState(this.getAttribute('data-state'));
   });
 });
-
-function switchState(stateId) {
-  document.querySelectorAll('.state-item').forEach(function(i) {
-    i.classList.toggle('active', i.getAttribute('data-state') === stateId);
+function switchState(id) {
+  document.querySelectorAll('.nav-item').forEach(function(i) {
+    i.classList.toggle('active', i.getAttribute('data-state') === id);
   });
-  document.querySelectorAll('.stage-content').forEach(function(p) {
-    p.classList.toggle('active', p.id === 'state-' + stateId);
+  document.querySelectorAll('.panel').forEach(function(p) {
+    p.classList.toggle('active', p.id === 'state-' + id);
   });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
