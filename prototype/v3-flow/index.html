@@ -317,6 +317,88 @@ body {
   font-size: 11px; color: var(--ink-4);
 }
 
+/* ===== Multi-scenario card ===== */
+.scenario-cards-wrap { margin-bottom: 28px; }
+.scenario-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 14px;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+.scenario-card.open { border-color: var(--gold); box-shadow: 0 2px 12px rgba(184,148,60,0.08); }
+.scenario-head {
+  padding: 16px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  cursor: pointer;
+  background: var(--surface);
+  transition: background 0.15s;
+  user-select: none;
+}
+.scenario-card.open .scenario-head { background: var(--gold-bg); }
+.scenario-head-icon {
+  width: 28px; height: 28px;
+  background: var(--primary);
+  border-radius: var(--radius-sm);
+  display: grid; place-items: center;
+  color: var(--gold);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.scenario-card.open .scenario-head-icon { background: var(--ink-1); }
+.scenario-head-main { flex: 1; min-width: 0; }
+.scenario-head-title {
+  font-size: 14px; font-weight: 700;
+  color: var(--ink-1);
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+.scenario-card.open .scenario-head-title { color: var(--ink-1); }
+.scenario-head-meta {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  font-size: 11px; color: var(--ink-4);
+}
+.scenario-head-meta .sc-dim {
+  background: var(--primary-bg);
+  color: var(--primary);
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+.scenario-head-meta .sc-count { font-family: var(--font-mono); }
+.scenario-head-meta .sc-id { font-family: var(--font-mono); opacity: 0.6; }
+.scenario-chevron {
+  font-size: 18px;
+  color: var(--ink-4);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.scenario-card.open .scenario-chevron { transform: rotate(90deg); color: var(--gold); }
+
+.scenario-body {
+  display: none;
+  padding: 20px;
+  animation: fadeSlide 0.25s ease;
+}
+.scenario-card.open .scenario-body { display: block; }
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Solution methodology line (compact) */
+.solution-line {
+  font-size: 13px; color: var(--ink-3);
+  padding: 10px 14px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--ink-6);
+  margin-bottom: 14px;
+}
+
 /* ===== State 2: search result ===== */
 .result-card {
   background: var(--card);
@@ -1025,24 +1107,28 @@ body {
         </div>
       </div>
 
-      <div class="result-card">
-        <!-- locator -->
-        <div class="locator">
-          <div class="locator-badge">🎯</div>
-          <div>
-            <div class="locator-label">Capability Match</div>
-            <div class="locator-title">定位到 <span class="dim">带看谈判</span> · 异议处理</div>
-            <div class="locator-ref"><span class="cap">CAP-SKILL-101</span> 客户异议处理 · 标准能力条目</div>
-          </div>
-        </div>
+      <div style="font-size:12px;font-weight:600;color:var(--ink-4);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px;">
+        命中 <span style="color:var(--ink-1);">4</span> 个高频问题 · 按出现频率排序 · 点击展开看话术
+      </div>
 
-        <div class="result-body">
-          <!-- Primary: speech variants -->
-          <div class="section-head">
-            <div class="section-head-bar"></div>
-            <div class="section-head-text">现在能发的话术（复制即用）</div>
-            <div class="section-head-meta">3 个版本 · 按客户类型</div>
+      <!-- ========== 场景 1：最贵了 ========== -->
+      <div class="scenario-card open">
+        <div class="scenario-head" onclick="this.parentElement.classList.toggle('open')">
+          <div class="scenario-head-icon">💬</div>
+          <div class="scenario-head-main">
+            <div class="scenario-head-title">客户说"太贵了"怎么办？</div>
+            <div class="scenario-head-meta">
+              <span class="sc-dim">带看谈判</span>
+              <span class="sc-id">CAP-SKILL-101</span>
+              <span class="sc-count">4 个话术版本</span>
+              <span>· 4 个相关工具</span>
+            </div>
           </div>
+          <div class="scenario-chevron">›</div>
+        </div>
+        <div class="scenario-body">
+          <div class="solution-line">先共情接住情绪 → 给客观数据支撑 → 引导说出真实顾虑（真缺钱？觉得不值？想压价？）</div>
+
           <div class="speech-list">
             <div class="speech-variant">
               <div class="speech-variant-head">
@@ -1050,73 +1136,243 @@ body {
                 <div class="speech-variant-tag">讲数据 · 讲对比</div>
               </div>
               <div class="speech-variant-body">
-                "李哥您说的隔壁 480 万我也了解过，但那套在 6 楼没电梯、朝北、满五唯一还差 2 个月。这套在中间楼层、南北通透、业主急售价格已经让了 15 万。您看要不咱约业主当面再谈谈？"
+                "张哥您说的隔壁小区 480 万那套我知道——6 楼没电梯、朝北、满五唯一还差 2 个月。咱们这套中间楼层、南北通透、业主急售价格已经让了 15 万。我觉得主要是位置您可能觉得偏了点？要不我给您对比下两个小区近 3 个月的成交记录？"
               </div>
-              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓';this.classList.add('copied')">一键复制</button>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓'">一键复制</button>
             </div>
-
             <div class="speech-variant">
               <div class="speech-variant-head">
                 <div class="speech-variant-label">版本 B · 感性客户</div>
-                <div class="speech-variant-tag">先共情 · 再引导</div>
+                <div class="speech-variant-tag">先共情 · 拉近距离</div>
               </div>
               <div class="speech-variant-body">
-                "李哥我特别理解您的感受，520 万确实不是小数。这几天带您看下来，感觉您对这套房子是真心喜欢的，是不是主要是价格这块儿有点犹豫？您跟我说个实在数，我拼尽全力帮您争取。"
+                "李姐我特别理解您的感受，520 万确实不是小数，换我买房也得掂量掂量。这几天带您看下来，感觉您对这套是真心喜欢的——是不是主要是价格这块儿有点犹豫？您跟我说个实在数，我拼尽全力帮您争取。"
               </div>
-              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓';this.classList.add('copied')">一键复制</button>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓'">一键复制</button>
             </div>
-
             <div class="speech-variant">
               <div class="speech-variant-head">
                 <div class="speech-variant-label">版本 C · 爱面子客户</div>
                 <div class="speech-variant-tag">给台阶 · 降焦虑</div>
               </div>
               <div class="speech-variant-body">
-                "李哥我跟您说句实在的，这价格真不贵——这套是整个小区性价比最高的一套了。您能看中这套眼光真不错。这样，您今天给个痛快话，我帮您跟业主砍到 510 万，差的那 10 万我来贴点，咱就把合同签了。"
+                "张哥我跟您说句实在的，这价格真不贵——这个户型在望京板块真没有比这套性价比高的了。您能看中这套眼光真不错。这样，您今天给个痛快话，我帮您跟业主砍到 510 万，差的那 10 万我来贴点，咱就把合同签了。"
               </div>
-              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓';this.classList.add('copied')">一键复制</button>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓'">一键复制</button>
+            </div>
+            <div class="speech-variant">
+              <div class="speech-variant-head">
+                <div class="speech-variant-label">版本 D · 刚需客户</div>
+                <div class="speech-variant-tag">直接 · 帮想办法</div>
+              </div>
+              <div class="speech-variant-body">
+                "王哥我明白，首付确实压得紧。520 万这套是好，但咱们能不能退一步——旁边那个小区 490 万的两居室您考虑吗？楼层差点、装修旧点，但总价差 30 万，首付能少掏 9 万多。我下午就能带您过去看。"
+              </div>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓'">一键复制</button>
             </div>
           </div>
 
-          <!-- Secondary: tools + knowledge -->
-          <div class="section-head">
-            <div class="section-head-bar"></div>
-            <div class="section-head-text">相关工具 · 知识点</div>
-          </div>
           <div class="secondary">
             <div class="secondary-col">
               <div class="secondary-title">Tools</div>
-              <div class="secondary-item">📎 异议处理 36 招 <span class="secondary-item-arrow">→</span></div>
               <div class="secondary-item">📊 小区近 3 个月成交记录 <span class="secondary-item-arrow">→</span></div>
               <div class="secondary-item">📝 带看话术模板库（23 套）<span class="secondary-item-arrow">→</span></div>
               <div class="secondary-item">🧮 议价计算器 <span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">📎 异议处理 36 招 <span class="secondary-item-arrow">→</span></div>
             </div>
             <div class="secondary-col">
               <div class="secondary-title">Knowledge</div>
-              <div class="secondary-item">📖 议价心理学：为什么客户说"贵"？ <span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">📖 议价心理学：客户说"贵"背后是什么 <span class="secondary-item-arrow">→</span></div>
               <div class="secondary-item">📖 数据谈判法：用成交记录说话 <span class="secondary-item-arrow">→</span></div>
-              <div class="secondary-item">📖 如何识别客户的真实预算 <span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">📖 如何识别客户真实预算 <span class="secondary-item-arrow">→</span></div>
             </div>
           </div>
 
-          <!-- Minimal principles (dry methodology, de-prioritized) -->
-          <div class="principles">
-            <div class="principles-title">Principle · 异议应对三步法</div>
-            <ol class="principles-list">
-              <li>先共情，接住客户情绪，不让他觉得你在推销</li>
-              <li>给数据，用同小区/同户型/同楼层的近期成交记录说话</li>
-              <li>再提问，引导客户说出真实顾虑（是真缺钱？还是觉得不值？）</li>
-            </ol>
-          </div>
-
-          <!-- Soft hook for assessment — last, not first -->
           <div class="hook-soft">
             <div class="hook-soft-emoji">🧩</div>
             <div class="hook-soft-copy">
               <div class="hook-soft-title">经常遇到这类异议？</div>
-              <div class="hook-soft-desc">花 2 分钟测一下你的带看谈判能力，5 道专项情景题 · 对标 TOP 10% 经纪人</div>
+              <div class="hook-soft-desc">测一下你的带看谈判能力，5 道专项情景题 · 对标 TOP 10%</div>
             </div>
             <button class="hook-soft-cta" onclick="switchState('quiz')">专项 5 题 →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 场景 2：回去商量 ========== -->
+      <div class="scenario-card">
+        <div class="scenario-head" onclick="this.parentElement.classList.toggle('open')">
+          <div class="scenario-head-icon">👁️</div>
+          <div class="scenario-head-main">
+            <div class="scenario-head-title">客户说"回去商量一下"怎么办？</div>
+            <div class="scenario-head-meta">
+              <span class="sc-dim">需求洞察</span>
+              <span class="sc-id">CAP-SKILL-202</span>
+              <span class="sc-count">3 个话术版本</span>
+            </div>
+          </div>
+          <div class="scenario-chevron">›</div>
+        </div>
+        <div class="scenario-body">
+          <div class="solution-line">肯定客户（买房是大事）→ 挖真实顾虑（您跟我说我好准备材料）→ 留钩子（您老婆最关心什么？）</div>
+          <div class="speech-list">
+            <div class="speech-variant">
+              <div class="speech-variant-head">
+                <div class="speech-variant-label">版本 A · 真要商量</div>
+                <div class="speech-variant-tag">支持 · 帮忙准备</div>
+              </div>
+              <div class="speech-variant-body">
+                "应该的哥！买房是大事，肯定得跟老婆商量。您跟我说，她主要关心什么？我好准备点材料——学区？还是户型？或者我帮您拍几张房子细节照片，您回去给她看看？"
+              </div>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓'">一键复制</button>
+            </div>
+            <div class="speech-variant">
+              <div class="speech-variant-head">
+                <div class="speech-variant-label">版本 B · 假商量</div>
+                <div class="speech-variant-tag">点破 · 给安全感</div>
+              </div>
+              <div class="speech-variant-body">
+                "哈哈张姐我懂，'跟家人商量'有时候是'我自己还没想好'对吧？没事，您跟我说实话——是价格这块儿觉得贵了？还是房子本身有哪块不满意？我好帮您想想办法。"
+              </div>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓'">一键复制</button>
+            </div>
+            <div class="speech-variant">
+              <div class="speech-variant-head">
+                <div class="speech-variant-label">版本 C · 其实不喜欢</div>
+                <div class="speech-variant-tag">给台阶 · 换方向</div>
+              </div>
+              <div class="speech-variant-body">
+                "应该的李姐！您回去好好想想。不过我猜您心里可能也有想法了——您是觉得这套哪块不太合适？楼层？还是装修？您跟我说，我好给您找找别的方向。"
+              </div>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓'">一键复制</button>
+            </div>
+          </div>
+          <div class="secondary">
+            <div class="secondary-col">
+              <div class="secondary-title">Tools</div>
+              <div class="secondary-item">📅 跟进节奏表 <span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">📝 跟进话术模板 <span class="secondary-item-arrow">→</span></div>
+            </div>
+            <div class="secondary-col">
+              <div class="secondary-title">Knowledge</div>
+              <div class="secondary-item">📖 SPIN 提问框架 <span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">📖 识别客户言外之意 <span class="secondary-item-arrow">→</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 场景 3：契税多少 ========== -->
+      <div class="scenario-card">
+        <div class="scenario-head" onclick="this.parentElement.classList.toggle('open')">
+          <div class="scenario-head-icon">📐</div>
+          <div class="scenario-head-main">
+            <div class="scenario-head-title">首套房契税多少？怎么算？</div>
+            <div class="scenario-head-meta">
+              <span class="sc-dim">专业方案</span>
+              <span class="sc-id">CAP-SKILL-301</span>
+              <span class="sc-count">3 个话术版本</span>
+            </div>
+          </div>
+          <div class="scenario-chevron">›</div>
+        </div>
+        <div class="scenario-body">
+          <div class="solution-line">分情况列清楚 → 给计算公式 → 附法条依据（怕算错担责）</div>
+          <div class="speech-list">
+            <div class="speech-variant">
+              <div class="speech-variant-head">
+                <div class="speech-variant-label">版本 A · 首次购房完全不懂</div>
+                <div class="speech-variant-tag">耐心 · 一步步</div>
+              </div>
+              <div class="speech-variant-body">
+                "姐我给您算一下——首套房 90 平以下契税 1%，90 平以上 1.5%。咱们这套 89 平，网签价 450 万，契税就是 4.5 万。满五唯一免增值税和个税，税费总共就 4.5 万。我发张计算表给您，上面有法条依据，放心。"
+              </div>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓'">一键复制</button>
+            </div>
+            <div class="speech-variant">
+              <div class="speech-variant-head">
+                <div class="speech-variant-label">版本 B · 有经验要数字准</div>
+                <div class="speech-variant-tag">直接 · 给数 · 给依据</div>
+              </div>
+              <div class="speech-variant-body">
+                "王哥，这套 89 平，满五唯一，您首套：契税 4.5 万（网签价 450 万 × 1%），增值税 0，个税 0。总共 4.5 万。依据京财税〔2016〕213 号文，首套 90 平以下按 1%。需要我把计算表发您吗？"
+              </div>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓'">一键复制</button>
+            </div>
+            <div class="speech-variant">
+              <div class="speech-variant-head">
+                <div class="speech-variant-label">版本 C · 业主问卖房要交多少</div>
+                <div class="speech-variant-tag">替业主算账</div>
+              </div>
+              <div class="speech-variant-body">
+                "哥您这套满五唯一，卖房只交一个印花税，网签价的万分之 5，也就是 2250 块。其他没有了。要是找中介挂牌，中介费是成交价的 2%，比如卖 520 万就是 10.4 万。"
+              </div>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓'">一键复制</button>
+            </div>
+          </div>
+          <div class="secondary">
+            <div class="secondary-col">
+              <div class="secondary-title">Tools</div>
+              <div class="secondary-item">🧮 北京税费计算器 <span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">📋 交易知识手册 <span class="secondary-item-arrow">→</span></div>
+            </div>
+            <div class="secondary-col">
+              <div class="secondary-title">Knowledge</div>
+              <div class="secondary-item">📖 京财税〔2016〕213 号 <span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">📖 满五唯一 vs 满二 <span class="secondary-item-arrow">→</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 场景 4：资金监管 ========== -->
+      <div class="scenario-card">
+        <div class="scenario-head" onclick="this.parentElement.classList.toggle('open')">
+          <div class="scenario-head-icon">📝</div>
+          <div class="scenario-head-main">
+            <div class="scenario-head-title">资金监管安全吗？钱打给谁？</div>
+            <div class="scenario-head-meta">
+              <span class="sc-dim">交易履约</span>
+              <span class="sc-id">CAP-SKILL-501</span>
+              <span class="sc-count">2 个话术版本</span>
+            </div>
+          </div>
+          <div class="scenario-chevron">›</div>
+        </div>
+        <div class="scenario-body">
+          <div class="solution-line">明确放银行不是中介 → 讲清楚监管账户是什么 → 画清楚钱的流转路径 → 给法条依据</div>
+          <div class="speech-list">
+            <div class="speech-variant">
+              <div class="speech-variant-head">
+                <div class="speech-variant-label">版本 A · 特别谨慎客户</div>
+                <div class="speech-variant-tag">打消顾虑 · 讲流程</div>
+              </div>
+              <div class="speech-variant-body">
+                "李姐您放心！监管的钱是放在<strong>银行监管账户</strong>里的，不是中介公司账户——我一分钱都碰不到。流程：您首付打监管账户 → 银行冻结 → 过户完成 → 银行自动解冻给业主。全程有北京住建委的监管办法管着，您随时可以去银行查。"
+              </div>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓'">一键复制</button>
+            </div>
+            <div class="speech-variant">
+              <div class="speech-variant-head">
+                <div class="speech-variant-label">版本 B · 半懂不懂</div>
+                <div class="speech-variant-tag">画图式讲 · 简单明了</div>
+              </div>
+              <div class="speech-variant-body">
+                "王哥简单说：您 → 银行监管账户（冻结）→ 过户完成 → 银行自动打给业主。我和中介全程碰不到钱。监管账户密码只有银行知道，这个是住建委强制要求的，不是我们能改的。"
+              </div>
+              <button class="speech-variant-copy" onclick="this.textContent='已复制 ✓'">一键复制</button>
+            </div>
+          </div>
+          <div class="secondary">
+            <div class="secondary-col">
+              <div class="secondary-title">Tools</div>
+              <div class="secondary-item">📊 资金监管流程图 <span class="secondary-item-arrow">→</span></div>
+              <div class="secondary-item">📋 交易流程清单 <span class="secondary-item-arrow">→</span></div>
+            </div>
+            <div class="secondary-col">
+              <div class="secondary-title">Knowledge</div>
+              <div class="secondary-item">📖 《存量房资金监管办法》<span class="secondary-item-arrow">→</span></div>
+            </div>
           </div>
         </div>
       </div>
