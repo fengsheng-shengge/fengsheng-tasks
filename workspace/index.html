@@ -501,6 +501,15 @@
   <!-- 主内容 -->
   <div class="main">
 
+    <!-- v3.0：二次访问问候条（有测评记录才显示） -->
+    <div id="welcome-back-bar" style="display:none;margin-bottom:18px;padding:16px 20px;background:linear-gradient(135deg,#e8f0e9,#faf5ea);border:1px solid rgba(201,169,98,0.3);border-radius:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="font-size:14px;font-weight:700;color:#1a3d24;" id="wb-title">👋 欢迎回来，师傅</div>
+        <a href="/care-test/" style="font-size:11px;color:#1a3d24;text-decoration:none;font-weight:500;">去做完整 35 题 →</a>
+      </div>
+      <div id="wb-summary" style="font-size:12px;color:#555;line-height:1.6;"></div>
+    </div>
+
     <!-- 1. 问题入口（最核心） -->
     <div class="search-section">
       <div class="search-title">遇到客户服务的难题了？</div>
@@ -956,6 +965,57 @@
         "的7维度专项测评——10分钟出能力报告，告诉你哪里强哪里弱，该先补什么。";
       goBtn.href = "/care-test/?domain=" + domainId + "&position=" + position.position_id;
     }
+
+    // ===== v3.0：二次访问问候条 =====
+    function showWelcomeBack(){
+      var bar = document.getElementById('welcome-back-bar');
+      if(!bar) return;
+      var raw = localStorage.getItem('fs_care_profile');
+      if(!raw) return;
+
+      var profile;
+      try { profile = JSON.parse(raw); } catch(e) { return; }
+      if(!profile.avg || !profile.weakest_dim) return;
+
+      var daysAgo = 0;
+      if(profile.timestamp){
+        var diff = Date.now() - new Date(profile.timestamp).getTime();
+        daysAgo = Math.floor(diff / (1000*60*60*24));
+      }
+      var timeText = daysAgo === 0 ? '今天' : (daysAgo === 1 ? '昨天' : (daysAgo + ' 天前'));
+
+      var avg = profile.avg;
+      var sortedDims = Object.keys(avg).sort(function(a,b){ return avg[a] - avg[b]; });
+      var weakest = sortedDims[0];
+      var weakestScore = avg[weakest];
+      var secondDim = sortedDims[1] || '需求洞察';
+      var secondScore = avg[secondDim] || 50;
+
+      var modeText = profile.mode === 'focused' ? '专项' : '完整 7 维';
+
+      document.getElementById('wb-title').textContent = '👋 上次 ' + timeText + ' 做了' + modeText + '测评 · 综合 ' + profile.total + ' 分';
+      document.getElementById('wb-summary').innerHTML =
+        '🔧 最弱：<strong style="color:#c0392b;">' + weakest + ' ' + weakestScore + '分</strong>' +
+        '　·　次弱：<strong style="color:#e67e22;">' + secondDim + ' ' + secondScore + '分</strong>' +
+        '<br>' +
+        '👉 <a href="#" onclick="document.querySelector(\'.search-input\').value=\'' + getKeyword(weakest) + '\';document.querySelector(\'.search-btn\').click();return false;" style="color:#1a3d24;font-weight:600;text-decoration:none;">搜"' + weakest + '"的话术 →</a>' +
+        '　·　' +
+        '<a href="/scene/?dim=' + (getDimId(weakest) || 4) + '" style="color:#1a3d24;font-weight:500;text-decoration:none;">🎭 练场景</a>';
+
+      bar.style.display = 'block';
+    }
+
+    function getDimId(name){
+      var m = {'获客触达':1,'需求洞察':2,'专业方案':3,'带看谈判':4,'交易履约':5,'售后复购':6,'数字化协同':7};
+      return m[name];
+    }
+    function getKeyword(dim){
+      var m = {'获客触达':'怎么获客','需求洞察':'客户不信任怎么办','专业方案':'契税怎么算','带看谈判':'客户说太贵了','交易履约':'资金监管安全吗','售后复购':'老客户回访','数字化协同':'AI能帮我做什么'};
+      return m[dim] || '客户嫌贵';
+    }
+
+    // 启动时（两个 fetch 都回来了之后）显示问候条
+    setTimeout(showWelcomeBack, 600);
   })();
   </script>
 
