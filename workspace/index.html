@@ -177,6 +177,50 @@
     font-weight: 600;
     cursor: pointer;
   }
+
+  /* ===== Search result panel ===== */
+  .result-panel { display: none; margin-top: 18px; animation: fadeIn 0.3s ease; }
+  .result-panel.show { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  .result-hint { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
+  .result-hint span { color: var(--ink); }
+  .scenario-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; overflow: hidden; transition: all 0.2s; }
+  .scenario-card.open { border-color: var(--gold); box-shadow: 0 2px 12px rgba(201,169,98,0.1); }
+  .scenario-head { padding: 14px 18px; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; background: #fafaf7; transition: background 0.15s; user-select: none; }
+  .scenario-card.open .scenario-head { background: var(--gold-bg); }
+  .scenario-icon { width: 28px; height: 28px; background: var(--primary); border-radius: 6px; display: grid; place-items: center; color: var(--gold); font-size: 13px; flex-shrink: 0; }
+  .scenario-main { flex: 1; min-width: 0; }
+  .scenario-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 3px; line-height: 1.4; }
+  .scenario-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: var(--muted); }
+  .scenario-meta .sc-dim { background: var(--primary-bg); color: var(--primary); padding: 1px 8px; border-radius: 3px; font-weight: 500; }
+  .scenario-chevron { font-size: 18px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+  .scenario-card.open .scenario-chevron { transform: rotate(90deg); color: var(--gold); }
+  .scenario-body { display: none; padding: 14px 18px 18px; border-top: 1px solid var(--line); }
+  .scenario-card.open .scenario-body { display: block; }
+  .solution-line { font-size: 13px; color: var(--body); padding: 8px 12px; background: #fafaf7; border-radius: 6px; border-left: 3px solid var(--muted); margin-bottom: 12px; }
+  .speech-list { margin-bottom: 14px; }
+  .speech-variant { background: #fafaf7; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; position: relative; }
+  .speech-variant-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .speech-variant-label { font-size: 12px; font-weight: 600; color: var(--ink); }
+  .speech-variant-tag { font-size: 10px; color: var(--primary); background: var(--primary-bg); padding: 2px 8px; border-radius: 3px; font-weight: 500; }
+  .speech-variant-body { font-size: 13px; line-height: 1.75; color: var(--body); background: var(--card); border-left: 3px solid var(--gold); padding: 10px 12px; border-radius: 0 6px 6px 0; }
+  .speech-variant-copy { position: absolute; bottom: 10px; right: 12px; font-size: 11px; font-weight: 500; color: var(--primary); background: var(--primary-bg); border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: all 0.15s; }
+  .speech-variant-copy:hover { background: var(--primary); color: #fff; }
+  .secondary-row { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+  .secondary-col { flex: 1; padding: 12px 14px; }
+  .secondary-col:first-child { border-right: 1px solid var(--line); }
+  .secondary-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
+  .secondary-item { font-size: 13px; color: var(--body); padding: 3px 0; cursor: pointer; }
+  .secondary-item:hover { color: var(--primary); }
+  .hook-soft { display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: var(--bg); border: 1px dashed var(--line); border-radius: 8px; }
+  .hook-soft-emoji { font-size: 16px; flex-shrink: 0; }
+  .hook-soft-copy { flex: 1; }
+  .hook-soft-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .hook-soft-desc { font-size: 12px; color: var(--muted); }
+  .hook-soft-cta { font-size: 12px; font-weight: 600; color: #fff; background: var(--primary); border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; }
+  .hook-soft-cta:hover { background: var(--primary-light); }
+  .empty-hint { text-align: center; padding: 30px; color: var(--muted); font-size: 13px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+
   .hot-questions {
     margin-top: 12px;
     font-size: 12px;
@@ -474,6 +518,12 @@
         <span>二手房税费明细</span>
         <span>限购政策查询</span>
       </div>
+
+      <!-- 搜索结果面板（默认隐藏） -->
+      <div class="result-panel" id="result-panel">
+        <div class="result-hint">命中 <span id="result-count">0</span> 个高频问题 · 点击展开看话术</div>
+        <div id="scenario-cards"></div>
+      </div>
     </div>
 
     <!-- 2. 按客户服务全流程找方法 -->
@@ -650,6 +700,7 @@
     var DOM_KEY = "fs_workspace_domain";
     var POS_KEY = "fs_workspace_position";
     var modelData = null;
+    var questionMap = null;
 
     // 1. 加载维度模型
     fetch("/data/v3/dimensions_multi.json")
@@ -660,6 +711,145 @@
         init();
       })
       .catch(function(){});
+
+    // 2. 加载问题拆解引擎
+    fetch("/data/v3/question_map.json")
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(data){
+        if(!data) return;
+        questionMap = data;
+        bindSearch();
+      })
+      .catch(function(){});
+
+    function bindSearch(){
+      var input = document.querySelector(".search-input");
+      var btn = document.querySelector(".search-btn");
+      var hotSpans = document.querySelectorAll(".hot-questions span");
+
+      function doSearch(){
+        var q = (input.value || "").trim();
+        if(!q || !questionMap) return;
+        var results = matchQuestions(q);
+        renderResults(results);
+      }
+
+      btn.addEventListener("click", doSearch);
+      input.addEventListener("keydown", function(e){ if(e.key === "Enter") doSearch(); });
+
+      // 热门问题点击直接搜
+      hotSpans.forEach(function(span){
+        span.addEventListener("click", function(){
+          input.value = span.textContent;
+          doSearch();
+        });
+        span.style.cursor = "pointer";
+      });
+    }
+
+    function matchQuestions(query){
+      if(!questionMap) return [];
+      var q = query.toLowerCase();
+      var scored = [];
+      questionMap.mapping.forEach(function(m){
+        var score = 0;
+        var matched = [];
+        m.keywords.forEach(function(kw){
+          if(kw.toLowerCase().indexOf(q) !== -1 || q.indexOf(kw.toLowerCase()) !== -1){
+            // 长关键词匹配加分多
+            score += kw.length >= 3 ? 3 : 2;
+            matched.push(kw);
+          }
+        });
+        // 标题里也搜一下
+        if(m.solution && m.solution.indexOf(q) !== -1) score += 1;
+        if(score > 0){
+          scored.push({ entry: m, score: score, matched: matched });
+        }
+      });
+      scored.sort(function(a, b){ return b.score - a.score; });
+      return scored.slice(0, 4);
+    }
+
+    function renderResults(results){
+      var panel = document.getElementById("result-panel");
+      var cardsWrap = document.getElementById("scenario-cards");
+      var countEl = document.getElementById("result-count");
+
+      if(results.length === 0){
+        cardsWrap.innerHTML = '<div class="empty-hint">暂未匹配到直接答案。试试换个关键词，或者去知识库搜更全面的内容 → <a href="/knowledge/" style="color:var(--primary);font-weight:600;">/knowledge/</a></div>';
+        countEl.textContent = "0";
+        panel.classList.add("show");
+        return;
+      }
+
+      countEl.textContent = results.length;
+      panel.classList.add("show");
+
+      cardsWrap.innerHTML = results.map(function(r, idx){
+        var m = r.entry;
+        var variants = m.speech_variants || [];
+        var tools = (m.tools || []).map(function(t){ return '<div class="secondary-item">' + t + ' →</div>'; }).join("");
+
+        var speechBlocks = variants.map(function(v, vi){
+          return '<div class="speech-variant">' +
+            '<div class="speech-variant-head">' +
+              '<div class="speech-variant-label">版本 ' + String.fromCharCode(65+vi) + ' · ' + v.customer_type + '</div>' +
+              '<div class="speech-variant-tag">' + (v.tone || "") + '</div>' +
+            '</div>' +
+            '<div class="speech-variant-body">' + v.text + '</div>' +
+            '<button class="speech-variant-copy" data-text="' + encodeURIComponent(v.text) + '">一键复制</button>' +
+          '</div>';
+        }).join("");
+
+        return '<div class="scenario-card ' + (idx === 0 ? "open" : "") + '">' +
+          '<div class="scenario-head" onclick="this.parentElement.classList.toggle(\'open\')">' +
+            '<div class="scenario-icon">' + getDimIcon(m.dim_id) + '</div>' +
+            '<div class="scenario-main">' +
+              '<div class="scenario-title">' + m.title + '</div>' +
+              '<div class="scenario-meta">' +
+                '<span class="sc-dim">' + m.dim_name + '</span>' +
+                '<span style="font-family:monospace;opacity:.6;">' + (m.skill_standard || "") + '</span>' +
+                '<span>' + variants.length + ' 个话术版本</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="scenario-chevron">›</div>' +
+          '</div>' +
+          '<div class="scenario-body">' +
+            '<div class="solution-line">' + m.solution + '</div>' +
+            '<div class="speech-list">' + speechBlocks + '</div>' +
+            (tools ?
+              '<div class="secondary-row"><div class="secondary-col"><div class="secondary-title">Tools</div>' + tools + '</div></div>' : ""
+            ) +
+            '<div class="hook-soft">' +
+              '<div class="hook-soft-emoji">🧩</div>' +
+              '<div class="hook-soft-copy">' +
+                '<div class="hook-soft-title">经常遇到这类问题？</div>' +
+                '<div class="hook-soft-desc">花 2 分钟测一下你的' + m.dim_name + '能力，对标 TOP 10% 经纪人</div>' +
+              '</div>' +
+              '<a class="hook-soft-cta" href="/care-test/?dim=' + m.dim_id + '">专项 5 题 →</a>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join("");
+
+      // 绑定一键复制
+      cardsWrap.querySelectorAll(".speech-variant-copy").forEach(function(btn){
+        btn.addEventListener("click", function(e){
+          e.stopPropagation();
+          var text = decodeURIComponent(btn.getAttribute("data-text"));
+          navigator.clipboard.writeText(text).then(function(){
+            btn.textContent = "已复制 ✓";
+            setTimeout(function(){ btn.textContent = "一键复制"; }, 1500);
+          });
+        });
+      });
+    }
+
+    function getDimIcon(dimId){
+      var map = { 1:"📣", 2:"👁️", 3:"📐", 4:"💬", 5:"📝", 6:"🤝", 7:"🤖" };
+      return map[dimId] || "💡";
+    }
 
     function init(){
       var tabs = document.querySelectorAll("#domain-tabs .domain-tab");
