@@ -301,7 +301,12 @@
     <div class="section-title">改善建议 TOP3</div>
     <div id="suggestions"></div>
 
-    <button class="breeder-btn" id="breeder-btn" onclick="goToBreeder()" style="display:none;margin-top:12px;width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#1a3d24, #2d5a3d);color:white;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;box-shadow:0 4px 15px rgba(102,126,234,0.35);">🤖 培养专属助理（同步我的测评结果）</button>
+    <!-- ===== v3.0：下一步引导（测完直接告诉你去哪） ===== -->
+    <div class="section-title" id="next-step-title" style="margin-top:28px;">⚡ 下一步 · 你可以去做这些</div>
+    <div id="next-step-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;"></div>
+    <a id="next-step-ask" href="/workspace/" style="display:block;text-align:center;padding:12px;background:#f7f5f0;color:#1a3d24;font-size:13px;font-weight:600;border-radius:10px;text-decoration:none;border:1px dashed #e8e4da;">🔍 还有别的问题？回去搜问题 →</a>
+
+    <button class="breeder-btn" id="breeder-btn" onclick="goToBreeder()" style="display:none;margin-top:16px;width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#1a3d24, #2d5a3d);color:white;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;box-shadow:0 4px 15px rgba(102,126,234,0.35);">🤖 培养专属助理（同步我的测评结果）</button>
     <button class="restart-btn" onclick="restart()" style="margin-top:10px;">重新测评</button>
   </div>
 </div>
@@ -351,211 +356,101 @@ var DIM_ICONS = {
   '数字化协同': '🤖'
 };
 
-// 能力题目定义（每维3题，共21题 · 每题4选项 5/4/2/1分档 · 选项顺序数据内交错+开测时随机打乱）
-var QUESTIONS = [
-  // ---- 获客触达 📣 3题 · 阶段:获客 ----
-  {id:'grow1', dim:'获客触达', stage:'获客', dimColor:'#2563eb',
-   title:'你的新客户，主要从哪些渠道来？',
-   subtitle:'渠道结构决定你淡季还有没有进线',
-   options:[
-     {text:'门店自然进线加上朋友介绍，线上偶尔发发', score:2},
-     {text:'转介绍为主，短视频/社群和网络平台也有稳定进线', score:5},
-     {text:'主要等公司分客，自己没专门做过渠道', score:1},
-     {text:'有一个跑得还行的主力渠道，加上转介绍，淡旺季有波动', score:4}
-   ]},
-  {id:'grow2', dim:'获客触达', stage:'获客', dimColor:'#2563eb',
-   title:'你的自媒体账号（抖音/小红书/视频号），现在是什么状态？',
-   subtitle:'自媒体是当下成本最低的获客场',
-   options:[
-     {text:'每周在更新，内容以房源和政策解读为主，偶尔有私信', score:4},
-     {text:'断断续续在发，主要转发房源，点赞全看心情', score:2},
-     {text:'有固定更新节奏，按栏目做内容，后台能带来咨询', score:5},
-     {text:'基本没做，或者开过号就没再管过', score:1}
-   ]},
-  {id:'grow3', dim:'获客触达', stage:'获客', dimColor:'#2563eb',
-   title:'上个月新增的意向客户里，有多少是你自己主动开发来的？',
-   subtitle:'主动开发 = 跑盘陌拜 + 自媒体获客 + 网络平台 + 老客深挖',
-   options:[
-     {text:'几乎没有，基本是公司分的和自然进店', score:1},
-     {text:'四成上下，自己主动跑和线上获客占一部分', score:4},
-     {text:'差不多三分之一，剩下的靠门店和公司分客', score:2},
-     {text:'一半以上——转介绍、自媒体私信、平台咨询都算', score:5}
-   ]},
+// ============================================================
+//  题目数据加载（v3.0：从 /data/v3/quiz.json fetch，35 题 × 7 维）
+// ============================================================
+var QUESTIONS = [];     // 运行时填充
+var quizDataRaw = null; // 保存原始 quiz.json 数据供后续用
 
-  // ---- 需求洞察 🔍 3题 · 阶段:洞察建档 ----
-  {id:'insight1', dim:'需求洞察', stage:'洞察建档', dimColor:'#0891b2',
-   title:'客户说"预算300万，三居"，你接下来做什么？',
-   subtitle:'先画人，再找房',
-   options:[
-     {text:'先追问通勤、家庭成员和换房时点，把人聊透了再筛房', score:5},
-     {text:'问清核心几项（朝向、楼层、学区）就开始匹配房源', score:4},
-     {text:'先按预算挑几套差不多的，边带看边确认', score:2},
-     {text:'先推几套价位对得上的，客户看了再说', score:1}
-   ]},
-  {id:'insight2', dim:'需求洞察', stage:'洞察建档', dimColor:'#0891b2',
-   title:'带看后客户说"再看看"，你怎么理解？',
-   subtitle:'客户嘴上的理由，往往不是真正的理由',
-   options:[
-     {text:'觉得是没看上，过两天换个房源再问一句', score:2},
-     {text:'回看带看细节，判断卡在价格、户型还是信心，约下一次', score:5},
-     {text:'那就是没兴趣，等他主动联系我', score:1},
-     {text:'换个角度再推荐两套，试探他到底是哪里不满意', score:4}
-   ]},
-  {id:'insight3', dim:'需求洞察', stage:'洞察建档', dimColor:'#0891b2',
-   title:'你手上的客户档案里，记录了哪些信息？',
-   subtitle:'档案深度 = 洞察深度',
-   options:[
-     {text:'需求和预算记得细，家庭情况和反馈大概有数', score:4},
-     {text:'主要存个电话，细节都在脑子里', score:1},
-     {text:'需求、家庭与决策链、历次带看反馈都记，翻档案就能接上', score:5},
-     {text:'预算、户型、联系方式这些基本项有，反馈记得少', score:2}
-   ]},
+// dim_id → 中文维度名（和 quiz.json 的 dim_name 对齐）
+var DIM_ID_TO_NAME = {
+  1:'获客触达', 2:'需求洞察', 3:'专业方案', 4:'带看谈判',
+  5:'交易履约', 6:'售后复购', 7:'数字化协同'
+};
 
-  // ---- 专业方案 📐 3题 · 阶段:专业方案 ----
-  {id:'pro1', dim:'专业方案', stage:'专业方案', dimColor:'#059669',
-   title:'客户问"这套房满五唯一和满二，税费差多少"，你会？',
-   subtitle:'税费贷款是专业度最硬的试金石',
-   options:[
-     {text:'手边有顺手的算法，能给个准数并讲清满五唯一的口径', score:5},
-     {text:'概念都懂，得现查资料，数字要等会儿', score:2},
-     {text:'知道怎么算，掏手机按一遍基本能给答案', score:4},
-     {text:'大概有个印象，具体数字说不上来', score:1}
-   ]},
-  {id:'pro2', dim:'专业方案', stage:'专业方案', dimColor:'#059669',
-   title:'你给客户出的置业方案，通常包含什么？',
-   subtitle:'方案完整度 = 客户决策的底气',
-   options:[
-     {text:'月供税费算得清，房源对比有，风险提示偶尔提', score:4},
-     {text:'月供、税费、资金计划和风险点都有，能横向对比两套', score:5},
-     {text:'主要是房源介绍和图片', score:1},
-     {text:'房源参数加个大概月供，税费提一句', score:2}
-   ]},
-  {id:'pro3', dim:'专业方案', stage:'专业方案', dimColor:'#059669',
-   title:'遇到没把握的政策问题（比如最新限购调整），你通常？',
-   subtitle:'专业不是什么都懂，是知道哪里能查证',
-   options:[
-     {text:'先说个范围，回头查证了再补准确答复', score:4},
-     {text:'按自己的经验给个说法，问题应该不大', score:2},
-     {text:'照之前记的老政策答，差不多', score:1},
-     {text:'查住建委/税务官方口径，确认后再答，带上出处', score:5}
-   ]},
+function convertQuiz(rawQuestions){
+  return rawQuestions.map(function(q){
+    return {
+      id: q.id,
+      dim: q.dim_name || DIM_ID_TO_NAME[q.dim_id] || '带看谈判',
+      stage: null,  // quiz.json 没 stage 字段
+      dimColor: DIM_COLORS[q.dim_name] || DIM_COLORS['带看谈判'],
+      title: 'Question ' + q.id,
+      subtitle: q.question,
+      options: q.options.map(function(text, idx){
+        return { text: text, score: idx === q.correct ? 5 : 1 };
+      }),
+      // 额外：保存原始信息供报告页用
+      _explanation: q.explanation,
+      _standard: q.standard_ref,
+      _type: q.type,
+      _dim_id: q.dim_id
+    };
+  });
+}
 
-  // ---- 带看谈判 🤝 3题 · 阶段:带看谈判 ----
-  {id:'nego1', dim:'带看谈判', stage:'带看谈判', dimColor:'#d97706',
-   title:'带看之前，你会做什么准备？',
-   subtitle:'带看的胜负，在进门之前就决定了',
-   options:[
-     {text:'提前复核实勘和房况，按这个客户的情况备一套讲法', score:5},
-     {text:'核对房源状态和钥匙，路线时间安排好', score:4},
-     {text:'确认房源在、约好时间，其他的到现场说', score:2},
-     {text:'到点带过去，边看边说', score:1}
-   ]},
-  {id:'nego2', dim:'带看谈判', stage:'带看谈判', dimColor:'#d97706',
-   title:'客户当面挑毛病压价，你的第一反应是？',
-   subtitle:'压价是流程，不是攻击',
-   options:[
-     {text:'先让一小步探探口风，谈不动就再拖一轮', score:2},
-     {text:'先接住情绪，再用可比成交和成本拆解，试探真实出价', score:5},
-     {text:'拿同小区成交价对比着讲，让步卡在权限内', score:4},
-     {text:'赶紧解释房子没那么多毛病，劝他别压太狠', score:1}
-   ]},
-  {id:'nego3', dim:'带看谈判', stage:'带看谈判', dimColor:'#d97706',
-   title:'谈判卡住、双方僵持时，你怎么推进？',
-   subtitle:'僵局需要台阶，不需要嗓门',
-   options:[
-     {text:'给双方各找个台阶，比如付款方式上做文章', score:4},
-     {text:'僵着，等谁先松口', score:1},
-     {text:'找共同利益，拆开价格之外的条件做交换', score:5},
-     {text:'再强调几遍房源优势，推一把', score:2}
-   ]},
+// 启动时加载
+fetch('/data/v3/quiz.json')
+  .then(function(r){ return r.ok ? r.json() : null; })
+  .then(function(data){
+    if(!data || !data.questions) return;
+    quizDataRaw = data;
+    QUESTIONS = convertQuiz(data.questions);
+    // URL 参数处理 + 更新 Intro 页标题
+    processUrlParams();
+  })
+  .catch(function(){});
 
-  // ---- 交易履约 📝 3题 · 阶段:交易履约 ----
-  {id:'deal1', dim:'交易履约', stage:'交易履约', dimColor:'#7c3aed',
-   title:'签合同前，你会逐条和客户过哪些内容？',
-   subtitle:'合同是零容忍环节，不是走过场',
-   options:[
-     {text:'付款节点、违约责任、时间表逐条讲，确认客户真听懂', score:5},
-     {text:'重点条款逐条念，让客户签字前再确认一遍', score:4},
-     {text:'把金额、时间这些重点念一遍', score:2},
-     {text:'客户不问就不展开了', score:1}
-   ]},
-  {id:'deal2', dim:'交易履约', stage:'交易履约', dimColor:'#7c3aed',
-   title:'交易中途出了意外（比如贷款没批下来），你会？',
-   subtitle:'意外不可怕，没预案才可怕',
-   options:[
-     {text:'把情况转达给客户，等银行反馈再说', score:2},
-     {text:'先找银行问清原因，同时想想有没有备选路子', score:4},
-     {text:'等银行那边给结论', score:1},
-     {text:'当天摸清卡点，备选方案摆上桌，进度群同步各方', score:5}
-   ]},
-  {id:'deal3', dim:'交易履约', stage:'交易履约', dimColor:'#7c3aed',
-   title:'交房验房那天，你会怎么做？',
-   subtitle:'交割的细节，决定口碑的底子',
-   options:[
-     {text:'跟着流程签字，验房有专人管', score:1},
-     {text:'水电物业逐项验、费用结清留凭证，问题当场列清单', score:5},
-     {text:'大面上过得去就签了，小问题回头微信里说', score:2},
-     {text:'按清单大致过一遍，小毛病拍照记录', score:4}
-   ]},
+// 解析 URL 参数：?dim=4（专项 5 题）/ ?domain=&position=（岗位）
+function processUrlParams(){
+  var params = new URLSearchParams(window.location.search);
+  var dimParam = params.get('dim');
+  var domainParam = params.get('domain');
+  var positionParam = params.get('position');
 
-  // ---- 售后复购 💗 3题 · 阶段:售后复购 ----
-  {id:'after1', dim:'售后复购', stage:'售后复购', dimColor:'#db2777',
-   title:'成交之后，你和客户多久联系一次？',
-   subtitle:'成交不是终点，是下一单的起点',
-   options:[
-     {text:'交房、入住、政策变动这些节点主动联系，带内容不带推销', score:5},
-     {text:'固定半年回访一次，节日发祝福', score:4},
-     {text:'逢年过节发个问候，有事才聊', score:2},
-     {text:'基本不联系，等他想起我', score:1}
-   ]},
-  {id:'after2', dim:'售后复购', stage:'售后复购', dimColor:'#db2777',
-   title:'客户入住后找你反映问题（比如漏水），你会？',
-   subtitle:'售后的一次出手，顶十次推销',
-   options:[
-     {text:'帮他判断该找谁，提醒关键注意事项', score:4},
-     {text:'推个师傅的电话，让他自己联系', score:2},
-     {text:'先帮他找对责任方和师傅，跟到修完再回访一句', score:5},
-     {text:'房子交付过了，这不在我服务范围', score:1}
-   ]},
-  {id:'after3', dim:'售后复购', stage:'售后复购', dimColor:'#db2777',
-   title:'过去一年你的成交里，老客户转介绍大概占多少？',
-   subtitle:'转介绍占比，是售后质量最诚实的镜子',
-   options:[
-     {text:'三成上下，转介绍是稳定来源之一', score:4},
-     {text:'一两成，偶尔有', score:2},
-     {text:'很少，基本靠新客', score:1},
-     {text:'接近一半，老客户主动介绍居多', score:5}
-   ]},
+  var introTitle = document.getElementById('intro-title');
+  var introSub = document.getElementById('intro-subtitle');
+  var startBtn = document.querySelector('.start-btn');
 
-  // ---- 数字化协同 🤖 3题 · 阶段:全程数字化 ----
-  {id:'ai1', dim:'数字化协同', stage:'全程数字化', dimColor:'#475569',
-   title:'你用AI工具（写方案/话术/算税费）的频率？',
-   subtitle:'AI产出 · 真人复核 · 方才发送',
-   options:[
-     {text:'每单都用，但数字和承诺都自己核过才发出去', score:5},
-     {text:'常用在写文案和话术上，关键数据自己再算一遍', score:4},
-     {text:'偶尔用，输出基本看一眼就发了', score:2},
-     {text:'没用过，或者只试了几次就弃了', score:1}
-   ]},
-  {id:'ai2', dim:'数字化协同', stage:'全程数字化', dimColor:'#475569',
-   title:'你有没有自己持续更新的知识库？',
-   subtitle:'脑子里的知识会过期，沉淀下来的才会复利',
-   options:[
-     {text:'按主题存了不少资料，隔段时间会整理', score:4},
-     {text:'攒了一些收藏和散笔记，没怎么整理', score:2},
-     {text:'有分类的笔记/知识库，定期更新，查起来很快', score:5},
-     {text:'都在脑子里，用到再想', score:1}
-   ]},
-  {id:'ai3', dim:'数字化协同', stage:'全程数字化', dimColor:'#475569',
-   title:'AI给你的方案和你的现场判断冲突时，你会？',
-   subtitle:'工具负责放大，你负责拍板',
-   options:[
-     {text:'两边对不上就多问几个人再定', score:2},
-     {text:'先按现场的来，同时把AI结果当参考校验', score:4},
-     {text:'AI算得比人细，直接用它的', score:1},
-     {text:'以现场核实为准，回头把AI那版修正掉', score:5}
-   ]}
-];
+  // 岗位信息（可选，影响显示文案）
+  if(domainParam || positionParam){
+    // 等 dimensions_multi.json 加载完显示岗位名
+    fetch('/data/v3/dimensions_multi.json')
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(dm){
+        if(!dm) return;
+        var posName = '';
+        if(positionParam){
+          for(var dk in dm.domains){
+            var pos = dm.domains[dk].positions.find(function(p){ return p.position_id === positionParam; });
+            if(pos){ posName = pos.position_name; break; }
+          }
+        }
+        if(posName && introSub){
+          introSub.textContent = posName + '的7维度专项画像——' + introSub.textContent;
+        }
+      }).catch(function(){});
+  }
+
+  // 专项模式：只加载某个维度的 5 题
+  if(dimParam){
+    var dimId = parseInt(dimParam);
+    var dimName = DIM_ID_TO_NAME[dimId] || '带看谈判';
+    // 筛选这个维度的前 5 题
+    var filtered = QUESTIONS.filter(function(q){ return q.dim === dimName; });
+    QUESTIONS = filtered.slice(0, 5);
+    if(introTitle){
+      introTitle.textContent = dimName + ' · 专项能力测评';
+    }
+    if(introSub){
+      introSub.textContent = '5 道情景题 · 2 分钟出结果 · 测完告诉你短板在哪';
+    }
+    if(startBtn){
+      startBtn.textContent = '开始专项 5 题 →';
+    }
+  }
+}
+
 
 // 能力画像映射（按最强维度归型）
 var ABILITY_PROFILES = {
@@ -889,6 +784,23 @@ function showReport() {
   // 显示培养助理按钮
   document.getElementById("breeder-btn").style.display = "block";
 
+  // === v3.0：localStorage 持久化 + 下一步引导 ===
+  try {
+    var profile = {
+      total: total,
+      avg: avg,
+      weakest_dim: lowest,
+      second_weakest: secondLowest,
+      timestamp: new Date().toISOString(),
+      question_count: QUESTIONS.length,
+      mode: QUESTIONS.length <= 7 ? 'focused' : 'full'
+    };
+    localStorage.setItem('fs_care_profile', JSON.stringify(profile));
+  } catch(e) {}
+
+  // 渲染下一步引导
+  renderNextSteps(avg, lowest, secondLowest);
+
   for (var wi = 0; wi < weakDims.length; wi++) {
     var wdim = weakDims[wi];
     var ws = avg[wdim];
@@ -1048,6 +960,78 @@ function drawRadar(avg) {
 // ============================================================
 //  重新开始
 // ============================================================
+// ============================================================
+//  v3.0：下一步引导渲染
+// ============================================================
+var DIM_TO_ID = {'获客触达':1,'需求洞察':2,'专业方案':3,'带看谈判':4,'交易履约':5,'售后复购':6,'数字化协同':7};
+var DIM_EMOJI = {'获客触达':'📣','需求洞察':'👁️','专业方案':'📐','带看谈判':'💬','交易履约':'📝','售后复购':'🤝','数字化协同':'🤖'};
+
+function renderNextSteps(avg, lowest, secondLowest){
+  var grid = document.getElementById('next-step-grid');
+  if(!grid) return;
+
+  // 两个最弱维度 → 去练 + 去搜问题
+  var dims = [lowest, secondLowest].filter(function(d){ return avg[d] !== undefined; });
+  if(dims.length === 0){ dims = DIMS.slice(0, 2); }
+
+  var cards = [];
+
+  // 每个最弱维度给 2 个入口：🎭去练 / 🔍搜问题
+  for(var i = 0; i < dims.length; i++){
+    var dim = dims[i];
+    var dimId = DIM_TO_ID[dim];
+    var emoji = DIM_EMOJI[dim] || '💡';
+    var score = avg[dim] || 0;
+    var color = score < 50 ? '#e74c3c' : (score < 70 ? '#f39c12' : '#2ecc71');
+
+    // 🎭 去练（场景练习——跳 workspace 搜问题 + 带维度参数）
+    cards.push({
+      emoji: emoji + '🎭',
+      title: dim + ' · 去练场景',
+      desc: 'AI 模拟真实客户跟你对话，练这个维度的实战',
+      href: '/scene/?dim=' + dimId,
+      color: color
+    });
+
+    // 🔍 搜问题
+    cards.push({
+      emoji: emoji + '🔍',
+      title: dim + ' · 搜问题找答案',
+      desc: '输入客户常说的话，直接给可复制的话术',
+      href: '/workspace/',
+      color: color
+    });
+  }
+
+  // 如果只有 2 个卡，补 📚 去学 + ✅ 做完整 35 题
+  if(cards.length < 4){
+    cards.push({
+      emoji: '📚',
+      title: '去学核心课',
+      desc: dims[0] + '入门 · 60-90 分钟 · 系统补强',
+      href: '/agent-academy/',
+      color: '#1a3d24'
+    });
+    cards.push({
+      emoji: '📝',
+      title: '做完整 35 题全量',
+      desc: '7 维完整画像 · 综合分 + 雷达图',
+      href: '/care-test/',
+      color: '#c9a962'
+    });
+  }
+
+  grid.innerHTML = cards.map(function(c){
+    return '<a href="' + c.href + '" target="_blank" style="display:flex;gap:10px;padding:14px;background:#fafaf7;border:1px solid #e8e4da;border-radius:10px;text-decoration:none;transition:all 0.15s;" onmouseover="this.style.borderColor=\''+c.color+'\';this.style.background=\'#fff\'" onmouseout="this.style.borderColor=\'#e8e4da\';this.style.background=\'#fafaf7\'">' +
+      '<div style="font-size:22px;flex-shrink:0;">' + c.emoji + '</div>' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:2px;">' + c.title + '</div>' +
+        '<div style="font-size:11px;color:#999;line-height:1.5;">' + c.desc + '</div>' +
+      '</div>' +
+    '</a>';
+  }).join('');
+}
+
 function restart() {
   // 如果中途退出（还没看报告），记录放弃事件
   if (currentQ > 0 && currentQ < QUESTIONS.length) {
