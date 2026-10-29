@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>经纪人作业端 · 工作台增强版</title>
+<style>
+  :root {
+    --墨绿: #1a3d24;
+    --墨绿深: #0f2817;
+    --匠星金: #c9a962;
+    --匠星金淡: #e8d9a8;
+    --米白: #faf8f4;
+    --暖灰: #6b6357;
+    --边框: #e8e3d9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #1a1a1a;
+    color: #2c2c2c;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  /* 模拟 iPad 设备框 */
+  .ipad-frame {
+    width: 900px;
+    max-width: 100%;
+    aspect-ratio: 4/3;
+    background: #000;
+    border-radius: 24px;
+    padding: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    position: relative;
+  }
+  .ipad-frame::before {
+    content: 'iPad Pro · 经纪人作业端';
+    position: absolute;
+    bottom: -32px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 2px;
+    white-space: nowrap;
+  }
+  .ipad-screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--米白);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 顶部导航 */
+  .nav {
+    background: var(--墨绿);
+    color: #fff;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+  .nav .left { display: flex; gap: 18px; align-items: center; }
+  .nav .logo { font-weight: 700; font-size: 15px; }
+  .nav .tab {
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    opacity: .65;
+  }
+  .nav .tab.active { background: rgba(201,169,98,0.25); opacity: 1; color: var(--匠星金); }
+  .nav .tab:hover { opacity: 1; }
+  .nav .right { display: flex; align-items: center; gap: 10px; }
+  .nav .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--匠星金);
+    color: var(--墨绿深);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+  }
+
+  /* 主内容区 */
+  .content {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 260px 1fr 300px;
+    overflow: hidden;
+  }
+
+  /* 左列：今日任务 + 客户列表 */
+  .sidebar {
+    background: #fff;
+    border-right: 1px solid var(--边框);
+    padding: 16px;
+    overflow-y: auto;
+  }
+  .sidebar h3 {
+    font-size: 11px;
+    color: var(--匠星金);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .task-item {
+    padding: 10px 12px;
+    background: var(--米白);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+  }
+  .task-item .time { color: var(--匠星金); font-weight: 600; font-size: 11px; }
+  .task-item .desc { color: var(--墨绿); margin-top: 2px; }
+  .task-item .tag {
+    display: inline-block;
+    font-size: 10px;
+    background: var(--匠星金);
+    color: var(--墨绿深);
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-top: 4px;
+  }
+  .task-item.priority { border-left-color: var(--匠星金); background: linear-gradient(135deg, #faf8f4, #f0e9d8); }
+
+  .customer-card {
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid var(--边框);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .customer-card:hover { border-color: var(--匠星金); }
+  .customer-card.active { border-color: var(--墨绿); background: var(--米白); }
+  .customer-card .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .customer-card .name { font-size: 13px; font-weight: 600; color: var(--墨绿); }
+  .customer-card .source {
+    font-size: 10px;
+    background: var(--匠星金淡);
+    color: var(--墨绿深);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+  .customer-card .meta {
+    font-size: 11px;
+    color: var(--暖灰);
+    margin-top: 4px;
+  }
+  .customer-card .actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 10px;
+  }
+  .customer-card .actions .a {
+    padding: 2px 6px;
+    background: var(--米白);
+    border-radius: 3px;
+    color: var(--墨绿);
+  }
+
+  /* 中列：讲解大纲 + 场景卡 */
+  .main-area {
+    padding: 16px 20px;
+    overflow-y: auto;
+  }
+
+  .ai-brief {
+    background: linear-gradient(135deg, var(--墨绿), var(--墨绿深));
+    color: #fff;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .ai-brief .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .ai-brief .head .t { font-size: 13px; font-weight: 600; }
+  .ai-brief .head .t::before { content: '🤖 '; }
+  .ai-brief .head .regen {
+    font-size: 11px;
+    background: rgba(201,169,98,0.2);
+    color: var(--匠星金);
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .ai-brief .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .ai-brief .step-item {
+    background: rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .ai-brief .step-item .n {
+    color: var(--匠星金);
+    font-weight: 700;
+    font-size: 11px;
+    min-width: 14px;
+  }
+  .ai-brief .step-item .text { flex: 1; line-height: 1.5; }
+  .ai-brief .step-item .kb-ref {
+    font-size: 10px;
+    background: rgba(201,169,98,0.15);
+    color: var(--匠星金);
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .ai-brief .behavior-tag {
+    display: inline-block;
+    font-size: 10px;
+    background: rgba(201,169,98,0.3);
+    color: var(--匠星金);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-right: 4px;
+    margin-top: 6px;
+  }
+
+  .section-title {
+    font-size: 14px;
+    color: var(--墨绿);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title .badge {
+    font-size: 10px;
+    background: var(--匠星金);
+    color: var(--墨绿深);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .scenario-card {
+    background: #fff;
+    border: 1px solid var(--边框);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .scenario-card:hover {
+    border-color: var(--匠星金);
+    box-shadow: 0 2px 12px rgba(201,169,98,0.15);
+  }
+  .scenario-card .sc-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--墨绿);
+    margin-bottom: 4px;
+  }
+  .scenario-card .sc-meta {
+    font-size: 10px;
+    color: var(--暖灰);
+    margin-bottom: 8px;
+  }
+  .scenario-card .speech {
+    font-size: 12px;
+    color: var(--文字);
+    line-height: 1.5;
+    background: var(--米白);
+    padding: 8px 10px;
+    border-radius: 6px;
+    border-left: 2px solid var(--匠星金);
+  }
+  .scenario-card .kb-link {
+    font-size: 10px;
+    color: var(--匠星金);
+    margin-top: 6px;
+    display: flex;
+    gap: 6px;
+  }
+  .scenario-card .kb-link .kb-tag {
+    background: var(--匠星金淡);
+    padding: 1px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  /* 右列：本地知识 + 复盘 */
+  .right-panel {
+    background: #fff;
+    border-left: 1px solid var(--边框);
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  .kb-block {
+    margin-bottom: 16px;
+  }
+  .kb-block h4 {
+    font-size: 11px;
+    color: var(--匠星金);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .kb-block h4 .count {
+    font-size: 10px;
+    color: var(--暖灰);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .kb-item {
+    background: var(--米白);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-left: 3px solid var(--墨绿);
+    cursor: pointer;
+  }
+  .kb-item:hover { background: var(--匠星金淡); }
+  .kb-item .k-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--墨绿);
+    margin-bottom: 4px;
+  }
+  .kb-item .k-content {
+    font-size: 11px;
+    color: var(--暖灰);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .kb-item .k-meta {
+    font-size: 10px;
+    color: var(--匠星金);
+    margin-top: 4px;
+  }
+
+  .reflection-box {
+    background: linear-gradient(135deg, #fff8f0, #fef5e7);
+    border: 1px solid #f3d0a3;
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .reflection-box h4 {
+    font-size: 12px;
+    color: #e67e22;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .reflection-box .field {
+    margin-bottom: 10px;
+  }
+  .reflection-box label {
+    display: block;
+    font-size: 10px;
+    color: var(--暖灰);
+    margin-bottom: 4px;
+  }
+  .reflection-box select, .reflection-box input, .reflection-box textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--边框);
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: inherit;
+    background: #fff;
+  }
+  .reflection-box textarea { min-height: 50px; resize: vertical; }
+  .reflection-box .submit {
+    background: var(--墨绿);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  /* 演示切换器 */
+  .demo-switcher {
+    position: fixed;
+    top: 20px; right: 20px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    z-index: 1000;
+    max-width: 240px;
+  }
+  .demo-switcher h4 { font-size: 13px; color: var(--墨绿); margin-bottom: 10px; }
+  .demo-switcher button {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background: #faf8f4;
+    border: 1px solid var(--边框);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--墨绿);
+    cursor: pointer;
+    text-align: left;
+  }
+  .demo-switcher button:hover { background: var(--匠星金淡); border-color: var(--匠星金); }
+  .nav-links { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--边框); }
+  .nav-links a { display: block; font-size: 11px; color: var(--暖灰); text-decoration: none; padding: 3px 0; }
+  .nav-links a:hover { color: var(--墨绿); }
+</style>
+</head>
+<body>
+
+<!-- 演示切换器 -->
+<div class="demo-switcher">
+  <h4>🎬 演示场景</h4>
+  <button onclick="switchCustomer('zhang')">① 张姐 · 有娃家庭（大屏留资）</button>
+  <button onclick="switchCustomer('li')">② 李先生 · 通勤刚需</button>
+  <button onclick="switchCustomer('wang')">③ 王阿姨 · 养老改善</button>
+  <div class="nav-links">
+    <a href="/design-prototype/index.html">← 回总览</a>
+    <a href="/design-prototype/bigscreen.html">← 大屏客户端</a>
+    <a href="/design-prototype/h5.html">→ 客户 H5 决策包</a>
+  </div>
+</div>
+
+<div class="ipad-frame">
+  <div class="ipad-screen">
+    <!-- 顶部导航 -->
+    <div class="nav">
+      <div class="left">
+        <div class="logo">丰晟 · 工作台</div>
+        <div class="tab active">今日接待</div>
+        <div class="tab">我的客户</div>
+        <div class="tab">带看复盘</div>
+        <div class="tab">知识底座</div>
+      </div>
+      <div class="right">
+        <span style="font-size:11px;opacity:.6;">望京南店</span>
+        <div class="avatar">小</div>
+        <span style="font-size:12px;">小李</span>
+      </div>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="content">
+
+      <!-- 左列：今日任务 + 客户 -->
+      <div class="sidebar">
+        <h3>📅 今日带看</h3>
+        <div class="task-item priority">
+          <div class="time">14:00</div>
+          <div class="desc">张姐 · 银领家园 3 号楼</div>
+          <div class="tag">大屏留资</div>
+        </div>
+        <div class="task-item">
+          <div class="time">16:30</div>
+          <div class="desc">李先生 · 金桂嘉园</div>
+          <div class="tag">老客复看</div>
+        </div>
+        <div class="task-item">
+          <div class="time">19:00</div>
+          <div class="desc">王阿姨 · 公园首府</div>
+          <div class="tag">大屏留资</div>
+        </div>
+
+        <h3 style="margin-top:18px;">👥 我的客户</h3>
+
+        <div class="customer-card active" id="customer-zhang">
+          <div class="head">
+            <div class="name">张女士</div>
+            <div class="source">大屏留资 · 10 分钟前</div>
+          </div>
+          <div class="meta">有娃家庭 · 学区刚需 · 望京南</div>
+          <div class="actions">
+            <span class="a">📍 圈了 3 小区</span>
+            <span class="a">⏱️ 停留 12 分钟</span>
+            <span class="a">❣️ 勾了银领家园</span>
+          </div>
+        </div>
+
+        <div class="customer-card" id="customer-li" onclick="switchCustomer('li')">
+          <div class="head">
+            <div class="name">李先生</div>
+            <div class="source">老客 · 跟进 3 周</div>
+          </div>
+          <div class="meta">通勤刚需 · 15 号线沿线</div>
+          <div class="actions">
+            <span class="a">已带看 2 次</span>
+            <span class="a">卡"价格"</span>
+          </div>
+        </div>
+
+        <div class="customer-card" id="customer-wang" onclick="switchCustomer('wang')">
+          <div class="head">
+            <div class="name">王阿姨</div>
+            <div class="source">大屏留资 · 昨天</div>
+          </div>
+          <div class="meta">养老改善 · 安静电梯房</div>
+          <div class="actions">
+            <span class="a">圈了公园首府</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中列：AI 讲解大纲 + 场景卡 -->
+      <div class="main-area">
+        <!-- AI 讲解大纲 -->
+        <div class="ai-brief" id="aiBrief">
+          <div class="head">
+            <div class="t">为张姐准备的讲解大纲</div>
+            <div class="regen">🔄 根据大屏行为生成</div>
+          </div>
+          <div class="steps">
+            <div class="step-item">
+              <div class="n">①</div>
+              <div class="text">开场先确认学区对口——张姐是冲实验小学来的，这是她最在意的点</div>
+              <div class="kb-ref">KB：银领家园学区</div>
+            </div>
+            <div class="step-item">
+              <div class="n">②</div>
+              <div class="text">重点讲 3 号楼——中间楼层、供暖最好（去年冬天实测 25℃）、离小区出入口近</div>
+              <div class="kb-ref">KB：供暖实测</div>
+            </div>
+            <div class="step-item">
+              <div class="n">③</div>
+              <div class="text">主动提"东边临马路偶尔有噪音"——短板不遮丑，反而建立信任</div>
+              <div class="kb-ref">KB：业主评价</div>
+            </div>
+            <div class="step-item">
+              <div class="n">④</div>
+              <div class="text">带看后自然问一句"要不要今天帮您约下复看？周六下午比较清静"</div>
+            </div>
+          </div>
+          <div>
+            <span class="behavior-tag">📍 大屏圈了 3 小区</span>
+            <span class="behavior-tag">⏱️ 停留 12 分钟</span>
+            <span class="behavior-tag">❣️ 反复点银领家园</span>
+          </div>
+        </div>
+
+        <!-- 推荐场景卡 -->
+        <div class="section-title">
+          🎯 推荐话术场景
+          <span class="badge">AI 匹配</span>
+        </div>
+        <div class="scenario-grid">
+          <div class="scenario-card">
+            <div class="sc-title">"这房学区稳吗？"</div>
+            <div class="sc-meta">需求洞察 · 学区房 · 有娃家庭</div>
+            <div class="speech">"姐我给您看教育局公示——2026 年银领家园整栋对口实验小学。去年这个政策没变、前年也没变，这是稳定对口。"</div>
+            <div class="kb-link">
+              <span class="kb-tag">📎 KB：学区公示</span>
+              <span class="kb-tag">📋 复制</span>
+            </div>
+          </div>
+          <div class="scenario-card">
+            <div class="sc-title">"冬天供暖怎么样？"</div>
+            <div class="sc-meta">专业方案 · 楼栋细节</div>
+            <div class="speech">"3 号楼中间楼层最好——我去年冬天带客户时实测过，24-26℃。1-2 层偏低 18℃，顶层西晒。我带您看中间楼层。"</div>
+            <div class="kb-link">
+              <span class="kb-tag">📎 KB：供暖实测</span>
+              <span class="kb-tag">📋 复制</span>
+            </div>
+          </div>
+          <div class="scenario-card">
+            <div class="sc-title">"这房有没有啥缺点？"</div>
+            <div class="sc-meta">带看谈判 · 短板坦诚</div>
+            <div class="speech">"姐我必须说两个——东边临马路晚高峰偶尔有噪音（关窗基本听不见），车位配比 1:0.8 回家晚了要等。但这两个在同价位学区房里已经算好的。"</div>
+            <div class="kb-link">
+              <span class="kb-tag">📎 KB：短板清单</span>
+              <span class="kb-tag">📋 复制</span>
+            </div>
+          </div>
+          <div class="scenario-card">
+            <div class="sc-title">"约下周六看可以吗？"</div>
+            <div class="sc-meta">邀约 · 强留资</div>
+            <div class="speech">"可以！我帮您约周六下午 3 点——那时候小区里清静，光线也好，能好好看看 3 号楼。我提前 15 分钟把钥匙备好，门口等您。"</div>
+            <div class="kb-link">
+              <span class="kb-tag">📋 复制</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右列：本地知识 + 复盘 -->
+      <div class="right-panel">
+        <!-- 本地知识 -->
+        <div class="kb-block">
+          <h4>
+            📚 本地知识库
+            <span class="count">银领家园 · 12 条</span>
+          </h4>
+
+          <div class="kb-item">
+            <div class="k-title">学区对口 · 实验小学</div>
+            <div class="k-content">2026 年教育局划片公示——银领家园整栋对口，步行 800m（12 分钟）...</div>
+            <div class="k-meta">来源：学区专员李姐 · 2026-09-01 · ✅ 已验证</div>
+          </div>
+          <div class="kb-item">
+            <div class="k-title">供暖实测 · 3 号楼优选</div>
+            <div class="k-content">3 号楼中间楼层供暖最好——去年冬天实测 25-26℃；1-2 层偏低 18℃...</div>
+            <div class="k-meta">来源：经纪人小王 · 带看 8 次实测</div>
+          </div>
+          <div class="kb-item">
+            <div class="k-title">物业口碑 · 保洁一般</div>
+            <div class="k-content">保安负责、门岗登记严格；但保洁一般——楼道一周才扫一次；物业费 3.5/平...</div>
+            <div class="k-meta">来源：业主访谈录 · 张女士 3-12</div>
+          </div>
+          <div class="kb-item">
+            <div class="k-title">停车情况 · 配比 1:0.8</div>
+            <div class="k-content">地下车位约 960 个，业主 1200 户。回家晚于 19:00 基本要等。有充电桩 12 个...</div>
+            <div class="k-meta">来源：物业查询 · 2026-10</div>
+          </div>
+          <div class="kb-item">
+            <div class="k-title">通勤试算 · 实时</div>
+            <div class="k-content">步行到 14 号线阜通站 500m（7 分钟）。早高峰 8:00 → 国贸 22min → 望京 SOHO 15min</div>
+            <div class="k-meta">来源：高德路线 · 实时试算</div>
+          </div>
+          <div class="kb-item" style="background:#fff8f0;border-left-color:#e67e22;">
+            <div class="k-title">⚠️ 短板清单 · 必须讲</div>
+            <div class="k-content">① 东侧临阜通东大街，晚高峰 6:30-8:00 偶有车流声；② 地下车位紧；③ 14/15 层夏天西晒</div>
+            <div class="k-meta">来源：业主共识 · 必须讲，不讲不上主推位</div>
+          </div>
+        </div>
+
+        <!-- 带看复盘 -->
+        <div class="kb-block">
+          <h4>📝 带看复盘</h4>
+          <div class="reflection-box">
+            <h4>张姐看完后 · 记一下</h4>
+            <div class="field">
+              <label>客户卡在哪一步？</label>
+              <select>
+                <option>价格犹豫</option>
+                <option>地段纠结</option>
+                <option>学区想再确认</option>
+                <option>家里人要商量</option>
+                <option>没看上这套</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>需要什么跟进？</label>
+              <textarea placeholder="例：今晚把同小区另外两套的供暖实测发给她..."></textarea>
+            </div>
+            <button class="submit">提交复盘 → 店长看板</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const briefs = {
+    zhang: {
+      title: '为张姐准备的讲解大纲',
+      steps: [
+        ['①', '开场先确认学区对口——张姐是冲实验小学来的，这是她最在意的点', 'KB：银领家园学区'],
+        ['②', '重点讲 3 号楼——中间楼层、供暖最好（去年冬天实测 25℃）、离小区出入口近', 'KB：供暖实测'],
+        ['③', '主动提"东边临马路偶尔有噪音"——短板不遮丑，反而建立信任', 'KB：业主评价'],
+        ['④', '带看后自然问一句"要不要今天帮您约下复看？周六下午比较清静"', ''],
+      ],
+      tags: ['📍 大屏圈了 3 小区', '⏱️ 停留 12 分钟', '❣️ 反复点银领家园']
+    },
+    li: {
+      title: '为李先生准备的讲解大纲',
+      steps: [
+        ['①', '开场先算通勤时间——李先生要 15 号线沿线到望京 SOHO', 'KB：通勤试算'],
+        ['②', '重点讲金桂嘉园 8 号楼——步行 600m 到望京站、电梯高层、朝南', 'KB：楼栋对比'],
+        ['③', '价格上主动说"最近同户型成交 5.2 万/平"——用数据给安全感', 'KB：成交行情'],
+        ['④', '李先生纠结"要不要等新盘"——直接对比"新盘 2 年后交房，二手现在就能住"', ''],
+      ],
+      tags: ['📍 之前来看过 2 次', '卡：价格', '意向：高']
+    },
+    wang: {
+      title: '为王阿姨准备的讲解大纲',
+      steps: [
+        ['①', '开场先关注电梯和菜场——养老最在意的两个点', 'KB：配套距离'],
+        ['②', '重点讲公园首府 5 号楼——电梯直达、步行 400m 到菜市场、小区里安静', 'KB：楼栋细节'],
+        ['③', '供暖必须讲清楚——王阿姨怕冷，这栋供暖最好（26℃）', 'KB：供暖实测'],
+        ['④', '带看时慢一点、陪她走一圈菜市场、问问日常习惯', ''],
+      ],
+      tags: ['📍 大屏圈了公园首府', '标签：养老', '⏱️ 停留 15 分钟']
+    }
+  };
+
+  function switchCustomer(key) {
+    document.querySelectorAll('.customer-card').forEach(c => c.classList.remove('active'));
+    const id = key === 'zhang' ? 'customer-zhang' : key === 'li' ? 'customer-li' : 'customer-wang';
+    document.getElementById(id).classList.add('active');
+
+    const b = briefs[key];
+    const briefEl = document.getElementById('aiBrief');
+    briefEl.querySelector('.t').textContent = b.title;
+    briefEl.querySelector('.steps').innerHTML = b.steps.map(s => `
+      <div class="step-item">
+        <div class="n">${s[0]}</div>
+        <div class="text">${s[1]}</div>
+        ${s[2] ? `<div class="kb-ref">${s[2]}</div>` : ''}
+      </div>
+    `).join('');
+    briefEl.querySelectorAll('.behavior-tag').forEach(t => t.remove());
+    b.tags.forEach(t => {
+      const span = document.createElement('span');
+      span.className = 'behavior-tag';
+      span.textContent = t;
+      briefEl.querySelector('.steps').parentElement.appendChild(span);
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>丰晟智囊团 × 门店本地居住知识库 · 产品设计 v1.0</title>
+<style>
+  :root {
+    --墨绿: #1a3d24;
+    --墨绿深: #0f2817;
+    --匠星金: #c9a962;
+    --匠星金淡: #e8d9a8;
+    --米白: #faf8f4;
+    --暖灰: #6b6357;
+    --边框: #e8e3d9;
+    --主色: #1a3d24;
+    --辅色: #c9a962;
+    --文字: #2c2c2c;
+    --次级文字: #6b6357;
+    --背景: #faf8f4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--背景);
+    color: var(--文字);
+    line-height: 1.6;
+  }
+  header {
+    background: var(--墨绿);
+    color: #fff;
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201,169,98,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  header .tag {
+    display: inline-block;
+    background: rgba(201,169,98,0.2);
+    color: var(--匠星金);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  header .subtitle {
+    font-size: 17px;
+    color: rgba(255,255,255,0.75);
+    max-width: 720px;
+  }
+  header .meta {
+    margin-top: 20px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+  }
+  nav.tabs {
+    display: flex;
+    gap: 4px;
+    background: #fff;
+    padding: 12px 40px 0;
+    border-bottom: 1px solid var(--边框);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  nav.tabs a {
+    padding: 12px 20px;
+    color: var(--暖灰);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all .2s;
+  }
+  nav.tabs a:hover { color: var(--墨绿); }
+  nav.tabs a.active {
+    color: var(--墨绿);
+    border-bottom-color: var(--匠星金);
+    font-weight: 600;
+  }
+  main { padding: 40px; max-width: 1200px; margin: 0 auto; }
+  section { margin-bottom: 56px; }
+  h2 {
+    font-size: 22px;
+    color: var(--墨绿);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  h2 .num {
+    background: var(--匠星金);
+    color: var(--墨绿深);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid var(--边框);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  /* ===== 四端卡片 ===== */
+  .four-ends {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .end-card {
+    background: #fff;
+    border: 1px solid var(--边框);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all .2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .end-card:hover {
+    border-color: var(--匠星金);
+    box-shadow: 0 4px 20px rgba(201,169,98,0.15);
+    transform: translateY(-2px);
+  }
+  .end-card .icon {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  .end-card.client .icon { background: linear-gradient(135deg,#1a3d24,#2d5a3a); }
+  .end-card.agent .icon { background: linear-gradient(135deg,#2d5a3a,#4a7c58); }
+  .end-card.h5 .icon { background: linear-gradient(135deg,#c9a962,#d8bf82); }
+  .end-card.ai .icon { background: linear-gradient(135deg,#3d5a4a,#1a3d24); }
+  .end-card h3 {
+    font-size: 16px;
+    color: var(--墨绿);
+    margin-bottom: 6px;
+  }
+  .end-card .who {
+    font-size: 12px;
+    color: var(--匠星金);
+    margin-bottom: 10px;
+    letter-spacing: .5px;
+  }
+  .end-card p {
+    font-size: 13px;
+    color: var(--暖灰);
+    line-height: 1.55;
+  }
+  .end-card .arrow {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--匠星金);
+    font-weight: 600;
+  }
+
+  /* ===== 架构图 ===== */
+  .arch-wrap {
+    background: #fff;
+    border: 1px solid var(--边框);
+    border-radius: 12px;
+    padding: 32px;
+    overflow-x: auto;
+  }
+  .arch {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr 80px 1fr;
+    gap: 0;
+    align-items: center;
+    min-width: 900px;
+  }
+  .arch-col { display: flex; flex-direction: column; gap: 12px; }
+  .arch-block {
+    background: #faf8f4;
+    border: 1px solid var(--边框);
+    border-radius: 8px;
+    padding: 12px 14px;
+    position: relative;
+  }
+  .arch-block.c-end { background: linear-gradient(135deg,#1a3d24,#2d5a3a); color: #fff; border: none; }
+  .arch-block.c-end .label { color: rgba(255,255,255,0.7); }
+  .arch-block.c-end .value { color: #fff; font-weight: 600; }
+  .arch-block.a-end { background: linear-gradient(135deg,#c9a962,#d8bf82); border: none; }
+  .arch-block.ai-core { background: linear-gradient(135deg,#2d5a3a,#1a3d24); color: #fff; border: none; text-align: center; padding: 20px; }
+  .arch-block.ai-core .big { font-size: 15px; font-weight: 700; }
+  .arch-block.ai-core .small { font-size: 12px; opacity: .7; margin-top: 4px; }
+  .arch-block .label { font-size: 11px; color: var(--暖灰); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .arch-block .value { font-size: 13px; color: var(--墨绿); font-weight: 500; }
+  .arch-arrow {
+    text-align: center;
+    font-size: 20px;
+    color: var(--匠星金);
+  }
+  .arch-arrow.ai { color: var(--墨绿); }
+
+  /* ===== 集成清单 ===== */
+  .integration-list { list-style: none; }
+  .integration-list li {
+    padding: 14px 0;
+    border-bottom: 1px dashed var(--边框);
+    display: grid;
+    grid-template-columns: 200px 1fr 120px;
+    gap: 16px;
+    align-items: start;
+  }
+  .integration-list li:last-child { border-bottom: none; }
+  .int-source {
+    font-size: 13px;
+    color: var(--匠星金);
+    font-weight: 500;
+  }
+  .int-desc { font-size: 14px; color: var(--暖灰); }
+  .int-target {
+    font-size: 12px;
+    background: var(--米白);
+    color: var(--墨绿);
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid var(--匠星金淡);
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px;
+    font-size: 12px;
+    color: var(--暖灰);
+    border-top: 1px solid var(--边框);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag">PRODUCT DESIGN · v1.0</div>
+  <h1>丰晟智囊团 × 门店本地居住知识库</h1>
+  <div class="subtitle">经纪人"遇到难题时的智囊团" —— 从知识底座到四端闭环，让单店级的本地深度变成可复用的接待能力</div>
+  <div class="meta">设计稿 · 2026-10-29 · 生哥审阅</div>
+</header>
+
+<nav class="tabs">
+  <a href="/design-prototype/index.html" class="active">总览</a>
+  <a href="/design-prototype/bigscreen.html">大屏客户端</a>
+  <a href="/design-prototype/agent.html">经纪人作业端</a>
+  <a href="/design-prototype/h5.html">客户 H5 决策包</a>
+  <a href="/design-prototype/digital-employee.html">数字员工架构</a>
+</nav>
+
+<main>
+
+<!-- ============ 四端入口 ============ -->
+<section>
+  <h2><span class="num">1</span>四端核心入口（点击看原型）</h2>
+  <div class="four-ends">
+    <a class="end-card client" href="bigscreen.html">
+      <div class="icon">🖥️</div>
+      <div class="who">消费者 · 进店触摸大屏</div>
+      <h3>大屏客户端</h3>
+      <p>AI 迎宾 → 地图五层探索 → 客户分型自动呈现 → 留资三档渐进</p>
+      <div class="arrow">→ 看原型</div>
+    </a>
+    <a class="end-card agent" href="agent.html">
+      <div class="icon">💼</div>
+      <div class="who">经纪人 · iPad / 手机作业端</div>
+      <h3>经纪人作业端</h3>
+      <p>本地知识一键调出 → AI 讲解大纲 → 带看复盘 → 专属话术推荐</p>
+      <div class="arrow">→ 看原型</div>
+    </a>
+    <a class="end-card h5" href="h5.html">
+      <div class="icon">📱</div>
+      <div class="who">消费者 · 扫码带走的决策包</div>
+      <h3>客户 H5</h3>
+      <p>信任包（片区/小区/房源）→ 经纪人名片 → AI 顾问随时问</p>
+      <div class="arrow">→ 看原型</div>
+    </a>
+    <a class="end-card ai" href="digital-employee.html">
+      <div class="icon">🤖</div>
+      <div class="who">数字员工 · AI 核心能力</div>
+      <h3>数字员工训练体系</h3>
+      <p>资深经纪人 SOP 复刻 → 本地知识底座 → 对话式需求探寻 → 留资引导</p>
+      <div class="arrow">→ 看架构</div>
+    </a>
+  </div>
+</section>
+
+<!-- ============ 架构图 ============ -->
+<section>
+  <h2><span class="num">2</span>四端集成架构</h2>
+  <div class="arch-wrap">
+    <div class="arch">
+      <!-- 左列：消费者触达 -->
+      <div class="arch-col">
+        <div class="arch-block c-end">
+          <div class="label">客户端入口</div>
+          <div class="value">大屏触摸</div>
+        </div>
+        <div class="arch-block c-end">
+          <div class="label">带走端</div>
+          <div class="value">客户 H5 决策包</div>
+        </div>
+        <div class="arch-block c-end">
+          <div class="label">远程触达</div>
+          <div class="value">AI 顾问（决策包内嵌）</div>
+        </div>
+      </div>
+
+      <div class="arch-arrow ai">⇄</div>
+
+      <!-- 中列：AI 数字员工核心 -->
+      <div class="arch-col">
+        <div class="arch-block ai-core">
+          <div class="big">🤖 数字员工</div>
+          <div class="small">资深经纪人能力复刻</div>
+        </div>
+        <div class="arch-block ai-core" style="background:linear-gradient(135deg,#1a3d24,#3d5a4a);">
+          <div class="small" style="opacity:.7;">训练素材来源</div>
+          <div class="big" style="font-size:13px;margin-top:6px;">知识底座 + 五层本地知识库<br>讲解 SOP + question_map 话术库</div>
+        </div>
+        <div class="arch-block ai-core" style="background:linear-gradient(135deg,#2d5a3a,#1a3d24);">
+          <div class="small" style="opacity:.7;">核心能力</div>
+          <div class="big" style="font-size:13px;margin-top:6px;">迎宾开场 · 需求探寻<br>知识呈现 · 留资引导</div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">⇄</div>
+
+      <!-- 右列：经纪人侧 -->
+      <div class="arch-col">
+        <div class="arch-block a-end">
+          <div class="label">经纪人作业端</div>
+          <div class="value">工作台（增强版）</div>
+        </div>
+        <div class="arch-block a-end">
+          <div class="label">AI 辅助</div>
+          <div class="value">讲解大纲 + 话术推荐</div>
+        </div>
+        <div class="arch-block a-end">
+          <div class="label">店长看板</div>
+          <div class="value">带看复盘 + 转化数据</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:20px;padding-top:20px;border-top:1px dashed var(--边框);font-size:12px;color:var(--暖灰);text-align:center;">
+      底层：Cloudflare Worker API · 知识底座 + question_map 话术库 · 五层本地知识库数据层
+    </div>
+  </div>
+</section>
+
+<!-- ============ 集成清单 ============ -->
+<section>
+  <h2><span class="num">3</span>与丰晟智囊团现有网站的集成清单</h2>
+  <div class="card">
+    <ul class="integration-list">
+      <li>
+        <div class="int-source">知识底座（knowledge/）</div>
+        <div class="int-desc">新增「本地专属词条」分类，承接产品方案 v2.1 的五层知识库内容（板块区位→商圈生活→小区楼盘→楼栋户型→生活场景），每条带来源+时间+验证状态+短板必填</div>
+        <div class="int-target">大屏 · 经纪人端</div>
+      </li>
+      <li>
+        <div class="int-source">工作台（workspace/）</div>
+        <div class="int-desc">场景卡新增「本地知识关联」字段，一键调出对应五层词条；AI 讲解大纲根据客户画像（大屏行为数据）自动生成；带看复盘记录"客户卡在哪一步"</div>
+        <div class="int-target">经纪人端</div>
+      </li>
+      <li>
+        <div class="int-source">question_map 话术库</div>
+        <div class="int-desc">扩到 100+ 条，覆盖五层知识每个节点的讲解话术；数字员工学这些话术，而不是从零编；新增讲解 SOP 流程话术（区位→小区→楼栋→风险→带看）</div>
+        <div class="int-target">AI 数字员工 · 经纪人端</div>
+      </li>
+      <li>
+        <div class="int-source">agent-academy</div>
+        <div class="int-desc">训练课程新增「讲解 SOP 复刻」模块——把资深经纪人的 5 步讲解流程结构化，作为数字员工的训练素材；新增"本地知识"专项训练</div>
+        <div class="int-target">AI 数字员工</div>
+      </li>
+      <li>
+        <div class="int-source">care-test 能力测评</div>
+        <div class="int-desc">测评维度新增「本地知识掌握度」和「讲解 SOP 熟练度」，帮经纪人知道自己哪块需要 AI 辅助</div>
+        <div class="int-target">经纪人端</div>
+      </li>
+      <li>
+        <div class="int-source">策展报告（curation/）</div>
+        <div class="int-desc">客户 H5 决策包的原型来源——把策展引擎生成的生命周期报告改造成可带走的信任包（自选内容 + 本地实测 + 经纪人卡片 + 短板必填）</div>
+        <div class="int-target">客户 H5</div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 留资三档 ============ -->
+<section>
+  <h2><span class="num">4</span>留资三档 × 数字员工自动触发时机</h2>
+  <div class="card" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+    <div style="border-left:3px solid var(--匠星金);padding-left:16px;">
+      <div style="font-size:11px;color:var(--匠星金);font-weight:600;letter-spacing:1px;">LIGHT · 开场</div>
+      <div style="font-size:16px;font-weight:600;color:var(--墨绿);margin:8px 0;">轻留资</div>
+      <p style="font-size:13px;color:var(--暖灰);margin-bottom:10px;">扫匿名偏好码（买房/卖房/租房/学区/通勤），不强制手机号</p>
+      <div style="font-size:12px;color:var(--匠星金);">🤖 AI 触发：客户圈完片区/选完客户类型 → "您的偏好我记住了，扫码收藏这片"</div>
+    </div>
+    <div style="border-left:3px solid var(--墨绿);padding-left:16px;">
+      <div style="font-size:11px;color:var(--匠星金);font-weight:600;letter-spacing:1px;">MEDIUM · 讲解中</div>
+      <div style="font-size:16px;font-weight:600;color:var(--墨绿);margin:8px 0;">中留资</div>
+      <p style="font-size:13px;color:var(--暖灰);margin-bottom:10px;">加微信 → 带走所选内容 H5 决策包（自选小区+房源+本地经验）</p>
+      <div style="font-size:12px;color:var(--匠星金);">🤖 AI 触发：客户勾了 3+ 小区/看了 5+ 分钟 → "加个微信，把您选的内容发手机上"</div>
+    </div>
+    <div style="border-left:3px solid var(--墨绿深);padding-left:16px;">
+      <div style="font-size:11px;color:var(--匠星金);font-weight:600;letter-spacing:1px;">STRONG · 结尾</div>
+      <div style="font-size:16px;font-weight:600;color:var(--墨绿);margin:8px 0;">强留资</div>
+      <p style="font-size:13px;color:var(--暖灰);margin-bottom:10px;">预约带看时段 + 联系经纪人，有撤回与删除入口（合规）</p>
+      <div style="font-size:12px;color:var(--匠星金);">🤖 AI 触发：客户看完主推房 → "这套周六下午有人看，我帮您约下午 4 点可以吗？"</div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  丰晟智囊团 · 产品设计 v1.0 · 跟产品方案 v2.1 同源同构 · 不为上线而设计，为验证而设计
+</footer>
+
+</body>
+</html>

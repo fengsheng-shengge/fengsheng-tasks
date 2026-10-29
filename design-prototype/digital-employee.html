@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数字员工架构 · 资深经纪人能力复刻</title>
+<style>
+  :root {
+    --墨绿: #1a3d24;
+    --墨绿深: #0f2817;
+    --匠星金: #c9a962;
+    --匠星金淡: #e8d9a8;
+    --米白: #faf8f4;
+    --暖灰: #6b6357;
+    --边框: #e8e3d9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--米白);
+    color: #2c2c2c;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--墨绿);
+    color: #fff;
+    padding: 48px 40px 40px;
+    position: relative;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -30%; right: -10%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(201,169,98,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  header .tag {
+    display: inline-block;
+    background: rgba(201,169,98,0.2);
+    color: var(--匠星金);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  header h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
+  header p { font-size: 16px; opacity: .75; max-width: 680px; line-height: 1.6; }
+
+  nav.tabs {
+    display: flex;
+    gap: 4px;
+    background: #fff;
+    padding: 12px 40px 0;
+    border-bottom: 1px solid var(--边框);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  nav.tabs a {
+    padding: 12px 20px;
+    color: var(--暖灰);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+  }
+  nav.tabs a.active {
+    color: var(--墨绿);
+    border-bottom-color: var(--匠星金);
+  }
+
+  main { padding: 40px; max-width: 1200px; margin: 0 auto; }
+  section { margin-bottom: 48px; }
+  h2 {
+    font-size: 22px;
+    color: var(--墨绿);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  h2 .num {
+    background: var(--匠星金);
+    color: var(--墨绿深);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+
+  /* 架构图 */
+  .arch-wrap {
+    background: #fff;
+    border: 1px solid var(--边框);
+    border-radius: 14px;
+    padding: 32px;
+    overflow-x: auto;
+  }
+  .arch-flow {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    align-items: stretch;
+    min-width: 900px;
+  }
+  .arch-step {
+    position: relative;
+    padding: 20px 16px;
+    text-align: center;
+  }
+  .arch-step .box {
+    background: linear-gradient(135deg, var(--墨绿), var(--墨绿深));
+    color: #fff;
+    border-radius: 12px;
+    padding: 18px 14px;
+    height: 100%;
+  }
+  .arch-step .box.s1 { background: linear-gradient(135deg, #2d5a3a, var(--墨绿)); }
+  .arch-step .box.s2 { background: linear-gradient(135deg, #1a3d24, #2d5a3a); }
+  .arch-step .box.s3 { background: linear-gradient(135deg, #3d5a4a, #1a3d24); }
+  .arch-step .box.s4 { background: linear-gradient(135deg, #2d5a3a, var(--墨绿)); }
+  .arch-step .box.s5 { background: linear-gradient(135deg, #1a3d24, #0f2817); }
+
+  .arch-step .emoji { font-size: 32px; margin-bottom: 10px; }
+  .arch-step .t { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .arch-step .c { font-size: 11px; opacity: .7; line-height: 1.5; }
+  .arch-step .sources {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+  }
+  .arch-step .sources .src {
+    background: rgba(201,169,98,0.2);
+    color: var(--匠星金);
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+  }
+
+  .arch-arrow {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: var(--匠星金);
+    z-index: 2;
+  }
+
+  /* 能力图谱 */
+  .cap-map {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  .cap-group {
+    background: #fff;
+    border: 1px solid var(--边框);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .cap-head {
+    padding: 14px 16px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cap-head .level {
+    font-size: 10px;
+    background: rgba(255,255,255,0.3);
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .cap-group:nth-child(1) .cap-head { background: var(--墨绿); }
+  .cap-group:nth-child(2) .cap-head { background: #2d5a3a; }
+  .cap-group:nth-child(3) .cap-head { background: #3d5a4a; }
+  .cap-group:nth-child(4) .cap-head { background: #4a6b58; }
+
+  .cap-body { padding: 12px 16px; }
+  .cap-item {
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--边框);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .cap-item:last-child { border-bottom: none; }
+  .cap-item .name { color: var(--文字); }
+  .cap-item .coverage {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+    flex-shrink: 0;
+    height: fit-content;
+  }
+  .coverage.full { background: rgba(26,61,36,0.1); color: var(--墨绿); }
+  .coverage.high { background: rgba(201,169,98,0.2); color: var(--墨绿深); }
+  .coverage.mid { background: rgba(230,126,34,0.1); color: #e67e22; }
+  .coverage.low { background: #f5f5f5; color: var(--暖灰); }
+
+  /* 对话流程 */
+  .dialog-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .dialog-step {
+    display: grid;
+    grid-template-columns: 100px 1fr 120px;
+    gap: 14px;
+    align-items: start;
+    background: #fff;
+    border: 1px solid var(--边框);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .dialog-step .role {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-align: center;
+    height: fit-content;
+  }
+  .dialog-step .role.ai { background: var(--匠星金淡); color: var(--墨绿深); }
+  .dialog-step .role.client { background: #f0f0f0; color: var(--暖灰); }
+  .dialog-step .content { font-size: 13px; color: var(--文字); line-height: 1.6; }
+  .dialog-step .trig {
+    font-size: 10px;
+    padding: 4px 8px;
+    background: var(--米白);
+    border-radius: 4px;
+    color: var(--匠星金);
+    text-align: center;
+    height: fit-content;
+  }
+  .dialog-step .trig .t1 { color: var(--墨绿); font-weight: 600; }
+
+  /* 集成表 */
+  .integrate-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--边框);
+  }
+  .integrate-table th, .integrate-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--边框);
+    font-size: 13px;
+  }
+  .integrate-table th {
+    background: var(--墨绿);
+    color: #fff;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  .integrate-table td:first-child { color: var(--匠星金); font-weight: 600; }
+
+  /* 约束/红线 */
+  .constraints {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .constraint {
+    background: #fff;
+    border-left: 3px solid var(--匠星金);
+    padding: 12px 16px;
+    border-radius: 6px;
+  }
+  .constraint .c-title { font-size: 12px; font-weight: 600; color: var(--墨绿); margin-bottom: 4px; }
+  .constraint .c-desc { font-size: 12px; color: var(--暖灰); line-height: 1.5; }
+  .constraint.red { border-left-color: #e74c3c; }
+
+  footer {
+    text-align: center;
+    padding: 40px;
+    font-size: 12px;
+    color: var(--暖灰);
+    border-top: 1px solid var(--边框);
+  }
+
+  .demo-switcher {
+    position: fixed;
+    top: 20px; right: 20px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    z-index: 1000;
+  }
+  .demo-switcher a {
+    display: block;
+    font-size: 12px;
+    color: var(--墨绿);
+    text-decoration: none;
+    padding: 4px 0;
+  }
+  .demo-switcher a:hover { color: var(--匠星金); }
+</style>
+</head>
+<body>
+
+<div class="demo-switcher">
+  <a href="/design-prototype/index.html">← 总览</a>
+  <a href="/design-prototype/bigscreen.html">← 大屏</a>
+  <a href="/design-prototype/agent.html">← 经纪人端</a>
+  <a href="/design-prototype/h5.html">← H5 决策包</a>
+</div>
+
+<header>
+  <div class="tag">AI · CORE ARCHITECTURE</div>
+  <h1>数字员工：资深经纪人能力复刻</h1>
+  <p>不是从零编话术的通用 AI——是学了本店 10 年沉淀的本地经验、资深经纪人的讲解 SOP、question_map 话术库、五层本地知识库，专门做"迎宾开场 + 需求探寻 + 知识呈现 + 留资引导"这四件事的门店专属顾问。</p>
+</header>
+
+<nav class="tabs">
+  <a href="/design-prototype/index.html">总览</a>
+  <a href="/design-prototype/bigscreen.html">大屏客户端</a>
+  <a href="/design-prototype/agent.html">经纪人作业端</a>
+  <a href="/design-prototype/h5.html">客户 H5 决策包</a>
+  <a href="/design-prototype/digital-employee.html" class="active">数字员工架构</a>
+</nav>
+
+<main>
+
+<!-- ============ 训练链路 ============ -->
+<section>
+  <h2><span class="num">1</span>训练链路：从素材到能上岗</h2>
+  <div class="arch-wrap">
+    <div class="arch-flow">
+      <div class="arch-step">
+        <div class="box s1">
+          <div class="emoji">📚</div>
+          <div class="t">知识底座</div>
+          <div class="c">七层能力维度 × 六阶段 × 39 条问题拆解</div>
+          <div class="sources">
+            <span class="src">knowledge/</span>
+          </div>
+        </div>
+        <div class="arch-arrow">→</div>
+      </div>
+      <div class="arch-step">
+        <div class="box s2">
+          <div class="emoji">🗺️</div>
+          <div class="t">五层本地知识库</div>
+          <div class="c">板块区位→商圈生活→小区楼盘→楼栋户型→生活场景</div>
+          <div class="sources">
+            <span class="src">门店自录</span>
+            <span class="src">业主反馈</span>
+          </div>
+        </div>
+        <div class="arch-arrow">→</div>
+      </div>
+      <div class="arch-step">
+        <div class="box s3">
+          <div class="emoji">🎓</div>
+          <div class="t">讲解 SOP</div>
+          <div class="c">资深经纪人 5 步流程：区位→小区→楼栋→风险→带看</div>
+          <div class="sources">
+            <span class="src">agent-academy</span>
+            <span class="src">店长录入</span>
+          </div>
+        </div>
+        <div class="arch-arrow">→</div>
+      </div>
+      <div class="arch-step">
+        <div class="box s4">
+          <div class="emoji">💬</div>
+          <div class="t">话术库</div>
+          <div class="c">question_map 100+ 条 × 3-4 变体 = 300+ 话术模板</div>
+          <div class="sources">
+            <span class="src">question_map</span>
+            <span class="src">带看复盘</span>
+          </div>
+        </div>
+        <div class="arch-arrow">→</div>
+      </div>
+      <div class="arch-step">
+        <div class="box s5">
+          <div class="emoji">🤖</div>
+          <div class="t">数字员工</div>
+          <div class="c">迎宾开场 · 需求探寻 · 知识呈现 · 留资引导</div>
+          <div class="sources">
+            <span class="src">大屏</span>
+            <span class="src">H5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px dashed var(--边框);font-size:11px;color:var(--暖灰);text-align:center;">
+      素材 → 结构化 → 专项训练 → 四端部署 · 数据持续从带看复盘反哺
+    </div>
+  </div>
+</section>
+
+<!-- ============ 能力图谱 ============ -->
+<section>
+  <h2><span class="num">2</span>能力图谱：能做什么 · 不能做什么</h2>
+  <div class="cap-map">
+    <div class="cap-group">
+      <div class="cap-head">🤝 迎宾开场 <span class="level">全自动化</span></div>
+      <div class="cap-body">
+        <div class="cap-item"><span class="name">主动打招呼</span><span class="coverage full">全覆盖</span></div>
+        <div class="cap-item"><span class="name">30 秒自我介绍</span><span class="coverage full">全覆盖</span></div>
+        <div class="cap-item"><span class="name">引导客户选类型</span><span class="coverage full">全覆盖</span></div>
+        <div class="cap-item"><span class="name">迎宾演示态循环</span><span class="coverage full">全覆盖</span></div>
+      </div>
+    </div>
+    <div class="cap-group">
+      <div class="cap-head">🔍 需求探寻 <span class="level">可独立</span></div>
+      <div class="cap-body">
+        <div class="cap-item"><span class="name">圈片区→推测偏好</span><span class="coverage full">全覆盖</span></div>
+        <div class="cap-item"><span class="name">客户分型自动切换内容</span><span class="coverage full">全覆盖</span></div>
+        <div class="cap-item"><span class="name">追问问句（卡在哪一步）</span><span class="coverage high">高覆盖</span></div>
+        <div class="cap-item"><span class="name">对话式需求挖掘</span><span class="coverage mid">中覆盖</span></div>
+      </div>
+    </div>
+    <div class="cap-group">
+      <div class="cap-head">📖 知识呈现 <span class="level">AI 核心</span></div>
+      <div class="cap-body">
+        <div class="cap-item"><span class="name">五层知识库词条</span><span class="coverage full">全覆盖</span></div>
+        <div class="cap-item"><span class="name">话术变体自动匹配</span><span class="coverage high">高覆盖</span></div>
+        <div class="cap-item"><span class="name">短板必填不遮丑</span><span class="coverage full">全覆盖</span></div>
+        <div class="cap-item"><span class="name">业主评价真实呈现</span><span class="coverage high">高覆盖</span></div>
+      </div>
+    </div>
+    <div class="cap-group">
+      <div class="cap-head">🎯 留资引导 <span class="level">AI 辅助</span></div>
+      <div class="cap-body">
+        <div class="cap-item"><span class="name">轻留资（匿名偏好）</span><span class="coverage full">全覆盖</span></div>
+        <div class="cap-item"><span class="name">中留资（H5 带走）</span><span class="coverage full">全覆盖</span></div>
+        <div class="cap-item"><span class="name">强留资（约带看）</span><span class="coverage mid">中覆盖</span></div>
+        <div class="cap-item"><span class="name">谈判成交</span><span class="coverage low">❌ 不碰</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 对话流程 ============ -->
+<section>
+  <h2><span class="num">3</span>完整对话流程（大屏 AI 迎宾 → 留资）</h2>
+  <div class="dialog-flow">
+    <div class="dialog-step">
+      <span class="role ai">🤖 数字员工</span>
+      <div class="content"><strong>（客户推门进店，30 秒无操作→迎宾演示态→唤醒）</strong><br>"您好欢迎光临丰晟望京南店，我是小丰。您是来看房的？还是想了解这片？"</div>
+      <div class="trig">
+        <div class="t1">⏱️ 触发</div>
+        进店唤醒
+      </div>
+    </div>
+    <div class="dialog-step">
+      <span class="role client">👤 客户</span>
+      <div class="content">"我来看看房，家里有娃想找学区"</div>
+      <div class="trig"></div>
+    </div>
+    <div class="dialog-step">
+      <span class="role ai">🤖 数字员工</span>
+      <div class="content">切换到"有娃家庭"模式，屏上自动高亮实验小学学区 + 公园 + 医院。<br>"姐学区关注是吧？咱们这片实验小学是朝阳不错的学校，我先给您看学区范围——您可以在地图上圈选想了解的片区。"</div>
+      <div class="trig">
+        <div class="t1">🔀 触发</div>
+        客户分型 → 自动切图层
+      </div>
+    </div>
+    <div class="dialog-step">
+      <span class="role client">👤 客户</span>
+      <div class="content">在地图上圈了银领家园周边，点进银领家园，勾了"主推房源"</div>
+      <div class="trig"></div>
+    </div>
+    <div class="dialog-step">
+      <span class="role ai">🤖 数字员工</span>
+      <div class="content">右侧 AI 面板自动切换为银领家园讲解："银领家园 2010 年建的，电梯房，3 号楼中间楼层供暖最好——去年冬天实测 25℃。我给您说个实在的，这套房唯一的短板是东边临马路晚高峰偶尔有噪音，关窗基本听不见。您介意吗？"</div>
+      <div class="trig">
+        <div class="t1">📖 触发</div>
+        点选小区 → 调 KB 词条 + 话术
+      </div>
+    </div>
+    <div class="dialog-step">
+      <span class="role client">👤 客户</span>
+      <div class="content">"有点吵... 不过可以看看中间单元"</div>
+      <div class="trig"></div>
+    </div>
+    <div class="dialog-step">
+      <span class="role ai">🤖 数字员工</span>
+      <div class="content">"姐您看——我给您标一下 3 号楼中间单元的位置（地图上高亮）。中间单元离马路远 8 米，实测噪音低 4-6 分贝，基本听不到。要不我帮您记下这个偏好？" <br>→ 自动弹出"扫码收藏匿名偏好"（轻留资）</div>
+      <div class="trig">
+        <div class="t1">🎯 触发</div>
+        5 分钟停留 → 引导轻留资
+      </div>
+    </div>
+    <div class="dialog-step">
+      <span class="role client">👤 客户</span>
+      <div class="content">扫码了，手机弹出偏好确认页</div>
+      <div class="trig"></div>
+    </div>
+    <div class="dialog-step">
+      <span class="role ai">🤖 数字员工</span>
+      <div class="content">"姐已经帮您保存了——学区、电梯房、银领家园中间单元。现在您已经看了 7 分钟、勾了 3 个小区、收藏了这套房。要不要把您选的内容扫个码带回去，跟家人一起商量？" <br>→ 中留资：引导扫码带走 H5 决策包</div>
+      <div class="trig">
+        <div class="t1">🎯 触发</div>
+        10 分钟 + 多小区勾选 → 引导中留资
+      </div>
+    </div>
+    <div class="dialog-step">
+      <span class="role client">👤 客户</span>
+      <div class="content">扫码带走了</div>
+      <div class="trig"></div>
+    </div>
+    <div class="dialog-step">
+      <span class="role ai">🤖 数字员工</span>
+      <div class="content">"姐带回去慢慢看——扫码的 H5 里有片区故事、三个小区对比、还有小李的联系方式。小李是望京南店 8 年的老顾问，这个片区她熟。周六下午 3 点您方便过来实地看看吗？我帮您约好小李。" <br>→ 强留资：预约带看时段</div>
+      <div class="trig">
+        <div class="t1">🎯 触发</div>
+        看完主推房 → 引导强留资
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:16px;font-size:11px;color:var(--暖灰);text-align:center;">
+    ⬆️ 这是 AI 数字员工完全自主完成的留资三档链路 · 全程没碰真人经纪人
+  </div>
+</section>
+
+<!-- ============ 跟 agent-academy 集成 ============ -->
+<section>
+  <h2><span class="num">4</span>跟我们现有网站的集成点</h2>
+  <table class="integrate-table">
+    <tr><th>我们现有模块</th><th>集成方式</th><th>谁消费</th></tr>
+    <tr>
+      <td>agent-academy（数字员工学院）</td>
+      <td>新增「讲解 SOP 复刻」训练模块，把资深经纪人的 5 步讲解流程结构化存为 agent 的 system prompt 骨架</td>
+      <td>数字员工</td>
+    </tr>
+    <tr>
+      <td>knowledge/（知识底座）</td>
+      <td>七层能力维度 → 数字员工推理框架；39 条问题拆解 → 常见问题知识库（question_map 扩到 100 条后）</td>
+      <td>数字员工</td>
+    </tr>
+    <tr>
+      <td>workspace/（经纪人工作台）</td>
+      <td>大屏行为数据 → AI 自动生成讲解大纲 → 经纪人打开工作台就看到"为 XX 准备的大纲"</td>
+      <td>经纪人端</td>
+    </tr>
+    <tr>
+      <td>care-test（能力测评）</td>
+      <td>测评维度新增「本地知识掌握度」「讲解 SOP 熟练度」，经纪人知道自己哪块需要 AI 辅助</td>
+      <td>经纪人端</td>
+    </tr>
+    <tr>
+      <td>curation/（策展引擎）</td>
+      <td>策展报告的消费者视角 → H5 决策包原型；生命周期节点 → 留资三档时机</td>
+      <td>客户 H5</td>
+    </tr>
+    <tr>
+      <td>data/v3/question_map.json</td>
+      <td>100+ 条话术模板 = 数字员工的话术资产；speech_variants 每个变体 = 不同客户类型的说话方式</td>
+      <td>数字员工</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ============ 红线 ============ -->
+<section>
+  <h2><span class="num">5</span>红线：数字员工绝对不碰的事</h2>
+  <div class="constraints">
+    <div class="constraint red">
+      <div class="c-title">❌ 不做最终决策</div>
+      <div class="c-desc">不说"这套房最适合您"、"这套房肯定涨"——只说数据、说实测、说业主原话，引导客户自己做判断</div>
+    </div>
+    <div class="constraint red">
+      <div class="c-title">❌ 不碰价格谈判</div>
+      <div class="c-desc">不说"我帮您砍到 XX 价"、"这个价可以"——价格谈判全权交给真人经纪人，数字员工只说"同户型最近成交价 XX"</div>
+    </div>
+    <div class="constraint red">
+      <div class="c-title">❌ 不做学区承诺</div>
+      <div class="c-desc">不说"肯定对口"、"保证入学"——只说"2026 年教育局划片公示是 XX"，给教育局原文链接</div>
+    </div>
+    <div class="constraint red">
+      <div class="c-title">❌ 不替客户留隐私信息</div>
+      <div class="c-desc">轻留资要扫码、中留资要扫、强留资要选时段——都是客户主动操作，数字员工不碰手机号、不碰身份信息</div>
+    </div>
+    <div class="constraint">
+      <div class="c-title">✅ 数据标注来源</div>
+      <div class="c-desc">每条知识、每句话术都标注：谁录的、什么时候、验证了没有。"业主张女士 3-12 层 2026-08-20 原话"比 AI 编的可信 100 倍</div>
+    </div>
+    <div class="constraint">
+      <div class="c-title">✅ 讲错有溯源</div>
+      <div class="c-desc">数字员工说的每句话都能追溯到哪条知识词条。出了问题店长能定位是哪条词条错了——数据质量 = 信任根基</div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  丰晟智囊团 · 产品设计 v1.0 · 数字员工 = 资深经纪人 SOP 复刻 · 不是从零编话术的通用 AI
+</footer>
+
+</body>
+</html>
