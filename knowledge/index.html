@@ -973,7 +973,7 @@ async function loadEntriesData(){
     window.__ALL_BLOCKS = ALL_BLOCKS;
     // Build businessDomains from manifest
     businessDomains = data.domains.map(d=>{
-      const cfg = DOMAIN_CONFIG[d.domain] || { icon:'📄', title:d.domain, desc:'' };
+      const cfg = { icon: getDomainIcon(d.domain), title: d.domain, desc: '' };
       return {
         code: d.domain,
         title: cfg.title,
