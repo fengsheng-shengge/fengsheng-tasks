@@ -3813,6 +3813,7 @@ export default {
         '/breeder/', '/care-test/', '/about/', '/agent-academy/', '/curation/', '/dashboard-manager/', '/purchase/', '/toolkit/',
         '/clients/', '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
         '/assessment/', '/s1-report/', '/showing-report/', '/agent-assessment/',
+        '/academy', '/academy/',
       ]);
       const normalized = path.endsWith('/') ? path.slice(0, -1) : path;
       if (!KNOWN_ROUTES.has(path) && !KNOWN_ROUTES.has(normalized) && !KNOWN_ROUTES.has(normalized + '/')) {
