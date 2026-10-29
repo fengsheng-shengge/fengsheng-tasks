@@ -993,7 +993,7 @@ async function loadEntriesData(){
     renderDomains();
     console.log('✅ 词条清单加载完成:', totalEntries, '条,', totalDomains, '个域 (按需加载模式)');
   }catch(e){
-    console.warn('⚠️ 加载 knowledge-stats 失败',e);
+    console.warn('⚠️ 加载 knowledge-stats 失败', e?.message || e, e?.stack || 'no stack');
   }
 }
 
