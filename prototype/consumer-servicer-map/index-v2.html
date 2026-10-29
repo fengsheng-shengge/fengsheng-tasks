@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>方案 D · 消费者旅程驱动（重拍）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f7f5f0; color: #1a1a1a; padding: 40px 64px; }
+  h1 { font-size: 22px; color: #1a3d24; margin-bottom: 4px; }
+  .sub { font-size: 13px; color: #999; margin-bottom: 32px; }
+
+  .title-line {
+    font-size: 12px; color: #999; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .title-line .gold { color: #c9a962; font-weight: 700; }
+  .title-line .green { color: #1a3d24; font-weight: 700; }
+  .title-line .arrow { font-size: 16px; }
+
+  /* ===== 方案 D：消费者旅程 = 容器 ===== */
+  .plan-d { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e8e4da; margin-bottom: 48px; }
+  
+  .d-header {
+    background: linear-gradient(135deg, #faf5ea 0%, #e8f0e9 100%);
+    padding: 16px 24px;
+    border-bottom: 2px solid #c9a962;
+  }
+  .d-header-title { font-size: 15px; font-weight: 700; color: #1a3d24; }
+  .d-header-sub { font-size: 12px; color: #555; margin-top: 4px; }
+  
+  .d-stages { display: flex; border-bottom: 1px solid #e8e4da; }
+  .d-stage-tab {
+    flex: 1;
+    padding: 12px 16px;
+    cursor: pointer;
+    text-align: center;
+    border-right: 1px solid #f0ede6;
+    transition: all 0.2s;
+    font-size: 12px;
+    background: #fafafa;
+  }
+  .d-stage-tab:last-child { border-right: none; }
+  .d-stage-tab:hover { background: #f0ede6; }
+  .d-stage-tab.active {
+    background: #c9a962;
+    color: #fff;
+    font-weight: 700;
+  }
+  .d-stage-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+  .d-stage-name { display: block; }
+  
+  .d-body { padding: 24px; display: grid; grid-template-columns: 1fr 4px 1fr; gap: 20px; min-height: 200px; }
+  
+  .d-consumer-side { padding-right: 16px; border-right: 2px solid #c9a962; }
+  .d-label { font-size: 10px; font-weight: 700; color: #c9a962; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+  .d-consumer-title { font-size: 20px; font-weight: 700; color: #8a7040; margin-bottom: 4px; }
+  .d-consumer-desc { font-size: 13px; color: #555; margin-bottom: 12px; line-height: 1.5; }
+  
+  .d-consumer-needs { margin-bottom: 16px; }
+  .d-need {
+    background: #faf5ea;
+    border-left: 3px solid #c9a962;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #8a7040;
+    margin-bottom: 6px;
+    border-radius: 0 6px 6px 0;
+  }
+  
+  .d-servicer-side { padding-left: 16px; }
+  .d-servicer-title { font-size: 20px; font-weight: 700; color: #1a3d24; margin-bottom: 4px; }
+  .d-servicer-desc { font-size: 13px; color: #555; margin-bottom: 12px; line-height: 1.5; }
+  
+  .d-servicer-cap { margin-bottom: 10px; }
+  .d-cap-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    border: 2px solid transparent;
+  }
+  .d-cap-row.core {
+    background: #e8f0e9;
+    border-color: #1a3d24;
+  }
+  .d-cap-row.support {
+    background: #f0ede6;
+    border-color: #c9a962;
+    opacity: 0.8;
+  }
+  .d-cap-importance {
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+  }
+  .d-cap-row.core .d-cap-importance { background: #1a3d24; color: #fff; }
+  .d-cap-row.support .d-cap-importance { background: #c9a962; color: #fff; }
+  .d-cap-name { font-size: 14px; font-weight: 700; color: #1a3d24; }
+  .d-cap-desc { font-size: 11px; color: #555; flex: 1; }
+  .d-cap-action {
+    font-size: 11px; color: #1a3d24; font-weight: 600; cursor: pointer;
+    padding: 4px 10px; background: #fff; border-radius: 12px; border: 1px solid #1a3d24;
+    transition: all 0.2s;
+  }
+  .d-cap-action:hover { background: #1a3d24; color: #fff; }
+  
+  .d-footer {
+    background: #f7f5f0;
+    padding: 12px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px;
+  }
+  .d-footer-left { color: #555; }
+  .d-footer-left strong { color: #1a3d24; }
+  .d-footer-right a { color: #c9a962; text-decoration: none; font-weight: 600; }
+  
+  /* ===== 方案 E：能力画像里直接嵌入（更融合） ===== */
+  .plan-e { margin-bottom: 48px; }
+  .ability-v2 { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e8e4da; }
+  .ability-v2-header { padding: 16px 24px; border-bottom: 1px solid #e8e4da; display: flex; justify-content: space-between; align-items: center; }
+  .ability-v2-title { font-size: 15px; font-weight: 700; color: #1a3d24; }
+  .ability-v2-sub { font-size: 12px; color: #999; }
+  .ability-v2-badge {
+    font-size: 11px; padding: 2px 8px; border-radius: 10px;
+    background: #faf5ea; color: #8a7040; font-weight: 600;
+  }
+  
+  .ability-v2-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 20px; }
+  .ability-v2-card {
+    border: 2px solid #e8e4da;
+    border-radius: 12px;
+    padding: 14px;
+    transition: all 0.2s;
+    position: relative;
+    cursor: pointer;
+  }
+  .ability-v2-card:hover { border-color: #c9a962; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .ability-v2-card.in-stage { border-color: #1a3d24; background: #e8f0e9; }
+  .ability-v2-card-title { font-size: 14px; font-weight: 700; color: #1a3d24; margin-bottom: 6px; }
+  .ability-v2-card-desc { font-size: 11px; color: #555; line-height: 1.4; margin-bottom: 8px; }
+  .ability-v2-card-stages { display: flex; gap: 3px; flex-wrap: wrap; }
+  .ability-v2-stage-chip {
+    font-size: 10px; background: #faf5ea; color: #8a7040;
+    padding: 2px 7px; border-radius: 8px;
+  }
+  .ability-v2-score {
+    position: absolute; top: 12px; right: 12px;
+    font-size: 20px; font-weight: 700; color: #c9a962;
+  }
+  
+  /* 阶段 filter bar */
+  .stage-filter-bar {
+    display: flex; gap: 6px; padding: 12px 20px;
+    background: #fafafa; border-bottom: 1px solid #e8e4da;
+    overflow-x: auto;
+  }
+  .stage-filter-chip {
+    padding: 5px 12px; border-radius: 16px; font-size: 12px;
+    background: #fff; border: 1px solid #e8e4da; color: #555; cursor: pointer;
+    white-space: nowrap; transition: all 0.2s;
+  }
+  .stage-filter-chip:hover { border-color: #c9a962; color: #8a7040; }
+  .stage-filter-chip.active { background: #c9a962; color: #fff; border-color: #c9a962; }
+  
+  .note {
+    font-size: 11px; color: #999; padding: 8px 14px;
+    background: #fff9e6; border-left: 3px solid #c9a962;
+    margin-bottom: 12px; border-radius: 0 6px 6px 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>方案 D / E · 消费者旅程驱动（重拍）</h1>
+<p class="sub">修正方向：叙事自上而下、真正融合、信息不拥挤</p>
+
+<!-- 方案 D -->
+<div class="title-line">
+  <span class="gold">消费者旅程</span>
+  <span class="arrow">⟶ 导出 ⟶</span>
+  <span class="green">服务者能力</span>
+  <span style="margin-left:auto;font-size:11px;color:#999;">一个阶段看一次，信息聚焦</span>
+</div>
+
+<div class="plan-d">
+  <div class="d-header">
+    <div class="d-header-title">🎯 消费者走到哪一步，经纪人需要什么能力？</div>
+    <div class="d-header-sub">我们的 7 维能力体系，是从消费者购房全流程的 6 个关键阶段<strong>自然导出</strong>的</div>
+  </div>
+  
+  <div class="d-stages">
+    <div class="d-stage-tab" data-stage="prepare">
+      <span class="d-stage-icon">📋</span>
+      <span class="d-stage-name">购房准备</span>
+    </div>
+    <div class="d-stage-tab" data-stage="market">
+      <span class="d-stage-icon">🔍</span>
+      <span class="d-stage-name">了解市场</span>
+    </div>
+    <div class="d-stage-tab" data-stage="invite">
+      <span class="d-stage-icon">🏠</span>
+      <span class="d-stage-name">邀约带看</span>
+    </div>
+    <div class="d-stage-tab active" data-stage="negotiate">
+      <span class="d-stage-icon">💬</span>
+      <span class="d-stage-name">带看议价</span>
+    </div>
+    <div class="d-stage-tab" data-stage="transaction">
+      <span class="d-stage-icon">💰</span>
+      <span class="d-stage-name">交易安全</span>
+    </div>
+    <div class="d-stage-tab" data-stage="closing">
+      <span class="d-stage-icon">🔄</span>
+      <span class="d-stage-name">过户交接</span>
+    </div>
+  </div>
+  
+  <div class="d-body">
+    <!-- 消费者侧 -->
+    <div class="d-consumer-side">
+      <div class="d-label">👤 消费者此刻需要</div>
+      <div id="consumer-title" class="d-consumer-title">带看后，价格谈不拢</div>
+      <div id="consumer-desc" class="d-consumer-desc">客户说"太贵了""回去商量""再看看"——需要被接住、被理解、被引导做决定，而不是被硬推。</div>
+      <div class="d-consumer-needs">
+        <div class="d-need">🔹 情绪被接住，不被硬压价</div>
+        <div class="d-need">🔹 想知道"这房值不值这个价"的客观依据</div>
+        <div class="d-need">🔹 不想被套路，但也不想错过</div>
+      </div>
+    </div>
+    
+    <!-- 服务者侧 -->
+    <div class="d-servicer-side">
+      <div class="d-label">🧢 经纪人需要的能力</div>
+      <div class="d-servicer-title">2 项核心 + 1 项辅助</div>
+      <div class="d-servicer-desc">能服务好这个阶段的客户，你需要——</div>
+      <div class="d-servicer-cap" id="cap-list"></div>
+    </div>
+  </div>
+  
+  <div class="d-footer">
+    <div class="d-footer-left">💡 当前看的是 <strong>购房客户（buyer）</strong>。切换成售房业主会看到不同的能力要求。</div>
+    <div class="d-footer-right"><a href="#">去做能力测评 →</a></div>
+  </div>
+</div>
+
+<!-- 方案 E -->
+<div class="title-line">
+  <span style="color:#999;">备选方案</span>
+  <span style="margin-left:auto;font-size:11px;color:#999;">更极简，融入现有能力画像</span>
+</div>
+
+<div class="plan-e">
+  <div class="ability-v2">
+    <div class="ability-v2-header">
+      <div>
+        <div class="ability-v2-title">📊 你的能力画像</div>
+        <div class="ability-v2-sub">按客户服务全流程导出的 7 个维度</div>
+      </div>
+      <div class="ability-v2-badge">📌 点一个阶段看对应能力</div>
+    </div>
+    
+    <div class="stage-filter-bar">
+      <span class="stage-filter-chip" data-sf="all">全部</span>
+      <span class="stage-filter-chip" data-sf="prepare">📋 购房准备</span>
+      <span class="stage-filter-chip" data-sf="market">🔍 了解市场</span>
+      <span class="stage-filter-chip" data-sf="invite">🏠 邀约带看</span>
+      <span class="stage-filter-chip active" data-sf="negotiate">💬 带看议价</span>
+      <span class="stage-filter-chip" data-sf="transaction">💰 交易安全</span>
+      <span class="stage-filter-chip" data-sf="closing">🔄 过户交接</span>
+    </div>
+    
+    <div class="ability-v2-grid" id="grid-e"></div>
+  </div>
+</div>
+
+<script>
+const STAGES = {
+  prepare: {
+    consumer_title: '算预算，查贷款资格',
+    consumer_desc: '刚想买房，还在算能承受什么价位、公积金能贷多少、首套认定怎么算。',
+    needs: ['🔹 想知道"我到底能买多少钱的房"', '🔹 怕算错预算踩坑', '🔹 对税费/贷款完全没概念'],
+    caps: [
+      { level: 'core', name: '需求洞察', desc: '挖出客户真实预算、购房动机、家庭结构' },
+      { level: 'core', name: '专业方案', desc: '公积金/商贷/组合贷测算、首套二套认定' },
+      { level: 'support', name: '数字化协同', desc: 'AI 帮算月供和税费清单' },
+    ]
+  },
+  market: {
+    consumer_title: '想了解片区和政策',
+    consumer_desc: '还没锁定具体小区，在看不同板块的行情、学区、政策走向。',
+    needs: ['🔹 想选对片区不踩坑', '🔹 想知道现在是不是好时机', '🔹 对学区/政策搞不清楚'],
+    caps: [
+      { level: 'core', name: '专业方案', desc: '片区行情、学区政策、限购限贷解读' },
+      { level: 'core', name: '获客触达', desc: '把合适的房源/片区推给合适的客户' },
+      { level: 'support', name: '数字化协同', desc: 'AI 生成片区对比报告' },
+    ]
+  },
+  invite: {
+    consumer_title: '被邀请看房但还没下定决心',
+    consumer_desc: '"我先随便看看""再了解了解"——客户还没到愿意出门的状态。',
+    needs: ['🔹 不想被骚扰', '🔹 想被尊重，而不是被追着跑', '🔹 需要一个出门的理由'],
+    caps: [
+      { level: 'core', name: '获客触达', desc: '让客户愿意出门：话术、时机、价值主张' },
+      { level: 'core', name: '带看谈判', desc: '应对"随便看看""不着急"等软拒绝' },
+      { level: 'support', name: '需求洞察', desc: '找到客户真正顾虑的点' },
+    ]
+  },
+  negotiate: {
+    consumer_title: '带看后，价格谈不拢',
+    consumer_desc: '客户说"太贵了""回去商量""再看看"——需要被接住而不是被硬推。',
+    needs: ['🔹 情绪被接住，不被硬压价', '🔹 想知道"这房值不值"的客观依据', '🔹 不想被套路也不想错过'],
+    caps: [
+      { level: 'core', name: '带看谈判', desc: '异议处理36招、价格谈判斡旋' },
+      { level: 'core', name: '需求洞察', desc: '挖到客户"嫌贵"背后的真实顾虑' },
+      { level: 'support', name: '专业方案', desc: '竞品对比数据、税费成本算清' },
+    ]
+  },
+  transaction: {
+    consumer_title: '要签合同了，怕安全问题',
+    consumer_desc: '合同条款看不懂，资金监管安不安全，税费怎么算才对。',
+    needs: ['🔹 怕合同有坑', '🔹 资金安全是底线', '🔹 税费想算清清楚楚'],
+    caps: [
+      { level: 'core', name: '交易履约', desc: '合同审核、资金监管、交易流程把控' },
+      { level: 'core', name: '专业方案', desc: '税费精确测算、合规提醒' },
+      { level: 'support', name: '数字化协同', desc: 'AI 审核合同风险点' },
+    ]
+  },
+  closing: {
+    consumer_title: '要过户了，后面还会有人管吗？',
+    consumer_desc: '过户流程跑一半，担心交房细节、水电物业过户、装修建议。',
+    needs: ['🔹 过户流程不想跑错', '🔹 交房交接要清楚', '🔹 希望后续有问题还能找你'],
+    caps: [
+      { level: 'core', name: '交易履约', desc: '过户全流程、交接 checklist' },
+      { level: 'core', name: '售后复购', desc: '售后跟进、转介绍引导' },
+      { level: 'support', name: '数字化协同', desc: 'AI 自动推提醒节点' },
+    ]
+  },
+};
+
+// ===== 方案 D 交互 =====
+const stageTabs = document.querySelectorAll('.d-stage-tab');
+const consumerTitle = document.getElementById('consumer-title');
+const consumerDesc = document.getElementById('consumer-desc');
+const capList = document.getElementById('cap-list');
+
+function renderStage(stageKey) {
+  const s = STAGES[stageKey];
+  if (!s) return;
+  stageTabs.forEach(t => t.classList.toggle('active', t.dataset.stage === stageKey));
+  consumerTitle.textContent = s.consumer_title;
+  consumerDesc.textContent = s.consumer_desc;
+  
+  // consumer needs
+  document.querySelectorAll('.d-need').forEach((el, i) => {
+    el.textContent = s.needs[i] || '';
+    el.style.display = s.needs[i] ? '' : 'none';
+  });
+  
+  // capabilities
+  capList.innerHTML = s.caps.map(c => `
+    <div class="d-cap-row ${c.level}">
+      <span class="d-cap-importance">${c.level === 'core' ? '核心' : '辅助'}</span>
+      <span class="d-cap-name">${c.name}</span>
+      <span class="d-cap-desc">${c.desc}</span>
+      <span class="d-cap-action" onclick="alert('跳测评专项')">测测 →</span>
+    </div>
+  `).join('');
+}
+
+stageTabs.forEach(t => t.addEventListener('click', () => renderStage(t.dataset.stage)));
+renderStage('negotiate');
+
+// ===== 方案 E 交互 =====
+const ALL_DIMS = [
+  { name: '获客触达', desc: '个人品牌/渠道/客源端', score: 72, stages: ['market', 'invite'] },
+  { name: '需求洞察', desc: '动机/家庭/预算挖掘', score: 68, stages: ['prepare', 'invite', 'negotiate'] },
+  { name: '专业方案', desc: '税费/贷款/学区/政策', score: 80, stages: ['prepare', 'market', 'negotiate', 'transaction'] },
+  { name: '带看谈判', desc: '异议处理/价格斡旋', score: 55, stages: ['invite', 'negotiate'] },
+  { name: '交易履约', desc: '合同/监管/过户', score: 78, stages: ['transaction', 'closing'] },
+  { name: '售后复购', desc: '售后/转介绍', score: 60, stages: ['closing'] },
+  { name: '数字化协同', desc: 'AI工具/数据/反馈', score: 45, stages: ['prepare', 'transaction', 'closing'] },
+];
+
+function renderGridE(filter) {
+  const grid = document.getElementById('grid-e');
+  grid.innerHTML = ALL_DIMS.map(d => {
+    const inStage = filter === 'all' || d.stages.includes(filter);
+    return `
+      <div class="ability-v2-card ${inStage ? 'in-stage' : ''}" style="${inStage ? '' : 'opacity:0.35;'}">
+        <div class="ability-v2-score">${d.score}</div>
+        <div class="ability-v2-card-title">${d.name}</div>
+        <div class="ability-v2-card-desc">${d.desc}</div>
+        <div class="ability-v2-card-stages">
+          ${d.stages.map(s => `<span class="ability-v2-stage-chip">${STAGES[s].consumer_title.slice(0,4)}</span>`).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+document.querySelectorAll('.stage-filter-chip').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('.stage-filter-chip').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    renderGridE(c.dataset.sf);
+  });
+});
+renderGridE('negotiate');
+</script>
+</body>
+</html>

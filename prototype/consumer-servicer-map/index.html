@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>消费者需求 → 服务者能力 · 映射可视化方案</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f7f5f0; color: #1a1a1a; padding: 32px 48px; }
+  h1 { font-size: 22px; color: #1a3d24; margin-bottom: 4px; }
+  .sub { font-size: 13px; color: #999; margin-bottom: 32px; }
+  .section { margin-bottom: 48px; }
+  .section-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #1a3d24; display: inline-block; }
+  .section-desc { font-size: 13px; color: #555; margin-bottom: 20px; line-height: 1.6; }
+
+  /* 现有状态 */
+  .current-state { display: flex; gap: 24px; }
+  .col { flex: 1; }
+  .col-title { font-size: 13px; font-weight: 700; color: #999; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .stages { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .stage-chip { background: #e8f0e9; border: 1px solid #2d5a3d; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #1a3d24; }
+  .stage-chip.active { background: #1a3d24; color: #fff; }
+  .ability-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .ability-card { background: #fff; border: 1px solid #e8e4da; border-radius: 8px; padding: 10px; font-size: 11px; line-height: 1.4; }
+  .ability-card-title { font-weight: 700; font-size: 12px; color: #1a3d24; margin-bottom: 2px; }
+  .problem-tag { display: inline-block; background: #fdecea; color: #c0392b; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
+
+  /* ===== 方案 A：左右对应 + 连线 ===== */
+  .plan-a { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; }
+  .consumer-col, .servicer-col { display: flex; flex-direction: column; gap: 8px; }
+  .mapping-line { display: flex; flex-direction: column; justify-content: space-around; height: 100%; padding: 4px 0; }
+  .line-connector { font-size: 20px; color: #c9a962; text-align: center; }
+  .consumer-stage { background: #fff; border: 2px solid #c9a962; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; color: #8a7040; }
+  .consumer-stage .icon { font-size: 18px; margin-right: 6px; }
+  .servicer-dim-group { background: #e8f0e9; border: 2px solid #1a3d24; border-radius: 10px; padding: 8px 12px; }
+  .servicer-dim-title { font-size: 11px; color: #2d5a3d; margin-bottom: 4px; }
+  .servicer-dim-chips { display: flex; gap: 4px; flex-wrap: wrap; }
+  .servicer-chip { background: #1a3d24; color: #fff; font-size: 11px; padding: 3px 8px; border-radius: 10px; }
+
+  /* ===== 方案 B：融合一张图 + 上下两层 ===== */
+  .plan-b { background: #fff; border: 2px solid #c9a962; border-radius: 16px; padding: 24px; }
+  .plan-b-header { text-align: center; margin-bottom: 20px; }
+  .plan-b-title { font-size: 14px; font-weight: 700; color: #8a7040; }
+  .plan-b-sub { font-size: 11px; color: #999; margin-top: 2px; }
+  .plan-b-rows { display: flex; flex-direction: column; gap: 12px; }
+  .plan-b-row { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 12px; align-items: center; padding: 10px 14px; border-radius: 10px; }
+  .plan-b-row:nth-child(odd) { background: #faf5ea; }
+  .plan-b-row:nth-child(even) { background: #e8f0e9; }
+  .plan-b-consumer { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #8a7040; }
+  .plan-b-arrow { text-align: center; font-size: 18px; color: #c9a962; }
+  .plan-b-servicer { display: flex; gap: 4px; flex-wrap: wrap; }
+  .plan-b-servicer-chip { background: #1a3d24; color: #fff; font-size: 11px; padding: 3px 10px; border-radius: 12px; }
+  .plan-b-servicer-chip.secondary { background: #2d5a3d; opacity: 0.8; }
+
+  /* ===== 方案 C：交互高亮（hover 联动） ===== */
+  .plan-c { display: flex; flex-direction: column; gap: 16px; }
+  .plan-c-consumer-row { display: flex; gap: 8px; justify-content: center; padding: 12px; background: #fff; border-radius: 10px; border: 1px solid #c9a962; }
+  .plan-c-stage { padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 12px; border: 1px solid transparent; }
+  .plan-c-stage:hover { background: #c9a962; color: #fff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201,169,98,0.3); }
+  .plan-c-stage.active { background: #8a7040; color: #fff; }
+  .plan-c-servicer-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .plan-c-dim { background: #f0ede6; border: 1px solid #e8e4da; padding: 14px 8px; border-radius: 10px; text-align: center; font-size: 11px; transition: all 0.3s; opacity: 0.4; }
+  .plan-c-dim.highlight { background: #e8f0e9; border-color: #1a3d24; color: #1a3d24; font-weight: 700; opacity: 1; transform: scale(1.05); box-shadow: 0 4px 12px rgba(26,61,36,0.2); }
+  .plan-c-dim.secondary { background: #faf5ea; border-color: #c9a962; opacity: 0.7; }
+  .plan-c-hint { text-align: center; font-size: 12px; color: #999; }
+
+  .recommend-badge { display: inline-block; background: linear-gradient(90deg,#c9a962,#f5deb3); color: #1a3d24; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; margin-left: 8px; }
+  .pros-cons { font-size: 12px; color: #555; line-height: 1.8; margin-top: 10px; background: #fff; padding: 12px; border-radius: 8px; }
+  .pros-cons span.good { color: #27ae60; font-weight: 600; }
+  .pros-cons span.bad { color: #c0392b; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h1>消费者需求 → 服务者能力 · 映射可视化方案</h1>
+<p class="sub">解决：现在"购房流程阶段"和"7维能力画像"是两块独立 UI，用户看不到它们的因果关系。这个映射是产品的核心逻辑——<strong>消费者走到哪一步，经纪人需要什么能力</strong>。</p>
+
+<!-- 现有状态 -->
+<div class="section">
+  <div class="section-title">📌 现有状态（两个独立板块）</div>
+  <div class="section-desc">上面是"购房流程阶段"筛选 Tab，下面是"7维能力画像"。中间没有任何视觉/逻辑连接。</div>
+  <div class="current-state">
+    <div class="col">
+      <div class="col-title">消费者购房流程（顶部筛选 Tab）</div>
+      <div class="stages">
+        <span class="stage-chip">📋 购房准备</span>
+        <span class="stage-chip">🔍 了解市场</span>
+        <span class="stage-chip">🏠 邀约带看</span>
+        <span class="stage-chip active">💬 带看议价</span>
+        <span class="stage-chip">💰 交易安全</span>
+        <span class="stage-chip">🔄 过户交接</span>
+      </div>
+      <p class="problem-tag">❌ 独立板块，无连接</p>
+    </div>
+    <div class="col">
+      <div class="col-title">服务者 7 维能力画像（下方板块）</div>
+      <div class="ability-grid">
+        <div class="ability-card"><div class="ability-card-title">获客触达</div>15条能力标准</div>
+        <div class="ability-card"><div class="ability-card-title">需求洞察</div>15条能力标准</div>
+        <div class="ability-card"><div class="ability-card-title">专业方案</div>25条能力标准</div>
+        <div class="ability-card"><div class="ability-card-title">带看谈判</div>20条能力标准</div>
+        <div class="ability-card"><div class="ability-card-title">交易履约</div>20条能力标准</div>
+        <div class="ability-card"><div class="ability-card-title">售后复购</div>10条能力标准</div>
+        <div class="ability-card"><div class="ability-card-title">数字化协同</div>5条能力标准</div>
+      </div>
+      <p class="problem-tag">❌ 用户不知道"为什么是这7维"</p>
+    </div>
+  </div>
+</div>
+
+<!-- 方案 B -->
+<div class="section">
+  <div class="section-title">方案 B · 上下行 × 箭头映射（简洁明了）<span class="recommend-badge">⭐ 推荐</span></div>
+  <div class="section-desc">在阶段 Tab 和能力画像之间，插入一张<strong>消费者→能力映射表</strong>。每一行清晰表达"消费者在 X 阶段 → 经纪人需要 Y 能力"。双主体语义色：金色=消费者侧，墨绿=服务者侧。</div>
+  <div class="plan-b">
+    <div class="plan-b-header">
+      <div class="plan-b-title">🎯 消费者旅程 × 服务者能力需求矩阵</div>
+      <div class="plan-b-sub">消费者走到哪一步 → 经纪人需要什么能力才能服务好</div>
+    </div>
+    <div class="plan-b-rows">
+      <div class="plan-b-row">
+        <div class="plan-b-consumer"><span>📋</span>购房准备（预算/贷款）</div>
+        <div class="plan-b-arrow">⟶</div>
+        <div class="plan-b-servicer">
+          <span class="plan-b-servicer-chip">需求洞察</span>
+          <span class="plan-b-servicer-chip">专业方案</span>
+          <span class="plan-b-servicer-chip secondary">数字化协同</span>
+        </div>
+      </div>
+      <div class="plan-b-row">
+        <div class="plan-b-consumer"><span>🔍</span>了解市场（片区/政策）</div>
+        <div class="plan-b-arrow">⟶</div>
+        <div class="plan-b-servicer">
+          <span class="plan-b-servicer-chip">专业方案</span>
+          <span class="plan-b-servicer-chip">获客触达</span>
+        </div>
+      </div>
+      <div class="plan-b-row">
+        <div class="plan-b-consumer"><span>🏠</span>邀约带看（让客户出门）</div>
+        <div class="plan-b-arrow">⟶</div>
+        <div class="plan-b-servicer">
+          <span class="plan-b-servicer-chip">获客触达</span>
+          <span class="plan-b-servicer-chip">带看谈判</span>
+          <span class="plan-b-servicer-chip secondary">需求洞察</span>
+        </div>
+      </div>
+      <div class="plan-b-row">
+        <div class="plan-b-consumer"><span>💬</span>带看议价（异议/价格）</div>
+        <div class="plan-b-arrow">⟶</div>
+        <div class="plan-b-servicer">
+          <span class="plan-b-servicer-chip">带看谈判</span>
+          <span class="plan-b-servicer-chip">需求洞察</span>
+          <span class="plan-b-servicer-chip secondary">专业方案</span>
+        </div>
+      </div>
+      <div class="plan-b-row">
+        <div class="plan-b-consumer"><span>💰</span>交易安全（合同/税费）</div>
+        <div class="plan-b-arrow">⟶</div>
+        <div class="plan-b-servicer">
+          <span class="plan-b-servicer-chip">交易履约</span>
+          <span class="plan-b-servicer-chip">专业方案</span>
+          <span class="plan-b-servicer-chip secondary">数字化协同</span>
+        </div>
+      </div>
+      <div class="plan-b-row">
+        <div class="plan-b-consumer"><span>🔄</span>过户交接（售后/未来）</div>
+        <div class="plan-b-arrow">⟶</div>
+        <div class="plan-b-servicer">
+          <span class="plan-b-servicer-chip">交易履约</span>
+          <span class="plan-b-servicer-chip">售后复购</span>
+          <span class="plan-b-servicer-chip secondary">数字化协同</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pros-cons">
+    <span class="good">✅ 优点：</span>一张表看懂底层逻辑、每行独立可扩展、主次关系清晰（深色=核心能力，浅色=辅助能力）<br>
+    <span class="bad">❌ 缺点：</span>静态展示，没有交互（用户不会主动去看完整张表）
+  </div>
+</div>
+
+<!-- 方案 C -->
+<div class="section">
+  <div class="section-title">方案 C · 交互联动（Hover 高亮 + 点击锁定）</div>
+  <div class="section-desc">不新增大板块，而是让<strong>现有两块东西互动起来</strong>：鼠标 hover/点某个"购房阶段"，下面对应的能力维度就高亮。反过来点某个能力维度，上面哪些阶段需要它也联动高亮。</div>
+  <div class="plan-c">
+    <div class="plan-c-consumer-row">
+      <div class="plan-c-stage" onmouseover="highlightForStage('prepare')" onmouseout="resetHighlight()">📋 购房准备</div>
+      <div class="plan-c-stage" onmouseover="highlightForStage('market')" onmouseout="resetHighlight()">🔍 了解市场</div>
+      <div class="plan-c-stage" onmouseover="highlightForStage('invite')" onmouseout="resetHighlight()">🏠 邀约带看</div>
+      <div class="plan-c-stage active" onmouseover="highlightForStage('negotiate')" onmouseout="resetHighlight()">💬 带看议价 ← 当前</div>
+      <div class="plan-c-stage" onmouseover="highlightForStage('transaction')" onmouseout="resetHighlight()">💰 交易安全</div>
+      <div class="plan-c-stage" onmouseover="highlightForStage('closing')" onmouseout="resetHighlight()">🔄 过户交接</div>
+    </div>
+    <div class="plan-c-hint">👆 鼠标移到不同阶段上，观察下面能力维度的变化</div>
+    <div class="plan-c-servicer-row">
+      <div class="plan-c-dim" id="dim-1">获客触达</div>
+      <div class="plan-c-dim" id="dim-2">需求洞察</div>
+      <div class="plan-c-dim" id="dim-3">专业方案</div>
+      <div class="plan-c-dim" id="dim-4">带看谈判</div>
+      <div class="plan-c-dim" id="dim-5">交易履约</div>
+      <div class="plan-c-dim" id="dim-6">售后复购</div>
+      <div class="plan-c-dim" id="dim-7">数字化协同</div>
+    </div>
+  </div>
+  <div class="pros-cons">
+    <span class="good">✅ 优点：</span>零新增视觉负担、利用用户已有的浏览行为、交互即理解（"哦，原来带看议价主要靠谈判和洞察"）<br>
+    <span class="bad">❌ 缺点：</span>需要用户 hover 才能看到、不会主动理解"全链路映射"、适合做补充层而不是主视觉
+  </div>
+</div>
+
+<!-- 推荐 -->
+<div class="section">
+  <div class="section-title">🎯 推荐：B + C 组合</div>
+  <div class="section-desc">
+    用 <strong>方案 B（映射表）</strong> 作为<strong>首次引导</strong>——在工作台首次打开时显示一次，点击"我知道了"之后折叠成一行小标题。用户第二次进来直接看到已有的筛选 Tab + 能力画像，但加了 <strong>方案 C（交互联动）</strong>——hover 阶段 Tab 时能力画像联动高亮。
+    <br><br>
+    这样既传达了"我们的能力体系是从消费者需求导出的"这个<strong>核心产品故事</strong>，又不增加长期视觉负担。
+  </div>
+</div>
+
+<script>
+  const MAP = {
+    prepare:    { 1:0, 2:2, 3:2, 4:0, 5:0, 6:0, 7:1 },
+    market:     { 1:2, 2:0, 3:2, 4:0, 5:0, 6:0, 7:0 },
+    invite:     { 1:2, 2:1, 3:0, 4:2, 5:0, 6:0, 7:0 },
+    negotiate:  { 1:0, 2:2, 3:1, 4:2, 5:0, 6:0, 7:0 },
+    transaction:{ 1:0, 2:0, 3:2, 4:0, 5:2, 6:0, 7:1 },
+    closing:    { 1:0, 2:0, 3:0, 4:0, 5:2, 6:2, 7:1 },
+  };
+  const DEFAULT = MAP.negotiate;
+
+  function applyMap(m){
+    for(let i=1;i<=7;i++){
+      const el = document.getElementById('dim-'+i);
+      el.classList.remove('highlight','secondary');
+      if(m[i] === 2) el.classList.add('highlight');
+      else if(m[i] === 1) el.classList.add('secondary');
+    }
+  }
+  function highlightForStage(key){
+    applyMap(MAP[key]);
+  }
+  function resetHighlight(){
+    applyMap(DEFAULT);
+  }
+  applyMap(DEFAULT);
+</script>
+
+</body>
+</html>

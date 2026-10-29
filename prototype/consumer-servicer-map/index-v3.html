@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>三面板联动 · 交互原型</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f7f5f0; color: #1a1a1a; padding: 24px; }
+
+  /* 模拟工作台整体布局 */
+  .mock { max-width: 1000px; margin: 0 auto; background: #fff; border-radius: 16px; border: 1px solid #e8e4da; overflow: hidden; }
+  .mock-topbar { background: #fafafa; padding: 10px 20px; border-bottom: 1px solid #e8e4da; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+  .mock-topbar .logo { font-weight: 700; color: #1a3d24; }
+  .mock-topbar .links a { margin-left: 12px; color: #555; text-decoration: none; font-size: 12px; }
+  .mock-topbar .links a.active { color: #1a3d24; font-weight: 600; }
+
+  /* 成长进度条占位 */
+  .mock-growth { background: linear-gradient(135deg, #1a3d24, #2d5a3d); color: #fff; padding: 14px 20px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+  .mock-growth .left { display: flex; gap: 14px; align-items: center; }
+  .mock-growth .badge { background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 10px; font-size: 11px; }
+  .mock-growth .bar { flex: 1; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden; width: 100px; }
+  .mock-growth .fill { height: 100%; background: #c9a962; width: 40%; border-radius: 3px; }
+  .mock-growth .pct { font-size: 14px; font-weight: 700; color: #c9a962; }
+  .mock-growth .next { background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-size: 12px; }
+  .mock-growth .next .t { font-size: 10px; color: rgba(255,255,255,0.6); }
+
+  /* 搜索区 */
+  .mock-search { padding: 16px 20px; border-bottom: 1px solid #e8e4da; }
+  .mock-search h3 { font-size: 14px; color: #1a3d24; margin-bottom: 10px; }
+  .mock-search-box { display: flex; gap: 8px; margin-bottom: 10px; }
+  .mock-search-box input { flex: 1; padding: 10px 14px; border: 2px solid #e8e4da; border-radius: 10px; font-size: 13px; outline: none; transition: border 0.2s; }
+  .mock-search-box input:focus { border-color: #c9a962; }
+  .mock-search-box button { padding: 10px 20px; background: #1a3d24; color: #fff; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; }
+  .mock-suggest { display: flex; gap: 6px; flex-wrap: wrap; font-size: 11px; }
+  .mock-suggest .s { background: #faf5ea; color: #8a7040; padding: 3px 10px; border-radius: 10px; cursor: pointer; }
+
+  /* 引导提示 */
+  .mock-guide { padding: 8px 20px; font-size: 12px; color: #8a7040; background: #fff9e6; border-bottom: 1px solid #f0ede6; display: flex; justify-content: space-between; align-items: center; }
+  .mock-guide .dismiss { cursor: pointer; color: #c9a962; font-weight: 600; }
+
+  /* 阶段 Tab */
+  .mock-stages { display: flex; border-bottom: 2px solid #1a3d24; }
+  .mock-stage { flex: 1; padding: 10px 14px; text-align: center; cursor: pointer; font-size: 12px; border-bottom: 3px solid transparent; transition: all 0.2s; color: #555; background: #fafafa; }
+  .mock-stage:hover { background: #f0ede6; }
+  .mock-stage.active { background: #fff; color: #1a3d24; font-weight: 700; border-bottom-color: #1a3d24; }
+  .mock-stage .c { font-size: 18px; display: block; margin-bottom: 2px; }
+  .mock-stage .n { display: block; }
+  .mock-stage .count { font-size: 10px; color: #999; }
+
+  /* 三面板并列展示 */
+  .mock-panels { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-bottom: 1px solid #e8e4da; }
+  .mock-panel { padding: 16px 20px; border-right: 1px solid #f0ede6; min-height: 180px; }
+  .mock-panel:last-child { border-right: none; }
+  .mock-panel .plabel { font-size: 10px; font-weight: 700; color: #1a3d24; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .mock-panel .plabel .sync { font-size: 10px; background: #c9a962; color: #fff; padding: 1px 6px; border-radius: 8px; font-weight: 600; }
+  
+  /* 面板 1：场景卡 */
+  .scene-card { background: #faf5ea; border: 1px solid #c9a962; border-radius: 8px; padding: 10px 12px; margin-bottom: 6px; font-size: 12px; }
+  .scene-card .st { font-weight: 700; color: #8a7040; margin-bottom: 4px; }
+  .scene-card .sd { color: #555; font-size: 11px; line-height: 1.4; }
+  
+  /* 面板 2：推荐搜索 */
+  .kw-group { margin-bottom: 8px; }
+  .kw-label { font-size: 10px; color: #999; margin-bottom: 4px; }
+  .kw-item { background: #fafafa; border-left: 3px solid #c9a962; padding: 6px 10px; font-size: 12px; color: #555; margin-bottom: 4px; border-radius: 0 6px 6px 0; transition: all 0.2s; }
+  .kw-item:hover { background: #faf5ea; color: #8a7040; cursor: pointer; transform: translateX(3px); }
+  
+  /* 面板 3：能力画像（联动态） */
+  .dim-list { display: flex; flex-direction: column; gap: 6px; }
+  .dim-row {
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+  }
+  .dim-row.core { background: #1a3d24; color: #fff; border-color: #1a3d24; transform: scale(1.02); box-shadow: 0 2px 10px rgba(26,61,36,0.2); }
+  .dim-row.support { background: #faf5ea; color: #8a7040; border-color: #c9a962; }
+  .dim-row.off { opacity: 0.3; background: #f0f0f0; color: #aaa; }
+  .dim-row .dn { font-weight: 700; }
+  .dim-row .ds { font-size: 10px; }
+  .dim-row .tag { font-size: 9px; padding: 2px 6px; border-radius: 6px; font-weight: 700; }
+  .dim-row.core .tag { background: #c9a962; color: #1a3d24; }
+  .dim-row.support .tag { background: #c9a962; color: #fff; }
+
+  /* 图例 */
+  .legend { padding: 12px 20px; display: flex; gap: 16px; justify-content: center; font-size: 11px; color: #555; background: #fafafa; }
+  .legend .lg { display: flex; align-items: center; gap: 4px; }
+  .legend .box { width: 14px; height: 14px; border-radius: 3px; }
+
+  .hint { text-align: center; padding: 20px; font-size: 12px; color: #999; }
+  .hint strong { color: #1a3d24; }
+</style>
+</head>
+<body>
+
+<div class="hint">🖱️ 点击或 hover 下面的「消费者阶段 Tab」→ 三个面板同时动起来</div>
+
+<div class="mock">
+  <!-- 顶栏 -->
+  <div class="mock-topbar">
+    <div class="logo">风 · 聚满匠星云</div>
+    <div class="links">
+      <a href="#">首页</a>
+      <a href="#" class="active">工作台</a>
+      <a href="#">知识底座</a>
+      <a href="#">能力测评</a>
+    </div>
+  </div>
+
+  <!-- 成长进度条 -->
+  <div class="mock-growth">
+    <div class="left">
+      <span>👤 师傅</span>
+      <span class="badge">交易服务·买卖经纪人</span>
+      <span class="badge">🥈 初级</span>
+      <div class="bar"><div class="fill"></div></div>
+      <span class="pct">40%</span>
+    </div>
+    <div class="next">
+      <div class="t">⚡ 下一步推荐</div>
+      <div>AI 模拟对话 →</div>
+    </div>
+  </div>
+
+  <!-- 搜索区 -->
+  <div class="mock-search">
+    <h3>遇到客户服务的难题了？</h3>
+    <div class="mock-search-box">
+      <input type="text" placeholder="这里会根据你选的阶段推荐词">
+      <button>搜一下</button>
+    </div>
+    <div class="mock-suggest">
+      <span class="s">🔥 客户说太贵了</span>
+      <span class="s">🔥 回去商量</span>
+      <span class="s">🔥 不愿出来看房</span>
+    </div>
+  </div>
+
+  <!-- 首次引导 -->
+  <div class="mock-guide" id="mock-guide">
+    🎯 探索：<strong>点不同的消费者阶段</strong> → 看经纪人需要哪些能力（我们的 7 维体系是从消费者旅程导出的）
+    <span class="dismiss" onclick="document.getElementById('mock-guide').style.display='none'">知道了 ✕</span>
+  </div>
+
+  <!-- 阶段 Tab -->
+  <div class="mock-stages" id="mock-stages">
+    <div class="mock-stage" data-stage="prepare"><span class="c">📋</span><span class="n">购房准备</span><span class="count">1 条</span></div>
+    <div class="mock-stage" data-stage="market"><span class="c">🔍</span><span class="n">了解市场</span><span class="count">0 条</span></div>
+    <div class="mock-stage" data-stage="invite"><span class="c">🏠</span><span class="n">邀约带看</span><span class="count">4 条</span></div>
+    <div class="mock-stage active" data-stage="negotiate"><span class="c">💬</span><span class="n">带看议价</span><span class="count">6 条</span></div>
+    <div class="mock-stage" data-stage="transaction"><span class="c">💰</span><span class="n">交易安全</span><span class="count">2 条</span></div>
+    <div class="mock-stage" data-stage="closing"><span class="c">🔄</span><span class="n">过户交接</span><span class="count">0 条</span></div>
+  </div>
+
+  <!-- 三面板 -->
+  <div class="mock-panels">
+    <!-- 面板 1：场景卡 -->
+    <div class="mock-panel">
+      <div class="plabel">🔍 场景浏览 <span class="sync">联动</span></div>
+      <div id="panel-scenes"></div>
+    </div>
+
+    <!-- 面板 2：推荐搜索 -->
+    <div class="mock-panel">
+      <div class="plabel">💡 推荐搜索 <span class="sync">联动</span></div>
+      <div id="panel-keywords"></div>
+    </div>
+
+    <!-- 面板 3：能力画像 -->
+    <div class="mock-panel">
+      <div class="plabel">🧢 能力画像 <span class="sync">联动</span></div>
+      <div id="panel-dims" class="dim-list"></div>
+    </div>
+  </div>
+
+  <!-- 图例 -->
+  <div class="legend">
+    <span class="lg"><span class="box" style="background:#1a3d24"></span> 核心能力（墨绿·真人决策）</span>
+    <span class="lg"><span class="box" style="background:#faf5ea;border:1px solid #c9a962"></span> 辅助能力（匠星金·可能AI帮上）</span>
+    <span class="lg"><span class="box" style="background:#f0f0f0;opacity:0.3"></span> 此阶段不相关</span>
+  </div>
+</div>
+
+<script>
+// ===== 数据 =====
+const STAGES = {
+  prepare: {
+    scenes: [
+      { t: '公积金能贷多少？', d: '贷款资格、首付比例、首套认定' },
+    ],
+    keywords: [
+      { t: '公积金能贷多少', d: '客户问贷款额度' },
+      { t: '首套房怎么认定', d: '客户怕按二套算' },
+      { t: '预算怎么算合理', d: '客户不确定能买多少钱的房' },
+    ],
+    dims: [
+      { n: '需求洞察', s: '挖预算/动机', level: 'core' },
+      { n: '专业方案', s: '贷款/税费测算', level: 'core' },
+      { n: '数字化协同', s: 'AI 帮算月供', level: 'support' },
+    ],
+  },
+  market: {
+    scenes: [],
+    keywords: [
+      { t: '片区行情怎么样', d: '客户想对比板块' },
+      { t: '新盘值不值得买', d: '客户纠结新旧' },
+    ],
+    dims: [
+      { n: '专业方案', s: '片区/政策', level: 'core' },
+      { n: '获客触达', s: '推合适房源', level: 'core' },
+    ],
+  },
+  invite: {
+    scenes: [
+      { t: '客户不愿出来看房', d: '"没时间""再了解下"' },
+      { t: '客户不回消息不接电话', d: '失联怎么破冰' },
+      { t: '业主不让看房/不给钥匙', d: '业主要求先付意向金' },
+      { t: '被追着烦', d: '客户嫌骚扰' },
+    ],
+    keywords: [
+      { t: '客户不愿出门看房', d: '邀约话术' },
+      { t: '客户不回消息怎么办', d: '破冰技巧' },
+      { t: '被追着烦怎么破', d: '控制频次 + 价值投递' },
+    ],
+    dims: [
+      { n: '获客触达', s: '让客户愿意出门', level: 'core' },
+      { n: '带看谈判', s: '应对"随便看看"', level: 'core' },
+      { n: '需求洞察', s: '找真正顾虑', level: 'support' },
+    ],
+  },
+  negotiate: {
+    scenes: [
+      { t: '客户说太贵了', d: '异议处理 36 招' },
+      { t: '客户回去商量', d: '临门一脚' },
+      { t: '带看完怎么跟进', d: '次日/3日/7日节奏' },
+      { t: '业主不让价怎么办', d: '斡旋策略' },
+      { t: '客户嫌面积小', d: '价值重构' },
+      { t: '客户觉得装修旧', d: '折旧估算' },
+    ],
+    keywords: [
+      { t: '客户说太贵了怎么回', d: '共情→数据→引导' },
+      { t: '客户回去商量怎么办', d: '不追→挖顾虑→锁时间' },
+      { t: '业主不让价怎么办', d: '找竞品对比数据' },
+    ],
+    dims: [
+      { n: '带看谈判', s: '异议/价格斡旋', level: 'core' },
+      { n: '需求洞察', s: '挖真实顾虑', level: 'core' },
+      { n: '专业方案', s: '竞品对比', level: 'support' },
+    ],
+  },
+  transaction: {
+    scenes: [
+      { t: '首套房契税怎么算', d: '精确测算' },
+      { t: '资金监管安全吗', d: '流程 SOP' },
+    ],
+    keywords: [
+      { t: '首套房契税怎么算', d: '精确到分' },
+      { t: '资金监管安全吗', d: '打消顾虑' },
+      { t: '合同要注意什么坑', d: '条款 checklist' },
+    ],
+    dims: [
+      { n: '交易履约', s: '合同/监管/过户', level: 'core' },
+      { n: '专业方案', s: '税费精确算', level: 'core' },
+      { n: '数字化协同', s: 'AI 审合同', level: 'support' },
+    ],
+  },
+  closing: {
+    scenes: [],
+    keywords: [
+      { t: '过户流程怎么走', d: '一步一步说清' },
+      { t: '交房交接 checklist', d: '不漏水电物业' },
+      { t: '装修建议有吗', d: '转介绍切入点' },
+    ],
+    dims: [
+      { n: '交易履约', s: '过户/交接', level: 'core' },
+      { n: '售后复购', s: '售后/转介绍', level: 'core' },
+      { n: '数字化协同', s: 'AI 自动提醒', level: 'support' },
+    ],
+  },
+};
+
+const ALL_DIMS = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
+
+function renderAll(stage) {
+  const s = STAGES[stage];
+  if (!s) return;
+
+  // 面板 1：场景
+  const scenesEl = document.getElementById('panel-scenes');
+  if (s.scenes.length === 0) {
+    scenesEl.innerHTML = '<div style="color:#999;font-size:11px;padding:10px 0;">暂无此阶段场景卡<br>📋 近期补全</div>';
+  } else {
+    scenesEl.innerHTML = s.scenes.map(sc => `
+      <div class="scene-card">
+        <div class="st">${sc.t}</div>
+        <div class="sd">${sc.d}</div>
+      </div>
+    `).join('');
+  }
+
+  // 面板 2：推荐搜索
+  const kwEl = document.getElementById('panel-keywords');
+  kwEl.innerHTML = s.keywords.map(k => `
+    <div class="kw-group">
+      <div class="kw-label">💡 推荐搜</div>
+      <div class="kw-item">「${k.t}」<br><span style="color:#8a7040;font-size:10px;">${k.d}</span></div>
+    </div>
+  `).join('');
+
+  // 面板 3：能力画像（7 维全部展示 + 联动高亮）
+  const dimMap = {};
+  s.dims.forEach(d => dimMap[d.n] = d.level);
+  const dimEl = document.getElementById('panel-dims');
+  dimEl.innerHTML = ALL_DIMS.map(name => {
+    const level = dimMap[name] || 'off';
+    const subMap = {
+      '获客触达': '渠道/品牌', '需求洞察': '动机/预算', '专业方案': '税费/学区',
+      '带看谈判': '异议/斡旋', '交易履约': '合同/过户', '售后复购': '售后/转介绍',
+      '数字化协同': 'AI/数据',
+    };
+    const tagMap = { core: '核心', support: '辅助', off: '' };
+    return `
+      <div class="dim-row ${level}">
+        <div>
+          <span class="dn">${name}</span>
+          <span style="margin-left:8px;" class="tag">${tagMap[level]}</span>
+        </div>
+        <span class="ds">${subMap[name]}</span>
+      </div>
+    `;
+  }).join('');
+
+  // tab active
+  document.querySelectorAll('.mock-stage').forEach(t => t.classList.toggle('active', t.dataset.stage === stage));
+
+  // 更新搜索框 placeholder
+  const input = document.querySelector('.mock-search input');
+  if (s.keywords[0]) input.placeholder = `试试：${s.keywords[0].t}`;
+}
+
+document.querySelectorAll('.mock-stage').forEach(t => {
+  t.addEventListener('click', () => renderAll(t.dataset.stage));
+  t.addEventListener('mouseover', () => renderAll(t.dataset.stage));
+});
+
+renderAll('negotiate');
+</script>
+</body>
+</html>
