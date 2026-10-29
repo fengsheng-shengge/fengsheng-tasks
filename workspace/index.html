@@ -255,6 +255,125 @@
   .kb-empty { font-size: 11px; color: #999; text-align: center; padding: 6px 0; }
   .kb-loading { font-size: 11px; color: #c9a962; text-align: center; padding: 6px 0; animation: kb-pulse 1.5s infinite; }
   @keyframes kb-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  /* ===== 🆕 知识底座 · 阶段精选面板 ===== */
+  .kb-stage-panel {
+    margin: 20px 0 0;
+    background: linear-gradient(135deg, #fffdf5 0%, #fef7e7 100%);
+    border: 1.5px solid #c9a962;
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .kb-stage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1.5px dashed rgba(201,169,98,0.4);
+  }
+  .kb-stage-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a3d24;
+  }
+  .kb-stage-tag {
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #c9a962 0%, #a8873f 100%);
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+  }
+  .kb-stage-more {
+    font-size: 12px;
+    color: #8a7040;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .kb-stage-more:hover { color: #c9a962; }
+  .kb-stage-body { display: flex; flex-direction: column; gap: 8px; }
+  .kb-stage-loading, .kb-stage-empty {
+    text-align: center;
+    padding: 14px;
+    font-size: 12px;
+    color: #8a7040;
+  }
+  .kb-stage-loading { animation: kb-pulse 1.5s infinite; }
+  .kb-pick {
+    background: #fff;
+    border: 1px solid rgba(201,169,98,0.35);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .kb-pick:hover {
+    border-color: #c9a962;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(201,169,98,0.15);
+  }
+  .kb-pick-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .kb-pick-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a3d24;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .kb-pick-domain {
+    font-size: 10px;
+    font-weight: 500;
+    color: #8a7040;
+    background: #faf0d7;
+    padding: 1px 7px;
+    border-radius: 3px;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+  .kb-pick-q {
+    font-size: 11.5px;
+    color: #555;
+    line-height: 1.55;
+    margin-bottom: 4px;
+  }
+  .kb-pick-q strong { color: #c9a962; }
+  .kb-pick-cp {
+    font-size: 11.5px;
+    color: #1a3d24;
+    font-weight: 500;
+    line-height: 1.55;
+    margin-bottom: 6px;
+  }
+  .kb-pick-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .kb-pick-tag {
+    font-size: 10px;
+    color: #8a7040;
+    background: #faf0d7;
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+  .kb-pick-link {
+    font-size: 11px;
+    color: #c9a962;
+    font-weight: 500;
+  }
+
   .empty-hint { text-align: center; padding: 30px; color: var(--muted); font-size: 13px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
 
   /* ===== Consumer filter + Stage tabs 外包区域 ===== */
@@ -793,6 +912,20 @@
         </div>
         <div id="stage-scenario-cards"></div>
       </div>
+
+      <!-- ===== 🆕 知识底座 · 本阶段精选（切 Tab 主动加载） ===== -->
+      <div class="kb-stage-panel" id="kb-stage-panel">
+        <div class="kb-stage-header">
+          <div class="kb-stage-title">
+            <span>📚 知识底座 · 本阶段精选</span>
+            <span class="kb-stage-tag">匠星金 · AI 精选</span>
+          </div>
+          <a class="kb-stage-more" href="/knowledge/" target="_blank">进入知识底座 →</a>
+        </div>
+        <div class="kb-stage-body" id="kb-stage-body">
+          <div class="kb-stage-loading">⏳ 正在匹配本阶段核心词条...</div>
+        </div>
+      </div>
     </div>
 
     <!-- 能力画像 -->
@@ -968,13 +1101,16 @@
 
     // ===== 阶段 Tab 数据 =====
     var STAGES = [
-      { key: "prepare",    icon: "📋", name: "购房准备",  desc: "预算测算、贷款资格" },
-      { key: "market",     icon: "🔍", name: "了解市场",  desc: "片区行情、政策" },
-      { key: "invite",     icon: "🏠", name: "邀约带看",  desc: "让客户愿意出门" },
-      { key: "negotiate",  icon: "💬", name: "带看议价",  desc: "异议处理、价格谈判" },
-      { key: "transaction",icon: "💰", name: "交易安全",  desc: "资金监管、税费" },
-      { key: "closing",    icon: "🔄", name: "过户交接",  desc: "过户流程、售后" }
+      { key: "prepare",    icon: "📋", name: "购房准备",  desc: "预算测算、贷款资格",  kb:"pre" },
+      { key: "market",     icon: "🔍", name: "了解市场",  desc: "片区行情、政策",     kb:"pre" },
+      { key: "invite",     icon: "🏠", name: "邀约带看",  desc: "让客户愿意出门",     kb:"pre" },
+      { key: "negotiate",  icon: "💬", name: "带看议价",  desc: "异议处理、价格谈判", kb:"mid" },
+      { key: "transaction",icon: "💰", name: "交易安全",  desc: "资金监管、税费",     kb:"mid" },
+      { key: "closing",    icon: "🔄", name: "过户交接",  desc: "过户流程、售后",     kb:"post" }
     ];
+
+    // ===== 去重：场景卡底部已展示的 KB entry ids =====
+    var _kbCardEntryIds = new Set();
 
     // ===== 消费者名称映射 =====
     var CONSUMER_NAMES = {
@@ -1269,6 +1405,7 @@
       if(!suppressRender){
         renderStageTabs();  // 刷新计数
         renderStageBrowse();
+        loadKBStagePicks(); // 🆕 切阶段 → 拉 KB 精选
       }
     }
 
@@ -1278,6 +1415,7 @@
       if(!suppressRender){
         renderStageTabs();  // 刷新计数
         renderStageBrowse();
+        loadKBStagePicks(); // 🆕 切消费者 → 重拉 KB 精选
         // 清空搜索结果（因为筛选条件变了，搜索结果可能不再对）
         document.getElementById("result-panel").classList.remove("show");
       }
@@ -1675,14 +1813,17 @@
       const data = await resp.json();
       const results = data.results || [];
       
+      // 🆕 收集 entry ids 用于去重
+      results.forEach(function(e){ if(e.id) _kbCardEntryIds.add(e.id); });
+
       let itemsHTML = '';
       if (results.length === 0) {
         itemsHTML = '<div class="kb-empty">知识底座暂无此场景词条，近期补全</div>';
       } else {
-        itemsHTML = results.map(e => {
-          const alias = e.alias ? (e.alias[0] || '') : '';
-          const consumerQ = e.consumerQ || '';
-          const cpPreview = consumerQ 
+        itemsHTML = results.map(function(e){
+          var alias = e.alias ? (e.alias[0] || '') : '';
+          var consumerQ = e.consumerQ || '';
+          var cpPreview = consumerQ 
             ? '<div class="kb-item-cp">💡 <strong>客户问：</strong>' + consumerQ + '</div>'
             : '';
           return '<div class="kb-item" onclick="window.open(\'/entry/?id=' + e.id + '\',\'_blank\')">' +
@@ -1704,6 +1845,80 @@
           '<span class="kb-relations-hint">加载失败</span>' +
         '</div>' +
         '<div class="kb-empty">知识底座暂时不可用，稍后刷新试试</div>';
+    }
+  }
+
+  /* ===== 🆕 阶段 Tab 主动联动：拉 KB 精选（去重 + 增强版展示） ===== */
+  var _kbStageLastKey = ""; // 避免同阶段重复 fetch
+
+  async function loadKBStagePicks() {
+    var stageInfo = STAGES.find(function(s){ return s.key === currentStage; });
+    if (!stageInfo) return;
+    var kbStage = stageInfo.kb; // pre / mid / post
+    var body = document.getElementById("kb-stage-body");
+    if (!body) return;
+
+    // 防抖：同阶段不重复拉
+    var cacheKey = kbStage + "|" + currentConsumer;
+    if (cacheKey === _kbStageLastKey) return;
+    _kbStageLastKey = cacheKey;
+
+    body.innerHTML = '<div class="kb-stage-loading">⏳ 正在匹配「' + stageInfo.name + '」阶段核心词条...</div>';
+
+    try {
+      var url = '/api/entries?stage=' + kbStage + '&limit=10';
+      // 按 consumer 过滤（非 all 时加参数）
+      if (currentConsumer !== "all") {
+        var clientMap = { buyer: "buyer", seller: "owner", renter: "renter", landlord: "landlord" };
+        var ct = clientMap[currentConsumer];
+        if (ct) url += '&clientType=' + ct;
+      }
+      var resp = await fetch(url);
+      if (!resp.ok) throw new Error('fetch failed ' + resp.status);
+      var data = await resp.json();
+      var entries = (data && data.entries) || [];
+
+      // 去重：过滤掉场景卡底部已展示过的 entry
+      var fresh = entries.filter(function(e){ return !_kbCardEntryIds.has(e.id); });
+      // 场景卡没展示的 → 用全部（fresh 可能几乎等于 entries 因为场景卡底部是用户手动展开才加载的）
+      if (fresh.length < 3) fresh = entries;
+
+      // 取 top 5
+      var picks = fresh.slice(0, 5);
+
+      if (picks.length === 0) {
+        body.innerHTML = '<div class="kb-stage-empty">📭 知识底座里「' + stageInfo.name + '」阶段暂无匹配词条<br><span style="opacity:.6;font-size:12px;">我们正在补充，稍后再来看看 →</span></div>';
+        return;
+      }
+
+      body.innerHTML = picks.map(function(e){
+        var consumerQ = e.consumerQ || '';
+        var cpArr = e.cp || [];
+        var cpFirst = cpArr.length > 0 ? cpArr[0] : '';
+        var sceneDomain = e.sceneDomain || '';
+        var clientLabel = '';
+        if (e.tags && e.tags.clientType) {
+          var cl = e.tags.clientType[0];
+          var clMap = { buyer:'购房客户', owner:'业主', renter:'租客', landlord:'房东' };
+          clientLabel = clMap[cl] || cl;
+        }
+        return '<div class="kb-pick" onclick="window.open(\'/entry/?id=' + e.id + '\',\'_blank\')">' +
+          '<div class="kb-pick-head">' +
+            '<span class="kb-pick-name">' + e.name + '</span>' +
+            (sceneDomain ? '<span class="kb-pick-domain">' + sceneDomain + '</span>' : '') +
+          '</div>' +
+          (consumerQ ? '<div class="kb-pick-q">💡 <strong>客户：</strong>' + consumerQ + '</div>' : '') +
+          (cpFirst ? '<div class="kb-pick-cp">' + cpFirst + '</div>' : '') +
+          '<div class="kb-pick-footer">' +
+            (clientLabel ? '<span class="kb-pick-tag">👤 ' + clientLabel + '</span>' : '') +
+            '<span class="kb-pick-link">查看完整词条 →</span>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+    } catch(err) {
+      _kbStageLastKey = ""; // 允许重试
+      body.innerHTML = '<div class="kb-stage-empty">⚠️ 知识底座暂时不可用（' + (err.message || '') + '）<br><span style="opacity:.6;font-size:12px;">刷新页面试试</span></div>';
     }
   }
   </script>
