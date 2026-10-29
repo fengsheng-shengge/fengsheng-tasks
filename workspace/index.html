@@ -855,7 +855,6 @@
     <div class="nav-links">
       <a href="/">首页</a>
       <a href="/workspace/" class="active">工作台</a>
-      <a href="/clients/">客户管理</a>
       <a href="/knowledge/">知识底座</a>
       <a href="/curation/">策展引擎</a>
       <a href="/decoder/">话术解码</a>
@@ -1631,14 +1630,26 @@
       var savedDomain = localStorage.getItem(DOM_KEY) || "TRANSACTION";
       var savedPosition = localStorage.getItem(POS_KEY);
 
+      // 🆕 未开放模块锁定：只允许恢复到已开放（NOW）板块，防止串台显示错误内容
+      var savedTab = Array.prototype.find.call(tabs, function(t){
+        return t.getAttribute("data-domain") === savedDomain;
+      });
+      if(savedTab && savedTab.getAttribute("data-phase") !== "NOW"){
+        savedDomain = "TRANSACTION";
+        savedPosition = null;
+        localStorage.setItem(DOM_KEY, savedDomain);
+        localStorage.removeItem(POS_KEY);
+      }
+
       // 绑定板块切换
       tabs.forEach(function(tab){
         tab.addEventListener("click", function(){
           var phase = this.getAttribute("data-phase");
           var domain = this.getAttribute("data-domain");
           if(phase !== "NOW"){
-            // Phase 2/3 板块：显示即将提示，仍然允许点（做预览）
-            // 但岗位选择器里标记"即将开放"
+            // 🆕 暂不开放：锁定态，不切换、不渲染错误内容，只提示
+            flashToast("「" + this.textContent.replace("即将","").trim() + "」模块内容建设中，当前可体验：交易服务");
+            return;
           }
           // 切换 active
           tabs.forEach(function(t){ t.classList.remove("active"); });

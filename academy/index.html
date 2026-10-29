@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习成长 · 即将开放 | 风声 · 聚满匠星云</title>
+<meta name="description" content="风声学习成长中心：测学练考评闭环中的「学」与「练」——7门核心课、21个场景练习、70道考核、23门外部推荐课，与能力测评画像联动。即将开放。">
+<link rel="icon" href="/favicon.png" type="image/png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#f7f5f0;color:#2b2b2b;line-height:1.6}
+a{text-decoration:none;color:inherit}
+
+/* 顶栏（站内规范） */
+.fs-top-nav{position:sticky;top:0;z-index:100;background:#f7f5f0;border-bottom:1px solid #e8e4da;padding:10px 32px;display:flex;align-items:center;gap:20px}
+.fs-top-logo{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.fs-top-mark{width:30px;height:30px;background:#1a3d24;color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.fs-top-name{font-size:14px;font-weight:700;color:#1a3d24;white-space:nowrap}
+.fs-top-links{display:flex;gap:14px;font-size:13px;flex-wrap:wrap;flex:1;justify-content:center}
+.fs-top-links a{color:#555;white-space:nowrap}
+.fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
+.fs-top-actions{display:flex;gap:10px;align-items:center;font-size:13px;flex-shrink:0}
+.fs-top-city{cursor:pointer;color:#555}
+.fs-top-avatar{width:30px;height:30px;background:#faf5ea;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px}
+@media(max-width:960px){.fs-top-links,.fs-top-city{display:none}}
+
+/* Hero */
+.hero{max-width:880px;margin:0 auto;padding:64px 24px 40px;text-align:center}
+.hero-badge{display:inline-block;font-size:12px;letter-spacing:2px;color:#8a7040;background:#faf0d7;border:1px solid #e8d9b8;padding:5px 14px;border-radius:20px;margin-bottom:22px}
+.hero h1{font-size:34px;font-weight:800;color:#1a3d24;line-height:1.3;margin-bottom:14px}
+.hero h1 .soon{color:#c9a962}
+.hero-sub{font-size:15px;color:#6b6b6b;max-width:620px;margin:0 auto}
+
+/* 闭环位置说明 */
+.loop{max-width:880px;margin:0 auto;padding:0 24px 8px}
+.loop-strip{display:flex;gap:0;justify-content:center;align-items:stretch;background:#fff;border:1px solid #e8e4da;border-radius:14px;overflow:hidden}
+.loop-step{flex:1;padding:16px 8px;text-align:center;font-size:13px;position:relative}
+.loop-step .ls-icon{font-size:20px;display:block;margin-bottom:5px}
+.loop-step .ls-name{font-weight:700;color:#555}
+.loop-step .ls-sub{font-size:11px;color:#999;margin-top:2px}
+.loop-step.hl{background:linear-gradient(135deg,#fdf9ef,#fffbf3)}
+.loop-step.hl .ls-name{color:#8a7040}
+.loop-step:not(:last-child){border-right:1px dashed #e8e4da}
+.loop-note{text-align:center;font-size:12px;color:#999;margin-top:10px}
+
+/* 体系规划卡片 */
+.plans{max-width:880px;margin:0 auto;padding:32px 24px}
+.plans-title{font-size:18px;font-weight:800;color:#1a3d24;text-align:center;margin-bottom:6px}
+.plans-sub{font-size:13px;color:#888;text-align:center;margin-bottom:24px}
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.plan-card{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:20px}
+.plan-card .pc-icon{font-size:24px;margin-bottom:10px}
+.plan-card .pc-count{font-size:26px;font-weight:800;color:#1a3d24}
+.plan-card .pc-count small{font-size:13px;font-weight:600;color:#8a7040;margin-left:4px}
+.plan-card .pc-name{font-size:15px;font-weight:700;margin:4px 0 6px}
+.plan-card .pc-desc{font-size:12.5px;color:#777;line-height:1.65}
+.plan-card .pc-tag{display:inline-block;margin-top:10px;font-size:10px;font-weight:700;color:#fff;background:#c9a962;padding:2px 8px;border-radius:8px;letter-spacing:1px}
+
+/* 联动说明 */
+.link-section{max-width:880px;margin:8px auto 0;padding:0 24px 40px}
+.link-box{background:linear-gradient(135deg,#e8f0ea,#f5f8f6);border:1px solid #cddccf;border-radius:14px;padding:22px 24px}
+.link-box h3{font-size:15px;color:#1a3d24;font-weight:800;margin-bottom:10px}
+.link-flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:#3a5a42}
+.link-flow .lf-item{background:#fff;border:1px solid #cddccf;border-radius:8px;padding:6px 12px;font-weight:600}
+.link-flow .lf-arrow{color:#c9a962;font-weight:700}
+.link-box p{font-size:12.5px;color:#5f7a66;margin-top:12px}
+
+/* 当前可用入口 */
+.actions{max-width:880px;margin:0 auto;padding:0 24px 64px;text-align:center}
+.actions .a-title{font-size:14px;font-weight:700;color:#555;margin-bottom:14px}
+.action-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:11px 22px;border-radius:9px;font-size:14px;font-weight:700;transition:all .15s}
+.btn-green{background:#1a3d24;color:#fff}
+.btn-green:hover{background:#14301b}
+.btn-gold{background:#c9a962;color:#fff}
+.btn-gold:hover{background:#b8985a}
+.btn-outline{border:1.5px solid #1a3d24;color:#1a3d24;background:transparent}
+.btn-outline:hover{background:#e8f0ea}
+.note{font-size:12px;color:#999;margin-top:16px}
+
+/* 页脚 */
+.footer-note{max-width:880px;margin:0 auto;padding:22px 24px 34px;border-top:1px solid #e8e4da;font-size:12px;color:#999;text-align:center;line-height:1.9}
+.footer-note a{color:#1a3d24;font-weight:600}
+</style>
+</head>
+<body>
+
+<nav class="fs-top-nav">
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声·聚满匠星云</span></a>
+  <div class="fs-top-links">
+    <a href="/">首页</a>
+    <a href="/workspace/">工作台</a>
+    <a href="/knowledge/">知识底座</a>
+    <a href="/curation/">策展引擎</a>
+    <a href="/decoder/">话术解码</a>
+    <a href="/care-test/">能力测评</a>
+    <a class="active" href="/academy/">学习成长</a>
+  </div>
+  <div class="fs-top-actions">
+    <span class="fs-top-city" onclick="alert('当前以北京为样板城市，多城市数据接入中')">📍 北京 ▾</span>
+    <span class="fs-top-avatar">👤</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">测 · 学 · 练 · 考 · 评 · 配</div>
+  <h1>学习成长中心<br><span class="soon">即将开放</span></h1>
+  <p class="hero-sub">闭环里的「学」与「练」——测评出分后，按你最弱的维度推送该学的课、该练的场景。<br>内容按知识底座标准入库后开放，先立骨架。</p>
+</div>
+
+<div class="loop">
+  <div class="loop-strip">
+    <div class="loop-step"><span class="ls-icon">📋</span><span class="ls-name">测</span><span class="ls-sub">能力测评</span></div>
+    <div class="loop-step hl"><span class="ls-icon">📖</span><span class="ls-name">学</span><span class="ls-sub">核心课 · 外部课</span></div>
+    <div class="loop-step hl"><span class="ls-icon">🎭</span><span class="ls-name">练</span><span class="ls-sub">场景模拟</span></div>
+    <div class="loop-step"><span class="ls-icon">📝</span><span class="ls-name">考</span><span class="ls-sub">岗位考核</span></div>
+    <div class="loop-step"><span class="ls-icon">📊</span><span class="ls-name">评</span><span class="ls-sub">能力画像</span></div>
+    <div class="loop-step"><span class="ls-icon">🎯</span><span class="ls-name">配</span><span class="ls-sub">人岗匹配</span></div>
+  </div>
+  <div class="loop-note">当前开放：测（能力测评） · 学习成长开放中 →</div>
+</div>
+
+<div class="plans">
+  <div class="plans-title">学习体系规划（内容入库后开放）</div>
+  <div class="plans-sub">全部内容按 7 个能力维度组织，与测评画像一一对应</div>
+  <div class="plan-grid">
+    <div class="plan-card">
+      <div class="pc-icon">📖</div>
+      <div class="pc-count">7<small>门</small></div>
+      <div class="pc-name">核心课</div>
+      <div class="pc-desc">获客触达 / 需求洞察 / 专业方案 / 带看谈判 / 交易履约 / 售后复购 / 数字化协同——一维一课，测出短板补哪门。</div>
+      <span class="pc-tag">规划中</span>
+    </div>
+    <div class="plan-card">
+      <div class="pc-icon">🎭</div>
+      <div class="pc-count">21<small>个</small></div>
+      <div class="pc-name">场景练习</div>
+      <div class="pc-desc">AI 扮演客户的真实对话练习——嫌贵怎么回、砍价怎么接、异议怎么拆。练完给评分和话术复盘。</div>
+      <span class="pc-tag">规划中</span>
+    </div>
+    <div class="plan-card">
+      <div class="pc-icon">📝</div>
+      <div class="pc-count">70<small>道</small></div>
+      <div class="pc-name">考核题库</div>
+      <div class="pc-desc">学完练完再考——70 道岗位考核题，过线进阶，不过回炉。分数计入能力画像。</div>
+      <span class="pc-tag">规划中</span>
+    </div>
+    <div class="plan-card">
+      <div class="pc-icon">🌐</div>
+      <div class="pc-count">23<small>门</small></div>
+      <div class="pc-name">外部推荐课</div>
+      <div class="pc-desc">站外优质课程按维度精选——本站不重复造课，只做筛选和匹配。</div>
+      <span class="pc-tag">规划中</span>
+    </div>
+  </div>
+</div>
+
+<div class="link-section">
+  <div class="link-box">
+    <h3>🔗 开放后怎么联动（测 → 学 → 练）</h3>
+    <div class="link-flow">
+      <span class="lf-item">测评出分</span>
+      <span class="lf-arrow">→</span>
+      <span class="lf-item">找出得分最低的 2 个维度</span>
+      <span class="lf-arrow">→</span>
+      <span class="lf-item">推 1 门核心课 + 3 个场景练习</span>
+      <span class="lf-arrow">→</span>
+      <span class="lf-item">练完回写能力画像</span>
+    </div>
+    <p>不是"上完课就完"——学的、练的都从你的测评短板来，练完分数回写画像，下次测评看得到进步。</p>
+  </div>
+</div>
+
+<div class="actions">
+  <div class="a-title">现在就能用的：</div>
+  <div class="action-btns">
+    <a href="/care-test/" class="btn btn-green">📋 先测能力短板</a>
+    <a href="/workspace/" class="btn btn-gold">🔍 去工作台找答案</a>
+    <a href="/knowledge/" class="btn btn-outline">📚 逛知识底座</a>
+  </div>
+  <div class="note">学习成长开放时，会在工作台顶部提醒你。</div>
+</div>
+
+<div class="footer-note">
+  风声·聚满匠星云 · 经纪人能力外挂辅助系统<br>
+  © 2026 fengsheng.tech
+</div>
+
+</body>
+</html>

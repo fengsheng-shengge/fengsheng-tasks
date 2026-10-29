@@ -4,12 +4,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>服务者能力画像测评 | 风声</title>
 <meta property="og:title" content="服务者能力画像测评 · 风声">
-<meta property="og:description" content="7个维度21道题每题4选项，测出你在获客、洞察、方案、谈判、履约、复购、数字化的真实水平，并标出服务阶段的优势与断点。专为房产经纪人设计。">
+<meta property="og:description" content="7个维度35道题每题4选项，测出你在获客、洞察、方案、谈判、履约、复购、数字化的真实水平，并标出服务阶段的优势与断点。专为房产经纪人设计。">
 <meta property="og:image" content="https://fengsheng.tech/og-image.png">
 <meta property="og:url" content="https://fengsheng.tech/care-test/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="7个维度21道题（每题4选项）约5分钟，按获客/洞察/方案/带看/交易/售后的服务阶段，测出房产经纪人的真实优势与断点，附缺口分析与工具推荐。免费自测。">
+<meta name="description" content="7个维度35道题（每题4选项）约15分钟，按获客/洞察/方案/带看/交易/售后的服务阶段，测出房产经纪人的真实优势与断点，附缺口分析与工具推荐。免费自测。">
 <meta name="keywords" content="房产经纪人能力测评,经纪人能力画像,获客能力测评,带看谈判测评,房产经纪自测,服务者能力画像">
 <link rel="canonical" href="https://fengsheng.tech/care-test/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"服务者能力画像测评","url":"https://fengsheng.tech/care-test/","applicationCategory":"EducationApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"description":"7维度测出房产经纪人的能力画像：获客·洞察·方案·谈判·履约·复购·数字化协同"}</script>
@@ -140,7 +140,6 @@
   <div class="fs-nav-links">
     <a href="/">首页</a>
     <a href="/workspace/">工作台</a>
-    <a href="/clients/">客户管理</a>
     <a href="/knowledge/">知识底座</a>
     <a href="/curation/">策展引擎</a>
     <a href="/decoder/">话术解码</a>
@@ -179,7 +178,7 @@
 <div class="page active" id="page-intro">
   <div class="intro-header">
     <h1>服务者能力<br>画像测评</h1>
-    <p>7个维度 · 21道题 · 每题4选项 · 约5分钟<br>按客户服务阶段呈现你的优势与断点，测出真实水平<br>专为一线经纪人设计 · 完全免费</p>
+    <p>7个维度 · 35道题 · 每题4选项 · 约15分钟<br>按客户服务阶段呈现你的优势与断点，测出真实水平<br>专为一线经纪人设计 · 完全免费</p>
   </div>
   <div class="intro-body">
 
@@ -251,7 +250,7 @@
   </div>
   <div class="quiz-body">
     <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-    <div class="q-counter" id="q-counter">第 1 题 / 共 21 题</div>
+    <div class="q-counter" id="q-counter">第 1 题 / 共 35 题</div>
     <div id="q-options"></div>
     <div class="quiz-nav">
       <button class="nav-btn nav-prev" id="prev-btn" onclick="prevQuestion()" disabled>上一题</button>
@@ -331,7 +330,7 @@
 
 <script>
 // ============================================================
-//  服务者能力画像测评 - 核心数据（7维度 · 21题，对齐能力画像）
+//  服务者能力画像测评 - 核心数据（7维度 · 35题，对齐能力画像）
 // ============================================================
 
 var DIMS = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
@@ -471,7 +470,7 @@ var SOLUTIONS = {
   ],
   '需求洞察': [
     {title:'话术解码器', desc:'客户问题怎么答，把"再看看"背后的真实顾虑挖出来', type:'free', link:'/decoder/'},
-    {title:'客户管理', desc:'建完整客户档案：需求+家庭+决策链+带看记录', type:'free', link:'/clients/'}
+    {title:'知识底座·客户解码', desc:'75条客户解码词条——听懂话外音，识别真实顾虑', type:'free', link:'/knowledge/'}
   ],
   '专业方案': [
     {title:'知识底座', desc:'购房方案模板/税费测算/政策口径秒查，6,135条业务知识', type:'free', link:'/knowledge/'},
@@ -483,22 +482,22 @@ var SOLUTIONS = {
   ],
   '交易履约': [
     {title:'知识底座', desc:'交易节点SOP/过户清单/交房验房流程，合同条款对照查', type:'free', link:'/knowledge/'},
-    {title:'客户管理', desc:'跟踪交易节点：签约、贷款、过户、交房不漏项', type:'free', link:'/clients/'}
+    {title:'话术解码器', desc:'资金监管、税费追问怎么答——交易环节疑问应对参考', type:'free', link:'/decoder/'}
   ],
   '售后复购': [
-    {title:'客户管理', desc:'建立售后回访节奏，把成交客户经营成长期关系', type:'free', link:'/clients/'},
+    {title:'策展引擎', desc:'给老客户生成一份居住方案——把回访做成专业触达', type:'free', link:'/curation/'},
     {title:'知识底座', desc:'后市场维修/家装改造/资产运营词条，帮老客户解决居住问题', type:'free', link:'/knowledge/'}
   ],
   '数字化协同': [
     {title:'策展引擎', desc:'完整体验"AI产出 · 真人复核 · 方才发送"的作业闭环', type:'free', link:'/curation/'},
-    {title:'学习成长', desc:'系统训练你的AI协同能力，从会用到善用', type:'free', link:'/academy/'}
+    {title:'学习成长', desc:'测完按你的短板维度推核心课与场景练习，学练回写画像', type:'free', link:'/academy/'}
   ]
 };
 
 // 改善建议
 var SUGGESTIONS = {
   '获客触达': {icon:'📣', color:'#2563eb', text:'本周先做一件事：在知识底座"工具模板"域里抓一条收房核验清单，转发到朋友圈。内容稳、口径准、转发自带权威。'},
-  '需求洞察': {icon:'🔍', color:'#0891b2', text:'下次带看前，把客户的通勤、家庭结构、换房原因写进客户档案，带着画像去看房——而不是带着房源去看客户。'},
+  '需求洞察': {icon:'🔍', color:'#0891b2', text:'下次带看前，把客户的通勤、家庭结构、换房原因记成一页需求笔记，带着画像去看房——而不是带着房源去看客户。'},
   '专业方案': {icon:'📐', color:'#059669', text:'打开知识底座"工具模板"域，把购房方案模板套一遍：客户画像+片区对比+税费+贷款+风险提示，10分钟出初稿。'},
   '带看谈判': {icon:'🤝', color:'#d97706', text:'知识底座搜"异议处理"，把最常见的3个压价回应背下来——"房子贵"的标准回应在底座里现成可查。'},
   '交易履约': {icon:'📝', color:'#7c3aed', text:'"工具模板"域里有现成的交易节点清单（签约→贷款→过户→交房），每单打勾执行，不丢任何一步。'},
@@ -1131,7 +1130,7 @@ window.addEventListener('beforeunload', function() {
   </div>
   <div class="fs-guide-body">
     <h4>这是什么</h4>
-    <p>服务者能力画像测评，7 个维度 21 道题约 5 分钟，测出你在客户全生命周期各环节的真实能力水平。</p>
+    <p>服务者能力画像测评，7 个维度 35 道题约 15 分钟，测出你在客户全生命周期各环节的真实能力水平。</p>
     <h4>能帮你解决什么</h4>
     <p>凭感觉干，不知道自己弱在哪——测完即给出缺口分析与对应工具。</p>
     <h4>怎么用（3 步）</h4>
