@@ -3433,9 +3433,8 @@ export default {
     const pathRewrites = {
       '/showing-report': '/s1-report/',
       '/showing-report/': '/s1-report/',
-      // 学习成长导航别名 → 现有智能体学院（开发包 v1.0 路由对齐）
-      '/academy': '/agent-academy/',
-      '/academy/': '/agent-academy/',
+      // P0-4 学习成长 → 新占位页 /academy/（原指向 agent-academy 数字员工宣传页，暂不展示）
+      '/academy': '/academy/',
     };
     if (pathRewrites[path]) {
       const rewriteUrl = new URL(pathRewrites[path], request.url);
