@@ -525,6 +525,98 @@
     color: var(--muted);
     font-size: 12px;
   }
+
+  /* ===== v3.4 成长进度总览条 ===== */
+  .growth-bar {
+    background: linear-gradient(135deg, #1a3d24 0%, #2d5a3d 100%);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 16px;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(26,61,36,0.15);
+  }
+  .gb-left { flex: 1; min-width: 0; }
+  .gb-right {
+    background: rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 12px 16px;
+    min-width: 200px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .gb-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .gb-avatar { font-size: 20px; }
+  .gb-name { font-size: 15px; font-weight: 700; }
+  .gb-domain {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.12);
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .gb-level-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 10px;
+  }
+  .gb-level-badge[data-level="L1"] { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); }
+  .gb-level-badge[data-level="L2"] { background: #f5deb3; color: #5c4a1a; }
+  .gb-level-badge[data-level="L3"] { background: #c9a962; color: #1a3d24; }
+  .gb-level-badge[data-level="L4"] { background: linear-gradient(90deg,#c9a962,#f5deb3); color: #1a3d24; }
+  .gb-level-badge[data-level="L5"] { background: linear-gradient(90deg,#c9a962,#f5deb3,#c9a962); color: #1a3d24; box-shadow: 0 0 12px rgba(201,169,98,0.5); }
+
+  .gb-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .gb-progress-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .gb-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #c9a962, #f5deb3);
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+  .gb-progress-pct { font-size: 13px; font-weight: 700; color: #c9a962; min-width: 38px; text-align: right; }
+
+  .gb-path {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-size: 11px;
+  }
+  .gb-path-step { color: rgba(255,255,255,0.55); }
+  .gb-path-done { color: #c9a962; font-weight: 600; }
+  .gb-path-current { color: #fff; font-weight: 600; }
+  .gb-path-arrow { color: rgba(255,255,255,0.3); font-size: 9px; }
+
+  .gb-next-label { font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  .gb-next-item {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f5deb3;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .gb-next-item:hover { color: #fff; }
+  .gb-next-sub { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 3px; }
 </style>
 </head>
 <body>
@@ -568,6 +660,38 @@
 
   <!-- 主内容 -->
   <div class="main">
+
+    <!-- 🆕 v3.4：成长进度总览条（页面最顶部，用户第一眼看到） -->
+    <div class="growth-bar" id="growth-bar">
+      <div class="gb-left">
+        <div class="gb-user">
+          <span class="gb-avatar">👤</span>
+          <span class="gb-name">师傅</span>
+          <span class="gb-domain" id="gb-domain-tag">买卖经纪人</span>
+          <span class="gb-level-badge" id="gb-level-badge">🥉 见习</span>
+        </div>
+        <div class="gb-progress-row">
+          <div class="gb-progress-bar">
+            <div class="gb-progress-fill" id="gb-progress-fill" style="width:0%"></div>
+          </div>
+          <div class="gb-progress-pct" id="gb-progress-pct">0%</div>
+        </div>
+        <div class="gb-path" id="gb-path">
+          <span class="gb-path-step gb-path-done">✅ 测评</span>
+          <span class="gb-path-arrow">→</span>
+          <span class="gb-path-step">🎭 练场景</span>
+          <span class="gb-path-arrow">→</span>
+          <span class="gb-path-step">📚 学课程</span>
+          <span class="gb-path-arrow">→</span>
+          <span class="gb-path-step">🎯 通过考核</span>
+        </div>
+      </div>
+      <div class="gb-right">
+        <div class="gb-next-label">⚡ 下一步推荐</div>
+        <div class="gb-next-item" id="gb-next-item">开始能力测评 →</div>
+        <div class="gb-next-sub" id="gb-next-sub">测完知道自己哪块弱</div>
+      </div>
+    </div>
 
     <!-- v3.0：二次访问问候条（有测评记录才显示） -->
     <div id="welcome-back-bar" style="display:none;margin-bottom:18px;padding:16px 20px;background:linear-gradient(135deg,#e8f0e9,#faf5ea);border:1px solid rgba(201,169,98,0.3);border-radius:12px;">
@@ -1383,9 +1507,106 @@
       return m[dim] || '客户嫌贵';
     }
 
-    // 启动时（两个 fetch 都回来了之后）显示问候条
-    setTimeout(showWelcomeBack, 600);
+    // 启动时（两个 fetch 都回来了之后）显示问候条 + 成长进度条
+    setTimeout(function(){
+      showWelcomeBack();
+      initGrowthBar();
+    }, 600);
   })();
+
+  /* ===== v3.4 成长进度总览条逻辑 ===== */
+  const LEVELS = [
+    { id: 'L1', name: '见习',   minScore: 0,  needScene: 0,  needCourse: 0,  needExam: 0  },
+    { id: 'L2', name: '初级',   minScore: 65, needScene: 1,  needCourse: 1,  needExam: 0  },
+    { id: 'L3', name: '中级',   minScore: 75, needScene: 3,  needCourse: 2,  needExam: 1  },
+    { id: 'L4', name: '高级',   minScore: 85, needScene: 8,  needCourse: 4,  needExam: 1  },
+    { id: 'L5', name: '专家',   minScore: 95, needScene: 15, needCourse: 7,  needExam: 2  },
+  ];
+  const LEVEL_ICON = { L1: '🥉', L2: '🥈', L3: '🥇', L4: '⭐', L5: '💎' };
+
+  function initGrowthBar() {
+    const bar = document.getElementById('growth-bar');
+    if (!bar) return;
+
+    // 读 localStorage 数据
+    const profile = JSON.parse(localStorage.getItem('fs_care_profile') || 'null');
+    const sceneCount = parseInt(localStorage.getItem('fs_scene_count') || '0');
+    const courseCount = parseInt(localStorage.getItem('fs_learn_progress') || '0');
+    const examCount = parseInt(localStorage.getItem('fs_exam_count') || '0');
+    const domain = localStorage.getItem('fs_workspace_domain') || 'TRANSACTION';
+
+    // 读岗位
+    const pos = localStorage.getItem('fs_workspace_position') || 'BROKER';
+    const domainNames = { TRANSACTION:'交易服务', ASSET:'资产运营', DECOR:'家装服务', AFTER:'后市场服务', SPECIAL:'特殊居住' };
+    const posNames = { BROKER:'买卖经纪人', NEW_HOME:'新房顾问', LEASE:'租赁管家', PM:'资管经理', DESIGNER:'设计师' };
+    document.getElementById('gb-domain-tag').textContent = (domainNames[domain] || domain) + ' · ' + (posNames[pos] || pos);
+
+    // 计算当前等级
+    const hasTest = profile && profile.avg && Object.keys(profile.avg).length > 0;
+    const avgScore = hasTest ? Math.round(Object.values(profile.avg).reduce((s,v)=>s+v,0) / Object.values(profile.avg).length) : 0;
+
+    let currentLevelIdx = 0;
+    for (let i = LEVELS.length - 1; i >= 0; i--) {
+      const L = LEVELS[i];
+      if (avgScore >= L.minScore && sceneCount >= L.needScene && courseCount >= L.needCourse && examCount >= L.needExam) {
+        currentLevelIdx = i;
+        break;
+      }
+    }
+    const currentLevel = LEVELS[currentLevelIdx];
+    const nextLevel = LEVELS[currentLevelIdx + 1];
+
+    // 渲染等级徽章
+    const badge = document.getElementById('gb-level-badge');
+    badge.textContent = (LEVEL_ICON[currentLevel.id] || '🥉') + ' ' + currentLevel.name;
+    badge.dataset.level = currentLevel.id;
+
+    // 计算进度
+    let progress = 0;
+    if (!hasTest) {
+      progress = 0;
+    } else if (!nextLevel) {
+      progress = 100; // 专家满了
+    } else {
+      // 加权计算到下一级还差多少
+      const scoreProg = Math.min(1, Math.max(0, (avgScore - currentLevel.minScore) / (nextLevel.minScore - currentLevel.minScore))) * 0.4;
+      const sceneProg = nextLevel.needScene > 0 ? Math.min(1, sceneCount / nextLevel.needScene) * 0.25 : 0.25;
+      const courseProg = nextLevel.needCourse > 0 ? Math.min(1, courseCount / nextLevel.needCourse) * 0.2 : 0.2;
+      const examProg = nextLevel.needExam > 0 ? Math.min(1, examCount / nextLevel.needExam) * 0.15 : 0.15;
+      progress = Math.round((currentLevelIdx * 20) + (scoreProg + sceneProg + courseProg + examProg) * 20);
+    }
+    progress = Math.max(0, Math.min(100, progress));
+
+    // 渲染进度条
+    document.getElementById('gb-progress-fill').style.width = progress + '%';
+    document.getElementById('gb-progress-pct').textContent = progress + '%';
+
+    // 渲染路径（哪些步骤完成了）
+    const pathEl = document.getElementById('gb-path');
+    const steps = [
+      { done: hasTest,              label: '✅ 测评',           next: !hasTest,            link: '/care-test/', sub: '完成能力测评知道短板' },
+      { done: sceneCount > 0,       label: '🎭 练场景',         next: hasTest && sceneCount === 0, link: '/scene/',     sub: 'AI 模拟对话练谈判' },
+      { done: courseCount > 0,      label: '📚 学课程',         next: hasTest && sceneCount > 0 && courseCount === 0, link: '/academy/', sub: '补谈判提升课' },
+      { done: examCount > 0,        label: '🎯 通过考核',       next: false,               link: '#',           sub: 'Q4 季度考核（近期上线）' },
+    ];
+    let pathHTML = '';
+    steps.forEach((s, i) => {
+      if (i > 0) pathHTML += '<span class="gb-path-arrow">→</span>';
+      let cls = 'gb-path-step';
+      if (s.done) cls += ' gb-path-done';
+      else if (s.next) cls += ' gb-path-current';
+      pathHTML += '<span class="' + cls + '">' + s.label + '</span>';
+    });
+    pathEl.innerHTML = pathHTML;
+
+    // 下一步推荐（找到第一个没完成的）
+    const nextStep = steps.find(s => !s.done && (s.next || s.label.includes('测评'))) || steps[0];
+    const itemEl = document.getElementById('gb-next-item');
+    const subEl = document.getElementById('gb-next-sub');
+    itemEl.textContent = nextStep.label.replace(/^[✅🎭📚🎯]\s*/, '') + ' →';
+    itemEl.onclick = () => { if (nextStep.link && nextStep.link !== '#') window.location.href = nextStep.link; else alert(nextStep.sub); };
+    subEl.textContent = hasTest ? ('测评均分 ' + avgScore + ' · ' + nextStep.sub) : nextStep.sub;
+  }
   </script>
 
   <div class="footer-note">
