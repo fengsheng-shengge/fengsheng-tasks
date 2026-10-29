@@ -294,8 +294,18 @@
     color: #8a7040;
     text-decoration: none;
     font-weight: 500;
+    margin-right: 10px;
   }
   .kb-stage-more:hover { color: #c9a962; }
+  .kb-stage-actions { display: flex; align-items: center; gap: 6px; }
+  .kb-stage-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #faf0d7; color: #8a7040; font-size: 11px; font-weight: 700;
+    cursor: pointer; user-select: none; transition: transform .2s;
+  }
+  .kb-stage-panel.collapsed .kb-stage-toggle { transform: rotate(180deg); }
+  .kb-stage-panel.collapsed .kb-stage-body { display: none; }
   .kb-stage-body { display: flex; flex-direction: column; gap: 8px; }
   .kb-stage-loading, .kb-stage-empty {
     text-align: center;
@@ -984,12 +994,15 @@
 
       <!-- ===== 🆕 知识底座 · 本阶段精选（切 Tab 主动加载） ===== -->
       <div class="kb-stage-panel" id="kb-stage-panel">
-        <div class="kb-stage-header">
+        <div class="kb-stage-header" onclick="toggleKBStage()">
           <div class="kb-stage-title">
             <span>📚 知识底座 · 本阶段精选</span>
             <span class="kb-stage-tag">匠星金 · AI 精选</span>
           </div>
-          <a class="kb-stage-more" href="/knowledge/" target="_blank">进入知识底座 →</a>
+          <div class="kb-stage-actions">
+            <a class="kb-stage-more" href="/knowledge/" target="_blank" onclick="event.stopPropagation()">进入知识底座 →</a>
+            <span class="kb-stage-toggle" id="kb-stage-toggle" title="收起/展开">▼</span>
+          </div>
         </div>
         <div class="kb-stage-body" id="kb-stage-body">
           <div class="kb-stage-loading">⏳ 正在匹配本阶段核心词条...</div>
@@ -1997,6 +2010,15 @@
   /* ===== 🆕 阶段 Tab 主动联动：拉 KB 精选（去重 + 增强版展示） ===== */
   var _kbStageLastKey = ""; // 避免同阶段重复 fetch
 
+  /* 🆕 折叠/展开 KB 精选面板（挂到 window 以便 header onclick 调用） */
+  function toggleKBStage(){
+    var panel = document.getElementById("kb-stage-panel");
+    if (!panel) return;
+    panel.classList.toggle("collapsed");
+    // 不持久化，让用户每次进来默认都能看到
+  }
+  window.toggleKBStage = toggleKBStage;
+
   async function loadKBStagePicks() {
     var stageInfo = STAGES.find(function(s){ return s.key === currentStage; });
     if (!stageInfo) return;
@@ -2012,7 +2034,7 @@
     body.innerHTML = '<div class="kb-stage-loading">⏳ 正在匹配「' + stageInfo.name + '」阶段核心词条...</div>';
 
     try {
-      var url = '/api/entries?stage=' + kbStage + '&limit=10';
+      var url = '/api/entries?stage=' + kbStage + '&limit=15';
       // 按 consumer 过滤（非 all 时加参数）
       if (currentConsumer !== "all") {
         var clientMap = { buyer: "buyer", seller: "owner", renter: "renter", landlord: "landlord" };
@@ -2029,8 +2051,8 @@
       // 场景卡没展示的 → 用全部（fresh 可能几乎等于 entries 因为场景卡底部是用户手动展开才加载的）
       if (fresh.length < 3) fresh = entries;
 
-      // 取 top 5
-      var picks = fresh.slice(0, 5);
+      // 🆕 取 top 10（用户反馈：比 5 条稍多些好，10 条以内合适）
+      var picks = fresh.slice(0, 10);
 
       if (picks.length === 0) {
         body.innerHTML = '<div class="kb-stage-empty">📭 知识底座里「' + stageInfo.name + '」阶段暂无匹配词条<br><span style="opacity:.6;font-size:12px;">我们正在补充，稍后再来看看 →</span></div>';
