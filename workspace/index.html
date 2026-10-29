@@ -534,6 +534,76 @@
   .ability-card-full {
     grid-column: span 3;
   }
+
+  /* ===== 🆕 阶段 Tab 联动：能力画像维度高亮 ===== */
+  .ability-card.dim-primary {
+    border: 2px solid #1a3d24;
+    background: linear-gradient(135deg, #e8f0ea 0%, #f5f8f6 100%);
+    box-shadow: 0 2px 10px rgba(26,61,36,0.15);
+  }
+  .ability-card.dim-primary .ability-card-name { color: #1a3d24; font-weight: 700; }
+  .ability-card.dim-primary::after {
+    content: "核心";
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    background: #1a3d24;
+    padding: 1px 6px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+  }
+  .ability-card { position: relative; } /* for ::after */
+
+  .ability-card.dim-secondary {
+    border: 2px solid #c9a962;
+    background: linear-gradient(135deg, #fdf9ef 0%, #fffbf3 100%);
+  }
+  .ability-card.dim-secondary .ability-card-name { color: #8a7040; }
+  .ability-card.dim-secondary::after {
+    content: "辅助";
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 9px;
+    font-weight: 600;
+    color: #fff;
+    background: #c9a962;
+    padding: 1px 6px;
+    border-radius: 8px;
+  }
+
+  .ability-card.dim-muted {
+    opacity: 0.45;
+    filter: grayscale(0.3);
+    background: #f5f5f5;
+    border-color: #e0e0e0;
+  }
+  .ability-card.dim-muted .ability-card-name { color: #aaa; }
+
+  .stage-dim-hint {
+    display: block;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(0,0,0,0.15);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .stage-dim-hint .dim-primary {
+    color: #1a3d24;
+    font-weight: 700;
+    background: #e8f0ea;
+    padding: 1px 7px;
+    border-radius: 4px;
+    margin-right: 6px;
+  }
+  .stage-dim-hint .dim-secondary {
+    color: #8a7040;
+    font-weight: 600;
+    background: #faf0d7;
+    padding: 1px 7px;
+    border-radius: 4px;
+  }
   .ability-tip {
     background: var(--gold-bg);
     border-radius: 8px;
@@ -1109,6 +1179,19 @@
       { key: "closing",    icon: "🔄", name: "过户交接",  desc: "过户流程、售后",     kb:"post" }
     ];
 
+    // ===== 🆕 阶段 Tab → 服务者维度联动映射 =====
+    // primary = 墨绿实底（核心能力，必须有）
+    // secondary = 匠星金边（辅助能力，加分项）
+    // 未列出 = 灰掉（当前阶段不重要）
+    var STAGE_TO_DIMS = {
+      prepare:     { primary: ["INSIGHT","SOLUTION"],   secondary: ["ACQUISITION","NEGOTIATION"] },
+      market:      { primary: ["INSIGHT","ACQUISITION"], secondary: ["SOLUTION","NEGOTIATION"] },
+      invite:      { primary: ["ACQUISITION","NEGOTIATION"], secondary: ["INSIGHT","SOLUTION"] },
+      negotiate:   { primary: ["NEGOTIATION","INSIGHT"], secondary: ["SOLUTION","FULFILLMENT"] },
+      transaction: { primary: ["FULFILLMENT","SOLUTION"], secondary: ["NEGOTIATION","INSIGHT"] },
+      closing:     { primary: ["FULFILLMENT","AFTERSALE"], secondary: ["DIGITAL","NEGOTIATION"] }
+    };
+
     // ===== 去重：场景卡底部已展示的 KB entry ids =====
     var _kbCardEntryIds = new Set();
 
@@ -1406,6 +1489,7 @@
         renderStageTabs();  // 刷新计数
         renderStageBrowse();
         loadKBStagePicks(); // 🆕 切阶段 → 拉 KB 精选
+        highlightAbilityForStage(); // 🆕 三面板联动：能力画像高亮
       }
     }
 
@@ -1416,6 +1500,7 @@
         renderStageTabs();  // 刷新计数
         renderStageBrowse();
         loadKBStagePicks(); // 🆕 切消费者 → 重拉 KB 精选
+        highlightAbilityForStage(); // 🆕 消费者切换也刷新
         // 清空搜索结果（因为筛选条件变了，搜索结果可能不再对）
         document.getElementById("result-panel").classList.remove("show");
       }
@@ -1626,6 +1711,7 @@
         var weight = Math.round(dim.weight * 100);
         var card = document.createElement("div");
         card.className = "ability-card" + (dim.dim_key === "DIGITAL" ? " ability-card-full" : "");
+        card.setAttribute("data-dim-key", dim.dim_key); // 🆕 供阶段联动用
         card.innerHTML =
           '<div class="ability-card-name">' + dim.dim_icon + " " + dim.dim_name + '</div>' +
           '<div class="ability-card-desc">' + dim.dim_desc + '</div>' +
@@ -1638,6 +1724,56 @@
       tipText.textContent = "针对「" + domainName + "·" + position.position_name + "」" +
         "的7维度专项测评——10分钟出能力报告，告诉你哪里强哪里弱，该先补什么。";
       goBtn.href = "/care-test/?domain=" + domainId + "&position=" + position.position_id;
+
+      highlightAbilityForStage(); // 🆕 切岗位后也重新联动
+    }
+
+    /* ===== 🆕 三面板联动：阶段 Tab → 能力画像高亮 ===== */
+    function highlightAbilityForStage(){
+      var stageInfo = STAGES.find(function(s){ return s.key === currentStage; });
+      var mapping = STAGE_TO_DIMS[currentStage];
+      if (!stageInfo || !mapping) return;
+
+      var primarySet = {};
+      var secondarySet = {};
+      mapping.primary.forEach(function(k){ primarySet[k] = true; });
+      mapping.secondary.forEach(function(k){ secondarySet[k] = true; });
+
+      // 找到能力画像标题或引导文案，加"本阶段重点"提示
+      var tipText = document.getElementById("ability-tip-text");
+      if (tipText) {
+        var primaryNames = [];
+        var secondaryNames = [];
+        // 从 DOM 读取卡片名字（已经渲染了）
+        document.querySelectorAll("#ability-grid .ability-card").forEach(function(card){
+          var key = card.getAttribute("data-dim-key");
+          var nameEl = card.querySelector(".ability-card-name");
+          var name = nameEl ? nameEl.textContent.split(" ")[1] : key;
+          if (primarySet[key]) primaryNames.push(name);
+          else if (secondarySet[key]) secondaryNames.push(name);
+        });
+        if (primaryNames.length > 0) {
+          var hintText = '<br><span class="stage-dim-hint">📍 当前是「' + stageInfo.name + '」阶段 → ' +
+            '<span class="dim-primary">核心关注：' + primaryNames.join("、") + '</span>' +
+            (secondaryNames.length > 0 ? ' <span class="dim-secondary">辅助：' + secondaryNames.join("、") + '</span>' : '') +
+            '</span>';
+          // 在原有文案后面加提示（如果还没加）
+          var baseText = tipText.getAttribute("data-base-text");
+          if (!baseText) {
+            tipText.setAttribute("data-base-text", tipText.textContent);
+          }
+          tipText.innerHTML = tipText.getAttribute("data-base-text") + hintText;
+        }
+      }
+
+      // 给每个 ability-card 加阶段 class
+      document.querySelectorAll("#ability-grid .ability-card").forEach(function(card){
+        var key = card.getAttribute("data-dim-key");
+        card.classList.remove("dim-primary","dim-secondary","dim-muted");
+        if (primarySet[key]) card.classList.add("dim-primary");
+        else if (secondarySet[key]) card.classList.add("dim-secondary");
+        else card.classList.add("dim-muted");
+      });
     }
 
     // ===== v3.0：二次访问问候条 =====
