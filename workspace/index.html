@@ -1680,15 +1680,13 @@
         itemsHTML = '<div class="kb-empty">知识底座暂无此场景词条，近期补全</div>';
       } else {
         itemsHTML = results.map(e => {
-          const cpList = e.cp || [];
           const alias = e.alias ? (e.alias[0] || '') : '';
           const consumerQ = e.consumerQ || '';
-          const cpPreview = cpList.length > 0 
-            ? '<div class="kb-item-cp">' + cpList.slice(0, 2).map(c => '• ' + c).join('<br>') + '</div>'
-            : (consumerQ ? '<div class="kb-item-cp">💡 <strong>客户问：</strong>' + consumerQ + '</div>' : '');
+          const cpPreview = consumerQ 
+            ? '<div class="kb-item-cp">💡 <strong>客户问：</strong>' + consumerQ + '</div>'
+            : '';
           return '<div class="kb-item" onclick="window.open(\'/entry/?id=' + e.id + '\',\'_blank\')">' +
             '<div class="kb-item-name">' + e.name + '</div>' +
-            (alias ? '<div class="kb-item-alias">别名: ' + alias + '</div>' : '') +
             cpPreview +
           '</div>';
         }).join('');
