@@ -221,6 +221,35 @@
   .hook-soft-cta:hover { background: var(--primary-light); }
   .empty-hint { text-align: center; padding: 30px; color: var(--muted); font-size: 13px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
 
+  /* ===== Consumer filter (type chips) ===== */
+  .consumer-filter { display: flex; align-items: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .consumer-filter-label { font-size: 12px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .consumer-filter .cf-chip {
+    font-size: 12px; padding: 5px 14px; border-radius: 18px; cursor: pointer;
+    background: var(--bg); color: var(--body); border: 1px solid var(--line);
+    transition: all 0.18s; font-weight: 500;
+  }
+  .consumer-filter .cf-chip:hover { background: var(--primary-bg); color: var(--primary); border-color: var(--primary-bg); }
+  .consumer-filter .cf-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; box-shadow: 0 1px 4px rgba(26,61,36,0.25); }
+
+  /* ===== Stage tabs (journey stages) ===== */
+  .stage-tabs { display: flex; gap: 2px; margin-top: 10px; background: var(--bg); border-radius: 10px; padding: 4px; overflow-x: auto; }
+  .stage-tabs .st-tab {
+    flex: 1; min-width: 92px; text-align: center; padding: 10px 6px;
+    font-size: 12px; border-radius: 8px; cursor: pointer; color: var(--body);
+    transition: all 0.18s; font-weight: 500; white-space: nowrap;
+  }
+  .stage-tabs .st-tab:hover { color: var(--primary); background: rgba(26,61,36,0.06); }
+  .stage-tabs .st-tab.active { background: var(--card); color: var(--primary); font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .stage-tabs .st-tab .st-icon { margin-right: 4px; }
+  .stage-tabs .st-tab .st-count { margin-left: 4px; font-size: 10px; background: var(--primary-bg); color: var(--primary); padding: 1px 6px; border-radius: 10px; font-weight: 600; }
+
+  /* ===== Stage browse panel (always visible now) ===== */
+  .stage-browse-panel { display: block; margin-top: 14px; animation: fadeIn 0.3s ease; }
+  .stage-browse-hint { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; margin-bottom: 10px; }
+  .stage-browse-hint span { color: var(--ink); }
+  .stage-browse-hint .st-consumer-tag { background: var(--primary-bg); color: var(--primary); padding: 2px 8px; border-radius: 3px; font-size: 10px; margin-left: 6px; font-weight: 600; }
+
   .hot-questions {
     margin-top: 12px;
     font-size: 12px;
@@ -528,10 +557,34 @@
         <span>限购政策查询</span>
       </div>
 
-      <!-- 搜索结果面板（默认隐藏） -->
+      <!-- ===== 类型筛选（永远可见） ===== -->
+      <div class="consumer-filter" id="consumer-filter">
+        <span class="consumer-filter-label">👤 服务对象：</span>
+        <span class="cf-chip active" data-consumer="all">全部</span>
+        <span class="cf-chip" data-consumer="buyer">👤 购房</span>
+        <span class="cf-chip" data-consumer="seller">🏠 售房</span>
+        <span class="cf-chip" data-consumer="renter">🧑 租房</span>
+        <span class="cf-chip" data-consumer="landlord">🔑 出租</span>
+      </div>
+
+      <!-- ===== 阶段 Tab（永远可见） ===== -->
+      <div class="stage-tabs" id="stage-tabs"></div>
+
+      <!-- ===== 搜索命中面板（有搜索才显示） ===== -->
       <div class="result-panel" id="result-panel">
-        <div class="result-hint">命中 <span id="result-count">0</span> 个高频问题 · 点击展开看话术</div>
+        <div class="result-hint">🔍 搜索命中 <span id="result-count">0</span> 条 · 点击展开看话术</div>
         <div id="scenario-cards"></div>
+      </div>
+
+      <!-- ===== 阶段浏览面板（永远可见，空态 + 有搜索都展示） ===== -->
+      <div class="stage-browse-panel" id="stage-browse">
+        <div class="stage-browse-hint">
+          <span id="browse-stage-name">💬 带看议价</span>
+          阶段 ·
+          <span id="browse-stage-count">0</span> 个场景
+          <span class="st-consumer-tag" id="browse-consumer-tag">👤 购房客户</span>
+        </div>
+        <div id="stage-scenario-cards"></div>
       </div>
     </div>
 
@@ -711,6 +764,29 @@
     var modelData = null;
     var questionMap = null;
 
+    // ===== 阶段 Tab 数据 =====
+    var STAGES = [
+      { key: "prepare",    icon: "📋", name: "购房准备",  desc: "预算测算、贷款资格" },
+      { key: "market",     icon: "🔍", name: "了解市场",  desc: "片区行情、政策" },
+      { key: "invite",     icon: "🏠", name: "邀约带看",  desc: "让客户愿意出门" },
+      { key: "negotiate",  icon: "💬", name: "带看议价",  desc: "异议处理、价格谈判" },
+      { key: "transaction",icon: "💰", name: "交易安全",  desc: "资金监管、税费" },
+      { key: "closing",    icon: "🔄", name: "过户交接",  desc: "过户流程、售后" }
+    ];
+
+    // ===== 消费者名称映射 =====
+    var CONSUMER_NAMES = {
+      all:     { label: "全部",     icon: "👤" },
+      buyer:   { label: "购房客户", icon: "👤" },
+      seller:  { label: "售房业主", icon: "🏠" },
+      renter:  { label: "租房客户", icon: "🧑" },
+      landlord:{ label: "出租业主", icon: "🔑" }
+    };
+
+    // ===== 当前筛选状态 =====
+    var currentConsumer = "all";
+    var currentStage = "negotiate";  // 默认选带看议价（场景最多）
+
     // 1. 加载维度模型
     fetch("/data/v3/dimensions_multi.json")
       .then(function(r){ return r.ok ? r.json() : null; })
@@ -727,7 +803,14 @@
       .then(function(data){
         if(!data) return;
         questionMap = data;
-        bindSearch();
+        // 给老数据补默认字段
+        questionMap.mapping.forEach(function(m){
+          if(!m.consumer) m.consumer = "buyer";
+          if(!m.stage) m.stage = "negotiate";
+        });
+        bindStageControls();   // 阶段 Tab + 类型筛选
+        bindSearch();          // 搜索
+        selectStage(currentStage);  // 触发初始渲染
       })
       .catch(function(){});
 
@@ -740,11 +823,55 @@
         var q = (input.value || "").trim();
         if(!q || !questionMap) return;
         var results = matchQuestions(q);
+
+        if(results.length === 0){
+          // 0 命中 → 隐藏 result-panel，展示阶段浏览（不显示 empty-hint）
+          var panel = document.getElementById("result-panel");
+          panel.classList.remove("show");
+          // 给用户提示后降级
+          flashToast("没搜到" + q + "？试试按下面的流程阶段浏览 →");
+          return;
+        }
+
+        // 有命中 → 置顶展示 + 自动对齐 Tab
+        // 1) 自动选中出现最多的阶段
+        var stageCount = {};
+        results.forEach(function(r){
+          var s = r.entry.stage || "negotiate";
+          stageCount[s] = (stageCount[s] || 0) + 1;
+        });
+        var bestStage = Object.keys(stageCount).reduce(function(a,b){
+          return (stageCount[a]||0) >= (stageCount[b]||0) ? a : b;
+        }, currentStage);
+        // 2) 自动选中出现最多的 consumer（如果 all 能覆盖多个，优先选具体的）
+        var conCount = {};
+        results.forEach(function(r){
+          var c = r.entry.consumer || "buyer";
+          conCount[c] = (conCount[c] || 0) + 1;
+        });
+        var bestConsumer = Object.keys(conCount).reduce(function(a,b){
+          return (conCount[a]||0) >= (conCount[b]||0) ? a : b;
+        }, "buyer");
+        // 如果 bestConsumer 只有 1 条，不如保持 all 方便
+        if((conCount[bestConsumer]||0) < 2) bestConsumer = "all";
+
+        selectConsumer(bestConsumer, true);  // 不自动刷新（等 renderResults）
+        selectStage(bestStage, true);       // 同上
+
         renderResults(results);
+        renderStageBrowse();  // 阶段浏览也跟着刷新
       }
 
       btn.addEventListener("click", doSearch);
       input.addEventListener("keydown", function(e){ if(e.key === "Enter") doSearch(); });
+
+      // 清空搜索时回到正常浏览模式
+      input.addEventListener("input", function(){
+        if(!input.value.trim()){
+          document.getElementById("result-panel").classList.remove("show");
+          renderStageBrowse();
+        }
+      });
 
       // 热门问题点击直接搜
       hotSpans.forEach(function(span){
@@ -828,10 +955,9 @@
       var cardsWrap = document.getElementById("scenario-cards");
       var countEl = document.getElementById("result-count");
 
-      if(results.length === 0){
-        cardsWrap.innerHTML = '<div class="empty-hint">暂未匹配到直接答案。试试换个关键词，或者去知识库搜更全面的内容 → <a href="/knowledge/" style="color:var(--primary);font-weight:600;">/knowledge/</a></div>';
-        countEl.textContent = "0";
-        panel.classList.add("show");
+      // 0 命中不应该走到这里（doSearch 已提前 return），保险处理
+      if(!results || results.length === 0){
+        panel.classList.remove("show");
         return;
       }
 
@@ -839,68 +965,205 @@
       panel.classList.add("show");
 
       cardsWrap.innerHTML = results.map(function(r, idx){
-        var m = r.entry;
-        var variants = m.speech_variants || [];
-        var tools = (m.tools || []).map(function(t){ return '<div class="secondary-item">' + t + ' →</div>'; }).join("");
-
-        var speechBlocks = variants.map(function(v, vi){
-          return '<div class="speech-variant">' +
-            '<div class="speech-variant-head">' +
-              '<div class="speech-variant-label">版本 ' + String.fromCharCode(65+vi) + ' · ' + v.customer_type + '</div>' +
-              '<div class="speech-variant-tag">' + (v.tone || "") + '</div>' +
-            '</div>' +
-            '<div class="speech-variant-body">' + v.text + '</div>' +
-            '<button class="speech-variant-copy" data-text="' + encodeURIComponent(v.text) + '">一键复制</button>' +
-          '</div>';
-        }).join("");
-
-        return '<div class="scenario-card ' + (idx === 0 ? "open" : "") + '">' +
-          '<div class="scenario-head" onclick="this.parentElement.classList.toggle(\'open\')">' +
-            '<div class="scenario-icon">' + getDimIcon(m.dim_id) + '</div>' +
-            '<div class="scenario-main">' +
-              '<div class="scenario-title">' + m.title + '</div>' +
-              '<div class="scenario-meta">' +
-                '<span class="sc-dim">' + m.dim_name + '</span>' +
-                '<span style="font-family:monospace;opacity:.6;">' + (m.skill_standard || "") + '</span>' +
-                '<span>' + variants.length + ' 个话术版本</span>' +
-              '</div>' +
-            '</div>' +
-            '<div class="scenario-chevron">›</div>' +
-          '</div>' +
-          '<div class="scenario-body">' +
-            '<div class="solution-line">' + m.solution + '</div>' +
-            '<div class="speech-list">' + speechBlocks + '</div>' +
-            (tools ?
-              '<div class="secondary-row"><div class="secondary-col"><div class="secondary-title">Tools</div>' + tools + '</div></div>' : ""
-            ) +
-            '<div class="hook-soft">' +
-              '<div class="hook-soft-emoji">🧩</div>' +
-              '<div class="hook-soft-copy">' +
-                '<div class="hook-soft-title">经常遇到这类问题？</div>' +
-                '<div class="hook-soft-desc">花 2 分钟测一下你的' + m.dim_name + '能力，对标 TOP 10% 经纪人</div>' +
-              '</div>' +
-              '<a class="hook-soft-cta" href="/care-test/?dim=' + m.dim_id + '">专项 5 题 →</a>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
+        return buildCardHTML(r.entry, idx === 0);
       }).join("");
 
-      // 绑定一键复制
-      cardsWrap.querySelectorAll(".speech-variant-copy").forEach(function(btn){
-        btn.addEventListener("click", function(e){
-          e.stopPropagation();
-          var text = decodeURIComponent(btn.getAttribute("data-text"));
-          navigator.clipboard.writeText(text).then(function(){
-            btn.textContent = "已复制 ✓";
-            setTimeout(function(){ btn.textContent = "一键复制"; }, 1500);
-          });
-        });
-      });
+      // 绑定复制
+      cardsWrap.querySelectorAll(".speech-variant-copy").forEach(bindCopyBtn);
     }
 
     function getDimIcon(dimId){
       var map = { 1:"📣", 2:"👁️", 3:"📐", 4:"💬", 5:"📝", 6:"🤝", 7:"🤖" };
       return map[dimId] || "💡";
+    }
+
+    // ===== 阶段 Tab + 类型筛选初始化 =====
+    function bindStageControls(){
+      // 1) 渲染阶段 Tab
+      renderStageTabs();
+
+      // 2) 绑定类型筛选 chip
+      document.querySelectorAll(".consumer-filter .cf-chip").forEach(function(chip){
+        chip.addEventListener("click", function(){
+          var c = this.getAttribute("data-consumer");
+          selectConsumer(c);
+        });
+      });
+    }
+
+    function renderStageTabs(){
+      var wrap = document.getElementById("stage-tabs");
+      if(!wrap || !questionMap) return;
+      wrap.innerHTML = STAGES.map(function(s){
+        var count = countScenesInStage(s.key);
+        return '<div class="st-tab" data-stage="' + s.key + '">' +
+          '<span class="st-icon">' + s.icon + '</span>' + s.name +
+          (count > 0 ? '<span class="st-count">' + count + '</span>' : '') +
+        '</div>';
+      }).join("");
+      // 绑定点击
+      wrap.querySelectorAll(".st-tab").forEach(function(tab){
+        tab.addEventListener("click", function(){
+          selectStage(this.getAttribute("data-stage"));
+        });
+      });
+      // 高亮当前
+      syncStageTabHighlight();
+    }
+
+    function syncStageTabHighlight(){
+      document.querySelectorAll("#stage-tabs .st-tab").forEach(function(tab){
+        tab.classList.toggle("active", tab.getAttribute("data-stage") === currentStage);
+      });
+      // 同步 consumer chip
+      document.querySelectorAll(".consumer-filter .cf-chip").forEach(function(chip){
+        chip.classList.toggle("active", chip.getAttribute("data-consumer") === currentConsumer);
+      });
+    }
+
+    function countScenesInStage(stageKey){
+      if(!questionMap) return 0;
+      var list = questionMap.mapping.filter(function(m){
+        if(m.stage !== stageKey) return false;
+        if(currentConsumer !== "all" && m.consumer !== currentConsumer) return false;
+        return true;
+      });
+      return list.length;
+    }
+
+    function filterScenes(){
+      if(!questionMap) return [];
+      return questionMap.mapping.filter(function(m){
+        if(m.stage !== currentStage) return false;
+        if(currentConsumer !== "all" && m.consumer !== currentConsumer) return false;
+        return true;
+      });
+    }
+
+    function selectStage(stageKey, suppressRender){
+      currentStage = stageKey;
+      syncStageTabHighlight();
+      if(!suppressRender){
+        renderStageTabs();  // 刷新计数
+        renderStageBrowse();
+      }
+    }
+
+    function selectConsumer(consumerKey, suppressRender){
+      currentConsumer = consumerKey;
+      syncStageTabHighlight();
+      if(!suppressRender){
+        renderStageTabs();  // 刷新计数
+        renderStageBrowse();
+        // 清空搜索结果（因为筛选条件变了，搜索结果可能不再对）
+        document.getElementById("result-panel").classList.remove("show");
+      }
+    }
+
+    // ===== 渲染阶段浏览面板 =====
+    function renderStageBrowse(){
+      var scenes = filterScenes();
+      var cardsWrap = document.getElementById("stage-scenario-cards");
+      var nameEl = document.getElementById("browse-stage-name");
+      var countEl = document.getElementById("browse-stage-count");
+      var tagEl = document.getElementById("browse-consumer-tag");
+
+      var stageInfo = STAGES.find(function(s){ return s.key === currentStage; });
+      var consumerInfo = CONSUMER_NAMES[currentConsumer] || CONSUMER_NAMES.all;
+
+      if(nameEl) nameEl.textContent = (stageInfo ? stageInfo.icon + " " + stageInfo.name : "");
+      if(countEl) countEl.textContent = scenes.length;
+      if(tagEl) tagEl.textContent = consumerInfo.icon + " " + consumerInfo.label;
+
+      if(scenes.length === 0){
+        cardsWrap.innerHTML = '<div class="empty-hint">这个阶段暂无场景话术，试试切到「全部」看看 · 或选其他服务对象</div>';
+        return;
+      }
+
+      cardsWrap.innerHTML = scenes.map(function(m, idx){
+        return buildCardHTML(m, idx === 0);
+      }).join("");
+
+      // 绑定复制
+      cardsWrap.querySelectorAll(".speech-variant-copy").forEach(bindCopyBtn);
+    }
+
+    // ===== 共用：构建场景卡 HTML =====
+    function buildCardHTML(m, isOpen){
+      var variants = m.speech_variants || [];
+      var tools = (m.tools || []).map(function(t){ return '<div class="secondary-item">' + t + ' →</div>'; }).join("");
+      var consumerInfo = CONSUMER_NAMES[m.consumer] || CONSUMER_NAMES.buyer;
+
+      var speechBlocks = variants.map(function(v, vi){
+        return '<div class="speech-variant">' +
+          '<div class="speech-variant-head">' +
+            '<div class="speech-variant-label">版本 ' + String.fromCharCode(65+vi) + ' · ' + v.customer_type + '</div>' +
+            '<div class="speech-variant-tag">' + (v.tone || "") + '</div>' +
+          '</div>' +
+          '<div class="speech-variant-body">' + v.text + '</div>' +
+          '<button class="speech-variant-copy" data-text="' + encodeURIComponent(v.text) + '">一键复制</button>' +
+        '</div>';
+      }).join("");
+
+      return '<div class="scenario-card ' + (isOpen ? "open" : "") + '">' +
+        '<div class="scenario-head" onclick="this.parentElement.classList.toggle(\'open\')">' +
+          '<div class="scenario-icon">' + getDimIcon(m.dim_id) + '</div>' +
+          '<div class="scenario-main">' +
+            '<div class="scenario-title">' + m.title +
+              '<span style="font-size:10px;background:var(--gold-bg);color:#8a7040;padding:1px 7px;border-radius:3px;margin-left:6px;font-weight:500;">' + consumerInfo.icon + ' ' + consumerInfo.label + '</span>' +
+            '</div>' +
+            '<div class="scenario-meta">' +
+              '<span class="sc-dim">' + m.dim_name + '</span>' +
+              '<span style="font-family:monospace;opacity:.6;">' + (m.skill_standard || "") + '</span>' +
+              '<span>' + variants.length + ' 个话术版本</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="scenario-chevron">›</div>' +
+        '</div>' +
+        '<div class="scenario-body">' +
+          '<div class="solution-line">' + m.solution + '</div>' +
+          '<div class="speech-list">' + speechBlocks + '</div>' +
+          (tools ?
+            '<div class="secondary-row"><div class="secondary-col"><div class="secondary-title">Tools</div>' + tools + '</div></div>' : ""
+          ) +
+          '<div class="hook-soft">' +
+            '<div class="hook-soft-emoji">🧩</div>' +
+            '<div class="hook-soft-copy">' +
+              '<div class="hook-soft-title">经常遇到这类问题？</div>' +
+              '<div class="hook-soft-desc">花 2 分钟测一下你的' + m.dim_name + '能力，对标 TOP 10% 经纪人</div>' +
+            '</div>' +
+            '<a class="hook-soft-cta" href="/care-test/?dim=' + m.dim_id + '">专项 5 题 →</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    // ===== 共用：绑定一键复制按钮 =====
+    function bindCopyBtn(btn){
+      btn.addEventListener("click", function(e){
+        e.stopPropagation();
+        var text = decodeURIComponent(btn.getAttribute("data-text"));
+        navigator.clipboard.writeText(text).then(function(){
+          btn.textContent = "已复制 ✓";
+          setTimeout(function(){ btn.textContent = "一键复制"; }, 1500);
+        });
+      });
+    }
+
+    // ===== 轻提示（0命中时用） =====
+    var _toastTimer = null;
+    function flashToast(msg){
+      var el = document.getElementById("flash-toast");
+      if(!el){
+        el = document.createElement("div");
+        el.id = "flash-toast";
+        el.style.cssText = "position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.15);opacity:0;transition:opacity .2s;";
+        document.body.appendChild(el);
+      }
+      el.textContent = msg;
+      el.style.opacity = "1";
+      if(_toastTimer) clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(function(){ el.style.opacity = "0"; }, 2500);
     }
 
     function init(){
