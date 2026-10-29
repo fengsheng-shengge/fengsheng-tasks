@@ -453,7 +453,16 @@
 
   /* ===== Stage browse panel (always visible now) ===== */
   .stage-browse-panel { display: block; margin-top: 14px; animation: fadeIn 0.3s ease; }
-  .stage-browse-hint { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; margin-bottom: 10px; }
+  .stage-browse-hint { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+  .st-hint-left { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+  .st-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #faf0d7; color: #8a7040; font-size: 11px; font-weight: 700;
+    transition: transform .2s; flex-shrink: 0;
+  }
+  .stage-browse-panel.collapsed .st-toggle { transform: rotate(180deg); }
+  .stage-browse-panel.collapsed #stage-scenario-cards { display: none; }
   .stage-browse-hint span { color: var(--ink); }
   .stage-browse-hint .st-consumer-tag { background: var(--primary-bg); color: var(--primary); padding: 2px 8px; border-radius: 3px; font-size: 10px; margin-left: 6px; font-weight: 600; }
 
@@ -983,11 +992,14 @@
 
       <!-- ===== 阶段浏览面板（永远可见，空态 + 有搜索都展示） ===== -->
       <div class="stage-browse-panel" id="stage-browse">
-        <div class="stage-browse-hint">
-          <span id="browse-stage-name">💬 带看议价</span>
-          阶段 ·
-          <span id="browse-stage-count">0</span> 个场景
-          <span class="st-consumer-tag" id="browse-consumer-tag">👤 购房客户</span>
+        <div class="stage-browse-hint" onclick="toggleStageBrowse()" title="点击收起/展开">
+          <div class="st-hint-left">
+            <span id="browse-stage-name">💬 带看议价</span>
+            阶段 ·
+            <span id="browse-stage-count">0</span> 个场景
+            <span class="st-consumer-tag" id="browse-consumer-tag">👤 购房客户</span>
+          </div>
+          <span class="st-toggle" id="st-toggle">▼</span>
         </div>
         <div id="stage-scenario-cards"></div>
       </div>
@@ -2018,6 +2030,14 @@
     // 不持久化，让用户每次进来默认都能看到
   }
   window.toggleKBStage = toggleKBStage;
+
+  /* 🆕 折叠/展开 阶段场景浏览面板 */
+  function toggleStageBrowse(){
+    var panel = document.getElementById("stage-browse");
+    if (!panel) return;
+    panel.classList.toggle("collapsed");
+  }
+  window.toggleStageBrowse = toggleStageBrowse;
 
   async function loadKBStagePicks() {
     var stageInfo = STAGES.find(function(s){ return s.key === currentStage; });
