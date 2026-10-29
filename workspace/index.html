@@ -1988,6 +1988,10 @@
     variant.classList.toggle('collapsed');
   }
 
+  // 🆕 把 onclick 用到的函数挂到 window 上（IIFE 闭包内不会自动暴露到全局）
+  window.onScToggle = onScToggle;
+  window.onVariantToggle = onVariantToggle;
+
   async function loadKBRelations(kbEl, keyword) {
     try {
       kbEl.innerHTML = '<div class="kb-relations-header"><span>📚 来自知识底座</span><span class="kb-relations-hint kb-loading">关联词条 · 匹配中...</span></div>';
