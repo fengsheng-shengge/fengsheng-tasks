@@ -38,25 +38,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Wait for deployment
-        run: sleep 10
+        run: sleep 15
 
-      - name: Verify site accessibility
+      - name: Verify site accessibility (Pages 自带域名)
         run: |
-          echo "=== 验证 https://fengsheng.tech 可访问 ==="
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://fengsheng.tech --max-time 10)
+          PAGES_DOMAIN="https://fengsheng.pages.dev"
+          echo "=== 验证 $PAGES_DOMAIN 可访问 ==="
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$PAGES_DOMAIN" --max-time 15)
           if [ "$HTTP_CODE" = "200" ]; then
-            echo "  ✓ 网站正常响应 (HTTP $HTTP_CODE)"
+            echo "  ✓ Pages 站点正常响应 (HTTP $HTTP_CODE)"
           else
-            echo "  ⚠ 网站响应 HTTP $HTTP_CODE（可能还在部署中）"
+            echo "  ⚠ Pages 站点响应 HTTP $HTTP_CODE"
+            echo "  (备注: fengsheng.tech 主域名因备案关闭解析中，Pages 自带域名是部署真实验证入口)"
           fi
 
-      - name: Verify key pages
+      - name: Verify key pages + API + P1 新页面
         run: |
-          echo "=== 验证关键页面 ==="
-          for page in index.html breeder.html care-test.html quality-test.html privacy.html; do
-            URL="https://fengsheng.tech/$page"
-            CODE=$(curl -s -o /dev/null -w "%{http_code}" "$URL" --max-time 10)
-            echo "  $page → HTTP $CODE"
+          PAGES_DOMAIN="https://fengsheng.pages.dev"
+          echo "=== 静态页面 ==="
+          for page in /index.html /care-test/ /quality-test/ /knowledge/ /breeder/ /privacy/; do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" "$PAGES_DOMAIN$page" --max-time 10)
+            STATUS=$([ "$CODE" = "200" ] && echo "✓" || echo "✗")
+            echo "  $STATUS $page → HTTP $CODE"
+          done
+          echo ""
+          echo "=== API 健康检查 ==="
+          for api in /api/health /api/ai-advisor/health; do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" "$PAGES_DOMAIN$api" --max-time 10)
+            STATUS=$([ "$CODE" = "200" ] && echo "✓" || echo "✗")
+            echo "  $STATUS $api → HTTP $CODE"
+          done
+          echo ""
+          echo "=== P1 新页面 ==="
+          for page in /ai-advisor/ /trust-package/ /sales-champion/; do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" "$PAGES_DOMAIN$page" --max-time 10)
+            STATUS=$([ "$CODE" = "200" ] && echo "✓" || echo "✗")
+            echo "  $STATUS $page → HTTP $CODE"
           done
 
   data-consistency:
