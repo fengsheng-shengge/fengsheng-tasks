@@ -4162,7 +4162,7 @@ async function handleAiAdvisor(request, env) {
       trust_level: sopAction.trust_level || sopAction.level,
     } : null,
     knowledge: knowledge.slice(0, 5),
-    can_respond,
+    can_respond: canRespond,
     human_handoff: !canRespond ? {
       reason: redlineHits.length > 0
         ? `触发红线：${redlineHits.map(r => r.id).join(', ')}`
@@ -4174,7 +4174,7 @@ async function handleAiAdvisor(request, env) {
     trace: {
       sop_version: sop?.version || 'unknown',
       question_map_version: qmap.version || 'unknown',
-      checked_redlines: REDLINES.map(r => r.split(':')[0]).join(','),
+      checked_redlines: REDLINES.map(r => typeof r === 'string' ? r.split(':')[0] : r.id || r).join(','),
     },
   };
 

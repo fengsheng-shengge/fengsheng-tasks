@@ -42,19 +42,18 @@ jobs:
 
       - name: Verify site accessibility (Pages 自带域名)
         run: |
-          PAGES_DOMAIN="https://fengsheng.pages.dev"
+          PAGES_DOMAIN="https://fengsheng-ee9.pages.dev"
           echo "=== 验证 $PAGES_DOMAIN 可访问 ==="
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$PAGES_DOMAIN" --max-time 15)
           if [ "$HTTP_CODE" = "200" ]; then
             echo "  ✓ Pages 站点正常响应 (HTTP $HTTP_CODE)"
           else
             echo "  ⚠ Pages 站点响应 HTTP $HTTP_CODE"
-            echo "  (备注: fengsheng.tech 主域名因备案关闭解析中，Pages 自带域名是部署真实验证入口)"
           fi
 
       - name: Verify key pages + API + P1 新页面
         run: |
-          PAGES_DOMAIN="https://fengsheng.pages.dev"
+          PAGES_DOMAIN="https://fengsheng-ee9.pages.dev"
           echo "=== 静态页面 ==="
           for page in /index.html /care-test/ /quality-test/ /knowledge/ /breeder/ /privacy/; do
             CODE=$(curl -s -o /dev/null -w "%{http_code}" "$PAGES_DOMAIN$page" --max-time 10)
