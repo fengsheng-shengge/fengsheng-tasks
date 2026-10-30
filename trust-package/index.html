@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>风声 · 信任包 | 买房决策看得见的安全感</title>
+<style>
+  :root{
+    --brand-dark:#1a3d24;
+    --brand-gold:#c9a962;
+    --brand-ai:#4a6fa5;
+    --bg:#f5f6f4;
+    --card:#fff;
+    --text:#2d2d2d;
+    --text-sub:#6b7280;
+    --border:#e5e7eb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+  .wrap{max-width:420px;margin:0 auto;padding:20px 16px}
+  header{background:linear-gradient(135deg,var(--brand-dark),#2a5a3a);color:#fff;padding:28px 20px;border-radius:0 0 24px 24px;margin:-20px -16px 20px}
+  header h1{font-size:22px;font-weight:700;margin-bottom:4px}
+  header p{font-size:13px;opacity:.85}
+  header .badge{display:inline-block;background:rgba(201,169,98,.2);color:var(--brand-gold);font-size:11px;padding:2px 8px;border-radius:10px;margin-top:10px}
+
+  .card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+  .card h2{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .card h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--brand-gold)}
+
+  .trust-meter{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .trust-score{font-size:36px;font-weight:700;color:var(--brand-dark)}
+  .trust-label{font-size:12px;color:var(--text-sub)}
+  .progress-bar{height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;margin-top:8px}
+  .progress-bar .fill{height:100%;background:linear-gradient(90deg,var(--brand-gold),var(--brand-dark));border-radius:4px;transition:width .8s}
+  .score-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+  .score-item{background:#f9fafb;border-radius:10px;padding:10px}
+  .score-item .num{font-size:18px;font-weight:700;color:var(--brand-dark)}
+  .score-item .label{font-size:11px;color:var(--text-sub);margin-top:2px}
+
+  .source-list{list-style:none}
+  .source-list li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;font-size:13px}
+  .source-list li:last-child{border-bottom:none}
+  .source-list li .icon{width:24px;height:24px;border-radius:6px;background:var(--brand-gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+  .source-list li .val{margin-left:auto;font-size:12px;color:var(--brand-dark);font-weight:600}
+
+  .recommend-banner{background:linear-gradient(135deg,var(--brand-dark),#2a5a3a);color:#fff;border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+  .recommend-banner .avatar{width:48px;height:48px;border-radius:50%;background:rgba(201,169,98,.3);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+  .recommend-banner .info{flex:1}
+  .recommend-banner .info .name{font-weight:600;font-size:14px}
+  .recommend-banner .info .tag{font-size:11px;opacity:.8;margin-top:2px}
+  .recommend-banner .cta{background:var(--brand-gold);color:var(--brand-dark);font-size:12px;font-weight:700;padding:8px 14px;border-radius:8px;border:none;cursor:pointer}
+
+  .entry{background:#f9fafb;border-radius:10px;padding:12px;margin-bottom:8px;border-left:3px solid var(--brand-gold)}
+  .entry .cap-skill{font-size:11px;color:var(--brand-ai);font-weight:600}
+  .entry .name{font-size:13px;font-weight:500;margin-top:4px}
+  .entry .trace{font-size:10px;color:var(--text-sub);margin-top:6px;display:flex;gap:8px;flex-wrap:wrap}
+  .entry .trace span{background:#eef2ff;color:var(--brand-ai);padding:1px 6px;border-radius:4px}
+
+  .section-title{font-size:12px;color:var(--text-sub);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin:16px 4px 8px}
+
+  footer{text-align:center;padding:20px;font-size:11px;color:var(--text-sub)}
+  footer a{color:var(--brand-dark);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🏠 我的买房信任包</h1>
+    <p>四源合成可验证分 · 买房决策不再凭感觉</p>
+    <span class="badge">风声信任体系 v1.0</span>
+  </header>
+
+  <!-- 信任总分 -->
+  <div class="card">
+    <h2><span class="dot"></span>信任综合分</h2>
+    <div class="trust-meter">
+      <div class="trust-score" id="trustScore">--</div>
+      <div>
+        <div class="trust-label">/ 100 分</div>
+        <div class="trust-label" id="trustLevel">正在计算...</div>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="fill" id="trustBar" style="width:0%"></div></div>
+    <div class="score-breakdown">
+      <div class="score-item">
+        <div class="num" id="sAssess">--</div>
+        <div class="label">能力测评 30%</div>
+      </div>
+      <div class="score-item">
+        <div class="num" id="sLearn">--</div>
+        <div class="label">学习完成 20%</div>
+      </div>
+      <div class="score-item">
+        <div class="num" id="sPractice">--</div>
+        <div class="label">模拟练习 20%</div>
+      </div>
+      <div class="score-item">
+        <div class="num" id="sExam">--</div>
+        <div class="label">考核通过 20%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 销冠推荐 -->
+  <div class="section-title">销冠推荐顾问</div>
+  <div class="recommend-banner" id="agentBanner">
+    <div class="avatar">👤</div>
+    <div class="info">
+      <div class="name">望京南 · 李姐</div>
+      <div class="tag">7年销冠 · 学区房成交 62% · 信任分 92</div>
+    </div>
+    <button class="cta" onclick="alert('预约功能开发中')">预约</button>
+  </div>
+
+  <!-- 已掌握的信任动作 -->
+  <div class="section-title">我的信任动作</div>
+  <div class="card" id="actionList">
+    <h2><span class="dot"></span>已掌握 0 / 4 类信任动作</h2>
+    <div id="actions"></div>
+  </div>
+
+  <!-- 知识库检索入口 -->
+  <div class="section-title">知识追溯</div>
+  <div class="card">
+    <h2><span class="dot"></span>快速搜索</h2>
+    <input id="kbSearch" type="text" placeholder="输入问题，比如'公积金能贷多少'" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:13px">
+    <div id="kbResult" style="margin-top:10px"></div>
+    <a href="/knowledge/" style="display:block;text-align:center;margin-top:10px;font-size:12px;color:var(--brand-ai);text-decoration:none">→ 进入完整知识库</a>
+  </div>
+
+  <!-- 留资 -->
+  <div class="section-title">想让顾问联系我？</div>
+  <div class="card">
+    <div style="font-size:13px;color:var(--text-sub);margin-bottom:12px">填写以下信息，销冠顾问会在 24 小时内联系您</div>
+    <div style="display:grid;gap:10px">
+      <input id="leadName" type="text" placeholder="姓名" style="padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:13px">
+      <input id="leadPhone" type="tel" placeholder="手机号" style="padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:13px">
+      <select id="leadIntent" style="padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:#fff">
+        <option value="">购房/卖房？</option>
+        <option value="buyer">我想买房</option>
+        <option value="seller">我想卖房</option>
+        <option value="renter">租房</option>
+      </select>
+      <button onclick="submitLead()" style="padding:12px;background:var(--brand-dark);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">提交 · 让顾问联系我</button>
+      <div id="leadResult" style="font-size:12px;text-align:center"></div>
+    </div>
+  </div>
+
+  <footer>
+    风声 · 信任体系 v1.0<br>
+    <a href="/">← 回到首页</a>
+  </footer>
+</div>
+
+<script>
+// ========== 信任分计算 ==========
+// 规则引擎版本：基于模拟数据，后续接测评 API
+function calcTrustScore() {
+  // 从本地存储读取（模拟），或者给默认值
+  const d = JSON.parse(localStorage.getItem('trust_data') || '{}');
+  const assess = d.assess ?? 82;   // 测评
+  const learn = d.learn ?? 45;     // 学习
+  const practice = d.practice ?? 30; // 练习
+  const exam = d.exam ?? 60;       // 考核
+
+  const score = Math.round(
+    assess * 0.3 + learn * 0.2 + practice * 0.2 + exam * 0.3
+  );
+
+  document.getElementById('trustScore').textContent = score;
+  document.getElementById('trustBar').style.width = score + '%';
+  document.getElementById('sAssess').textContent = assess;
+  document.getElementById('sLearn').textContent = learn;
+  document.getElementById('sPractice').textContent = practice;
+  document.getElementById('sExam').textContent = exam;
+
+  let level = '待提升';
+  if (score >= 85) level = '资深专家';
+  else if (score >= 70) level = '值得信赖';
+  else if (score >= 55) level = '正在成长';
+  document.getElementById('trustLevel').textContent = level;
+}
+
+// ========== 信任动作列表 ==========
+function loadActions() {
+  const actions = [
+    { id: 'TRUST-01', name: '破冰·连接', tier: 'service', done: true, cap_skill: 'CAP-SKILL-201' },
+    { id: 'TRUST-02', name: '证明·专业', tier: 'pro', done: true, cap_skill: 'CAP-SKILL-301' },
+    { id: 'TRUST-03', name: '共情·接住', tier: 'human_only', done: false, cap_skill: '—' },
+    { id: 'TRUST-04', name: '引导·低压力', tier: 'service', done: false, cap_skill: 'CAP-SKILL-001' },
+  ];
+
+  const html = actions.map(a => `
+    <div class="entry">
+      <div class="cap-skill">${a.cap_skill} · ${a.tier === 'human_only' ? '真人必须' : (a.tier === 'pro' ? '专业方案' : '基础服务')}</div>
+      <div class="name">${a.done ? '✅' : '⬜'} ${a.name} (${a.id})</div>
+    </div>
+  `).join('');
+
+  document.getElementById('actions').innerHTML = html;
+  document.querySelector('#actionList h2').innerHTML =
+    `<span class="dot"></span>已掌握 ${actions.filter(a=>a.done).length} / ${actions.length} 类信任动作`;
+}
+
+// ========== 知识库搜索 ==========
+async function searchKB() {
+  const q = document.getElementById('kbSearch').value.trim();
+  if (!q) return;
+
+  const resultEl = document.getElementById('kbResult');
+  resultEl.innerHTML = '<div style="font-size:12px;color:#999">搜索中...</div>';
+
+  try {
+    // 先试 AI 顾问 API
+    const resp = await fetch('/api/ai-advisor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: q, clientType: 'buyer' }),
+    });
+
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.match) {
+        let html = `<div class="entry">
+          <div class="cap-skill">${data.match.skill_standard} · dim${data.match.dim_id} ${data.match.dim_name}</div>
+          <div class="name">📌 ${data.match.title}</div>
+          <div class="trace"><span>关键词: ${data.match.hit_keyword}</span><span>命中分: ${data.match.score}</span></div>
+          ${data.solution ? `<div style="font-size:12px;margin-top:8px;color:#374151">${data.solution.slice(0,120)}...</div>` : ''}
+        </div>`;
+
+        if (data.knowledge && data.knowledge.length) {
+          html += `<div style="margin-top:10px;font-size:11px;color:var(--text-sub)">相关知识条目:</div>`;
+          data.knowledge.slice(0, 3).forEach(k => {
+            html += `<div style="font-size:12px;padding:6px 0;color:#374151">• ${k.name} <span style="color:#999;font-size:10px">(${k.domain})</span></div>`;
+          });
+        }
+
+        if (!data.can_respond) {
+          html += `<div style="margin-top:10px;padding:8px;background:#fef2f2;border-radius:8px;font-size:12px;color:#b91c1c">
+            ⚠️ ${data.human_handoff?.reason || '此问题 AI 不能回答'}
+          </div>`;
+        }
+
+        resultEl.innerHTML = html;
+      } else {
+        resultEl.innerHTML = '<div style="font-size:12px;color:#999">暂无匹配，试试换个关键词</div>';
+      }
+    } else {
+      // 降级：试 search API
+      const sResp = await fetch('/api/search/v2?q=' + encodeURIComponent(q));
+      if (sResp.ok) {
+        const sData = await sResp.json();
+        const items = sData.entries || [];
+        if (items.length) {
+          resultEl.innerHTML = items.slice(0, 3).map(e =>
+            `<div style="font-size:12px;padding:6px 0">• ${e.name} <span style="color:#999">(${e.domain})</span></div>`
+          ).join('');
+        } else {
+          resultEl.innerHTML = '<div style="font-size:12px;color:#999">暂无结果</div>';
+        }
+      }
+    }
+  } catch(e) {
+    resultEl.innerHTML = '<div style="font-size:12px;color:#999">服务暂时不可用</div>';
+  }
+}
+
+document.getElementById('kbSearch')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') searchKB();
+});
+
+// ========== 留资 ==========
+async function submitLead() {
+  const name = document.getElementById('leadName').value.trim();
+  const phone = document.getElementById('leadPhone').value.trim();
+  const intent = document.getElementById('leadIntent').value;
+  const resultEl = document.getElementById('leadResult');
+
+  if (!name && !phone) {
+    resultEl.style.color = '#b91c1c';
+    resultEl.textContent = '请至少填写姓名或电话';
+    return;
+  }
+
+  resultEl.style.color = '';
+  resultEl.textContent = '提交中...';
+
+  try {
+    const resp = await fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, intent, source: 'trust-package' }),
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      resultEl.style.color = 'var(--brand-dark)';
+      resultEl.textContent = '✅ 已收到！顾问会尽快联系您';
+      document.getElementById('leadName').value = '';
+      document.getElementById('leadPhone').value = '';
+    } else {
+      resultEl.style.color = '#b91c1c';
+      resultEl.textContent = data.error || '提交失败';
+    }
+  } catch(e) {
+    resultEl.style.color = '#b91c1c';
+    resultEl.textContent = '网络错误，请稍后再试';
+  }
+}
+
+// ========== 启动 ==========
+calcTrustScore();
+loadActions();
+</script>
+</body>
+</html>

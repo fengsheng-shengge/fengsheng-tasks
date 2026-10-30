@@ -3602,6 +3602,19 @@ export default {
       return handleFeishuEvent(request, env);
     }
 
+    // ===== P1: AI 顾问（规则版零模型 + Workers AI 可选）=====
+    if (path === '/api/ai-advisor' && request.method === 'POST') {
+      return handleAiAdvisor(request, env);
+    }
+    if (path === '/api/ai-advisor/health') {
+      return jsonResponse({ ok: true, mode: 'rule-engine', version: 'v1' });
+    }
+
+    // ===== P1: 留资 API =====
+    if (path === '/api/lead' && request.method === 'POST') {
+      return handleLead(request, env);
+    }
+
     // ===== Mentor Payment Routes =====
 
     if (path === '/mentor-api/payment/init' && request.method === 'POST') {
@@ -3815,6 +3828,9 @@ export default {
         '/assessment/', '/s1-report/', '/showing-report/', '/agent-assessment/',
         '/academy', '/academy/',
         '/design-prototype', '/design-prototype/',
+        // P1: 门店智能接待新页面
+        '/ai-advisor', '/ai-advisor/', '/trust-package', '/trust-package/',
+        '/sales-champion', '/sales-champion/',
       ]);
       const normalized = path.endsWith('/') ? path.slice(0, -1) : path;
       if (!KNOWN_ROUTES.has(path) && !KNOWN_ROUTES.has(normalized) && !KNOWN_ROUTES.has(normalized + '/')) {
@@ -3971,5 +3987,288 @@ async function handleFeishuEvent(request, env) {
     // Always return 200 for url_verification even on error
     return jsonResponse({ ok: false, error: 'internal error' }, 500);
   }
+}
+
+// ============================================================
+// P1: AI 顾问 — 规则引擎版（零模型成本，可接 Workers AI 扩展）
+// ============================================================
+
+/**
+ * POST /api/ai-advisor
+ * 消费者提问 → 规则引擎匹配 question_map → SOP → KB 追溯 → 红线拦截
+ *
+ * Request body:
+ *   { "message": "我想买房但预算不够怎么办", "clientType": "buyer" }
+ *
+ * Response:
+ *   {
+ *     match: { skill_standard, title, sop_ref, dim_name },
+ *     sop: { tier, ai_can, human_must },
+ *     knowledge: [{ id, name, source, cap_skills }],
+ *     redline: [],          // 触发的红线编号
+ *     can_respond: true,     // AI 能否直接回答
+ *     fallback: null         // 不能回答时建议给经纪人的提示
+ *   }
+ */
+async function handleAiAdvisor(request, env) {
+  if (request.method !== 'POST') return jsonResponse({ error: 'POST only' }, 405);
+  if (!env.ASSETS) return jsonResponse({ error: 'env.ASSETS 未配置' }, 500);
+
+  const body = await parseBodyJson(request);
+  if (!body || !body.message || typeof body.message !== 'string') {
+    return jsonResponse({ ok: false, error: '请发送 {"message": "您的问题"}', hint: 'message 字段必填' }, 400);
+  }
+
+  const message = body.message.trim().slice(0, 200);
+  const clientType = body.clientType || '';
+  const stage = body.stage || '';
+
+  // 1. 加载 question_map + sales-sop + domain entries
+  const [qmap, sop, manifest] = await Promise.all([
+    loadAssetJson(env, '/data/v3/question_map.json'),
+    loadAssetJson(env, '/data/v3/sales-sop.json'),
+    loadAssetJson(env, '/data/domains/_manifest.json'),
+  ]);
+
+  if (!qmap || !qmap.mapping) {
+    return jsonResponse({ ok: false, error: '知识库加载失败' }, 503);
+  }
+
+  // 2. 红线检查（6 条）— 任何一条触发即停机
+  const REDLINES = sop?.redlines_global || [
+    'RED-01: AI 不做最终决策',
+    'RED-02: AI 不碰价格谈判',
+    'RED-03: AI 不做强留资',
+    'RED-04: AI 不碰隐私信息',
+    'RED-05: AI 不承诺学区/政策',
+    'RED-06: 所有输出必须可追溯',
+  ];
+
+  const redlineHits = [];
+  const msg = message.toLowerCase();
+  const REDLINE_CHECKS = [
+    { id: 'RED-02', pattern: /(多少钱一平米|单价|总价|报价|价格|优惠多少|能便宜|能降)/, msg: '价格/报价类问题，AI 只能给市场行情不能谈价' },
+    { id: 'RED-03', pattern: /(手机号|留个电话|加个微信|约看房|什么时候来看|地址发我)/, msg: '强留资/邀约类问题，必须真人经纪人跟进' },
+    { id: 'RED-05', pattern: /(肯定|保证|承诺|百分百|一定|对口学区|学区肯定|政策不会变|以后不会变)/, msg: '承诺类表述触发红线，AI 不能给确定性承诺' },
+    { id: 'RED-04', pattern: /(身份证|银行卡号|密码|征信报告|银行流水|收入证明|隐私)/, msg: '隐私信息类问题，请当面沟通' },
+  ];
+
+  for (const check of REDLINE_CHECKS) {
+    if (check.pattern.test(msg)) {
+      redlineHits.push({ id: check.id, reason: check.msg });
+    }
+  }
+
+  // 3. question_map 匹配
+  const questions = qmap.mapping;
+  const scored = questions.map(q => {
+    let score = 0;
+    let hitKw = null;
+    const text = msg;
+    for (const kw of q.keywords || []) {
+      const k = kw.toLowerCase();
+      if (k && text.includes(k)) {
+        score += k.length >= 4 ? 3 : 2; // 长关键词权重更高
+        hitKw = hitKw || k;
+      }
+    }
+    // clientType 匹配加分
+    if (clientType && q.consumer && (
+      (clientType === 'buyer' && q.consumer === 'buyer') ||
+      (clientType === 'seller' && q.consumer === 'seller')
+    )) score += 1;
+    return { q, score, hitKw };
+  }).filter(x => x.score > 0).sort((a, b) => b.score - a.score);
+
+  const bestMatch = scored[0] || null;
+
+  // 4. 加载相关知识条目（从 domain files 聚合）
+  const knowledge = [];
+  if (manifest && bestMatch) {
+    const targetCapSkill = bestMatch.q.skill_standard;
+    const domains = manifest.domains || [];
+
+    // 遍历所有 domain 文件，找 cap_skills 包含该 CAP-SKILL 的条目
+    for (const domName of domains) {
+      try {
+        const filename = manifest.files[domName];
+        const entries = await loadAssetJson(env, `/data/domains/${encodeURIComponent(filename)}`);
+        if (!Array.isArray(entries)) continue;
+        const matched = entries
+          .filter(e => e.cap_skills && e.cap_skills.includes(targetCapSkill))
+          .slice(0, 3);
+        matched.forEach(e => knowledge.push({
+          id: e.id,
+          name: e.name,
+          alias: (e.alias || []).slice(0, 2),
+          domain: e.domain,
+          source: e.source || '',
+          dataRef: e.dataRef || '',
+          caseRef: e.caseRef || '',
+          hasDetail: !!(e.detail && e.detail.length > 100),
+        }));
+      } catch (e) { /* 跳过加载失败的 domain */ }
+    }
+  }
+
+  // 5. SOP 动作匹配
+  let sopAction = null;
+  if (sop && bestMatch) {
+    const targetSopId = bestMatch.q.sop_ref;
+    const allActions = [
+      ...(sop.actions || []),
+      ...(sop.trust_actions || []),
+    ];
+    sopAction = allActions.find(a => a.id === targetSopId) || null;
+  }
+
+  // 6. 判断 AI 能否回答
+  const L3_HUMAN_ONLY = 'human_only';
+  const canRespond = redlineHits.length === 0 &&
+    sopAction?.tier !== L3_HUMAN_ONLY &&
+    bestMatch !== null;
+
+  const response = {
+    ok: true,
+    version: 'v1-rule-engine',
+    timestamp: new Date().toISOString(),
+    input: {
+      message: message.slice(0, 50),
+      clientType,
+    },
+    redline: {
+      triggered: redlineHits,
+      total_checked: 6,
+    },
+    match: bestMatch ? {
+      skill_standard: bestMatch.q.skill_standard,
+      title: bestMatch.q.title,
+      score: bestMatch.score,
+      hit_keyword: bestMatch.hitKw,
+      dim_id: bestMatch.q.dim_id,
+      dim_name: bestMatch.q.dim_name,
+      stage: bestMatch.q.stage,
+      consumer: bestMatch.q.consumer,
+      sop_ref: bestMatch.q.sop_ref,
+      solution: bestMatch.q.solution || '',
+      speech_variants: (bestMatch.q.speech_variants || []).slice(0, 2),
+    } : null,
+    sop: sopAction ? {
+      id: sopAction.id,
+      tier: sopAction.tier,
+      name: sopAction.name,
+      ai_can: sopAction.ai_can || [],
+      human_must: sopAction.human_must || [],
+      trust_level: sopAction.trust_level || sopAction.level,
+    } : null,
+    knowledge: knowledge.slice(0, 5),
+    can_respond,
+    human_handoff: !canRespond ? {
+      reason: redlineHits.length > 0
+        ? `触发红线：${redlineHits.map(r => r.id).join(', ')}`
+        : sopAction?.tier === L3_HUMAN_ONLY ? '共情类问题必须真人' : '未匹配到 SOP 动作',
+      suggested_action: redlineHits.length > 0
+        ? '建议经纪人跟进'
+        : sopAction?.human_must?.[0] || '建议经纪人跟进',
+    } : null,
+    trace: {
+      sop_version: sop?.version || 'unknown',
+      question_map_version: qmap.version || 'unknown',
+      checked_redlines: REDLINES.map(r => r.split(':')[0]).join(','),
+    },
+  };
+
+  return jsonResponse(response);
+}
+
+/**
+ * POST /api/lead — 留资 API
+ * 接收消费者线索，写入 KV（如果有）或返回 mock 成功
+ */
+async function handleLead(request, env) {
+  if (request.method !== 'POST') return jsonResponse({ error: 'POST only' }, 405);
+
+  const body = await parseBodyJson(request);
+  if (!body) return jsonResponse({ ok: false, error: 'invalid body' }, 400);
+
+  // 字段校验
+  const name = sanitizeString(body.name, 30);
+  const phone = sanitizeString(body.phone || body.tel || body.mobile, 20);
+  const intent = sanitizeString(body.intent || body.need, 100);
+  const source = sanitizeString(body.source, 50) || 'ai-advisor';
+
+  if (!name && !phone) {
+    return jsonResponse({ ok: false, error: '至少提供姓名或电话', hint: 'name / phone 二选一' }, 400);
+  }
+
+  // 手机号格式轻量校验（不严格匹配，避免误伤）
+  if (phone && !/^[\d-+ ]{8,20}$/.test(phone)) {
+    return jsonResponse({ ok: false, error: '手机号格式不太对', hint: '请检查手机号' }, 400);
+  }
+
+  const lead = {
+    id: 'lead_' + await simpleHash(`${Date.now()}-${phone || name}`),
+    name,
+    phone,
+    intent,
+    source,
+    clientType: body.clientType || 'unknown',
+    stage: body.stage || '',
+    message: sanitizeString(body.message, 500) || '',
+    ua: sanitizeString(request.headers.get('User-Agent'), 200) || '',
+    ip: sanitizeString(request.headers.get('CF-Connecting-IP'), 40) || '',
+    created_at: new Date().toISOString(),
+  };
+
+  // 写入 KV（如果配置了）
+  let storage_status = 'mock';
+  try {
+    if (env.LEAD_KV) {
+      await env.LEAD_KV.put(lead.id, JSON.stringify(lead), { expirationTtl: 365 * 24 * 3600 });
+      storage_status = 'kv-stored';
+    } else if (env.DB) {
+      await env.DB.prepare(
+        "INSERT INTO leads (id, name, phone, intent, source, client_type, stage, message, ip, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+      ).bind(lead.id, lead.name, lead.phone, lead.intent, lead.source, lead.clientType, lead.stage, lead.message, lead.ip, lead.created_at).run();
+      storage_status = 'db-stored';
+    }
+  } catch (e) {
+    console.error('Lead storage failed:', e.message);
+    storage_status = 'error:' + e.message.slice(0, 50);
+  }
+
+  // 事件上报（如果有 DB）
+  try {
+    if (env.DB) {
+      await env.DB.prepare(
+        "INSERT INTO events (event_type, uid, data, created_at) VALUES (?, ?, ?, ?)"
+      ).bind('lead_submit', lead.id, JSON.stringify({ source, intent: lead.intent }), lead.created_at).run();
+    }
+  } catch (e) { /* events 表可能不存在，忽略 */ }
+
+  return jsonResponse({
+    ok: true,
+    lead_id: lead.id,
+    storage: storage_status,
+    message: '已收到，稍后经纪人会联系您',
+  });
+}
+
+// AI 顾问辅助：从 ASSETS 加载 JSON
+async function loadAssetJson(env, path) {
+  try {
+    const resp = await env.ASSETS.fetch(new Request(`https://fakehost${path}`));
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch (e) {
+    console.error(`loadAssetJson(${path}) failed:`, e.message);
+    return null;
+  }
+}
+
+// 字符串安全清洗
+function sanitizeString(str, maxLen) {
+  if (!str) return '';
+  return String(str).replace(/[<>"']/g, '').trim().slice(0, maxLen || 100);
 }
 
