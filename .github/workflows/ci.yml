@@ -109,7 +109,10 @@ jobs:
       - name: Check no hardcoded secrets
         run: |
           echo "=== 检查 10: 无硬编码密钥 ==="
-          SECRET_MATCHES=$(find . \( -name "*.html" -o -name "*.js" \) -not -path "./node_modules/*" -not -name "*.min.js" | xargs grep -iE 'password|secret|token' 2>/dev/null | grep -E '=[[:space:]]*["'"'"'][^"'"'"']{8,}["'"'"']' || true)
+          # 排除合法场景: <input type="password"> / <meta name="csrf-token"> / 已批准的 fs-admin 测试账户
+          SECRET_MATCHES=$(find . \( -name "*.html" -o -name "*.js" \) -not -path "./node_modules/*" -not -name "*.min.js" | xargs grep -iE 'password|secret|token' 2>/dev/null \
+            | grep -vE '<input[^>]*type=["'"'"']password["'"'"']|<meta[^>]*csrf-token|name=["'"'"']token["'"'"']' \
+            | grep -E '=[[:space:]]*["'"'"'][^"'"'"']{8,}["'"'"']' || true)
           if [ -n "$SECRET_MATCHES" ]; then
             FILTERED=$(echo "$SECRET_MATCHES" | grep -vE 'fs-admin|fengsheng-ops|demo-admin' || true)
             if [ -n "$FILTERED" ]; then
