@@ -2,794 +2,325 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>大屏客户端 · AI 迎宾 + 地图五层探索</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>大屏客户端 · 数字员工 AI 迎宾 + 五层知识呈现</title>
 <style>
-  :root {
-    --墨绿: #1a3d24;
-    --墨绿深: #0f2817;
-    --匠星金: #c9a962;
-    --匠星金淡: #e8d9a8;
-    --米白: #faf8f4;
-    --暖灰: #6b6357;
-    --边框: #e8e3d9;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    background: #111;
-    color: #fff;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-  }
-  /* ===== 模拟大屏设备框 ===== */
-  .screen-frame {
-    width: 1100px;
-    max-width: 100%;
-    aspect-ratio: 16/9;
-    background: #0a0a0a;
-    border-radius: 20px;
-    padding: 14px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 3px #2a2a2a;
-    position: relative;
-  }
-  .screen-frame::before {
-    content: '65" 触控屏';
-    position: absolute;
-    bottom: -32px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px;
-    color: #555;
-    letter-spacing: 2px;
-  }
-  .screen {
-    width: 100%;
-    height: 100%;
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--米白);
-    position: relative;
-  }
+:root{
+  --ink:#1a3d24;--gold:#c9a962;--bg:#0f1a14;--card:#1e2e24;--card2:#2a3e31;--line:#3a4e42;--ink-soft:#8fa397;--ok:#2d7a4a;--ai-blue:#4a6fa5;--danger:#b85c38;--white:#f7f5f0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--white);line-height:1.4;overflow-x:hidden}
+.wrap{max-width:1280px;margin:0 auto;padding:24px}
 
-  /* ===== 顶部状态条 ===== */
-  .status-bar {
-    background: var(--墨绿);
-    color: #fff;
-    padding: 10px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 13px;
-  }
-  .status-bar .left { display: flex; align-items: center; gap: 14px; }
-  .status-bar .logo { font-weight: 700; font-size: 15px; letter-spacing: 1px; }
-  .status-bar .ai-badge {
-    background: var(--匠星金);
-    color: var(--墨绿深);
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-  .status-bar .right { display: flex; gap: 14px; font-size: 12px; opacity: .75; }
-  .status-bar .right .rec {
-    background: #e74c3c;
-    color: #fff;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 10px;
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.5;} }
+/* 顶栏 */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.topbar .brand{display:flex;align-items:center;gap:12px}
+.topbar .logo{font-size:22px;font-weight:700;color:var(--gold)}
+.topbar .store{font-size:13px;color:var(--ink-soft)}
+.topbar .modes{display:flex;gap:6px}
+.topbar .modes button{background:var(--card);border:1px solid var(--line);color:var(--ink-soft);padding:6px 14px;border-radius:18px;font-size:12px;cursor:pointer;transition:.2s}
+.topbar .modes button.on{background:var(--gold);color:var(--bg);border-color:var(--gold)}
 
-  /* ===== 主区域布局 ===== */
-  .main {
-    display: grid;
-    grid-template-columns: 280px 1fr 320px;
-    height: calc(100% - 42px);
-  }
+/* 主栅：左屏 + 右侧对话 */
+.main{display:grid;grid-template-columns:1fr 420px;gap:16px}
 
-  /* ===== 左列：客户分型 + 讲解步骤 ===== */
-  .left-col {
-    background: #fff;
-    border-right: 1px solid var(--边框);
-    padding: 20px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    overflow-y: auto;
-  }
-  .section-title {
-    font-size: 11px;
-    color: var(--匠星金);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-weight: 600;
-    margin-bottom: 12px;
-  }
+/* 左侧大屏区域 */
+.left{background:var(--card);border-radius:12px;padding:20px;min-height:600px;position:relative;overflow:hidden}
+.welcome-view{text-align:center;padding:80px 20px}
+.welcome-view .robot{font-size:80px;margin-bottom:20px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.welcome-view h2{font-size:28px;margin-bottom:8px}
+.welcome-view p{color:var(--ink-soft);margin-bottom:28px}
+.welcome-view .btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.welcome-view .btns button{background:var(--ink);color:var(--white);border:none;padding:14px 24px;border-radius:10px;font-size:15px;cursor:pointer;transition:.2s}
+.welcome-view .btns button:hover{background:var(--gold);color:var(--bg)}
 
-  .client-types { display: flex; flex-direction: column; gap: 10px; }
-  .client-type-btn {
-    background: #faf8f4;
-    border: 2px solid var(--边框);
-    border-radius: 10px;
-    padding: 12px 14px;
-    cursor: pointer;
-    transition: all .2s;
-    text-align: left;
-    width: 100%;
-    font-size: 14px;
-    color: var(--墨绿);
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .client-type-btn:hover { border-color: var(--匠星金); background: #fff; }
-  .client-type-btn.active {
-    border-color: var(--匠星金);
-    background: linear-gradient(135deg, #faf8f4 0%, #e8d9a8 100%);
-  }
-  .client-type-btn .emoji { font-size: 22px; }
-  .client-type-btn .desc { font-size: 11px; color: var(--暖灰); font-weight: 400; }
+/* 地图视图 */
+.map-view{display:none}
+.map-view.on{display:block}
+.map-area{height:280px;background:linear-gradient(135deg,#1a2e22 0%,#0d1a12 100%);border-radius:10px;position:relative;overflow:hidden;margin-bottom:16px}
+.map-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(201,169,98,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(201,169,98,.06) 1px,transparent 1px);background-size:40px 40px}
+.map-marker{position:absolute;background:var(--gold);width:14px;height:14px;border-radius:50%;box-shadow:0 0 0 4px rgba(201,169,98,.2);animation:pulse 2s infinite;cursor:pointer}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(201,169,98,.4)}70%{box-shadow:0 0 0 14px rgba(201,169,98,0)}100%{box-shadow:0 0 0 0 rgba(201,169,98,0)}}
+.map-marker .label{position:absolute;top:-28px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--card2);padding:2px 8px;border-radius:4px;font-size:11px;color:var(--gold);border:1px solid var(--line)}
+.map-marker.agent{background:var(--ink);box-shadow:0 0 0 4px rgba(26,61,36,.3)}
+.zoom-controls{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:4px}
+.zoom-controls button{background:var(--card2);border:1px solid var(--line);color:var(--ink-soft);width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:16px}
 
-  .steps { display: flex; flex-direction: column; gap: 6px; }
-  .step {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    background: var(--米白);
-    font-size: 13px;
-    color: var(--暖灰);
-  }
-  .step.done { background: rgba(26,61,36,0.08); color: var(--墨绿); }
-  .step.current { background: var(--墨绿); color: #fff; }
-  .step .n {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    background: var(--边框);
-    color: var(--暖灰);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700;
-  }
-  .step.done .n { background: var(--匠星金); color: var(--墨绿深); }
-  .step.current .n { background: var(--匠星金); color: var(--墨绿深); }
+/* 小区信息面板 */
+.hood-panel{background:var(--card2);border-radius:10px;padding:16px;border:1px solid var(--line)}
+.hood-panel h3{font-size:16px;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.layer-tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.layer-tabs button{background:transparent;border:1px solid var(--line);color:var(--ink-soft);padding:5px 12px;border-radius:14px;font-size:12px;cursor:pointer;transition:.2s}
+.layer-tabs button.on{background:var(--ink);color:var(--gold);border-color:var(--gold)}
+.layer-content{min-height:120px;font-size:13px}
+.layer-content .fact{padding:10px 12px;background:rgba(201,169,98,.05);border-radius:8px;margin-bottom:8px;border-left:3px solid var(--gold)}
+.layer-content .fact .src{color:var(--ink-soft);font-size:11px;margin-top:4px}
+.layer-content .fact.shortage{background:rgba(184,92,56,.08);border-left-color:var(--danger)}
+.layer-content .fact.shortage .label{color:var(--danger);font-size:11px;margin-bottom:2px}
 
-  /* ===== 中列：地图区域 ===== */
-  .map-area {
-    position: relative;
-    background: linear-gradient(135deg, #e8e4d9 0%, #d4cfc2 100%);
-    overflow: hidden;
-  }
-  /* 模拟地图 */
-  .map-svg { width: 100%; height: 100%; }
-  .map-layer-switch {
-    position: absolute;
-    top: 16px; left: 16px;
-    display: flex;
-    gap: 4px;
-    background: rgba(255,255,255,0.95);
-    border-radius: 10px;
-    padding: 6px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    z-index: 5;
-  }
-  .layer-btn {
-    padding: 8px 14px;
-    border: none;
-    background: transparent;
-    border-radius: 6px;
-    font-size: 12px;
-    color: var(--暖灰);
-    cursor: pointer;
-    font-weight: 500;
-  }
-  .layer-btn.active {
-    background: var(--墨绿);
-    color: #fff;
-  }
-  .zoom-controls {
-    position: absolute;
-    bottom: 16px; right: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .zoom-btn {
-    width: 44px; height: 44px;
-    background: rgba(255,255,255,0.95);
-    border: none;
-    border-radius: 8px;
-    font-size: 20px;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  .circle-hint {
-    position: absolute;
-    top: 16px; right: 16px;
-    background: rgba(255,255,255,0.95);
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    color: var(--暖灰);
-    display: flex; align-items: center; gap: 6px;
-  }
-  .circle-hint::before {
-    content: '✋';
-    font-size: 16px;
-  }
+/* 右侧对话区 */
+.right{display:flex;flex-direction:column;height:600px}
+.chat-header{background:var(--card);border-radius:12px 12px 0 0;padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+.chat-header .avatar{font-size:28px}
+.chat-header .who{flex:1}
+.chat-header .who .name{font-size:14px;font-weight:600}
+.chat-header .who .role{font-size:11px;color:var(--ink-soft)}
+.chat-header .mode-switch{display:flex;gap:4px;background:var(--bg);padding:3px;border-radius:16px}
+.chat-header .mode-switch button{background:transparent;border:none;color:var(--ink-soft);padding:4px 10px;border-radius:14px;font-size:11px;cursor:pointer}
+.chat-header .mode-switch button.on{background:var(--ink);color:var(--gold)}
 
-  /* 地图上的小区点 */
-  .community-dot {
-    position: absolute;
-    width: 12px; height: 12px;
-    background: var(--墨绿);
-    border: 3px solid #fff;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    transition: all .2s;
-  }
-  .community-dot:hover { transform: scale(1.4); }
-  .community-dot.selected {
-    background: var(--匠星金);
-    width: 16px; height: 16px;
-    border-color: #fff;
-    box-shadow: 0 0 0 6px rgba(201,169,98,0.3);
-  }
-  .community-dot .label {
-    position: absolute;
-    top: 16px; left: 50%;
-    transform: translateX(-50%);
-    background: rgba(26,61,36,0.9);
-    color: #fff;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity .2s;
-  }
-  .community-dot:hover .label, .community-dot.selected .label { opacity: 1; }
+.chat-body{flex:1;background:var(--card);overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:85%;padding:12px 14px;border-radius:12px;font-size:13px;position:relative}
+.msg.ai{background:var(--ai-blue);color:#fff;align-self:flex-start;border-bottom-left-radius:4px}
+.msg.human{background:var(--gold);color:var(--bg);align-self:flex-end;border-bottom-right-radius:4px}
+.msg.user{background:var(--card2);color:var(--white);align-self:flex-end;border:1px solid var(--line)}
+.msg .cap-tag{position:absolute;bottom:-16px;right:4px;font-size:10px;color:var(--ink-soft);white-space:nowrap;background:var(--card);padding:1px 6px;border-radius:8px;border:1px solid var(--line)}
+.msg.human .cap-tag{background:var(--ink);color:var(--gold);border-color:var(--gold)}
+.msg .cap-label{font-size:10px;color:rgba(255,255,255,.5);margin-top:6px}
+.msg.human .cap-label{color:rgba(26,61,36,.5)}
+.msg.ai .cap-label{color:rgba(255,255,255,.6)}
 
-  /* ===== 右列：AI 讲解面板 + 小区详情 ===== */
-  .right-col {
-    background: #fff;
-    border-left: 1px solid var(--边框);
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-  }
+/* 留资三档 */
+.lead-banner{background:rgba(201,169,98,.1);border:1px solid var(--gold);border-radius:8px;padding:10px;font-size:12px;color:var(--gold);margin-top:8px}
+.lead-banner .lvl{display:inline-block;background:var(--gold);color:var(--bg);padding:1px 6px;border-radius:8px;font-size:10px;margin-right:6px}
 
-  .ai-panel {
-    background: var(--墨绿);
-    color: #fff;
-    padding: 18px 20px;
-  }
-  .ai-avatar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  .ai-face {
-    width: 44px; height: 44px;
-    background: linear-gradient(135deg, var(--匠星金), #e8d9a8);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-  }
-  .ai-info .name { font-weight: 600; font-size: 14px; }
-  .ai-info .role { font-size: 11px; opacity: .6; }
-  .ai-speech {
-    font-size: 14px;
-    line-height: 1.6;
-    padding: 14px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 10px;
-    position: relative;
-  }
-  .ai-speech::before {
-    content: '「';
-    position: absolute;
-    top: -8px; left: 14px;
-    background: var(--墨绿);
-    padding: 0 4px;
-    color: var(--匠星金);
-    font-size: 16px;
-  }
+.chat-input{background:var(--card);border-top:1px solid var(--line);padding:10px;display:flex;gap:8px;border-radius:0 0 12px 12px}
+.chat-input input{flex:1;background:var(--card2);border:1px solid var(--line);color:var(--white);padding:10px;border-radius:8px;font-size:13px;outline:none}
+.chat-input button{background:var(--gold);color:var(--bg);border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px}
 
-  .community-detail {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-  }
-  .cd-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 14px;
-  }
-  .cd-name { font-size: 18px; font-weight: 700; color: var(--墨绿); }
-  .cd-meta { font-size: 11px; color: var(--暖灰); margin-top: 2px; }
+/* 底部演示场景 */
+.demo-bar{margin-top:16px;background:var(--card);border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px}
+.demo-bar .label{font-size:12px;color:var(--ink-soft);white-space:nowrap}
+.demo-bar .btns{display:flex;gap:6px;flex:1;flex-wrap:wrap}
+.demo-bar button{background:var(--card2);border:1px solid var(--line);color:var(--ink-soft);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;transition:.2s}
+.demo-bar button.on,.demo-bar button:hover{border-color:var(--gold);color:var(--gold)}
 
-  .kb-card {
-    background: var(--米白);
-    border-radius: 10px;
-    padding: 14px;
-    margin-bottom: 10px;
-    border-left: 3px solid var(--匠星金);
-  }
-  .kb-card.warn { border-left-color: #e67e22; background: #fff8f0; }
-  .kb-card .kb-title {
-    font-size: 12px;
-    color: var(--匠星金);
-    font-weight: 600;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-  }
-  .kb-card.warn .kb-title { color: #e67e22; }
-  .kb-card .kb-content { font-size: 14px; color: var(--文字); line-height: 1.6; }
-  .kb-card .kb-source {
-    margin-top: 10px;
-    padding-top: 8px;
-    border-top: 1px dashed var(--边框);
-    font-size: 11px;
-    color: var(--暖灰);
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .kb-card .kb-source .tag {
-    background: #fff;
-    padding: 2px 8px;
-    border-radius: 4px;
-    border: 1px solid var(--边框);
-  }
-
-  .shortage-banner {
-    background: linear-gradient(135deg, #fff8f0, #fef5e7);
-    border: 1px solid #f3d0a3;
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
-  .shortage-banner .icon { font-size: 18px; }
-  .shortage-banner .text .t { font-size: 12px; color: #e67e22; font-weight: 600; margin-bottom: 4px; }
-  .shortage-banner .text .c { font-size: 13px; color: var(--暖灰); }
-
-  /* ===== 底部留资引导 ===== */
-  .cta-bar {
-    background: var(--墨绿);
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .cta-info { color: rgba(255,255,255,0.7); font-size: 13px; }
-  .cta-info strong { color: #fff; }
-  .cta-buttons { display: flex; gap: 10px; }
-  .btn {
-    padding: 12px 22px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all .2s;
-  }
-  .btn-gold {
-    background: var(--匠星金);
-    color: var(--墨绿深);
-  }
-  .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,169,98,0.4); }
-  .btn-outline {
-    background: transparent;
-    color: #fff;
-    border: 2px solid rgba(255,255,255,0.3);
-  }
-  .btn-outline:hover { border-color: var(--匠星金); }
-
-  /* ===== 小标签 ===== */
-  .tag-chip {
-    display: inline-block;
-    background: rgba(201,169,98,0.15);
-    color: var(--匠星金);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 11px;
-    margin-right: 4px;
-  }
-  .tag-chip.green { background: rgba(26,61,36,0.1); color: var(--墨绿); }
-  .tag-chip.red { background: rgba(231,76,60,0.1); color: #e74c3c; }
-
-  /* 演示提示 */
-  .demo-switcher {
-    position: fixed;
-    top: 20px; right: 20px;
-    background: #fff;
-    border-radius: 10px;
-    padding: 16px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-    z-index: 1000;
-    max-width: 240px;
-  }
-  .demo-switcher h4 { font-size: 13px; color: var(--墨绿); margin-bottom: 10px; }
-  .demo-switcher button {
-    display: block;
-    width: 100%;
-    padding: 8px 12px;
-    margin-bottom: 6px;
-    background: #faf8f4;
-    border: 1px solid var(--边框);
-    border-radius: 6px;
-    font-size: 12px;
-    color: var(--墨绿);
-    cursor: pointer;
-    text-align: left;
-  }
-  .demo-switcher button:hover { background: var(--匠星金淡); border-color: var(--匠星金); }
-  .nav-links { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--边框); }
-  .nav-links a { display: block; font-size: 11px; color: var(--暖灰); text-decoration: none; padding: 3px 0; }
-  .nav-links a:hover { color: var(--墨绿); }
-
-  /* 欢迎态 */
-  .welcome-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--墨绿), var(--墨绿深));
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    z-index: 50;
-    transition: opacity .5s;
-  }
-  .welcome-overlay.hidden { opacity: 0; pointer-events: none; }
-  .welcome-avatar {
-    width: 80px; height: 80px;
-    background: linear-gradient(135deg, var(--匠星金), var(--匠星金淡));
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 40px;
-    margin-bottom: 20px;
-    animation: float 3s ease-in-out infinite;
-  }
-  @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
-  .welcome-text { font-size: 24px; margin-bottom: 8px; font-weight: 600; }
-  .welcome-sub { font-size: 14px; opacity: .6; margin-bottom: 30px; }
-  .welcome-btns { display: flex; gap: 16px; }
-  .welcome-btn {
-    padding: 16px 28px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    transition: transform .2s;
-  }
-  .welcome-btn.gold { background: var(--匠星金); color: var(--墨绿深); }
-  .welcome-btn.white { background: rgba(255,255,255,0.15); color: #fff; }
-  .welcome-btn:hover { transform: scale(1.05); }
+/* 导航 */
+.nav{display:flex;gap:14px;margin-bottom:14px}
+.nav a{color:var(--ink-soft);text-decoration:none;font-size:12px;padding:4px 10px;border:1px solid var(--line);border-radius:14px;transition:.2s}
+.nav a:hover,.nav a.active{color:var(--gold);border-color:var(--gold)}
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<!-- 演示切换器 -->
-<div class="demo-switcher">
-  <h4>🎬 演示场景切换</h4>
-  <button onclick="showWelcome()">① AI 迎宾（客户进店）</button>
-  <button onclick="showSearch()">② 有娃家庭 · 探索学区</button>
-  <button onclick="showCommunity()">③ 点选小区 · 本地知识呈现</button>
-  <button onclick="showShortage()">④ 短板必填 · 信任机制</button>
-  <button onclick="showLeadGen()">⑤ 留资引导 · 中留资</button>
-  <div class="nav-links">
-    <a href="./index.html">← 回总览</a>
-    <a href="./agent.html">→ 经纪人作业端</a>
+<div class="nav">
+  <a href="./index.html">① 总览</a>
+  <a href="./bigscreen.html" class="active">② 大屏</a>
+  <a href="./agent.html">③ 经纪人端</a>
+  <a href="./h5.html">④ H5</a>
+  <a href="./digital-employee.html">⑤ 数字员工架构</a>
+</div>
+
+<!-- 顶栏 -->
+<div class="topbar">
+  <div class="brand">
+    <div class="logo">风声 · 望京南门店</div>
+    <div class="store">望京南地铁 B 口 · 65" 触控大屏</div>
+  </div>
+  <div class="modes">
+    <button class="on" onclick="switchView('welcome')">迎宾态</button>
+    <button onclick="switchView('map')">地图态</button>
+    <button onclick="switchView('hood')">小区态</button>
   </div>
 </div>
 
-<!-- 模拟大屏 -->
-<div class="screen-frame">
-  <div class="screen">
+<!-- 主栅 -->
+<div class="main">
 
-    <!-- 状态条 -->
-    <div class="status-bar">
-      <div class="left">
-        <div class="logo">🏠 风声 · 望京南门店</div>
-        <div class="ai-badge">🤖 AI 迎宾中</div>
-      </div>
-      <div class="right">
-        <span class="rec">●</span>
-        <span>进店第 7 分钟</span>
-        <span>👤 有娃家庭</span>
+  <!-- 左屏 -->
+  <div class="left">
+
+    <!-- 迎宾态 -->
+    <div id="view-welcome" class="welcome-view">
+      <div class="robot">🤖</div>
+      <h2>您好，欢迎光临风声望京南店</h2>
+      <p>我是数字接待员小丰。您是来看房的？还是想了解这片？</p>
+      <div class="btns">
+        <button onclick="selectPersona('parent')">👨‍👩‍👧 我是有娃家庭，想找学区房</button>
+        <button onclick="selectPersona('commute')">💼 我是通勤刚需，要近地铁</button>
+        <button onclick="selectPersona('elder')">👵 我是养老改善，要安静好物业</button>
       </div>
     </div>
 
-    <!-- 主区域 -->
-    <div class="main">
-
-      <!-- 左列 -->
-      <div class="left-col">
-        <div>
-          <div class="section-title">👤 客户类型</div>
-          <div class="client-types" id="clientTypes">
-            <button class="client-type-btn active" data-type="family" onclick="selectType(this)">
-              <span class="emoji">👨‍👩‍👧</span>
-              <div>
-                有孩子的家庭
-                <div class="desc">学区、公园、医疗</div>
-              </div>
-            </button>
-            <button class="client-type-btn" data-type="commute" onclick="selectType(this)">
-              <span class="emoji">💼</span>
-              <div>通勤刚需
-                <div class="desc">地铁、时间、价格</div>
-              </div>
-            </button>
-            <button class="client-type-btn" data-type="retire" onclick="selectType(this)">
-              <span class="emoji">👴</span>
-              <div>养老改善
-                <div class="desc">安静、电梯、菜场</div>
-              </div>
-            </button>
-            <button class="client-type-btn" data-type="rent" onclick="selectType(this)">
-              <span class="emoji">🏃</span>
-              <div>租房过渡
-                <div class="desc">通勤、配套</div>
-              </div>
-            </button>
-            <button class="client-type-btn" data-type="seller" onclick="selectType(this)">
-              <span class="emoji">🏷️</span>
-              <div>售房业主
-                <div class="desc">片区行情、定价</div>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <div class="section-title">📖 讲解步骤</div>
-          <div class="steps">
-            <div class="step done"><div class="n">1</div>区位板块 · 这片是什么样的</div>
-            <div class="step done"><div class="n">2</div>商圈生活 · 每天过日子方便吗</div>
-            <div class="step current"><div class="n">3</div>小区楼盘 · 住起来舒服吗</div>
-            <div class="step"><div class="n">4</div>楼栋户型 · 这栋这个户型怎么样</div>
-            <div class="step"><div class="n">5</div>带看预约 · 约个时间实地看</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 中列：地图 -->
+    <!-- 地图态 -->
+    <div id="view-map" class="map-view">
       <div class="map-area">
-        <div class="map-layer-switch">
-          <button class="layer-btn active">生活配套</button>
-          <button class="layer-btn">小区特性</button>
-          <button class="layer-btn">楼栋细节</button>
+        <div class="map-grid"></div>
+        <div class="map-marker" style="top:30%;left:25%" onclick="showHood('A')">
+          <span class="label">A · 望京西园 均价 7.8万</span>
         </div>
-        <div class="circle-hint">手指圈选 · 聚焦范围</div>
-        <svg class="map-svg" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-          <!-- 底图纹理 -->
-          <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
-            </pattern>
-          </defs>
-          <rect width="800" height="600" fill="url(#grid)"/>
-          <!-- 道路 -->
-          <path d="M 0 300 Q 400 280 800 300" stroke="#fff" stroke-width="24" fill="none" opacity=".8"/>
-          <path d="M 400 0 Q 380 300 400 600" stroke="#fff" stroke-width="20" fill="none" opacity=".8"/>
-          <!-- 地铁线 -->
-          <path d="M 100 150 Q 300 200 500 180 Q 650 165 800 200" stroke="#1a3d24" stroke-width="4" fill="none" stroke-dasharray="8,4"/>
-          <!-- 公园/绿地 -->
-          <ellipse cx="600" cy="450" rx="80" ry="50" fill="#c4dccb" opacity=".6"/>
-          <text x="600" y="455" text-anchor="middle" fill="#1a3d24" font-size="12" opacity=".7">望京公园</text>
-          <!-- 几个小区块（不同填充） -->
-          <rect x="120" y="140" width="150" height="120" rx="8" fill="rgba(201,169,98,0.15)" stroke="rgba(201,169,98,0.5)" stroke-dasharray="4,2"/>
-          <rect x="300" y="340" width="180" height="140" rx="8" fill="rgba(26,61,36,0.1)" stroke="rgba(26,61,36,0.4)" stroke-dasharray="4,2"/>
-          <rect x="520" y="180" width="160" height="130" rx="8" fill="rgba(201,169,98,0.1)" stroke="rgba(201,169,98,0.4)" stroke-dasharray="4,2"/>
-          <!-- 学区圈（选中高亮） -->
-          <ellipse cx="390" cy="250" rx="120" ry="80" fill="none" stroke="#c9a962" stroke-width="2" stroke-dasharray="6,4" opacity=".8"/>
-          <text x="390" y="240" text-anchor="middle" fill="#c9a962" font-size="11" font-weight="600">✅ 实验小学学区</text>
-        </svg>
-
-        <!-- 小区点 -->
-        <div class="community-dot" style="left:19%;top:32%;" onclick="selectCommunity(this,'望京花园','1.2km 到实验小学','2000年建成 · 9栋楼')">
-          <span class="label">望京花园</span>
+        <div class="map-marker" style="top:45%;left:55%" onclick="showHood('B')">
+          <span class="label">B · 望京新城 均价 7.2万</span>
         </div>
-        <div class="community-dot selected" style="left:40%;top:48%;" onclick="selectCommunity(this,'银领家园','500m 到实验小学','2010年建成 · 6栋楼')">
-          <span class="label">银领家园 ★</span>
+        <div class="map-marker agent" style="top:55%;left:75%" onclick="showHood('C')">
+          <span class="label">C · 大西洋新城 均价 9.1万 🏆 主推</span>
         </div>
-        <div class="community-dot" style="left:66%;top:35%;" onclick="selectCommunity(this,'金桂嘉园','800m 到实验小学','2015年建成 · 12栋')">
-          <span class="label">金桂嘉园</span>
-        </div>
-        <div class="community-dot" style="left:30%;top:70%;" onclick="selectCommunity(this,'东洲花园','步行 1.5km','老小区 · 2002年')">
-          <span class="label">东洲花园</span>
-        </div>
-        <div class="community-dot" style="left:55%;top:72%;" onclick="selectCommunity(this,'公园首府','步行 800m','次新 · 2018年')">
-          <span class="label">公园首府</span>
-        </div>
-
         <div class="zoom-controls">
-          <button class="zoom-btn">＋</button>
-          <button class="zoom-btn">－</button>
+          <button>+</button><button>−</button>
         </div>
       </div>
-
-      <!-- 右列 -->
-      <div class="right-col">
-        <!-- AI 讲解面板 -->
-        <div class="ai-panel">
-          <div class="ai-avatar">
-            <div class="ai-face">🤖</div>
-            <div class="ai-info">
-              <div class="name">小丰 · 数字顾问</div>
-              <div class="role">望京南店 · 经营 10 年</div>
-            </div>
-          </div>
-          <div class="ai-speech" id="aiSpeech">
-            姐选了有娃家庭，我给您聚焦到实验小学学区——这一片三个小区我都熟：银领家园最新、学区对口最稳；望京花园有大户型适合三代同堂；金桂嘉园电梯高层带花园。我先从银领家园讲起？
-          </div>
+      <div class="hood-panel" id="hood-panel">
+        <h3>🏘️ <span id="hood-name">大西洋新城</span> · 选中查看五层知识</h3>
+        <div class="layer-tabs">
+          <button class="on" onclick="switchLayer(0,this)">① 板块区位</button>
+          <button onclick="switchLayer(1,this)">② 商圈生活</button>
+          <button onclick="switchLayer(2,this)">③ 小区楼盘</button>
+          <button onclick="switchLayer(3,this)">④ 楼栋户型</button>
+          <button onclick="switchLayer(4,this)">⑤ 生活场景</button>
         </div>
-
-        <!-- 小区详情 -->
-        <div class="community-detail" id="communityDetail">
-          <div class="cd-header">
-            <div>
-              <div class="cd-name">银领家园</div>
-              <div class="cd-meta">📍 望京南 · 2010年建成 · 6栋18层 · 1200户</div>
-            </div>
-            <div>
-              <span class="tag-chip">学区对口</span>
-              <span class="tag-chip green">电梯房</span>
-            </div>
-          </div>
-
-          <!-- 短板必填 -->
-          <div class="shortage-banner">
-            <div class="icon">⚠️</div>
-            <div class="text">
-              <div class="t">这房的短板 · 业主如实说</div>
-              <div class="c">小区东侧临阜通东大街，晚高峰 6:30-8:00 偶尔有车流声（关窗基本听不见）；地下车库车位配比 1:0.8，回家晚了要等。</div>
-            </div>
-          </div>
-
-          <!-- KB 词条 -->
-          <div class="kb-card">
-            <div class="kb-title">🏫 学区对口</div>
-            <div class="kb-content">
-              实验小学 2026 年划片已公示——银领家园整栋对口。步行 800 米（12 分钟），过两个红绿灯。学校口碑：高年级老师稳定、低年级有轮岗，去年市重点率 23%。
-            </div>
-            <div class="kb-source">
-              <span class="tag">来源：望京南店学区专员李姐</span>
-              <span class="tag">更新：2026-09-01</span>
-              <span class="tag">✅ 已验证</span>
-            </div>
-          </div>
-
-          <div class="kb-card">
-            <div class="kb-title">🌡️ 供暖实测</div>
-            <div class="kb-content">
-              3 号楼中间楼层供暖最好——去年冬天实测 25-26℃；1-2 层偏低，18-20℃；顶层（18 层）夏天西晒。3 号楼是我们主推首选。
-            </div>
-            <div class="kb-source">
-              <span class="tag">来源：经纪人小王（带看 8 次实测记录）</span>
-              <span class="tag">更新：2026-11-15</span>
-              <span class="tag">✅ 已验证</span>
-            </div>
-          </div>
-
-          <div class="kb-card">
-            <div class="kb-title">🚇 通勤试算</div>
-            <div class="kb-content">
-              步行到 14 号线阜通站 500 米（7 分钟）。早高峰 8:00 试算：到国贸 22 分钟（站内换乘），到望京 SOHO 15 分钟（直达）。
-            </div>
-            <div class="kb-source">
-              <span class="tag">来源：高德路线规划 · 实时试算</span>
-              <span class="tag">更新：2026-11-28</span>
-            </div>
-          </div>
-
-          <div class="kb-card warn">
-            <div class="kb-title">🏠 业主真实评价</div>
-            <div class="kb-content">
-              "住了 6 年最满意的是安静——小区内不允许广场舞、儿童乐园离楼远。最想吐槽的是物业保洁——楼道一周才扫一次。"（张女士，3 号楼 12 层）
-            </div>
-            <div class="kb-source">
-              <span class="tag">来源：业主访谈录</span>
-              <span class="tag">更新：2026-08-20</span>
-              <span class="tag">✅ 已验证（经纪人老李回访确认）</span>
-            </div>
-          </div>
+        <div class="layer-content" id="layer-content">
+          <div class="fact"><b>板块性格</b>：望京核心区，2000-2010 年建成，以改善型家庭为主，社区氛围成熟。<div class="src">来源：门店本地知识库 · 2026-10 店长更新 · 已验证</div></div>
+          <div class="fact"><b>规划动向</b>：东侧 1.2km 有 14 号线支线段施工中，预计 2028 年通车。通车后板块价值预计涨幅 8-12%。<div class="src">来源：市规划委员会公示 · 2026-08-15</div></div>
+          <div class="fact shortage"><span class="label">⚠️ 短板（必填）</span><br>西侧临广顺北大街，晚高峰 18:00-19:00 偶尔有噪音。<div class="src">来源：实测数据 · 店长噪音仪 App 每周测一次 · 近 4 周均值 52dB</div></div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- 底部 CTA -->
-    <div class="cta-bar" id="ctaBar">
-      <div class="cta-info">
-        📍 您现在看的是 <strong>银领家园</strong> · 带看机会多、业主配合度高 · 目前 <strong>主推位</strong>（跟业主共识）
+  <!-- 右侧对话 -->
+  <div class="right">
+    <div class="chat-header">
+      <div class="avatar">🤖</div>
+      <div class="who">
+        <div class="name">数字接待员 · 小丰</div>
+        <div class="role">资深销冠张姐的 SOP 复刻 · 7×24 迎宾</div>
       </div>
-      <div class="cta-buttons">
-        <button class="btn btn-outline" onclick="alert('轻留资：扫码匿名收藏这个小区偏好')">扫码收藏</button>
-        <button class="btn btn-gold" onclick="alert('中留资：扫码带走 H5 决策包（自选小区+房源+本地经验）')">📱 扫码带走</button>
-        <button class="btn btn-outline" onclick="alert('强留资：预约带看时段')">约看</button>
+      <div class="mode-switch">
+        <button class="on" onclick="switchMode('ai',this)">🤖 AI</button>
+        <button onclick="switchMode('human',this)">👤 真人</button>
       </div>
     </div>
 
-    <!-- 迎宾覆盖层 -->
-    <div class="welcome-overlay hidden" id="welcome">
-      <div class="welcome-avatar">🤖</div>
-      <div class="welcome-text">您好，欢迎光临风声</div>
-      <div class="welcome-sub">我是小丰 · 这片我熟 · 您是哪种人？</div>
-      <div class="welcome-btns">
-        <button class="welcome-btn gold" onclick="document.getElementById('welcome').classList.add('hidden')">我来看看房</button>
-        <button class="welcome-btn white" onclick="document.getElementById('welcome').classList.add('hidden')">了解片区</button>
+    <div class="chat-body" id="chat-body">
+      <!-- 初始消息 -->
+      <div class="msg ai">
+        您好，我是小丰。我会先问您几个简单的问题，帮您快速了解这片。您看可以吗？
+        <div class="cap-label">💭 CAP-SKILL-ACQ-01 迎宾开场 · 标准化</div>
       </div>
-      <div style="margin-top:20px;font-size:11px;opacity:.4;">30 秒无操作自动切回迎宾演示态</div>
     </div>
 
+    <div class="chat-input">
+      <input type="text" placeholder="选个场景预设开始对话..." disabled>
+      <button onclick="sendQuick()">发送</button>
+    </div>
+  </div>
+</div>
+
+<!-- 底部演示场景 -->
+<div class="demo-bar">
+  <div class="label">🎬 演示场景切换：</div>
+  <div class="btns">
+    <button onclick="runScene('parent')">👨‍👩‍👧 有娃家庭 → 学区房探寻</button>
+    <button onclick="runScene('commute')">💼 通勤刚需 → 快速匹配</button>
+    <button onclick="runScene('elder')">👵 养老改善 → 安静物业</button>
+    <button onclick="runScene('leadgen')">📝 留资触发（5min 预设）</button>
   </div>
 </div>
 
 <script>
-  function showWelcome() { document.getElementById('welcome').classList.remove('hidden'); }
-  function showSearch() {
-    document.getElementById('welcome').classList.add('hidden');
-    document.getElementById('aiSpeech').innerHTML =
-      "姐选了有娃家庭，我给您聚焦到实验小学学区——这一片三个小区我都熟：银领家园最新、学区对口最稳；望京花园有大户型适合三代同堂；金桂嘉园电梯高层带花园。我先从银领家园讲起？";
-    document.querySelector('.client-type-btn[data-type="family"]').classList.add('active');
-  }
-  function showCommunity() {
-    document.getElementById('welcome').classList.add('hidden');
-    document.getElementById('aiSpeech').innerHTML =
-      "银领家园 2010 年建成，6 栋楼都是电梯房——3 号楼是我主推首选，中间楼层供暖最好（去年冬天实测 25-26℃）。这个小区业主自住率 80%，邻里关系比较稳。";
-    document.querySelectorAll('.community-dot').forEach(d => d.classList.remove('selected'));
-    document.querySelectorAll('.community-dot')[1].classList.add('selected');
-  }
-  function showShortage() {
-    document.getElementById('welcome').classList.add('hidden');
-    document.getElementById('aiSpeech').innerHTML =
-      "姐我给您说实话——银领家园有两个短板我得告诉您：东边临马路晚高峰偶尔有噪音，车位配比也不高。我带您看看东边的楼和中间的楼对比一下？";
-  }
-  function showLeadGen() {
-    document.getElementById('welcome').classList.add('hidden');
-    document.getElementById('aiSpeech').innerHTML =
-      "姐您已经看了 7 分钟、勾了 3 个小区——我帮您把这些内容扫个码带回去，跟家人一起商量？微信扫码就行，还能带我的联系方式和电话。";
-  }
+var CHAT = document.getElementById('chat-body');
 
-  function selectType(btn) {
-    document.querySelectorAll('.client-type-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const type = btn.dataset.type;
-    const speeches = {
-      family: "姐选了有娃家庭，我给您聚焦到实验小学学区——这一片三个小区我都熟。",
-      commute: "通勤刚需是吧？我给您看 14 号线和 15 号线沿线，每套房我都测过到国贸的时间。",
-      retire: "养老改善我推荐安静、电梯房、靠近菜市场的——公园首府这边最适合。",
-      rent: "租房过渡是吧？我给您看本周新上的、离地铁近的、价格在您预算内的。",
-      seller: "您要卖房？我给您讲这片最近的成交行情、在售竞争、定价怎么才能卖得快。"
-    };
-    document.getElementById('aiSpeech').innerHTML = speeches[type];
+function addMsg(text, role, capTag, capLabel){
+  var m = document.createElement('div');
+  m.className = 'msg ' + (role==='ai'?'ai':role==='human'?'human':'user');
+  m.innerHTML = text;
+  if(capLabel){
+    var lbl = document.createElement('div');
+    lbl.className = 'cap-label';
+    lbl.textContent = capLabel;
+    m.appendChild(lbl);
   }
+  if(capTag){
+    var t = document.createElement('span');
+    t.className = 'cap-tag';
+    t.textContent = capTag;
+    m.appendChild(t);
+  }
+  CHAT.appendChild(m);
+  CHAT.scrollTop = CHAT.scrollHeight;
+}
 
-  function selectCommunity(el, name, dist, info) {
-    document.querySelectorAll('.community-dot').forEach(d => d.classList.remove('selected'));
-    el.classList.add('selected');
-    document.querySelector('.cd-name').textContent = name;
-    document.querySelector('.cd-meta').textContent = `📍 望京南 · ${info} · ${dist}`;
-    document.getElementById('aiSpeech').innerHTML =
-      `选中了${name}——${info}。我给您讲讲它的学区、供暖、通勤和业主评价。`;
-  }
+function switchView(v){
+  document.getElementById('view-welcome').style.display = v==='welcome' ? '' : 'none';
+  document.getElementById('view-map').classList.toggle('on', v==='map' || v==='hood');
+  if(v==='hood') showHood('C');
+  document.querySelectorAll('.topbar .modes button').forEach((b,i)=>{
+    b.classList.toggle('on', (['welcome','map','hood'][i]===v));
+  });
+}
+function showHood(id){
+  var names = {A:'望京西园',B:'望京新城',C:'大西洋新城 🏆 主推'};
+  document.getElementById('hood-name').textContent = names[id] || id;
+  document.getElementById('hood-panel').style.borderColor = id==='C' ? 'var(--gold)' : 'var(--line)';
+}
+function switchLayer(idx, btn){
+  document.querySelectorAll('.layer-tabs button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  var contents = [
+    '<div class="fact"><b>板块性格</b>：望京核心区，2000-2010 年建成，以改善型家庭为主。<div class="src">来源：门店本地知识库 · 2026-10 店长更新</div></div><div class="fact shortage"><span class="label">⚠️ 短板（必填）</span><br>西侧临广顺北大街，晚高峰偶尔有噪音。<div class="src">来源：噪音仪实测 · 近 4 周均值 52dB</div></div>',
+    '<div class="fact"><b>通勤</b>：步行 8 分钟到 14 号线阜通站；开车到国贸 25-35 分钟。<div class="src">来源：高德地图大数据 · 2026-09 实测</div></div><div class="fact"><b>买菜</b>：楼下京客隆 7:00-22:00；1km 内有盒马 X 会员店。<div class="src">来源：门店社区地图 · 2026-08</div></div>',
+    '<div class="fact"><b>小区口碑</b>：业主评价"物业认真负责、安静舒适"（4.7/5）。<div class="src">来源：30 位近期带看业主访谈 · 2026-09</div></div><div class="fact shortage"><span class="label">⚠️ 短板（必填）</span><br>停车位紧张，1:1.3 配比，夜间偶尔需要等 10 分钟。<div class="src">来源：业主群反馈 · 2026-10</div></div>',
+    '<div class="fact"><b>供暖</b>：市政集中供暖，实测 24-26℃，北向房间稍低 2℃。<div class="src">来源：店长 3-12 层温度计每周实测 · 2026-2027 采暖季</div></div><div class="fact"><b>采光</b>：中间楼层（6-12 层）上午 9:30 开始日照，持续 5+ 小时。<div class="src">来源：冬至日实测 · 2025-12-22</div></div>',
+    '<div class="fact"><b>典型一天</b>：早 7-9 点电梯等待 3-5 分钟；晚 7-9 点小区门口车流集中。<div class="src">来源：业主访谈 + 实地观察 · 2026-09</div></div>'
+  ];
+  document.getElementById('layer-content').innerHTML = contents[idx];
+}
+function switchMode(m, btn){
+  document.querySelectorAll('.mode-switch button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function selectPersona(p){
+  switchView('map');
+  runScene(p);
+}
+
+// 场景演示
+var SCENES = {
+  parent: [
+    {role:'ai',text:'好的，有娃家庭我理解～我帮您筛一下：学区对口、小区氛围、电梯/绿化这几个点您最在意哪个？',cap:'INS-01',label:'💭 CAP-SKILL-INS-01 情绪识别 · 家长焦虑点'},
+    {role:'user',text:'主要是学区对口，还有小区别太吵'},
+    {role:'ai',text:'明白。我先给您调出望京南三个对口学区的小区，每个我都会主动说短板——不遮不藏，您自己判断。',cap:'SOL-01',label:'💭 CAP-SKILL-SOL-01 诚信 · 主动呈现短板'},
+    {role:'ai',text:'首先看大西洋新城：对口望京实验学校（9 年连、优秀率 98%）。<b>主要短板</b>是西侧临路，晚高峰噪音 52dB——我给您看实测数据。<div class="lead-banner"><span class="lvl">轻留资</span>系统触发（3 分钟 + 学区词命中）→ "扫码保存这三个小区对比清单，回家慢慢看？"</div>',cap:'SOL-03',label:'🔗 CAP-SKILL-SOL-03 学区信息 · 带验证来源'},
+    {role:'human',text:'张姐这时接手：姐，您家娃多大了？三年级对口还有没有机会？（AI 到这就停，追问交给真人）',cap:'INS-03',label:'👤 CAP-SKILL-INS-03 需求深挖 · 追问交给真人'}
+  ],
+  commute: [
+    {role:'ai',text:'通勤刚需明白～您每天大概几点出门？目的地是国贸、望京还是其他？',cap:'INS-02',label:'💭 CAP-SKILL-INS-02 结构化探寻'},
+    {role:'user',text:'9 点到望京 SOHO，想控制在 20 分钟内'},
+    {role:'ai',text:'那地铁 14 号线沿线最适合。我给您筛出来：步行 8 分钟内阜通站的小区。<br>• 大西洋新城 7.2 万/平（主力）<br>• 望京新城 6.8 万/平（总价更友好）<br>• 望京西园 6.5 万/平（房龄稍老）',cap:'SOL-04',label:'🔗 CAP-SKILL-SOL-04 数据筛选 · 精准匹配'},
+    {role:'human',text:'（真人接手）张哥您预算多少？我帮您算一下这几个小区的首付月供各是多少。（税费贷款实时算 AI 能做，但"这个预算适不适合您"要真人判断）',cap:'SOL-02',label:'👤 CAP-SKILL-SOL-02 方案匹配 · 真人解读'}
+  ],
+  elder: [
+    {role:'ai',text:'养老改善我记下了。安静、电梯、近医院、物业靠谱，这四个我给您排个优先级？',cap:'INS-02',label:'💭 CAP-SKILL-INS-02 结构化探寻'},
+    {role:'user',text:'安静第一，其次是电梯和物业'},
+    {role:'ai',text:'安静第一的话——我推荐大西洋新城中间楼层（6-12 层），实测噪音 48dB（<span style="color:#c9a962">图书馆安静水平</span>）。物业 4.7 分，电梯 24 小时值守。<div class="lead-banner"><span class="lvl">中留资</span>系统触发（10 分钟 + 多小区勾选）→ "阿姨扫这个码，我把安静小区清单发您，让孩子也帮您看看？"</div>',cap:'SOL-03',label:'🔗 CAP-SKILL-SOL-03 小区优缺点 · 实测数据'}
+  ],
+  leadgen: [
+    {role:'ai',text:'（系统：客户已停留 5 分钟、勾了 3 个小区、切了 2 层知识 → 触发三档留资引导）',cap:'ACQ-08',label:'💭 CAP-SKILL-ACQ-08 留资引导中档次触发'},
+    {role:'ai',text:'您好～您看了好一会儿了，对大西洋新城和望京新城都挺感兴趣的对吧？<br><br>我给您生成了一份<b>专属对比清单</b>——学区、通勤、价格、短板都列清楚了，扫码就能带走，回家跟家人慢慢商量。<br><br><span style="font-size:28px">📱</span>',cap:'ACQ-08',label:'💭 CAP-SKILL-ACQ-08 中留资 · 扫码带走决策包'},
+    {role:'user',text:'好，我扫一下'},
+    {role:'human',text:'（真人接手 · 强留资）姐，我加您微信发个朋友圈位置——您周末来带看的话，我提前 20 分钟帮您开好门、跟业主打个招呼。明天上午 10 点可以吗？',cap:'ACQ-09',label:'👤 CAP-SKILL-ACQ-09 强留资 · 必须真人'}
+  ]
+};
+
+function runScene(name){
+  CHAT.innerHTML = '';
+  var lines = SCENES[name];
+  lines.forEach(function(l, i){
+    setTimeout(function(){
+      addMsg(l.text, l.role, l.cap, l.label);
+      if(i === lines.length - 1 && name === 'leadgen'){
+        setTimeout(function(){
+          addMsg('⚠️ 注意：强留资环节 AI 不会触发——必须在真人模式下由经纪人完成。这是<b>红线</b>。', 'ai', '', '🔴 红线：强留资不允许 AI 做');
+        }, 800);
+      }
+    }, i * 900);
+  });
+}
+
+// 初始欢迎
+addMsg('您好，我是小丰。我会先问您几个简单的问题，帮您快速了解这片。您看可以吗？', 'ai', '', '💭 CAP-SKILL-ACQ-01 迎宾开场 · 标准化');
 </script>
 </body>
 </html>

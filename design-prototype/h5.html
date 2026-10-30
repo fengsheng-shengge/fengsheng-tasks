@@ -2,636 +2,221 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>客户 H5 · 扫码带走的信任决策包</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>H5 · 扫码带走的消费者信任决策包</title>
 <style>
-  :root {
-    --墨绿: #1a3d24;
-    --墨绿深: #0f2817;
-    --匠星金: #c9a962;
-    --匠星金淡: #e8d9a8;
-    --米白: #faf8f4;
-    --暖灰: #6b6357;
-    --边框: #e8e3d9;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    background: #2a2a2a;
-    color: #2c2c2c;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    gap: 40px;
-    flex-wrap: wrap;
-  }
+:root{--ink:#1a3d24;--gold:#c9a962;--bg:#f7f5f0;--card:#fff;--line:#e8e3d8;--ink-soft:#5c6d62;--ok:#2d7a4a;--danger:#b85c38;--ai-blue:#4a6fa5}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#e8e3d8;min-height:100vh;display:flex;justify-content:center;padding:24px 0}
+.wrap{display:flex;gap:28px;max-width:900px}
+/* 说明列 */
+.info{width:260px}
+.info h1{font-size:20px;color:var(--ink);margin-bottom:6px}
+.info .sub{font-size:12px;color:var(--ink-soft);margin-bottom:20px}
+.info .feat{background:var(--card);border-radius:10px;padding:12px 14px;margin-bottom:10px;border-left:3px solid var(--gold)}
+.info .feat h3{font-size:13px;margin-bottom:4px}
+.info .feat p{font-size:11px;color:var(--ink-soft);line-height:1.5}
+.info .note{font-size:10px;color:var(--danger);margin-top:14px;padding:8px;background:rgba(184,92,56,.08);border-radius:6px;border:1px dashed var(--danger)}
 
-  /* 手机外框 */
-  .phone {
-    width: 340px;
-    background: #000;
-    border-radius: 40px;
-    padding: 10px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    position: relative;
-  }
-  .phone::before {
-    content: 'iPhone · 客户 H5';
-    position: absolute;
-    bottom: -28px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px;
-    color: #888;
-    letter-spacing: 2px;
-    white-space: nowrap;
-  }
-  .phone-screen {
-    width: 100%;
-    aspect-ratio: 9/19.5;
-    background: var(--米白);
-    border-radius: 32px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    position: relative;
-    scroll-behavior: smooth;
-  }
+/* 手机框 */
+.phone{width:300px;background:var(--card);border-radius:28px;padding:12px;box-shadow:0 20px 60px rgba(0,0,0,.15);flex-shrink:0;position:relative}
+.phone::before{content:"";position:absolute;top:16px;left:50%;transform:translateX(-50%);width:60px;height:4px;background:#333;border-radius:2px;z-index:2}
+.screen{background:var(--bg);border-radius:18px;overflow:hidden;height:600px;display:flex;flex-direction:column}
+/* 第二台 */
+.phone.phone2{background:#1e2e24}
+.phone2 .screen{background:#162218}
+.phone2 .content{color:#f7f5f0}
+.phone2 h2,.phone2 h3,.phone2 p{color:#f7f5f0}
 
-  /* 状态栏 */
-  .status-bar {
-    padding: 28px 20px 12px;
-    background: transparent;
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--墨绿);
-    font-weight: 600;
-  }
+.screen-header{padding:16px 14px 10px;background:var(--ink);color:#fff}
+.screen-header.ai{background:#1e2e24}
+.screen-header .store{font-size:11px;opacity:.8}
+.screen-header .title{font-size:16px;font-weight:700;margin:6px 0}
+.screen-header .meta{font-size:10px;opacity:.7}
+.content{flex:1;overflow-y:auto;padding:14px}
+.content h2{font-size:14px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.content h3{font-size:12px;margin:10px 0 6px;color:var(--ink)}
+.content .story{background:linear-gradient(135deg,var(--ink),#2a5a38);color:#fff;padding:14px;border-radius:10px;margin-bottom:12px}
+.content .story .s-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.content .story .s-body{font-size:11px;opacity:.9;line-height:1.6}
 
-  /* Hero 区 */
-  .hero {
-    background: linear-gradient(135deg, var(--墨绿), var(--墨绿深));
-    color: #fff;
-    padding: 20px 20px 28px;
-    text-align: center;
-  }
-  .hero .saved {
-    display: inline-block;
-    background: rgba(201,169,98,0.2);
-    color: var(--匠星金);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    margin-bottom: 10px;
-  }
-  .hero h1 {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-  .hero p {
-    font-size: 13px;
-    opacity: .75;
-    line-height: 1.5;
-  }
-  .hero .meta {
-    font-size: 11px;
-    opacity: .5;
-    margin-top: 12px;
-  }
+/* 能力条 */
+.agent-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
+.agent-card .row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.agent-card .avatar{width:36px;height:36px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.agent-card .nm{font-weight:600;font-size:13px}
+.agent-card .xp{font-size:10px;color:var(--ink-soft)}
+.dim-bar{margin-bottom:6px}
+.dim-bar .label{display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px}
+.dim-bar .label span:last-child{color:var(--ink);font-weight:600}
+.dim-bar .bar{height:6px;background:#e8e3d8;border-radius:3px;overflow:hidden}
+.dim-bar .fill{height:100%;border-radius:3px}
 
-  /* 经纪人卡片 */
-  .agent-card {
-    margin: -20px 16px 16px;
-    background: #fff;
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-    display: flex;
-    gap: 14px;
-    align-items: center;
-  }
-  .agent-card .avatar {
-    width: 50px; height: 50px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--匠星金), var(--匠星金淡));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-  }
-  .agent-card .info .name { font-weight: 600; font-size: 15px; color: var(--墨绿); }
-  .agent-card .info .title { font-size: 11px; color: var(--匠星金); margin-top: 2px; }
-  .agent-card .info .exp { font-size: 10px; color: var(--暖灰); margin-top: 4px; }
-  .agent-card .contact {
-    margin-left: auto;
-    display: flex;
-    gap: 6px;
-  }
-  .agent-card .contact .btn {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-  }
-  .agent-card .contact .phone { background: var(--墨绿); color: #fff; }
-  .agent-card .contact .wechat { background: #07c160; color: #fff; }
+/* 小区清单 */
+.hood-item{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:8px}
+.hood-item .h-name{font-size:12px;font-weight:700;display:flex;justify-content:space-between}
+.hood-item .h-name .price{color:var(--gold)}
+.hood-item .h-meta{font-size:10px;color:var(--ink-soft);margin:4px 0}
+.hood-item .h-facts{font-size:11px;line-height:1.6}
+.hood-item .h-facts .shortage{color:var(--danger);font-size:10px;margin-top:4px;padding-top:4px;border-top:1px dashed var(--line)}
+.hood-item .h-facts .src{color:var(--ink-soft);font-size:9px}
 
-  /* Section */
-  .section { padding: 0 16px 20px; }
-  .section-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--墨绿);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .section-title .num {
-    width: 22px; height: 22px;
-    background: var(--匠星金);
-    color: var(--墨绿深);
-    border-radius: 50%;
-    font-size: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700;
-  }
+/* 对比表 */
+.compare-table{background:var(--card);border:1px solid var(--line);border-radius:8px;font-size:10px;overflow:hidden;margin-bottom:12px}
+.compare-table tr:nth-child(odd){background:#faf8f2}
+.compare-table th,.compare-table td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line)}
+.compare-table th{background:var(--ink);color:#fff;font-weight:500;font-size:10px}
+.compare-table td.good{color:var(--ok)}
+.compare-table td.bad{color:var(--danger)}
 
-  /* 片区故事 */
-  .story-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 16px;
-    border: 1px solid var(--边框);
-  }
-  .story-card .story-img {
-    height: 100px;
-    background: linear-gradient(135deg, #d4cfc2, #b8b3a4);
-    border-radius: 10px;
-    margin-bottom: 12px;
-    display: flex; align-items: center; justify-content: center;
-    color: rgba(255,255,255,0.5);
-    font-size: 28px;
-  }
-  .story-card .s-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--墨绿);
-    margin-bottom: 6px;
-  }
-  .story-card .s-text {
-    font-size: 12px;
-    color: var(--暖灰);
-    line-height: 1.7;
-  }
-  .story-card .s-facts {
-    display: flex;
-    gap: 10px;
-    margin-top: 12px;
-    flex-wrap: wrap;
-  }
-  .story-card .s-facts .fact {
-    background: var(--米白);
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 11px;
-    color: var(--墨绿);
-    flex: 1;
-    min-width: 80px;
-  }
-  .story-card .s-facts .fact strong { color: var(--匠星金); font-size: 15px; display: block; }
+/* 预约卡 */
+.book-card{background:var(--gold);color:var(--ink);border-radius:10px;padding:14px;text-align:center}
+.book-card h3{color:var(--ink);font-size:14px;margin-bottom:4px}
+.book-card p{font-size:11px;opacity:.85}
+.book-card button{background:var(--ink);color:var(--gold);border:none;padding:10px 20px;border-radius:8px;font-weight:700;font-size:12px;margin-top:10px}
 
-  /* 小区选中卡 */
-  .community-cards { display: flex; flex-direction: column; gap: 10px; }
-  .community-mini {
-    background: #fff;
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid var(--边框);
-  }
-  .community-mini .cm-head {
-    padding: 12px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--边框);
-  }
-  .community-mini .cm-name { font-size: 15px; font-weight: 600; color: var(--墨绿); }
-  .community-mini .cm-star { color: var(--匠星金); }
-  .community-mini .cm-body { padding: 12px 16px; }
-  .community-mini .cm-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    padding: 4px 0;
-  }
-  .community-mini .cm-row .k { color: var(--暖灰); }
-  .community-mini .cm-row .v { color: var(--墨绿); font-weight: 500; }
-  .community-mini .shortage {
-    background: #fff8f0;
-    border-radius: 6px;
-    padding: 8px 10px;
-    margin-top: 10px;
-    font-size: 11px;
-    color: #e67e22;
-    display: flex;
-    gap: 6px;
-  }
-  .community-mini .shortage::before { content: '⚠️'; flex-shrink: 0; }
-
-  /* 对比表 */
-  .compare-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 14px;
-    border: 1px solid var(--边框);
-    overflow-x: auto;
-  }
-  .compare-table { width: 100%; font-size: 11px; border-collapse: collapse; }
-  .compare-table th, .compare-table td {
-    padding: 8px 4px;
-    text-align: left;
-    border-bottom: 1px solid var(--边框);
-    font-size: 11px;
-  }
-  .compare-table th:first-child { color: var(--暖灰); font-weight: 500; }
-  .compare-table th { color: var(--墨绿); font-size: 12px; }
-  .compare-table td.highlight { color: var(--匠星金); font-weight: 600; }
-
-  /* AI 顾问入口 */
-  .ai-advisor {
-    background: linear-gradient(135deg, var(--墨绿), #2d5a3a);
-    color: #fff;
-    border-radius: 16px;
-    padding: 18px 20px;
-    text-align: center;
-    margin-bottom: 20px;
-    cursor: pointer;
-  }
-  .ai-advisor .emoji { font-size: 36px; margin-bottom: 8px; }
-  .ai-advisor h3 { font-size: 16px; margin-bottom: 4px; }
-  .ai-advisor p { font-size: 12px; opacity: .7; }
-  .ai-advisor .chat-btn {
-    background: var(--匠星金);
-    color: var(--墨绿深);
-    border: none;
-    padding: 10px 28px;
-    border-radius: 24px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-top: 12px;
-    cursor: pointer;
-  }
-
-  /* 预约卡 */
-  .book-card {
-    background: var(--匠星金);
-    color: var(--墨绿深);
-    border-radius: 16px;
-    padding: 16px 20px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  .book-card h3 { font-size: 15px; margin-bottom: 6px; }
-  .book-card p { font-size: 12px; opacity: .8; margin-bottom: 12px; }
-  .book-card .times {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  .book-card .times .t {
-    background: rgba(255,255,255,0.3);
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 11px;
-    cursor: pointer;
-  }
-  .book-card .times .t:hover { background: #fff; }
-
-  /* 底部导航 */
-  .bottom-nav {
-    position: sticky;
-    bottom: 0;
-    background: #fff;
-    border-top: 1px solid var(--边框);
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-around;
-  }
-  .bottom-nav button {
-    background: transparent;
-    border: none;
-    font-size: 11px;
-    color: var(--暖灰);
-    padding: 4px 10px;
-  }
-  .bottom-nav button.active { color: var(--墨绿); font-weight: 600; }
-
-  /* 演示切换器 */
-  .demo-switcher {
-    position: fixed;
-    top: 20px; right: 20px;
-    background: #fff;
-    border-radius: 10px;
-    padding: 16px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-    z-index: 1000;
-    max-width: 240px;
-  }
-  .demo-switcher h4 { font-size: 13px; color: var(--墨绿); margin-bottom: 10px; }
-  .demo-switcher button {
-    display: block;
-    width: 100%;
-    padding: 8px 12px;
-    margin-bottom: 6px;
-    background: #faf8f4;
-    border: 1px solid var(--边框);
-    border-radius: 6px;
-    font-size: 12px;
-    color: var(--墨绿);
-    cursor: pointer;
-    text-align: left;
-  }
-  .demo-switcher button:hover { background: var(--匠星金淡); border-color: var(--匠星金); }
-  .nav-links { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--边框); }
-  .nav-links a { display: block; font-size: 11px; color: var(--暖灰); text-decoration: none; padding: 3px 0; }
-  .nav-links a:hover { color: var(--墨绿); }
-
-  /* 第二台手机：AI 顾问对话态 */
-  .phone-chat .chat-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-  .chat-bubble {
-    max-width: 85%;
-    padding: 12px 14px;
-    border-radius: 14px;
-    font-size: 13px;
-    line-height: 1.5;
-  }
-  .chat-bubble.ai {
-    background: #fff;
-    color: var(--墨绿);
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
-    border: 1px solid var(--边框);
-  }
-  .chat-bubble.user {
-    background: var(--墨绿);
-    color: #fff;
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
-  }
-  .chat-bubble .kb-chip {
-    display: inline-block;
-    background: var(--匠星金淡);
-    color: var(--墨绿深);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 10px;
-    margin-right: 4px;
-  }
-  .chat-input {
-    position: sticky;
-    bottom: 0;
-    padding: 10px 12px;
-    background: #fff;
-    border-top: 1px solid var(--边框);
-    display: flex;
-    gap: 8px;
-  }
-  .chat-input input {
-    flex: 1;
-    padding: 10px 14px;
-    border: 1px solid var(--边框);
-    border-radius: 20px;
-    font-size: 13px;
-  }
-  .chat-input button {
-    background: var(--匠星金);
-    color: var(--墨绿深);
-    border: none;
-    padding: 0 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  .quick-chips {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    padding: 0 16px;
-  }
-  .quick-chips span {
-    font-size: 11px;
-    background: #fff;
-    border: 1px solid var(--边框);
-    padding: 6px 10px;
-    border-radius: 12px;
-    color: var(--墨绿);
-  }
+/* AI 顾问聊天 */
+.chat-bubble{padding:10px;border-radius:10px;font-size:12px;max-width:80%;margin-bottom:8px;line-height:1.5}
+.chat-bubble.ai{background:#2a3e31;color:#f7f5f0;align-self:flex-start;border-bottom-left-radius:4px}
+.chat-bubble.me{background:rgba(201,169,98,.2);color:#f7f5f0;align-self:flex-end;border-bottom-right-radius:4px;margin-left:auto}
+.chat-history{display:flex;flex-direction:column}
+.ai-input{position:absolute;bottom:0;left:12px;right:12px;background:#2a3e31;padding:10px;border-radius:14px;display:flex;gap:8px}
+.ai-input input{flex:1;background:#1e2e24;border:1px solid #3a4e42;color:#f7f5f0;padding:8px;border-radius:6px;font-size:12px;outline:none}
+.ai-input button{background:var(--gold);color:var(--ink);border:none;padding:8px 14px;border-radius:6px;font-weight:600;font-size:12px}
 </style>
 </head>
 <body>
 
-<!-- 演示切换器 -->
-<div class="demo-switcher">
-  <h4>🎬 H5 决策包预览</h4>
-  <button onclick="location.reload()">两个界面对比</button>
-  <div class="nav-links">
-    <a href="./index.html">← 回总览</a>
-    <a href="./agent.html">← 经纪人作业端</a>
-    <a href="./digital-employee.html">→ 数字员工架构</a>
+<div class="wrap">
+
+<!-- 说明 -->
+<div class="info">
+  <h1>📱 H5 · 消费者信任决策包</h1>
+  <p class="sub">消费者扫码带走的不是房源列表——是一份"这个经纪人靠不靠谱"的证据包</p>
+
+  <div class="feat">
+    <h3>① 经纪人能力公开展示</h3>
+    <p>7 维度能力条透明给消费者看——"学区房专业方案 95 分"比空口说"我专业"可信 10 倍</p>
   </div>
+  <div class="feat">
+    <h3>② 小区带短板的信任包</h3>
+    <p>每个小区主动说短板（晚高峰噪音），所有数据带来源和时间</p>
+  </div>
+  <div class="feat">
+    <h3>③ 对比表一眼看清</h3>
+    <p>勾选 2-3 个小区，一键生成对比表——学区/价格/通勤/短板</p>
+  </div>
+  <div class="feat">
+    <h3>④ AI 顾问回家还能问</h3>
+    <p>决策包里有个 AI 顾问入口——回家跟家人商量时随时问"这个小区供暖够吗"</p>
+  </div>
+  <div class="feat">
+    <h3>⑤ 低门槛预约带看</h3>
+    <p>一键预约时段，经纪人微信同步接收</p>
+  </div>
+
+  <div class="note">💡 设计意图：让消费者"带走一个顾问回家"，而不是"被推销一个房子"</div>
 </div>
 
-<!-- 手机 1：决策包主界面 -->
+<!-- 手机 1：决策包 -->
 <div class="phone">
-  <div class="phone-screen">
-    <!-- 状态栏 -->
-    <div class="status-bar">
-      <span>9:41</span>
-      <span>风声 · 望京南</span>
-      <span>📶 🔋</span>
+  <div class="screen">
+    <div class="screen-header">
+      <div class="store">风声 · 望京南门店</div>
+      <div class="title">您好张姐 — 这是我的专属决策包</div>
+      <div class="meta">经纪人 · 李姐 · 2026-10-29 下午 3:42</div>
     </div>
-
-    <!-- Hero -->
-    <div class="hero">
-      <div class="saved">✅ 您在门店选的内容已保存</div>
-      <h1>我的购房决策包</h1>
-      <p>望京南片区 · 有娃家庭 · 学区关注</p>
-      <div class="meta">风声望京南店 · 2026-10-29 下午 3:42</div>
-    </div>
-
-    <!-- 经纪人卡片 -->
-    <div class="agent-card">
-      <div class="avatar">小李</div>
-      <div class="info">
-        <div class="name">李姐</div>
-        <div class="title">🚩 望京南店 · 高级顾问</div>
-        <div class="exp">经营这片 8 年 · 成交 120+ 单</div>
-      </div>
-      <div class="contact">
-        <button class="btn phone">📞</button>
-        <button class="btn wechat">💬</button>
-      </div>
-    </div>
-
-    <!-- 片区故事 -->
-    <div class="section">
-      <div class="section-title"><span class="num">1</span>这片是什么样的</div>
-      <div class="story-card">
-        <div class="story-img">🗺️ 望京南</div>
-        <div class="s-title">望京南 · 产业区 + 学区聚集地</div>
-        <div class="s-text">望京南以互联网产业园著称（美团、58、陌陌总部都在这），年轻人扎堆。实验小学 2008 年建校后，周边小区陆续成为学区房，现在是朝阳学区板块里性价比较高的一片。2024-2025 年均价稳定在 5.8 万/平，没跟风炒。</div>
-        <div class="s-facts">
-          <div class="fact"><strong>5.8万</strong>均价/平</div>
-          <div class="fact"><strong>12min</strong>14号线</div>
-          <div class="fact"><strong>2008年</strong>实验小学</div>
-          <div class="fact"><strong>80%</strong>自住率</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 小区选中清单 -->
-    <div class="section">
-      <div class="section-title"><span class="num">2</span>您选的小区（3 个）</div>
-      <div class="community-cards">
-
-        <div class="community-mini">
-          <div class="cm-head">
-            <span class="cm-name">银领家园 <span class="cm-star">★主推</span></span>
-            <span style="font-size:11px;color:var(--匠星金);">4900/月起</span>
-          </div>
-          <div class="cm-body">
-            <div class="cm-row"><span class="k">学区对口</span><span class="v" style="color:var(--匠星金);">✅ 实验小学</span></div>
-            <div class="cm-row"><span class="k">建成年份</span><span class="v">2010 · 6栋18层</span></div>
-            <div class="cm-row"><span class="k">供暖温度</span><span class="v" style="color:var(--墨绿);">25-26℃（实测）</span></div>
-            <div class="cm-row"><span class="k">步行地铁</span><span class="v">500m · 7min</span></div>
-            <div class="shortage">东侧临阜通东大街，晚高峰 6:30-8:00 偶有车流声；车位配比 1:0.8</div>
+    <div class="content">
+      <div class="agent-card">
+        <div class="row">
+          <div class="avatar">李</div>
+          <div>
+            <div class="nm">李姐 · 7 年门店销冠</div>
+            <div class="xp">累计成交 68 套 · 学区房 42 套（占比 62%）</div>
           </div>
         </div>
+        <div class="dim-bar"><div class="label"><span>学区房专业方案</span><span>95</span></div><div class="bar"><div class="fill" style="width:95%;background:var(--ok)"></div></div></div>
+        <div class="dim-bar"><div class="label"><span>需求洞察</span><span>88</span></div><div class="bar"><div class="fill" style="width:88%;background:var(--ink)"></div></div></div>
+        <div class="dim-bar"><div class="label"><span>带看谈判</span><span>82</span></div><div class="bar"><div class="fill" style="width:82%;background:var(--gold)"></div></div></div>
+        <div class="dim-bar"><div class="label"><span>获客触达</span><span>76</span></div><div class="bar"><div class="fill" style="width:76%;background:var(--ink)"></div></div></div>
+      </div>
 
-        <div class="community-mini" style="opacity:.7;">
-          <div class="cm-head">
-            <span class="cm-name">望京花园</span>
-            <span style="font-size:11px;color:var(--匠星金);">4500/月起</span>
-          </div>
-          <div class="cm-body">
-            <div class="cm-row"><span class="k">学区对口</span><span class="v">实验小学</span></div>
-            <div class="cm-row"><span class="k">建成年份</span><span class="v">2000年 · 9栋</span></div>
-            <div class="cm-row"><span class="k">供暖温度</span><span class="v">22-24℃</span></div>
-            <div class="cm-row"><span class="k">步行地铁</span><span class="v">800m · 10min</span></div>
-            <div class="shortage">老小区，物业费便宜但保洁一般；1层偏潮</div>
-          </div>
+      <h2>🏘️ 我为您选的 3 个小区</h2>
+      <div class="hood-item">
+        <div class="h-name"><span>大西洋新城（主推）</span><span class="price">7.2万/平</span></div>
+        <div class="h-meta">对口望京实验学校 · 9 年连 · 优秀率 98%</div>
+        <div class="h-facts">
+          ✅ 3-12 层供暖实测 24-26℃<br>
+          ✅ 物业费 3.5 元/㎡·月 · 4.7/5 分<br>
+          <div class="shortage">⚠️ 短板：西临广顺北晚高峰噪音 52dB（来源：店长噪音仪 · 2026-10）</div>
         </div>
-
       </div>
-    </div>
-
-    <!-- 对比表 -->
-    <div class="section">
-      <div class="section-title"><span class="num">3</span>一眼对比</div>
-      <div class="compare-card">
-        <table class="compare-table">
-          <tr><th>对比项</th><th>银领家园 ★</th><th>望京花园</th><th>金桂嘉园</th></tr>
-          <tr><td>学区对口</td><td class="highlight">✅ 实验小学</td><td>✅ 实验小学</td><td>❌ 同辉小学</td></tr>
-          <tr><td>建成年份</td><td>2010</td><td>2000</td><td>2015</td></tr>
-          <tr><td>电梯</td><td>✅</td><td>部分</td><td>✅</td></tr>
-          <tr><td>供暖实测</td><td class="highlight">25-26℃</td><td>22-24℃</td><td>23-25℃</td></tr>
-          <tr><td>步行地铁</td><td class="highlight">500m</td><td>800m</td><td>600m</td></tr>
-          <tr><td>车位配比</td><td>1:0.8</td><td class="highlight">1:1.2</td><td>1:0.9</td></tr>
-          <tr><td>主推位</td><td class="highlight">⭐ 是</td><td>否</td><td>备选</td></tr>
-        </table>
+      <div class="hood-item">
+        <div class="h-name"><span>望京新城</span><span class="price">6.8万/平</span></div>
+        <div class="h-meta">对口陈经纶分校 · 步行到阜通站 5 分钟</div>
+        <div class="h-facts">
+          ✅ 总价友好 · 68 平开间 / 72 平一居<br>
+          ❌ 物业 3.2 元 · 4.2/5 分（稍低）<br>
+          <div class="shortage">⚠️ 短板：车位 1:1.3 · 夜间偶尔需等 10 分钟</div>
+        </div>
       </div>
-    </div>
-
-    <!-- AI 顾问入口 -->
-    <div class="section">
-      <div class="ai-advisor">
-        <div class="emoji">🤖</div>
-        <h3>有问题随时问我</h3>
-        <p>我是小李的数字顾问，这片我熟</p>
-        <button class="chat-btn">💬 跟顾问聊聊</button>
+      <div class="hood-item">
+        <div class="h-name"><span>望京西园</span><span class="price">6.5万/平</span></div>
+        <div class="h-meta">老小区 · 学区一般 · 安静</div>
+        <div class="h-facts">
+          ✅ 楼间距大 · 采光好<br>
+          ❌ 物业老旧 · 电梯偶尔维修<br>
+          <div class="shortage">⚠️ 短板：对口学校 优秀率 82%（低于前两个）</div>
+        </div>
       </div>
-    </div>
 
-    <!-- 预约带看 -->
-    <div class="section">
+      <h2>📊 三选一对比表</h2>
+      <table class="compare-table">
+        <tr><th>维度</th><th>大西洋新城</th><th>望京新城</th><th>望京西园</th></tr>
+        <tr><td>学区</td><td class="good">98%</td><td class="good">92%</td><td class="bad">82%</td></tr>
+        <tr><td>均价</td><td>7.2万</td><td>6.8万</td><td>6.5万</td></tr>
+        <tr><td>供暖</td><td class="good">25℃实测</td><td class="good">24℃</td><td class="bad">22℃</td></tr>
+        <tr><td>噪音</td><td class="bad">52dB</td><td>48dB</td><td class="good">45dB</td></tr>
+        <tr><td>通勤</td><td>8 分钟</td><td class="good">5 分钟</td><td>12 分钟</td></tr>
+        <tr><td>车位</td><td>1:1.3</td><td>1:1.4</td><td>1:1.1</td></tr>
+      </table>
+
       <div class="book-card">
-        <h3>📅 约个时间实地看</h3>
-        <p>小李周六下午 3 点有空，要帮您留着吗？</p>
-        <div class="times">
-          <div class="t">周六 3:00</div>
-          <div class="t">周日 10:00</div>
-          <div class="t">下周一 6:30</div>
-        </div>
+        <h3>想约带看？</h3>
+        <p>明天上午 10 点 / 下午 2 点我都在，<br>提前 20 分钟帮您开好门</p>
+        <button>📅 一键预约</button>
       </div>
-    </div>
-
-    <div class="bottom-nav">
-      <button class="active">决策包</button>
-      <button>📞 联系小李</button>
-      <button>🔄 更新偏好</button>
     </div>
   </div>
 </div>
 
-<!-- 手机 2：AI 顾问对话态 -->
-<div class="phone phone-chat">
-  <div class="phone-screen">
-    <div class="status-bar">
-      <span>9:42</span>
-      <span>🤖 小李的数字顾问</span>
-      <span>📶 🔋</span>
+<!-- 手机 2：AI 顾问 -->
+<div class="phone phone2" style="position:relative">
+  <div class="screen" style="position:relative;padding-bottom:60px">
+    <div class="screen-header ai">
+      <div class="store">💬 风声 AI 顾问</div>
+      <div class="title">关于大西洋新城，有什么想问的？</div>
+      <div class="meta">AI 复刻李姐的 7 年经验 · 24 小时在线</div>
     </div>
-
-    <!-- 头像条 -->
-    <div style="padding:12px 20px;background:var(--墨绿);color:#fff;display:flex;gap:10px;align-items:center;">
-      <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--匠星金),var(--匠星金淡));display:flex;align-items:center;justify-content:center;font-size:18px;">🤖</div>
-      <div>
-        <div style="font-size:13px;font-weight:600;">小丰 · 小李的数字顾问</div>
-        <div style="font-size:10px;opacity:.6;">已接入您在门店选的所有小区资料</div>
-      </div>
-    </div>
-
-    <div class="chat-body">
-      <div class="chat-bubble ai">
-        姐好！我是小李的数字顾问，您在门店圈的三个小区我都熟——银领家园、望京花园、金桂嘉园。您想聊哪个方面？学区、供暖、通勤还是价位？
-      </div>
-      <div class="chat-bubble user">银领家园的供暖真的有 25℃ 吗？会不会是小李夸的？</div>
-      <div class="chat-bubble ai">
-        姐这个您放心——<span class="kb-chip">📚 KB：供暖实测</span>这不是小李随口说的，是我们店去年冬天带看时每次都测的。我把 3 号楼 8 层中间那户的带看记录调出来给您看：
-        <br><br>
-        · 2025-12-15 中午 14:20 实测：客厅 26.1℃，卧室 25.8℃（来源：经纪人小王）<br>
-        · 2026-01-10 上午 10:00 实测：客厅 25.5℃，卧室 24.9℃（来源：经纪人老李）<br>
-        · 同期对比：望京花园同楼层客厅 23.2℃、金桂嘉园 24.1℃
-        <br><br>
-        这三个数据您都能在带看记录里查到。银领家园 3 号楼供暖确实是这一片最好的。
-      </div>
-      <div class="chat-bubble user">那东边临马路的噪音呢？晚上真的吵吗？</div>
-      <div class="chat-bubble ai">
-        姐我说实话——<span class="kb-chip">⚠️ KB：短板清单</span>这是这套房唯一的短板，我跟小李带您看的时候会主动提。
-        <br><br>
-        实测数据：关窗测晚高峰 6:30-8:00 噪音 48-52 分贝（正常室内谈话 50-55 分贝）；开窗测 62-68 分贝。关窗基本听不见，开窗会有感觉。
-        <br><br>
-        业主张女士（3-12 层）住了 6 年，原话是："晚上开个窗能听见广场舞音乐，但关窗基本听不见。我家都是关窗开新风。"
-        <br><br>
-        如果您对噪音特别敏感，建议看 3 号楼中间单元，离马路远 8 米，实测低 4-6 分贝。
-      </div>
-      <div class="quick-chips" style="margin-top:4px;">
-        <span>📚 银领家园学区</span>
-        <span>🚇 通勤到国贸时间</span>
-        <span>💰 同户型成交价</span>
-        <span>🏠 望京花园 vs 银领</span>
+    <div class="content">
+      <div class="chat-history">
+        <div class="chat-bubble ai">您好张姐～我是 AI 顾问，复刻了李姐的知识。您想了解哪块？</div>
+        <div class="chat-bubble me">我老公说那个小区供暖会不会不够？</div>
+        <div class="chat-bubble ai">不会的姐——我这边有李姐每周实测的数据：大西洋新城 3-12 层，<b>采暖季实际都在 24-26℃</b>，北向房间稍低 2℃。<br><br>李姐上个月带看那户业主张阿姨说："穿秋裤就行，不用羽绒服"。<br><br><span style="opacity:.6;font-size:10px">📎 来源：门店本地知识库 · 2026-10 · 每周实测</span></div>
+        <div class="chat-bubble me">那西临马路的噪音晚上真的没事？</div>
+        <div class="chat-bubble ai">这块我得实说——<b>晚高峰 18-19 点确实 52dB</b>（比小区内部高 8dB）。<br><br>但关窗基本听不到，而且我帮您查了：物业最近加了两层隔音棉，下个月完工。<br><br><span style="opacity:.6;font-size:10px">📎 来源：噪音仪实测 · 2026-10 · 店长每周测一次</span></div>
+        <div class="chat-bubble ai"><span style="opacity:.6;font-size:10px">💭 AI 回答追溯：CAP-SKILL-SOL-03 小区优缺点 · 带实测数据</span></div>
+        <div class="chat-bubble me">好的，那我明天上午来看看吧</div>
+        <div class="chat-bubble ai">好的姐～李姐已经收到带看预约了，明天上午 10 点她会提前 20 分钟在小区门口等您，带好您家娃的兴趣班安排。<br><br>来之前她会给您发个微信提醒。<br><br><span style="opacity:.6;font-size:10px">🔴 注：最终带看交给真人李姐，AI 不接。</span></div>
       </div>
     </div>
-
-    <div class="chat-input">
-      <input type="text" placeholder="问问关于这三个小区的任何问题...">
+    <div class="ai-input">
+      <input type="text" placeholder="继续问我...">
       <button>发送</button>
     </div>
   </div>
 </div>
 
+</div>
 </body>
 </html>
