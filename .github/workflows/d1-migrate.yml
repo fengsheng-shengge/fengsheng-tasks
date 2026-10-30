@@ -34,7 +34,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           echo "=== Listing all D1 databases ==="
-          wrangler d1 list --remote
+          wrangler d1 list --json
           echo "=== Done ==="
 
       - name: Show migration file
