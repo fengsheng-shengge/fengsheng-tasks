@@ -28,6 +28,15 @@ jobs:
       - name: Install Wrangler
         run: npm i -g wrangler
 
+      - name: List all D1 databases in account
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          echo "=== Listing all D1 databases ==="
+          wrangler d1 list --remote
+          echo "=== Done ==="
+
       - name: Show migration file
         run: |
           echo "=== Migration file: migrations/${{ github.event.inputs.migration_file }} ==="
