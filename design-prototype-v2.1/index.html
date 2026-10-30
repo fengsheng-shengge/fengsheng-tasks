@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>风声智囊团 × 门店智能接待 · 产品设计 v2.1 · 总览矩阵</title>
+<style>
+:root{--ink:#1a3d24;--gold:#c9a962;--bg:#f7f5f0;--card:#fff;--line:#e8e3d8;--ink-soft:#5c6d62;--ok:#2d7a4a;--ai-blue:#4a6fa5;--danger:#b85c38}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:1200px;margin:0 auto;padding:32px 24px}
+.nav{display:flex;gap:14px;margin-bottom:24px}
+.nav a{color:var(--ink-soft);text-decoration:none;font-size:12px;padding:5px 12px;border:1px solid var(--line);border-radius:16px;transition:.2s}
+.nav a:hover,.nav a.active{color:#fff;border-color:var(--gold);background:var(--gold)}
+
+.banner{background:linear-gradient(135deg,var(--ink),#2a5a38);color:#fff;padding:40px 32px;border-radius:14px;margin-bottom:24px;position:relative;overflow:hidden}
+.banner::before{content:"";position:absolute;top:-30px;right:-30px;width:180px;height:180px;border:2px solid rgba(201,169,98,.15);border-radius:50%}
+.banner h1{font-size:28px;margin-bottom:8px}
+.banner p{opacity:.85;font-size:14px;max-width:700px;margin-bottom:16px}
+.banner .tag{display:inline-block;padding:3px 12px;border-radius:12px;border:1px solid var(--gold);color:var(--gold);font-size:11px;margin-right:6px}
+
+.thesis{background:var(--card);border-radius:10px;padding:20px 24px;margin-bottom:24px;border-left:4px solid var(--gold)}
+.thesis h3{font-size:15px;margin-bottom:8px}
+.thesis p{font-size:13px;color:var(--ink-soft)}
+.thesis b{color:var(--ink)}
+
+/* 总图：三侧贯通 */
+.arch{background:var(--card);border-radius:10px;padding:24px;margin-bottom:24px}
+.arch h2{font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.arch h2::before{content:"";width:3px;height:18px;background:var(--ink)}
+.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.arch-col{padding:16px;border-radius:8px;border:1px solid var(--line)}
+.arch-col h4{font-size:13px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.arch-col.consumer{border-color:var(--ai-blue);background:rgba(74,111,165,.04)}
+.arch-col.consumer h4{color:var(--ai-blue)}
+.arch-col.agent{border-color:var(--ink);background:rgba(26,61,36,.04)}
+.arch-col.agent h4{color:var(--ink)}
+.arch-col ul{font-size:12px;color:var(--ink-soft);line-height:2}
+.arch-col ul li::marker{color:var(--gold)}
+
+.arch-center{grid-column:1/3;background:linear-gradient(135deg,var(--ink),#2a5a38);color:#fff;border-radius:8px;padding:16px;text-align:center}
+.arch-center h4{font-size:13px;color:var(--gold);margin-bottom:6px}
+.arch-center p{font-size:11px;opacity:.9;line-height:1.8}
+
+/* 信任动作时间轴 */
+.trust-flow{background:var(--card);border-radius:10px;padding:24px;margin-bottom:24px}
+.trust-flow h2{font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.trust-flow h2::before{content:"";width:3px;height:18px;background:var(--ink)}
+
+.trust-actions{display:flex;gap:0;margin-bottom:16px}
+.trust-box{flex:1;padding:14px;border:1px solid var(--line);background:var(--bg);min-height:120px;position:relative;border-top:4px solid var(--gold)}
+.trust-box.human{border-top-color:var(--ink);background:rgba(26,61,36,.04)}
+.trust-box.pro{border-top-color:var(--ai-blue);background:rgba(74,111,165,.04)}
+.trust-box .num{font-size:11px;color:var(--ink-soft);margin-bottom:2px}
+.trust-box h4{font-size:13px;margin-bottom:6px}
+.trust-box .def{font-size:11px;color:var(--ink-soft);margin-bottom:8px}
+.trust-box .caps{display:flex;gap:4px;flex-wrap:wrap}
+.trust-box .caps span{background:#fff;padding:2px 7px;border-radius:10px;font-size:10px;border:1px solid var(--line)}
+.trust-box .caps .ai-badge{background:var(--ai-blue);color:#fff;border-color:var(--ai-blue)}
+.trust-box .caps .hu-badge{background:var(--ink);color:#fff;border-color:var(--ink)}
+.trust-box .caps .line-badge{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.trust-arrow{align-self:center;color:var(--gold);font-weight:700;padding:0 2px;font-size:14px}
+
+.sop-legend{font-size:11px;color:var(--ink-soft);display:flex;gap:16px}
+.sop-legend span{display:flex;align-items:center;gap:4px}
+.sop-legend .b{width:10px;height:10px;border-radius:2px}
+
+/* 三层 × 7 维度矩阵 */
+.matrix-wrap{background:var(--card);border-radius:10px;padding:24px;margin-bottom:24px;overflow-x:auto}
+.matrix-wrap h2{font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.matrix-wrap h2::before{content:"";width:3px;height:18px;background:var(--ink)}
+
+.matrix{width:100%;border-collapse:collapse;font-size:12px}
+.matrix th,.matrix td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.matrix th{background:var(--bg);font-size:11px;font-weight:600;color:var(--ink)}
+.matrix th.layer-h{text-align:center;font-size:12px}
+.matrix th.layer-h.human{background:var(--ink);color:#fff}
+.matrix th.layer-h.service{background:var(--gold);color:var(--ink)}
+.matrix th.layer-h.pro{background:var(--ai-blue);color:#fff}
+.matrix td.dim{font-weight:600;background:var(--bg);white-space:nowrap;font-size:12px}
+
+.cap-chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;margin:2px 1px;border:1px solid transparent}
+.cap-chip.human{background:rgba(26,61,36,.08);color:var(--ink);border-color:rgba(26,61,36,.15)}
+.cap-chip.both{background:rgba(201,169,98,.12);color:#8a7032;border-color:rgba(201,169,98,.25)}
+.cap-chip.ai{background:rgba(74,111,165,.1);color:#3a5480;border-color:rgba(74,111,165,.2)}
+.cap-chip.persona{border-color:var(--gold);background:rgba(201,169,98,.06);font-style:italic}
+.cap-chip.sop{border-style:dashed;background:#faf8f2}
+
+.legend{display:flex;gap:16px;margin-top:12px;font-size:11px;color:var(--ink-soft)}
+.legend span{display:flex;align-items:center;gap:4px}
+.legend .b{width:10px;height:10px;border-radius:3px}
+
+/* 线上集成清单 */
+.integration{background:var(--card);border-radius:10px;padding:20px;margin-bottom:24px}
+.integration h2{font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.integration h2::before{content:"";width:3px;height:18px;background:var(--ink)}
+.int-row{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:12px}
+.int-row:last-child{border-bottom:none}
+.int-row .n{flex-shrink:0;width:24px;height:24px;background:var(--gold);color:var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.int-row h4{font-size:13px;margin-bottom:3px}
+.int-row p{color:var(--ink-soft);font-size:11px}
+.int-row code{background:#faf8f2;padding:1px 5px;border-radius:4px;font-size:10px;color:#8a6f3a}
+
+/* 原型入口 */
+.protos{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px}
+.proto{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;text-decoration:none;color:var(--ink);transition:.2s;display:block}
+.proto:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(26,61,36,.08);border-color:var(--gold)}
+.proto .icon{font-size:28px;margin-bottom:6px}
+.proto h4{font-size:14px;margin-bottom:4px}
+.proto p{font-size:11px;color:var(--ink-soft);line-height:1.6}
+.proto .tags{margin-top:8px;display:flex;gap:4px;flex-wrap:wrap}
+.proto .tags span{background:#faf8f2;padding:1px 8px;border-radius:10px;font-size:10px;color:var(--ink-soft)}
+
+.footer{text-align:center;color:var(--ink-soft);font-size:12px;padding:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="nav">
+  <a href="./index.html" class="active">① 总览矩阵</a>
+  <a href="./ai-advisor.html">② AI 顾问落地页</a>
+  <a href="./sales-champion.html">③ 销冠示范库</a>
+</div>
+
+<!-- Banner -->
+<div class="banner">
+  <h1>风声智囊团 × 门店智能接待系统 · 产品设计 v2.1</h1>
+  <p>把门店销冠经验<strong>变成线上产品的标准答案</strong>——消费者得到销冠级服务，经纪人对照销冠练成能力，门店把信任转化为带看。三者共用同一套 CAP-SKILL、同一份知识库、同一个评价闭环。</p>
+  <span class="tag">📦 新增：sales-sop.json + dimension-tags.json</span>
+  <span class="tag">🔗 question_map 39 条 × sop_ref 100% 覆盖</span>
+  <span class="tag">⚡ P0 零模型可跑</span>
+</div>
+
+<!-- 核心命题 -->
+<div class="thesis">
+  <h3>🎯 核心命题</h3>
+  <p>原设计把销冠装进了门店机器；本方案把销冠变成了<strong>线上产品的一等公民</strong>。线上 AI 顾问回答消费者的每个问题、经纪人学销冠时看的每个示范、门店大屏调的每条知识库词条——<b>全部追溯到同一条 CAP-SKILL + 同一条 SOP 信任动作</b>。</p>
+</div>
+
+<!-- 三侧贯通图 -->
+<div class="arch">
+  <h2>🌐 三侧贯通架构</h2>
+  <div class="arch-grid">
+    <div class="arch-col consumer">
+      <h4>👤 消费者侧 · 信任前置</h4>
+      <ul>
+        <li>线上 AI 顾问（落地页公开入口）</li>
+        <li>门店大屏迎宾 + 五层知识</li>
+        <li>H5 决策包：经纪人能力条可验证分</li>
+        <li>24×7 在线答疑（AI 顾问带回家）</li>
+        <li>留资三档：轻（扫码）· 中（加微信）· 强（红线，交给真人）</li>
+      </ul>
+    </div>
+    <div class="arch-col agent">
+      <h4>💼 经纪人侧 · 能力基准</h4>
+      <ul>
+        <li>销冠示范库：每道题"销冠怎么做"</li>
+        <li>AI 客户练习：数字员工反串客户</li>
+        <li>能力画像 vs 销冠基准（7 维度雷达）</li>
+        <li>测评 → 学 → 练 → 考 → 评 → 配 → 反馈 闭环</li>
+        <li>接待即训练，训练即评价</li>
+      </ul>
+    </div>
+    <div class="arch-center">
+      <h4>🔗 统一评价层</h4>
+      <p>sales-sop.json（4 信任动作 × 3 分型）+ dimension-tags.json（30 标签 × 7 维度）+ question_map（39 条 × CAP-SKILL × sop_ref）+ 知识库五层词条 + care-test 35 题 × 7 维度 —— <b>一套能力，三侧受益</b></p>
+    </div>
+  </div>
+</div>
+
+<!-- 信任动作时间轴 -->
+<div class="trust-flow">
+  <h2>🔄 销冠 4 信任动作 × AI/真人分工</h2>
+  <div class="trust-actions">
+    <div class="trust-box service">
+      <div class="num">TRUST-01</div>
+      <h4>破冰·连接</h4>
+      <div class="def">30 秒建立"这人懂我"</div>
+      <div class="caps">
+        <span class="ai-badge">AI 画像匹配开场</span>
+        <span class="hu-badge">真人即兴微调</span>
+      </div>
+    </div>
+    <div class="trust-arrow">→</div>
+    <div class="trust-box pro">
+      <div class="num">TRUST-02</div>
+      <h4>证明·专业</h4>
+      <div class="def">数据带来源 · 优点带短板</div>
+      <div class="caps">
+        <span class="ai-badge">AI 调五层 KB</span>
+        <span class="hu-badge">真人解读</span>
+      </div>
+    </div>
+    <div class="trust-arrow">→</div>
+    <div class="trust-box human">
+      <div class="num">TRUST-03</div>
+      <h4>共情·接住</h4>
+      <div class="def">先接情绪再给方案</div>
+      <div class="caps">
+        <span class="line-badge">AI 仅提醒</span>
+        <span class="hu-badge">真人必须</span>
+      </div>
+    </div>
+    <div class="trust-arrow">→</div>
+    <div class="trust-box service">
+      <div class="num">TRUST-04</div>
+      <h4>引导·低压力</h4>
+      <div class="def">给选项 · 24h 在线</div>
+      <div class="caps">
+        <span class="ai-badge">AI 轻/中留资</span>
+        <span class="hu-badge">真人强留资</span>
+      </div>
+    </div>
+  </div>
+  <div class="sop-legend">
+    <span><span class="b" style="background:#4a6fa5"></span>AI 可做</span>
+    <span><span class="b" style="background:#1a3d24"></span>真人必须</span>
+    <span><span class="b" style="background:#c9a962"></span>过渡/交接</span>
+  </div>
+</div>
+
+<!-- 三层 × 7 维度矩阵 -->
+<div class="matrix-wrap">
+  <h2>📊 三层 × 7 维度 × CAP-SKILL × SOP 完整矩阵</h2>
+  <table class="matrix">
+    <thead>
+      <tr>
+        <th rowspan="2">线上维度</th>
+        <th colspan="2" class="layer-h human">🧠 素养层（9 tag）</th>
+        <th colspan="2" class="layer-h service">💬 服务层（12 tag）</th>
+        <th colspan="2" class="layer-h pro">📚 专业层（9 tag）</th>
+      </tr>
+      <tr>
+        <th>标签</th><th>SOP · CAP-SKILL</th>
+        <th>AI / 真人分工</th><th>SOP · CAP-SKILL</th>
+        <th>AI / 真人分工</th><th>SOP · CAP-SKILL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="dim">ACQUISITION 获客触达</td>
+        <td>HUM-08 老客转介绍意愿</td>
+        <td class="cap-chip sop">TRUST-01 · CAP-SKILL-602</td>
+        <td>
+          <span class="cap-chip both">SVC-01 迎宾 AI 先跑</span>
+          <span class="cap-chip human">SVC-07 强留资真人</span>
+        </td>
+        <td class="cap-chip sop">TRUST-04 · CAP-SKILL-001/004/005/006</td>
+        <td>—</td><td>—</td>
+      </tr>
+      <tr>
+        <td class="dim">INSIGHT 需求洞察</td>
+        <td>HUM-01 共情力<br>HUM-04 眼力</td>
+        <td class="cap-chip sop">TRUST-03 · CAP-SKILL-202</td>
+        <td><span class="cap-chip both">SVC-02 结构化探寻 AI 问·真人挖</span></td>
+        <td class="cap-chip sop">TRUST-01 → TRUST-03 · CAP-SKILL-201~207</td>
+        <td>—</td><td>—</td>
+      </tr>
+      <tr>
+        <td class="dim">SOLUTION 专业方案</td>
+        <td>HUM-02 真诚感<br>主动说短板</td>
+        <td class="cap-chip sop">TRUST-02 · CAP-SKILL-303</td>
+        <td><span class="cap-chip ai">SVC-04 调五层 KB</span></td>
+        <td class="cap-chip sop">TRUST-02 · CAP-SKILL-303~307</td>
+        <td>
+          <span class="cap-chip ai">PRO-01 税费贷款 AI 算</span>
+          <span class="cap-chip human">真人解读</span>
+        </td>
+        <td class="cap-chip sop">TRUST-02 · CAP-SKILL-301~309</td>
+      </tr>
+      <tr>
+        <td class="dim">NEGOTIATION 带看谈判</td>
+        <td>HUM-06 情绪稳定<br>HUM-05 分寸感</td>
+        <td class="cap-chip sop">TRUST-03 · CAP-SKILL-101</td>
+        <td>
+          <span class="cap-chip both">SVC-08 标准异议 AI 给变体</span>
+          <span class="cap-chip human">SVC-09 即兴应对真人</span>
+        </td>
+        <td class="cap-chip sop">TRUST-03 · CAP-SKILL-101~107</td>
+        <td>—</td><td>—</td>
+      </tr>
+      <tr>
+        <td class="dim">FULFILLMENT 交易履约</td>
+        <td>—</td><td>—</td>
+        <td>—</td><td>—</td>
+        <td>
+          <span class="cap-chip ai">PRO-06 流程 checklist AI 调</span>
+          <span class="cap-chip human">真人执行沟通</span>
+        </td>
+        <td class="cap-chip sop">TRUST-03 → TRUST-04 · CAP-SKILL-501~508</td>
+      </tr>
+      <tr>
+        <td class="dim">AFTERSALE 售后复购</td>
+        <td>HUM-07 责任心<br>HUM-09 长期主义</td>
+        <td>—</td><td>—</td><td>—</td><td>—</td><td class="cap-chip sop">TRUST-04 · CAP-SKILL-601/602</td>
+      </tr>
+      <tr>
+        <td class="dim">DIGITAL 数字化协同</td>
+        <td>—</td><td>—</td>
+        <td><span class="cap-chip ai">SVC-12 H5 里 AI 顾问</span></td>
+        <td>—</td><td><span class="cap-chip ai">PRO-04 调 KB 词条</span></td><td>—</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="legend">
+    <span><span class="b" style="background:var(--ink)"></span>真人必须亲自</span>
+    <span><span class="b" style="background:var(--gold)"></span>AI 能帮 · 经纪人接手</span>
+    <span><span class="b" style="background:var(--ai-blue)"></span>AI 天生擅长</span>
+    <span><span class="b" style="background:#faf8f2;border:1px dashed var(--line)"></span>→ SOP 动作关联</span>
+  </div>
+</div>
+
+<!-- 线上集成清单 -->
+<div class="integration">
+  <h2>🔗 与线上风声聚满匠星云 5 个对接点</h2>
+  <div class="int-row"><div class="n">1</div><div><h4>SOP → question_map sop_ref</h4><p>39 条 question_map 每条挂 sop_ref = TRUST-01~04 某个动作。AI 顾问匹配话术时，先过 SOP 逻辑再出方案。<code>sales-sop.json · question_map.sop_ref</code></p></div></div>
+  <div class="int-row"><div class="n">2</div><div><h4>CAP-SKILL → dimension-tags 三维度打标</h4><p>每条 CAP-SKILL 自动归入素养/服务/专业三层，7 维度评价体系扩展到 30 标签。消费者看到的经纪人能力条 = 四源合成分。<code>dimension-tags.json</code></p></div></div>
+  <div class="int-row"><div class="n">3</div><div><h4>知识库五层词条 → AI 顾问答案</h4><p>AI 顾问的每个答案 = 知识库词条原文 + 来源 + 时间 + 验证状态，不是模型编的。P0 规则版用关键词匹配，P1 模型版用 Prompt 注入限制。</p></div></div>
+  <div class="int-row"><div class="n">4</div><div><h4>STAGE_TO_DIMS 阶段映射 → SOP 自动切换</h4><p>prepare/market/invite → TRUST-01+02；negotiate → TRUST-03；transaction/closing → TRUST-04。大屏、AI 顾问、经纪人作业端、工作台共享同一个阶段逻辑。<code>workspace/index.html STAGE_TO_DIMS</code></p></div></div>
+  <div class="int-row"><div class="n">5</div><div><h4>care-test 能力画像 → 销冠示范库</h4><p>经纪人测出最弱维度 → 自动推送"销冠在这个维度是怎么做的"3 个示范 + AI 对话回放。接待即训练，训练即评价。<code>/care-test/</code></p></div></div>
+</div>
+
+<!-- 原型入口 -->
+<h2 class="section-title" style="font-size:16px;margin-bottom:12px">🖱️ 原型入口（v2.1 重写 · 3 页）</h2>
+<div class="protos">
+  <a class="proto" href="./ai-advisor.html">
+    <div class="icon">🤖</div><h4>② AI 顾问落地页</h4>
+    <p>消费者线上公开入口 · 结构化菜单 → question_map → KB 词条 → 每条带 CAP-SKILL 追溯 · 轻留资钩子</p>
+    <div class="tags"><span>规则版</span><span>零模型可跑</span><span>P0</span></div>
+  </a>
+  <a class="proto" href="./sales-champion.html">
+    <div class="icon">🏆</div><h4>③ 销冠示范库</h4>
+    <p>经纪人侧 · 39 道真实场景 → 销冠怎么做 → AI 对话回放 → 能力画像 vs 销冠基准</p>
+    <div class="tags"><span>望京南李姐</span><span>CAP-SKILL 编号</span></div>
+  </a>
+  <a class="proto" href="./index.html">
+    <div class="icon">📊</div><h4>① 三层×7维度矩阵</h4>
+    <p>本页 · 总览架构 · 信任动作时间轴 · 完整矩阵表 · 线上 5 对接点</p>
+    <div class="tags"><span>总图</span><span>可追溯</span></div>
+  </a>
+</div>
+
+<div class="footer">风声智囊团 · 产品设计 v2.1 · 2026-10-30</div>
+</div>
+</body>
+</html>

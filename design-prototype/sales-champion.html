@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>销冠示范库 · 风声智囊团 · 跟销冠练能力</title>
+<style>
+:root{--ink:#1a3d24;--gold:#c9a962;--bg:#f7f5f0;--card:#fff;--line:#e8e3d8;--ink-soft:#5c6d62;--ok:#2d7a4a;--ai-blue:#4a6fa5;--danger:#b85c38}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:1100px;margin:0 auto;padding:32px 24px}
+.nav{display:flex;gap:14px;margin-bottom:24px}
+.nav a{color:var(--ink-soft);text-decoration:none;font-size:12px;padding:5px 12px;border:1px solid var(--line);border-radius:16px;transition:.2s}
+.nav a:hover,.nav a.active{color:#fff;border-color:var(--gold);background:var(--gold)}
+
+.hero{background:linear-gradient(135deg,var(--ink),#2a5a38);color:#fff;padding:36px 32px;border-radius:14px;margin-bottom:20px;display:flex;gap:24px;align-items:center}
+.hero .avatar{width:64px;height:64px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;flex-shrink:0}
+.hero .who h1{font-size:20px;margin-bottom:4px}
+.hero .who p{font-size:12px;opacity:.85;max-width:500px}
+.hero .who .stats{display:flex;gap:16px;margin-top:10px;font-size:11px}
+.hero .who .stats span b{color:var(--gold)}
+
+/* 能力雷达 vs 销冠基准 */
+.radar-wrap{background:var(--card);border-radius:10px;padding:20px;margin-bottom:16px;display:grid;grid-template-columns:240px 1fr;gap:20px;border:1px solid var(--line)}
+.radar-placeholder{width:220px;height:220px;background:#faf8f2;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);font-size:11px;position:relative}
+.dim-bars{display:flex;flex-direction:column;gap:8px}
+.dim-bar{display:flex;align-items:center;gap:8px;font-size:12px}
+.dim-bar .nm{width:80px;color:var(--ink)}
+.dim-bar .bar{flex:1;height:14px;background:#e8e3d8;border-radius:7px;position:relative}
+.dim-bar .fill{height:100%;border-radius:7px;background:var(--ink)}
+.dim-bar .fill.human{background:rgba(26,61,36,.6)}
+.dim-bar .fill.champion{height:2px;background:var(--gold);position:absolute;top:6px;z-index:1}
+.dim-bar .score{width:60px;text-align:right;color:var(--ink-soft);font-size:11px}
+.dim-bar .score.weak{color:var(--danger);font-weight:600}
+.radar-wrap .weak-title{font-size:11px;color:var(--danger);margin-top:8px;background:rgba(184,92,56,.06);padding:6px 10px;border-radius:6px}
+
+/* 筛选 */
+.filters{background:var(--card);border-radius:10px;padding:14px;margin-bottom:16px;border:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.filters .lbl{font-size:12px;color:var(--ink-soft);margin-right:6px}
+.filters button{background:var(--bg);border:1px solid var(--line);color:var(--ink-soft);padding:5px 12px;border-radius:14px;font-size:11px;cursor:pointer}
+.filters button:hover,.filters button.on{border-color:var(--gold);color:var(--gold);background:rgba(201,169,98,.06)}
+
+/* 示范列表 */
+.scene-list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
+.scene-item{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;transition:.2s}
+.scene-item:hover{border-color:var(--gold);transform:translateY(-2px)}
+.scene-head{padding:14px 16px;background:var(--bg);display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.scene-head .t{font-size:13px;font-weight:600;flex:1}
+.scene-head .tags{display:flex;gap:4px}
+.scene-head .tags span{padding:2px 8px;border-radius:10px;font-size:10px}
+.scene-head .tags .dim{background:var(--ink);color:var(--gold)}
+.scene-head .tags .sop{background:var(--gold);color:var(--ink)}
+.scene-head .tags .cap{background:var(--bg);color:var(--ai-blue);border:1px solid var(--ai-blue)}
+.scene-body{padding:16px;display:none}
+.scene-item.open .scene-body{display:block}
+.scene-body .question{font-size:12px;color:var(--ink-soft);margin-bottom:10px}
+.scene-body .champion-demo{background:rgba(201,169,98,.06);border-left:3px solid var(--gold);padding:10px 12px;border-radius:0 6px 6px 0;margin-bottom:10px}
+.scene-body .champion-demo h5{font-size:11px;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.scene-body .champion-demo p{font-size:12px;line-height:1.7}
+.scene-body .sop-trace{font-size:11px;color:var(--ink-soft);padding:8px 10px;background:#faf8f2;border-radius:6px;margin-bottom:10px}
+.scene-body .sop-trace b{color:var(--ink)}
+.scene-body .ai-replay{margin-top:10px}
+.scene-body .ai-replay h5{font-size:11px;color:var(--ai-blue);margin-bottom:8px}
+.scene-body .ai-replay .rp-line{font-size:11px;padding:4px 8px;background:rgba(74,111,165,.06);border-radius:4px;margin-bottom:4px}
+.scene-body .ai-replay .rp-line.me{background:var(--ink);color:#fff;text-align:right}
+
+/* 红线 */
+.red-banner{background:rgba(184,92,56,.06);border:1px dashed var(--danger);border-radius:8px;padding:12px;margin-bottom:16px;font-size:12px;color:var(--danger)}
+.red-banner b{color:var(--danger)}
+
+/* 数据条 */
+.foot-stats{background:var(--card);border-radius:10px;padding:14px;margin-bottom:16px;border:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);gap:10px;text-align:center}
+.foot-stats .n{font-size:22px;font-weight:700;color:var(--ink)}
+.foot-stats .n span{color:var(--gold);font-size:12px}
+.foot-stats .l{font-size:11px;color:var(--ink-soft);margin-top:2px}
+
+.footer{text-align:center;color:var(--ink-soft);font-size:12px;padding:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="nav">
+  <a href="./index.html">① 总览矩阵</a>
+  <a href="./ai-advisor.html">② AI 顾问落地页</a>
+  <a href="./sales-champion.html" class="active">③ 销冠示范库</a>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="avatar">李</div>
+  <div class="who">
+    <h1>🏆 销冠示范库 · 望京南店 · 李姐</h1>
+    <p>7 年门店销冠 · 学区房占比 62% · 累计成交 68 套。<br>每个真实场景 → "李姐怎么做" → SOP 动作追溯 → CAP-SKILL 编号 → AI 对话回放。<br><b>你跟她的差距，就是你该练的地方。</b></p>
+    <div class="stats">
+      <span><b>68</b> 套成交</span>
+      <span><b>62%</b> 学区房占比</span>
+      <span><b>4.9</b> 客户评分</span>
+      <span><b>39</b> 场景示范</span>
+    </div>
+  </div>
+</div>
+
+<!-- 能力画像 vs 销冠基准 -->
+<div class="radar-wrap">
+  <div class="radar-placeholder">
+    <div style="font-size:40px">📊</div>
+    <div>雷达图占位</div>
+    <div style="position:absolute;bottom:8px">你 vs 李姐 · 7 维度对比</div>
+  </div>
+  <div class="dim-bars">
+    <div class="dim-bar"><span class="nm">获客触达</span>
+      <div class="bar"><div class="fill" style="width:72%"></div><div class="fill champion" style="left:88%"></div></div>
+      <span class="score">72 / <b style="color:var(--gold)">88</b></span></div>
+    <div class="dim-bar"><span class="nm">需求洞察</span>
+      <div class="bar"><div class="fill" style="width:68%"></div><div class="fill champion" style="left:92%"></div></div>
+      <span class="score weak">68 / <b style="color:var(--gold)">92</b></span></div>
+    <div class="dim-bar"><span class="nm">专业方案</span>
+      <div class="bar"><div class="fill" style="width:82%"></div><div class="fill champion" style="left:90%"></div></div>
+      <span class="score">82 / <b style="color:var(--gold)">90</b></span></div>
+    <div class="dim-bar"><span class="nm">带看谈判</span>
+      <div class="bar"><div class="fill" style="width:65%"></div><div class="fill champion" style="left:94%"></div></div>
+      <span class="score weak">65 / <b style="color:var(--gold)">94</b></span></div>
+    <div class="dim-bar"><span class="nm">交易履约</span>
+      <div class="bar"><div class="fill" style="width:78%"></div><div class="fill champion" style="left:86%"></div></div>
+      <span class="score">78 / <b style="color:var(--gold)">86</b></span></div>
+    <div class="dim-bar"><span class="nm">售后复购</span>
+      <div class="bar"><div class="fill" style="width:55%"></div><div class="fill champion" style="left:85%"></div></div>
+      <span class="score weak">55 / <b style="color:var(--gold)">85</b></span></div>
+    <div class="dim-bar"><span class="nm">数字化协同</span>
+      <div class="bar"><div class="fill" style="width:85%"></div><div class="fill champion" style="left:80%"></div></div>
+      <span class="score">85 / <b style="color:var(--gold)">80</b></span></div>
+    <div class="weak-title">🔎 李姐示范库已自动为您匹配 <b>带看谈判（差 29）</b> 和 <b>售后复购（差 30）</b> 维度的场景示范 —— 这是您最该练的地方。</div>
+  </div>
+</div>
+
+<!-- 红线提示 -->
+<div class="red-banner">
+  <b>🔴 红线提醒</b>：以下 5 类场景，<b>AI 可以给变体，但最终必须真人执行</b>：<br>
+  强留资（约带看时段）· 即兴异议应对（客户突然说"我妈说风水不好"）· 强共情沟通 · 合同修改谈判 · 业主价格谈判
+</div>
+
+<!-- 筛选 -->
+<div class="filters">
+  <span class="lbl">筛选：</span>
+  <button class="on" onclick="filterDim(this,'all')">全部 39 条</button>
+  <button onclick="filterDim(this,'带看谈判')">带看谈判（7）</button>
+  <button onclick="filterDim(this,'需求洞察')">需求洞察（7）</button>
+  <button onclick="filterDim(this,'专业方案')">专业方案（9）</button>
+  <button onclick="filterDim(this,'获客触达')">获客触达（6）</button>
+  <button onclick="filterDim(this,'交易履约')">交易履约（8）</button>
+  <button onclick="filterDim(this,'售后复购')">售后复购（2）</button>
+  <button onclick="filterDim(this,'weak')">⚠️ 我最弱的</button>
+</div>
+
+<!-- 示范列表 -->
+<div class="scene-list" id="scene-list"></div>
+
+<!-- 数据条 -->
+<div class="foot-stats">
+  <div><div class="n">39<span>/100</span></div><div class="l">question_map 已录入</div></div>
+  <div><div class="n">4</div><div class="l">SOP 信任动作（TRUST-01~04）</div></div>
+  <div><div class="n">30</div><div class="l">三层能力标签</div></div>
+  <div><div class="n">6</div><div class="l">红线 · 任何一条触发即停机</div></div>
+</div>
+
+<div class="footer">风声智囊团 · 销冠示范库 · 望京南李姐 × question_map × sales-sop.json × dimension-tags.json</div>
+</div>
+
+<script>
+// 简化版 question_map 条目（从真实数据里抽的）
+const ITEMS = [
+  {id:1, stage:'negotiate', dim:'带看谈判', skill:'CAP-SKILL-101', sop:'TRUST-03', title:'客户说太贵了怎么办？', persona:'rational',
+    champion:'先共情接住，再给数据，最后引导说真实顾虑。<br>"哥您说的隔壁 480 万那套我知道——6 楼没电梯、朝北、满五唯一还差 2 个月。咱们这套中间楼层、南北通透、满五唯一。价差 20 万其实是品质差。您说的"贵"，是真没钱？觉得不值？还是想压价？"',
+    red:false, weakness:true},
+  {id:3, stage:'negotiate', dim:'需求洞察', skill:'CAP-SKILL-202', sop:'TRUST-03', title:'客户说回去商量一下怎么办？', persona:'anxious',
+    champion:"接住情绪（'理解，买房不是逛超市'）→ 给具体利益（'我给您发一份对比清单'）→ 降低门槛（'随时微信我'）。<br><b>重点</b>：别追着问'那您商量出啥结果了'——客户最烦这个。",
+    red:false},
+  {id:36, stage:'negotiate', dim:'带看谈判', skill:'CAP-SKILL-106', sop:'TRUST-03', title:'客户拿竞品压价怎么办？', persona:'rational',
+    champion:'3 维对比破局：学区、通勤、楼层。不争论价格，让客户自己看差距。<br>"哥您说的 XX 小区我知道——我给您列 3 条客观差距，您自己判断是不是值得 40 万的价差。"',
+    red:false, weakness:true},
+  {id:2, stage:'invite', dim:'需求洞察', skill:'CAP-SKILL-201', sop:'TRUST-01', title:'客户说随便看看怎么办？', persona:'rational',
+    champion:"不接'随便看看'——接'您今天想看什么？'或主动给线索。<br>'姐那太巧了——我今天有 3 套新到的学区房，可以一起看。您大概关注哪个片区？'",
+    red:false},
+  {id:4, stage:'invite', dim:'获客触达', skill:'CAP-SKILL-001', sop:'TRUST-01', title:'客户不愿出来看房怎么办？', persona:'anxious',
+    champion:"给无法拒绝的具体理由 + 降低门槛。<br>'姐这周六下午 2 点有业主开放日，我跟物业打了招呼，您来业主李姐在场——她自己是三年级家长。就 20 分钟。'",
+    red:false},
+  {id:25, stage:'prepare', dim:'需求洞察', skill:'CAP-SKILL-203', sop:'TRUST-02', title:'购房预算超支了怎么办？给 3 个务实方案', persona:'rational',
+    champion:'给 3 个降级方向：换片区 / 换户型 / 换业主（法拍/回迁）。每个方向算清楚差多少。最后问："您觉得哪个您能接受？"',
+    red:false},
+  {id:23, stage:'prepare', dim:'专业方案', skill:'CAP-SKILL-303', sop:'TRUST-02', title:'首套/二套房怎么认定？北京标准是什么？', persona:'rational',
+    champion:"直接给来源和时间。<br>'姐北京首套认定：您本人+配偶+未成年子女，在北京都没有房产记录。来源：北京住建委 2026-03 最新口径。我帮您算一下如果首套 vs 二套的首付月供差多少。'",
+    red:false},
+  {id:33, stage:'market', dim:'专业方案', skill:'CAP-SKILL-307', sop:'TRUST-02', title:'学区房值不值得买？3 种情况给您明确答案', persona:'emotional',
+    champion:'分 3 种情况明确说：<br>1. 刚需娃小 → 值得<br>2. 投资 → 谨慎（涨跌大）<br>3. 非学区也能上 → 不一定<br>⚠️ 红线：绝不替客户做决定，只给情况分析',
+    red:true},
+  {id:34, stage:'invite', dim:'获客触达', skill:'CAP-SKILL-006', sop:'TRUST-04', title:'客户说要再看看怎么办？主动给 3 套精华房源', persona:'anxious',
+    champion:'降低门槛：给 3 套精华 + 主动跟进 + 强留资环节（红线：必须真人）。<br>"姐我帮您选了 3 套最匹配的，您要不要明天上午带您一起看看？我提前开门等您。"',
+    red:true},
+  {id:47, stage:'closing', dim:'售后复购', skill:'CAP-SKILL-601', sop:'TRUST-04', title:'入住后发现房子有问题怎么办？3 种情况 + 维权步骤', persona:'rational',
+    champion:'分类处理：<br>1. 合同里有的问题 → 按合同走 → 我帮您沟通原业主<br>2. 物业问题 → 我帮您找物业<br>3. 自己发现的问题 → 我帮您判断是不是原业主故意隐瞒<br>🏆 李姐说：这个环节是建立长期信任的关键——比成交还重要',
+    red:false, weakness:true},
+  {id:48, stage:'closing', dim:'售后复购', skill:'CAP-SKILL-602', sop:'TRUST-04', title:'成交后怎么感谢客户 + 维护关系？让他主动转介绍', persona:'emotional',
+    champion:'成交不是终点——是转介绍的起点。<br>李姐习惯：<br>• 成交后 7 天内上门送入伙礼（小家电/绿植）<br>• 3 个月后约出来喝咖啡问体验<br>• 过年发手写贺卡<br>结果：她 60% 成交来自转介绍',
+    red:false, weakness:true}
+];
+
+function render(){
+  var list = document.getElementById('scene-list');
+  var filterDim = document.getElementById('scene-list').dataset.filter || 'all';
+  var filtered = ITEMS.filter(x=>{
+    if(filterDim==='all') return true;
+    if(filterDim==='weak') return x.weakness;
+    return x.dim === filterDim;
+  });
+
+  list.innerHTML = filtered.map(function(x, i){
+    return '<div class="scene-item ' + (i<2?'open':'') + '" onclick="toggle(this)">' +
+      '<div class="scene-head">' +
+        '<div class="t">' + x.title + '</div>' +
+        '<div class="tags">' +
+          '<span class="dim">' + x.dim + '</span>' +
+          '<span class="sop">' + x.sop + '</span>' +
+          '<span class="cap">' + x.skill + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="scene-body">' +
+        '<div class="question"><b>场景：</b>' + x.title + ' · <b>客户类型：</b>' + x.persona + ' · <b>阶段：</b>' + x.stage + '</div>' +
+        '<div class="champion-demo"><h5>🏆 李姐怎么做</h5><p>' + x.champion + '</p></div>' +
+        '<div class="sop-trace">🔗 <b>SOP 追溯：' + x.sop + '</b> · <b>CAP-SKILL：' + x.skill + '</b> · <b>阶段：' + x.stage + '</b> · <b>线上可测评</b></div>' +
+        (x.red ? '<div style="background:rgba(184,92,56,.06);border-left:3px solid var(--danger);padding:8px 10px;border-radius:0 6px 6px 0;font-size:11px;color:var(--danger);margin-bottom:10px">🔴 <b>红线场景</b>：AI 可以给话术变体，但最终执行必须真人亲自</div>' : '') +
+        '<div class="ai-replay"><h5>🤖 AI 对话回放（纯前端模拟）</h5>' +
+          replay(x) +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function replay(x){
+  var personaMap = {rational:'理性客户 · 看数据看对比',emotional:'感性客户 · 看故事看感觉',anxious:'焦虑客户 · 怕买贵怕买错'};
+  return '<div class="rp-line me">👤 客户（' + personaMap[x.persona] + '）：' + x.title.replace('怎么办','') + '</div>' +
+    '<div class="rp-line">🤖 AI 顾问（规则版）：匹配 question_map → id=' + x.id + ' → 推荐 TRUST-03 共情接住阶段 → 输出 3 个话术变体</div>' +
+    '<div class="rp-line">🏆 李姐：AI 给的是参考版本，我会根据客户的微表情选合适的那个，并即兴微调。</div>';
+}
+
+function toggle(el){ el.classList.toggle('open'); }
+
+function filterDim(btn, dim){
+  document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('scene-list').dataset.filter = dim;
+  render();
+}
+
+render();
+</script>
+</html>

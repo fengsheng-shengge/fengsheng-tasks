@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 顾问 · 风声智囊团 · 像销冠一样给您讲房</title>
+<style>
+:root{--ink:#1a3d24;--gold:#c9a962;--bg:#f7f5f0;--card:#fff;--line:#e8e3d8;--ink-soft:#5c6d62;--ok:#2d7a4a;--ai-blue:#4a6fa5;--danger:#b85c38}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:1000px;margin:0 auto;padding:32px 24px}
+.nav{display:flex;gap:14px;margin-bottom:24px}
+.nav a{color:var(--ink-soft);text-decoration:none;font-size:12px;padding:5px 12px;border:1px solid var(--line);border-radius:16px;transition:.2s}
+.nav a:hover,.nav a.active{color:#fff;border-color:var(--gold);background:var(--gold)}
+
+.hero{background:linear-gradient(135deg,var(--ink),#2a5a38);color:#fff;padding:40px 32px;border-radius:14px;margin-bottom:20px}
+.hero h1{font-size:22px;margin-bottom:6px}
+.hero p{opacity:.85;font-size:13px;margin-bottom:10px}
+.hero .trust{font-size:11px;color:var(--gold)}
+
+/* 主对话区 */
+.chat-wrap{background:var(--card);border-radius:12px;border:1px solid var(--line);overflow:hidden;margin-bottom:16px}
+.chat-header{background:var(--ink);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+.chat-header h3{font-size:15px;display:flex;align-items:center;gap:8px}
+.chat-header .meta{font-size:11px;opacity:.75}
+.chat-header .trust-badge{background:var(--gold);color:var(--ink);padding:2px 10px;border-radius:10px;font-size:10px;font-weight:600}
+
+.chat-body{padding:20px;min-height:400px;max-height:500px;overflow-y:auto}
+.msg{max-width:80%;padding:12px 14px;border-radius:12px;margin-bottom:12px;font-size:13px;line-height:1.6;position:relative}
+.msg.ai{background:var(--bg);border:1px solid var(--line);color:var(--ink);align-self:flex-start}
+.msg.me{background:var(--ink);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.msg.ai b{color:var(--ink)}
+.msg .cap-ref{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:11px;color:var(--ink-soft);line-height:1.6}
+.msg .cap-ref .sop{color:var(--gold);font-weight:600}
+.msg .cap-ref .cap{color:var(--ai-blue)}
+.msg .cap-ref .kb{color:var(--ok)}
+
+/* 知识库词条卡片 */
+.kb-card{background:rgba(74,111,165,.06);border:1px solid rgba(74,111,165,.2);border-left:3px solid var(--ai-blue);border-radius:8px;padding:12px;margin:10px 0 0;font-size:12px}
+.kb-card .kb-t{font-weight:600;color:var(--ink);margin-bottom:4px}
+.kb-card .kb-src{font-size:10px;color:var(--ink-soft);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.kb-card .kb-short{background:rgba(184,92,56,.08);border-left-color:var(--danger);border-left-width:3px;border-left-style:solid;padding:8px;border-radius:0 6px 6px 0;margin-top:8px;font-size:11px;color:var(--danger)}
+.kb-card .kb-short::before{content:"⚠️ 短板必填：";font-weight:600}
+
+/* 快捷选择菜单 */
+.quick-menu{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.quick-menu button{background:var(--card);border:1px solid var(--line);color:var(--ink);padding:8px 14px;border-radius:20px;font-size:12px;cursor:pointer;transition:.2s}
+.quick-menu button:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,169,98,.06)}
+
+/* 底部输入 */
+.chat-input{padding:14px 18px;border-top:1px solid var(--line);background:var(--bg);display:flex;gap:10px}
+.chat-input input{flex:1;background:#fff;border:1px solid var(--line);padding:10px;border-radius:8px;font-size:13px;outline:none}
+.chat-input button{background:var(--ink);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+.chat-input button:hover{background:var(--gold);color:var(--ink)}
+
+/* 留资钩子 */
+.lead-hook{background:linear-gradient(135deg,rgba(201,169,98,.08),rgba(26,61,36,.04));border:1px solid var(--gold);border-radius:10px;padding:14px;margin-top:12px;text-align:center}
+.lead-hook h4{font-size:13px;color:var(--ink);margin-bottom:4px}
+.lead-hook p{font-size:11px;color:var(--ink-soft);margin-bottom:10px}
+.lead-hook button{background:var(--gold);color:var(--ink);border:none;padding:10px 24px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer}
+
+/* 红线提示 */
+.red-hint{background:rgba(184,92,56,.06);border:1px dashed var(--danger);border-radius:8px;padding:10px;font-size:11px;color:var(--danger);margin-top:10px;display:flex;gap:8px}
+.red-hint::before{content:"🔴";flex-shrink:0}
+
+/* demo 选择 */
+.demo-switch{background:var(--card);border-radius:10px;padding:14px;margin-bottom:16px;border:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.demo-switch .lbl{font-size:12px;color:var(--ink-soft);white-space:nowrap}
+.demo-switch button{background:var(--bg);border:1px solid var(--line);color:var(--ink-soft);padding:6px 12px;border-radius:14px;font-size:11px;cursor:pointer}
+.demo-switch button:hover,.demo-switch button.on{border-color:var(--gold);color:var(--gold)}
+
+/* SOP 追溯面板 */
+.trace-panel{background:var(--card);border-radius:10px;padding:16px;border:1px solid var(--line);margin-bottom:16px}
+.trace-panel h3{font-size:13px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.trace-row{display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.trace-row:last-child{border-bottom:none}
+.trace-row .step{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.trace-row .s{font-weight:600}
+.trace-row .v{color:var(--ink-soft)}
+
+.footer{text-align:center;color:var(--ink-soft);font-size:12px;padding:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="nav">
+  <a href="./index.html">① 总览矩阵</a>
+  <a href="./ai-advisor.html" class="active">② AI 顾问落地页</a>
+  <a href="./sales-champion.html">③ 销冠示范库</a>
+</div>
+
+<div class="hero">
+  <h1>🤖 AI 顾问 · 像销冠一样给您讲房</h1>
+  <p>线上公开入口 · 零模型规则版 · 每个回答带来源和时间 · 不做决策、不碰谈判、不承诺学区</p>
+  <div class="trust">🔒 安全承诺：所有回答追溯到风声 KB 词条 + CAP-SKILL · 红线 6 条 · 零编造</div>
+</div>
+
+<!-- 演示场景切换 -->
+<div class="demo-switch">
+  <span class="lbl">🎬 演示场景：</span>
+  <button class="on" onclick="runScenario('parent',this)">👨‍👩‍👧 有娃家庭·学区房</button>
+  <button onclick="runScenario('commute',this)">💼 通勤刚需</button>
+  <button onclick="runScenario('anxious',this)">😰 焦虑客户</button>
+  <button onclick="runScenario('cold',this)">❄️ 红线拦截演示</button>
+</div>
+
+<!-- 追溯面板 -->
+<div class="trace-panel">
+  <h3>🔗 本次对话追溯链路（实时更新）</h3>
+  <div id="trace-body">
+    <div class="trace-row"><span class="step">1</span><span class="s">question_map 匹配</span><span class="v">等待用户问题...</span></div>
+    <div class="trace-row"><span class="step">2</span><span class="s">SOP 信任动作</span><span class="v">等待...</span></div>
+    <div class="trace-row"><span class="step">3</span><span class="s">CAP-SKILL 编号</span><span class="v">等待...</span></div>
+    <div class="trace-row"><span class="step">4</span><span class="s">知识库词条</span><span class="v">等待...</span></div>
+    <div class="trace-row"><span class="step">5</span><span class="s">红线检查</span><span class="v">等待...</span></div>
+  </div>
+</div>
+
+<!-- 对话主区 -->
+<div class="chat-wrap">
+  <div class="chat-header">
+    <h3>🤖 AI 顾问 · 销冠接待</h3>
+    <div class="meta">复刻望京南李姐 · 7 年销冠 · 学区房 62%</div>
+    <div class="trust-badge">🔒 可追溯</div>
+  </div>
+  <div class="chat-body" id="chat-body">
+    <div class="msg ai">您好！我是 AI 顾问，复刻了风声望京南店李姐的销冠经验。<br><br>我可以帮您了解：学区房、二手房流程、贷款税费、小区优缺点等。<br><br>👇 选一个您最关心的，或者直接打字问我。</div>
+    <div class="quick-menu">
+      <button onclick="sendQ('我想找学区房，预算 650 万')">🏫 学区房 650 万</button>
+      <button onclick="sendQ('二手房税费怎么算？')">💰 税费计算</button>
+      <button onclick="sendQ('大西洋新城这个小区怎么样？')">🏘️ 大西洋新城</button>
+      <button onclick="sendQ('我妈说风水不好怎么办')">❓ 风水不好怎么办</button>
+    </div>
+  </div>
+  <div class="chat-input">
+    <input id="user-input" type="text" placeholder="打字问我，比如：学区房值不值得买？" onkeydown="if(event.key==='Enter')sendQ()">
+    <button onclick="sendQ()">发送</button>
+  </div>
+</div>
+
+<!-- 留资钩子（条件触发） -->
+<div id="lead-hook-wrap"></div>
+
+<!-- 红线提示（条件触发） -->
+<div id="red-wrap"></div>
+
+<div class="footer">风声智囊团 · 产品设计 v2.1 · P0 规则版演示</div>
+</body>
+
+<script>
+// === 模拟 question_map（规则版 AI 用的匹配数据） ===
+const QMAP = {
+  "学区": {id:33, skill:"CAP-SKILL-307", sop:"TRUST-02", dim:"专业方案", answer:"学区房值不值得买，看 3 件事：<br>1. <b>对口学校优秀率</b>（大西洋新城对口望京实验 98%，比周边高 6-8%）<br>2. <b>划片稳定性</b>（近 3 年无变动，教委公示可查）<br>3. <b>学位占用</b>（交易前必查，我们可以帮您跑教委）", kbs:[
+    {t:"大西洋新城 · 对口学校", body:"望京实验学校（9 年连），2026 届小学优秀率 98%，中学 92%。对口覆盖大西洋新城 A-F 区，划片近 3 年无变动。", src:"来源：朝阳区教委 · 2026-04 公示"},
+    {t:"⚠️ 短板必填 · 学位占用风险", body:"有历史案例：同户型 3 号楼某户 2025 年因前业主孩子未毕业，被卡学位。<b>交易前必须跑教委查占用</b>。", src:"来源：门店带看记录 · 2025-07 · 已验证", short:true}
+  ]},
+  "贵": {id:1, skill:"CAP-SKILL-101", sop:"TRUST-03", dim:"带看谈判", answer:"哥/姐您说的我完全理解——换我买房我也算三遍。<br><br>不过我给您看组客观数据：<br>大西洋新城近 3 个月同户型成交价只波动 <b>±2%</b>（附链家成交对比），而且学区房这边刚需还是在的。<br><br>您说的"贵"，是真觉得不值？还是担心跌？还是想压价？", kbs:[
+    {t:"大西洋新城 · 近 3 个月成交价", body:"7 月份 7.1 万 → 8 月份 7.15 万 → 9 月份 7.2 万，波动 ±2%。共成交 12 套。", src:"来源：链家大数据 · 2026-09"}
+  ]},
+  "税费": {id:5, skill:"CAP-SKILL-301", sop:"TRUST-02", dim:"专业方案", answer:"首套 650 万住宅（满五唯一）：<br>• <b>契税</b>：650×1.5% = 9.75 万（首套 90 平以上 1.5%）<br>• <b>增值税</b>：满五唯一 → <b>免征</b><br>• <b>个人所得税</b>：满五唯一 → <b>免征</b><br>• <b>首付 30%</b>：195 万<br>• <b>月供（等额本息 30 年）</b>：约 22,800 元/月", kbs:[
+    {t:"北京住宅契税标准", body:"首套：90 平以下 1%，90 平以上 1.5%；二套：90 平以下 1%，90 平以上 2%。", src:"来源：北京住建委 · 2024-01 新政"},
+    {t:"⚠️ 短板必填 · 公积金贷款上限", body:"北京首套公积金最高 120 万。如果您月缴不足，可能贷不到 120 万——建议提前去公积金中心查额度。", src:"来源：客户踩坑记录 · 2025-11", short:true}
+  ]},
+  "大西洋": {id:31, skill:"CAP-SKILL-305", sop:"TRUST-02", dim:"专业方案", answer:"大西洋新城我给您讲 3 件事：<br><b>1. 板块定位</b>：望京核心，2000-2010 年建成，改善型家庭为主<br><b>2. 优点</b>：学区好、小区大、内部配套全（超市/幼儿园/足球场）<br><b>3. 短板（必须说）</b>：西边临广顺北，晚高峰偶尔 52dB", kbs:[
+    {t:"大西洋新城 · 供暖实测", body:"3-12 层实测 24-26℃，北向房间稍低 2℃。物业每周测温。", src:"来源：门店本地知识库 · 2026-10 · 每周实测"},
+    {t:"⚠️ 短板必填 · 西临广顺北晚高峰噪音", body:"晚高峰 18-19 点实测 52dB（比小区内部高 8dB）。但关窗基本听不到，物业最近加了两层隔音棉。", src:"来源：噪音仪实测 · 2026-10 · 店长每周测一次", short:true},
+    {t:"大西洋新城 · 物业费与口碑", body:"3.5 元/㎡·月，业主评分 4.7/5（30 位近期带看业主访谈）。物业反应快，公共区域维护好。", src:"来源：业主访谈 · 2026-09"}
+  ]},
+  "风水": {id:-1, skill:"红线拦截", sop:"RED-01/06", dim:"红线", answer:"⚠️ AI 顾问说明：风水问题属于主观判断范畴，我没有专业能力做推荐。<br><br>如果您在意这类问题，<b>建议请专业风水师现场看</b>，或者我们带您实地感受一下采光、通风、朝向。<br><br>我能帮您的：<br>• 小区实测数据（采光时长/通风/噪音）<br>• 同户型业主的真实评价<br>• 楼层/朝向的客观优劣势对比", kbs:[], red:true},
+  "跌": {id:27, skill:"CAP-SKILL-205", sop:"TRUST-03", dim:"需求洞察", answer:"姐您这个担心我完全理解——我当时买房也是睡不好觉。<br><br>给您 3 个理性参考：<br>1. <b>学区房刚需</b>：望京南学区房近 3 年波动 ±2%<br>2. <b>规划利好</b>：14 号线支线段 2028 通车，板块价值预计涨 8-12%<br>3. <b>如果真跌了能接受吗？</b>——这个问题您先想清楚<br><br>其实最实在的建议：选一个您住进去不后悔的小区，比纠结涨跌重要。", kbs:[
+    {t:"14 号线支线段规划", body:"东侧 1.2km 有支线段施工中，预计 2028 年通车。通车后板块价值预计涨幅 8-12%。", src:"来源：市规划委公示 · 2026-08-15"}
+  ]}
+};
+
+const CHAT = document.getElementById('chat-body');
+const TRACE = document.getElementById('trace-body');
+let msgCount = 0;
+let leadTriggered = false;
+
+function addMsg(text, isAI){
+  var m = document.createElement('div');
+  m.className = 'msg ' + (isAI ? 'ai' : 'me');
+  m.innerHTML = text;
+  CHAT.appendChild(m);
+  CHAT.scrollTop = CHAT.scrollHeight;
+}
+
+function sendQ(text){
+  if(!text) text = document.getElementById('user-input').value;
+  if(!text.trim()) return;
+  document.getElementById('user-input').value = '';
+  addMsg(text, false);
+  setTimeout(()=>processAI(text), 400);
+  msgCount++;
+  checkLeadHook();
+}
+
+function matchQuery(text){
+  text = text.toLowerCase();
+  for(var key in QMAP){
+    if(text.indexOf(key.toLowerCase()) >= 0) return QMAP[key];
+  }
+  // 默认：知识底座通用答复
+  return {id:0, skill:"CAP-SKILL-???", sop:"TRUST-02", dim:"通用",
+    answer:"这个问题我需要更多信息才能精准回答。您可以：<br>1. 看看上面的快速入口有没有您关心的<br>2. 或者说具体一点（比如'首套 650 万学区房'）<br><br>我的所有回答都来自风声望京南店的本地知识库，每条带来源和时间。", kbs:[
+    {t:"未匹配关键词", body:"建议用'学区/税费/大西洋新城/房价跌'等关键词精确匹配", src:"来源：规则版 AI 顾问 · 关键词匹配模式"}
+  ]};
+}
+
+function processAI(text){
+  var match = matchQuery(text);
+  updateTrace(match);
+
+  // 红线拦截
+  if(match.red){
+    var html = match.answer;
+    addMsg(html, true);
+    document.getElementById('red-wrap').innerHTML = '<div class="red-hint">这条回答触发了红线 RED-01（不做推荐结论）和 RED-06（不可追溯内容不输出），已自动切换为客观对比模式。</div>';
+    return;
+  }
+
+  // 主回答 + KB 词条 + 追溯
+  var html = match.answer;
+  if(match.kbs && match.kbs.length){
+    html += '<div style="margin-top:10px">📚 知识库词条：</div>';
+    match.kbs.forEach(function(kb){
+      html += '<div class="kb-card">';
+      html += '<div class="kb-t">' + kb.t + '</div>';
+      html += '<div>' + kb.body + '</div>';
+      html += '<div class="kb-src">' + kb.src + '</div>';
+      if(kb.short) html += '<div class="kb-short">这条是短板，必须主动说</div>';
+      html += '</div>';
+    });
+  }
+  html += '<div class="cap-ref">';
+  html += '<span class="sop">🔗 SOP 动作：' + match.sop + '</span> · ';
+  html += '<span class="cap">CAP-SKILL：' + match.skill + '</span> · ';
+  html += '<span class="kb">维度：' + match.dim + '</span>';
+  html += '</div>';
+
+  addMsg(html, true);
+}
+
+function updateTrace(match){
+  TRACE.innerHTML = '';
+  TRACE.innerHTML += '<div class="trace-row"><span class="step">1</span><span class="s">question_map 匹配</span><span class="v">id=' + match.id + ' · title 关键词=' + Object.keys(QMAP).find(k=>QMAP[k].id===match.id) + '</span></div>';
+  TRACE.innerHTML += '<div class="trace-row"><span class="step">2</span><span class="s">SOP 信任动作</span><span class="v"><b>' + match.sop + '</b> ' + (match.sop.indexOf('TRUST')===0 ? ['破冰·连接','证明·专业','共情·接住','引导·低压力'][parseInt(match.sop.split('-')[1])-1] : '红线拦截') + '</span></div>';
+  TRACE.innerHTML += '<div class="trace-row"><span class="step">3</span><span class="s">CAP-SKILL 编号</span><span class="v"><b>' + match.skill + '</b> · 线上 7 维度可测评</span></div>';
+  TRACE.innerHTML += '<div class="trace-row"><span class="step">4</span><span class="s">知识库词条</span><span class="v">' + match.kbs.length + ' 条 · 每条带来源+时间+验证状态</span></div>';
+  TRACE.innerHTML += '<div class="trace-row"><span class="step">5</span><span class="s">红线检查</span><span class="v">' + (match.red ? '🚫 触发拦截 · 已切换客观对比' : '✅ 零命中 · 正常输出') + '</span></div>';
+}
+
+function checkLeadHook(){
+  if(msgCount >= 3 && !leadTriggered){
+    leadTriggered = true;
+    setTimeout(function(){
+      document.getElementById('lead-hook-wrap').innerHTML = '<div class="lead-hook"><h4>✨ 聊了好一会儿了？</h4><p>我给您生成一份<b>专属信任包</b>——把今天聊的学区/税费/小区都整理进去了，扫码就能带走，回家跟家人慢慢商量。</p><button onclick="alert(\'轻留资：扫码带走信任包（匿名）。这个能力已经接到页面里了，等 P1 上线 Workers AI 后会更流畅。\')">📱 扫码带走</button></div>';
+    }, 1500);
+  }
+}
+
+// === 演示场景 ===
+function runScenario(name, btn){
+  document.querySelectorAll('.demo-switch button').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  CHAT.innerHTML = '';
+  TRACE.innerHTML = '<div class="trace-row"><span class="step">1</span><span class="s">等待用户问题</span><span class="v">...</span></div>';
+  leadTriggered = false;
+  document.getElementById('lead-hook-wrap').innerHTML = '';
+  document.getElementById('red-wrap').innerHTML = '';
+  msgCount = 0;
+
+  var scripts = {
+    parent: ["我想找学区房，预算 650 万", "学区房值不值得买？会不会跌？", "大西洋新城这个小区怎么样？"],
+    commute: ["二手房税费怎么算？首套 300 万", "公积金能贷多少？", "通勤 20 分钟选哪个片区？"],
+    anxious: ["我妈说风水不好怎么办", "房价会跌吗？再等等？", "大西洋新城这个小区怎么样？有什么不好的？"],
+    cold: ["给我推荐最好的学区房", "这套房肯定会升值吧？", "我妈说风水不好怎么办"]
+  };
+
+  CHAT.innerHTML = '<div class="msg ai">好的，这个场景我来演示。按销冠 SOP 一步步走，每个回答都可追溯。</div>';
+  scripts[name].forEach(function(q, i){
+    setTimeout(function(){ sendQ(q); }, 900 + i * 1100);
+  });
+}
+
+// 初始
+updateTrace({id:0, skill:"—", sop:"—", dim:"—", red:false});
+</script>
+</html>
