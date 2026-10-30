@@ -1,0 +1,642 @@
+{
+  "version": "1.0",
+  "updated_at": "2026-10-30",
+  "schema": "三层能力标签 × 7 维度 × CAP-SKILL 关联",
+  "layers": {
+    "human_only": {
+      "label": "🧠 素养层",
+      "color": "#1a3d24",
+      "def": "内在特质与行为习惯 — AI 学不来，只能观察辅助",
+      "scoring": "不打分，只用徽章 + 客户评价 + 行为记录呈现",
+      "total_tags": 9
+    },
+    "service": {
+      "label": "💬 服务层",
+      "color": "#c9a962",
+      "def": "与客户打交道的流程和话术 — AI 可以先跑，经纪人接手",
+      "scoring": "可测评 + 可练习 + 可 AI 辅助打分",
+      "total_tags": 12
+    },
+    "pro": {
+      "label": "📚 专业层",
+      "color": "#4a6fa5",
+      "def": "必须具备的知识和工具 — AI 天生擅长，但真人兜底",
+      "scoring": "知识底座贡献 + 测评 + 实战考核",
+      "total_tags": 9
+    }
+  },
+  "tags": {
+    "human_only": [
+      {
+        "id": "HUM-01",
+        "label": "共情力——接住情绪不急于讲数据",
+        "desc": "客户焦虑时，先共情再给方案。AI 可以识别情绪信号并提醒，但无法真实共情。",
+        "cap_skill": "CAP-SKILL-202",
+        "tier_in_dim": "INSIGHT",
+        "evidence_source": "客户评价 + 带看复盘记录",
+        "linked_qids": [
+          3,
+          27,
+          32
+        ],
+        "cap_skills": [
+          "CAP-SKILL-202",
+          "CAP-SKILL-205",
+          "CAP-SKILL-206"
+        ]
+      },
+      {
+        "id": "HUM-02",
+        "label": "真诚感——主动说短板不遮不藏",
+        "desc": "讲房源时主动提短板，反而建立信任。AI 可以被训练说短板，但不会选择'什么时候说什么短板'。",
+        "cap_skill": "CAP-SKILL-303",
+        "tier_in_dim": "SOLUTION",
+        "evidence_source": "带看复盘 + 知识库短板条目标注率",
+        "linked_qids": [
+          23,
+          30,
+          31
+        ],
+        "cap_skills": [
+          "CAP-SKILL-303",
+          "CAP-SKILL-305",
+          "CAP-SKILL-306"
+        ]
+      },
+      {
+        "id": "HUM-03",
+        "label": "耐心——客户纠结 30 分钟不看表",
+        "desc": "AI 永远有耐心，但真人会累会烦。这是素养，不在线上 7 维度里——但直接影响转化。",
+        "cap_skill": null,
+        "tier_in_dim": null,
+        "evidence_source": "带看时长 + 客户评价",
+        "linked_qids": [],
+        "cap_skills": []
+      },
+      {
+        "id": "HUM-04",
+        "label": "眼力——察言观色判断沟通节奏",
+        "desc": "穿西装的客户想先看数据、带娃的客户想先聊感觉——靠观察不是靠套路。",
+        "cap_skill": "CAP-SKILL-201",
+        "tier_in_dim": "INSIGHT",
+        "evidence_source": "话术变体选择正确率（AI 给了 3 个版本，经纪人选对了几个）",
+        "linked_qids": [
+          2,
+          25,
+          26,
+          35
+        ],
+        "cap_skills": [
+          "CAP-SKILL-201",
+          "CAP-SKILL-203",
+          "CAP-SKILL-204",
+          "CAP-SKILL-207"
+        ]
+      },
+      {
+        "id": "HUM-05",
+        "label": "分寸感——什么时候说、什么时候闭嘴",
+        "desc": "客户不想听时不追、客户追问时不敷衍、情绪不好时先停。",
+        "cap_skill": null,
+        "tier_in_dim": null,
+        "evidence_source": "AI 模拟客户练习时的评分 + 带看复盘",
+        "linked_qids": [],
+        "cap_skills": []
+      },
+      {
+        "id": "HUM-06",
+        "label": "情绪稳定——面对愤怒/不满不被带跑",
+        "desc": "客户说'你骗我'时，不能急着辩解。先接情绪再讲事实。",
+        "cap_skill": "CAP-SKILL-101",
+        "tier_in_dim": "NEGOTIATION",
+        "evidence_source": "带看复盘 + 客户评价",
+        "linked_qids": [
+          1,
+          12,
+          36,
+          37
+        ],
+        "cap_skills": [
+          "CAP-SKILL-101",
+          "CAP-SKILL-102",
+          "CAP-SKILL-106",
+          "CAP-SKILL-107"
+        ]
+      },
+      {
+        "id": "HUM-07",
+        "label": "责任心——答应客户的事一定做到",
+        "desc": "说'我帮您问问业主'就一定问、一定回。哪怕没问到也要回。",
+        "cap_skill": null,
+        "tier_in_dim": null,
+        "evidence_source": "客户评价 + 内部奖惩记录",
+        "linked_qids": [],
+        "cap_skills": []
+      },
+      {
+        "id": "HUM-08",
+        "label": "老客转介绍意愿——让客户愿意带你去见家人",
+        "desc": "转介绍是最高信任证明。不是靠话术，是靠'我觉得这个人靠谱'。",
+        "cap_skill": "CAP-SKILL-602",
+        "tier_in_dim": null,
+        "evidence_source": "转介绍率（成交后 6 个月内有转介绍的客户占比）",
+        "linked_qids": [
+          47,
+          48
+        ],
+        "cap_skills": [
+          "CAP-SKILL-601",
+          "CAP-SKILL-602"
+        ]
+      },
+      {
+        "id": "HUM-09",
+        "label": "长期主义——不坑下家也不坑业主",
+        "desc": "不做一锤子买卖。哪怕客户现在不签，也帮他把房看对、把坑躲开。",
+        "cap_skill": null,
+        "tier_in_dim": null,
+        "evidence_source": "3 年以上复购/转介绍率",
+        "linked_qids": [],
+        "cap_skills": []
+      }
+    ],
+    "service": [
+      {
+        "id": "SVC-01",
+        "label": "迎宾开场——7×24 不遗漏",
+        "desc": "数字员工接客，标准化不遗漏。经纪人到岗后接手。",
+        "cap_skill": "CAP-SKILL-001",
+        "tier_in_dim": "ACQUISITION",
+        "ai_who": "数字员工",
+        "linked_qids": [
+          4,
+          7,
+          21
+        ],
+        "cap_skills": [
+          "CAP-SKILL-001",
+          "CAP-SKILL-002",
+          "CAP-SKILL-003"
+        ]
+      },
+      {
+        "id": "SVC-02",
+        "label": "结构化需求探寻——10 问 + 记录",
+        "desc": "AI 问完、记录完、形成画像回传。经纪人根据画像追问深挖。",
+        "cap_skill": "CAP-SKILL-201",
+        "tier_in_dim": "INSIGHT",
+        "ai_who": "AI 问 · 经纪人挖",
+        "linked_qids": [
+          2,
+          25,
+          26,
+          35
+        ],
+        "cap_skills": [
+          "CAP-SKILL-201",
+          "CAP-SKILL-203",
+          "CAP-SKILL-204",
+          "CAP-SKILL-207"
+        ]
+      },
+      {
+        "id": "SVC-03",
+        "label": "画像生成——按客户类型匹配开场",
+        "desc": "理性客户 vs 感性客户 vs 焦虑客户，三种开场不同。AI 匹配，经纪人微调。",
+        "cap_skill": "CAP-SKILL-202",
+        "tier_in_dim": "INSIGHT",
+        "ai_who": "AI 先跑",
+        "linked_qids": [
+          3,
+          27,
+          32
+        ],
+        "cap_skills": [
+          "CAP-SKILL-202",
+          "CAP-SKILL-205",
+          "CAP-SKILL-206"
+        ]
+      },
+      {
+        "id": "SVC-04",
+        "label": "知识呈现——调五层知识库",
+        "desc": "AI 调板块/商圈/小区/楼栋/生活五层知识，每条带时间来源。",
+        "cap_skill": "CAP-SKILL-305",
+        "tier_in_dim": "SOLUTION",
+        "ai_who": "AI 天生擅长",
+        "linked_qids": [
+          30,
+          31,
+          33
+        ],
+        "cap_skills": [
+          "CAP-SKILL-305",
+          "CAP-SKILL-306",
+          "CAP-SKILL-307"
+        ]
+      },
+      {
+        "id": "SVC-05",
+        "label": "留资引导·轻档——扫码带走信任包",
+        "desc": "5 分钟停留 + 选 2+ 小区 → 自动触发轻留资。",
+        "cap_skill": "CAP-SKILL-004",
+        "tier_in_dim": "ACQUISITION",
+        "ai_who": "AI 触发",
+        "linked_qids": [
+          28,
+          34
+        ],
+        "cap_skills": [
+          "CAP-SKILL-004",
+          "CAP-SKILL-006"
+        ]
+      },
+      {
+        "id": "SVC-06",
+        "label": "留资引导·中档——扫码加微信",
+        "desc": "10 分钟停留 + 看完主推房 → 自动触发中留资。",
+        "cap_skill": "CAP-SKILL-004",
+        "tier_in_dim": "ACQUISITION",
+        "ai_who": "AI 触发",
+        "linked_qids": [
+          28,
+          29,
+          34
+        ],
+        "cap_skills": [
+          "CAP-SKILL-004",
+          "CAP-SKILL-005",
+          "CAP-SKILL-006"
+        ]
+      },
+      {
+        "id": "SVC-07",
+        "label": "留资引导·强档——约带看时段（红线）",
+        "desc": "AI 绝不触发。必须真人经纪人来。",
+        "cap_skill": "CAP-SKILL-005",
+        "tier_in_dim": "ACQUISITION",
+        "ai_who": "🔴 只有真人",
+        "linked_qids": [
+          29,
+          34
+        ],
+        "cap_skills": [
+          "CAP-SKILL-005",
+          "CAP-SKILL-006"
+        ]
+      },
+      {
+        "id": "SVC-08",
+        "label": "标准异议处理——3 个话术变体匹配",
+        "desc": "AI 匹配 question_map speech_variants 给经纪人 3 个版本参考。",
+        "cap_skill": "CAP-SKILL-101",
+        "tier_in_dim": "NEGOTIATION",
+        "ai_who": "AI 给变体 · 经纪人讲",
+        "linked_qids": [
+          1,
+          12,
+          36,
+          37
+        ],
+        "cap_skills": [
+          "CAP-SKILL-101",
+          "CAP-SKILL-102",
+          "CAP-SKILL-106",
+          "CAP-SKILL-107"
+        ]
+      },
+      {
+        "id": "SVC-09",
+        "label": "即兴异议应对——客户突然说'我妈说风水不好'",
+        "desc": "红线：AI 不做。经纪人必须即兴。",
+        "cap_skill": "CAP-SKILL-103",
+        "tier_in_dim": "NEGOTIATION",
+        "ai_who": "🔴 只有真人",
+        "linked_qids": [
+          19,
+          20,
+          22,
+          37
+        ],
+        "cap_skills": [
+          "CAP-SKILL-103",
+          "CAP-SKILL-104",
+          "CAP-SKILL-105",
+          "CAP-SKILL-107"
+        ]
+      },
+      {
+        "id": "SVC-10",
+        "label": "交接协议——AI → 经纪人标准化",
+        "desc": "客户画像 + 知识库轨迹 + 留资档位 + 情绪记录 + 推荐房源，AI 推给经纪人。",
+        "cap_skill": null,
+        "tier_in_dim": null,
+        "ai_who": "AI 推 · 真人接",
+        "linked_qids": [],
+        "cap_skills": []
+      },
+      {
+        "id": "SVC-11",
+        "label": "H5 决策包生成——按勾选自动生成",
+        "desc": "客户在大屏勾 3 个小区 → AI 生成对比包 + 经纪人能力展示。",
+        "cap_skill": "CAP-SKILL-004",
+        "tier_in_dim": "SOLUTION",
+        "ai_who": "AI 生成",
+        "linked_qids": [
+          28,
+          31,
+          33
+        ],
+        "cap_skills": [
+          "CAP-SKILL-004",
+          "CAP-SKILL-306",
+          "CAP-SKILL-307"
+        ]
+      },
+      {
+        "id": "SVC-12",
+        "label": "24×7 在线答疑——H5 里的 AI 顾问",
+        "desc": "客户回家跟家人商量时随时问。红线：不做决策、不碰谈判。",
+        "cap_skill": null,
+        "tier_in_dim": null,
+        "ai_who": "AI 全程",
+        "linked_qids": [],
+        "cap_skills": []
+      }
+    ],
+    "pro": [
+      {
+        "id": "PRO-01",
+        "label": "政策/税费/贷款实时计算",
+        "desc": "AI 实时算，准确，不犯错。经纪人确认数字正确并解读。",
+        "cap_skill": "CAP-SKILL-301",
+        "tier_in_dim": "SOLUTION",
+        "ai_who": "AI 天生擅长",
+        "linked_qids": [
+          5,
+          6,
+          41
+        ],
+        "cap_skills": [
+          "CAP-SKILL-301",
+          "CAP-SKILL-302",
+          "CAP-SKILL-309"
+        ]
+      },
+      {
+        "id": "PRO-02",
+        "label": "学区划片规则 + 对口学校查询",
+        "desc": "AI 调 KB 词条。经纪人解读'对您家意味着什么'。",
+        "cap_skill": "CAP-SKILL-304",
+        "tier_in_dim": "SOLUTION",
+        "ai_who": "AI 调 · 真人解读",
+        "linked_qids": [
+          24,
+          33
+        ],
+        "cap_skills": [
+          "CAP-SKILL-304",
+          "CAP-SKILL-307"
+        ]
+      },
+      {
+        "id": "PRO-03",
+        "label": "片区规划/行情/价格走势",
+        "desc": "AI 调 KB 词条，每条带来源+时间。",
+        "cap_skill": "CAP-SKILL-305",
+        "tier_in_dim": "SOLUTION",
+        "ai_who": "AI 天生擅长",
+        "linked_qids": [
+          30,
+          31,
+          32
+        ],
+        "cap_skills": [
+          "CAP-SKILL-305",
+          "CAP-SKILL-306",
+          "CAP-SKILL-206"
+        ]
+      },
+      {
+        "id": "PRO-04",
+        "label": "小区优缺点 + 实测数据（供暖/噪音/采光）",
+        "desc": "AI 从 KB 调实测数据。经纪人现场核实（带看时摸暖气片）。",
+        "cap_skill": "CAP-SKILL-303",
+        "tier_in_dim": "SOLUTION",
+        "ai_who": "AI 调数据 · 真人核实",
+        "linked_qids": [
+          23,
+          30,
+          39
+        ],
+        "cap_skills": [
+          "CAP-SKILL-303",
+          "CAP-SKILL-305",
+          "CAP-SKILL-308"
+        ]
+      },
+      {
+        "id": "PRO-05",
+        "label": "合同条款 10 个必改风险点",
+        "desc": "AI 给 checklist。经纪人解释'这条为什么要改，改了影响什么'。",
+        "cap_skill": "CAP-SKILL-502",
+        "tier_in_dim": "FULFILLMENT",
+        "ai_who": "AI 给 checklist · 真人解释",
+        "linked_qids": [
+          38
+        ],
+        "cap_skills": [
+          "CAP-SKILL-502"
+        ]
+      },
+      {
+        "id": "PRO-06",
+        "label": "资金监管 + 过户全流程",
+        "desc": "AI 一步步 checklist。经纪人陪同走流程。",
+        "cap_skill": "CAP-SKILL-501",
+        "tier_in_dim": "FULFILLMENT",
+        "ai_who": "AI 天生擅长",
+        "linked_qids": [
+          8,
+          42,
+          43,
+          44,
+          45,
+          46
+        ],
+        "cap_skills": [
+          "CAP-SKILL-501",
+          "CAP-SKILL-504",
+          "CAP-SKILL-505",
+          "CAP-SKILL-506",
+          "CAP-SKILL-507",
+          "CAP-SKILL-508"
+        ]
+      },
+      {
+        "id": "PRO-07",
+        "label": "卖方临时违约风险预案",
+        "desc": "AI 给 3 种预案。经纪人执行 + 跟业主沟通（红线：AI 不碰沟通）。",
+        "cap_skill": "CAP-SKILL-503",
+        "tier_in_dim": "FULFILLMENT",
+        "ai_who": "AI 给预案 · 真人执行沟通",
+        "linked_qids": [
+          40,
+          43,
+          44,
+          45
+        ],
+        "cap_skills": [
+          "CAP-SKILL-503",
+          "CAP-SKILL-505",
+          "CAP-SKILL-506",
+          "CAP-SKILL-507"
+        ]
+      },
+      {
+        "id": "PRO-08",
+        "label": "评估价比成交价低的补救方案",
+        "desc": "AI 实时算，给 3 种务实方案。",
+        "cap_skill": "CAP-SKILL-308",
+        "tier_in_dim": "SOLUTION",
+        "ai_who": "AI 天生擅长",
+        "linked_qids": [
+          39
+        ],
+        "cap_skills": [
+          "CAP-SKILL-308"
+        ]
+      },
+      {
+        "id": "PRO-09",
+        "label": "合法税费优惠 + 红线",
+        "desc": "AI 算，给 3 种官方优惠 + 提醒什么不能碰（红线）。",
+        "cap_skill": "CAP-SKILL-309",
+        "tier_in_dim": "SOLUTION",
+        "ai_who": "AI 天生擅长",
+        "linked_qids": [
+          41
+        ],
+        "cap_skills": [
+          "CAP-SKILL-309"
+        ]
+      }
+    ]
+  },
+  "dimension_map": {
+    "ACQUISITION 获客触达": {
+      "tier_in_layer": "service",
+      "tags_service": [
+        "SVC-01",
+        "SVC-05",
+        "SVC-06",
+        "SVC-07"
+      ],
+      "tags_human": [
+        "HUM-08"
+      ]
+    },
+    "INSIGHT 需求洞察": {
+      "tier_in_layer": "human_only + service",
+      "tags_service": [
+        "SVC-02",
+        "SVC-03"
+      ],
+      "tags_human": [
+        "HUM-01",
+        "HUM-04"
+      ]
+    },
+    "SOLUTION 专业方案": {
+      "tier_in_layer": "pro",
+      "tags_pro": [
+        "PRO-01",
+        "PRO-02",
+        "PRO-03",
+        "PRO-04",
+        "PRO-08",
+        "PRO-09"
+      ],
+      "tags_human": [
+        "HUM-02"
+      ],
+      "tags_service": [
+        "SVC-04",
+        "SVC-11"
+      ]
+    },
+    "NEGOTIATION 带看谈判": {
+      "tier_in_layer": "service + human",
+      "tags_service": [
+        "SVC-08",
+        "SVC-09"
+      ],
+      "tags_human": [
+        "HUM-05",
+        "HUM-06"
+      ]
+    },
+    "FULFILLMENT 交易履约": {
+      "tier_in_layer": "pro",
+      "tags_pro": [
+        "PRO-05",
+        "PRO-06",
+        "PRO-07"
+      ]
+    },
+    "AFTERSALE 售后复购": {
+      "tier_in_layer": "human",
+      "tags_human": [
+        "HUM-07",
+        "HUM-09"
+      ],
+      "tags_service": [
+        "SVC-10"
+      ]
+    },
+    "DIGITAL 数字化协同": {
+      "tier_in_layer": "pro",
+      "tags_pro": [
+        "PRO-04"
+      ],
+      "tags_service": [
+        "SVC-12"
+      ]
+    }
+  },
+  "tagging_rules": {
+    "rule_1": {
+      "name": "CAP-SKILL → dimension_tags 正向打标",
+      "desc": "question_map 每条 skill_standard 编号 → 自动匹配 dimension-tags 里的 tier_in_dim → 归入对应维度的 primary 或 secondary",
+      "example": "CAP-SKILL-006（获客触达）→ tier_in_dim=ACQUISITION → 归入 ACQUISITION 维度 primary 能力"
+    },
+    "rule_2": {
+      "name": "speech_variants → persona 打标",
+      "desc": "speech_variants 里的 customer_type → 自动匹配 sales-sop.json personas（rational/emotional/anxious）",
+      "example": "customer_type='理性客户·看数据看对比' → persona.id=rational → 匹配 TRUST-01 persona_variants.rational"
+    },
+    "rule_3": {
+      "name": "kb_query → 五层知识打标",
+      "desc": "question_map kb_query 关键词 → 匹配本地知识库五层条目（板块/商圈/小区/楼栋/生活）",
+      "example": "kb_query='大西洋新城供暖' → 匹配楼栋层条目 → PRO-04 标签"
+    },
+    "rule_4": {
+      "name": "stage → trust_action 映射",
+      "desc": "prepare/market/invite → TRUST-01 破冰 + TRUST-02 证明；negotiate → TRUST-03 共情；transaction/closing → TRUST-04 引导",
+      "example": "stage=negotiate 默认进入 TRUST-03 共情接住阶段"
+    },
+    "rule_5": {
+      "name": "红线自动拦截",
+      "desc": "所有输出先过 sales-sop.json redlines_global 6 条红线检查，任何一条命中则不输出",
+      "example": "AI 输出'您应该选大西洋新城' → RED-01 命中 → 拦截"
+    }
+  },
+  "coverage_audit": {
+    "total_tags": 30,
+    "human_only": 9,
+    "service": 12,
+    "pro": 9,
+    "cap_skill_coverage": "question_map 39 条 × skill_standard 全部可追溯到 tags 里的 tier_in_dim",
+    "linked_qid_coverage": "tags 里的 linked_qids 覆盖 question_map 39 条，每条至少被一个 tag 引用"
+  }
+}
