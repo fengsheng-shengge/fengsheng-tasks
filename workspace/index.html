@@ -867,70 +867,66 @@
   .gb-next-item:hover { color: #fff; }
   .gb-next-sub { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 3px; }
 
-  /* ===== 🆕 阶段三层拆解（素养×技能×服务 × 数字员工分野） ===== */
+  /* ===== 🆕 经纪人视角 · 测学练考评（简洁版） ===== */
   .layered-section { background: var(--card); border-radius: 16px; border: 1px solid var(--line); margin-bottom: 20px; overflow: hidden; }
-  .layered-header { padding: 14px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: linear-gradient(135deg, #f5f3ec 0%, #faf7f0 100%); transition: background 0.2s; user-select: none; border-bottom: 1px solid var(--line); }
-  .layered-header:hover { background: linear-gradient(135deg, #f0ece0 0%, #faf7f0 100%); }
-  .layered-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--ink); }
-  .layered-title span:first-child { font-size: 16px; }
-  .layered-trust { font-size: 10px; font-weight: 700; background: var(--gold-bg); color: #8a7040; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; }
-  .layered-meta { margin-left: auto; font-size: 11px; color: var(--muted); display: flex; gap: 10px; }
-  .layered-toggle { font-size: 12px; color: var(--muted); transition: transform 0.2s; }
+  .layered-header { padding: 14px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: linear-gradient(135deg, #f0f5f2 0%, #e8f0ea 100%); transition: background 0.2s; user-select: none; border-bottom: 1px solid var(--line); }
+  .layered-header:hover { background: linear-gradient(135deg, #e5ede7 0%, #f0f5f2 100%); }
+  .layered-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 800; color: var(--primary); }
+  .layered-title span:first-child { font-size: 18px; }
+  .layered-trust { font-size: 10px; font-weight: 700; background: var(--gold-bg); color: #8a7040; padding: 3px 10px; border-radius: 12px; letter-spacing: 0.3px; }
+  .layered-toggle { margin-left: auto; font-size: 12px; color: var(--muted); transition: transform 0.2s; }
   .layered-body { padding: 16px 20px; display: grid; gap: 12px; }
   .layered-body.collapsed { display: none; }
 
-  .layer-card { border-radius: 10px; padding: 12px 16px; }
-  .layer-card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed var(--line); }
-  .lc-icon { font-size: 16px; }
-  .lc-title { font-size: 13px; font-weight: 800; color: var(--ink); }
-  .lc-sub { font-size: 10px; color: var(--muted); margin-left: auto; font-weight: 500; }
+  .bp-card { border-radius: 10px; padding: 12px 16px; }
+  .bp-head { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .bp-icon { font-size: 15px; }
+  .bp-title { font-size: 13px; font-weight: 800; color: var(--ink); }
+  .bp-sub { font-size: 10px; color: var(--muted); margin-left: auto; font-weight: 500; }
 
-  /* 素养层 */
-  .layer-su { background: #faf7ff; border: 1px solid #e8e3f8; }
-  .layer-su .lc-title { color: #5b4cdb; }
-  .layer-su .lc-content { display: flex; flex-wrap: wrap; gap: 6px; }
-  .su-tag { background: #ede8ff; border: 1px solid #d6cef5; color: #5b4cdb; padding: 4px 10px; border-radius: 14px; font-size: 11px; font-weight: 600; }
+  /* 🎯 核心动作 */
+  .bp-actions { background: var(--primary); color: #fff; }
+  .bp-actions .bp-head { margin-bottom: 8px; }
+  .bp-actions .bp-title { color: var(--gold); }
+  .bp-actions .bp-icon { color: var(--gold); }
+  .bp-actions-list { padding-left: 20px; margin: 0; }
+  .bp-actions-list li { font-size: 13px; color: rgba(255,255,255,0.92); padding: 4px 0; line-height: 1.65; font-weight: 500; }
+  .bp-actions-list li::marker { color: var(--gold); font-weight: 700; }
 
-  /* 技能层 */
-  .layer-sk { background: var(--primary-bg); border: 1px solid #c5d8ca; }
-  .layer-sk .lc-title { color: var(--primary); }
-  .sk-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #fff; border-radius: 8px; border-left: 3px solid var(--primary); font-size: 12px; margin-bottom: 6px; }
-  .sk-code { font-family: "SF Mono", monospace; color: var(--primary); font-weight: 700; white-space: nowrap; font-size: 11px; min-width: 80px; }
-  .sk-text { color: var(--body); flex: 1; line-height: 1.5; }
-  .sk-tier { font-size: 9px; padding: 2px 7px; border-radius: 4px; font-weight: 700; white-space: nowrap; }
-  .sk-tier.pro { background: var(--primary-bg); color: var(--primary); }
-  .sk-tier.service { background: var(--gold-bg); color: #8a7040; }
-  .sk-tier.human_only { background: #fef0ed; color: #c44a32; }
-  .sk-tier.ai_only { background: #e3f0f7; color: #264653; }
+  /* 💡 为什么 */
+  .bp-why { background: var(--gold-bg); border: 1px solid #e8dcc0; }
+  .bp-why .bp-title { color: #8a7040; }
+  .bp-why .bp-icon { color: #c9a962; }
+  .bp-why-text { font-size: 12.5px; color: #7a6030; line-height: 1.7; font-weight: 500; }
+  .bp-why-text strong { color: #5a4220; }
 
-  /* 服务层 */
-  .layer-se { background: #fff; border: 1px solid var(--line); }
-  .layer-se .lc-title { color: #8a7040; }
-  .se-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .se-col { border-radius: 8px; padding: 12px 14px; font-size: 12px; }
-  .se-col.ai-col { background: #eef4f8; border: 1px solid #c5d8e3; }
-  .se-col.human-col { background: var(--gold-bg); border: 1px solid #e8dcc0; }
-  .se-col h4 { font-size: 11px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
-  .ai-col h4 { color: #264653; }
-  .human-col h4 { color: #8a7040; }
-  .se-col ul { list-style: none; padding: 0; }
-  .se-col li { padding: 3px 0 3px 14px; position: relative; color: var(--body); line-height: 1.6; font-size: 11.5px; }
-  .se-col li::before { content: "·"; position: absolute; left: 0; font-weight: 800; }
-  .ai-col li::before { color: #264653; }
-  .human-col li::before { color: #c9a962; }
+  /* 🤖 练 + 📖 学 并排 */
+  .bp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .bp-practice { background: #eef4f8; border: 1px solid #c5d8e3; }
+  .bp-practice .bp-title { color: #264653; }
+  .bp-practice .bp-icon { color: #264653; }
+  .bp-practice-scene { background: #fff; border: 1px dashed #a8c0d0; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--body); margin-bottom: 10px; line-height: 1.6; font-style: italic; }
+  .bp-learn { background: var(--primary-bg); border: 1px solid #c5d8ca; }
+  .bp-learn .bp-title { color: var(--primary); }
+  .bp-learn .bp-icon { color: var(--primary); }
+  .bp-learn-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+  .bp-learn-item { font-size: 11.5px; color: var(--body); padding: 5px 8px; background: #fff; border-radius: 6px; border-left: 2px solid var(--primary); text-decoration: none; display: block; transition: transform 0.15s; line-height: 1.4; }
+  .bp-learn-item:hover { transform: translateX(2px); color: var(--primary); }
 
-  /* 红线 */
-  .red-flags-box { margin-top: 10px; background: #fef0ed; border: 1px solid #e7c4be; border-radius: 8px; padding: 10px 14px; }
-  .red-flags-box::before { content: "🚫 红线 · AI 绝不做这些"; font-size: 11px; font-weight: 700; color: #c44a32; display: block; margin-bottom: 6px; }
-  .red-flags-box ul { list-style: none; padding: 0; }
-  .red-flags-box li { font-size: 11px; color: #8b3a2b; padding: 2px 0 2px 14px; position: relative; line-height: 1.5; }
-  .red-flags-box li::before { content: "·"; position: absolute; left: 0; color: #c44a32; font-weight: 800; }
+  .bp-cta { display: block; text-align: center; background: #264653; color: #fff; text-decoration: none; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 700; transition: background 0.15s; }
+  .bp-cta:hover { background: #1a343f; }
+  .bp-cta-alt { background: var(--primary); }
+  .bp-cta-alt:hover { background: var(--primary-light); }
 
-  /* Checklist */
-  .layer-ck { background: var(--bg); border: 1px solid var(--line); }
-  .layer-ck .lc-title { color: var(--primary); }
-  .layer-ck .lc-content ol { padding-left: 22px; }
-  .layer-ck .lc-content li { font-size: 12px; color: var(--body); padding: 2px 0; line-height: 1.6; }
+  /* 红线 + 小测 */
+  .bp-footer { background: var(--bg); border: 1px solid var(--line); padding: 10px 16px; }
+  .bp-red { font-size: 11px; color: #c44a32; background: #fef0ed; border-radius: 6px; padding: 6px 10px; margin-bottom: 8px; line-height: 1.6; }
+  .bp-red::before { content: "🚫 红线："; font-weight: 700; }
+  .bp-check { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--body); }
+  .bp-check-icon { font-size: 14px; }
+  .bp-check-text { flex: 1; }
+  .bp-check-link { color: var(--primary); font-weight: 700; text-decoration: none; }
+  .bp-check-link:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -1092,44 +1088,51 @@
       </div>
     </div>
 
-    <!-- ===== 🆕 阶段三层拆解（素养×技能×服务 × 数字员工分野） ===== -->
+    <!-- ===== 🆕 这个阶段我该做什么（经纪人视角 · 测学练考评） ===== -->
     <div class="layered-section" id="layered-section">
       <div class="layered-header" onclick="document.getElementById('layered-body').classList.toggle('collapsed')">
         <div class="layered-title">
           <span id="layered-stage-icon">🏠</span>
           <span id="layered-stage-name">带看议价</span>
-          <span class="layered-trust" id="layered-trust">TRUST-03</span>
+          <span class="layered-trust" id="layered-trust">为什么这么做</span>
         </div>
-        <div class="layered-meta" id="layered-meta"></div>
         <span class="layered-toggle">▼</span>
       </div>
       <div class="layered-body" id="layered-body">
-        <!-- 🧠 素养层 -->
-        <div class="layer-card layer-su">
-          <div class="layer-card-head"><span class="lc-icon">🧠</span><span class="lc-title">素养层 · Mindset</span><span class="lc-sub">经纪人内在心态</span></div>
-          <div class="lc-content" id="lc-su"></div>
+        <!-- 🎯 核心动作 4 步 -->
+        <div class="bp-card bp-actions">
+          <div class="bp-head"><span class="bp-icon">🎯</span><span class="bp-title">你现在按顺序做这 4 件事</span></div>
+          <ol class="bp-actions-list" id="lc-actions"></ol>
         </div>
 
-        <!-- 🛠️ 技能层 (CAP-SKILL) -->
-        <div class="layer-card layer-sk">
-          <div class="layer-card-head"><span class="lc-icon">🛠️</span><span class="lc-title">技能层 · CAP-SKILL</span><span class="lc-sub">可追溯编号 · 本阶段核心</span></div>
-          <div class="lc-content" id="lc-sk"></div>
+        <!-- 💡 为什么这么做 -->
+        <div class="bp-card bp-why">
+          <div class="bp-head"><span class="bp-icon">💡</span><span class="bp-title">为什么这么做</span></div>
+          <div class="bp-why-text" id="lc-why"></div>
         </div>
 
-        <!-- 💬 服务层 (AI vs Human) -->
-        <div class="layer-card layer-se">
-          <div class="layer-card-head"><span class="lc-icon">💬</span><span class="lc-title">服务层 · 数字员工分野</span><span class="lc-sub">谁做什么 · sales-sop 真数据</span></div>
-          <div class="se-split">
-            <div class="se-col ai-col"><h4>🤖 数字员工能做</h4><ul id="lc-se-ai"></ul></div>
-            <div class="se-col human-col"><h4>👤 经纪人必须做</h4><ul id="lc-se-human"></ul></div>
+        <!-- 🤖 练一练 + 📖 学一学（并排） -->
+        <div class="bp-row">
+          <div class="bp-card bp-practice">
+            <div class="bp-head"><span class="bp-icon">🤖</span><span class="bp-title">练一练</span><span class="bp-sub">AI 模拟客户</span></div>
+            <div class="bp-practice-scene" id="lc-practice-scene"></div>
+            <a class="bp-cta" href="/ai-advisor/" target="_blank" id="lc-practice-link">开始练习 →</a>
           </div>
-          <div class="red-flags-box" id="lc-red"></div>
+          <div class="bp-card bp-learn">
+            <div class="bp-head"><span class="bp-icon">📖</span><span class="bp-title">学一学</span><span class="bp-sub">点进知识底座</span></div>
+            <div class="bp-learn-list" id="lc-learn"></div>
+            <a class="bp-cta bp-cta-alt" href="/knowledge/" target="_blank">进入知识底座 →</a>
+          </div>
         </div>
 
-        <!-- ✅ Checklist -->
-        <div class="layer-card layer-ck">
-          <div class="layer-card-head"><span class="lc-icon">✅</span><span class="lc-title">动作 Checklist</span><span class="lc-sub">照这个顺序走</span></div>
-          <div class="lc-content" id="lc-ck"></div>
+        <!-- 🚫 红线 + ✅ 小测提示 -->
+        <div class="bp-card bp-footer">
+          <div class="bp-red" id="lc-red"></div>
+          <div class="bp-check">
+            <span class="bp-check-icon">✅</span>
+            <span class="bp-check-text">这个阶段的小测 5 分钟就能完成，帮你验收学得怎么样</span>
+            <a class="bp-check-link" href="/care-test/">去测 →</a>
+          </div>
         </div>
       </div>
     </div>
@@ -1387,70 +1390,51 @@
     // 每个阶段的素养层 + 服务层（AI vs 真人）+ 红线 + checklist
     // 服务层的 AI 能做 / 真人必须做 / 红线来自 sales-sop.trust_actions 的 AI/HL/MF
     // 素养层 + checklist 是从 v2.1 设计原型 + 样本里抽象出来的
-    function initStageLayerData(){
+        function initStageLayerData(){
+      // 经纪人视角：每个阶段告诉 4 件事
+      // actions: 核心动作 4 步（简洁）
+      // why: 为什么这么做（TRUST 逻辑）
+      // practiceScene: AI 模拟客户的一句话场景
+      // red: 红线（1-2 条关键的）
       stageLayerData = {
         prepare: {
-          su:["耐心——客户算税算贷款容易焦虑，不能急","准确——数字不能错，错一次信任打骨折","分寸——别用专业术语吓客户"],
-          trust:"TRUST-01 · 破冰连接",
-          capRange:"CAP-SKILL-201~207 + 301~309",
-          goal:"帮客户算清贷款/税费/首套二套——硬数字对了客户才能往下走",
-          ai:["自动算贷款额度/月供/税费 3 组方案","调知识库拉学区对口 + 政策来源","生成首套 vs 二套成本对比表","预判客户可能关心的准备项"],
-          human:["解读数字——'这个利率每月多还 X 元'","判断客户焦虑点（怕贷不下来/怕买贵）","区分官方政策和实际操作","共情——客户算房贷压力大时先接住"],
-          red:["AI 绝不替客户做'选首套还是二套'决策","AI 绝不说'这个学区最靠谱'——只给客观对比","AI 绝不输出没来源的政策数字"],
-          ck:["先算贷款 → 再算税费 → 最后对比首付","给完数字问'还有什么担心的'","客户问学区先给对口表 → 再给政策变化"]
+          actions:["先算贷款额度 → 客户才知道能不能买","再算税费明细 → 首付/月供/交易成本全部透明","对比首套 vs 二套 → 客户自己选路径","给完数字问'还有什么担心的' → 挖深层顾虑"],
+          why:"TRUST-01 破冰：准备阶段客户最焦虑的是'我能不能买得起'——硬数字对了，客户才愿意往下走",
+          practiceScene:"客户问：公积金能贷多少？首套和二套差多少？",
+          red:"AI 绝不替客户做'选首套还是二套'的决策"
         },
         market: {
-          su:["真诚——别装什么都懂，'我帮您核实下'比瞎说强","敏锐——30 秒抓客户真实需求点","克制——别上来就推房，先聊人"],
-          trust:"TRUST-01 + TRUST-02",
-          capRange:"CAP-SKILL-001~006 + 301~309",
-          goal:"破冰 30 秒建立'这人懂我'——用知识底座给数据，优点带短板反增信任",
-          ai:["根据客户画像生成 3 种开场话术变体","调知识库拉 5 层本地数据（板块/商圈/小区/楼栋/生活）","按客户勾选自动生成多维对比表","主动呈现短板（噪音/车位/学区风险）"],
-          human:["临场察言观色——判断客户当下心情节奏","数据解读——'这个学区对你家意味着什么'","短板时机选择——什么时候说哪个短板有帮助","现场核实——带看时摸暖气片、量窗距、听噪音"],
-          red:["AI 绝不输出'您看起来像是 XX 类型的人'主观判断","AI 绝不说'这个学区最好'——只给客观对比","AI 绝不承诺政策不会变——只陈述官方来源和时间"],
-          ck:["30 秒破冰 → 不推房先聊人 → 再提'有个小区挺适合您'","数据 + 来源 + 时间三件套，少一件都别讲","主动说一个小短板，客户反而更信你"]
+          actions:["30 秒破冰 → 别上来就推房，先聊人","用知识底座拉数据 → 成交价/学区/配套全部带来源","主动说一个小短板 → 反增信任","给对比表 → 周边 3 个小区同维度对比"],
+          why:"TRUST-01 + TRUST-02 破冰+证明：客户觉得你专业不是因为你懂，是因为你说的话'有根有据'",
+          practiceScene:"客户问：要对比周边小区怎么办？这个学区到底怎么样？",
+          red:"AI 绝不说'这个学区最好'——只给客观对比"
         },
         invite: {
-          su:["耐心——'不愿出来'不是讨厌你，是没建立信任","理解——客户忙/懒/不紧急都是真实的","温和——别逼，用'陪您看看不是让您买'的姿态"],
-          trust:"TRUST-01 + TRUST-03",
-          capRange:"CAP-SKILL-001~006 + 201~207",
-          goal:"让客户愿意出来——接住抗拒点，给选项不给命令",
-          ai:["生成 3 种邀约话术变体（理性/感性/焦虑）","识别抗拒关键词分类（没时间/不信任/真不紧急）","推送情绪提醒卡（'客户有抗拒信号，用共情开场'）","自动发 H5 决策包——让客户在家先看降低门槛"],
-          human:["真实共情——让客户觉得被看见（AI 可以说'我理解'但没真懂）","分寸感——什么时候闭嘴、什么时候转移话题","强留资——真人才能约带看时段、拉信任、承诺等","带看前微信再确认一次，降低爽约率"],
-          red:["AI 绝不替经纪人约带看时段——必须真人发","AI 绝不替经纪人跟业主沟通开门时间","AI 绝不输出共情话术作为'标准答案'让你背"],
-          ck:["先共情抗拒点 → 再给选项（2 选 1）→ 最后说'不是让您买，就是看看'","约完带看 24 小时内发确认微信","带看前准备好 H5 决策包，让客户到家还能看"]
+          actions:["先共情抗拒点 → '您忙我理解'","给选项 → '周二晚 vs 周六下午，哪个方便'","低压力承诺 → '陪您看看不是让您买'","约完 24 小时内微信确认 → 降低爽约率"],
+          why:"TRUST-01 + TRUST-03 破冰+共情：客户'不愿出来'不是讨厌你，是还没建立信任——接住抗拒点比逼他更有效",
+          practiceScene:"客户说：最近太忙了，等有空再说吧",
+          red:"AI 绝不替经纪人约带看时段——必须真人发"
         },
         negotiate: {
-          su:["情绪稳定——客户说'太贵了'不是骂你，是表达压力","分寸——什么时候逼、什么时候松、什么时候给台阶","不推销——先接住再给方案"],
-          trust:"TRUST-03 · 共情接住",
-          capRange:"CAP-SKILL-101~107 + 201~207",
-          goal:"让犹豫的客户下决心——接情绪 → 给数据 → 临门一脚",
-          ai:["识别情绪关键词——'太贵了'=压力、'再看看'=不确定、'跌'=焦虑","推送情绪提醒卡（'客户纠结价格，用共情开场'）","记录客户情绪反应（哪些说法点头、哪些皱眉）","实时算'差 X 万每月多还 Y 元'的数据"],
-          human:["真实共情——'哥我理解，换我也算三遍'","临门一脚——'张哥您今天定我帮您跟业主争取 X'（必须真人）","情绪稳定——面对客户焦虑不能急","判断什么时候该逼、什么时候该放"],
-          red:["AI 绝不替经纪人做谈判决策","AI 绝不输出'您应该今天定'这种结论","AI 绝不做共情——共情必须是真实的，AI 只能提醒你客户有情绪"],
-          ck:["接情绪（先不说方案）→ 给数据（算清差额）→ 给选项 → 临门一脚","逼单之前先搞清楚客户犹豫点是价格/时机/家人/还是没看上","如果真逼不下来，留好印象——下一个可能是他介绍的"]
+          actions:["接情绪 → 客户说'太贵了'先不说价，先说'哥我理解'","给数据 → 算差额：'差X万每月多还Y元'","给选项 → A 方案 vs B 方案（不是非买即走）","临门一脚 → 真人说'今天定我帮您跟业主争取'"],
+          why:"TRUST-03 共情接住：客户犹豫 = 情绪没被接住。先接情绪再给数据，临门一脚必须真人",
+          practiceScene:"客户说：太贵了，回去商量一下。",
+          red:"共情必须真人来——AI 可以提醒你客户有情绪，但不能替你共情"
         },
         transaction: {
-          su:["严谨——合同一字之差可能赔大钱","透明——资金怎么打、给谁、什么时候到，全部讲清楚","不催促——客户要时间看合同就给时间"],
-          trust:"TRUST-03 + TRUST-04",
-          capRange:"CAP-SKILL-301~309 + 501~508",
-          goal:"帮客户走完交易流程——合同条款/资金监管/税费/时间节点全部讲清",
-          ai:["自动算税费明细并生成对比表","生成交易流程图——每个节点谁做什么、耗时多久","调知识库拉合同关键条款解读（带红线标注）","实时更新过户进度提醒"],
-          human:["逐条讲合同——'这条对您是什么意思'","帮客户做最终选择的临门一脚（签还是不签）","跟银行/业主/中介协调时间","资金监管的细节必须真人现场确认"],
-          red:["AI 绝不替客户签合同","AI 绝不替经纪人决定走哪个方案","AI 绝不承诺'这个时间能办完'——必须按实际节奏"],
-          ck:["合同逐条讲 → 重点条款标红 → 让客户问完再签","资金监管必须讲清楚'钱打给谁、什么时候能动'","签约后 24 小时内发 H5 进度表——客户随时查"]
+          actions:["合同逐条讲 → '这条对您是什么意思'","资金监管讲清楚 → '钱打给谁、什么时候能动'","税费明细算清楚 → 一张表客户签字确认","时间节点排好 → 网签/面签/过户的日期全部定死"],
+          why:"TRUST-03 + TRUST-04：签约是客户最紧张的时刻——你越透明，他越敢签",
+          practiceScene:"客户问：资金监管安全吗？我应该先签还是先交钱？",
+          red:"AI 绝不替客户签合同"
         },
         closing: {
-          su:["细致——交房漏了一项后面补救可能花几万","同理心——客户终于要搬新家了，这个时刻他会紧张","靠谱——约定好的时间必须到"],
-          trust:"TRUST-04 · 引导低压力",
-          capRange:"CAP-SKILL-501~508 + 601~602",
-          goal:"帮客户顺利拿到钥匙——交房清单逐项核对，后续服务推荐长期价值",
-          ai:["生成交房 checklist——物业/水电/燃气/户口/维修基金一项项打勾","自动推送时间节点提醒","调知识库拉户口查询渠道和最新政策","推荐入住后服务——整装/托管/资产配置（长期价值）"],
-          human:["交房现场必须到——帮客户验房、核对清单","跟业主协调交房时间和户口迁出承诺","过户后跟银行/房管局保持沟通进度","入住后回访——客户可能介绍下一个客户"],
-          red:["AI 绝不替客户收房签字","AI 绝不替经纪人承诺'户口一定能迁出'——必须看合同约定","AI 绝不替业主做任何承诺"],
-          ck:["交房清单逐项核对 → 水电燃气过户 → 户口迁出跟进 → 入住回访","交房现场拍视频留证——防止后续纠纷","入住后 1 个月回访，推荐后续服务（整装/托管）"]
+          actions:["交房清单逐项核对 → 物业/水电/燃气/户口/维修基金","跟业主确认户口迁出承诺 → 写进合同","过户后保持跟进 → 银行/房管局进度同步","入住后 1 个月回访 → 推后续服务（整装/托管）"],
+          why:"TRUST-04：交房不是终点——回访和长期服务才是转介绍的源头",
+          practiceScene:"客户问：过户后户口怎么迁？物业交接要注意什么？",
+          red:"AI 绝不替经纪人承诺'户口一定能迁出'——必须看合同约定"
         }
       };
-      renderLayeredView(currentStage); // 立即渲染
+      renderLayeredView(currentStage);
     }
 
     // ===== 进阶区卡片点击展开锚点介绍 =====
@@ -1726,66 +1710,46 @@
     }
 
     // ===== 🆕 渲染阶段三层拆解（素养×技能×服务 × 数字员工分野） =====
-    function renderLayeredView(stageKey){
-      if(!stageLayerData) return; // 数据还没加载好，等 initStageLayerData
+        function renderLayeredView(stageKey){
+      if(!stageLayerData) return;
+      var s = stageLayerData[stageKey];
+      if(!s) return;
 
-      var stageInfo = stageLayerData[stageKey];
-      if(!stageInfo) return;
+      var stageMeta = (STAGES.find(function(x){ return x.key === stageKey; }) || {});
+      var stageName = stageMeta.name || stageKey;
 
-      // 找 STAGES 里的 icon 和 name
-      var stageMeta = (STAGES.find(function(s){ return s.key === stageKey; }) || {});
-
-      // 头部
+      // 头部：阶段名 + "为什么这么做" 标签
       document.getElementById("layered-stage-icon").textContent = stageMeta.icon || "📋";
-      document.getElementById("layered-stage-name").textContent = stageMeta.name || stageKey;
-      document.getElementById("layered-trust").textContent = stageInfo.trust || "";
+      document.getElementById("layered-stage-name").textContent = stageName + " · 你该做什么";
+      document.getElementById("layered-trust").textContent = "为什么这么做";
 
-      // meta 区域
-      document.getElementById("layered-meta").innerHTML =
-        '<span>' + stageInfo.goal + '</span>';
+      // 🎯 核心动作 4 步
+      document.getElementById("lc-actions").innerHTML = s.actions.map(function(a){
+        return "<li>" + a + "</li>";
+      }).join("");
 
-      // 🧠 素养层
-      var suHtml = stageInfo.su.map(function(t){
-        return '<span class="su-tag">' + t + '</span>';
-      }).join('');
-      document.getElementById("lc-su").innerHTML = suHtml || '<div style="color:#999;font-size:11px">暂无素养定义</div>';
+      // 💡 为什么这么做
+      document.getElementById("lc-why").textContent = s.why;
 
-      // 🛠️ 技能层（从 question_map 按阶段筛选，最多显示 6 条）
-      var skHtml = '';
+      // 🤖 练一练场景
+      document.getElementById("lc-practice-scene").textContent = s.practiceScene;
+
+      // 📖 学一学：从 question_map 动态筛 3 条
+      var learnHtml = "";
       if(questionMap){
         var stageSkills = questionMap.mapping.filter(function(m){
           return m.stage === stageKey && (currentConsumer === "all" || m.consumer === currentConsumer);
-        }).slice(0, 6);
-        skHtml = stageSkills.map(function(m){
-          var tierClass = (m.tier === "human_only") ? "human_only" :
-                          (m.tier === "ai_only") ? "ai_only" :
-                          (m.tier === "pro") ? "pro" : "service";
-          var tierLabel = (m.tier === "human_only") ? "仅真人" :
-                          (m.tier === "ai_only") ? "仅AI" :
-                          (m.tier === "pro") ? "专业" : "服务";
-          return '<div class="sk-item">' +
-            '<span class="sk-code">' + m.skill_standard + '</span>' +
-            '<span class="sk-text">' + m.title + '</span>' +
-            '<span class="sk-tier ' + tierClass + '">' + tierLabel + '</span>' +
-          '</div>';
-        }).join('');
+        }).slice(0, 3);
+        learnHtml = stageSkills.map(function(m){
+          return '<a class="bp-learn-item" href="/knowledge/#cap-' + m.skill_standard + '">' +
+                 m.skill_standard + ' · ' + m.title + '</a>';
+        }).join("");
       }
-      if(!skHtml) skHtml = '<div style="color:#999;font-size:11px;padding:8px">暂无本阶段技能条目</div>';
-      document.getElementById("lc-sk").innerHTML = skHtml;
-
-      // 💬 服务层 AI vs Human
-      var aiHtml = stageInfo.ai.map(function(x){ return '<li>' + x + '</li>'; }).join('');
-      document.getElementById("lc-se-ai").innerHTML = aiHtml || '<li>暂无定义</li>';
-      var humanHtml = stageInfo.human.map(function(x){ return '<li>' + x + '</li>'; }).join('');
-      document.getElementById("lc-se-human").innerHTML = humanHtml || '<li>暂无定义</li>';
+      if(!learnHtml) learnHtml = '<div style="font-size:11px;color:#999">暂无本阶段知识条目</div>';
+      document.getElementById("lc-learn").innerHTML = learnHtml;
 
       // 🚫 红线
-      var redHtml = stageInfo.red.map(function(x){ return '<li>' + x + '</li>'; }).join('');
-      document.getElementById("lc-red").innerHTML = '<ul>' + redHtml + '</ul>' || '<div style="color:#999;font-size:11px">暂无红线</div>';
-
-      // ✅ Checklist
-      var ckHtml = stageInfo.ck.map(function(x){ return '<li>' + x + '</li>'; }).join('');
-      document.getElementById("lc-ck").innerHTML = '<ol>' + ckHtml + '</ol>' || '<div style="color:#999;font-size:11px">暂无 checklist</div>';
+      document.getElementById("lc-red").textContent = s.red;
     }
 
     // ===== 渲染阶段浏览面板 =====
