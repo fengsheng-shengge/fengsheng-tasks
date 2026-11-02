@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>风声 · 六维带看报告生成器</title>
-<meta property="og:title" content="六维带看报告 · 风声">
+<title>风声信息咨询 · 六维带看报告生成器</title>
+<meta property="og:title" content="六维带看报告 · 风声信息咨询">
 <meta property="og:description" content="2分钟生成专业带看报告，用六维标准评估房源品质，让客户看到专业价值。">
 <meta property="og:image" content="https://fengsheng.tech/og-image.png">
 <meta property="og:url" content="https://fengsheng.tech/s1-report/">
@@ -13,7 +13,7 @@
 
 <!-- 微信分享优化 -->
 <meta name="description" content="让每一次带看都变成专业信任的交付物。六维标准说话，告别'这房子不错'的空话">
-<meta itemprop="name" content="风声·六维带看报告生成器">
+<meta itemprop="name" content="风声信息咨询·六维带看报告生成器">
 <meta itemprop="description" content="专业房产顾问的带看报告工具，六维品质分析，一份报告=一次信任建立">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -534,7 +534,7 @@ textarea{resize:vertical;min-height:64px}
   <div class="report-header">
     <div class="rh-decoration">🏠</div>
     <div class="rh-inner">
-      <div class="rh-label">风声 · 购房决策建议书</div>
+      <div class="rh-label">风声信息咨询 · 购房决策建议书</div>
       <div class="rh-client" id="rhClient"></div>
       <div class="rh-property" id="rhProp"></div>
       <div class="rh-meta"><span id="rhBroker">风声认证经纪人</span> · <span id="rhDate"></span></div>
@@ -2179,7 +2179,7 @@ function shareReport(){
   trackEvent(TRACK_EVENTS.share_click);
   const text=`🏠 ${state.clientName}的六维品质报告\n📍 ${state.propCommunity}\n⭐ 综合评分：${state.finalScore}分\n\n由「风声」六维带看报告生成器制作`;
   if(navigator.share){
-    navigator.share({title:'风声 · 六维品质报告',text,body:text}).catch(()=>fallbackCopy(text));
+    navigator.share({title:'风声信息咨询 · 六维品质报告',text,body:text}).catch(()=>fallbackCopy(text));
   }else{fallbackCopy(text);}
 }
 function fallbackCopy(text){
@@ -2314,7 +2314,7 @@ document.querySelector('.daily-box')?.addEventListener('click',(e)=>{
 
     <footer style="text-align:center;padding:24px 0 16px;font-size:12px;color:#999;border-top:1px solid #eee;margin-top:40px;">
       <p style="margin:4px 0;">本报告由 AI 辅助生成，仅供参考，不构成专业评估建议。</p>
-      <p style="margin:4px 0;">© 2026 风声 · <a href="/" style="color:#666;">风声首页</a> · <a href="/privacy/" style="color:#666;">隐私政策</a> · <a href="/terms/" style="color:#666;">用户协议</a></p>
+      <p style="margin:4px 0;">© 2026 风声信息咨询 · <a href="/" style="color:#666;">风声首页</a> · <a href="/privacy/" style="color:#666;">隐私政策</a> · <a href="/terms/" style="color:#666;">用户协议</a></p>
 </footer>
 <!-- fs-module-guide -->
 <style>

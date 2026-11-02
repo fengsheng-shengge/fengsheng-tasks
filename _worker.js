@@ -1606,7 +1606,7 @@ async function handleInternalGate(request, env) {
 }
 
 async function handlePartnerIntent(request, env) {
-  if (request.method === 'GET') return jsonResponse({ ok: true, title: '风声·合作意向', fields: ['name', 'phone', 'company', 'intent', 'message'] });
+  if (request.method === 'GET') return jsonResponse({ ok: true, title: '风声信息咨询·合作意向', fields: ['name', 'phone', 'company', 'intent', 'message'] });
   if (request.method !== 'POST') return jsonResponse({ ok: false, error: 'method not allowed' }, 405);
   const data = await parseBodyJson(request);
   if (!data) return jsonResponse({ ok: false, error: 'invalid body' }, 400);
@@ -1632,7 +1632,7 @@ async function handlePartnerIntent(request, env) {
 }
 
 async function handleIpDesign(request, env) {
-  if (request.method === 'GET') return jsonResponse({ ok: true, title: '风声·IP 角色设计', supported_styles: SUPPORTED_STYLES });
+  if (request.method === 'GET') return jsonResponse({ ok: true, title: '风声信息咨询·IP 角色设计', supported_styles: SUPPORTED_STYLES });
   if (request.method !== 'POST') return jsonResponse({ ok: false, error: 'method not allowed' }, 405);
   const data = await parseBodyJson(request);
   if (!data) return jsonResponse({ ok: false, error: 'invalid body' }, 400);
