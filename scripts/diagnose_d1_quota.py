@@ -9,12 +9,20 @@ D1 免费额度真凶诊断 —— 定位 500 万 rows read/天 到底被谁打�
 （CI / deploy / 巡检都不碰 D1，daily-health-check 引用的 scripts/daily_check.py
 在仓库里根本不存在），必须用 Cloudflare 官方 analytics 拿实证。
 
-做法：GraphQL Analytics API → d1AnalyticsAdaptiveGroups，
-     按查询维度拆 sum.rowsRead，直接看哪条 SQL 读得最多。
+Cloudflare GraphQL schema（2026-11-05 __type 内省实测）：
+  AccountD1AnalyticsAdaptiveGroups
+      dimensions: databaseId, databaseRole, date, datetime, datetimeHour,
+                  datetimeMinute, servedByInstance, servedByRegion
+      sum:       rowsRead, rowsWritten, readQueries, writeQueries
+      → 无 SQL 文本，但能按分钟拆出「每分钟读了多少行」
 
-设计要点：不猜 GraphQL schema。
-  Cloudflare 各版本维度名不同（queryText / query / sqlText …），
-  这里先用 __type 内省一路走下来，拿到真实字段名再拼查询。
+  AccountD1QueriesAdaptiveGroups
+      dimensions: query, datetime, date, error, databaseId, databaseRole, …
+      sum:       rowsRead, rowsReturned, rowsWritten, queryDurationMs
+      avg:       rowsRead, rowsReturned, rowsWritten, queryDurationMs
+      → 有 SQL 文本（query 维度），avg.rowsRead = 单条查询平均读多少行
+
+本脚本两个数据集都查：Queries 给「哪条 SQL」，Analytics 给「什么时候」。
 
 用法（需环境变量）：
   CLOUDFLARE_API_TOKEN   必填
@@ -49,12 +57,26 @@ def gql(query, variables, token):
         return {'__err__': str(e)}
 
 
-def fields_of(type_name, token):
-    """内省某个 GraphQL 类型的字段名列表。"""
-    s = gql('{ __type(name: "%s") { fields { name } } }' % type_name, {}, token)
-    if s.get('data') and s['data'].get('__type'):
-        return [f['name'] for f in s['data']['__type']['fields'] or []]
-    return []
+def fetch(dataset, dims, sum_fields, avg_fields, order_by, variables, token):
+    """通用取数：viewer.accounts(filter:{accountTag}){ dataset(filter:{}){...} }"""
+    sel_sum = ' '.join(sum_fields)
+    sel_avg = ' '.join(avg_fields) if avg_fields else ''
+    avg_part = ('avg { %s } ' % sel_avg) if sel_avg else ''
+    q = ('query($tag: String!, $since: TimeStamp!, $top: Int!) { viewer { '
+         'accounts(filter: {accountTag: $tag}) { %s('
+         'limit: $top, %sfilter: { datetime_geq: $since }) { '
+         'dimensions { %s } sum { %s } %s } } } }'
+         ) % (dataset, order_by, dims, sel_sum, avg_part)
+    out = gql(q, variables, token)
+    if out.get('errors'):
+        # 去掉 orderBy 再试
+        q2 = q.replace(order_by, '')
+        out = gql(q2, variables, token)
+        if out.get('errors'):
+            return None, out['errors']
+    groups = ((((out.get('data') or {}).get('viewer') or {}).get('accounts') or [{}])[0]
+              .get(dataset)) or []
+    return groups, None
 
 
 def main():
@@ -70,118 +92,107 @@ def main():
              - datetime.timedelta(hours=hours)).strftime('%Y-%m-%dT%H:%M:%SZ')
     print('=== D1 额度诊断 · 回溯 %d 小时 ===' % hours)
     print('起点(UTC): %s' % since)
-    print('')
 
     probe = gql('{ viewer { __typename } }', {}, token)
     if probe.get('errors') or probe.get('__http__') or probe.get('__err__'):
         print('GraphQL 不可用: %s' % json.dumps(probe, ensure_ascii=False)[:400])
         return 1
     print('GraphQL 连通（token 有 analytics 读权限）')
-
-    # ── 步骤 1：内省出 d1AnalyticsAdaptiveGroups 的维度字段名 ──
     print('')
-    print('-- 内省 schema --')
-    group_type = None
-    for tn in ('D1AdaptiveGroups', 'D1AnalyticsAdaptiveGroups', 'AdaptiveGroups'):
-        fl = fields_of(tn, token)
-        if fl:
-            print('   类型 %s 字段: %s' % (tn, ', '.join(fl)))
-            if group_type is None:
-                group_type = tn
-    if group_type is None:
-        tl = gql('{ __schema { types { name } } }', {}, token)
-        names = []
-        if tl.get('data'):
-            names = [t['name'] for t in (tl['data'].get('__schema') or {}).get('types') or []
-                     if 'd1' in (t['name'] or '').lower()]
-        print('   含 D1 的类型: %s' % (', '.join(names[:40]) if names else '（无）'))
-        for tn in names:
-            fl = fields_of(tn, token)
-            if fl:
-                print('   %s: %s' % (tn, ', '.join(fl)))
-                if group_type is None:
-                    group_type = tn
-    if group_type is None:
-        print('   拿不到维度字段，退出')
-        return 1
-
-    # dimensions 字段的类型名 → 该类型的字段就是真正的维度名
-    dim_type = None
-    s = gql('{ __type(name: "%s") { fields { name type { name kind ofType { name kind ofType { name } } } } } }'
-            % group_type, {}, token)
-    if s.get('data') and s['data'].get('__type'):
-        for f in s['data']['__type']['fields'] or []:
-            if f['name'] == 'dimensions':
-                t = f.get('type') or {}
-                nm = t.get('name') or ((t.get('ofType') or {}).get('name')) or \
-                     (((t.get('ofType') or {}).get('ofType') or {}).get('name'))
-                dim_type = nm
-                print('   dimensions 字段类型: %s' % nm)
-                break
-    dim_names = fields_of(dim_type, token) if dim_type else []
-    print('   实际维度名: %s' % (', '.join(dim_names) if dim_names else '（无）'))
-
-    text_dim = None
-    for cand in ('queryText', 'query', 'sqlText', 'sql', 'statement', 'queryHash', 'queryId'):
-        if cand in dim_names:
-            text_dim = cand
-            break
-    time_dim = None
-    for cand in ('datetime', 'date', 'minute', 'hour', 'day'):
-        if cand in dim_names:
-            time_dim = cand
-            break
-    print('   选用维度: 文本=%s  时间=%s' % (text_dim, time_dim))
-
-    dims = ' '.join([d for d in (time_dim, text_dim) if d])
-    if not dims:
-        print('   无可用维度，退出')
-        return 1
-    tfilter = (time_dim or 'datetime') + '_geq'
-
-    # ── 步骤 2：取分组数据 ──
-    def build(extra):
-        return ('query($tag: String!, $since: TimeStamp!, $top: Int!) { viewer { '
-                'accounts(filter: {accountTag: $tag}) { d1AnalyticsAdaptiveGroups('
-                'limit: $top, %sfilter: { %s: $since }) { dimensions { %s } '
-                'sum { rowsRead rowsWritten } } } } }') % (extra, tfilter, dims)
 
     variables = {'tag': account, 'since': since, 'top': top}
-    out = gql(build('orderBy: [sum_rowsRead_DESC], '), variables, token)
-    if out.get('errors'):
-        print('   带 orderBy 查询失败，去掉后重试')
-        out = gql(build(''), variables, token)
-        if out.get('errors'):
-            print('   查询失败: %s' % json.dumps(out['errors'], ensure_ascii=False)[:600])
-            return 1
 
-    groups = ((((out.get('data') or {}).get('viewer') or {}).get('accounts') or [{}])[0]
-              .get('d1AnalyticsAdaptiveGroups')) or []
-    if not groups:
-        print('该时段无 D1 查询记录（API 可能有延迟）')
-        return 0
+    # ── ① 按 SQL 文本排行（Queries 数据集）──
+    print('=' * 108)
+    print('【一】按 SQL 排行（哪些语句读得最多）')
+    print('=' * 108)
+    groups, err = fetch(
+        'd1QueriesAdaptiveGroups',
+        'query datetime error',
+        ['rowsRead', 'rowsReturned', 'rowsWritten'],
+        ['rowsRead', 'rowsReturned'],
+        'orderBy: [sum_rowsRead_DESC], ',
+        variables, token)
+    if err:
+        print('  查询失败: %s' % json.dumps(err, ensure_ascii=False)[:500])
+        groups = []
+    if groups:
+        # 同一 SQL 可能有多条记录（按 datetime 拆）→ 按 SQL 文本聚合
+        agg = {}
+        for g in groups:
+            d = g.get('dimensions') or {}
+            s = g.get('sum') or {}
+            a = g.get('avg') or {}
+            key = ' '.join(str(d.get('query') or '').split())
+            e = agg.setdefault(key, {'rowsRead': 0, 'rowsReturned': 0, 'rowsWritten': 0,
+                                     'avgRowsRead': 0.0, 'n': 0, 'errs': set(),
+                                     'first': d.get('datetime'), 'last': d.get('datetime')})
+            e['rowsRead'] += s.get('rowsRead') or 0
+            e['rowsReturned'] += s.get('rowsReturned') or 0
+            e['rowsWritten'] += s.get('rowsWritten') or 0
+            e['avgRowsRead'] += a.get('rowsRead') or 0
+            e['n'] += 1
+            if d.get('error'):
+                e['errs'].add(str(d['error']))
+            for k in ('first', 'last'):
+                if d.get('datetime'):
+                    if not e[k] or d['datetime'] < e[k]:
+                        e[k] = d['datetime']
+                    if not e[k] or d['datetime'] > e[k]:
+                        e[k] = d['datetime']
+        rows = sorted(agg.items(), key=lambda kv: -kv[1]['rowsRead'])
+        total = sum(v['rowsRead'] for _, v in rows)
+        print('合计 rowsRead = %s   （免费额度 5,000,000/天）' % format(total, ','))
+        print('')
+        for i, (sql, v) in enumerate(rows[:top], 1):
+            qt = sql if len(sql) <= 300 else sql[:300] + '...'
+            print('%2d. rowsRead=%10s  rowsReturned=%8s  rowsWritten=%8s  单条均读=%9s  命中段数=%d'
+                  % (i, format(v['rowsRead'], ','), format(v['rowsReturned'], ','),
+                     format(v['rowsWritten'], ','),
+                     format(int(v['avgRowsRead'] / max(v['n'], 1)), ','), v['n']))
+            print('    窗口: %s ~ %s' % (v['first'], v['last']))
+            if v['errs']:
+                print('    错误: %s' % ' | '.join(list(v['errs'])[:2])[:200])
+            print('    SQL: %s' % qt)
+            print('')
+    else:
+        print('  （无数据）')
 
-    total = sum((g.get('sum') or {}).get('rowsRead') or 0 for g in groups)
+    # ── ② 时间分布（Analytics 数据集，按分钟）──
+    print('=' * 108)
+    print('【二】时间分布（哪些时段在烧额度）')
+    print('=' * 108)
+    groups, err = fetch(
+        'd1AnalyticsAdaptiveGroups',
+        'datetime',
+        ['rowsRead', 'rowsWritten', 'readQueries', 'writeQueries'],
+        [],
+        'orderBy: [sum_rowsRead_DESC], ',
+        variables, token)
+    if err:
+        print('  查询失败: %s' % json.dumps(err, ensure_ascii=False)[:500])
+    elif not groups:
+        print('  （该时段无记录）')
+    else:
+        rows = sorted(groups, key=lambda g: (g.get('dimensions') or {}).get('datetime') or '')
+        total = sum((g.get('sum') or {}).get('rowsRead') or 0 for g in rows)
+        rq = sum((g.get('sum') or {}).get('readQueries') or 0 for g in rows)
+        print('合计 rowsRead = %s   readQueries = %s' % (format(total, ','), format(rq, ',')))
+        print('')
+        print('%-22s %12s %12s %10s' % ('datetime(UTC)', 'rowsRead', 'rowsWritten', 'readQ'))
+        print('-' * 60)
+        for g in rows[-40:]:
+            d = g.get('dimensions') or {}
+            s = g.get('sum') or {}
+            print('%-22s %12s %12s %10s' % (
+                d.get('datetime'), format(s.get('rowsRead') or 0, ','),
+                format(s.get('rowsWritten') or 0, ','),
+                format(s.get('readQueries') or 0, ',')))
+        print('-' * 60)
+        print('※ 只显示最后 40 个采样点；单点峰值可从上面【一】的窗口推断。')
+
     print('')
-    print('OK: %d 组聚合, 合计 rowsRead = %s  (免费额度 5,000,000/天)'
-          % (len(groups), format(total, ',')))
-    print('')
-    print('=' * 104)
-    for i, g in enumerate(groups, 1):
-        d = g.get('dimensions') or {}
-        s = g.get('sum') or {}
-        qt = ' '.join(str(d.get(text_dim) or '').split()) if text_dim else ''
-        if len(qt) > 150:
-            qt = qt[:150] + '...'
-        print('%3d. rowsRead=%10s  rowsWritten=%8s  %s'
-              % (i, format(s.get('rowsRead') or 0, ','),
-                 format(s.get('rowsWritten') or 0, ','),
-                 d.get(time_dim) if time_dim else ''))
-        if qt:
-            print('     %s' % qt)
-    print('=' * 104)
-    print('')
-    print('※ 免费额度 5,000,000 rows/day；本窗口内合计 %s 行。' % format(total, ','))
+    print('※ 免费额度 5,000,000 rows/day。')
     return 0
 
 
