@@ -61,3 +61,36 @@ jobs:
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database" \
             -o /tmp/dblist.json
           python3 scripts/format_d1_list.py /tmp/dblist.json
+
+      - name: 取证 · events 索引清单与规模（RAISE 诊断件）
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set +e
+          npm i -g wrangler >/dev/null 2>&1
+          echo "=== 取证 · events 索引与规模 ==="
+          echo "（本步骤预期报错：RAISE 把取证文本写进错误信息，这是刻意设计）"
+          echo ""
+          wrangler d1 execute fengsheng-events --remote \
+            --file migrations/009_probe_events_query_plan.sql 2>&1 | tail -20
+
+      - name: 取证 · 热点查询执行计划（额度恢复后可用）
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set +e
+          echo ""
+          echo "=== 热点查询执行计划（EXPLAIN QUERY PLAN）==="
+          echo "说明：--command 走 query API，额度锁死时会被预检拦住；恢复后才出结果。"
+          echo ""
+          wrangler d1 execute fengsheng-events --remote --command \
+            "EXPLAIN QUERY PLAN SELECT id, uid, event_type, product, page FROM events WHERE page = 'home' ORDER BY created_at ASC LIMIT 100;" 2>&1 | tail -20
+          echo ""
+          echo "--- 对照：无索引时的计划（应走 SCAN events USING INDEX idx_events_created_at）---"
+          wrangler d1 execute fengsheng-events --remote --command \
+            "EXPLAIN QUERY PLAN SELECT page, COUNT(*) as cnt FROM events WHERE page != '' GROUP BY page ORDER BY cnt DESC LIMIT 50;" 2>&1 | tail -20
+          exit 0
