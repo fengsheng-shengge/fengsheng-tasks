@@ -87,19 +87,26 @@ footer{text-align:center;margin-top:2rem;padding:1rem 0;color:var(--muted);font-
 </div>
 
 <script>
+// 2026-11-05：轮询频率 5min → 30min
+// 原因：/api/stats/daily 每次都扫 events 表（1.5 万行），
+//      5 分钟一次 = 单日 ~430 万行读取，D1 免费额度（500 万/天）被打穿，
+//      17:40 起所有统计接口报 rows read 超限，看板读数全变 0。
+//      服务端已加 5 分钟共享缓存，这里再降频做双保险。
+const _setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = (v ?? '--'); };
 async function loadData(){
   try{
-    const r=await fetch('/api/stats/daily');const d=await r.json();
-    document.getElementById('totalUV').textContent=d.total_uv||'--';
-    document.getElementById('totalPV').textContent=d.total_pv||'--';
-    document.getElementById('dayUV').textContent=d.today_uv||'--';
-    document.getElementById('dayPV').textContent=d.today_pv||'--';
-    document.getElementById('dayClick').textContent=d.today_click||'--';
-    document.getElementById('feedback').textContent=d.feedback_count||'--';
+    const r=await fetch('/api/stats/daily?days=7');const d=await r.json();
+    const days = d.daily || []; const today = days[days.length-1] || {};
+    _setText('totalUV', d.total_uv);
+    _setText('totalPV', d.total_pv);
+    _setText('dayUV', today.unique_uids);
+    _setText('dayPV', today.pageviews);
+    _setText('dayClick', today.clicks);
+    _setText('feedback', d.feedback_count);
   }catch(e){console.warn('[管理看板] 数据加载失败:', e.message)}
-  document.getElementById('refreshTime').textContent='更新时间: '+new Date().toLocaleString('zh-CN');
+  _setText('refreshTime','更新时间: '+new Date().toLocaleString('zh-CN'));
 }
-loadData();setInterval(loadData,300000);
+loadData();setInterval(loadData,1800000);
 </script>
 <script src="/tracker.js" async></script>
 </body>

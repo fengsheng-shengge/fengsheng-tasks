@@ -1337,6 +1337,66 @@ async function handleD1Diag(request, env) {
   return jsonResponse(out);
 }
 
+// ============================================================
+//  统计接口缓存层（2026-11-05）
+//  事故：/api/stats/summary 等接口每次都全表扫 events（1.5 万行），
+//        而 management 页每 5 分钟轮询一次 /api/stats/daily，
+//        叠加日常访问 → 单日 rows read 直接打穿 D1 免费额度上限（500 万/天），
+//        17:40 起所有统计接口开始报 "exceeded D1's free tier daily row read limit"，
+//        看板读数全变 0，且因为异常被吞成 "no database configured"，排查一度无从下手。
+//  对策：① 统计类 GET 接口加 5 分钟共享缓存（caches.default，跨 isolate 命中）
+//        ② isolate 内再存一份 memo，命中则完全不碰 D1
+//        ③ 失败响应（含 error 字段）不进缓存，避免把错误缓存住
+// ============================================================
+const STATS_CACHE_TTL = 300; // 秒
+const _statsMemo = new Map(); // key → { at, body }
+
+function statsCacheKey(url) {
+  return url.origin + url.pathname + '?' + url.search;
+}
+
+async function handleStatsCached(request, env, ctx, handler) {
+  const url = new URL(request.url);
+  const key = statsCacheKey(url);
+
+  // ① isolate 内 memo
+  const memo = _statsMemo.get(key);
+  if (memo && Date.now() - memo.at < STATS_CACHE_TTL * 1000) {
+    const r = new Response(memo.body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', 'X-Stats-Cache': 'MEMO' } });
+    return r;
+  }
+
+  // ② Cloudflare 共享缓存
+  let cache = null;
+  try { cache = caches.default; } catch (e) { cache = null; }
+  if (cache) {
+    try {
+      const hit = await cache.match(new Request(url.toString(), { method: 'GET' }));
+      if (hit) {
+        const body = await hit.text();
+        _statsMemo.set(key, { at: Date.now(), body });
+        return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', 'X-Stats-Cache': 'HIT' } });
+      }
+    } catch (e) { /* 缓存不可用则直连 D1 */ }
+  }
+
+  const res = await handler(request, env);
+  const text = await res.clone().text();
+  const isError = /"error"\s*:/.test(text) || /no database configured/.test(text);
+  if (!isError) {
+    _statsMemo.set(key, { at: Date.now(), body: text });
+    if (cache) {
+      try {
+        const put = new Response(text, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', 'Cache-Control': `public, max-age=${STATS_CACHE_TTL}` } });
+        ctx.waitUntil(cache.put(new Request(url.toString(), { method: 'GET' }), put));
+      } catch (e) { /* ignore */ }
+    }
+  }
+  const out = new Response(text, { status: res.status, headers: res.headers });
+  out.headers.set('X-Stats-Cache', isError ? 'BYPASS' : 'MISS');
+  return out;
+}
+
 async function handleStats(request, env) {
   const now = new Date().toISOString().split('T')[0];
   if (env.DB) {
@@ -3730,14 +3790,14 @@ export default {
       return handleEvent(request, env);
     }
 
-    // Stats
-    if (path === '/api/stats') return handleStats(request, env);
-    if (path === '/api/stats/summary') return handleStatsSummary(request, env);
-    if (path === '/api/stats/daily') return handleStatsDaily(request, env);
-    if (path === '/api/stats/health') return handleStatsHealth(request, env);
-    if (path === '/api/stats/pages') return handleStatsPages(request, env);
-    if (path === '/api/stats/events') return handleStatsEvents(request, env);
-    if (path === '/api/mp-stats') return handleMpStats(request, env);
+    // Stats（统计类接口走缓存层，避免高频轮询把 D1 免费额度打穿）
+    if (path === '/api/stats') return handleStatsCached(request, env, ctx, handleStats);
+    if (path === '/api/stats/summary') return handleStatsCached(request, env, ctx, handleStatsSummary);
+    if (path === '/api/stats/daily') return handleStatsCached(request, env, ctx, handleStatsDaily);
+    if (path === '/api/stats/health') return handleStatsCached(request, env, ctx, handleStatsHealth);
+    if (path === '/api/stats/pages') return handleStatsCached(request, env, ctx, handleStatsPages);
+    if (path === '/api/stats/events') return handleStatsCached(request, env, ctx, handleStatsEvents);
+    if (path === '/api/mp-stats') return handleStatsCached(request, env, ctx, handleMpStats);
 
     // 临时：D1 诊断（一次性令牌，诊断完成后移除）
     if (path === '/api/admin/d1-diag') return handleD1Diag(request, env);
