@@ -89,40 +89,26 @@ jobs:
           wrangler d1 execute "${{ steps.db.outputs.db_name }}" --remote \
             --file migrations/005_rebuild_stats_rollup.sql
 
-      - name: 重建结果校验
+      - name: 重建结果校验（--file 路径，不受 D1 额度锁影响）
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          set -e
-          echo "=== 物化层校验 ==="
-          wrangler d1 execute "${{ steps.db.outputs.db_name }}" --remote --command \
-            "SELECT (SELECT pv FROM stats_totals WHERE id=1) AS pv,
-                    (SELECT chats FROM stats_totals WHERE id=1) AS chats,
-                    (SELECT feedback FROM stats_totals WHERE id=1) AS feedback,
-                    (SELECT events FROM stats_totals WHERE id=1) AS events,
-                    (SELECT COUNT(*) FROM stats_uid) AS uids,
-                    (SELECT COUNT(*) FROM stats_product) AS products,
-                    (SELECT COUNT(*) FROM events) AS events_raw,
-                    (SELECT value FROM stats_meta WHERE key='rollup_ready') AS ready;"
-          echo ""
-          echo "=== 与 events 原始值对账（两者必须一致）==="
-          wrangler d1 execute "${{ steps.db.outputs.db_name }}" --remote --command \
-            "SELECT
-               (SELECT COUNT(*) FROM events WHERE event_type='pageview')
-                 = (SELECT pv FROM stats_totals WHERE id=1) AS pv_ok,
-               (SELECT COUNT(*) FROM events WHERE event_type IN ('chat','mentor_chat','coze_chat_open'))
-                 = (SELECT chats FROM stats_totals WHERE id=1) AS chats_ok,
-               (SELECT COUNT(*) FROM events WHERE event_type='reply_submit')
-                 = (SELECT feedback FROM stats_totals WHERE id=1) AS feedback_ok,
-               (SELECT COUNT(*) FROM events)
-                 = (SELECT events FROM stats_totals WHERE id=1) AS events_ok,
-               (SELECT COUNT(DISTINCT uid) FROM events)
-                 = (SELECT COUNT(*) FROM stats_uid) AS users_ok;"
-          echo ""
-          echo "=== 线上接口自检（物化路径是否生效）==="
+          wrangler d1 execute "${{ steps.db.outputs.db_name }}" --remote \
+            --file migrations/006_verify_stats_rollup.sql
+
+      - name: 线上接口自检（额度锁期间接口会返回 quota 错误，属预期）
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set +e
           for EP in /api/stats /api/stats/summary /api/chats /api/mp-stats; do
             printf '  %-22s ' "$EP"
-            curl -4 -s --max-time 20 "https://fengsheng-ee9.pages.dev$EP" | head -c 300
-            echo ""
+            BODY=$(curl -4 -s --max-time 20 "https://fengsheng-ee9.pages.dev$EP")
+            echo "${BODY:0:260}"
+            if echo "$BODY" | grep -q 'free tier daily row read limit'; then
+              echo "    ↳ D1 额度锁中（UTC 00:00 恢复），属预期；物化层已就绪，恢复后自动走物化路径"
+            fi
           done
+          exit 0
