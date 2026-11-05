@@ -114,21 +114,37 @@ def main():
         print('  → 将添加 Pages 自定义域名 %s' % PROD_DOMAIN)
 
     # ── ④ DNS 主机记录 ──
-    want_cname = not any(r.get('type') == 'CNAME' and r.get('name') == PROD_DOMAIN
-                          for r in existing)
-    if want_cname:
-        rec = {'type': 'CNAME', 'name': PROD_DOMAIN, 'content': PAGES_HOST,
-               'ttl': 1, 'proxied': True, 'comment': 'Pages custom domain (auto-added by fix_prod_domain.py)'}
-        print('  → 将新增 DNS: CNAME %s → %s (proxied)' % (PROD_DOMAIN, PAGES_HOST))
-        if apply:
+    # 优先 CNAME（Pages 自定义域名官方要求）；失败则回退 A 记录（官方回退 IP）。
+    have_cname = any(r.get('type') == 'CNAME' and r.get('name') == PROD_DOMAIN for r in existing)
+    have_a = any(r.get('type') == 'A' and r.get('name') == PROD_DOMAIN for r in existing)
+    if have_cname or have_a:
+        print('  ✓ DNS 主机记录已存在，跳过')
+    else:
+        candidates = [
+            ('CNAME', {'type': 'CNAME', 'name': PROD_DOMAIN, 'content': PAGES_HOST,
+                       'ttl': 1, 'proxied': True,
+                       'comment': 'Pages custom domain (fix_prod_domain.py)'}),
+            ('A', {'type': 'A', 'name': PROD_DOMAIN, 'content': PAGES_FALLBACK_IPS[0],
+                   'ttl': 1, 'proxied': True,
+                   'comment': 'Pages custom domain fallback IP (fix_prod_domain.py)'}),
+        ]
+        for label, rec in candidates:
+            print('  → 尝试新增 DNS: %s %s → %s (proxied)' % (label, PROD_DOMAIN, rec['content']))
+            if not apply:
+                continue
             d = api('/zones/%s/dns_records' % zid, token, method='POST', body=rec)
             if d.get('success'):
-                print('  ✓ DNS 记录已创建')
-            else:
-                print('  ✗ DNS 创建失败: %s' % json.dumps(d.get('errors'), ensure_ascii=False)[:300])
-                print('    备用方案：加 A 记录 → %s' % ', '.join(PAGES_FALLBACK_IPS))
-    else:
-        print('  ✓ CNAME 已存在，跳过')
+                print('  ✓ DNS 记录已创建（%s）' % label)
+                break
+            err = json.dumps(d.get('errors'), ensure_ascii=False)[:200]
+            print('  ✗ %s 失败: %s' % (label, err))
+            if 'Authentication' in err or '10000' in err:
+                print('    → token 无 DNS 写权限，改用 Cloudflare Dashboard 手动加：')
+                print('       Zone %s → DNS → Add record' % PROD_DOMAIN)
+                print('       类型 %s，名称 %s，指向 %s' % (label, PROD_DOMAIN, rec['content']))
+                break
+        if apply and not (have_cname or have_a):
+            pass
 
     if not apply:
         print('')
