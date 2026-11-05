@@ -158,12 +158,15 @@ def main():
             if not funcs:
                 print('   %s: 无 Functions' % pname)
                 continue
-            print('   %s: %d 个 Function' % (pname, len(funcs)))
+            print('   %s: %d 个 Function → %s' % (pname, len(funcs), funcs))
             for fn in funcs:
                 fname = fn.get('name') if isinstance(fn, dict) else str(fn)
+                if not fname:
+                    continue
                 blob = api('/accounts/%s/pages/projects/%s/functions/%s/content'
                            % (account, pname, fname), token, raw=True)
                 if not blob:
+                    print('      %s: 内容下载失败/为空' % fname)
                     continue
                 try:
                     ftext = blob.decode('utf-8', 'replace')
@@ -175,8 +178,11 @@ def main():
                 fhits = [(lb, len(list(re.finditer(pt, ftext, re.I | re.S))))
                          for lb, pt in PATTERNS]
                 fhits = [(lb, n) for lb, n in fhits if n]
+                mark = '★' if fhits else ' '
+                print('     %s %-28s %8d 字节 %s' % (
+                    mark, fname, len(ftext),
+                    (', '.join('%s×%d' % (l, n) for l, n in fhits)) if fhits else ''))
                 if fhits:
-                    print('      ★ %s → %s' % (fname, ', '.join('%s×%d' % (l, n) for l, n in fhits)))
                     hit_map.setdefault('%s/functions/%s' % (pname, fname), []).extend(
                         [l for l, _ in fhits])
                     for m in re.finditer(r'[^`\'"]{0,200}FROM\s+events[^`\'"]{0,300}', ftext, re.I):
