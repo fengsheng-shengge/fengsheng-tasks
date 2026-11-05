@@ -2370,10 +2370,10 @@
   })();
 
   // ===== 🆕 引导逻辑：无测评记录时把 0% 改成引导文案 =====
-  (function(){
+  // setTimeout 延迟确保在所有异步数据加载（question_map fetch 等）完成后执行
+  setTimeout(function(){
     var hasAssessment = false;
     try {
-      // 检测任何含 assessment / care_test / ability 的 localStorage key
       for(var j=0; j<localStorage.length; j++){
         var k = localStorage.key(j) || '';
         if(k.indexOf('assessment') >= 0 || k.indexOf('care_test') >= 0 || k.indexOf('ability') >= 0 || k.indexOf('fs_dim_scores') >= 0){
@@ -2398,7 +2398,7 @@
       var nextSub = document.getElementById('gb-next-sub');
       if(nextSub) nextSub.textContent = '测完自动生成能力画像 → 切到对应阶段练';
     }
-  })();
+  }, 800);
   </script>
 
   <div class="footer-note">
