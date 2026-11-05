@@ -1380,6 +1380,18 @@ async function handleEventsAudit(request, env) {
       });
     }
 
+    // delid：按 id 精确删除（用于清理自检时打的验证事件）
+    if (action === 'delid') {
+      const ids = (url.searchParams.get('id') || '').split(',').map((x) => parseInt(x, 10)).filter((x) => Number.isInteger(x) && x > 0);
+      if (!ids.length) return jsonResponse({ error: 'no ids' }, 400);
+      let deleted = 0;
+      for (const id of ids) {
+        const res = await env.DB.prepare('DELETE FROM events WHERE id = ?').bind(id).run();
+        deleted += res?.meta?.changes ?? 0;
+      }
+      return jsonResponse({ action: 'delid', ids, deleted_rows: deleted, timestamp: new Date().toISOString() });
+    }
+
     // purge：按 deepscan 命中的 id 全量删除（覆盖 uid/event_type/data 等
     // product/page 白名单抓不到的列）
     if (action === 'purge') {
