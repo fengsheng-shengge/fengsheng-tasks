@@ -1377,15 +1377,18 @@ async function handleEventsAudit(request, env) {
     if (action === 'deepscan') {
       const FIELDS = ['uid', 'event_type', 'url', 'page', 'product', 'title', 'referrer', 'source', 'data', 'ua', 'screen', 'vp', 'locale'];
       const SIGS = ['union', 'jndi', '@type', 'cmd_inject', '<script', 'javascript:', 'sleep(', 'benchmark(', 'or 1=1', "' --", '${', 'constructor(', '__proto__', 'alert(', 'select 1', 'drop table', 'insert into', '/bin/sh'];
-      const where = [];
-      const params = [];
-      for (const f of FIELDS) {
-        for (const s of SIGS) { where.push(`${f} LIKE ?`); params.push(`%${s}%`); }
+      // D1/SQLite 表达式树深度上限 100 —— 一个签名一条查询（每条 14 个 OR），逐个合并
+      const COLS = 'id, uid, event_type, url, page, product, title, referrer, source, data, ua, ts, created_at';
+      const rowMap = new Map();
+      for (const s of SIGS) {
+        const where = FIELDS.map((f) => `${f} LIKE ?`).join(' OR ');
+        const params = FIELDS.map(() => `%${s}%`);
+        const hits = await env.DB.prepare(
+          `SELECT ${COLS} FROM events WHERE ${where} ORDER BY id ASC LIMIT 1000`
+        ).bind(...params).all();
+        for (const r of hits?.results || []) if (!rowMap.has(r.id)) rowMap.set(r.id, r);
       }
-      const hits = await env.DB.prepare(
-        `SELECT id, uid, event_type, url, page, product, title, referrer, source, data, ua, ts, created_at FROM events WHERE ${where.join(' OR ')} ORDER BY id ASC LIMIT 1000`
-      ).bind(...params).all();
-      const rows = hits?.results || [];
+      const rows = [...rowMap.values()];
       const tagged = rows.map((r) => {
         const matched = [];
         for (const f of FIELDS) {
