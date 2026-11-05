@@ -191,7 +191,31 @@ def main():
         print('-' * 60)
         print('※ 只显示最后 40 个采样点；单点峰值可从上面【一】的窗口推断。')
 
-    print('')
+    # ── ③ 来源归属：databaseRole / databaseId / servedByRegion ──
+    # 真凶定位到具体 SQL 后，还要确认它来自哪个绑定（Pages Worker / 独立 Worker / CLI），
+    # 否则改了本仓库也没用。
+    print('=' * 108)
+    print('【三】来源归属（databaseRole / databaseId / region）')
+    print('=' * 108)
+    for ds, label in (('d1QueriesAdaptiveGroups', 'Queries'),
+                      ('d1AnalyticsAdaptiveGroups', 'Analytics')):
+        groups, err = fetch(ds, 'databaseRole databaseId servedByRegion',
+                            ['rowsRead', 'readQueries'], [], '', variables, token)
+        if err or not groups:
+            print('  %s: %s' % (label, '查询失败' if err else '无数据'))
+            continue
+        rows = sorted(groups, key=lambda g: -(g.get('sum') or {}).get('rowsRead') or 0)
+        total = sum((g.get('sum') or {}).get('rowsRead') or 0 for g in rows)
+        print('  %s 合计 rowsRead = %s' % (label, format(total, ',')))
+        for g in rows[:8]:
+            d = g.get('dimensions') or {}
+            s = g.get('sum') or {}
+            print('    role=%-22s dbId=%-38s region=%-14s rowsRead=%10s readQ=%6s' % (
+                str(d.get('databaseRole')), str(d.get('databaseId')),
+                str(d.get('servedByRegion')),
+                format(s.get('rowsRead') or 0, ','), format(s.get('readQueries') or 0, ',')))
+        print('')
+
     print('※ 免费额度 5,000,000 rows/day。')
     return 0
 
