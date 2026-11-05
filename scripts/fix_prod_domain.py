@@ -33,12 +33,15 @@ import urllib.request
 import urllib.error
 
 API = 'https://api.cloudflare.com/client/v4'
-PROD_DOMAIN = 'fengsheng.tech'
+PROD_DOMAIN = os.environ.get('PROD_DOMAIN', 'fengsheng.tech')
 PAGES_PROJECT = 'fengsheng'
 PAGES_HOST = 'fengsheng-ee9.pages.dev'
 
 # Pages 自定义域名的回退 IP（官方给 CNAME 失败时的 A 记录用）
 PAGES_FALLBACK_IPS = ['172.66.44.177', '172.66.47.79']
+
+# fengsheng.tech 的 zone id（只用于提示文案，脚本实际按域名查 zone）
+ZONE_ID_HINT = '11d52deaf9a0b2ae04dbf0a349553d72'
 
 
 def api(path, token, method='GET', body=None):
@@ -58,11 +61,20 @@ def api(path, token, method='GET', body=None):
 
 
 def find_zone(token, account):
-    """按名字找 Zone。优先用账户下 zones 列表（token 权限通常够）。"""
+    """按名字找 Zone。支持传子域名（www.fengsheng.tech → zone fengsheng.tech）。"""
+    # 1) 直接按名字找
     d = api('/zones?name=%s&account.id=%s' % (PROD_DOMAIN, account), token)
     if d.get('success') and d.get('result'):
         return d['result'][0]
-    # 回退：全量列出再按 name 匹配
+    # 2) 逐级去掉最左标签，找父级 zone
+    labels = PROD_DOMAIN.split('.')
+    for i in range(1, len(labels) - 1):
+        parent = '.'.join(labels[i:])
+        d = api('/zones?name=%s&account.id=%s' % (parent, account), token)
+        if d.get('success') and d.get('result'):
+            print('  （目标 %s 属于 zone %s）' % (PROD_DOMAIN, parent))
+            return d['result'][0]
+    # 3) 全量列出再按 name 匹配
     d = api('/zones?per_page=50', token)
     if d.get('success'):
         for z in d.get('result') or []:
@@ -139,9 +151,18 @@ def main():
             err = json.dumps(d.get('errors'), ensure_ascii=False)[:200]
             print('  ✗ %s 失败: %s' % (label, err))
             if 'Authentication' in err or '10000' in err:
-                print('    → token 无 DNS 写权限，改用 Cloudflare Dashboard 手动加：')
-                print('       Zone %s → DNS → Add record' % PROD_DOMAIN)
-                print('       类型 %s，名称 %s，指向 %s' % (label, PROD_DOMAIN, rec['content']))
+                print('    → token 无 DNS 写权限。两条路，二选一：')
+                print('')
+                print('    路线 A（最快，30 秒）：Cloudflare Dashboard 手动加一条记录')
+                print('       Zone %s → DNS → Records → Add record' % PROD_DOMAIN)
+                print('       类型：CNAME    名称：%s    指向：%s' % (PROD_DOMAIN, rec['content']))
+                print('       Proxy status：Proxied（橙云）    TTL：Auto')
+                print('')
+                print('    路线 B（可自动化）：建一个带 Zone:DNS:Edit 的 token，')
+                print('       存成仓库 secret CLOUDFLARE_DNS_TOKEN，')
+                print('       再跑本 workflow（apply=true）→ 脚本会自动用它写记录。')
+                print('       token 权限建议只给：Zone:DNS:Edit + Zone:Read，')
+                print('       资源限定 zone fengsheng.tech（zone_id=%s）' % ZONE_ID_HINT)
                 break
         if apply and not (have_cname or have_a):
             pass

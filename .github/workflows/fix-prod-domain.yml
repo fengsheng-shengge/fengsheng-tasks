@@ -4,13 +4,26 @@ name: 🌐 修复生产域名绑定与 DNS
 # 【背景】
 # 2026-11-05 实测（Cloudflare API，非推测）：
 #   · fengsheng.tech 的 A / AAAA / CNAME 主机记录全缺（NS/SOA/MX/TXT 正常）
-#   · Pages 项目 fengsheng 的 domains 只有 ['fengsheng-ee9.pages.dev']
-#     → 连自定义域名都没绑，所以 DNS 里也就没有对应主机记录
+#   · Pages 项目 fengsheng 的 domains 现在**已含** fengsheng.tech，状态 = pending
+#     （绑定这一步已完成，见 audit-cloudflare-token.yml run 42023695860）
 #   · 影响：生产域名上所有接口不可达；小程序真机埋点、小程序「服务器域名」
 #     配置全部卡在这里。这是 P0。
 #
+# 【凭据：两个 token 的差别很重要】
+#   CLOUDFLARE_API_TOKEN（现役）能力实测：
+#     Zone Read ✅ / Pages Edit ✅ / Workers Scripts Edit ✅ / Workers Routes Edit ✅
+#     **Zone DNS Edit ❌（4 种写法全 403）** / API Tokens Read·Write ❌
+#     → 它能建 Pages 自定义域名，但**建不了 DNS 记录**，且无法自签新 token
+#   CLOUDFLARE_DNS_TOKEN（可选，需人工补）：只要带 Zone:DNS:Edit + Zone:Read 即可
+#     权限范围建议限定 zone fengsheng.tech（zone_id=11d52deaf9a0b2ae04dbf0a349553d72）
+#
+# 【所以人工动作只剩一条，二选一】
+#   A. 在 Cloudflare Dashboard 手加一条 DNS 记录（30 秒，最省事）
+#   B. 建一个带 Zone:DNS:Edit 的 token，存成 secret CLOUDFLARE_DNS_TOKEN，
+#      然后跑本 workflow（apply=true）—— 全自动
+#
 # 【本 workflow 做两件事】
-#   1. 给 Pages 项目 fengsheng 添加自定义域名 fengsheng.tech
+#   1. 给 Pages 项目 fengsheng 添加自定义域名 fengsheng.tech（幂等，已存在则跳过）
 #   2. 在该 Zone 补 DNS：CNAME fengsheng.tech → fengsheng-ee9.pages.dev
 #
 # 【安全】
@@ -27,6 +40,14 @@ on:
         type: boolean
         required: false
         default: false
+      hostname:
+        description: '目标域名'
+        type: choice
+        options:
+          - 'fengsheng.tech'
+          - 'www.fengsheng.tech'
+        required: false
+        default: 'fengsheng.tech'
 
 permissions:
   contents: read
@@ -41,8 +62,10 @@ jobs:
 
       - name: 修复生产域名
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # 优先用专有的 DNS 写权限 token；没有就退回现役 token（大概率 403）
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_DNS_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PROD_DOMAIN: ${{ inputs.hostname }}
           APPLY: ${{ inputs.apply }}
         run: |
           set -e
