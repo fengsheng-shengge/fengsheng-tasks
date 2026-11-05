@@ -1,0 +1,156 @@
+name: 🔧 修代理 Worker 的 workers.dev 启用状态
+
+# ============================================================================
+# 【背景】
+# 2026-11-05：代理 Worker 上传成功，但通过 workers.dev 访问返回 HTTP 404 / error 1042。
+# 原因：`PUT /accounts/{acct}/workers/scripts/{name}` 上传时，metadata 没带
+#       `"workers_dev": true` → 脚本存在但**没有 workers.dev 入口**。
+#       （账户里已有的 small-sky-e81chwj-proxy 就是带 workers.dev 的，参照它。）
+#
+# 【本 workflow】
+#   1. 读两个脚本的 settings，对比 workers_dev 标记
+#   2. 给 fengsheng-proxy 补上 workers.dev：
+#        a) PUT /accounts/{acct}/workers/scripts/{name}/subdomain  {"enabled":true}
+#        b) 重传脚本，metadata 带 "workers_dev": true（幂等，两种都做）
+#   3. 再测 workers.dev 入口与内容一致性
+#
+# 【只读 + 一处写】只改 fengsheng-proxy 这一个脚本的启用标记。
+# ============================================================================
+on:
+  workflow_dispatch:
+    inputs:
+      hostname:
+        description: '生产域名'
+        required: false
+        default: 'fengsheng.tech'
+
+permissions:
+  contents: read
+
+jobs:
+  fix:
+    name: 启用并复测
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 修 workers.dev 启用状态
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          HOSTNAME: ${{ inputs.hostname }}
+          SCRIPT: fengsheng-proxy
+        run: |
+          set +e
+          CF=https://api.cloudflare.com/client/v4
+          ACC=$CLOUDFLARE_ACCOUNT_ID
+          SCRIPT=fengsheng-proxy
+
+          echo "════════ 1. 现状对比 ════════"
+          for s in "$SCRIPT" "small-sky-e81chwj-proxy" "fengsheng-tech"; do
+            echo "── $s ──"
+            curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              "$CF/accounts/$ACC/workers/scripts/$s/settings" | python3 -c "
+          import sys,json
+          try:
+              d=json.load(sys.stdin)
+          except Exception as e:
+              print('   解析失败', e); raise SystemExit
+          if not d.get('success'):
+              print('   ', json.dumps(d.get('errors'),ensure_ascii=False)); raise SystemExit
+          r=d.get('result') or {}
+          print('   workers_dev=%s  bindings=%s  tail_consumers=%s' % (
+              r.get('workers_dev'), [b.get('name') for b in (r.get('bindings') or [])], r.get('tail_consumers')))
+          "
+            curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              "$CF/accounts/$ACC/workers/scripts/$s/subdomain" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin); r=d.get('result') or {}
+          print('   subdomain=%s enabled=%s' % (r.get('subdomain') or r.get('hostname'), r.get('enabled')))
+          " 2>/dev/null
+          done
+
+          echo ""
+          echo "════════ 2. 补 workers.dev 启用（方式 a：subdomain 端点）════════"
+          curl -s --max-time 30 -o /tmp/sub.json -w "   HTTP %{http_code}\n" \
+            -X PUT "$CF/accounts/$ACC/workers/scripts/$SCRIPT/subdomain" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
+            -d '{"enabled":true,"previews_enabled":true}'
+          python3 -c "
+          import json
+          d=json.load(open('/tmp/sub.json'))
+          r=d.get('result') or {}
+          print('   ', '✅ enabled=%s hostname=%s' % (r.get('enabled'), r.get('subdomain') or r.get('hostname')) if d.get('success') else '❌ '+json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+
+          echo ""
+          echo "════════ 3. 重传脚本（metadata 带 workers_dev=true）════════"
+          mkdir -p /tmp/proxy
+          cat > /tmp/proxy/proxy.js <<'EOF'
+          const ORIGIN = 'https://fengsheng-ee9.pages.dev';
+
+          export default {
+            async fetch(request, env, ctx) {
+              const url = new URL(request.url);
+              const target = new URL(url.pathname + url.search, ORIGIN);
+              const headers = new Headers(request.headers);
+              headers.delete('cf-connecting-ip');
+              headers.set('x-forwarded-host', url.host);
+              headers.set('x-forwarded-proto', url.protocol.replace(':', ''));
+
+              const init = { method: request.method, headers, redirect: 'manual' };
+              if (!['GET', 'HEAD'].includes(request.method)) {
+                init.body = request.body;
+              }
+
+              let res;
+              try {
+                res = await fetch(target, init);
+              } catch (e) {
+                return new Response(JSON.stringify({
+                  error: 'proxy_fetch_failed',
+                  detail: String(e && e.message || e),
+                  origin: ORIGIN,
+                }), { status: 502, headers: { 'Content-Type': 'application/json;charset=UTF-8' } });
+              }
+              const out = new Headers(res.headers);
+              out.set('x-proxied-by', 'fengsheng-proxy');
+              return new Response(res.body, { status: res.status, statusText: res.statusText, headers: out });
+            },
+          };
+          EOF
+          curl -s --max-time 40 -o /tmp/up.json -w "   HTTP %{http_code}\n" \
+            -X PUT "$CF/accounts/$ACC/workers/scripts/$SCRIPT" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -F 'metadata={"main_module":"proxy.js","compatibility_date":"2024-01-01","workers_dev":true};type=application/json' \
+            -F 'proxy.js=@/tmp/proxy/proxy.js;type=application/javascript+module'
+          python3 -c "
+          import json
+          d=json.load(open('/tmp/up.json'))
+          print('   ', '✅ 上传成功' if d.get('success') else '❌ '+json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+
+          echo ""
+          echo "════════ 4. 复测 ════════"
+          SUB=$(curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/accounts/$ACC/workers/subdomain" | python3 -c "import sys,json;print((json.load(sys.stdin).get('result') or {}).get('subdomain',''))")
+          PROXY_URL="https://$SCRIPT.$SUB.workers.dev"
+          echo "   代理入口 = $PROXY_URL"
+          for ep in "/" "/api/health" "/api/stats/pages?days=7"; do
+            CODE=$(curl -4 -s -o /tmp/px.txt -w "%{http_code}" --max-time 30 "$PROXY_URL$ep")
+            echo "   代理 $ep → HTTP ${CODE:-无} | $(head -c 150 /tmp/px.txt | tr -d '\n')"
+          done
+          echo ""
+          echo "   ── 与 Pages 兜底域名内容比对 ──"
+          for ep in "/" "/api/health" "/api/stats/summary"; do
+            A=$(curl -4 -s --max-time 30 "$PROXY_URL$ep" | shasum -a 256 | cut -c1-16)
+            B=$(curl -4 -s --max-time 30 "https://fengsheng-ee9.pages.dev$ep" | shasum -a 256 | cut -c1-16)
+            [ "$A" = "$B" ] && echo "   ✅ $ep 内容一致 (sha=$A)" || echo "   ⚠️  $ep 不一致 proxy=$A pages=$B"
+          done
+          echo ""
+          echo "   ── 生产域名现状 ──"
+          CODE=$(curl -4 -s -o /dev/null -w "%{http_code}" --max-time 25 "https://$HOSTNAME/api/health")
+          echo "   https://$HOSTNAME/api/health → HTTP ${CODE:-无}（DNS 未补，预期 000）"
+          exit 0
