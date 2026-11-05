@@ -4,6 +4,9 @@
 // - h5 链接：降级方案，浏览器打开网页版
 // - 小程序码：通过服务端 /api/wxacode 接口生成真·小程序码
 
+// 后端地址取当前生效的那个（主域不可用时会自动降级到 Pages 兜底域）
+import { getActiveBase } from '../api/endpoint.js'
+
 export const APP_SHARE_TITLE = '风声 · 帮服务者用独立价值获得尊重'
 const MP_APPID = 'wxd4ccbb319a00bb89'
 
@@ -25,7 +28,7 @@ export function buildShareLink(path) {
   return location.origin + '/#/' + p
   // #endif
   // #ifndef H5
-  return 'https://fengsheng.tech/#/' + p
+  return getActiveBase() + '/#/' + p
   // #endif
 }
 
@@ -35,7 +38,7 @@ export function buildShareLink(path) {
 // width: 可选，像素宽，默认430，范围280-1280
 // hyaline: 可选，透明背景，默认false
 export function buildWxQrCodeUrl({ scene = 'index', page = '', width = 430, hyaline = false } = {}) {
-  const base = 'https://fengsheng.tech/api/wxacode'
+  const base = getActiveBase() + '/api/wxacode'
   const params = new URLSearchParams({ scene, width: String(width) })
   if (page) params.set('page', page)
   if (hyaline) params.set('hyaline', 'true')

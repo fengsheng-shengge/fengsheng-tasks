@@ -152,9 +152,19 @@ jobs:
             node --check tracker.js && echo "  ✓ tracker.js 语法正确" || echo "  ✗ tracker.js 有语法错误"
           fi
 
+  mp-failover:
+    name: 小程序后端地址 failover 单测
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run failover unit test
+        run: |
+          echo "=== 检查 11: 小程序后端地址 failover ==="
+          node fs-mini-program/tests/failover.test.mjs
+
   ci-result:
     name: CI Summary
-    needs: [lint, html-valid, js-lint]
+    needs: [lint, html-valid, js-lint, mp-failover]
     runs-on: ubuntu-latest
     if: always()
     steps:

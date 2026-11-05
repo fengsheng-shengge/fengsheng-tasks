@@ -2,8 +2,7 @@
 // 铁律：依据真不幻觉 —— 仅对真实 legalRef 挂依据徽标；缺失条目诚实标注；绝不编造。
 // V3.1：支持动态 API 数据（generateCurationAsync），静态数据作为降级兜底
 import ENTRIES from './data/entries_slim.js'
-
-const API_BASE = 'https://fengsheng.tech'
+import { getActiveBase } from '../api/endpoint.js'
 
 // ===== 双纵轴节点（购5 / 租4）与检索关键词 =====
 export const AXIS_GROUPS = [
@@ -89,6 +88,9 @@ async function fetchCurationEntries() {
   ]
 
   const grouped = { decoder: [], see: [], nego: [] }
+
+  // 后端地址取当前生效的那个（主域不可用时会自动降级到 Pages 兜底域）
+  const API_BASE = getActiveBase()
 
   for (const { domain } of domainRequests) {
     const resp = await new Promise((resolve, reject) => {
