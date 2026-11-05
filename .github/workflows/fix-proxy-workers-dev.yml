@@ -73,20 +73,22 @@ jobs:
           done
 
           echo ""
-          echo "════════ 2. 补 workers.dev 启用（方式 a：subdomain 端点）════════"
+          echo "════════ 2. 补 workers.dev 启用（方式 a：subdomain 端点，方法必须是 POST）════════"
           curl -s --max-time 30 -o /tmp/sub.json -w "   HTTP %{http_code}\n" \
-            -X PUT "$CF/accounts/$ACC/workers/scripts/$SCRIPT/subdomain" \
+            -X POST "$CF/accounts/$ACC/workers/scripts/$SCRIPT/subdomain" \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
             -d '{"enabled":true,"previews_enabled":true}'
           python3 -c "
           import json
           d=json.load(open('/tmp/sub.json'))
           r=d.get('result') or {}
-          print('   ', '✅ enabled=%s hostname=%s' % (r.get('enabled'), r.get('subdomain') or r.get('hostname')) if d.get('success') else '❌ '+json.dumps(d.get('errors'),ensure_ascii=False))
+          print('   ', '✅ enabled=%s previews=%s' % (r.get('enabled'), r.get('previews_enabled')) if d.get('success') else '❌ '+json.dumps(d.get('errors'),ensure_ascii=False))
           "
 
           echo ""
-          echo "════════ 3. 重传脚本（metadata 带 workers_dev=true）════════"
+          echo "════════ 3. 重传脚本（开 global_fetch_strictly_public 兼容标志）════════"
+          echo "   说明：error 1042 = 「Worker 试图 fetch 同 zone 的另一个 Worker」。"
+          echo "        代理要 fetch fengsheng-ee9.pages.dev（同账户 Pages），必须开这个标志才能走公网回环。"
           mkdir -p /tmp/proxy
           cat > /tmp/proxy/proxy.js <<'EOF'
           const ORIGIN = 'https://fengsheng-ee9.pages.dev';
@@ -124,7 +126,7 @@ jobs:
           curl -s --max-time 40 -o /tmp/up.json -w "   HTTP %{http_code}\n" \
             -X PUT "$CF/accounts/$ACC/workers/scripts/$SCRIPT" \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            -F 'metadata={"main_module":"proxy.js","compatibility_date":"2024-01-01","workers_dev":true};type=application/json' \
+            -F 'metadata={"main_module":"proxy.js","compatibility_date":"2024-09-23","compatibility_flags":["global_fetch_strictly_public"],"workers_dev":true};type=application/json' \
             -F 'proxy.js=@/tmp/proxy/proxy.js;type=application/javascript+module'
           python3 -c "
           import json
