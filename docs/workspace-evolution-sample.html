@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>风声信息咨询 · 经纪人工作台 · 6服务阶段 × 素养×技能×服务三层 × 数字员工分野</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --brand:#1a3d24;--brand-mid:#2d5a3d;--brand-light:#40916c;
+  --gold:#c9a962;--gold-bg:#faf5ea;
+  --red:#c44a32;--red-bg:#fef3f0;
+  --gray-900:#1a1a1a;--gray-700:#4a4f48;--gray-500:#7a8078;--gray-200:#e8e4da;--gray-100:#f7f5f0;
+  --bg:#f7f5f0;--surface:#fff;
+  --radius:12px;--shadow:0 2px 12px rgba(0,0,0,.06)
+}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--gray-900);min-height:100vh}
+
+/* ====== HERO ====== */
+.hero{background:linear-gradient(135deg,var(--brand),var(--brand-mid));padding:40px 24px 28px;color:#fff;text-align:center}
+.hero h1{font-size:22px;font-weight:800;letter-spacing:.5px}
+.hero p{opacity:.85;margin-top:8px;font-size:13px;max-width:540px;margin-left:auto;margin-right:auto;line-height:1.6}
+.hero .badge{display:inline-block;background:var(--gold);color:var(--brand);padding:3px 12px;border-radius:12px;font-size:11px;font-weight:700;margin-top:12px}
+
+/* ====== 阶段 Tab ====== */
+.stage-bar{display:flex;justify-content:center;gap:0;padding:14px;background:#fff;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:50;flex-wrap:wrap}
+.stage-bar button{border:1px solid var(--gray-200);background:#fff;padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;transition:.15s;color:var(--gray-700);font-weight:500;margin:2px}
+.stage-bar button:hover{border-color:var(--brand);color:var(--brand)}
+.stage-bar button.active{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:700}
+.stage-bar button .s-num{font-size:10px;opacity:.7;margin-right:3px}
+
+/* ====== STAGE CONTAINER ====== */
+.stage{display:none;animation:fade .35s ease}.stage.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ====== 阶段头部 ====== */
+.stage-header{max-width:900px;margin:20px auto 0;background:#fff;border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);border-left:4px solid var(--brand)}
+.stage-header .sh-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.stage-header .sh-title{font-size:18px;font-weight:800;color:var(--brand)}
+.stage-header .sh-sub{font-size:12px;color:var(--gray-500);margin-top:4px}
+.stage-header .sh-goal{font-size:13px;color:var(--gray-900);margin-top:12px;line-height:1.6}
+.stage-header .trust-tag{display:inline-block;background:var(--gold-bg);color:#8b6514;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-top:10px}
+.stage-header .cap-range{font-size:11px;color:var(--gray-500);margin-top:4px}
+
+/* ====== 三层 Main Grid ====== */
+.main{max-width:900px;margin:14px auto;display:grid;gap:12px}
+.layer{background:#fff;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:3px solid var(--gray-200)}
+.layer.su{border-top-color:#6c5ce7}
+.layer.sk{border-top-color:var(--brand)}
+.layer.se{border-top-color:var(--gold)}
+
+.layer-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.layer-head .lh-icon{font-size:18px}
+.layer-head .lh-title{font-size:14px;font-weight:800;color:var(--gray-900)}
+.layer-head .lh-sub{font-size:11px;color:var(--gray-500);margin-left:auto}
+.layer.su .lh-title{color:#5b4cdb}
+.layer.sk .lh-title{color:var(--brand)}
+.layer.se .lh-title{color:#8b6514}
+
+/* ====== 素养层 items ====== */
+.su-items{display:flex;flex-wrap:wrap;gap:6px}
+.su-tag{background:#f0edff;border:1px solid #e4dfff;color:#5b4cdb;padding:4px 10px;border-radius:14px;font-size:11px;font-weight:600}
+
+/* ====== 技能层 (CAP-SKILL) ====== */
+.sk-list{display:flex;flex-direction:column;gap:6px}
+.sk-item{display:flex;gap:10px;padding:8px 12px;background:#f6f8f5;border-radius:8px;border-left:3px solid var(--brand-mid);font-size:12px}
+.sk-code{font-family:monospace;color:var(--brand);font-weight:700;white-space:nowrap;min-width:70px}
+.sk-text{color:var(--gray-700);flex:1;line-height:1.5}
+.sk-tier{font-size:9px;padding:1px 6px;border-radius:4px;font-weight:700;white-space:nowrap;height:fit-content;margin-top:2px}
+.sk-tier.pro{background:#e8f0ee;color:var(--brand)}
+.sk-tier.service{background:#faf5ea;color:#8b6514}
+.sk-tier.human_only{background:#fef3f0;color:var(--red)}
+.sk-tier.ai_only{background:#e8f0f5;color:#264653}
+
+/* ====== 服务层 (AI vs Human) ====== */
+.se-split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.se-col{border-radius:8px;padding:12px;font-size:12px}
+.se-col.ai{background:#e8f0f5;border:1px solid #b8d4e3}
+.se-col.human{background:#fef5ea;border:1px solid #e8dcc0}
+.se-col h4{font-size:12px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.se-col.ai h4{color:#264653}
+.se-col.human h4{color:#8b6514}
+.se-col ul{list-style:none}
+.se-col li{padding:3px 0 3px 14px;position:relative;color:var(--gray-700);line-height:1.55}
+.se-col li::before{content:"·";position:absolute;left:0;font-weight:800}
+.se-col.ai li::before{color:#264653}
+.se-col.human li::before{color:#c9a962}
+
+/* ====== 红色警戒线 ====== */
+.red-flags{background:var(--red-bg);border:1px solid #e7c4be;border-radius:8px;padding:10px 14px;margin-top:10px}
+.red-flags h4{font-size:11px;color:var(--red);font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.red-flags ul{list-style:none}
+.red-flags li{font-size:11px;color:#8b3a2b;padding:2px 0 2px 14px;position:relative}
+.red-flags li::before{content:"🚫";position:absolute;left:0;font-size:10px}
+
+/* ====== 经纪人 checklist ====== */
+.checklist{background:var(--gray-100);border-radius:8px;padding:10px 14px;margin-top:10px}
+.checklist h4{font-size:11px;color:var(--gray-500);font-weight:700;margin-bottom:6px}
+.checklist ol{padding-left:18px}
+.checklist li{font-size:12px;color:var(--gray-700);padding:2px 0;line-height:1.6}
+
+/* ====== 总结栏 ====== */
+.summary-bar{max-width:900px;margin:14px auto;background:linear-gradient(135deg,var(--gold-bg),#fff);border-radius:var(--radius);padding:14px 20px;border:1px solid #e8dcc0}
+.summary-bar .sg-title{font-size:13px;font-weight:700;color:#8b6514}
+.summary-bar .sg-text{font-size:12px;color:var(--gray-700);margin-top:4px;line-height:1.6}
+.summary-bar .sg-stats{display:flex;gap:18px;margin-top:8px}
+.summary-bar .sg-stat{font-size:11px;color:var(--gray-500)}
+.summary-bar .sg-stat b{color:var(--brand);font-size:16px;font-weight:800;margin-right:2px}
+
+/* ====== 底部 ====== */
+.footer{text-align:center;padding:24px;color:var(--gray-500);font-size:11px}
+.footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <h1>经纪人工作台 · 6 服务阶段 × 素养×技能×服务 三层拆解</h1>
+  <p>每个消费者服务阶段，数字员工能帮什么、经纪人必须做什么、红线不能碰什么——全部可追溯到 CAP-SKILL 编号</p>
+  <span class="badge">基于真数据 · question_map 39条 + sales-sop 4个信任动作</span>
+</div>
+
+<!-- ===== 阶段 Tab ===== -->
+<div class="stage-bar" id="stageBar"></div>
+
+<script>
+// ================ 真数据驱动 ================
+const STAGES = [
+  {
+    id:'prepare', num:'①', name:'签前准备',
+    goal:'帮客户在决策前做好所有准备工作——贷款能力、税费成本、首套二套认定，这些硬数字算清楚，客户才能往下走',
+    trust:'TRUST-01 · 破冰连接',
+    capRange:'CAP-SKILL-201~207（需求洞察） + 301~309（专业方案）',
+    // 素养层
+    su:['耐心——客户算税算贷款容易焦虑，不能急','准确——数字不能错，错一次信任打骨折','分寸——客户可能刚接触房产，别用专业术语吓他'],
+    // 技能层（来自 question_map 真数据）
+    sk:[
+      {code:'CAP-SKILL-302', text:'公积金能贷多少？贷款额度？', tier:'pro'},
+      {code:'CAP-SKILL-303', text:'首套/二套房怎么认定？', tier:'pro'},
+      {code:'CAP-SKILL-205', text:'客户要对比周边小区？主动给 3 维对比表', tier:'service'},
+      {code:'CAP-SKILL-301', text:'税费怎么算？契税/增值税/个税明细', tier:'pro'},
+      {code:'CAP-SKILL-305', text:'学区对口 + 入学政策最新消息', tier:'pro'},
+    ],
+    // 服务层
+    ai:['自动算贷款额度/月供/税费 3 组方案','调知识库拉学区对口 + 政策来源','生成"首套 vs 二套"成本对比表 H5','按客户画像预判他可能关心的准备项'],
+    human:['解读数字——"这个利率对你每月多还 X 元"','判断客户焦虑点在哪（怕买贵/怕贷不下来/怕选错）','说清官方政策和实际操作的区别','共情——客户算房贷压力大时先接住再给方案'],
+    // 红线
+    red:['AI 绝不替客户做"选首套还是二套"的决策','AI 绝不说"这个学区最靠谱"这种推荐结论','AI 绝不输出没来源的政策数字——必须附官方链接和时间'],
+    // checklist
+    checklist:['先算贷款 → 再算税费 → 最后对比首付方案','客户问学区 → 先给对口表 → 再给入学政策变化','给完数字后问"还有什么担心的"']
+  },
+  {
+    id:'market', num:'②', name:'获客吸引',
+    goal:'让客户愿意继续聊下去——从真实生活切入破冰，用专业数据建立信任，主动展示短板不做虚假',
+    trust:'TRUST-01 破冰 + TRUST-02 证明',
+    capRange:'CAP-SKILL-001~006（获客触达） + 301~309（专业方案）',
+    su:['真诚——别装什么都懂，"这个我帮您核实下"比瞎说强','敏锐——30 秒内抓客户真实需求点','克制——别上来就推房，先聊人'],
+    sk:[
+      {code:'CAP-SKILL-004', text:'客户要对比周边小区？主动给 3 维对比表', tier:'service'},
+      {code:'CAP-SKILL-001', text:'客户说"随便看看"怎么办？用 3 个问题破冰', tier:'service'},
+      {code:'CAP-SKILL-205', text:'客户说要等房价跌？给 3 个理性回应', tier:'human_only'},
+      {code:'CAP-SKILL-303', text:'板块数据带来源——成交价/学区/配套', tier:'pro'},
+      {code:'CAP-SKILL-006', text:'引导低压力决策——"扫码带走清单"', tier:'service'},
+    ],
+    ai:['根据客户画像生成场景化开场话术（通勤/娃年级/小区偏好）','调知识库拉 5 层本地数据（板块/商圈/小区/楼栋/生活）','按客户勾选自动生成多维对比表','主动呈现短板（楼栋噪音/车位配比/学区风险）'],
+    human:['临场察言观色——判断客户当下心情和沟通节奏','数据解读——"这个学区对你家意味着什么"（不是算数，是解读）','短板时机选择——什么时候说哪个短板对客户有帮助','现场核实——带看时摸暖气片、量窗距、听噪音'],
+    red:['AI 绝不输出"您看起来像是 XX 类型的人"这种主观判断','AI 绝不说"这个学区最好"——只给客观对比','AI 绝不承诺政策不会变——只陈述官方来源和时间'],
+    checklist:['30 秒破冰 → 不推房先聊人 → 聊完再提"有个小区挺适合您"','数据 + 来源 + 时间三件套，少一件都别讲','主动说一个小短板，客户反而更信你']
+  },
+  {
+    id:'invite', num:'③', name:'邀约带看',
+    goal:'让客户愿意出来看房——从"不想动/不信任/没紧迫感"三个抗拒点切入，给选项不给命令',
+    trust:'TRUST-01 + TRUST-03 共情接住',
+    capRange:'CAP-SKILL-001~006（获客触达） + 201~207（需求洞察）',
+    su:['耐心——"不愿出来"不是讨厌你，是还没建立信任','理解——客户忙、懒、不紧急都是真实的','温和——别逼，用"陪您看看不是让您买"的姿态'],
+    sk:[
+      {code:'CAP-SKILL-001', text:'客户不愿出来看房怎么办？3 种邀约话术', tier:'service'},
+      {code:'CAP-SKILL-201', text:'客户说"随便看看"怎么办？接住再引导', tier:'human_only'},
+      {code:'CAP-SKILL-006', text:'给选项——"周二晚 vs 周六下午"', tier:'service'},
+      {code:'CAP-SKILL-202', text:'客户说"再想想"怎么办？共情 + 给台阶', tier:'human_only'},
+    ],
+    ai:['生成 3 种邀约话术变体（理性/感性/焦虑型客户）','识别抗拒关键词（"忙"= 没时间？不信任？还是真不紧急？）','推送情绪提醒卡片（"客户有抗拒信号，考虑先用共情开场"）','自动发 H5 决策包——让客户在家先看，降低出门门槛'],
+    human:['真实共情——AI 可以说"我理解"但没真懂，你得让客户觉得被看见','分寸感——什么时候该闭嘴、什么时候该转移话题','强留资——真人才能约带看时段、拉信任、承诺等','带看前微信再确认一次，降低客户爽约率'],
+    red:['AI 绝不替经纪人约带看时段——必须真人发','AI 绝不替经纪人跟业主沟通开门时间','AI 绝不输出共情话术作为"标准答案"让你背'],
+    checklist:['先共情抗拒点 → 再给选项（2 选 1）→ 最后说"不是让您买，就是看看"','约完带看 24 小时内发确认微信','带看前准备好 H5 决策包，让客户到家还能看']
+  },
+  {
+    id:'negotiate', num:'④', name:'谈判逼单',
+    goal:'让犹豫的客户下决心——识别核心犹豫点、用数据回应、接住情绪、给临门一脚',
+    trust:'TRUST-03 共情接住',
+    capRange:'CAP-SKILL-101~107（带看谈判） + 201~207（需求洞察）',
+    su:['情绪稳定——客户说"太贵了"不是骂你，是表达压力','分寸——什么时候逼、什么时候松、什么时候给台阶','不推销的姿态——先接住再给方案'],
+    sk:[
+      {code:'CAP-SKILL-101', text:'客户说"太贵了"怎么办？3 层回应：情绪→数据→方案', tier:'human_only'},
+      {code:'CAP-SKILL-202', text:'客户说"回去商量一下"怎么办？共情 + 给理由', tier:'human_only'},
+      {code:'CAP-SKILL-205', text:'客户说"等跌"怎么办？理性回应 3 步', tier:'human_only'},
+      {code:'CAP-SKILL-103', text:'客户犹豫期——给倒计时还是给缓冲？', tier:'human_only'},
+      {code:'CAP-SKILL-107', text:'谈判失败怎么收场？留个好印象等转介绍', tier:'service'},
+    ],
+    ai:['识别情绪关键词——"太贵了"= 压力、"再看看"= 不确定、"跌"= 焦虑','推送情绪提醒卡（"客户纠结价格，考虑用共情开场"）','记录客户情绪反应（哪些说法让他点头、哪些皱眉）','实时算"差 X 万每月多还 Y 元"的数据'],
+    human:['真实共情——"哥我理解，换我也算三遍"','临门一脚——"张哥您今天定我帮您跟业主争取 X"（必须真人）','情绪稳定——面对客户焦虑不能急','判断什么时候该逼、什么时候该放'],
+    red:['AI 绝不替经纪人做谈判决策','AI 绝不输出"您应该今天定"这种结论','AI 绝不做共情——共情必须是真实的，AI 只能提醒你客户有情绪'],
+    checklist:['接情绪（先不说方案）→ 给数据（算清差额）→ 给选项（A 方案 vs B 方案）→ 临门一脚','逼单之前先搞清楚客户的犹豫点是价格/时机/家人意见/还是没看上','如果真逼不下来，留好印象——下一个客户可能是他介绍的']
+  },
+  {
+    id:'transaction', num:'⑤', name:'交易签约',
+    goal:'帮客户走完交易流程——合同条款、资金监管、税费明细、时间节点，每一步讲清楚客户才敢签',
+    trust:'TRUST-03 + TRUST-04 引导',
+    capRange:'CAP-SKILL-301~309（专业方案） + 501~508（交易履约）',
+    su:['严谨——合同一字之差可能赔大钱','透明——资金怎么打、给谁、什么时候到，全部讲清楚','不催促——客户要时间看合同就给时间'],
+    sk:[
+      {code:'CAP-SKILL-301', text:'首套房契税多少？怎么算？', tier:'pro'},
+      {code:'CAP-SKILL-501', text:'资金监管安全吗？钱打给谁？流程是什么？', tier:'pro'},
+      {code:'CAP-SKILL-502', text:'合同关键条款——定金/首付/违约/户口', tier:'pro'},
+      {code:'CAP-SKILL-303', text:'税费明细——契税/增值税/个税各多少？', tier:'pro'},
+      {code:'CAP-SKILL-503', text:'面签/网签/过户的时间节点', tier:'pro'},
+    ],
+    ai:['自动算税费明细并生成对比表','生成交易流程图——每个节点谁做什么、耗时多久','调知识库拉合同关键条款解读（带红线标注）','实时更新过户进度——什么时候该办什么手续'],
+    human:['逐条讲合同——"这条对您是什么意思"','帮客户做最终选择的临门一脚（签还是不签、A 方案还是 B 方案）','跟银行/业主/中介协调时间','资金监管的细节必须真人现场确认'],
+    red:['AI 绝不替客户签合同','AI 绝不替经纪人决定走哪个方案','AI 绝不承诺"这个时间能办完"——必须按银行/房管局的实际节奏'],
+    checklist:['合同逐条讲 → 重点条款标红 → 让客户问完再签','资金监管必须讲清楚"钱打给谁、什么时候能动"','签约后 24 小时内发 H5 进度表——客户随时能查']
+  },
+  {
+    id:'closing', num:'⑥', name:'过户交房',
+    goal:'帮客户顺利拿到钥匙——过户流程、交房清单、户口迁出、维修基金，每一步踩对时间点',
+    trust:'TRUST-04 引导低压力',
+    capRange:'CAP-SKILL-501~508（交易履约） + 601~602（售后复购）',
+    su:['细致——交房漏了一项后面补救可能花几万','同理心——客户终于要搬新家了，这个时刻他会紧张','靠谱——约定好的时间必须到'],
+    sk:[
+      {code:'CAP-SKILL-504', text:'二手房过户流程 7-15 天全流程拆解', tier:'pro'},
+      {code:'CAP-SKILL-505', text:'交房时业主不交钥匙怎么办？3 步稳控', tier:'pro'},
+      {code:'CAP-SKILL-506', text:'户口迁出——哪些影响学区？怎么查？', tier:'pro'},
+      {code:'CAP-SKILL-507', text:'维修基金过户 + 水电燃气过户', tier:'pro'},
+      {code:'CAP-SKILL-602', text:'入住后可以做什么——租/卖/装/托管推荐', tier:'service'},
+    ],
+    ai:['生成交房 checklist——物业/水电/燃气/户口/维修基金一项项打勾','自动推送时间节点提醒——"过户前 3 天别忘了带身份证"','调知识库拉户口查询渠道和最新政策','推荐入住后服务——整装/托管/资产配置（长期价值）'],
+    human:['交房现场必须到——帮客户验房、核对清单','跟业主协调交房时间和户口迁出承诺','过户后跟银行/房管局保持沟通进度','入住后回访——客户可能介绍下一个客户'],
+    red:['AI 绝不替客户收房签字','AI 绝不替经纪人承诺"户口一定能迁出"——必须看合同约定','AI 绝不替业主做任何承诺'],
+    checklist:['交房清单逐项核对 → 水电燃气过户 → 户口迁出跟进 → 入住回访','交房现场拍视频留证——防止后续纠纷','入住后 1 个月回访，推荐后续服务（整装/托管）']
+  }
+];
+
+// 渲染阶段 tab
+function renderBar(){
+  const bar = document.getElementById('stageBar');
+  bar.innerHTML = STAGES.map((s,i)=>`<button onclick="show(${i})" class="${i===0?'active':''}"><span class="s-num">${s.num}</span>${s.name}</button>`).join('');
+}
+
+// 渲染阶段内容
+function renderStage(i){
+  const s = STAGES[i];
+  return `
+  <div class="stage ${i===0?'active':''}" id="s${i}">
+    <div class="stage-header">
+      <div class="sh-top">
+        <div>
+          <div class="sh-title">${s.num} ${s.name}</div>
+          <div class="sh-sub">阶段目标 · 核心动作 · 能力要求</div>
+        </div>
+      </div>
+      <div class="sh-goal">🎯 ${s.goal}</div>
+      <span class="trust-tag">🔗 ${s.trust}</span>
+      <div class="cap-range">📘 ${s.capRange}</div>
+    </div>
+
+    <div class="summary-bar">
+      <div class="sg-title">💡 一句话策略</div>
+      <div class="sg-text">${strategy(s)}</div>
+      <div class="sg-stats">
+        <span class="sg-stat"><b>${s.sk.length}</b> CAP-SKILL</span>
+        <span class="sg-stat"><b>${s.ai.length}</b> AI 能做</span>
+        <span class="sg-stat"><b>${s.human.length}</b> 真人必做</span>
+        <span class="sg-stat"><b>${s.red.length}</b> 红线</span>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- 素养层 -->
+      <div class="layer su">
+        <div class="layer-head">
+          <span class="lh-icon">🧠</span>
+          <span class="lh-title">素养层 · Mindset</span>
+          <span class="lh-sub">经纪人内在心态</span>
+        </div>
+        <div class="su-items">${s.su.map(t=>`<span class="su-tag">${t}</span>`).join('')}</div>
+      </div>
+
+      <!-- 技能层 -->
+      <div class="layer sk">
+        <div class="layer-head">
+          <span class="lh-icon">🛠️</span>
+          <span class="lh-title">技能层 · CAP-SKILL</span>
+          <span class="lh-sub">可追溯编号 · question_map 真数据</span>
+        </div>
+        <div class="sk-list">
+          ${s.sk.map(k=>`
+            <div class="sk-item">
+              <span class="sk-code">${k.code}</span>
+              <span class="sk-text">${k.text}</span>
+              <span class="sk-tier ${k.tier}">${tierLabel(k.tier)}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- 服务层 -->
+      <div class="layer se">
+        <div class="layer-head">
+          <span class="lh-icon">💬</span>
+          <span class="lh-title">服务层 · 数字员工分野</span>
+          <span class="lh-sub">谁做什么 · sales-sop 真数据</span>
+        </div>
+        <div class="se-split">
+          <div class="se-col ai">
+            <h4>🤖 数字员工能做</h4>
+            <ul>${s.ai.map(x=>`<li>${x}</li>`).join('')}</ul>
+          </div>
+          <div class="se-col human">
+            <h4>👤 经纪人必须做</h4>
+            <ul>${s.human.map(x=>`<li>${x}</li>`).join('')}</ul>
+          </div>
+        </div>
+
+        <div class="red-flags">
+          <h4>🚫 红色警戒线（AI 绝不做这些）</h4>
+          <ul>${s.red.map(x=>`<li>${x}</li>`).join('')}</ul>
+        </div>
+      </div>
+
+      <!-- Checklist -->
+      <div class="layer" style="border-top-color:#264653">
+        <div class="layer-head">
+          <span class="lh-icon">✅</span>
+          <span class="lh-title">经纪人 · 动作 Checklist</span>
+          <span class="lh-sub">照这个顺序走就不会错</span>
+        </div>
+        <div class="checklist">
+          <ol>${s.checklist.map(c=>`<li>${c}</li>`).join('')}</ol>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function tierLabel(t){
+  return {pro:'专业',service:'服务',human_only:'仅真人',ai_only:'仅AI'}[t] || t;
+}
+function strategy(s){
+  const t = s.trust;
+  if(t.includes('TRUST-01') && !t.includes('TRUST-02')) return '先聊人再聊房——30 秒破冰建立"这人懂我"的信任，再用知识底座给数据';
+  if(t.includes('TRUST-02')) return '数据带来源，优点带短板——客户觉得你专业不是因为你懂，是因为你说的话"有根有据"';
+  if(t.includes('TRUST-03')) return '先接情绪再给方案——客户说"太贵了"不是要你降价，是表达压力，先接住再给数据';
+  if(t.includes('TRUST-04')) return '给选项不给结论，24h 在线——AI 帮客户带走资料慢慢看，真人最后做临门一脚';
+  return '每个阶段都有对应的信任动作和 CAP-SKILL，照着拆解来';
+}
+
+function show(i){
+  document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+i).classList.add('active');
+  document.querySelectorAll('.stage-bar button').forEach((b,j)=>b.classList.toggle('active',j===i));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// 初始化
+renderBar();
+document.body.insertAdjacentHTML('beforeend', STAGES.map((s,i)=>renderStage(i)).join(''));
+show(0);
+</script>
+
+<div class="footer">
+  风声信息咨询 · 经纪人工作台 · 6服务阶段 × 素养×技能×服务三层 × 数字员工分野<br>
+  数据来源：question_map.json 39 条 + sales-sop.json 4 个信任动作 + CAP-SKILL 6143 条知识库
+</div>
+
+</body>
+</html>

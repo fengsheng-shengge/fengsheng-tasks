@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>风声经纪人工作台 · 优化后完整样本</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f4f0; color: #2c2925; padding: 30px 20px; line-height: 1.6; }
+  .container { max-width: 860px; margin: 0 auto; }
+  .note { text-align: center; font-size: 12px; color: #aaa; margin-bottom: 16px; }
+
+  .intro { background: linear-gradient(135deg, #2d4a3e 0%, #3d5a4e 100%); color: #fff; border-radius: 14px; padding: 24px 26px 20px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(45,74,62,0.2); }
+  .intro h2 { font-size: 17px; font-weight: 700; margin-bottom: 6px; line-height: 1.45; }
+  .intro .hl { color: #f5d57a; }
+  .intro .sub { font-size: 12.5px; color: rgba(255,255,255,0.65); margin-bottom: 16px; }
+  .intro-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn { padding: 11px 18px; border-radius: 22px; font-size: 13px; font-weight: 700; text-decoration: none; display: inline-block; cursor: pointer; border: none; }
+  .btn-primary { background: #f5d57a; color: #2d4a3e; }
+  .btn-ghost { background: rgba(255,255,255,0.15); color: #fff; font-weight: 500; }
+
+  .progress { background: #fff; border-radius: 10px; padding: 14px 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .pb-badge { background: #fef5e0; color: #8a7040; padding: 5px 12px; border-radius: 12px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+  .pb-pct { font-size: 19px; font-weight: 800; color: #2d4a3e; white-space: nowrap; }
+  .pb-bar { flex: 1; height: 6px; background: #e8e6e0; border-radius: 3px; overflow: hidden; }
+  .pb-fill { width: 8%; height: 100%; background: #f5d57a; border-radius: 3px; }
+  .pb-next { font-size: 11px; color: #777; white-space: nowrap; }
+
+  .tabs { background: #fff; border-radius: 10px; padding: 10px; margin-bottom: 12px; display: flex; gap: 6px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .tab { padding: 7px 13px; border-radius: 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap; color: #888; cursor: pointer; border: 1px solid transparent; transition: all .15s; }
+  .tab.active { background: #2d4a3e; color: #fff; }
+
+  .layer { background: #fff; border-radius: 12px; padding: 20px 22px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .layer-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 2px solid #f5f4f0; }
+  .layer-title { font-size: 16px; font-weight: 800; color: #2d4a3e; }
+  .layer-tag { font-size: 10px; font-weight: 700; background: #fef5e0; color: #8a7040; padding: 3px 10px; border-radius: 10px; }
+
+  .act-box { background: #2d4a3e; border-radius: 10px; padding: 15px 18px 13px; margin-bottom: 12px; }
+  .act-box ol { padding-left: 18px; }
+  .act-box li { color: rgba(255,255,255,0.92); font-size: 13.5px; padding: 3.5px 0; line-height: 1.7; font-weight: 500; }
+  .act-box li::marker { color: #f5d57a; font-weight: 700; }
+
+  .why-box { background: #fef5e0; border-radius: 8px; padding: 11px 14px; margin-bottom: 12px; }
+  .why-t { font-size: 11px; font-weight: 700; color: #8a7040; margin-bottom: 3px; }
+  .why-d { font-size: 13px; color: #7a6030; font-weight: 500; line-height: 1.6; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .pb { border-radius: 8px; padding: 12px 14px; }
+  .pb-p { background: #eef4f6; border: 1px solid #c5d8de; }
+  .pb-l { background: #f0f5f2; border: 1px solid #c5d8ca; }
+  .pb .lbl { font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+  .pb-p .lbl { color: #264653; }
+  .pb-l .lbl { color: #2d4a3e; }
+  .scene { font-size: 12px; color: #555; line-height: 1.55; font-style: italic; margin-bottom: 8px; }
+  .litem { font-size: 11.5px; color: #444; padding: 4px 9px; background: #fff; border-radius: 5px; margin-bottom: 4px; border-left: 2px solid #2d4a3e; }
+  .cta { display: block; text-align: center; padding: 7px; border-radius: 6px; font-size: 12px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; }
+  .cta-d { background: #264653; color: #fff; }
+  .cta-g { background: #2d4a3e; color: #fff; }
+
+  .red { font-size: 11.5px; color: #c44a32; background: #fef0ed; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; line-height: 1.55; }
+  .red::before { content: "🚫 红线："; font-weight: 700; }
+  .hint { font-size: 11.5px; color: #666; display: flex; align-items: center; gap: 8px; }
+  .hint a { color: #2d4a3e; font-weight: 700; text-decoration: none; }
+
+  .tip { background: #fffbea; border: 1px dashed #e8d07a; border-radius: 8px; padding: 10px 14px; font-size: 11.5px; color: #8a6a30; margin-bottom: 14px; line-height: 1.6; }
+  .tip::before { content: "💡 "; font-size: 14px; }
+
+  @media (max-width: 640px) { .two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="note">📦 这是一个独立样本页，展示 workspace/index.html 优化后的真实渲染效果。数据全部来自代码里的 initStageLayerData()</div>
+
+<!-- ==================== 值 引 导 区 ==================== -->
+<div class="intro">
+  <h2>这个站就干一件事：<span class="hl">你陪客户到哪一步了？点一下，我告诉你下一步该干啥</span></h2>
+  <div class="sub">不用背话术，不用瞎摸索。选阶段 → 看 3 个引导问题 → AI 模拟客户练一把 → 5 分钟小测</div>
+  <div class="intro-btns">
+    <button class="btn btn-primary">🎯 5 分钟出你的「丢单预警」</button>
+    <span style="color:rgba(255,255,255,0.4);font-size:12px">或</span>
+    <button class="btn btn-ghost">💬 直接点"谈判逼单"试试</button>
+  </div>
+</div>
+
+<!-- ==================== 进 度 条 ==================== -->
+<div class="progress">
+  <span class="pb-badge">📌 5 分钟测丢单预警</span>
+  <span class="pb-pct">丢单预警</span>
+  <div class="pb-bar"><div class="pb-fill"></div></div>
+  <span class="pb-next">→ 测完告诉你：你谈判最弱、获客最强</span>
+</div>
+
+<!-- ==================== 阶 段 切 换 ==================== -->
+<div class="tabs">
+  <div class="tab">📋 购房准备</div>
+  <div class="tab">🔍 了解市场</div>
+  <div class="tab">🏠 邀约带看</div>
+  <div class="tab active">💬 带看议价</div>
+  <div class="tab">💰 交易安全</div>
+  <div class="tab">🔄 过户交接</div>
+</div>
+
+<div class="tip">经纪人点上面 6 个阶段切换，下面那块"你该搞清楚这 3 件事"会跟着变。当前选中「带看议价」</div>
+
+<!-- ==================== 引 导 问 题 卡（6 个阶段） ==================== -->
+
+<!-- 1. prepare -->
+<div class="layer">
+  <div class="layer-head">
+    <span style="font-size:17px">📋</span>
+    <span class="layer-title">购房准备 · 先搞清楚这 3 件事</span>
+    <span class="layer-tag">经纪人视角</span>
+  </div>
+
+  <div class="act-box">
+    <ol>
+      <li>先问清楚：他买房是为啥？结婚？孩子上学？换大的？还是纯投资？</li>
+      <li>把钱算透：首付掏多少？每月还多少？首套二套差几万？税+中介费一共花多少？</li>
+      <li>资格和坑先摸清：社保够不够？限不限购？学区对口哪个学校？现在利率多少？</li>
+    </ol>
+  </div>
+
+  <div class="why-box">
+    <div class="why-t">💡 为什么这么做</div>
+    <div class="why-d">客户现在最慌的是「我能不能买得起」——你先把数字摆出来，比带看 10 套房都管用</div>
+  </div>
+
+  <div class="two">
+    <div class="pb pb-p">
+      <div class="lbl">🤖 练一练（AI 模拟客户）</div>
+      <div class="scene">客户问："公积金能贷多少？首套和二套差多少？"</div>
+      <button class="cta cta-d">开始练习 →</button>
+    </div>
+    <div class="pb pb-l">
+      <div class="lbl">📖 学一学</div>
+      <div class="litem">公积金能贷多少？贷款额度？</div>
+      <div class="litem">首套二套房怎么认定？</div>
+      <div class="litem">学区房怎么查对口学校？</div>
+      <button class="cta cta-g">进入知识底座 →</button>
+    </div>
+  </div>
+
+  <div class="red">别替客户做「选首套还是二套」的决定——只给数字让他自己选</div>
+  <div class="hint">✅ 这个阶段 5 分钟小测验收 → <a href="#">去测丢单预警 →</a></div>
+</div>
+
+<!-- 2. market -->
+<div class="layer">
+  <div class="layer-head">
+    <span style="font-size:17px">🔍</span>
+    <span class="layer-title">了解市场 · 先搞清楚这 3 件事</span>
+    <span class="layer-tag">经纪人视角</span>
+  </div>
+
+  <div class="act-box">
+    <ol>
+      <li>先搞清楚他最在意啥：要学区？还是总价不能超？还是一定要地铁口？</li>
+      <li>拉真实成交价对比：挂牌价是蒙人的，看真实成交！周边 3 个小区对比一下</li>
+      <li>主动说缺点：别只吹好的，每个小区说一个真缺点——有噪音？车位少？学区可能变？</li>
+    </ol>
+  </div>
+
+  <div class="why-box">
+    <div class="why-t">💡 为什么这么做</div>
+    <div class="why-d">客户觉得你靠谱，不是因为你懂，是因为你说的话「有根有据」——别拿挂牌价瞎忽悠</div>
+  </div>
+
+  <div class="two">
+    <div class="pb pb-p">
+      <div class="lbl">🤖 练一练</div>
+      <div class="scene">客户问："要对比周边小区怎么办？这个学区到底怎么样？"</div>
+      <button class="cta cta-d">开始练习 →</button>
+    </div>
+    <div class="pb pb-l">
+      <div class="lbl">📖 学一学</div>
+      <div class="litem">客户要对比周边小区怎么办？</div>
+      <div class="litem">新盘和二手房选哪个？</div>
+      <div class="litem">客户说要等房价跌怎么办？</div>
+      <button class="cta cta-g">进入知识底座 →</button>
+    </div>
+  </div>
+
+  <div class="red">别跟客户说「这个学区最好」——只给数据和来源</div>
+  <div class="hint">✅ 这个阶段 5 分钟小测验收 → <a href="#">去测丢单预警 →</a></div>
+</div>
+
+<!-- 3. invite -->
+<div class="layer">
+  <div class="layer-head">
+    <span style="font-size:17px">🏠</span>
+    <span class="layer-title">邀约带看 · 先搞清楚这 3 件事</span>
+    <span class="layer-tag">经纪人视角</span>
+  </div>
+
+  <div class="act-box">
+    <ol>
+      <li>先接住他的抗拒：他说忙，你别逼问什么时候有空，先说「哥您忙我理解」</li>
+      <li>给选项别给问题：别说「你啥时候有空」，直接问「周二晚7点？还是周六上午10点？」</li>
+      <li>先发点东西过去：户型图/小区实拍视频/报价表，让他在家先看看</li>
+    </ol>
+  </div>
+
+  <div class="why-box">
+    <div class="why-t">💡 为什么这么做</div>
+    <div class="why-d">客户不愿出来不是讨厌你，是还没信你——接住他的抗拒比硬逼他管用</div>
+  </div>
+
+  <div class="two">
+    <div class="pb pb-p">
+      <div class="lbl">🤖 练一练</div>
+      <div class="scene">客户说："最近太忙了，等有空再说吧"</div>
+      <button class="cta cta-d">开始练习 →</button>
+    </div>
+    <div class="pb pb-l">
+      <div class="lbl">📖 学一学</div>
+      <div class="litem">客户不愿出来看房怎么办？</div>
+      <div class="litem">客户不回消息不接电话怎么办？</div>
+      <div class="litem">客户说随便看看怎么办？</div>
+      <button class="cta cta-g">进入知识底座 →</button>
+    </div>
+  </div>
+
+  <div class="red">别自己约带看时间——约时间必须真人发消息</div>
+  <div class="hint">✅ 这个阶段 5 分钟小测验收 → <a href="#">去测丢单预警 →</a></div>
+</div>
+
+<!-- 4. negotiate -->
+<div class="layer">
+  <div class="layer-head">
+    <span style="font-size:17px">💬</span>
+    <span class="layer-title">带看议价 · 先搞清楚这 3 件事</span>
+    <span class="layer-tag">经纪人视角</span>
+  </div>
+
+  <div class="act-box">
+    <ol>
+      <li>先接情绪再谈钱：他说太贵了，你第一句别提价格，先说「哥我理解，这个得慎重」</li>
+      <li>给差额给意义：别说「贵20万」，说「贵20万=每月多还X块，但这个学区明年对口Y中学」</li>
+      <li>给选项不是逼他走：A 今天定我帮你争取减5万 / B 旁边那套便宜15万但楼层差——让他选不是让他滚</li>
+    </ol>
+  </div>
+
+  <div class="why-box">
+    <div class="why-t">💡 为什么这么做</div>
+    <div class="why-d">客户犹豫 = 情绪没接住。先接情绪再给数据，最后那一锤必须真人上</div>
+  </div>
+
+  <div class="two">
+    <div class="pb pb-p">
+      <div class="lbl">🤖 练一练</div>
+      <div class="scene">客户说："太贵了，回去商量一下。"</div>
+      <button class="cta cta-d">开始练习 →</button>
+    </div>
+    <div class="pb pb-l">
+      <div class="lbl">📖 学一学</div>
+      <div class="litem">客户说太贵了怎么办？</div>
+      <div class="litem">客户说回去商量一下怎么办？</div>
+      <div class="litem">带看完怎么跟进客户？</div>
+      <button class="cta cta-g">进入知识底座 →</button>
+    </div>
+  </div>
+
+  <div class="red">情绪安抚必须真人来——AI 可以帮你算数据，但不能替你共情</div>
+  <div class="hint">✅ 这个阶段 5 分钟小测验收 → <a href="#">去测丢单预警 →</a></div>
+</div>
+
+<!-- 5. transaction -->
+<div class="layer">
+  <div class="layer-head">
+    <span style="font-size:17px">💰</span>
+    <span class="layer-title">交易安全 · 先搞清楚这 3 件事</span>
+    <span class="layer-tag">经纪人视角</span>
+  </div>
+
+  <div class="act-box">
+    <ol>
+      <li>合同一条一条念：别让他直接签，说「这条是付款时间，这条是违约责任我帮你标红了」</li>
+      <li>资金监管说清楚：钱打给银行监管账户，过户完银行自动打给业主——打消他怕被骗的顾虑</li>
+      <li>税费算到分 + 时间排死：一张表签字，网签/面签/过户/放款每个节点谁干啥都写清楚</li>
+    </ol>
+  </div>
+
+  <div class="why-box">
+    <div class="why-t">💡 为什么这么做</div>
+    <div class="why-d">客户签约那一刻最紧张——你越透明他越敢签。模糊的钱和模糊的时间都是恐惧源</div>
+  </div>
+
+  <div class="two">
+    <div class="pb pb-p">
+      <div class="lbl">🤖 练一练</div>
+      <div class="scene">客户问："资金监管安全吗？我应该先签还是先交钱？"</div>
+      <button class="cta cta-d">开始练习 →</button>
+    </div>
+    <div class="pb pb-l">
+      <div class="lbl">📖 学一学</div>
+      <div class="litem">资金监管安全吗？钱打给谁？</div>
+      <div class="litem">二手房合同条款要注意什么？</div>
+      <div class="litem">首套房契税多少？怎么算？</div>
+      <button class="cta cta-g">进入知识底座 →</button>
+    </div>
+  </div>
+
+  <div class="red">别替客户签合同——合同必须真人口头过一遍</div>
+  <div class="hint">✅ 这个阶段 5 分钟小测验收 → <a href="#">去测丢单预警 →</a></div>
+</div>
+
+<!-- 6. closing -->
+<div class="layer">
+  <div class="layer-head">
+    <span style="font-size:17px">🔄</span>
+    <span class="layer-title">过户交接 · 先搞清楚这 3 件事</span>
+    <span class="layer-tag">经纪人视角</span>
+  </div>
+
+  <div class="act-box">
+    <ol>
+      <li>交房时一项项核对：物业/水电/燃气/户口/维修基金，一项项打勾别漏</li>
+      <li>户口迁出写合同里压钱：口头说会迁没用，白纸黑字+压几万块尾款</li>
+      <li>过户后别失联：银行放款进度/房管局消息每周说一声，别签完就消失</li>
+    </ol>
+  </div>
+
+  <div class="why-box">
+    <div class="why-t">💡 为什么这么做</div>
+    <div class="why-d">交房不是终点——今天这个客户，就是明天给你介绍新客户的人</div>
+  </div>
+
+  <div class="two">
+    <div class="pb pb-p">
+      <div class="lbl">🤖 练一练</div>
+      <div class="scene">客户问："过户后户口怎么迁？物业交接要注意什么？"</div>
+      <button class="cta cta-d">开始练习 →</button>
+    </div>
+    <div class="pb pb-l">
+      <div class="lbl">📖 学一学</div>
+      <div class="litem">二手房过户流程是什么？</div>
+      <div class="litem">交房时业主不交钥匙怎么办？</div>
+      <div class="litem">过户延期了怎么办？</div>
+      <button class="cta cta-g">进入知识底座 →</button>
+    </div>
+  </div>
+
+  <div class="red">别替客户承诺「户口一定能迁」——得看合同写没写</div>
+  <div class="hint">✅ 这个阶段 5 分钟小测验收 → <a href="#">去测丢单预警 →</a></div>
+</div>
+
+<!-- 能力画像 -->
+<div class="layer" style="padding: 18px 22px;">
+  <div class="layer-head">
+    <span style="font-size:17px">📊</span>
+    <span class="layer-title">你的能力画像（7 维度 · 默认折叠）</span>
+    <span class="layer-tag">测完后显示</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;text-align:center;font-size:11px;color:#888">
+    <div><span style="font-size:20px">📣</span><br>获客触达</div>
+    <div><span style="font-size:20px">👁️</span><br>需求洞察</div>
+    <div><span style="font-size:20px">🎯</span><br>带看逼单</div>
+    <div><span style="font-size:20px">💼</span><br>谈判议价</div>
+    <div><span style="font-size:20px">📝</span><br>交易安全</div>
+    <div><span style="font-size:20px">🏠</span><br>过户交接</div>
+    <div><span style="font-size:20px">🤝</span><br>长期服务</div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
