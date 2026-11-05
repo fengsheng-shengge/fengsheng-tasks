@@ -1852,7 +1852,13 @@ async function handleStatsPages(request, env) {
         WHERE created_at >= unixepoch('now', ?) AND page != ''`;
       const bind = [`-${days} days`];
       if (product) { sql += ` AND product = ?`; bind.push(product); }
-      sql += ` GROUP BY page ORDER BY pageviews DESC`;
+      // 2026-11-05：加 page ASC 作为二级排序键。
+      // 原因：新增 idx_events_page_created 索引后，GROUP BY page 的执行计划变了，
+      //   并列 pageviews 值的相对顺序会跟着变（实测 '/showing-report/' 与
+      //   '/assessment/' 都是 1003，改前后者排第 6、改后排第 5）。
+      //   数据本身没变（差集为空），但输出顺序不稳定会让前后端对不上。
+      //   加二级键让排序确定，与是否有索引无关。
+      sql += ` GROUP BY page ORDER BY pageviews DESC, page ASC`;
       const res = await env.DB.prepare(sql).bind(...bind).all();
       return jsonResponse({
         pages: res?.results || [],
@@ -1880,7 +1886,8 @@ async function handleStatsEvents(request, env) {
         WHERE created_at >= unixepoch('now', ?)`;
       const bind = [`-${days} days`];
       if (product) { sql += ` AND product = ?`; bind.push(product); }
-      sql += ` GROUP BY event_type ORDER BY count DESC`;
+      // 2026-11-05：同样加 event_type ASC 二级排序键，理由同 handleStatsPages。
+      sql += ` GROUP BY event_type ORDER BY count DESC, event_type ASC`;
       const res = await env.DB.prepare(sql).bind(...bind).all();
       return jsonResponse({
         events: res?.results || [],

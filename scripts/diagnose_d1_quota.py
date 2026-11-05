@@ -191,31 +191,67 @@ def main():
         print('-' * 60)
         print('※ 只显示最后 40 个采样点；单点峰值可从上面【一】的窗口推断。')
 
-    # ── ③ 来源归属：databaseRole / databaseId / servedByRegion ──
+    # ── ③ 来源归属 ──
     # 真凶定位到具体 SQL 后，还要确认它来自哪个绑定（Pages Worker / 独立 Worker / CLI），
     # 否则改了本仓库也没用。
+    # 注意：Queries 数据集的 dimensions 里 databaseRole 与 query 混用时 GraphQL 会报错
+    #（实测 'databaseRole' 单独查 Queries 失败），所以按数据集分别降级维度组合。
     print('=' * 108)
     print('【三】来源归属（databaseRole / databaseId / region）')
     print('=' * 108)
-    for ds, label in (('d1QueriesAdaptiveGroups', 'Queries'),
-                      ('d1AnalyticsAdaptiveGroups', 'Analytics')):
-        groups, err = fetch(ds, 'databaseRole databaseId servedByRegion',
-                            ['rowsRead', 'readQueries'], [], '', variables, token)
-        if err or not groups:
-            print('  %s: %s' % (label, '查询失败' if err else '无数据'))
+    dim_variants = [
+        ('d1QueriesAdaptiveGroups', ['databaseRole', 'databaseId', 'servedByRegion']),
+        ('d1QueriesAdaptiveGroups', ['databaseId', 'servedByRegion']),
+        ('d1AnalyticsAdaptiveGroups', ['databaseRole', 'databaseId', 'servedByRegion']),
+        ('d1AnalyticsAdaptiveGroups', ['databaseId', 'servedByRegion']),
+    ]
+    seen = set()
+    for ds, dims in dim_variants:
+        key = (ds, tuple(dims))
+        if key in seen:
+            continue
+        seen.add(key)
+        groups, err = fetch(ds, ' '.join(dims), ['rowsRead', 'readQueries'], [], '',
+                            variables, token)
+        if err:
+            print('  %s [%s]: 查询失败（%s）' % (ds, ','.join(dims),
+                                              json.dumps(err, ensure_ascii=False)[:120]))
+            continue
+        if not groups:
+            print('  %s [%s]: 无数据' % (ds, ','.join(dims)))
             continue
         rows = sorted(groups, key=lambda g: -(g.get('sum') or {}).get('rowsRead') or 0)
         total = sum((g.get('sum') or {}).get('rowsRead') or 0 for g in rows)
-        print('  %s 合计 rowsRead = %s' % (label, format(total, ',')))
-        for g in rows[:8]:
+        print('  %s [%s] 合计 rowsRead = %s' % (ds, ','.join(dims), format(total, ',')))
+        for g in rows[:6]:
             d = g.get('dimensions') or {}
             s = g.get('sum') or {}
-            print('    role=%-22s dbId=%-38s region=%-14s rowsRead=%10s readQ=%6s' % (
+            print('    role=%-12s dbId=%-38s region=%-12s rowsRead=%11s readQ=%7s' % (
                 str(d.get('databaseRole')), str(d.get('databaseId')),
                 str(d.get('servedByRegion')),
                 format(s.get('rowsRead') or 0, ','), format(s.get('readQueries') or 0, ',')))
         print('')
 
+    # ── ④ 按天看：哪一天被打穿、每天各多少 ──
+    print('=' * 108)
+    print('【四】按天汇总')
+    print('=' * 108)
+    groups, err = fetch('d1AnalyticsAdaptiveGroups', 'date',
+                        ['rowsRead', 'rowsWritten', 'readQueries', 'writeQueries'], [],
+                        '', variables, token)
+    if err or not groups:
+        print('  查询失败或无数据')
+    else:
+        rows = sorted(groups, key=lambda g: (g.get('dimensions') or {}).get('date') or '')
+        for g in rows:
+            d = g.get('dimensions') or {}
+            s = g.get('sum') or {}
+            rr = s.get('rowsRead') or 0
+            flag = '  ← 超过 500 万额度' if rr > 5_000_000 else ''
+            print('  %s  rowsRead=%11s  readQ=%8s%s' % (
+                d.get('date'), format(rr, ','),
+                format(s.get('readQueries') or 0, ','), flag))
+    print('')
     print('※ 免费额度 5,000,000 rows/day。')
     return 0
 
