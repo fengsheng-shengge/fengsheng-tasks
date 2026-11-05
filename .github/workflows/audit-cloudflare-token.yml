@@ -1,0 +1,166 @@
+name: 🔐 Cloudflare 凭据能力审计
+
+# ============================================================================
+# 【为什么有这个 workflow】
+# 2026-11-05 P0：fengsheng.tech 的 DNS 主机记录建不出来。
+#   · Pages 自定义域名绑定已成功（说明 token 有 Pages 写权限）
+#   · DNS 记录创建报 code 10000 "Authentication error"
+#
+# 两种可能，现在必须分清：
+#   A) token 确实没有 Zone DNS Edit 权限 → 只能人工补记录
+#   B) token 有权限，是**请求体或 API 形态**不对 → 可以自己修
+#
+# 本 workflow 在 CI 里用真 secret 做一次能力矩阵，把 A/B 分开：
+#   1. token 身份与指纹（sha256 前 12 位，可与 Issue #42 评论里的候选对齐）
+#   2. token verify / 可见 zone 列表
+#   3. DNS 写入矩阵：CNAME 根域 / CNAME www / A 根域 / A 回退 IP，
+#      每次都打印**完整错误原文**，不再截断
+#   4. 顺带确认 Pages 侧域名绑定仍在
+#
+# 【安全】全程不打印密钥明文，只打印 sha256 指纹。
+# ============================================================================
+on:
+  workflow_dispatch:
+    inputs:
+      attempt_write:
+        description: '是否真的尝试写 DNS 记录（true 会真写）'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: 凭据能力矩阵
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 凭据能力矩阵
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ATTEMPT_WRITE: ${{ inputs.attempt_write }}
+        run: |
+          set +e
+          CF=https://api.cloudflare.com/client/v4
+          ZONE=fengsheng.tech
+          PAGES=fengsheng-ee9.pages.dev
+
+          echo "════════ 1. token 身份与指纹 ════════"
+          echo "  account_id : $CLOUDFLARE_ACCOUNT_ID"
+          echo "  token sha256 前 12 位 : $(printf '%s' "$CLOUDFLARE_API_TOKEN" | sha256sum | cut -c1-12)"
+          echo "  token 长度 : ${#CLOUDFLARE_API_TOKEN}"
+          echo "  token 前缀 : $(printf '%s' "$CLOUDFLARE_API_TOKEN" | cut -c1-4)…"
+
+          echo ""
+          echo "════════ 2. token verify ════════"
+          curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/user/tokens/verify" | python3 -c "import sys,json;print(json.dumps(json.load(sys.stdin),ensure_ascii=False,indent=2))"
+
+          echo ""
+          echo "════════ 3. 可见 zone 列表 ════════"
+          curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/zones?per_page=50" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin)
+          for z in (d.get('result') or []):
+              print('  zone=%s id=%s status=%s' % (z.get('name'), z.get('id'), z.get('status')))
+          if not d.get('success'): print('  ', json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+
+          ZONE_ID=$(curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/zones?name=$ZONE" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin); r=d.get('result') or []
+          print(r[0]['id'] if r else '')
+          ")
+          echo "  → ZONE_ID=$ZONE_ID"
+
+          echo ""
+          echo "════════ 4. zone 详情（看 token 权限面）════════"
+          [ -n "$ZONE_ID" ] && curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/zones/$ZONE_ID" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin); z=d.get('result') or {}
+          print('  name=%s status=%s paused=%s type=%s' % (z.get('name'), z.get('status'), z.get('paused'), z.get('type')))
+          if not d.get('success'): print('  ', json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+
+          echo ""
+          echo "════════ 5. 现有 DNS 主机记录 ════════"
+          [ -n "$ZONE_ID" ] && curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/zones/$ZONE_ID/dns_records?per_page=100" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin)
+          rs=d.get('result') or []
+          print('  主机记录条数: %d' % len([r for r in rs if r.get('type')!='TXT' and r.get('name')!='fengsheng.tech']))
+          for r in rs:
+              if r.get('name')=='fengsheng.tech' or r.get('name')=='www.fengsheng.tech':
+                  print('   - %s %s -> %s proxied=%s' % (r.get('type'), r.get('name'), r.get('content'), r.get('proxied')))
+          if not d.get('success'): print('  ', json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+
+          echo ""
+          echo "════════ 6. DNS 写入矩阵（ATTEMPT_WRITE=$ATTEMPT_WRITE）════════"
+          if [ "$ATTEMPT_WRITE" = "true" ] && [ -n "$ZONE_ID" ]; then
+            try_write() {
+              echo ""
+              echo "  ── 尝试: type=$1 name=$2 content=$3 ──"
+              curl -s --max-time 25 -o /tmp/cf.json -w "    HTTP %{http_code}\n" \
+                -X POST "$CF/zones/$ZONE_ID/dns_records" \
+                -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d "{\"type\":\"$1\",\"name\":\"$2\",\"content\":\"$3\",\"proxied\":true,\"ttl\":1}"
+              python3 -c "
+          import json
+          try:
+              d=json.load(open('/tmp/cf.json'))
+          except Exception as e:
+              print('    解析失败:', e); raise SystemExit
+          if d.get('success'):
+              r=d.get('result') or {}
+              print('    ✅ 写入成功: %s %s -> %s (id=%s)' % (r.get('type'), r.get('name'), r.get('content'), r.get('id')))
+          else:
+              print('    ❌ 失败，错误原文:')
+              print('    ', json.dumps(d.get('errors'), ensure_ascii=False))
+          "
+            }
+            try_write CNAME "$ZONE" "$PAGES"
+            try_write CNAME "www.$ZONE" "$PAGES"
+            try_write A "$ZONE" "172.66.44.177"
+            try_write A "www.$ZONE" "172.66.44.177"
+          else
+            echo "  （跳过写入）"
+          fi
+
+          echo ""
+          echo "════════ 7. Pages 自定义域名绑定状态 ════════"
+          curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/fengsheng/domains" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin)
+          for x in (d.get('result') or []):
+              print('  domain=%s status=%s' % (x.get('name'), x.get('status')))
+          if not d.get('success'): print('  ', json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+
+          echo ""
+          echo "════════ 8. 写入后再查 ════════"
+          if [ "$ATTEMPT_WRITE" = "true" ] && [ -n "$ZONE_ID" ]; then
+            curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              "$CF/zones/$ZONE_ID/dns_records?type=CNAME" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin)
+          for r in (d.get('result') or []):
+              print('   - %s %s -> %s proxied=%s' % (r.get('type'), r.get('name'), r.get('content'), r.get('proxied')))
+          "
+          fi
+          exit 0
