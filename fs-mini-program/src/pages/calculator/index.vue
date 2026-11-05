@@ -218,6 +218,7 @@
 </template>
 
 <script>
+import { trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return {
@@ -251,6 +252,8 @@ export default {
   onLoad() {
     uni.setNavigationBarTitle({ title: '测算工具' })
   },
+
+  onShow() { trackPageview('calculator') },
 
   methods: {
     // ========== 月租测算 ==========

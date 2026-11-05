@@ -72,6 +72,8 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
+import { trackPageview } from '../../utils/tracker'
 
 const STORE_KEY = 'fs_health_todo_v1'
 const types = [
@@ -161,6 +163,9 @@ function toggle(it) {
 }
 
 load()
+
+// 页面浏览埋点（与全站 onShow 口径一致：每次进入都上报）
+onShow(() => { trackPageview('health-todo') })
 </script>
 
 <style>

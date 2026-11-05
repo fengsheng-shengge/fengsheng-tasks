@@ -204,6 +204,7 @@
 
 <script>
 import { useUserStore } from '../../../store/user'
+import { trackPageview } from '../../../utils/tracker'
 
 // ★ V3.12 引导问诊 · 五步完成需求澄清
 export default {
@@ -360,6 +361,8 @@ export default {
     this.clientId = options.clientId || ''
     uni.setNavigationBarTitle({ title: '引导问诊' })
   },
+
+  onShow() { trackPageview('mot-diagnostic') },
 
   methods: {
     selectMotive(opt) {
