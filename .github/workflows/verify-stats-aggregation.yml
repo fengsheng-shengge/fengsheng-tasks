@@ -1,0 +1,141 @@
+name: 埋点聚合接口线上验收（一次性）
+# ============================================================================
+# 【为什么有这个 workflow】
+# 2026-11-05 小程序线把 /api/stats/pages、/api/stats/events 两个端点与
+# 小程序口径判据修复推到 main（9ea5122），deploy.yml 已自动部署成功。
+# 但 deploy.yml 的 verify 步骤只验了 /api/health 与 /api/ai-advisor/health，
+# **没有验这两个新端点**。
+# 而本地机器出网受限（fengsheng.tech DNS 不解析、公共 DoH 被代理拦），
+# 无法对生产域名跑 curl。
+# GitHub Actions runner 有出网能力 → 用它做这次线上验收。
+#
+# 【一次性说明】
+# 本 workflow 仅用于本次验收闭环。验收通过后可直接删除本文件，
+# 或保留为该批接口的回归验收项（后续改动 stats 相关代码时手动触发）。
+#
+# 【触发方式】
+# GitHub Actions 页面 → 本 workflow → Run workflow
+# ============================================================================
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: '统计时间范围（天）'
+        required: false
+        default: '14'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-stats-aggregation:
+    name: 埋点聚合接口线上验收
+    runs-on: ubuntu-latest
+    steps:
+      - name: 验收 6 条接口
+        env:
+          CHECK_URL: https://fengsheng.tech
+          DAYS: ${{ inputs.days }}
+        run: |
+          set -u
+          URL="$CHECK_URL"
+          DAYS="${DAYS:-14}"
+          echo "=== 埋点聚合接口线上验收 · $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S') ==="
+          echo "目标: $URL  |  days=$DAYS"
+          echo ""
+
+          fail=0
+
+          # ── 1. /api/stats/pages —— 验收点：首页 home 的 UV/PV 可读 ──
+          echo "--- [1] GET /api/stats/pages?product=mini-program&days=$DAYS ---"
+          BODY=$(curl -s --max-time 20 "$URL/api/stats/pages?product=mini-program&days=$DAYS")
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$URL/api/stats/pages?product=mini-program&days=$DAYS")
+          echo "  HTTP $CODE"
+          echo "$BODY" | head -c 1200
+          echo ""
+          if [ "$CODE" != "200" ]; then
+            echo "  ✗ 期望 HTTP 200，实际 $CODE"; fail=1
+          elif echo "$BODY" | grep -q '"home"'; then
+            echo "  ✓ 响应含 home 页面条目"
+            HOME_LINE=$(echo "$BODY" | tr ',' '\n' | grep -A2 '"home"' | tr '\n' ' ')
+            echo "    home 段: $HOME_LINE"
+            if echo "$HOME_LINE" | grep -qE '"uv"[[:space:]]*:[[:space:]]*[1-9]'; then
+              echo "  ✓ 验收点「首页 home UV/PV 可读」成立（uv > 0）"
+            else
+              echo "  ⚠ 未读到 home 的 uv>0：可能小程序侧真实访问量为 0（看板上产品侧用户数恒为 0 的 bug 已修，但库里若真无数据则 uv=0 属正常）"
+            fi
+          else
+            echo "  ✗ 响应中无 home 条目"; fail=1
+          fi
+          echo ""
+
+          # ── 2. /api/stats/events ──
+          echo "--- [2] GET /api/stats/events?product=mini-program&days=$DAYS ---"
+          BODY2=$(curl -s --max-time 20 "$URL/api/stats/events?product=mini-program&days=$DAYS")
+          CODE2=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$URL/api/stats/events?product=mini-program&days=$DAYS")
+          echo "  HTTP $CODE2"
+          echo "$BODY2" | head -c 1200
+          echo ""
+          if [ "$CODE2" != "200" ]; then
+            echo "  ✗ 期望 HTTP 200，实际 $CODE2"; fail=1
+          elif echo "$BODY2" | grep -q '"events"'; then
+            echo "  ✓ 返回 events 数组"
+            for t in pageview click feature_click banner_click feedback_open feedback_submit; do
+              if echo "$BODY2" | grep -q "\"$t\""; then
+                echo "    ✓ 含事件类型 $t"
+              else
+                echo "    · 未见事件类型 $t"
+              fi
+            done
+          else
+            echo "  ✗ 响应中无 events 字段"; fail=1
+          fi
+          echo ""
+
+          # ── 3. /api/mp-stats —— 修复前恒为 0 ──
+          echo "--- [3] GET /api/mp-stats（判据修复后应能读到小程序用户）---"
+          BODY3=$(curl -s --max-time 20 "$URL/api/mp-stats")
+          CODE3=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$URL/api/mp-stats")
+          echo "  HTTP $CODE3"
+          echo "$BODY3" | head -c 800
+          echo ""
+          MP_USERS=$(echo "$BODY3" | grep -oE '"mp_users"[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+$')
+          MP_PV=$(echo "$BODY3" | grep -oE '"mp_pv"[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+$')
+          echo "  mp_users=${MP_USERS:-未解析}  mp_pv=${MP_PV:-未解析}"
+          if [ "$CODE3" != "200" ]; then
+            echo "  ✗ 期望 HTTP 200，实际 $CODE3"; fail=1
+          elif [ -n "${MP_USERS:-}" ] && [ "$MP_USERS" != "0" ]; then
+            echo "  ✓ mp_users > 0 —— 判据修复生效（修复前恒为 0）"
+          else
+            echo "  ⚠ mp_users 仍为 0 或未解析：判据已修但库里可能真的没有小程序事件；需结合 /api/stats/summary 的 per_product 交叉判断"
+          fi
+          echo ""
+
+          # ── 4. 现有接口兼容性（字段不得丢）──
+          echo "--- [4] 现有接口兼容性检查 ---"
+          for ep in /api/stats /api/stats/summary /api/stats/daily; do
+            C=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$URL$ep")
+            B=$(curl -s --max-time 20 "$URL$ep" | head -c 400)
+            echo "  $ep → HTTP $C"
+            echo "     ${B:0:300}"
+            if [ "$C" != "200" ]; then fail=1; fi
+          done
+          echo ""
+
+          # ── 5. /api/stats 的 uv 是否含小程序（待拍板第⑥项，仅记录不判定）──
+          echo "--- [5] 跨端口径对照（仅记录，属待拍板第⑥项）---"
+          S=$(curl -s --max-time 20 "$URL/api/stats")
+          SUM=$(curl -s --max-time 20 "$URL/api/stats/summary")
+          echo "  /api/stats          : $(echo "$S" | head -c 400)"
+          echo "  /api/stats/summary  : $(echo "$SUM" | head -c 400)"
+          echo "  （per_product 中 mini-program 行的 pageviews/clicks 即小程序侧实际量）"
+          echo ""
+
+          echo "=========================================="
+          if [ "$fail" -eq 0 ]; then
+            echo "✅ 验收通过：核心接口均 HTTP 200 且响应结构符合预期"
+          else
+            echo "❌ 验收未通过：有接口异常，见上"
+          fi
+          echo "=========================================="
+          exit $fail
