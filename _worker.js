@@ -33,6 +33,9 @@ const BAN_DURATION_MS = 3600_000;
 // ============================================================
 const VALID_PRODUCT_RE = /^[A-Za-z0-9_%.\-]{1,64}$/;
 const VALID_PAGE_RE = /^[A-Za-z0-9_%.\-/:]{1,256}$/;
+// uid 是 COUNT(DISTINCT uid) 的维度键，event_type 是 GROUP BY 键 —— 同样要白名单
+const VALID_UID_RE = /^[A-Za-z0-9_.\-]{1,64}$/;
+const VALID_EVENT_TYPE_RE = /^[A-Za-z0-9_\-]{1,32}$/;
 
 // Malicious tool / scanner UAs — block outright
 const MALICIOUS_UA_PATTERNS = [
@@ -1245,26 +1248,30 @@ async function handleEvent(request, env) {
         'INSERT OR IGNORE INTO events (uid, event_type, url, page, product, title, referrer, utm_source, utm_medium, utm_campaign, ref, source, ua, screen, vp, locale, data, ts, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
       );
       // 2026-11-05 写入层加固：
-      //   product 是聚合分组键（per_product），不可信 → 整条丢弃，不入库；
-      //   page 也是分组键（/api/stats/pages），不可信 → 清空（该条仍入库，
-      //   但不参与 page 聚合，避免误伤正常事件的其它维度）。
+      //   uid / event_type / product / page 都是聚合维度键，不可信 → 整条丢弃，不入库；
+      //   page 不可信时只清空 page（该条仍入库，但退化为不参与 page 聚合，
+      //   避免误伤正常事件的其它维度）。
       //   title/url/referrer/data 是自由文本且不参与任何 GROUP BY，不做白名单。
       let skipped = 0;
       let clearedPage = 0;
       const accepted = [];
       for (const e of trackingEvents) {
+        const uid = String(e.uid || 'anon').slice(0, 64);
+        const eventType = String(e.type || e.event_type || 'event').slice(0, 32);
         const product = String(e.product || '').slice(0, 64);
         const page = String(e.page || '').slice(0, 256);
+        if (!VALID_UID_RE.test(uid)) { skipped++; continue; }
+        if (!VALID_EVENT_TYPE_RE.test(eventType)) { skipped++; continue; }
         if (product && !VALID_PRODUCT_RE.test(product)) { skipped++; continue; }
         let safePage = page;
         if (page && !VALID_PAGE_RE.test(page)) { safePage = ''; clearedPage++; }
-        accepted.push({ e, product, page: safePage });
+        accepted.push({ e, uid, eventType, product, page: safePage });
       }
-      const batch = accepted.map(({ e, product, page }) => {
+      const batch = accepted.map(({ e, uid, eventType, product, page }) => {
         const ts = e.ts || Date.now();
         return stmt.bind(
-          (e.uid || 'anon').slice(0, 64),
-          (e.type || e.event_type || 'event').slice(0, 32),
+          uid,
+          eventType,
           (e.url || '').slice(0, 512),
           page,
           product,
@@ -1369,6 +1376,40 @@ async function handleEventsAudit(request, env) {
         remaining_bad_products: (after?.results || []).filter((r) => !VALID_PRODUCT_RE.test(r.product)),
         remaining_bad_pages: (afterPages?.results || []).filter((r) => !VALID_PAGE_RE.test(r.page)),
         events_total_after: afterTotal?.c || 0,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // purge：按 deepscan 命中的 id 全量删除（覆盖 uid/event_type/data 等
+    // product/page 白名单抓不到的列）
+    if (action === 'purge') {
+      const FIELDS = ['uid', 'event_type', 'url', 'page', 'product', 'title', 'referrer', 'source', 'data', 'ua', 'screen', 'vp', 'locale'];
+      const SIGS = ['union', 'jndi', '@type', 'cmd_inject', '<script', 'javascript:', 'sleep(', 'benchmark(', 'or 1=1', "' --", '${', 'constructor(', '__proto__', 'alert(', 'select 1', 'drop table', 'insert into', '/bin/sh'];
+      const COLS = 'id';
+      const idSet = new Set();
+      for (const s of SIGS) {
+        const where = FIELDS.map((f) => `${f} LIKE ?`).join(' OR ');
+        const params = FIELDS.map(() => `%${s}%`);
+        const hits = await env.DB.prepare(
+          `SELECT ${COLS} FROM events WHERE ${where} LIMIT 2000`
+        ).bind(...params).all();
+        for (const r of hits?.results || []) idSet.add(r.id);
+      }
+      const ids = [...idSet];
+      let deleted = 0;
+      for (let i = 0; i < ids.length; i += 100) {
+        const chunk = ids.slice(i, i + 100);
+        const res = await env.DB.prepare(
+          `DELETE FROM events WHERE id IN (${chunk.map(() => '?').join(',')})`
+        ).bind(...chunk).run();
+        deleted += res?.meta?.changes ?? 0;
+      }
+      const after = await env.DB.prepare('SELECT COUNT(*) as c FROM events').first();
+      return jsonResponse({
+        action: 'purge',
+        target_ids: ids.length,
+        deleted_rows: deleted,
+        events_total_after: after?.c || 0,
         timestamp: new Date().toISOString(),
       });
     }
