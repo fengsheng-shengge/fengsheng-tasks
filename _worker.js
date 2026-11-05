@@ -1307,6 +1307,17 @@ async function handleEvent(request, env) {
 // ============================================================
 const EVENTS_AUDIT_TOKEN = '516a5f73c46db50603f9940e72b43964';
 
+function toIso(v) {
+  if (v === null || v === undefined || v === '') return null;
+  const n = Number(v);
+  if (Number.isFinite(n) && n > 0) {
+    const d = new Date(n * 1000);
+    return isNaN(d.getTime()) ? null : d.toISOString();
+  }
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
+
 async function handleEventsAudit(request, env) {
   const token = request.headers.get('X-Audit-Token') || '';
   if (token !== EVENTS_AUDIT_TOKEN) {
@@ -1384,7 +1395,7 @@ async function handleEventsAudit(request, env) {
           data: String(row.data || '').slice(0, 200),
           ts: row.ts,
           created_at: row.created_at,
-          created_iso: row.created_at ? new Date(row.created_at * 1000).toISOString() : null,
+          created_iso: toIso(row.created_at),
         });
       }
     };
