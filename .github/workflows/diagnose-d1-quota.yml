@@ -62,6 +62,17 @@ jobs:
             -o /tmp/dblist.json
           python3 scripts/format_d1_list.py /tmp/dblist.json
 
+      - name: 列出账户下的 Workers / Pages（找 D1 查询的真凶归属）
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set +e
+          echo ""
+          python3 scripts/list_cloudflare_apps.py
+          exit 0 0
+
       - name: 取证 · events 索引清单与规模（RAISE 诊断件）
         continue-on-error: true
         env:
