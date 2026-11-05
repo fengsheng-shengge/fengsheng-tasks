@@ -1,0 +1,143 @@
+name: 🔬 D1 额度真凶诊断
+
+# ============================================================================
+# 【用途】
+# 定位 D1 免费额度（500 万 rows read/天）到底被谁打穿。
+# 手段：Cloudflare GraphQL Analytics API → d1AnalyticsAdaptiveGroups，
+#       按 queryText 维度拆 sum.rowsRead，直接看谁吃得最多。
+#
+# 【为什么需要】
+# 2026-11-05 事故：额度被打穿后，UTC 00:00 已过（北京时间 08:00）仍处于锁死，
+#   说明恢复后又被打穿了第二次。只靠读代码猜不出真凶（CI/deploy 都不碰 D1），
+#   只能用官方 analytics 拿到「哪些 SQL 被执行、读了多少行」的实证。
+#
+# 【只读】本 workflow 只调用 GraphQL 查询接口，不做任何写操作。
+# ============================================================================
+
+on:
+  workflow_dispatch:
+    inputs:
+      hours:
+        description: '回溯时长（小时）'
+        required: false
+        default: '24'
+      top:
+        description: '输出条数'
+        required: false
+        default: '25'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    name: 查 D1 rows read 排行
+    runs-on: ubuntu-latest
+    steps:
+      - name: 查询 D1 analytics（按 SQL 拆 rows read）
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          HOURS: ${{ inputs.hours }}
+          TOP: ${{ inputs.top }}
+        run: |
+          set -e
+          HOURS="${HOURS:-24}"
+          TOP="${TOP:-25}"
+          echo "=== D1 额度诊断 · 回溯 ${HOURS} 小时 ==="
+
+          # GraphQL 只支持按绝对时间过滤 → 先算起点
+          SINCE=$(python3 -c "
+          import datetime, sys
+          h = int('$HOURS')
+          t = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=h)
+          print(t.strftime('%Y-%m-%dT%H:%M:%SZ'))
+          ")
+          echo "起点(UTC): $SINCE"
+          echo ""
+
+          # 变量：queryText 可能含引号，用 python 生成 JSON body 更安全
+          cat > /tmp/gql.py <<'PY'
+          import json, os, sys, urllib.request
+
+          account = os.environ['CLOUDFLARE_ACCOUNT_ID']
+          token   = os.environ['CLOUDFLARE_API_TOKEN']
+          since   = os.environ['SINCE']
+          top     = int(os.environ.get('TOP', '25'))
+
+          # 按 queryText 聚合取 rows read；同时按 datetime 看时间分布
+          q = """
+          query($acct: String!, $since: TimeStamp!, $top: Int!) {
+            viewer { account(id: $acct) {
+              d1AnalyticsAdaptiveGroups(
+                limit: $top,
+                orderBy: [sum_rowsRead_DESC],
+                filter: { datetime_geq: $since }
+              ) {
+                dimensions { datetime queryText }
+                sum { rowsRead rowsWritten }
+              }
+            } }
+          }
+          """
+          body = json.dumps({
+              'query': q,
+              'variables': {'acct': account, 'since': since, 'top': top}
+          }).encode()
+
+          req = urllib.request.Request(
+              'https://api.cloudflare.com/client/v4/graphql',
+              data=body,
+              headers={
+                  'Authorization': 'Bearer ' + token,
+                  'Content-Type': 'application/json',
+              })
+          try:
+              r = urllib.request.urlopen(req, timeout=60)
+              out = json.loads(r.read().decode())
+          except urllib.error.HTTPError as e:
+              print('❌ GraphQL HTTP', e.code, e.read().decode()[:800]); sys.exit(1)
+
+          if out.get('errors'):
+              print('❌ GraphQL errors:'); print(json.dumps(out['errors'], ensure_ascii=False)[:1200]); sys.exit(1)
+
+          groups = (((out.get('data') or {}).get('viewer') or {}).get('account') or {}).get('d1AnalyticsAdaptiveGroups') or []
+          if not groups:
+              print('⚠ 无数据（可能该 API 需要更高权限的 token，或该时段确实没有查询）')
+              print(json.dumps(out, ensure_ascii=False)[:600]); sys.exit(0)
+
+          total = sum((g.get('sum') or {}).get('rowsRead') or 0 for g in groups)
+          print(f'✅ 取到 {len(groups)} 组聚合，合计 rowsRead = {total:,}')
+          print('')
+          print('─'*100)
+          for i, g in enumerate(groups, 1):
+              d = g.get('dimensions') or {}
+              s = g.get('sum') or {}
+              qt = ' '.join((d.get('queryText') or '').split())
+              if len(qt) > 150: qt = qt[:150] + '…'
+              print(f"{i:>3}. rowsRead={s.get('rowsRead') or 0:>10,}  rowsWritten={s.get('rowsWritten') or 0:>8,}  {d.get('datetime')}")
+              print(f"     {qt}")
+          print('─'*100)
+          print(f'※ 免费额度 5,000,000 rows/day。上面合计 {total:,} 行。')
+          PY
+          export SINCE
+          python3 /tmp/gql.py
+
+      - name: 查询 D1 库清单与大小
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -e
+          echo ""
+          echo "=== D1 数据库清单 ==="
+          curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database" \
+            | python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          if not d.get('success'):
+              print('❌', json.dumps(d.get('errors'), ensure_ascii=False)[:400]); raise SystemExit
+          for db in d.get('result', []):
+              print(f\"  {db.get('name'):28s} {db.get('uuid')}  {db.get('num_tables')} tables  {db.get('file_size')} bytes\")
+          "
