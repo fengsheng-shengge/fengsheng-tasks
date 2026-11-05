@@ -22,6 +22,18 @@ const MAX_PAYLOAD_SIZE = 64 * 1024;
 const BANNED_IPS = new Map();
 const BAN_DURATION_MS = 3600_000;
 
+// ============================================================
+//  埋点字段白名单（2026-11-05 · 防止 /api/events 被灌入脏分组键）
+//  背景：/api/events 是公开 POST 接口，product/page 完全由客户端决定，
+//        攻击者用 `" union select 1,2,...,N-- ` 灌入 events 表，
+//        直接污染 /api/stats/summary 的 per_product 聚合。
+//  product 是机器标识（URL 路径派生 / 小程序固定 'mini-program'）→ 严格白名单；
+//  page 是路径形态 → 允许字母数字与 - _ . % / : ;
+//  合法的中文标题/URL 走 title/data/url 字段，不受此约束。
+// ============================================================
+const VALID_PRODUCT_RE = /^[A-Za-z0-9_%.\-]{1,64}$/;
+const VALID_PAGE_RE = /^[A-Za-z0-9_%.\-/:]{1,256}$/;
+
 // Malicious tool / scanner UAs — block outright
 const MALICIOUS_UA_PATTERNS = [
   /nmap/i, /sqlmap/i, /masscan/i, /nikto/i, /burpsuite/i, /wpscan/i,
@@ -226,6 +238,56 @@ function isSuspiciousQueryString(queryString) {
 }
 
 // ============================================================
+//  Layer 7.6: 注入类 payload 检测（SQLi / XSS / 命令注入 / 模板注入）
+//  2026-11-05 · 补 WAF 盲区
+//  盲区原文：SQLi/XSS 规则只在 isSuspiciousQueryString(url.search) 里生效，
+//            即只看 URL query；POST body 完全没有被检查。
+//  后果实测：10 条 `" union select 1,2,...,10-- ` 探针经 /api/events 的
+//            body 直接写进 D1 events 表，污染 /api/stats/summary 的
+//            per_product 聚合（2026-08-12 运维报告已记为 P1「攻击 Payload
+//            未清理」，至今未闭环）。
+//  本函数只做「高置信度」判定，避免误伤正常中文标题与埋点 JSON。
+// ============================================================
+const INJECTION_PAYLOAD_PATTERNS = [
+  // === SQL 注入 ===
+  /union\s+select/i,
+  /\bselect\b[^;]{0,120}\bfrom\b/i,
+  /\bor\s+1\s*=\s*1/i,
+  /['"`]\s*--/,
+  /\bdrop\s+table\b/i,
+  /\binsert\s+into\b/i,
+  /\bdelete\s+from\b/i,
+  /\bsleep\s*\(/i,
+  /\bbenchmark\s*\(/i,
+  /\bwaitfor\s+delay\b/i,
+  /\bxp_cmdshell\b/i,
+  /\bgroup\s+by\b[^;]{0,80}\bselect\b/i,
+  // === XSS ===
+  /<script/i,
+  /<\/script/i,
+  /javascript\s*:/i,
+  /\bon(?:error|load|mouseover)\s*=/i,
+  /\bdocument\s*\.\s*(cookie|location)/i,
+  // === 模板注入 / 原型污染 ===
+  /\$\{[^}]{0,200}\}/,
+  /__proto__/,
+  /constructor\s*\(/,
+  // === 命令注入 ===
+  /;\s*(?:cat|rm|wget|curl|nc|bash|sh)\s/i,
+  /\|\s*(?:sh|bash)\b/i,
+  /\/(?:bin|usr)\/bin\/(?:sh|bash)/i,
+];
+
+function isSuspiciousPayload(text) {
+  if (!text || typeof text !== 'string') return false;
+  const t = text.length > 8192 ? text.slice(0, 8192) : text;
+  for (const pattern of INJECTION_PAYLOAD_PATTERNS) {
+    if (pattern.test(t)) return true;
+  }
+  return false;
+}
+
+// ============================================================
 //  Layer 7.5: Log4Shell / fastjson JNDI 注入专项防御 (P1 紧急)
 //  部署：2026-08-05 · 5 payload 持续污染 events 表
 //  覆盖：
@@ -286,6 +348,33 @@ function isLog4ShellAttack(input) {
   return null;
 }
 
+// 有上限地读取请求体（2026-11-05）
+// 原实现用 Content-Length 判断是否读 body，但 chunked 传输（无 Content-Length）
+// 会让 body 检查整体失效 —— 扫描器最常用的就是 chunked。
+// 这里改成直接读流，最多读 64KB，读完即 cancel。
+async function readBodyCapped(request, maxBytes) {
+  try {
+    const stream = request.clone().body;
+    if (!stream) return null;
+    const reader = stream.getReader();
+    const decoder = new TextDecoder();
+    let text = '';
+    let bytes = 0;
+    while (bytes < maxBytes) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value) continue;
+      const take = Math.min(value.length, maxBytes - bytes);
+      text += decoder.decode(value.subarray(0, take), { stream: true });
+      bytes += take;
+    }
+    try { await reader.cancel(); } catch (e) { /* ignore */ }
+    return text;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function checkLog4ShellWAF(request) {
   let url;
   try { url = new URL(request.url); } catch (e) { return null; }
@@ -309,16 +398,20 @@ async function checkLog4ShellWAF(request) {
     attack = isLog4ShellAttack(key + ': ' + value);
     if (attack) return { source: 'header.' + key, ...attack };
   }
-  // 4. Body (POST/PUT/PATCH) — 限制大小，先 clone
+  // 4. Body (POST/PUT/PATCH) — 最多读 64KB（流式限长，不依赖 Content-Length）
   if (request.method === 'POST' || request.method === 'PUT' || request.method === 'PATCH') {
-    const contentLength = parseInt(request.headers.get('Content-Length') || '0');
-    if (contentLength > 0 && contentLength < 65536) {
-      try {
-        const cloned = request.clone();
-        const bodyText = await cloned.text();
-        attack = isLog4ShellAttack(bodyText);
-        if (attack) return { source: 'body', ...attack };
-      } catch (e) { /* body 读取失败不阻断 */ }
+    const bodyText = await readBodyCapped(request, 65536);
+    if (bodyText) {
+      attack = isLog4ShellAttack(bodyText);
+      if (attack) return { source: 'body', ...attack };
+      // 2026-11-05 补盲区：body 也要过注入检测（原先只看 query）
+      // 只对机器生成的埋点端点生效 —— /api/feedback 等自由文本接口的
+      // body 是用户留言，英文句子可能被误判（例如 "select ... from"），
+      // 那里误判一次就会封禁整个出口 IP，得不偿失。
+      const p = url.pathname.replace(/\/+$/, '');
+      if ((p === '/api/events' || p === '/api/event') && isSuspiciousPayload(bodyText)) {
+        return { source: 'body.injection', pattern: 'injection-payload', reason: 'injection-payload' };
+      }
     }
   }
   return null;
@@ -1151,14 +1244,30 @@ async function handleEvent(request, env) {
       const stmt = env.DB.prepare(
         'INSERT OR IGNORE INTO events (uid, event_type, url, page, product, title, referrer, utm_source, utm_medium, utm_campaign, ref, source, ua, screen, vp, locale, data, ts, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
       );
-      const batch = trackingEvents.map((e) => {
+      // 2026-11-05 写入层加固：
+      //   product 是聚合分组键（per_product），不可信 → 整条丢弃，不入库；
+      //   page 也是分组键（/api/stats/pages），不可信 → 清空（该条仍入库，
+      //   但不参与 page 聚合，避免误伤正常事件的其它维度）。
+      //   title/url/referrer/data 是自由文本且不参与任何 GROUP BY，不做白名单。
+      let skipped = 0;
+      let clearedPage = 0;
+      const accepted = [];
+      for (const e of trackingEvents) {
+        const product = String(e.product || '').slice(0, 64);
+        const page = String(e.page || '').slice(0, 256);
+        if (product && !VALID_PRODUCT_RE.test(product)) { skipped++; continue; }
+        let safePage = page;
+        if (page && !VALID_PAGE_RE.test(page)) { safePage = ''; clearedPage++; }
+        accepted.push({ e, product, page: safePage });
+      }
+      const batch = accepted.map(({ e, product, page }) => {
         const ts = e.ts || Date.now();
         return stmt.bind(
           (e.uid || 'anon').slice(0, 64),
           (e.type || e.event_type || 'event').slice(0, 32),
           (e.url || '').slice(0, 512),
-          (e.page || '').slice(0, 256),
-          (e.product || '').slice(0, 64),
+          page,
+          product,
           (e.title || '').slice(0, 256),
           (e.referrer || '').slice(0, 512),
           (e.utm_source || '').slice(0, 128),
@@ -1175,8 +1284,12 @@ async function handleEvent(request, env) {
           Math.floor(ts / 1000)
         );
       });
-      await env.DB.batch(batch);
-      console.log(`events: wrote ${trackingEvents.length} event(s)`);
+      if (batch.length) await env.DB.batch(batch);
+      if (skipped || clearedPage) {
+        console.warn(`events: rejected ${skipped} event(s) with invalid product, cleared page on ${clearedPage} event(s)`);
+      }
+      console.log(`events: wrote ${batch.length} event(s), skipped ${skipped}, page-cleared ${clearedPage}`);
+      return jsonResponse({ ok: true, stored: batch.length, skipped, page_cleared: clearedPage });
     } else if (trackingEvents.length) {
       console.log(`events: received ${trackingEvents.length} event(s) (no DB, not persisted)`);
     }
@@ -1184,6 +1297,107 @@ async function handleEvent(request, env) {
     console.error('events: write failed', e.message);
   }
   return jsonResponse({ ok: true });
+}
+
+// ============================================================
+//  临时：events 表污染审计 / 清理端点（2026-11-05 · 一次性令牌）
+//  背景：/api/events 被扫描器灌入注入探针，污染 per_product / per_page。
+//  用途：定位脏行的时间戳与来源指纹，并执行清理。
+//  生命周期：本次清理验证通过后随下一个 commit 一并移除（见仓库记录）。
+// ============================================================
+const EVENTS_AUDIT_TOKEN = '516a5f73c46db50603f9940e72b43964';
+
+async function handleEventsAudit(request, env) {
+  const token = request.headers.get('X-Audit-Token') || '';
+  if (token !== EVENTS_AUDIT_TOKEN) {
+    return jsonResponse({ error: 'forbidden' }, 403);
+  }
+  if (!env.DB) return jsonResponse({ error: 'no database' }, 503);
+  const url = new URL(request.url);
+  const action = url.searchParams.get('action') || 'scan';
+  try {
+    // 1) 取全部 distinct product / page（走 idx_events_product 索引，成本低）
+    const prodRows = await env.DB.prepare(
+      "SELECT product, COUNT(*) as cnt FROM events WHERE product != '' GROUP BY product ORDER BY cnt DESC"
+    ).all();
+    const pageRows = await env.DB.prepare(
+      "SELECT page, COUNT(*) as cnt FROM events WHERE page != '' GROUP BY page ORDER BY cnt DESC LIMIT 500"
+    ).all();
+    const badProducts = (prodRows?.results || []).filter((r) => !VALID_PRODUCT_RE.test(r.product));
+    const badPages = (pageRows?.results || []).filter((r) => !VALID_PAGE_RE.test(r.page));
+
+    if (action === 'clean') {
+      let deleted = 0, cleared = 0;
+      for (const r of badProducts) {
+        const res = await env.DB.prepare('DELETE FROM events WHERE product = ?').bind(r.product).run();
+        deleted += res?.meta?.changes ?? 0;
+      }
+      for (const r of badPages) {
+        const res = await env.DB.prepare("UPDATE events SET page = '' WHERE page = ?").bind(r.page).run();
+        cleared += res?.meta?.changes ?? 0;
+      }
+      const after = await env.DB.prepare(
+        "SELECT product, COUNT(*) as cnt FROM events WHERE product != '' GROUP BY product"
+      ).all();
+      return jsonResponse({
+        action: 'clean',
+        deleted_rows: deleted,
+        page_cleared_rows: cleared,
+        bad_product_groups_before: badProducts.length,
+        bad_page_groups_before: badPages.length,
+        product_groups_after: (after?.results || []).length,
+        remaining_bad_products: (after?.results || []).filter((r) => !VALID_PRODUCT_RE.test(r.product)),
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // scan：逐个脏 product 拉明细行
+    const details = [];
+    for (const r of badProducts) {
+      const rows = await env.DB.prepare(
+        'SELECT id, uid, event_type, product, page, title, url, referrer, source, ua, screen, vp, locale, data, ts, created_at FROM events WHERE product = ? ORDER BY created_at ASC LIMIT 100'
+      ).bind(r.product).all();
+      for (const row of rows?.results || []) {
+        details.push({
+          id: row.id,
+          uid: row.uid,
+          event_type: row.event_type,
+          product: row.product,
+          page: row.page,
+          title: String(row.title || '').slice(0, 120),
+          url: String(row.url || '').slice(0, 200),
+          referrer: String(row.referrer || '').slice(0, 120),
+          source: String(row.source || '').slice(0, 200),
+          ua: String(row.ua || '').slice(0, 200),
+          screen: row.screen, vp: row.vp, locale: row.locale,
+          data: String(row.data || '').slice(0, 200),
+          ts: row.ts,
+          created_at: row.created_at,
+          created_iso: new Date(row.created_at * 1000).toISOString(),
+        });
+      }
+    }
+    // 按天汇总脏行时间线
+    const timeline = {};
+    for (const d of details) {
+      const day = String(d.created_iso).slice(0, 10);
+      timeline[day] = (timeline[day] || 0) + 1;
+    }
+    const total = await env.DB.prepare('SELECT COUNT(*) as c FROM events').first();
+    return jsonResponse({
+      action: 'scan',
+      events_total: total?.c || 0,
+      product_groups: (prodRows?.results || []).length,
+      bad_product_groups: badProducts.map((r) => ({ product: r.product, cnt: r.cnt })),
+      bad_page_groups: badPages.map((r) => ({ page: r.page, cnt: r.cnt })),
+      dirty_rows: details.length,
+      timeline,
+      details,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500);
+  }
 }
 
 async function handleStats(request, env) {
@@ -3433,7 +3647,7 @@ export default {
     const log4shellAttack = await checkLog4ShellWAF(request);
     if (log4shellAttack) {
       banIP(clientIP);
-      console.error(`[WAF] Log4Shell/JNDI attack blocked: ip=${clientIP} source=${log4shellAttack.source} pattern=${log4shellAttack.pattern} ua=${ua.slice(0,80)} path=${path}`);
+      console.error(`[WAF] 注入类攻击已拦截: ip=${clientIP} source=${log4shellAttack.source} pattern=${log4shellAttack.pattern} ua=${ua.slice(0,80)} path=${path}`);
       return new Response('Forbidden', {
         status: 403,
         headers: {
@@ -3575,6 +3789,9 @@ export default {
     if (path === '/api/stats/pages') return handleStatsPages(request, env);
     if (path === '/api/stats/events') return handleStatsEvents(request, env);
     if (path === '/api/mp-stats') return handleMpStats(request, env);
+
+    // 临时：events 表污染审计 / 清理（一次性令牌，清理完成后移除）
+    if (path === '/api/admin/events-audit') return handleEventsAudit(request, env);
 
     // Feedback
     if (path === '/api/feedback') {
