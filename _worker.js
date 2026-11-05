@@ -968,12 +968,13 @@ async function handleMpStats(request, env) {
   let d1Data = { mp_users: 0, mp_pv: 0, source: 'd1_empty' };
   if (env.DB) {
     try {
-      // Count unique UIDs that look like miniprogram users (uid starting with wx_ or o prefix)
+      // 小程序用户判定：tracker.js 只上报 uid/product/page/data，url 与 source 恒为空，
+      // 故只能用 product='mini-program' 判定（原 wx_/o_/pages/ 判据实测命中 0 条）
       const mpUsersD1 = await env.DB.prepare(
-        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE uid LIKE 'wx_%' OR uid LIKE 'o_%' OR url LIKE 'pages/%' OR source LIKE '%miniprogram%'"
+        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE product = 'mini-program' AND event_type = 'pageview'"
       ).first();
       const mpPVD1 = await env.DB.prepare(
-        "SELECT COUNT(*) as c FROM events WHERE event_type = 'pageview' AND (uid LIKE 'wx_%' OR uid LIKE 'o_%' OR url LIKE 'pages/%' OR source LIKE '%miniprogram%')"
+        "SELECT COUNT(*) as c FROM events WHERE event_type = 'pageview' AND product = 'mini-program'"
       ).first();
       d1Data = {
         mp_users: mpUsersD1?.c || 0,
@@ -1215,12 +1216,12 @@ async function handleStats(request, env) {
         "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND created_at >= ?"
       ).bind(todayStart).first();
 
-      // Mini-program users: uid starts with wx_ (openid-based) or url starts with pages/
+      // Mini-program users: 以 product='mini-program' 判定（理由同 handleMpStats 内注释）
       const mpUsers = await env.DB.prepare(
-        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE uid LIKE 'wx_%' OR url LIKE 'pages/%' OR source LIKE '%miniprogram%'"
+        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE product = 'mini-program'"
       ).first();
       const mpPV = await env.DB.prepare(
-        "SELECT COUNT(*) as c FROM events WHERE event_type = 'pageview' AND (uid LIKE 'wx_%' OR url LIKE 'pages/%' OR source LIKE '%miniprogram%')"
+        "SELECT COUNT(*) as c FROM events WHERE event_type = 'pageview' AND product = 'mini-program'"
       ).first();
 
       // Feedback count
@@ -1399,6 +1400,64 @@ async function handleStatsDaily(request, env) {
   return jsonResponse({ daily: [], updated: now, note: 'no database configured' });
 }
 
+async function handleStatsPages(request, env) {
+  const url = new URL(request.url);
+  const days = Math.min(Math.max(parseInt(url.searchParams.get('days') || '7', 10) || 7, 1), 90);
+  const product = (url.searchParams.get('product') || '').trim();
+  const now = new Date().toISOString().split('T')[0];
+  if (env.DB) {
+    try {
+      let sql = `SELECT page,
+        COUNT(CASE WHEN event_type='pageview' THEN 1 END) AS pageviews,
+        COUNT(DISTINCT CASE WHEN event_type='pageview' THEN uid END) AS uv,
+        COUNT(CASE WHEN event_type='click' THEN 1 END) AS clicks
+        FROM events
+        WHERE created_at >= unixepoch('now', ?) AND page != ''`;
+      const bind = [`-${days} days`];
+      if (product) { sql += ` AND product = ?`; bind.push(product); }
+      sql += ` GROUP BY page ORDER BY pageviews DESC`;
+      const res = await env.DB.prepare(sql).bind(...bind).all();
+      return jsonResponse({
+        pages: res?.results || [],
+        days,
+        product: product || null,
+        updated: now,
+        source: 'db',
+      });
+    } catch (e) {
+      console.error('stats/pages: DB query failed', e.message);
+    }
+  }
+  return jsonResponse({ pages: [], days, product: product || null, updated: now, note: 'no database configured' });
+}
+
+async function handleStatsEvents(request, env) {
+  const url = new URL(request.url);
+  const days = Math.min(Math.max(parseInt(url.searchParams.get('days') || '7', 10) || 7, 1), 90);
+  const product = (url.searchParams.get('product') || '').trim();
+  const now = new Date().toISOString().split('T')[0];
+  if (env.DB) {
+    try {
+      let sql = `SELECT event_type, COUNT(*) AS count
+        FROM events
+        WHERE created_at >= unixepoch('now', ?)`;
+      const bind = [`-${days} days`];
+      if (product) { sql += ` AND product = ?`; bind.push(product); }
+      sql += ` GROUP BY event_type ORDER BY count DESC`;
+      const res = await env.DB.prepare(sql).bind(...bind).all();
+      return jsonResponse({
+        events: res?.results || [],
+        days,
+        product: product || null,
+        updated: now,
+        source: 'db',
+      });
+    } catch (e) {
+      console.error('stats/events: DB query failed', e.message);
+    }
+  }
+  return jsonResponse({ events: [], days, product: product || null, updated: now, note: 'no database configured' });
+}
 async function handleStatsHealth(request, env) {
   const now = new Date().toISOString();
   const base = {
@@ -3513,6 +3572,8 @@ export default {
     if (path === '/api/stats/summary') return handleStatsSummary(request, env);
     if (path === '/api/stats/daily') return handleStatsDaily(request, env);
     if (path === '/api/stats/health') return handleStatsHealth(request, env);
+    if (path === '/api/stats/pages') return handleStatsPages(request, env);
+    if (path === '/api/stats/events') return handleStatsEvents(request, env);
     if (path === '/api/mp-stats') return handleMpStats(request, env);
 
     // Feedback
