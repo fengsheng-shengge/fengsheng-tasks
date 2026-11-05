@@ -74,10 +74,41 @@ jobs:
           done
 
           echo ""
-          echo "════════ 4. 与 Pages 兜底域名逐字节比对 ════════"
-          for ep in "/" "/api/health" "/api/stats/summary"; do
-            A=$(curl -4 -s --max-time 30 "$PROXY_URL$ep" | shasum -a 256 | cut -c1-16)
-            B=$(curl -4 -s --max-time 30 "https://fengsheng-ee9.pages.dev$ep" | shasum -a 256 | cut -c1-16)
+          echo "════════ 4. 与 Pages 兜底域名内容比对（归一化易变字段）════════"
+          for ep in "/" "/api/health" "/api/stats/summary" "/api/stats/pages?days=7"; do
+            A=$(curl -4 -s --max-time 30 "$PROXY_URL$ep" | python3 -c "
+          import sys,json,re,hashlib
+          raw=sys.stdin.read()
+          try:
+              d=json.loads(raw)
+              # 抹掉随时间变化的字段（updated / timestamp / generated_at / cache 相关）
+              def strip(o):
+                  if isinstance(o,dict):
+                      return {k:strip(v) for k,v in o.items()
+                              if k.lower() not in ('updated','timestamp','generated_at','cached_at','expires_at','cache_hit','x-stats-cache','date','server_time','now')}
+                  if isinstance(o,list): return [strip(x) for x in o]
+                  return o
+              raw=json.dumps(strip(d),sort_keys=True,ensure_ascii=False)
+          except Exception:
+              raw=re.sub(r'\"(updated|timestamp|generated_at)\":\"[^\"]*\"','',raw)
+          print(hashlib.sha256(raw.encode()).hexdigest()[:16])
+          ")
+            B=$(curl -4 -s --max-time 30 "https://fengsheng-ee9.pages.dev$ep" | python3 -c "
+          import sys,json,re,hashlib
+          raw=sys.stdin.read()
+          try:
+              d=json.loads(raw)
+              def strip(o):
+                  if isinstance(o,dict):
+                      return {k:strip(v) for k,v in o.items()
+                              if k.lower() not in ('updated','timestamp','generated_at','cached_at','expires_at','cache_hit','x-stats-cache','date','server_time','now')}
+                  if isinstance(o,list): return [strip(x) for x in o]
+                  return o
+              raw=json.dumps(strip(d),sort_keys=True,ensure_ascii=False)
+          except Exception:
+              raw=re.sub(r'\"(updated|timestamp|generated_at)\":\"[^\"]*\"','',raw)
+          print(hashlib.sha256(raw.encode()).hexdigest()[:16])
+          ")
             if [ "$A" = "$B" ]; then
               echo "   ✅ $ep 内容一致 (sha=$A)"
             else
