@@ -867,7 +867,19 @@
   .gb-next-item:hover { color: #fff; }
   .gb-next-sub { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 3px; }
 
-  /* ===== 🆕 经纪人视角 · 测学练考评（简洁版） ===== */
+  /* ===== 🆕 价值引导区 ===== */
+  .value-intro { background: linear-gradient(135deg, #1a343f 0%, #2d5a4a 100%); border-radius: 16px; padding: 18px 22px; margin-bottom: 12px; color: #fff; }
+  .vi-title { font-size: 16px; font-weight: 800; margin: 0 0 6px; letter-spacing: 0.3px; line-height: 1.5; }
+  .vi-highlight { color: var(--gold); }
+  .vi-sub { font-size: 12.5px; color: rgba(255,255,255,0.75); margin: 0 0 12px; line-height: 1.6; }
+  .vi-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .vi-btn { padding: 9px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; }
+  .vi-btn-primary { background: var(--gold); color: #2d1f00; box-shadow: 0 4px 12px rgba(201,169,98,0.35); }
+  .vi-btn-ghost { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.25); }
+  .vi-or { font-size: 11px; color: rgba(255,255,255,0.5); }
+  .gb-onboard { background: linear-gradient(135deg, #1a343f 0%, #3d5a3a 100%); }
+
+  /* ===== 🆕 经纪人视角 · 测学练考评 ===== */
   .layered-section { background: var(--card); border-radius: 16px; border: 1px solid var(--line); margin-bottom: 20px; overflow: hidden; }
   .layered-header { padding: 14px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: linear-gradient(135deg, #f0f5f2 0%, #e8f0ea 100%); transition: background 0.2s; user-select: none; border-bottom: 1px solid var(--line); }
   .layered-header:hover { background: linear-gradient(135deg, #e5ede7 0%, #f0f5f2 100%); }
@@ -970,6 +982,17 @@
   <!-- 主内容 -->
   <div class="main">
 
+    <!-- ===== 🆕 价值引导区（经纪人打开 5 秒看懂） ===== -->
+    <div class="value-intro" id="value-intro">
+      <h2 class="vi-title">这个站帮你：<span class="vi-highlight">选一个服务阶段 → 告诉你做什么、为什么、怎么练、怎么测</span></h2>
+      <p class="vi-sub">不用背话术。6 个阶段 · 每一步 4 个核心动作 · AI 模拟客户陪练</p>
+      <div class="vi-actions">
+        <a class="vi-btn vi-btn-primary" href="/care-test/">🎯 先测 5 分钟 · 找你的薄弱项</a>
+        <span class="vi-or">或</span>
+        <span class="vi-btn vi-btn-ghost" onclick="document.querySelector('#stage-tabs .st-tab[data-stage=\\\"negotiate\\\"]')?.click(); document.getElementById('layered-section')?.scrollIntoView({behavior:'smooth', block:'start'});">💬 直接点"谈判逼单"试试</span>
+      </div>
+    </div>
+
     <!-- 🆕 v3.4：成长进度总览条（页面最顶部，用户第一眼看到） -->
     <div class="growth-bar" id="growth-bar">
       <div class="gb-left">
@@ -1056,38 +1079,6 @@
         <div id="scenario-cards"></div>
       </div>
 
-      <!-- ===== 阶段浏览面板（永远可见，空态 + 有搜索都展示） ===== -->
-      <div class="stage-browse-panel" id="stage-browse">
-        <div class="stage-browse-hint" onclick="toggleStageBrowse()" title="点击收起/展开">
-          <div class="st-hint-left">
-            <span id="browse-stage-name">💬 带看议价</span>
-            阶段 ·
-            <span id="browse-stage-count">0</span> 个场景
-            <span class="st-consumer-tag" id="browse-consumer-tag">👤 购房客户</span>
-          </div>
-          <span class="st-toggle" id="st-toggle">▼</span>
-        </div>
-        <div id="stage-scenario-cards"></div>
-      </div>
-
-      <!-- ===== 🆕 知识底座 · 本阶段精选（切 Tab 主动加载） ===== -->
-      <div class="kb-stage-panel" id="kb-stage-panel">
-        <div class="kb-stage-header" onclick="toggleKBStage()">
-          <div class="kb-stage-title">
-            <span>📚 知识底座 · 本阶段精选</span>
-            <span class="kb-stage-tag">匠星金 · AI 精选</span>
-          </div>
-          <div class="kb-stage-actions">
-            <a class="kb-stage-more" href="/knowledge/" target="_blank" onclick="event.stopPropagation()">进入知识底座 →</a>
-            <span class="kb-stage-toggle" id="kb-stage-toggle" title="收起/展开">▼</span>
-          </div>
-        </div>
-        <div class="kb-stage-body" id="kb-stage-body">
-          <div class="kb-stage-loading">⏳ 正在匹配本阶段核心词条...</div>
-        </div>
-      </div>
-    </div>
-
     <!-- ===== 🆕 这个阶段我该做什么（经纪人视角 · 测学练考评） ===== -->
     <div class="layered-section" id="layered-section">
       <div class="layered-header" onclick="document.getElementById('layered-body').classList.toggle('collapsed')">
@@ -1133,6 +1124,38 @@
             <span class="bp-check-text">这个阶段的小测 5 分钟就能完成，帮你验收学得怎么样</span>
             <a class="bp-check-link" href="/care-test/">去测 →</a>
           </div>
+        </div>
+      </div>
+    </div>
+
+      <!-- ===== 阶段浏览面板（永远可见，空态 + 有搜索都展示） ===== -->
+      <div class="stage-browse-panel" id="stage-browse" style="display:none">
+        <div class="stage-browse-hint" onclick="toggleStageBrowse()" title="点击收起/展开">
+          <div class="st-hint-left">
+            <span id="browse-stage-name">💬 带看议价</span>
+            阶段 ·
+            <span id="browse-stage-count">0</span> 个场景
+            <span class="st-consumer-tag" id="browse-consumer-tag">👤 购房客户</span>
+          </div>
+          <span class="st-toggle" id="st-toggle">▼</span>
+        </div>
+        <div id="stage-scenario-cards"></div>
+      </div>
+
+      <!-- ===== 🆕 知识底座 · 本阶段精选（切 Tab 主动加载） ===== -->
+      <div class="kb-stage-panel" id="kb-stage-panel" style="display:none">
+        <div class="kb-stage-header" onclick="toggleKBStage()">
+          <div class="kb-stage-title">
+            <span>📚 知识底座 · 本阶段精选</span>
+            <span class="kb-stage-tag">匠星金 · AI 精选</span>
+          </div>
+          <div class="kb-stage-actions">
+            <a class="kb-stage-more" href="/knowledge/" target="_blank" onclick="event.stopPropagation()">进入知识底座 →</a>
+            <span class="kb-stage-toggle" id="kb-stage-toggle" title="收起/展开">▼</span>
+          </div>
+        </div>
+        <div class="kb-stage-body" id="kb-stage-body">
+          <div class="kb-stage-loading">⏳ 正在匹配本阶段核心词条...</div>
         </div>
       </div>
     </div>
@@ -1731,18 +1754,20 @@
       // 💡 为什么这么做
       document.getElementById("lc-why").textContent = s.why;
 
-      // 🤖 练一练场景
+      // 🤖 练一练场景 + 动态加 ?stage 参数
       document.getElementById("lc-practice-scene").textContent = s.practiceScene;
+      var pl = document.getElementById("lc-practice-link");
+      if(pl) pl.href = "/ai-advisor/?stage=" + stageKey;
 
-      // 📖 学一学：从 question_map 动态筛 3 条
+      // 📖 学一学：从 question_map 动态筛 3 条（去 CAP-SKILL 编号，只显示问题标题）
       var learnHtml = "";
       if(questionMap){
         var stageSkills = questionMap.mapping.filter(function(m){
           return m.stage === stageKey && (currentConsumer === "all" || m.consumer === currentConsumer);
         }).slice(0, 3);
         learnHtml = stageSkills.map(function(m){
-          return '<a class="bp-learn-item" href="/knowledge/#cap-' + m.skill_standard + '">' +
-                 m.skill_standard + ' · ' + m.title + '</a>';
+          return '<a class="bp-learn-item" href="/knowledge/?stage=' + stageKey + '">' +
+                 m.title + '</a>';
         }).join("");
       }
       if(!learnHtml) learnHtml = '<div style="font-size:11px;color:#999">暂无本阶段知识条目</div>';
@@ -2342,6 +2367,37 @@
       body.innerHTML = '<div class="kb-stage-empty">⚠️ 知识底座暂时不可用（' + (err.message || '') + '）<br><span style="opacity:.6;font-size:12px;">刷新页面试试</span></div>';
     }
   }
+  })();
+
+  // ===== 🆕 引导逻辑：无测评记录时把 0% 改成引导文案 =====
+  (function(){
+    var hasAssessment = false;
+    try {
+      // 检测任何含 assessment / care_test / ability 的 localStorage key
+      for(var j=0; j<localStorage.length; j++){
+        var k = localStorage.key(j) || '';
+        if(k.indexOf('assessment') >= 0 || k.indexOf('care_test') >= 0 || k.indexOf('ability') >= 0 || k.indexOf('fs_dim_scores') >= 0){
+          hasAssessment = true; break;
+        }
+      }
+    } catch(e) {}
+
+    if(!hasAssessment){
+      var gb = document.getElementById('growth-bar');
+      if(gb) gb.classList.add('gb-onboard');
+      var pct = document.getElementById('gb-progress-pct');
+      if(pct) pct.textContent = '🔑 开始';
+      var badge = document.getElementById('gb-level-badge');
+      if(badge) badge.textContent = '📌 先测 5 分钟';
+      var fill = document.getElementById('gb-progress-fill');
+      if(fill) { fill.style.width = '8%'; fill.style.background = 'var(--gold)'; }
+      var nextLabel = document.querySelector('.gb-next-label');
+      if(nextLabel) { nextLabel.textContent = '🎯 第一步：'; nextLabel.style.color = 'var(--gold)'; }
+      var nextItem = document.getElementById('gb-next-item');
+      if(nextItem) { nextItem.innerHTML = '<a href="/care-test/" style="color:var(--gold);text-decoration:none">做 5 分钟测评 · 找你的薄弱项</a>'; }
+      var nextSub = document.getElementById('gb-next-sub');
+      if(nextSub) nextSub.textContent = '测完自动生成能力画像 → 切到对应阶段练';
+    }
   })();
   </script>
 
