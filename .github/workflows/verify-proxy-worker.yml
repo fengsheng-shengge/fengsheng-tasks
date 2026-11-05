@@ -1,0 +1,96 @@
+name: 🧪 代理 Worker 端到端自检
+
+# ============================================================================
+# 【目的】
+# 2026-11-05：fengsheng.tech 的 DNS 记录需要人工补（Cloudflare token 无 Zone DNS Edit）。
+# 在此之前，已在 Cloudflare 上铺好一条「DNS 一落地就生效」的路径：
+#   fengsheng.tech → Worker 路由 fengsheng.tech/* → fengsheng-proxy → 转发到 Pages
+#
+# 本 workflow 验证这条路径的每一环都真的通：
+#   1. 代理 Worker 脚本在不在
+#   2. Worker 路由在不在（pattern = fengsheng.tech/*）
+#   3. 代理 Worker 自己的 workers.dev 域名是否正确转发（关键：不依赖 DNS）
+#   4. 转发后的内容是否与 Pages 兜底域名**逐字节一致**（首页 + API）
+#   5. 生产域名当前解析状态（人工补记录前的基线）
+#
+# 【只读】不改任何配置。
+# ============================================================================
+on:
+  workflow_dispatch:
+    inputs:
+      hostname:
+        description: '生产域名'
+        required: false
+        default: 'fengsheng.tech'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: 代理链路自检
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 代理链路自检
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          HOSTNAME: ${{ inputs.hostname }}
+          SCRIPT: fengsheng-proxy
+        run: |
+          set +e
+          CF=https://api.cloudflare.com/client/v4
+          ACC=$CLOUDFLARE_ACCOUNT_ID
+
+          echo "════════ 1. workers.dev 子域 ════════"
+          SUB=$(curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/accounts/$ACC/workers/subdomain" | python3 -c "import sys,json;print((json.load(sys.stdin).get('result') or {}).get('subdomain',''))")
+          echo "   subdomain = $SUB"
+          PROXY_URL="https://$SCRIPT.$SUB.workers.dev"
+          echo "   代理入口 = $PROXY_URL"
+
+          echo ""
+          echo "════════ 2. Worker 路由 ════════"
+          ZONE_ID=$(curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/zones?name=fengsheng.tech" | python3 -c "import sys,json;r=(json.load(sys.stdin).get('result') or []);print(r[0]['id'] if r else '')")
+          curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/zones/$ZONE_ID/workers/routes" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin)
+          rs=d.get('result') or []
+          if not rs: print('   （无路由）')
+          for r in rs: print('   - pattern=%-28s script=%-20s zone=%s' % (r.get('pattern'), r.get('script'), (r.get('zone_id') or '')[:8]))
+          "
+
+          echo ""
+          echo "════════ 3. 代理 Worker 自身可用性（不依赖 DNS）════════"
+          for ep in "/" "/api/health" "/api/stats/pages?days=7"; do
+            CODE=$(curl -4 -s -o /tmp/px.txt -w "%{http_code}" --max-time 30 "$PROXY_URL$ep")
+            echo "   代理 $ep → HTTP ${CODE:-无} | $(head -c 150 /tmp/px.txt | tr -d '\n')"
+          done
+
+          echo ""
+          echo "════════ 4. 与 Pages 兜底域名逐字节比对 ════════"
+          for ep in "/" "/api/health" "/api/stats/summary"; do
+            A=$(curl -4 -s --max-time 30 "$PROXY_URL$ep" | shasum -a 256 | cut -c1-16)
+            B=$(curl -4 -s --max-time 30 "https://fengsheng-ee9.pages.dev$ep" | shasum -a 256 | cut -c1-16)
+            if [ "$A" = "$B" ]; then
+              echo "   ✅ $ep 内容一致 (sha=$A)"
+            else
+              echo "   ⚠️  $ep 内容不一致 proxy=$A pages=$B"
+            fi
+          done
+
+          echo ""
+          echo "════════ 5. 生产域名当前状态（人工补记录前的基线）════════"
+          for host in "$HOSTNAME" "www.$HOSTNAME"; do
+            CODE=$(curl -4 -s -o /dev/null -w "%{http_code}" --max-time 25 "https://$host/api/health")
+            echo "   https://$host/api/health → HTTP ${CODE:-无}"
+          done
+          echo "   DNS 记录条数：$(curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/zones/$ZONE_ID/dns_records?per_page=100" | python3 -c "import sys,json;print(len(json.load(sys.stdin).get('result') or []))")"
+          exit 0
