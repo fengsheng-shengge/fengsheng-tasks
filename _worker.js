@@ -1384,7 +1384,7 @@ async function handleEventsAudit(request, env) {
           data: String(row.data || '').slice(0, 200),
           ts: row.ts,
           created_at: row.created_at,
-          created_iso: new Date(row.created_at * 1000).toISOString(),
+          created_iso: row.created_at ? new Date(row.created_at * 1000).toISOString() : null,
         });
       }
     };
