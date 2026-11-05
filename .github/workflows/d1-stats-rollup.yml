@@ -183,3 +183,36 @@ jobs:
           print(f"  ✓ 接口读数与库内物化值一致：uv={row['uv']} pv={row['pv']} chats={row['chats']} feedback={row['feedback']}")
           PY
           exit 0
+
+      - name: D1 预算闸门与执行计划巡检
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set +e
+          echo ""
+          echo "=== D1 预算闸门与执行计划巡检 ==="
+
+          echo "--- ① 预算闸门响应头（X-D1-Budget-Used = 今日累计预估读取行数）---"
+          for EP in /api/stats /api/stats/summary /api/chats /api/mp-stats; do
+            printf '  %-22s ' "$EP"
+            curl -4 -s --max-time 20 -D /tmp/hh.txt -o /dev/null \
+              "https://fengsheng-ee9.pages.dev$EP"
+            USED=$(grep -i '^x-d1-budget-used:' /tmp/hh.txt | tr -d '\r' | awk '{print $2}')
+            CACHE=$(grep -i '^x-stats-cache:' /tmp/hh.txt | tr -d '\r' | awk '{print $2}')
+            echo "used=${USED:-无}  cache=${CACHE:-无}"
+          done
+
+          echo ""
+          echo "--- ② 热点查询执行计划（索引是否生效）---"
+          wrangler d1 execute fengsheng-events --remote --command \
+            "EXPLAIN QUERY PLAN SELECT id, uid, event_type, product, page FROM events WHERE page = 'home' ORDER BY created_at ASC LIMIT 100;" 2>&1 | tail -14
+
+          echo ""
+          echo "--- ③ 预算闸门是否真的拦得住（把预算顶到上限后看是否返回 BUDGET-SKIP）---"
+          echo "    （此步只读接口、不写 KV，实际拦截逻辑由本地 verify_budget.mjs 覆盖）"
+          curl -4 -s --max-time 20 -D /tmp/h3.txt -o /dev/null \
+            "https://fengsheng-ee9.pages.dev/api/stats"
+          grep -i '^x-stats-cache:' /tmp/h3.txt | tr -d '\r' | sed 's/^/    /'
+          exit 0
