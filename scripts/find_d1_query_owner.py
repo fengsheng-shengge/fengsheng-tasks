@@ -76,20 +76,44 @@ def main():
     for s in scripts:
         sid = s.get('id')
         print('── Worker: %s  (modified %s)' % (sid, s.get('modified_on')))
-        # 下载 metadata + 源码
+        # Workers 用模块化部署：/content 返回的是模块清单，不是真实代码。
+        # 必须逐个模块下载后拼起来。
         raw = api('/accounts/%s/workers/scripts/%s/content' % (account, sid), token, raw=True)
-        if not raw:
-            print('   源码下载失败或为空')
+        modules = []
+        if raw:
+            try:
+                meta = json.loads(raw.decode('utf-8', 'replace'))
+                if isinstance(meta, dict) and 'main_module' in meta:
+                    modules = [meta['main_module']] + list(meta.get('modules') or [])
+                elif isinstance(meta, list):
+                    modules = meta
+            except Exception:
+                modules = []
+        if not modules:
+            print('   未取到模块清单（返回 %d 字节）' % (len(raw) if raw else 0))
             continue
-        try:
-            text = raw.decode('utf-8', 'replace')
-        except Exception:
-            print('   源码解码失败')
+
+        text_parts = []
+        for i, m in enumerate(modules):
+            mname = m if isinstance(m, str) else m.get('name')
+            mtype = 'esm' if (isinstance(m, str) or m.get('type') == 'esm') else 'commonjs'
+            blob = api('/accounts/%s/workers/scripts/%s/content/%s?module=%s'
+                       % (account, sid, mname, mtype), token, raw=True)
+            if not blob:
+                continue
+            try:
+                text_parts.append('// ===== module: %s =====\n%s' % (
+                    mname, blob.decode('utf-8', 'replace')))
+            except Exception:
+                pass
+        text = '\n'.join(text_parts)
+        if not text:
+            print('   模块源码均下载失败')
             continue
         path = os.path.join(out_dir, sid + '.js')
         with open(path, 'w', encoding='utf-8') as f:
             f.write(text)
-        print('   源码已存: %s  (%d 字节)' % (path, len(text)))
+        print('   源码已存: %s  (%d 模块, %d 字节)' % (path, len(modules), len(text)))
 
         hits = []
         for label, pat in PATTERNS:
@@ -109,6 +133,47 @@ def main():
         else:
             print('   （未命中 D1 热点特征）')
         print('')
+
+    # ── Pages 项目的 Functions（可能是真凶）──
+    print('── Pages 项目 Functions ──')
+    pd = api('/accounts/%s/pages/projects' % account, token)
+    if pd.get('success'):
+        for pj in pd.get('result') or []:
+            pname = pj.get('name')
+            fd = api('/accounts/%s/pages/projects/%s/functions' % (account, pname), token)
+            if not fd.get('success'):
+                print('   %s: Functions 列表查询失败' % pname)
+                continue
+            funcs = fd.get('result') or []
+            if not funcs:
+                print('   %s: 无 Functions' % pname)
+                continue
+            print('   %s: %d 个 Function' % (pname, len(funcs)))
+            for fn in funcs:
+                fname = fn.get('name')
+                blob = api('/accounts/%s/pages/projects/%s/functions/%s/content'
+                           % (account, pname, fname), token, raw=True)
+                if not blob:
+                    continue
+                try:
+                    ftext = blob.decode('utf-8', 'replace')
+                except Exception:
+                    continue
+                fpath = os.path.join(out_dir, '%s__%s.js' % (pname, fname))
+                with open(fpath, 'w', encoding='utf-8') as f:
+                    f.write(ftext)
+                fhits = [(lb, len(list(re.finditer(pt, ftext, re.I | re.S))))
+                         for lb, pt in PATTERNS]
+                fhits = [(lb, n) for lb, n in fhits if n]
+                if fhits:
+                    print('      ★ %s → %s' % (fname, ', '.join('%s×%d' % (l, n) for l, n in fhits)))
+                    hit_map.setdefault('%s/functions/%s' % (pname, fname), []).extend(
+                        [l for l, _ in fhits])
+                    for m in re.finditer(r'[^`\'"]{0,200}FROM\s+events[^`\'"]{0,300}', ftext, re.I):
+                        print('         SQL: %s' % ' '.join(m.group(0).split())[:300])
+    else:
+        print('   Pages 项目查询失败')
+    print('')
 
     print('=' * 80)
     if hit_map:
