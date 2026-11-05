@@ -89,6 +89,15 @@ jobs:
           wrangler d1 execute "${{ steps.db.outputs.db_name }}" --remote \
             --file migrations/005_rebuild_stats_rollup.sql
 
+      - name: 兜底：确保物化表与触发器都在（重建中途失败也能自愈）
+        if: always()
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler d1 execute "${{ steps.db.outputs.db_name }}" --remote \
+            --file migrations/004_create_stats_rollup.sql
+
       - name: 重建结果校验（--file 路径，不受 D1 额度锁影响）
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
