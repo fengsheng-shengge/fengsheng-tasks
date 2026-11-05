@@ -63,9 +63,13 @@ def main():
             print('  %-24s domains=%s' % (
                 p.get('name'),
                 ','.join(p.get('domains') or [])))
-            for b in (p.get('deployment_configs') or {}).get('production', {}).get('env_vars', {}) or []:
-                if b.get('key', '').endswith('_ID') or 'D1' in b.get('key', ''):
-                    print('      env %s = %s' % (b.get('key'), b.get('value')))
+            # env_vars 可能是 dict 或 list，两种形态都兼容
+            envs = (p.get('deployment_configs') or {}).get('production', {}).get('env_vars') or {}
+            items = envs.items() if isinstance(envs, dict) else (
+                [(e.get('key'), e.get('value')) for e in envs if isinstance(e, dict)])
+            for k, v in items:
+                if k and ('D1' in str(k) or str(k).endswith('_ID') or 'DB' in str(k)):
+                    print('      env %s = %s' % (k, v))
         if not (d.get('result') or []):
             print('  （无）')
     else:
