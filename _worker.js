@@ -1373,6 +1373,43 @@ async function handleEventsAudit(request, env) {
       });
     }
 
+    // deepscan：全字段扫描，确认没有漏网的 payload（可能藏在 url/title/data/uid 等列）
+    if (action === 'deepscan') {
+      const FIELDS = ['uid', 'event_type', 'url', 'page', 'product', 'title', 'referrer', 'source', 'data', 'ua', 'screen', 'vp', 'locale'];
+      const SIGS = ['union', 'jndi', '@type', 'cmd_inject', '<script', 'javascript:', 'sleep(', 'benchmark(', 'or 1=1', "' --", '${', 'constructor(', '__proto__', 'alert(', 'select 1', 'drop table', 'insert into', '/bin/sh'];
+      const where = [];
+      const params = [];
+      for (const f of FIELDS) {
+        for (const s of SIGS) { where.push(`${f} LIKE ?`); params.push(`%${s}%`); }
+      }
+      const hits = await env.DB.prepare(
+        `SELECT id, uid, event_type, url, page, product, title, referrer, source, data, ua, ts, created_at FROM events WHERE ${where.join(' OR ')} ORDER BY id ASC LIMIT 1000`
+      ).bind(...params).all();
+      const rows = hits?.results || [];
+      const tagged = rows.map((r) => {
+        const matched = [];
+        for (const f of FIELDS) {
+          const v = String(r[f] ?? '');
+          if (!v) continue;
+          for (const s of SIGS) if (v.toLowerCase().includes(s.toLowerCase())) { matched.push(`${f}~${s}`); }
+        }
+        return {
+          id: r.id, uid: r.uid, event_type: r.event_type,
+          product: r.product, page: String(r.page || '').slice(0, 120),
+          url: String(r.url || '').slice(0, 160),
+          title: String(r.title || '').slice(0, 120),
+          source: String(r.source || '').slice(0, 160),
+          data: String(r.data || '').slice(0, 160),
+          ua: String(r.ua || '').slice(0, 120),
+          matched: [...new Set(matched)],
+          created_iso: toIso(r.created_at),
+        };
+      });
+      const tl = {};
+      for (const t of tagged) { const d = String(t.created_iso || 'unknown').slice(0, 10); tl[d] = (tl[d] || 0) + 1; }
+      return jsonResponse({ action: 'deepscan', hits: tagged.length, timeline: tl, rows: tagged, timestamp: new Date().toISOString() });
+    }
+
     // scan：逐个脏 product / 脏 page 拉明细行（按 id 去重）
     const details = [];
     const seenIds = new Set();
