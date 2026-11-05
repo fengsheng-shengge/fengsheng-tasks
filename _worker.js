@@ -1368,14 +1368,48 @@ async function handleStatsCached(request, env, ctx, handler) {
   const url = new URL(request.url);
   const key = statsCacheKey(url);
 
-  // ① isolate 内 memo
+  // ① 预算闸门（2026-11-05）—— 必须放在所有缓存检查之前。
+  //   原因：命中缓存虽然不读 D1，但「命中缓存」说明调用方仍在高频请求；
+  //   真正的风险是缓存未命中时打 D1。放在最前面可以保证
+  //   「超预算 → 一律不打 D1」这条不变量不被任何路径绕过。
+  //   不依赖知道调用方是谁，只看「今天 D1 已经读了多少行」。
+  const est = estimateRowsForEndpoint(url.pathname, url.searchParams);
+  const budget = await reserveBudget(env, est);
+  if (!budget.ok) {
+    console.warn(`stats budget exhausted: ${url.pathname} est=${budget.est} used=${budget.used}/${D1_DAILY_ROW_BUDGET}`);
+    // 有旧缓存就回旧缓存（标注降级），没有就返回空结果 + 明确说明
+    let stale = null;
+    let cache0 = null;
+    try { cache0 = caches.default; } catch (e) { cache0 = null; }
+    if (cache0) {
+      try {
+        const hit = await cache0.match(new Request(url.toString(), { method: 'GET' }));
+        if (hit) stale = await hit.text();
+      } catch (e) { /* ignore */ }
+    }
+    const body = stale || JSON.stringify({
+      degraded: true,
+      reason: 'd1_daily_row_budget_exhausted',
+      budget_used: budget.used,
+      budget_limit: D1_DAILY_ROW_BUDGET,
+      budget_reset_at: 'next UTC midnight',
+      note: '今日 D1 行读取预算已用尽，本接口暂停查询以保住写入链路（数据明天自动恢复）',
+    });
+    return new Response(body, { status: 200, headers: {
+      'Content-Type': 'application/json;charset=UTF-8',
+      'X-Stats-Cache': stale ? 'STALE' : 'BUDGET-SKIP',
+      'X-D1-Budget-Used': String(budget.used),
+    } });
+  }
+
+  // ② isolate 内 memo
   const memo = _statsMemo.get(key);
   if (memo && Date.now() - memo.at < STATS_CACHE_TTL * 1000) {
-    const r = new Response(memo.body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', 'X-Stats-Cache': 'MEMO' } });
+    const r = new Response(memo.body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', 'X-Stats-Cache': 'MEMO', 'X-D1-Budget-Used': String(budget.used) } });
     return r;
   }
 
-  // ② Cloudflare 共享缓存
+  // ③ Cloudflare 共享缓存
   let cache = null;
   try { cache = caches.default; } catch (e) { cache = null; }
   if (cache) {
@@ -1384,7 +1418,7 @@ async function handleStatsCached(request, env, ctx, handler) {
       if (hit) {
         const body = await hit.text();
         _statsMemo.set(key, { at: Date.now(), body });
-        return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', 'X-Stats-Cache': 'HIT' } });
+        return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', 'X-Stats-Cache': 'HIT', 'X-D1-Budget-Used': String(budget.used) } });
       }
     } catch (e) { /* 缓存不可用则直连 D1 */ }
   }
@@ -1403,7 +1437,123 @@ async function handleStatsCached(request, env, ctx, handler) {
   }
   const out = new Response(text, { status: res.status, headers: res.headers });
   out.headers.set('X-Stats-Cache', isError ? 'BYPASS' : 'MISS');
+  out.headers.set('X-D1-Budget-Used', String(budget.used));
   return out;
+}
+
+// 估算某个端点单次请求会读多少行（用于预算预扣）
+// 数值来自 2026-11-05 生产实测（events 15,313 行）：
+//   物化路径的接口读几百行；日期范围过滤的接口读「近 N 天行数」；
+//   未走物化/无过滤的接口按整表算。
+function estimateRowsForEndpoint(pathname, params) {
+  const EVENTS_TOTAL = 15313; // 生产实测行数
+  const days = Math.min(Math.max(parseInt(params.get('days') || '7', 10) || 7, 1), 90);
+  const perDay = Math.ceil(EVENTS_TOTAL / 107); // 107 天（本地复现库口径）
+  switch (pathname) {
+    case '/api/stats':
+      return 1200;                    // 物化路径：stats_totals + stats_uid(1115) + 当日
+    case '/api/stats/summary':
+      return 1300;                    // 物化路径：stats_product + stats_uid
+    case '/api/chats':
+      return 800;                     // 物化路径：stats_totals + stats_uid
+    case '/api/mp-stats':
+      return 50;                      // stats_product 单行
+    case '/api/stats/pages':
+    case '/api/stats/events':
+    case '/api/stats/daily':
+      return perDay * days + 200;     // 日期范围过滤：近 N 天行数
+    case '/api/stats/health':
+      return 500;                     // created_at 范围扫描（24h）
+    default:
+      return 2000;                    // 保守值
+  }
+}
+
+// ============================================================
+//  D1 每日行读取预算闸门（2026-11-05）
+// ------------------------------------------------------------
+//  事故教训：Cloudflare GraphQL analytics 实测，72 小时内 fengsheng-events
+//  被读 1303 万行 / 仅 1536 次查询 → 平均每次查询读 8495 行。
+//  500 万行/天的免费额度被 590 次查询就打穿，且查询方在本仓库之外 ——
+//  光靠改代码、加索引挡不住「高频 + 大扫描」的组合。
+//
+//  这一层是最后一道防线：不依赖知道调用方是谁，只看「今天已经读了多少」。
+//
+//  机制：
+//  · 用 KV 记录当日累计「预估读取行数」，KV 读写不消耗 D1 额度，
+//    所以 D1 锁死期间闸门依然可用（这是关键 —— 用 D1 记账的话锁死就失效了）。
+//  · 每个会读 events 表的接口在执行前先「预扣」本次查询的预估行数，
+//    扣完超过预算（默认 400 万，留 20% 余量）→ 直接返回降级数据，不再打 D1。
+//  · 预算按 UTC 日重置（D1 额度也是 UTC 日重置，两边对齐）。
+//
+//  降级行为：返回上一次成功的缓存值（若有），否则返回空数组 + 明确说明。
+//  宁可少一点数据，也不要把额度彻底打死 —— 打死之后连写入都失败。
+// ============================================================
+
+const D1_DAILY_ROW_BUDGET = 4_000_000; // 预留 20% 余量（免费额度 500 万/天）
+const D1_BUDGET_KV_KEY = 'd1_row_budget_utc_day';
+let _budgetMemo = { day: '', used: 0, at: 0 };
+
+function utcDayKey() {
+  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD（UTC）
+}
+
+// 读当日已用预算。
+// 关键：每次都直接读 KV（不用 isolate 内存做读缓存）。
+// 原因：isolate 内存里的值会落后于 KV（多 isolate 并发时必然落后），
+// 用内存值判断预算会「低估已用量」→ 以为还有额度 → 继续打 D1 → 再次打穿。
+// KV 读很便宜（不消耗 D1 额度），拿真值的代价可以接受。
+async function getBudgetUsed(env) {
+  const day = utcDayKey();
+  let used = 0;
+  if (env && env.FEEDBACK_KV) {
+    try {
+      const raw = await env.FEEDBACK_KV.get(D1_BUDGET_KV_KEY);
+      if (raw) {
+        const obj = JSON.parse(raw);
+        if (obj && obj.day === day) used = Number(obj.used) || 0;
+      }
+    } catch (e) { /* KV 不可用则退回内存计数 */ }
+  }
+  _budgetMemo = { day, used, at: Date.now() };
+  return { day, used };
+}
+
+// 预扣本次查询的预估行数；返回 true 表示预算充足、可以打 D1
+async function reserveBudget(env, estimatedRows) {
+  const est = Math.max(1, Math.min(Number(estimatedRows) || 1, 1_000_000));
+  const { day, used } = await getBudgetUsed(env);
+  const next = used + est;
+  if (next > D1_DAILY_ROW_BUDGET) {
+    return { ok: false, used, day, est, remaining: Math.max(0, D1_DAILY_ROW_BUDGET - used) };
+  }
+  // 内存先记（isolate 内立刻生效），KV 持久化
+  _budgetMemo = { day, used: next, at: Date.now() };
+  if (env && env.FEEDBACK_KV) {
+    try {
+      // 用 KV 里的旧值 + est 累加，而不是写内存值：
+      // isolate 内存可能落后于 KV（多 isolate 并发时），
+      // 直接写内存值会「丢账」→ 预算被低估 → 又打穿额度。
+      const raw = await env.FEEDBACK_KV.get(D1_BUDGET_KV_KEY);
+      let kvUsed = used;
+      let kvDay = day;
+      if (raw) {
+        try {
+          const obj = JSON.parse(raw);
+          if (obj && obj.day === day) kvUsed = Number(obj.used) || 0;
+          else if (obj && obj.day) kvDay = obj.day;
+        } catch (e) { /* ignore */ }
+      }
+      const finalUsed = Math.max(next, kvUsed + est);
+      _budgetMemo = { day, used: finalUsed, at: Date.now() };
+      await env.FEEDBACK_KV.put(D1_BUDGET_KV_KEY, JSON.stringify({ day, used: finalUsed }));
+      return { ok: true, used: finalUsed, day, est, remaining: D1_DAILY_ROW_BUDGET - finalUsed };
+    } catch (e) {
+      // KV 写失败：内存计数仍然生效（单 isolate 内正确），只是跨 isolate 精度下降
+      return { ok: true, used: next, day, est, remaining: D1_DAILY_ROW_BUDGET - next };
+    }
+  }
+  return { ok: true, used: next, day, est, remaining: D1_DAILY_ROW_BUDGET - next };
 }
 
 // ============================================================
@@ -1868,7 +2018,18 @@ async function handleStatsPages(request, env) {
         source: 'db',
       });
     } catch (e) {
+      // 2026-11-05：原来这里只 console.error 然后往下走到末尾的
+      // 「no database configured」分支 —— 异常被吞成「没配数据库」。
+      // 后果：2026-11-05 D1 额度锁死期间，看板上 /api/stats/pages 显示空数组，
+      // 看板上像「没有数据」，实际是「额度超限读不到」，排查方向直接跑偏。
+      // 改为如实回传 error 字段（与 /api/stats、/api/chats 的做法一致）。
       console.error('stats/pages: DB query failed', e.message);
+      return jsonResponse({
+        pages: [], days, product: product || null, updated: now,
+        source: 'db_error',
+        note: 'D1 query failed — 看 error 字段的真实原因',
+        error: e.message,
+      }, 500);
     }
   }
   return jsonResponse({ pages: [], days, product: product || null, updated: now, note: 'no database configured' });
@@ -1897,7 +2058,15 @@ async function handleStatsEvents(request, env) {
         source: 'db',
       });
     } catch (e) {
+      // 2026-11-05：同 handleStatsPages —— 原来异常被吞成「no database configured」，
+      // 额度锁死时看板显示「无数据」而不是「读不到」，排查方向会被带偏。
       console.error('stats/events: DB query failed', e.message);
+      return jsonResponse({
+        events: [], days, product: product || null, updated: now,
+        source: 'db_error',
+        note: 'D1 query failed — 看 error 字段的真实原因',
+        error: e.message,
+      }, 500);
     }
   }
   return jsonResponse({ events: [], days, product: product || null, updated: now, note: 'no database configured' });
