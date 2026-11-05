@@ -7,43 +7,40 @@ jobs:
   q:
     runs-on: ubuntu-latest
     steps:
-      - name: query
+      - name: 查询各类型 DNS 记录
         run: |
           set +e
           for rt in A AAAA CNAME NS SOA MX TXT; do
-            echo "───── fengsheng.tech  $rt ─────"
+            echo "----- fengsheng.tech  $rt -----"
             curl -s --max-time 15 -H "accept: application/dns-json" \
-              "https://dns.google/resolve?name=fengsheng.tech&type=$rt" \
-              | python3 -c "
-import json,sys
-try:
-    d=json.load(sys.stdin)
-except Exception as e:
-    print('  解析失败:', e); sys.exit()
-print('  Status:', d.get('Status'))
-for a in d.get('Answer',[]):
-    print('  ', a.get('type'), '→', a.get('data'), '(TTL', a.get('TTL'), ')')
-if not d.get('Answer'): print('   (无 Answer 记录)')
-"
+              "https://dns.google/resolve?name=fengsheng.tech&type=$rt" -o /tmp/dns.json
+            python3 /tmp/parse_dns.py /tmp/dns.json
             echo ""
           done
-          echo "═════ 对照组：fengsheng-ee9.pages.dev  A ═════"
+          echo "===== 对照组 fengsheng-ee9.pages.dev A ====="
           curl -s --max-time 15 -H "accept: application/dns-json" \
-            "https://dns.google/resolve?name=fengsheng-ee9.pages.dev&type=A" \
-            | python3 -c "
-import json,sys
-d=json.load(sys.stdin)
-for a in d.get('Answer',[]): print('  ', a.get('type'),'→',a.get('data'))
-"
+            "https://dns.google/resolve?name=fengsheng-ee9.pages.dev&type=A" -o /tmp/dns.json
+          python3 /tmp/parse_dns.py /tmp/dns.json
           echo ""
-          echo "═════ www.fengsheng.tech  A ═════"
+          echo "===== www.fengsheng.tech A ====="
           curl -s --max-time 15 -H "accept: application/dns-json" \
-            "https://dns.google/resolve?name=www.fengsheng.tech&type=A" \
-            | python3 -c "
-import json,sys
-d=json.load(sys.stdin)
-print('  Status:', d.get('Status'))
-for a in d.get('Answer',[]): print('  ', a.get('type'),'→',a.get('data'))
-if not d.get('Answer'): print('   (无 Answer)')
-"
+            "https://dns.google/resolve?name=www.fengsheng.tech&type=A" -o /tmp/dns.json
+          python3 /tmp/parse_dns.py /tmp/dns.json
           exit 0
+      - name: 写解析脚本
+        run: |
+          cat > /tmp/parse_dns.py <<'PYEOF'
+          import json, sys
+          try:
+              with open(sys.argv[1], encoding="utf-8") as fh:
+                  d = json.load(fh)
+          except Exception as e:
+              print("  parse fail:", e)
+              sys.exit(0)
+          print("  Status:", d.get("Status"))
+          ans = d.get("Answer") or []
+          if not ans:
+              print("   (no Answer record)")
+          for a in ans:
+              print("  ", a.get("type"), "->", a.get("data"), "(TTL", a.get("TTL"), ")")
+          PYEOF
