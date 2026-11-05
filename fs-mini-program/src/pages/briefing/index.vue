@@ -105,7 +105,7 @@
 </template>
 
 <script>
-import { trackPageview } from '../../utils/tracker'
+import { trackPageview, trackEvent } from '../../utils/tracker'
 
 export default {
   data() {
@@ -143,7 +143,11 @@ export default {
     this.loadWxacode()
 
     // 上报页面浏览
-    trackPageview('/pages/briefing/index', '见面简报-' + this.clientName)
+    // page 名用短名（与其余 26 页一致），保证 /api/stats/pages 按 page 聚合时不裂成两行；
+    // 原本想带的「见面简报-客户名」是 trackPageview 的第二个参数，会被静默丢弃，
+    // 故改用 trackEvent 单独上报，把原意保住。
+    trackPageview('briefing')
+    trackEvent('briefing_open', 'briefing', { client_name: this.clientName })
 
     uni.setNavigationBarTitle({ title: this.clientName + ' 的选房方案' })
   },

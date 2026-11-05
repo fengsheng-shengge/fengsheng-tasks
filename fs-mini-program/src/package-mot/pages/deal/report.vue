@@ -169,7 +169,7 @@ export default {
     },
   },
   onLoad(options) {
-    trackPageview('deal_report')
+    trackPageview('deal-report')
     if (options && options.clientId) {
       this.clientId = options.clientId
       this.loadData()

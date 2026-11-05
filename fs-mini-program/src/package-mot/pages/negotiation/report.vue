@@ -176,7 +176,7 @@ export default {
     },
   },
   onLoad(options) {
-    trackPageview('negotiation_report')
+    trackPageview('negotiation-report')
     if (options && options.clientId) {
       this.clientId = options.clientId
       this.loadData()

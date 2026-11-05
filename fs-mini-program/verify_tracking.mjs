@@ -13,6 +13,10 @@
 //   C3  埋点出口唯一性：/api/events 的上报只允许出现在 utils/tracker.js
 //   C4  展示层口径自愈：dict.js 不得再写死总条数（count 必须为 null，运行时实拉）
 //   C5  点击口径对齐：tracker.js 必须保留点击类事件的 event_type='click' 补发逻辑
+//   C6  page 命名规范：trackPageview 的 page 实参必须是 kebab-case 短名
+//       （禁路径式 /pages/x/index、禁 snake_case 下划线）——
+//       后端 /api/stats/pages 按 page 字段 GROUP BY，命名不统一会裂成多行，
+//       同一页面被算成两个页面，页面热力榜直接失真
 //
 // 【退出码】0 = 全通过；1 = 有 FAIL 项（可作为上传闸门的硬拦截）；2 = 脚本自身异常
 //
@@ -162,6 +166,65 @@ const pageFile = (route) => {
       ? `点击类事件 ${CLICK_TYPES.join('/')} 已补发 event_type='click'（带 origType），看板 click 口径可汇总`
       : `点击类清单=${hasClickList} click补发=${hasClickPost} origType=${hasOrigType}`;
     add('C5', ok ? 'PASS' : 'FAIL', 'C5 点击口径对齐', detail);
+  }
+}
+
+// ═══ C6 page 命名规范（kebab-case 短名）═══
+// 背景：后端 /api/stats/pages 按 events.page 字段 GROUP BY，
+//       若同一页面用两种命名上报，会被算成两个页面，热力榜失真。
+//       2026-11-05 实测修掉 5 处：/pages/briefing/index → briefing、
+//       deal_report/negotiation_report/proposal_report/showing_report → *-report
+{
+  const bad = [];
+  const seen = new Map(); // page 名 → 出现文件，用于检出重名
+  const dynamic = [];     // 动态 page 参数（trackEvent('x', <变量>, ...)）
+  for (const f of files) {
+    const t = fs.readFileSync(f, 'utf8');
+    for (const m of t.matchAll(/trackPageview\s*\(\s*['"]([^'"]+)['"]/g)) {
+      const p = m[1];
+      if (/^\//.test(p)) bad.push(`${p}（路径式，应为短名）@ ${rel(f)}`);
+      else if (/_/.test(p)) bad.push(`${p}（snake_case，应为 kebab-case）@ ${rel(f)}`);
+      else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(p)) bad.push(`${p}（非法字符）@ ${rel(f)}`);
+      if (!seen.has(p)) seen.set(p, []);
+      seen.get(p).push(rel(f));
+    }
+    // trackPageview 只接受 1 个参数；传 2 个时第二个会被静默丢弃
+    for (const m of t.matchAll(/trackPageview\s*\(\s*['"][^'"]+['"]\s*,/g)) {
+      bad.push(`多参数调用（第二参会被丢弃）@ ${rel(f)}`);
+    }
+    // trackEvent 的 page 参数允许是变量（如 feedback-popup 的 this.source），
+    // 但必须能静态解析成合法短名，否则 /api/stats/pages 里会多出「假页面」行。
+    for (const m of t.matchAll(/trackEvent\s*\(\s*['"][^'"]+['"]\s*,\s*([^,)]+)/g)) {
+      const arg = m[1].trim();
+      if (/^['"]/.test(arg)) {
+        const p = arg.replace(/^['"]|['"]$/g, '');
+        if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(p)) {
+          bad.push(`trackEvent 的 page「${p}」非 kebab-case @ ${rel(f)}`);
+        }
+        if (!seen.has(p)) seen.set(p, []);
+        seen.get(p).push(rel(f));
+      } else {
+        dynamic.push(`${arg} @ ${rel(f)}`);
+      }
+    }
+  }
+  const dup = [...seen.entries()].filter(([, fs2]) => fs2.length > 1);
+  const detail = bad.length
+    ? `${bad.length} 处命名不合规：${bad.join('；')}`
+    : `${seen.size} 个 page 名全部为 kebab-case 短名，无路径式、无 snake_case、无多参数调用` +
+      (dynamic.length ? `；${dynamic.length} 处动态 page 参数：${dynamic.join('，')}` : '');
+  add('C6', bad.length ? 'FAIL' : 'PASS', 'C6 page 命名规范', detail);
+
+  // 动态 page 参数提示：不阻断，但需人工确认其取值落在合法短名集合内
+  if (dynamic.length) {
+    console.error(`ℹ️  C6 附加提示：${dynamic.length} 处动态 page 参数（需人工确认取值合法）→ ` +
+      dynamic.join('，'));
+  }
+
+  // 重名提示：不阻断，但同一 page 名被多个文件上报通常是复制粘贴残留
+  if (dup.length) {
+    console.error(`⚠️  C6 附加提示：${dup.length} 个 page 名被多处上报 → ` +
+      dup.map(([p, fs2]) => `${p}(${fs2.length}处)`).join(', '));
   }
 }
 

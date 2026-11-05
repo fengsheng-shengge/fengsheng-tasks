@@ -198,7 +198,7 @@ export default {
     },
   },
   onLoad(options) {
-    trackPageview('showing_report')
+    trackPageview('showing-report')
     if (options && options.clientId) {
       this.clientId = options.clientId
       this.loadData()
