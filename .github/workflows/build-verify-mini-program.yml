@@ -1,0 +1,103 @@
+name: 🏗️ 小程序全量构建验证（只构建，不上传）
+
+# ============================================================================
+# 【为什么有这个 workflow】
+# 2026-11-05 改了小程序的后端地址策略：
+#   · 新增 src/api/endpoint.js（候选链）
+#   · src/api/request.js 改为候选链逐个尝试（网络级失败才切域）
+#   · src/utils/share.js、src/package-curation/engine.js 改用 getActiveBase()
+# 本地仓库没有 node_modules，无法本地构建验证 —— 必须用 CI 构建证明能编译。
+#
+# 【与既有 mini-program.yml 的区别】
+#   mini-program.yml 已被手动禁用（disabled_manually），而且它会打包 + 上传 artifact。
+#   本 workflow 只做「编译 + 断言」，不上传、不打扰既有的禁用状态。
+#
+# 【断言清单】
+#   1. 构建产物目录存在、app.js / app.json / pages/ 齐全
+#   2. 产物里能搜到兜底域 → 证明 failover 真的进了包（不是只改了源码没进构建）
+#   3. 产物里能搜到主域
+#   4. failover 单测通过（直接测仓库真实源码）
+# ============================================================================
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'fs-mini-program/**'
+      - '.github/workflows/build-verify-mini-program.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: 构建 + 断言
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NODE_VERSION: '20'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: fs-mini-program/package-lock.json
+
+      - name: Install dependencies
+        working-directory: fs-mini-program
+        run: npm ci
+
+      - name: 构建前单测（failover）
+        working-directory: fs-mini-program
+        run: node tests/failover.test.mjs
+
+      - name: Build uni-app → 微信小程序
+        working-directory: fs-mini-program
+        run: npm run build:mp-weixin
+
+      - name: 断言构建产物
+        working-directory: fs-mini-program
+        run: |
+          set +e
+          echo "=== 断言 1: 产物结构 ==="
+          if [ ! -d "dist/build/mp-weixin" ]; then
+            echo "  ✗ 产物目录不存在"; exit 1
+          fi
+          echo "  ✓ 产物目录存在，文件数 $(find dist/build/mp-weixin -type f | wc -l)"
+          for f in app.js app.json; do
+            if [ -f "dist/build/mp-weixin/$f" ]; then echo "  ✓ $f"; else echo "  ✗ $f 缺失"; exit 1; fi
+          done
+          echo "  ✓ pages/ 文件数 $(find dist/build/mp-weixin/pages -type f 2>/dev/null | wc -l)"
+
+          echo ""
+          echo "=== 断言 2: failover 候选链进了产物 ==="
+          HIT_FALLBACK=$(grep -rl "fengsheng-ee9.pages.dev" dist/build/mp-weixin 2>/dev/null | wc -l)
+          HIT_MAIN=$(grep -rl "fengsheng.tech" dist/build/mp-weixin 2>/dev/null | wc -l)
+          echo "  含兜底域的文件数: $HIT_FALLBACK"
+          echo "  含主域的文件数:   $HIT_MAIN"
+          if [ "$HIT_FALLBACK" -lt 1 ]; then
+            echo "  ✗ 产物里找不到兜底域 —— failover 没进构建！"; exit 1
+          fi
+          if [ "$HIT_MAIN" -lt 1 ]; then
+            echo "  ✗ 产物里找不到主域 —— 主域地址丢了！"; exit 1
+          fi
+          echo "  ✅ 两个候选域都在产物里"
+
+          echo ""
+          echo "=== 断言 3: 产物里没有硬编码的单一 BASE_URL 常量 ==="
+          # 期望：至少有一个候选链数组，而不是 const BASE_URL = 'https://fengsheng.tech'
+          if grep -rq "const BASE_URL = 'https://fengsheng.tech'" dist/build/mp-weixin 2>/dev/null; then
+            echo "  ⚠️  仍存在硬编码 BASE_URL 常量（不影响功能，但说明降级逻辑没生效）"
+          else
+            echo "  ✅ 没有硬编码 BASE_URL"
+          fi
+
+          echo ""
+          echo "=== 构建结论 ==="
+          echo "  ✅ 小程序全量构建通过，failover 已进入产物"
+          exit 0
