@@ -51,24 +51,24 @@ jobs:
           fi
 
           ISSUE_BODY="### 🔴 巡检异常报告
-**时间**: $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S') 北京时间
-**触发**: GitHub Actions 定时巡检
-**建议**:
-1. 打开 Cloudflare Dashboard → Pages → 查看部署日志
-2. 检查最新 commit 是否引入问题
-3. 必要时一键回滚到前一版本
-4. 通知小扣子/生哥
+          **时间**: $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S') 北京时间
+          **触发**: GitHub Actions 定时巡检
+          **建议**:
+          1. 打开 Cloudflare Dashboard → Pages → 查看部署日志
+          2. 检查最新 commit 是否引入问题
+          3. 必要时一键回滚到前一版本
+          4. 通知小扣子/生哥
 
----
+          ---
 
-<details><summary>📄 详细巡检报告</summary>
-<pre>
-$(cat scripts/report.json 2>/dev/null || echo "无报告")
-</pre>
-</details>
+          <details><summary>📄 详细巡检报告</summary>
+          <pre>
+          $(cat scripts/report.json 2>/dev/null || echo "无报告")
+          </pre>
+          </details>
 
----
-*由风声CTO巡检系统自动创建*"
+          ---
+          *由风声CTO巡检系统自动创建*"
 
           echo "$ISSUE_BODY" > /tmp/issue_body.md
           echo "Issue内容已生成"

@@ -106,6 +106,34 @@ jobs:
             exit 1
           fi
 
+      - name: Check all workflow YAML files are valid
+        run: |
+          echo "=== 检查 11: 全部 Actions workflow YAML 合法性 ==="
+          # 背景：2026-11-05 发现 memory-solidify.yml / daily-health-check.yml
+          # 的块标量里有写在第 0 列的内容（heredoc 正文 / 多行字符串），
+          # 会提前结束 YAML 块标量 → 整个文件非法 →
+          # GitHub 建一个 0 job 的失败 run 并把名字登记成文件路径，
+          # 表现为「每次 push 必红」。这里加一道闸门防复发。
+          BAD=$(python3 - <<'PY'
+          import glob, sys, yaml
+          bad = []
+          for f in sorted(glob.glob('.github/workflows/*.yml') + glob.glob('.github/workflows/*.yaml')):
+              try:
+                  yaml.safe_load(open(f, encoding='utf-8'))
+              except Exception as e:
+                  bad.append('%s → %s' % (f, str(e).split('\n')[0]))
+          for b in bad:
+              print(b)
+          sys.exit(1 if bad else 0)
+          PY
+          )
+          if [ -n "$BAD" ]; then
+            echo "  ✗ 存在非法 YAML 的 workflow："
+            echo "$BAD"
+            exit 1
+          fi
+          echo "  ✓ 全部 workflow YAML 合法"
+
       - name: Check no hardcoded secrets
         run: |
           echo "=== 检查 10: 无硬编码密钥 ==="
