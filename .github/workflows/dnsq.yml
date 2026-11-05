@@ -1,0 +1,49 @@
+name: DNS 记录逐类型查询
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  q:
+    runs-on: ubuntu-latest
+    steps:
+      - name: query
+        run: |
+          set +e
+          for rt in A AAAA CNAME NS SOA MX TXT; do
+            echo "───── fengsheng.tech  $rt ─────"
+            curl -s --max-time 15 -H "accept: application/dns-json" \
+              "https://dns.google/resolve?name=fengsheng.tech&type=$rt" \
+              | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+except Exception as e:
+    print('  解析失败:', e); sys.exit()
+print('  Status:', d.get('Status'))
+for a in d.get('Answer',[]):
+    print('  ', a.get('type'), '→', a.get('data'), '(TTL', a.get('TTL'), ')')
+if not d.get('Answer'): print('   (无 Answer 记录)')
+"
+            echo ""
+          done
+          echo "═════ 对照组：fengsheng-ee9.pages.dev  A ═════"
+          curl -s --max-time 15 -H "accept: application/dns-json" \
+            "https://dns.google/resolve?name=fengsheng-ee9.pages.dev&type=A" \
+            | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+for a in d.get('Answer',[]): print('  ', a.get('type'),'→',a.get('data'))
+"
+          echo ""
+          echo "═════ www.fengsheng.tech  A ═════"
+          curl -s --max-time 15 -H "accept: application/dns-json" \
+            "https://dns.google/resolve?name=www.fengsheng.tech&type=A" \
+            | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+print('  Status:', d.get('Status'))
+for a in d.get('Answer',[]): print('  ', a.get('type'),'→',a.get('data'))
+if not d.get('Answer'): print('   (无 Answer)')
+"
+          exit 0
