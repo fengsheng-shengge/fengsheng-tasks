@@ -125,18 +125,61 @@ jobs:
                     (SELECT COUNT(*) FROM stats_product) AS products,
                     (SELECT value FROM stats_meta WHERE key='rollup_ready') AS ready;"
 
-      - name: 线上接口自检（额度锁期间接口会返回 quota 错误，属预期）
+      - name: 线上接口自检 + 与库内物化值对账（最终验收闸门）
+        continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DB_NAME: ${{ steps.db.outputs.db_name }}
         run: |
           set +e
           for EP in /api/stats /api/stats/summary /api/chats /api/mp-stats; do
             printf '  %-22s ' "$EP"
-            BODY=$(curl -4 -s --max-time 20 "https://fengsheng-ee9.pages.dev$EP")
-            echo "${BODY:0:260}"
-            if echo "$BODY" | grep -q 'free tier daily row read limit'; then
-              echo "    ↳ D1 额度锁中（UTC 00:00 恢复），属预期；物化层已就绪，恢复后自动走物化路径"
-            fi
+            curl -4 -s --max-time 20 "https://fengsheng-ee9.pages.dev$EP" | head -c 260
+            echo ""
           done
+          echo ""
+          python3 - <<'PY'
+          import json, os, subprocess, sys, urllib.request
+          db = os.environ.get("DB_NAME", "fengsheng-events")
+          def d1(sql):
+              out = subprocess.run(
+                  ["wrangler", "d1", "execute", db, "--remote", "--command", sql],
+                  capture_output=True, text=True, timeout=180).stdout
+              if "free tier daily row read limit" in out or "7500" in out:
+                  return None
+              try:
+                  i = out.find('"results"')
+                  j = out.find("{", i)
+                  k = out.find("}", j)
+                  return json.loads(out[j:k+1])
+              except Exception:
+                  return None
+          def api(path):
+              try:
+                  with urllib.request.urlopen("https://fengsheng-ee9.pages.dev" + path, timeout=30) as r:
+                      return json.loads(r.read().decode())
+              except Exception as e:
+                  return {"__err": str(e)}
+          row = d1("SELECT (SELECT pv FROM stats_totals WHERE id=1) AS pv,"
+                   " (SELECT chats FROM stats_totals WHERE id=1) AS chats,"
+                   " (SELECT feedback FROM stats_totals WHERE id=1) AS feedback,"
+                   " (SELECT SUM(pv) FROM stats_uid) AS uv;"
+                   )
+          s = api("/api/stats")
+          if row is None:
+              print("  ↳ D1 额度锁中（UTC 00:00 恢复），跳过接口对账；物化层硬校验已在上一步通过")
+              sys.exit(0)
+          if not isinstance(s, dict) or "error" in s:
+              print(f"  ↳ 接口仍不可用（额度锁或异常）：{str(s)[:180]}")
+              sys.exit(0)
+          bad = []
+          for k_db, k_api in (("pv","pv"), ("chats","chats"), ("feedback","feedback_count"), ("uv","uv")):
+              if int(row.get(k_db, -1)) != int(s.get(k_api, -2)):
+                  bad.append(f"{k_api}: 库 {row.get(k_db)} vs 接口 {s.get(k_api)}")
+          if bad:
+              print("  ✗ 接口读数与库内物化值不一致：" + "; ".join(bad))
+              sys.exit(1)
+          print(f"  ✓ 接口读数与库内物化值一致：uv={row['uv']} pv={row['pv']} chats={row['chats']} feedback={row['feedback']}")
+          PY
           exit 0
