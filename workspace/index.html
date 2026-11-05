@@ -987,7 +987,7 @@
       <h2 class="vi-title">这个站就干一件事：<span class="vi-highlight">你陪客户到哪一步了？点一下，我告诉你下一步该干啥</span></h2>
       <p class="vi-sub">不用背话术，不用瞎摸索。选阶段 → 看 3 个引导问题 → AI 模拟客户练一把 → 5 分钟小测</p>
       <div class="vi-actions">
-        <a class="vi-btn vi-btn-primary" href="/care-test/">🎯 花 5 分钟测一下 · 找你的薄弱项</a>
+        <a class="vi-btn vi-btn-primary" href="/care-test/">🎯 5 分钟出你的「丢单预警」</a>
         <span class="vi-or">或</span>
         <span class="vi-btn vi-btn-ghost" onclick="document.querySelector('#stage-tabs .st-tab[data-stage=\\\"negotiate\\\"]')?.click(); document.getElementById('layered-section')?.scrollIntoView({behavior:'smooth', block:'start'});">💬 直接点"谈判逼单"试试</span>
       </div>
@@ -1873,7 +1873,7 @@
             '<div class="hook-soft-emoji">🧩</div>' +
             '<div class="hook-soft-copy">' +
               '<div class="hook-soft-title">经常遇到这类问题？</div>' +
-              '<div class="hook-soft-desc">花 2 分钟测一下你的' + m.dim_name + '能力，对标 TOP 10% 经纪人</div>' +
+              '<div class="hook-soft-desc">5 分钟测你这' + m.dim_name + '能丢几次单 · 对标 TOP 10% 经纪人</div>' +
             '</div>' +
             '<a class="hook-soft-cta" href="/care-test/?dim=' + m.dim_id + '">专项 5 题 →</a>' +
           '</div>' +
@@ -2405,9 +2405,9 @@
       var gb = document.getElementById('growth-bar');
       if(gb) gb.classList.add('gb-onboard');
       var pct = document.getElementById('gb-progress-pct');
-      if(pct) pct.textContent = '测一下';
+      if(pct) pct.textContent = '丢单预警';
       var badge = document.getElementById('gb-level-badge');
-      if(badge) badge.textContent = '📌 花 5 分钟测一下';
+      if(badge) badge.textContent = '📌 5 分钟测丢单预警';
       var fill = document.getElementById('gb-progress-fill');
       if(fill) { fill.style.width = '8%'; fill.style.background = 'var(--gold)'; }
       var nextLabel = document.querySelector('.gb-next-label');
