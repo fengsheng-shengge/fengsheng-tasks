@@ -155,10 +155,34 @@ def main():
                 print('   %s: Functions 列表查询失败' % pname)
                 continue
             funcs = fd.get('result') or []
+            # 实测：/functions 返回的是「项目对象」，不是数组
+            if isinstance(funcs, dict):
+                print('   %s: /functions 返回项目对象（非数组），改用 /functions/content 列举' % pname)
+                funcs = []
+            if not funcs:
+                # ① 从仓库里的 Pages Functions 目录推断（本仓库 api/*.js → functions/api/*）
+                repo_api = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'api')
+                names = []
+                if os.path.isdir(repo_api):
+                    names = ['api/' + f for f in os.listdir(repo_api) if f.endswith('.js')]
+                names.append('_worker.js')
+                # ② content 目录端点：抓可能的文件名
+                cd = api('/accounts/%s/pages/projects/%s/functions/content' % (account, pname),
+                         token, raw=True)
+                ctext = cd.decode('utf-8', 'replace') if cd else ''
+                extra = sorted(set(re.findall(r'"(?:name|filename)"\s*:\s*"([^"]+)"', ctext)))
+                if not extra:
+                    extra = sorted(set(re.findall(r'([A-Za-z0-9_\-./]+\.js)', ctext)))
+                for e in extra:
+                    if e not in names:
+                        names.append(e)
+                print('   %s: 候选 Function %d 个' % (pname, len(names)))
+                print('      %s' % ', '.join(names[:50]))
+                funcs = names
             if not funcs:
                 print('   %s: 无 Functions' % pname)
                 continue
-            print('   %s: %d 个 Function → %s' % (pname, len(funcs), funcs))
+            print('   %s: %d 个 Function' % (pname, len(funcs)))
             for fn in funcs:
                 fname = fn.get('name') if isinstance(fn, dict) else str(fn)
                 if not fname:
