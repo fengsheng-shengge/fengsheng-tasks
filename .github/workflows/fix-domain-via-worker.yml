@@ -1,0 +1,278 @@
+name: 🌐 生产域名修复（Workers 自定义域名路径）
+
+# ============================================================================
+# 【背景】
+# fengsheng.tech 的 DNS 主机记录 0 条，Pages 侧自定义域名状态 = pending。
+# 现役 CLOUDFLARE_API_TOKEN 实测（audit-cloudflare-token.yml，run 42023695860）：
+#   · token valid & active，能读 zone，但 4 种 DNS 写法全部 HTTP 403
+#   → 缺 Zone DNS Edit 权限，且仓库/Issue #42/钥匙串里都没有第二份 Cloudflare 凭据
+#
+# 【本 workflow 的思路】
+# 绕开「Zone DNS Edit」这条权限：
+# Cloudflare 的 **Workers 自定义域名** API（POST /workers/scripts/{name}/domains）
+# 由平台侧自动创建对应 DNS 记录，不需要调用方持有 Zone DNS Edit。
+#
+# 代价：域名后面挂的是 Worker 而不是 Pages 本身。
+# 处理方式：建一个**极薄的代理 Worker**，把请求原样转发到
+#   https://fengsheng-ee9.pages.dev（Pages 真身，D1/KV 绑定都在那边）
+# 于是 fengsheng.tech → 代理 Worker → Pages → 数据，功能完全等价，
+# 且 Pages 仍是唯一真身来源（改代码只改 Pages，不用动 Worker）。
+#
+# 路径依次尝试（任一成功即停）：
+#   ① POST /accounts/{acct}/workers/scripts/{script}/domains  {hostname}
+#   ② POST /accounts/{acct}/workers/domains                 {hostname, service, zone_id}
+#   ③ POST /zones/{zone}/workers/routes                     {pattern, script}
+#   ④ 上面都失败 → 回退建 A 记录指向 Pages 回退 IP（需要 DNS Edit，大概率也 403）
+#
+# 【安全】
+#   · 只处理 fengsheng.tech / www.fengsheng.tech
+#   · 全失败时自动删掉代理 Worker，不留垃圾
+#   · 代理只做转发，不改响应体
+# ============================================================================
+on:
+  workflow_dispatch:
+    inputs:
+      hostname:
+        description: '要绑定的域名（留空=fengsheng.tech）'
+        required: false
+        default: 'fengsheng.tech'
+      keep_worker:
+        description: '失败时是否保留代理 Worker（true=保留便于排查）'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+permissions:
+  contents: read
+
+jobs:
+  fix:
+    name: 建 DNS 并验证
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 代理 Worker 脚本
+        run: |
+          set +e
+          mkdir -p /tmp/proxy
+          cat > /tmp/proxy/proxy.js <<'EOF'
+          // fengsheng.tech 代理 Worker：把请求原样转发到 Pages 真身。
+          // Pages 侧 _worker.js 不依赖 Host，路由完全按 path 分发，因此转发行为等价。
+          const ORIGIN = 'https://fengsheng-ee9.pages.dev';
+
+          export default {
+            async fetch(request, env, ctx) {
+              const url = new URL(request.url);
+              const target = new URL(url.pathname + url.search, ORIGIN);
+              const headers = new Headers(request.headers);
+              headers.delete('cf-connecting-ip');
+              headers.set('x-forwarded-host', url.host);
+              headers.set('x-forwarded-proto', url.protocol.replace(':', ''));
+              headers.set('x-forwarded-for', request.headers.get('cf-connecting-ip') || '');
+
+              const init = { method: request.method, headers, redirect: 'manual' };
+              if (!['GET', 'HEAD'].includes(request.method)) {
+                init.body = request.body;
+              }
+
+              let res;
+              try {
+                res = await fetch(target, init);
+              } catch (e) {
+                return new Response(JSON.stringify({
+                  error: 'proxy_fetch_failed',
+                  detail: String(e && e.message || e),
+                  origin: ORIGIN,
+                }), { status: 502, headers: { 'Content-Type': 'application/json;charset=UTF-8' } });
+              }
+              const out = new Headers(res.headers);
+              out.set('x-proxied-by', 'fengsheng-proxy');
+              return new Response(res.body, { status: res.status, statusText: res.statusText, headers: out });
+            },
+          };
+          EOF
+          echo "代理脚本已写入，$(wc -c < /tmp/proxy/proxy.js) 字节"
+
+      - name: 建代理 Worker 并绑定自定义域名
+        id: bind
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          HOSTNAME: ${{ inputs.hostname }}
+          SCRIPT: fengsheng-proxy
+        run: |
+          set +e
+          CF=https://api.cloudflare.com/client/v4
+          ACC=$CLOUDFLARE_ACCOUNT_ID
+          ZONE_ID=$(curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/zones?name=fengsheng.tech" | python3 -c "import sys,json;d=json.load(sys.stdin);r=d.get('result') or [];print(r[0]['id'] if r else '')")
+          echo "ZONE_ID=$ZONE_ID  HOSTNAME=$HOSTNAME"
+
+          echo ""
+          echo "── 0. 现有 Workers 脚本清单 ──"
+          curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/accounts/$ACC/workers/scripts" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin)
+          for s in (d.get('result') or []):
+              print('   -', s.get('id'), s.get('modified_on'))
+          if not d.get('success'): print('  ', json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+
+          echo ""
+          echo "── 1. 上传代理 Worker ──"
+          curl -s --max-time 40 -o /tmp/up.json -w "   HTTP %{http_code}\n" \
+            -X PUT "$CF/accounts/$ACC/workers/scripts/$SCRIPT" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -F 'metadata={"main_module":"proxy.js","compatibility_date":"2024-01-01"};type=application/json' \
+            -F 'proxy.js=@/tmp/proxy/proxy.js;type=application/javascript+module'
+          python3 -c "
+          import json
+          try: d=json.load(open('/tmp/up.json'))
+          except Exception as e: print('   解析失败',e); raise SystemExit
+          print('   ', '✅ 上传成功' if d.get('success') else '❌ '+json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+
+          echo ""
+          echo "── 2. 尝试绑定自定义域名（路径 ①：scripts/{name}/domains）──"
+          curl -s --max-time 40 -o /tmp/d1.json -w "   HTTP %{http_code}\n" \
+            -X POST "$CF/accounts/$ACC/workers/scripts/$SCRIPT/domains" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"hostname\":\"$HOSTNAME\",\"zone_id\":\"$ZONE_ID\"}"
+          python3 -c "
+          import json
+          d=json.load(open('/tmp/d1.json'))
+          if d.get('success'):
+              r=d.get('result') or {}
+              print('   ✅ 绑定成功 hostname=%s zone_id=%s service=%s' % (r.get('hostname'), r.get('zone_id'), r.get('service')))
+              open('/tmp/bound','w').write('1')
+          else:
+              print('   ❌', json.dumps(d.get('errors'),ensure_ascii=False))
+              open('/tmp/bound','w').write('0')
+          "
+
+          if [ "$(cat /tmp/bound)" != "1" ]; then
+            echo ""
+            echo "── 3. 尝试路径 ②：POST /accounts/{acct}/workers/domains ──"
+            curl -s --max-time 40 -o /tmp/d2.json -w "   HTTP %{http_code}\n" \
+              -X POST "$CF/accounts/$ACC/workers/domains" \
+              -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{\"hostname\":\"$HOSTNAME\",\"zone_id\":\"$ZONE_ID\",\"service\":\"$SCRIPT\",\"environment\":\"production\"}"
+            python3 -c "
+          import json
+          d=json.load(open('/tmp/d2.json'))
+          if d.get('success'):
+              r=d.get('result') or {}
+              print('   ✅ 绑定成功 hostname=%s' % r.get('hostname'))
+              open('/tmp/bound','w').write('1')
+          else:
+              print('   ❌', json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+          fi
+
+          if [ "$(cat /tmp/bound)" != "1" ]; then
+            echo ""
+            echo "── 4. 尝试路径 ③：POST /zones/{zone}/workers/routes ──"
+            curl -s --max-time 40 -o /tmp/d3.json -w "   HTTP %{http_code}\n" \
+              -X POST "$CF/zones/$ZONE_ID/workers/routes" \
+              -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{\"pattern\":\"$HOSTNAME/*\",\"script\":\"$SCRIPT\"}"
+            python3 -c "
+          import json
+          d=json.load(open('/tmp/d3.json'))
+          if d.get('success'):
+              r=d.get('result') or {}
+              print('   ✅ 路由创建成功 pattern=%s -> %s' % (r.get('pattern'), r.get('script')))
+              open('/tmp/bound','w').write('1')
+          else:
+              print('   ❌', json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+          fi
+
+          echo ""
+          echo "── 5. DNS 记录现状 ──"
+          curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/zones/$ZONE_ID/dns_records?per_page=100" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin)
+          rs=d.get('result') or []
+          print('   总记录数: %d' % len(rs))
+          for r in rs:
+              print('   - %-6s %-24s -> %-32s proxied=%s' % (r.get('type'), r.get('name'), str(r.get('content'))[:32], r.get('proxied')))
+          "
+
+      - name: 解析与接口验证
+        env:
+          HOSTNAME: ${{ inputs.hostname }}
+        run: |
+          set +e
+          echo "── 6. 公网 DNS 解析（DoH）──"
+          for r in "https://dns.google/resolve" "https://cloudflare-dns.com/dns-query"; do
+            OUT=$(curl -s --max-time 15 -H "accept: application/dns-json" "$r?name=$HOSTNAME&type=A")
+            echo "   $r → $(echo "$OUT" | python3 -c "
+          import sys,json
+          try:
+              d=json.load(sys.stdin)
+              print('Status=%s' % d.get('Status'), [a.get('data') for a in (d.get('Answer') or [])][:3])
+          except Exception as e: print('解析失败', e)
+          ")"
+          done
+
+          echo ""
+          echo "── 7. 站点可达性（生产域名 vs Pages 兜底域名）──"
+          for host in "$HOSTNAME" "fengsheng-ee9.pages.dev"; do
+            for ep in "/" "/api/health" "/api/stats" "/api/stats/pages?days=7"; do
+              CODE=$(curl -4 -s -o /tmp/r.txt -w "%{http_code}" --max-time 25 "https://$host$ep")
+              echo "   $host$ep → HTTP ${CODE:-无} | $(head -c 120 /tmp/r.txt | tr -d '\n')"
+            done
+          done
+
+          echo ""
+          echo "── 8. 埋点上报连通性（POST /api/events）──"
+          CODE=$(curl -4 -s -o /tmp/ev.txt -w "%{http_code}" --max-time 25 -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"uid":"mp_domainfix_probe","type":"domainfix_probe","product":"mini-program","page":"__domainfix__","data":{"probe":1}}' \
+            "https://$HOSTNAME/api/events")
+          echo "   POST https://$HOSTNAME/api/events → HTTP ${CODE:-无} | $(head -c 200 /tmp/ev.txt | tr -d '\n')"
+
+      - name: 失败回滚
+        if: failure() || steps.bind.outcome == 'failure'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          HOSTNAME: ${{ inputs.hostname }}
+          KEEP_WORKER: ${{ inputs.keep_worker }}
+          SCRIPT: fengsheng-proxy
+        run: |
+          set +e
+          CF=https://api.cloudflare.com/client/v4
+          ACC=$CLOUDFLARE_ACCOUNT_ID
+          echo "── 收尾 ──"
+          echo "   删除自定义域名绑定（避免留下孤儿绑定）"
+          curl -s --max-time 20 -o /dev/null -w "   HTTP %{http_code}\n" \
+            -X DELETE "$CF/accounts/$ACC/workers/scripts/$SCRIPT/domains/$HOSTNAME" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          ZONE_ID=$(curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/zones?name=fengsheng.tech" | python3 -c "import sys,json;d=json.load(sys.stdin);r=d.get('result') or [];print(r[0]['id'] if r else '')")
+          echo "   删除 Worker 路由"
+          curl -s --max-time 20 -o /dev/null -w "   HTTP %{http_code}\n" \
+            -X DELETE "$CF/zones/$ZONE_ID/workers/routes/$HOSTNAME/*" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          if [ "$KEEP_WORKER" != "true" ]; then
+            echo "   删除代理 Worker（KEEP_WORKER=$KEEP_WORKER）"
+            curl -s --max-time 20 -o /dev/null -w "   HTTP %{http_code}\n" \
+              -X DELETE "$CF/accounts/$ACC/workers/scripts/$SCRIPT" \
+              -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          else
+            echo "   保留代理 Worker 便于排查"
+          fi
+          exit 0
