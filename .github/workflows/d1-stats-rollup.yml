@@ -1,0 +1,128 @@
+name: 统计物化层重建（D1 免费额度自愈）
+# ============================================================================
+# 【用途】
+# 维护 004/005 建立的统计物化层（stats_* 表）：
+#   ① 首次上线：建表 + 从 events 全量回填 + 置就绪标记
+#   ② 每天一次：从 events 全量重算，修正任何增量漂移
+#
+# 【为什么必须每天跑】
+# 统计接口在「rollup_ready」就绪后改读物化表，物化层由写入侧增量维护。
+# 万一某次增量批次失败（写冲突/D1 抖动），计数会漂移；
+# 每日全量重算 = 自愈，把漂移压到 24 小时以内。
+# 重算代价：events 全表扫 4 遍 ≈ 5.5 万行/天，占 500 万免费额度的 1.1%。
+#
+# 【时点选择】
+# cron "2 0 * * *" = UTC 00:02 = 北京时间 08:02。
+# D1 免费额度在 UTC 00:00 恢复，选在恢复后 2 分钟，避开额度尚未刷新的时段。
+# ============================================================================
+on:
+  schedule:
+    # 北京时间 08:02（UTC 00:02）—— D1 免费额度 UTC 00:00 恢复之后
+    - cron: "2 0 * * *"
+  workflow_dispatch:
+    inputs:
+      db_name:
+        description: 'D1 数据库名（留空 = 自动探测生产库）'
+        required: false
+        default: ''
+      create_tables:
+        description: '是否同时执行 004 建表（幂等，建议 true）'
+        required: false
+        default: 'true'
+        type: choice
+        options: ['true', 'false']
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild:
+    name: 重建统计物化层
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Wrangler
+        run: npm i -g wrangler
+
+      - name: 定位生产 D1 库（按 events 表探测）
+        id: db
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          INPUT_DB: ${{ inputs.db_name }}
+        run: |
+          set +e
+          CANDIDATES="fengsheng-db fengsheng-events fengsheng-db-prod"
+          if [ -n "$INPUT_DB" ]; then CANDIDATES="$INPUT_DB $CANDIDATES"; fi
+          FOUND=""
+          for DB in $CANDIDATES; do
+            OUT=$(wrangler d1 execute "$DB" --remote \
+              --command "SELECT name FROM sqlite_master WHERE type='table' AND name='events';" 2>&1)
+            if echo "$OUT" | grep -q '"events"'; then
+              FOUND="$DB"
+              echo "✅ 命中生产库：$DB"
+              break
+            fi
+            echo "  · $DB → 无 events 表"
+          done
+          if [ -z "$FOUND" ]; then
+            echo "::error::候选库均未找到 events 表，无法定位生产 D1，请手工指定 db_name"
+            exit 1
+          fi
+          echo "db_name=$FOUND" >> $GITHUB_OUTPUT
+
+      - name: 建表（幂等，0 行读取，额度锁死时也能执行）
+        if: inputs.create_tables != 'false'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler d1 execute "${{ steps.db.outputs.db_name }}" --remote \
+            --file migrations/004_create_stats_rollup.sql
+
+      - name: 全量重建 + 置就绪标记
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler d1 execute "${{ steps.db.outputs.db_name }}" --remote \
+            --file migrations/005_rebuild_stats_rollup.sql
+
+      - name: 重建结果校验
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -e
+          echo "=== 物化层校验 ==="
+          wrangler d1 execute "${{ steps.db.outputs.db_name }}" --remote --command \
+            "SELECT (SELECT pv FROM stats_totals WHERE id=1) AS pv,
+                    (SELECT chats FROM stats_totals WHERE id=1) AS chats,
+                    (SELECT feedback FROM stats_totals WHERE id=1) AS feedback,
+                    (SELECT events FROM stats_totals WHERE id=1) AS events,
+                    (SELECT COUNT(*) FROM stats_uid) AS uids,
+                    (SELECT COUNT(*) FROM stats_product) AS products,
+                    (SELECT COUNT(*) FROM events) AS events_raw,
+                    (SELECT value FROM stats_meta WHERE key='rollup_ready') AS ready;"
+          echo ""
+          echo "=== 与 events 原始值对账（两者必须一致）==="
+          wrangler d1 execute "${{ steps.db.outputs.db_name }}" --remote --command \
+            "SELECT
+               (SELECT COUNT(*) FROM events WHERE event_type='pageview')
+                 = (SELECT pv FROM stats_totals WHERE id=1) AS pv_ok,
+               (SELECT COUNT(*) FROM events WHERE event_type IN ('chat','mentor_chat','coze_chat_open'))
+                 = (SELECT chats FROM stats_totals WHERE id=1) AS chats_ok,
+               (SELECT COUNT(*) FROM events WHERE event_type='reply_submit')
+                 = (SELECT feedback FROM stats_totals WHERE id=1) AS feedback_ok,
+               (SELECT COUNT(*) FROM events)
+                 = (SELECT events FROM stats_totals WHERE id=1) AS events_ok,
+               (SELECT COUNT(DISTINCT uid) FROM events)
+                 = (SELECT COUNT(*) FROM stats_uid) AS users_ok;"
+          echo ""
+          echo "=== 线上接口自检（物化路径是否生效）==="
+          for EP in /api/stats /api/stats/summary /api/chats /api/mp-stats; do
+            printf '  %-22s ' "$EP"
+            curl -4 -s --max-time 20 "https://fengsheng-ee9.pages.dev$EP" | head -c 300
+            echo ""
+          done

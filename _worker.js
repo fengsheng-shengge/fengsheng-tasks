@@ -1066,12 +1066,24 @@ async function handleMpStats(request, env) {
     try {
       // 小程序用户判定：tracker.js 只上报 uid/product/page/data，url 与 source 恒为空，
       // 故只能用 product='mini-program' 判定（原 wx_/o_/pages/ 判据实测命中 0 条）
-      const mpUsersD1 = await env.DB.prepare(
-        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE product = 'mini-program' AND event_type = 'pageview'"
-      ).first();
-      const mpPVD1 = await env.DB.prepare(
-        "SELECT COUNT(*) as c FROM events WHERE event_type = 'pageview' AND product = 'mini-program'"
-      ).first();
+      let mpUsersD1, mpPVD1;
+      if (await isRollupReady(env)) {
+        // ---- 物化路径：读取量约 1 行（原 2.7 万行）----
+        const mp = await env.DB.prepare(
+          "SELECT pv_users AS users, pv FROM stats_product WHERE product = 'mini-program'"
+        ).first();
+        mpUsersD1 = { c: mp?.users || 0 };
+        mpPVD1 = { c: mp?.pv || 0 };
+      } else {
+        // ---- 未回填就绪：单次全表扫描（旧实现是 2 次全表扫）----
+        const r = await env.DB.prepare(
+          "SELECT COUNT(DISTINCT CASE WHEN event_type='pageview' THEN uid END) AS users, " +
+          "SUM(CASE WHEN event_type='pageview' THEN 1 ELSE 0 END) AS pv " +
+          "FROM events WHERE product = 'mini-program'"
+        ).first();
+        mpUsersD1 = { c: r?.users || 0 };
+        mpPVD1 = { c: r?.pv || 0 };
+      }
       d1Data = {
         mp_users: mpUsersD1?.c || 0,
         mp_pv: mpPVD1?.c || 0,
@@ -1141,6 +1153,8 @@ async function handleChat(request, env, authenticatedOpenid, resolvedBotId, ctx)
             JSON.stringify({ message: (message || '').slice(0, 200), conversation_id: conversation_id || null }),
             Date.now()
           ).run();
+          // 统计物化层：这条是 'chat' 类型事件，计数必须与 events 一致
+          await updateRollupForEvent(env, authenticatedOpenid || 'web_user', 'chat', 'mentor');
         } catch (dbErr) {
           console.error('chat event write failed:', dbErr.message);
         }
@@ -1191,6 +1205,8 @@ async function handleFeedback(request, env) {
       await env.DB.prepare(
         'INSERT INTO events (uid, event_type, product, data, ts, created_at) VALUES (?, ?, ?, ?, ?, unixepoch())'
       ).bind(eventUid, eventType, eventProduct, JSON.stringify({ content: eventContent, rating: eventRating, source: eventSource }), Date.now()).run();
+      // 统计物化层：反馈事件同样计入 events，计数必须同步
+      await updateRollupForEvent(env, eventUid, eventType, eventProduct);
     }
     return jsonResponse({ ok: true, message: '反馈已收到，感谢！' });
   } catch (err) {
@@ -1299,6 +1315,22 @@ async function handleEvent(request, env) {
         console.error('events: DB write failed', e.message);
         return jsonResponse({ ok: false, stored: 0, skipped, page_cleared: clearedPage, error: String(e && e.message || e) }, 503);
       }
+      // 2026-11-05 统计物化层：增量维护 stats_* 表（写 events 之后单独一批）。
+      // 单独一批的理由：① 物化层故障绝不能连累埋点数据本身；
+      // ② 事件批次可能很大，混在一起会撞 D1 单请求语句数上限。
+      // 物化层万一漂移，由每日重建任务（d1-stats-rollup.yml）从 events 全量重算兜底。
+      if (batch.length) {
+        try {
+          if (await rollupTablesExist(env)) {
+            const rollupStmts = buildRollupStatements(env, accepted);
+            for (let i = 0; i < rollupStmts.length; i += 100) {
+              await env.DB.batch(rollupStmts.slice(i, i + 100));
+            }
+          }
+        } catch (e) {
+          console.error('stats rollup: 增量维护失败（每日重建任务会自动修复，不影响埋点）:', e.message);
+        }
+      }
       if (skipped || clearedPage) {
         console.warn(`events: rejected ${skipped} event(s) with invalid product, cleared page on ${clearedPage} event(s)`);
       }
@@ -1374,63 +1406,226 @@ async function handleStatsCached(request, env, ctx, handler) {
   return out;
 }
 
+// ============================================================
+//  统计物化层（2026-11-05）— D1 免费额度根治
+// ------------------------------------------------------------
+//  事故根因（本地复现库 EXPLAIN QUERY PLAN 实测）：
+//    /api/stats         9 条 SQL，其中 6 条无任何日期过滤 → 全表/全索引扫描
+//    /api/stats/summary 4 条 SQL，含 SCAN events USING COVERING INDEX idx_events_uid
+//    /api/chats         7 条 SQL，含 2 条全表 COUNT + 3 条 ts>=? 范围查询
+//    单个 /api/stats 请求即读 8.2 万行（events 1.37 万行 × 6 条全表 SQL），
+//    叠加 15 分钟缓存未命中 + 外部调用 → 日 rows read 打穿免费额度 500 万/天。
+//
+//  根治方案：写入侧增量维护物化表，统计接口改读物化表。
+//    单请求读取量：8.2 万行 → 约 1 千行（降 60~90 倍）。
+//
+//  物化表：
+//    stats_totals       全局计数（1 行）        pv / chats / feedback / clicks / events
+//    stats_product      分产品计数（47 行）     含 users / pv_users 去重用户数
+//    stats_uid          全局去重用户（731 行）  pv / chat 标记
+//    stats_uid_prod     产品维度去重（写入用）  供触发器累加 users
+//    stats_uid_prod_pv  产品维度 pageview 去重   供触发器累加 pv_users
+//    stats_meta         就绪标记 rollup_ready    未回填前统计接口回落旧路径
+//
+//  口径不变：UV 仍为 COUNT(DISTINCT uid)，不擅自改数（口径拆分仍在待拍板，不在本次动）。
+// ============================================================
+
+const CHAT_TYPES_SQL = "('chat', 'mentor_chat', 'coze_chat_open')";
+
+function isChatEventType(t) {
+  return t === 'chat' || t === 'mentor_chat' || t === 'coze_chat_open';
+}
+
+// 物化表是否已建（未建则事件写入自动降级为「只写 events」，不阻塞埋点）
+let _rollupTablesState = { at: 0, ok: false };
+async function rollupTablesExist(env) {
+  const s = _rollupTablesState;
+  if (Date.now() - s.at < 300_000) return s.ok;
+  let ok = false;
+  try {
+    const r = await env.DB.prepare(
+      "SELECT COUNT(*) AS c FROM sqlite_master WHERE type='table' AND name IN ('stats_totals','stats_product','stats_uid','stats_uid_prod','stats_uid_prod_pv')"
+    ).first();
+    ok = Number(r?.c || 0) === 5;
+  } catch (e) {
+    ok = false;
+  }
+  _rollupTablesState = { at: Date.now(), ok };
+  return ok;
+}
+
+// 物化层是否已回填就绪（未就绪时统计接口回落「单次全表扫描」路径，保证数字正确）
+async function isRollupReady(env) {
+  try {
+    const r = await env.DB.prepare("SELECT value FROM stats_meta WHERE key = 'rollup_ready'").first();
+    return !!(r && r.value);
+  } catch (e) {
+    return false;
+  }
+}
+
+// 依据本批事件生成物化层增量维护语句
+// 顺序有讲究：stats_product 必须在 stats_uid_prod 之前 —— 后者的插入触发器
+// 要 UPDATE 已存在的 stats_product 行（users / pv_users 累加）。
+function buildRollupStatements(env, accepted) {
+  const totals = { pv: 0, chats: 0, feedback: 0, clicks: 0, events: 0 };
+  const perProduct = new Map();
+  const perUid = new Map();
+  const uidProd = new Set();
+  const uidProdPv = new Set();
+  for (const ev of accepted) {
+    const t = ev.eventType;
+    const isPv = t === 'pageview';
+    const isChat = isChatEventType(t);
+    const isFb = t === 'reply_submit';
+    const isCk = t === 'click';
+    totals.pv += isPv ? 1 : 0;
+    totals.chats += isChat ? 1 : 0;
+    totals.feedback += isFb ? 1 : 0;
+    totals.clicks += isCk ? 1 : 0;
+    totals.events += 1;
+    let pc = perProduct.get(ev.product);
+    if (!pc) { pc = { pv: 0, chats: 0, feedback: 0, clicks: 0, events: 0 }; perProduct.set(ev.product, pc); }
+    pc.pv += isPv ? 1 : 0;
+    pc.chats += isChat ? 1 : 0;
+    pc.feedback += isFb ? 1 : 0;
+    pc.clicks += isCk ? 1 : 0;
+    pc.events += 1;
+    let uc = perUid.get(ev.uid);
+    if (!uc) { uc = { pv: 0, chat: 0 }; perUid.set(ev.uid, uc); }
+    if (isPv) uc.pv = 1;
+    if (isChat) uc.chat = 1;
+    const key = ev.uid + '\u0001' + ev.product;
+    uidProd.add(key);
+    if (isPv) uidProdPv.add(key);
+  }
+  const stmts = [];
+  // ① 全局计数（id=1 单行）
+  stmts.push(env.DB.prepare(
+    'INSERT INTO stats_totals (id, pv, chats, feedback, clicks, events) VALUES (1, ?, ?, ?, ?, ?) ' +
+    'ON CONFLICT(id) DO UPDATE SET pv = stats_totals.pv + excluded.pv, chats = stats_totals.chats + excluded.chats, ' +
+    'feedback = stats_totals.feedback + excluded.feedback, clicks = stats_totals.clicks + excluded.clicks, events = stats_totals.events + excluded.events'
+  ).bind(totals.pv, totals.chats, totals.feedback, totals.clicks, totals.events));
+  // ② 分产品计数（users / pv_users 由触发器维护）
+  for (const [product, c] of perProduct) {
+    stmts.push(env.DB.prepare(
+      'INSERT INTO stats_product (product, users, pv_users, pv, chats, feedback, clicks, events) VALUES (?, 0, 0, ?, ?, ?, ?, ?) ' +
+      'ON CONFLICT(product) DO UPDATE SET pv = stats_product.pv + excluded.pv, chats = stats_product.chats + excluded.chats, ' +
+      'feedback = stats_product.feedback + excluded.feedback, clicks = stats_product.clicks + excluded.clicks, events = stats_product.events + excluded.events'
+    ).bind(product, c.pv, c.chats, c.feedback, c.clicks, c.events));
+  }
+  // ③ 全局去重用户（uv / total_users / unique_chat_users）
+  for (const [uid, u] of perUid) {
+    stmts.push(env.DB.prepare(
+      'INSERT INTO stats_uid (uid, pv, chat) VALUES (?, ?, ?) ' +
+      'ON CONFLICT(uid) DO UPDATE SET pv = MAX(stats_uid.pv, excluded.pv), chat = MAX(stats_uid.chat, excluded.chat)'
+    ).bind(uid, u.pv, u.chat));
+  }
+  // ④ 产品维度去重集合（供触发器累加 users / pv_users；INSERT OR IGNORE 保证同一对只触发一次）
+  const insProd = env.DB.prepare('INSERT OR IGNORE INTO stats_uid_prod (uid, product) VALUES (?, ?)');
+  for (const key of uidProd) {
+    const i = key.indexOf('\u0001');
+    stmts.push(insProd.bind(key.slice(0, i), key.slice(i + 1)));
+  }
+  const insProdPv = env.DB.prepare('INSERT OR IGNORE INTO stats_uid_prod_pv (uid, product) VALUES (?, ?)');
+  for (const key of uidProdPv) {
+    const i = key.indexOf('\u0001');
+    stmts.push(insProdPv.bind(key.slice(0, i), key.slice(i + 1)));
+  }
+  return stmts;
+}
+
+// 供非 tracker 的写入路径复用：写完 events 后增量维护物化层
+// 物化层失败绝不影响主流程（埋点/聊天/反馈的可用性优先），漂移由每日重建兜底。
+async function updateRollupForEvent(env, uid, eventType, product) {
+  try {
+    if (!await rollupTablesExist(env)) return;
+    const stmts = buildRollupStatements(env, [{
+      uid: String(uid == null ? '' : uid).slice(0, 64),
+      eventType: String(eventType == null ? 'event' : eventType).slice(0, 32),
+      product: String(product == null ? '' : product).slice(0, 64),
+    }]);
+    for (let i = 0; i < stmts.length; i += 100) {
+      await env.DB.batch(stmts.slice(i, i + 100));
+    }
+  } catch (e) {
+    console.error('stats rollup: 增量维护失败（每日重建任务会自动修复，不影响主流程）:', e.message);
+  }
+}
+
 async function handleStats(request, env) {
   const now = new Date().toISOString().split('T')[0];
   if (env.DB) {
     try {
       const todayStart = Math.floor(new Date(now + 'T00:00:00Z').getTime() / 1000);
 
-      const uvResult = await env.DB.prepare(
-        "SELECT COUNT(DISTINCT uid) as uv FROM events WHERE event_type = 'pageview'"
-      ).first();
-      const pvResult = await env.DB.prepare(
-        "SELECT COUNT(*) as pv FROM events WHERE event_type = 'pageview'"
-      ).first();
-      const chatResult = await env.DB.prepare(
-        "SELECT COUNT(*) as chats FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open')"
-      ).first();
       const lastEvent = await env.DB.prepare(
         "SELECT ts FROM events ORDER BY ts DESC LIMIT 1"
       ).first();
 
-      // Today's stats
-      const todayUV = await env.DB.prepare(
-        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE event_type = 'pageview' AND created_at >= ?"
-      ).bind(todayStart).first();
-      const todayPV = await env.DB.prepare(
-        "SELECT COUNT(*) as c FROM events WHERE event_type = 'pageview' AND created_at >= ?"
-      ).bind(todayStart).first();
-      const todayChats = await env.DB.prepare(
-        "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND created_at >= ?"
-      ).bind(todayStart).first();
+      if (await isRollupReady(env)) {
+        // ---- 物化路径：读取量约 1 千行（原 8.2 万行）----
+        const totals = await env.DB.prepare(
+          "SELECT pv, chats, feedback FROM stats_totals WHERE id = 1"
+        ).first();
+        const uidAgg = await env.DB.prepare(
+          "SELECT SUM(pv) AS uv, SUM(chat) AS chat_users FROM stats_uid"
+        ).first();
+        const mp = await env.DB.prepare(
+          "SELECT users, pv FROM stats_product WHERE product = 'mini-program'"
+        ).first();
+        // 当日指标仍走 created_at 范围扫描（只读当天行，几十行）
+        const today = await env.DB.prepare(
+          "SELECT COUNT(DISTINCT CASE WHEN event_type='pageview' THEN uid END) AS uv, " +
+          "SUM(CASE WHEN event_type='pageview' THEN 1 ELSE 0 END) AS pv, " +
+          "SUM(CASE WHEN event_type IN ('chat','mentor_chat','coze_chat_open') THEN 1 ELSE 0 END) AS chats " +
+          "FROM events WHERE created_at >= ?"
+        ).bind(todayStart).first();
+        return jsonResponse({
+          uv: uidAgg?.uv || 0,
+          total_users: uidAgg?.uv || 0,
+          pv: totals?.pv || 0,
+          chats: totals?.chats || 0,
+          last_event_ts: lastEvent?.ts || null,
+          updated: now,
+          source: 'db',
+          today_uv: today?.uv || 0,
+          today_pv: today?.pv || 0,
+          today_chats: today?.chats || 0,
+          mp_users: mp?.users || 0,
+          mp_pv: mp?.pv || 0,
+          feedback_count: totals?.feedback || 0,
+        });
+      }
 
-      // Mini-program users: 以 product='mini-program' 判定（理由同 handleMpStats 内注释）
-      const mpUsers = await env.DB.prepare(
-        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE product = 'mini-program'"
-      ).first();
-      const mpPV = await env.DB.prepare(
-        "SELECT COUNT(*) as c FROM events WHERE event_type = 'pageview' AND product = 'mini-program'"
-      ).first();
-
-      // Feedback count
-      const feedbackCount = await env.DB.prepare(
-        "SELECT COUNT(*) as c FROM events WHERE event_type = 'reply_submit'"
-      ).first();
+      // ---- 未回填就绪：单次全表扫描算完所有指标（旧实现是 6 次全表扫）----
+      const r = await env.DB.prepare(
+        "SELECT COUNT(DISTINCT CASE WHEN event_type='pageview' THEN uid END) AS uv, " +
+        "SUM(CASE WHEN event_type='pageview' THEN 1 ELSE 0 END) AS pv, " +
+        "SUM(CASE WHEN event_type IN ('chat','mentor_chat','coze_chat_open') THEN 1 ELSE 0 END) AS chats, " +
+        "COUNT(DISTINCT CASE WHEN event_type='pageview' AND created_at>=? THEN uid END) AS today_uv, " +
+        "SUM(CASE WHEN event_type='pageview' AND created_at>=? THEN 1 ELSE 0 END) AS today_pv, " +
+        "SUM(CASE WHEN event_type IN ('chat','mentor_chat','coze_chat_open') AND created_at>=? THEN 1 ELSE 0 END) AS today_chats, " +
+        "COUNT(DISTINCT CASE WHEN product='mini-program' THEN uid END) AS mp_users, " +
+        "SUM(CASE WHEN event_type='pageview' AND product='mini-program' THEN 1 ELSE 0 END) AS mp_pv, " +
+        "SUM(CASE WHEN event_type='reply_submit' THEN 1 ELSE 0 END) AS feedback_count " +
+        "FROM events"
+      ).bind(todayStart, todayStart, todayStart).first();
 
       return jsonResponse({
-        uv: uvResult?.uv || 0,
-        total_users: uvResult?.uv || 0,
-        pv: pvResult?.pv || 0,
-        chats: chatResult?.chats || 0,
+        uv: r?.uv || 0,
+        total_users: r?.uv || 0,
+        pv: r?.pv || 0,
+        chats: r?.chats || 0,
         last_event_ts: lastEvent?.ts || null,
         updated: now,
         source: 'db',
-        today_uv: todayUV?.c || 0,
-        today_pv: todayPV?.c || 0,
-        today_chats: todayChats?.c || 0,
-        mp_users: mpUsers?.c || 0,
-        mp_pv: mpPV?.c || 0,
-        feedback_count: feedbackCount?.c || 0,
+        today_uv: r?.today_uv || 0,
+        today_pv: r?.today_pv || 0,
+        today_chats: r?.today_chats || 0,
+        mp_users: r?.mp_users || 0,
+        mp_pv: r?.mp_pv || 0,
+        feedback_count: r?.feedback_count || 0,
       });
     } catch (e) {
       console.error('stats: DB query failed', e.message);
@@ -1459,33 +1654,52 @@ async function handleChats(request, env, ctx) {
   const today = now.split('T')[0];
   if (env.DB) {
     try {
-      let totalChats, recentChats;
-      if (sinceParam) {
-        const sinceDays = parseInt(sinceParam) || 0;
-        const sinceTs = sinceDays > 0
-          ? Math.floor((Date.now() - sinceDays * 86400_000) / 1000)
-          : 0;
+      const todayStart = Math.floor(new Date(today + 'T00:00:00Z').getTime() / 1000);
+      // 2026-11-05 单位修正：原实现拿「秒级阈值」去比「毫秒级 ts」，条件恒真
+      //   → chats_today 实际等于总量、since=N 天过滤形同虚设。
+      // 统一改用 created_at（秒级，与 todayStart 同单位），口径名称与实际值重新对齐。
+      const sinceDays = sinceParam ? (parseInt(sinceParam) || 0) : 0;
+      const hasSince = sinceDays > 0;
+      const sinceSec = hasSince ? Math.floor((Date.now() - sinceDays * 86400_000) / 1000) : 0;
+
+      const rollup = await isRollupReady(env);
+      let totalChats, recentChats, uniqueChatUsers;
+      if (hasSince) {
+        // 带 since：必须与 since 同口径，物化层（全量）不能直接用
         totalChats = await env.DB.prepare(
-          "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND ts >= ?"
-        ).bind(sinceTs).first();
+          "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND created_at >= ?"
+        ).bind(sinceSec).first();
+        uniqueChatUsers = await env.DB.prepare(
+          "SELECT COUNT(DISTINCT uid) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND created_at >= ?"
+        ).bind(sinceSec).first();
         recentChats = await env.DB.prepare(
-          "SELECT uid, event_type, product, ts FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND ts >= ? ORDER BY ts DESC LIMIT 10"
-        ).bind(sinceTs).all();
+          "SELECT uid, event_type, product, ts FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND created_at >= ? ORDER BY ts DESC LIMIT 10"
+        ).bind(sinceSec).all();
+      } else if (rollup) {
+        // ---- 物化路径：读取量约 750 行（原 4.1 万行）----
+        const totals = await env.DB.prepare("SELECT chats FROM stats_totals WHERE id = 1").first();
+        const uidAgg = await env.DB.prepare("SELECT SUM(chat) AS chat_users FROM stats_uid").first();
+        totalChats = { c: totals?.chats || 0 };
+        uniqueChatUsers = { c: uidAgg?.chat_users || 0 };
+        recentChats = await env.DB.prepare(
+          "SELECT uid, event_type, product, ts FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') ORDER BY ts DESC LIMIT 10"
+        ).all();
       } else {
-        totalChats = await env.DB.prepare(
-          "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open')"
+        // ---- 未回填就绪：单次全表扫描（旧实现是 2 次全表 COUNT）----
+        const agg = await env.DB.prepare(
+          "SELECT SUM(CASE WHEN event_type IN ('chat','mentor_chat','coze_chat_open') THEN 1 ELSE 0 END) AS chats, " +
+          "COUNT(DISTINCT CASE WHEN event_type IN ('chat','mentor_chat','coze_chat_open') THEN uid END) AS chat_users " +
+          "FROM events"
         ).first();
+        totalChats = { c: agg?.chats || 0 };
+        uniqueChatUsers = { c: agg?.chat_users || 0 };
         recentChats = await env.DB.prepare(
           "SELECT uid, event_type, product, ts FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') ORDER BY ts DESC LIMIT 10"
         ).all();
       }
-      const todayStart = Math.floor(new Date(today + 'T00:00:00Z').getTime() / 1000);
       const todayChats = await env.DB.prepare(
-        "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND ts >= ?"
+        "SELECT COUNT(*) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') AND created_at >= ?"
       ).bind(todayStart).first();
-      const uniqueChatUsers = await env.DB.prepare(
-        "SELECT COUNT(DISTINCT uid) as c FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open')"
-      ).first();
       const lastChatTs = await env.DB.prepare(
         "SELECT ts FROM events WHERE event_type IN ('chat', 'mentor_chat', 'coze_chat_open') ORDER BY ts DESC LIMIT 1"
       ).first();
@@ -1520,24 +1734,47 @@ async function handleStatsSummary(request, env) {
   const now = new Date().toISOString().split('T')[0];
   if (env.DB) {
     try {
-      const totalUsers = await env.DB.prepare(
-        "SELECT COUNT(DISTINCT uid) as total_users FROM events"
-      ).first();
-      const totalPageviews = await env.DB.prepare(
-        "SELECT COUNT(*) as total_pageviews FROM events WHERE event_type = 'pageview'"
-      ).first();
-      const totalFeedback = await env.DB.prepare(
-        "SELECT COUNT(*) as total_feedback FROM events WHERE event_type = 'reply_submit'"
+      if (await isRollupReady(env)) {
+        // ---- 物化路径：读取量约 780 行（原 5.5 万行）----
+        const totals = await env.DB.prepare(
+          "SELECT pv, feedback FROM stats_totals WHERE id = 1"
+        ).first();
+        const totalUsers = await env.DB.prepare(
+          "SELECT COUNT(*) AS total_users FROM stats_uid"
+        ).first();
+        const perProduct = await env.DB.prepare(
+          "SELECT product, users, pv AS pageviews, feedback, clicks, 0 AS actions " +
+          "FROM stats_product WHERE product != '' ORDER BY product"
+        ).all();
+        const users = totalUsers?.total_users || 0;
+        const fb = totals?.feedback || 0;
+        const fbRate = users > 0 ? Math.round(fb / users * 10000) / 100 : 0;
+        return jsonResponse({
+          total_users: users,
+          total_pageviews: totals?.pv || 0,
+          total_feedback: fb,
+          feedback_rate_pct: fbRate,
+          per_product: perProduct?.results || [],
+          updated: now,
+          source: 'db',
+        });
+      }
+      // ---- 未回填就绪：单次全表扫描（旧的 3 条各扫一遍）----
+      const agg = await env.DB.prepare(
+        "SELECT COUNT(DISTINCT uid) AS total_users, " +
+        "SUM(CASE WHEN event_type='pageview' THEN 1 ELSE 0 END) AS total_pageviews, " +
+        "SUM(CASE WHEN event_type='reply_submit' THEN 1 ELSE 0 END) AS total_feedback " +
+        "FROM events"
       ).first();
       const perProduct = await env.DB.prepare(
-        "SELECT product, COUNT(DISTINCT uid) as users, COUNT(CASE WHEN event_type='pageview' THEN 1 END) as pageviews, COUNT(CASE WHEN event_type='reply_submit' THEN 1 END) as feedback, COUNT(CASE WHEN event_type='click' THEN 1 END) as clicks, 0 as actions FROM events WHERE product != '' GROUP BY product"
+        "SELECT product, COUNT(DISTINCT uid) as users, COUNT(CASE WHEN event_type='pageview' THEN 1 END) as pageviews, COUNT(CASE WHEN event_type='reply_submit' THEN 1 END) as feedback, COUNT(CASE WHEN event_type='click' THEN 1 END) as clicks, 0 as actions FROM events WHERE product != '' GROUP BY product ORDER BY product"
       ).all();
-      const users = totalUsers?.total_users || 0;
-      const fb = totalFeedback?.total_feedback || 0;
+      const users = agg?.total_users || 0;
+      const fb = agg?.total_feedback || 0;
       const fbRate = users > 0 ? Math.round(fb / users * 10000) / 100 : 0;
       return jsonResponse({
         total_users: users,
-        total_pageviews: totalPageviews?.total_pageviews || 0,
+        total_pageviews: agg?.total_pageviews || 0,
         total_feedback: fb,
         feedback_rate_pct: fbRate,
         per_product: perProduct?.results || [],
@@ -1679,7 +1916,18 @@ async function handleStatsHealth(request, env) {
   try {
     const lastEvent = await safeD1First(env.DB, "SELECT ts, event_type, product FROM events ORDER BY ts DESC LIMIT 1");
     const count24h = await safeD1First(env.DB, "SELECT COUNT(*) as cnt FROM events WHERE created_at >= unixepoch('now', '-1 days')", [], { cnt: 0 });
-    const feedbackCount = await safeD1First(env.DB, "SELECT COUNT(*) as cnt FROM events WHERE event_type = 'reply_submit'", [], { cnt: 0 });
+    let totalEvents, feedbackCount;
+    if (await isRollupReady(env)) {
+      // ---- 物化路径：读取量 1 行 ----
+      const t = await safeD1First(env.DB, "SELECT events, feedback FROM stats_totals WHERE id = 1", [], { events: 0, feedback: 0 });
+      totalEvents = { cnt: t?.events || 0 };
+      feedbackCount = { cnt: t?.feedback || 0 };
+    } else {
+      // ---- 未回填就绪：单次全表扫描（旧实现是 1 次全表扫 + 1 次全表扫）----
+      const agg = await safeD1First(env.DB, "SELECT COUNT(*) AS total, SUM(CASE WHEN event_type='reply_submit' THEN 1 ELSE 0 END) AS fb FROM events", [], { total: 0, fb: 0 });
+      totalEvents = { cnt: agg?.total || 0 };
+      feedbackCount = { cnt: agg?.fb || 0 };
+    }
     return jsonResponse({
       ...base,
       status: _degradedMode ? 'degraded' : 'ok',
@@ -1687,7 +1935,7 @@ async function handleStatsHealth(request, env) {
       db_connected: true,
       last_event: lastEvent || null,
       events_24h: count24h?.cnt || 0,
-      events_count: count24h?.cnt || 0,
+      events_count: totalEvents?.cnt || 0,
       feedback_count: feedbackCount?.cnt || 0,
     });
   } catch (e) {
