@@ -1,0 +1,81 @@
+name: 🌐 修复生产域名绑定与 DNS
+
+# ============================================================================
+# 【背景】
+# 2026-11-05 实测（Cloudflare API，非推测）：
+#   · fengsheng.tech 的 A / AAAA / CNAME 主机记录全缺（NS/SOA/MX/TXT 正常）
+#   · Pages 项目 fengsheng 的 domains 只有 ['fengsheng-ee9.pages.dev']
+#     → 连自定义域名都没绑，所以 DNS 里也就没有对应主机记录
+#   · 影响：生产域名上所有接口不可达；小程序真机埋点、小程序「服务器域名」
+#     配置全部卡在这里。这是 P0。
+#
+# 【本 workflow 做两件事】
+#   1. 给 Pages 项目 fengsheng 添加自定义域名 fengsheng.tech
+#   2. 在该 Zone 补 DNS：CNAME fengsheng.tech → fengsheng-ee9.pages.dev
+#
+# 【安全】
+#   · 只动 fengsheng.tech 这一个域名，不碰其他域名/记录
+#   · 幂等：记录已存在则跳过
+#   · 默认 dry-run；apply 需显式传 apply=true
+# ============================================================================
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: '是否真正写入（false = 只看会做什么）'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  fix-domain:
+    name: 绑定 Pages 自定义域名 + 补 DNS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 修复生产域名
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          APPLY: ${{ inputs.apply }}
+        run: |
+          set -e
+          if [ "$APPLY" = "true" ]; then
+            python3 scripts/fix_prod_domain.py --apply
+          else
+            python3 scripts/fix_prod_domain.py
+          fi
+
+      - name: 验证生产域名可达（DNS 生效需 1~5 分钟，可能先失败）
+        continue-on-error: true
+        run: |
+          set +e
+          echo ""
+          echo "=== 生产域名验证 ==="
+          for i in 1 2 3; do
+            printf '  第 %s 次探测: ' "$i"
+            CODE=$(curl -4 -s -o /dev/null -w '%{http_code}' --max-time 20 "https://fengsheng.tech/api/health")
+            echo "HTTP $CODE"
+            [ "$CODE" = "200" ] && break
+            sleep 20
+          done
+          echo ""
+          echo "--- 解析结果 ---"
+          nslookup fengsheng.tech 2>/dev/null | tail -6 || true
+          echo ""
+          echo "--- 接口对比（生产域名 vs Pages 兜底域名）---"
+          for EP in /api/health /api/stats; do
+            printf '  %-16s 生产: ' "$EP"
+            curl -4 -s --max-time 20 "https://fengsheng.tech$EP" | head -c 160
+            echo ""
+            printf '  %-16s 兜底: ' "$EP"
+            curl -4 -s --max-time 20 "https://fengsheng-ee9.pages.dev$EP" | head -c 160
+            echo ""
+          done
+          exit 0
