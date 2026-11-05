@@ -1327,37 +1327,48 @@ async function handleEventsAudit(request, env) {
     const badPages = (pageRows?.results || []).filter((r) => !VALID_PAGE_RE.test(r.page));
 
     if (action === 'clean') {
-      let deleted = 0, cleared = 0;
+      let deleted = 0;
       for (const r of badProducts) {
         const res = await env.DB.prepare('DELETE FROM events WHERE product = ?').bind(r.product).run();
         deleted += res?.meta?.changes ?? 0;
       }
-      for (const r of badPages) {
-        const res = await env.DB.prepare("UPDATE events SET page = '' WHERE page = ?").bind(r.page).run();
-        cleared += res?.meta?.changes ?? 0;
+      // 重新取一次脏 page（product 脏行删完后可能还剩 page 脏行）
+      const pageRows2 = await env.DB.prepare(
+        "SELECT page, COUNT(*) as cnt FROM events WHERE page != '' GROUP BY page ORDER BY cnt DESC LIMIT 500"
+      ).all();
+      const badPages2 = (pageRows2?.results || []).filter((r) => !VALID_PAGE_RE.test(r.page));
+      for (const r of badPages2) {
+        const res = await env.DB.prepare('DELETE FROM events WHERE page = ?').bind(r.page).run();
+        deleted += res?.meta?.changes ?? 0;
       }
       const after = await env.DB.prepare(
         "SELECT product, COUNT(*) as cnt FROM events WHERE product != '' GROUP BY product"
       ).all();
+      const afterPages = await env.DB.prepare(
+        "SELECT page, COUNT(*) as cnt FROM events WHERE page != '' GROUP BY page LIMIT 500"
+      ).all();
+      const afterTotal = await env.DB.prepare('SELECT COUNT(*) as c FROM events').first();
       return jsonResponse({
         action: 'clean',
         deleted_rows: deleted,
-        page_cleared_rows: cleared,
         bad_product_groups_before: badProducts.length,
         bad_page_groups_before: badPages.length,
+        bad_page_groups_after_product_clean: badPages2.length,
         product_groups_after: (after?.results || []).length,
         remaining_bad_products: (after?.results || []).filter((r) => !VALID_PRODUCT_RE.test(r.product)),
+        remaining_bad_pages: (afterPages?.results || []).filter((r) => !VALID_PAGE_RE.test(r.page)),
+        events_total_after: afterTotal?.c || 0,
         timestamp: new Date().toISOString(),
       });
     }
 
-    // scan：逐个脏 product 拉明细行
+    // scan：逐个脏 product / 脏 page 拉明细行（按 id 去重）
     const details = [];
-    for (const r of badProducts) {
-      const rows = await env.DB.prepare(
-        'SELECT id, uid, event_type, product, page, title, url, referrer, source, ua, screen, vp, locale, data, ts, created_at FROM events WHERE product = ? ORDER BY created_at ASC LIMIT 100'
-      ).bind(r.product).all();
-      for (const row of rows?.results || []) {
+    const seenIds = new Set();
+    const pushRows = (rows) => {
+      for (const row of rows || []) {
+        if (seenIds.has(row.id)) continue;
+        seenIds.add(row.id);
         details.push({
           id: row.id,
           uid: row.uid,
@@ -1376,7 +1387,20 @@ async function handleEventsAudit(request, env) {
           created_iso: new Date(row.created_at * 1000).toISOString(),
         });
       }
+    };
+    for (const r of badProducts) {
+      const rows = await env.DB.prepare(
+        'SELECT id, uid, event_type, product, page, title, url, referrer, source, ua, screen, vp, locale, data, ts, created_at FROM events WHERE product = ? ORDER BY created_at ASC LIMIT 100'
+      ).bind(r.product).all();
+      pushRows(rows?.results);
     }
+    for (const r of badPages) {
+      const rows = await env.DB.prepare(
+        'SELECT id, uid, event_type, product, page, title, url, referrer, source, ua, screen, vp, locale, data, ts, created_at FROM events WHERE page = ? ORDER BY created_at ASC LIMIT 100'
+      ).bind(r.page).all();
+      pushRows(rows?.results);
+    }
+    details.sort((a, b) => (a.created_at || 0) - (b.created_at || 0));
     // 按天汇总脏行时间线
     const timeline = {};
     for (const d of details) {
