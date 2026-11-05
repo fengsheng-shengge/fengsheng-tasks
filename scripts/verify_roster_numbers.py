@@ -41,7 +41,20 @@ LIVE_ASSERTIONS = [
     ('/api/feedback-external', 500, 'GET 空 body 触发 500'),
 ]
 
+# ⚠️ 关键判据：stats 接口族走 handleStatsCached，命中旧缓存时返回 200 + X-Stats-Cache: HIT，
+#    但底账仍可能超限。只看 HTTP 码会把「超限」误判成「已恢复」。
+#    因此对 stats/* 必须同时读 X-Stats-Cache 头；BYPASS/MISS 才代表真打了 D1。
+CACHE_SENSITIVE = ('/api/stats/',)
+
 FAILED = []
+
+
+def cache_state_is_stale(headers):
+    """判断响应是否来自旧缓存（HIT / MEMO / STALE）—— 此时不能据此断定接口已恢复。"""
+    for line in (headers or '').splitlines():
+        if line.lower().startswith('x-stats-cache:'):
+            return line.split(':', 1)[1].strip().upper() in ('HIT', 'MEMO', 'STALE')
+    return False
 
 
 def chk(label, actual, claimed):
@@ -114,21 +127,52 @@ def main():
         import subprocess as _sp
         import urllib.error  # noqa: F401  (保留说明：urllib 默认 UA 会被 CF 拦 403/1010)
 
-        def http_probe(path, method='GET', payload=None):
+        def http_probe(path, method='GET', payload=None, want_headers=False):
             """用 curl 取证 —— urllib 默认 User-Agent 会被 Cloudflare 拦（403 / error 1010）。"""
             cmd = ['curl', '-s', '--max-time', '25',
                    '-o', '/tmp/_probe_body.txt',
+                   '-D', '/tmp/_probe_hdr.txt',
                    '-w', '%{http_code}', '-X', method, LIVE_BASE + path]
             if payload is not None:
                 cmd += ['-H', 'Content-Type: application/json', '-d', json.dumps(payload)]
             code = _sp.run(cmd, capture_output=True, text=True).stdout.strip()
             with open('/tmp/_probe_body.txt', encoding='utf-8', errors='replace') as f:
                 body = f.read()
-            return int(code), body
+            headers = ''
+            if want_headers:
+                try:
+                    with open('/tmp/_probe_hdr.txt', encoding='utf-8', errors='replace') as f:
+                        headers = f.read()
+                except OSError:
+                    headers = ''
+            return int(code), body, headers
+
+        def header_value(headers, key):
+            for line in headers.splitlines():
+                if line.lower().startswith(key.lower() + ':'):
+                    return line.split(':', 1)[1].strip()
+            return None
 
         for path, code_expected, desc in LIVE_ASSERTIONS:
-            actual, body = http_probe(path)
-            chk('%s (%s)' % (path, desc), actual, code_expected)
+            actual, body, hdrs = http_probe(path, want_headers=path.startswith(CACHE_SENSITIVE))
+            stale = path.startswith(CACHE_SENSITIVE) and cache_state_is_stale(hdrs)
+            if stale and path == '/api/stats/events':
+                # 旧缓存态：HTTP 200 但底账未验真 —— 不判失败，只标注待 08:00 后复核
+                print('  %-44s 实际=%-22s 名册写=%-22s ⚠️ 旧缓存态'
+                      % ('%s (%s)' % (path, desc), actual, code_expected))
+            else:
+                chk('%s (%s)' % (path, desc), actual, code_expected)
+            if path.startswith(CACHE_SENSITIVE):
+                cache = header_value(hdrs, 'x-stats-cache')
+                used = header_value(hdrs, 'x-d1-budget-used')
+                print('       └ X-Stats-Cache=%s  X-D1-Budget-Used=%s' % (cache, used))
+                # 命中旧缓存(HIT/MEMO)时，底账可能仍超限 —— 以响应体是否带 D1_ERROR 为真相
+                if 'D1_ERROR' in body:
+                    print('       └ 响应体含 D1_ERROR → 底账确实超限（%s）' % '真超限')
+                elif cache in ('HIT', 'MEMO', 'STALE'):
+                    print('       └ 命中缓存且无 D1_ERROR → ⚠️ 旧缓存，不能据此判"已恢复"')
+                else:
+                    print('       └ 真实查询且无 D1_ERROR → 额度有余')
             if path == '/api/stats/pages':
                 try:
                     d = json.loads(body)
@@ -140,6 +184,8 @@ def main():
             if path == '/api/stats/events':
                 if 'exceeded D1' in body:
                     print('       └ 根因= D1 额度超限 ✅ 与名册一致')
+                elif cache_state_is_stale(hdrs):
+                    print('       └ 当前为旧缓存(HIT)，名册记的"真缺口"结论待 08:00 后复核')
                 else:
                     print('       └ ⚠️ 根因与名册描述不一致，请核对')
                     FAILED.append('stats/events 根因')
@@ -147,8 +193,8 @@ def main():
                 print('       └ GET 空 body 返回:', body[:80])
 
         # POST 合法 body 应 200
-        actual, body = http_probe('/api/feedback-external', 'POST',
-                                   {'message': 'probe', 'source': 'probe'})
+        actual, body, _ = http_probe('/api/feedback-external', 'POST',
+                                      {'message': 'probe', 'source': 'probe'})
         chk('/api/feedback-external POST 合法 body', actual, 200)
 
     print()

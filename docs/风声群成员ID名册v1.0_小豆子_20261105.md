@@ -100,11 +100,44 @@
 
 | 接口 | HTTP | 真实状态 | 根因 |
 |---|---|---|---|
-| `/api/stats/pages` | **200** | ✅ **已可用**，返回 27 条页面聚合（7 天窗口，`source=db`），如 `/reply/` 376 pv / 140 uv | — |
+| `/api/stats/pages` | **200** | ✅ **可用**，返回 27 条页面聚合（7 天窗口，`source=db`），如 `/reply/` 376 pv / 140 uv（⚠️ 该响应当前为旧缓存 `HIT`，底账仍待 08:00 后验真） | — |
 | `/api/stats/events` | **500** | ❌ **真缺口**，但**非代码缺陷** | `D1_ERROR: Your account has exceeded D1's free tier daily row read limit` —— **D1 免费额度读行超限**，UTC 午夜恢复 |
 | `/api/feedback-external` | GET **500** / POST 带合法 body **200** | ⚠️ **接口本身可用**（`{"ok":true}`），GET 空 body 才报 `Unexpected end of JSON input` | 缺入参校验与 GET 防护（**小扣子 lane**） |
 | `/api/stats/summary` | **200** | ✅ 可用 | — |
 | `/api/stats/health` | **200** | ✅ `db_connected=true`、`circuit_breaker=closed`、`degraded_mode=false` | — |
+
+> ⚠️ **（11-06 00:26 实测追加）`/api/stats/events` 的 500→200 变化是缓存假象，不是额度恢复。**
+> 见下文「陷阱 3」。结论不变：**真缺口是 D1 额度，等 11-06 08:00（北京）真实恢复后再三验。**
+
+### 陷阱 3：HTTP 200 不等于接口可用（stats 接口族必读）
+
+`/api/stats/*` 走 `handleStatsCached`（`_worker.js` 1367 行），**预算闸门放在所有缓存检查之前**。
+预算闸门放行时命中旧缓存 → **返回 200 + `X-Stats-Cache: HIT`**，但**底下的 D1 仍然是超限的**。
+只有缓存未命中、真的打了 D1 时才会暴露 500。
+
+**11-06 00:26 实测（同一分钟内）**：
+
+| 接口 | HTTP | `X-Stats-Cache` | `X-D1-Budget-Used` | 真实含义 |
+|---|---|---|---|---|
+| `/api/stats/events` | 200 | **HIT** | 59250 | **旧缓存**，底账仍超限 |
+| `/api/stats/pages` | 200 | **HIT** | 60458 | **旧缓存** |
+| `/api/stats/summary` | 200 | **BYPASS** | 61758 | **真打 D1** → 响应体带 `D1_ERROR: exceeded D1's free tier` |
+| `/api/stats/daily` | 200 | **BYPASS** | 62966 | 真打 D1 |
+
+**判据**：`X-Stats-Cache: HIT` = 旧缓存（别当真）；
+`BYPASS`/`MISS` = 真查 D1，此时响应体里的 `D1_ERROR` 才是真相。
+**只看 HTTP 码会把「超限」误判成「已恢复」——这正是 11-06 00:26 我自己的复算脚本一度转绿的原因。**
+
+### 两套额度，别混（闸门 ≠ CF 免费额度）
+
+| | 数值 | 存哪 | 谁在用 |
+|---|---|---|---|
+| **自建预算闸门** | `D1_DAILY_ROW_BUDGET = 4_000_000`（预留 20%） | KV key `d1_row_budget_utc_day` | `_worker.js` 1493 行，**超了就不打 D1**，回旧缓存或降级响应 |
+| **CF 免费额度** | 500 万行/天 | Cloudflare 侧 | 闸门拦不住它 —— 闸门是 400 万 < 500 万，**但本次是被 CF 侧的 500 万卡住的** |
+
+即：**闸门放行 ≠ CF 额度还有余**。当前 `x-d1-budget-used` 约 6.3 万（远低于 400 万闸门），
+CF 侧却已超限 —— 说明真正的消耗路径不在闸门估算口径内（估算见 `estimateRowsForEndpoint`，1448 行）。
+**这一条属于待查项，已列入给小鱼儿的观察，不是结论。**
 
 ### 结论修正（对盘点表「缺口 3」的更正）
 
@@ -166,6 +199,7 @@ done
 | 版本 | 时间 | 内容 |
 |---|---|---|
 | v1.0 | 2026-11-05 23:36–23:52 | 首版。全群 12 人 4 维度 id 名册；4 形式 @ 解析实测；三项接口线上实测与缺口更正；三条使用规矩 |
+| v1.1 | 2026-11-06 00:30 | **追加陷阱 3**：`/api/stats/events` 500→200 是旧缓存假象（`X-Stats-Cache: HIT`），非额度恢复；补两套额度辨析（自建闸门 400 万 vs CF 免费额度 500 万）与缓存态判据。复算脚本改为读 `X-Stats-Cache` 头，不再只看 HTTP 码 |
 
 **作者**：小豆子（`cli_aaeac7106f38dbde`）
 **状态**：待小鱼儿验收。名册本身不含任何待拍板项（不依赖生哥拍板 5 项中的任何一条）。
