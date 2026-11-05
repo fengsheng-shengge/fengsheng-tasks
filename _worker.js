@@ -1315,37 +1315,6 @@ async function handleEvent(request, env) {
 }
 
 // ============================================================
-//  临时：D1 诊断端点（2026-11-05 · 一次性令牌）
-//  用途：/api/stats 与 /api/stats/summary 突然返回 0，需要拿到真实 DB 报错
-//        与 events 表真实行数（原先所有异常都被吞成 "no database configured"）
-// ============================================================
-const D1_DIAG_TOKEN = '9c7d2e41a6b84f0c95d13ea7b6024fc8';
-
-async function handleD1Diag(request, env) {
-  const token = request.headers.get('X-Diag-Token') || '';
-  if (token !== D1_DIAG_TOKEN) return jsonResponse({ error: 'forbidden' }, 403);
-  if (!env.DB) return jsonResponse({ error: 'no DB binding' }, 503);
-  const out = { at: new Date().toISOString() };
-  const probe = async (name, sql) => {
-    const t0 = Date.now();
-    try {
-      const r = await env.DB.prepare(sql).all();
-      out[name] = { ok: true, ms: Date.now() - t0, rows: (r?.results || []).slice(0, 8), count: (r?.results || []).length };
-    } catch (e) {
-      out[name] = { ok: false, ms: Date.now() - t0, error: String(e && e.message || e) };
-    }
-  };
-  await probe('count_all', 'SELECT COUNT(*) as c FROM events');
-  await probe('count_distinct_uid', 'SELECT COUNT(DISTINCT uid) as c FROM events');
-  await probe('count_where_type', "SELECT COUNT(*) as c FROM events WHERE event_type = 'pageview'");
-  await probe('group_product', "SELECT product, COUNT(DISTINCT uid) as users FROM events WHERE product != '' GROUP BY product LIMIT 5");
-  await probe('daily_30', "SELECT date(created_at,'unixepoch') as date, COUNT(DISTINCT uid) as u FROM events WHERE created_at >= unixepoch('now','-30 days') GROUP BY date LIMIT 40");
-  await probe('minmax', 'SELECT MIN(created_at) as mn, MAX(created_at) as mx, MIN(ts) as tsmin, MAX(ts) as tsmax FROM events');
-  await probe('tables', "SELECT name FROM sqlite_master WHERE type='table'");
-  return jsonResponse(out);
-}
-
-// ============================================================
 //  统计接口缓存层（2026-11-05）
 //  事故：/api/stats/summary 等接口每次都全表扫 events（1.5 万行），
 //        而 management 页每 5 分钟轮询一次 /api/stats/daily，
@@ -3807,8 +3776,6 @@ export default {
     if (path === '/api/stats/events') return handleStatsCached(request, env, ctx, handleStatsEvents);
     if (path === '/api/mp-stats') return handleStatsCached(request, env, ctx, handleMpStats);
 
-    // 临时：D1 诊断（一次性令牌，诊断完成后移除）
-    if (path === '/api/admin/d1-diag') return handleD1Diag(request, env);
 
 
     // Feedback
