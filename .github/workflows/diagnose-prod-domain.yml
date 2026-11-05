@@ -1,0 +1,107 @@
+name: 生产域名可达性诊断（fengsheng.tech）
+# ============================================================================
+# 【为什么有这个 workflow】
+# 2026-11-05 埋点聚合接口线上验收首跑失败：exit code 6（curl 无法解析主机），
+# 且发生在第一个 curl（https://fengsheng.tech/api/stats/pages）上，
+# GitHub Actions runner（westus）同样解析不了 fengsheng.tech。
+#
+# 这不是小事：小程序埋点 tracker.js 的上报地址就是
+#   https://fengsheng.tech/api/events
+# 若该域名在部分网络下解析不稳 → 真机埋点静默失败（tracker.js 的
+# fail 回调是空函数，不报错、不提示）→ 看板数据持续偏低且无告警。
+#
+# 本 workflow 做专项诊断：
+#   1. DNS 解析（系统解析器 / 公共 DoH / 指定解析器）
+#   2. IPv4 vs IPv6
+#   3. Pages 自带域名（fengsheng-ee9.pages.dev）作为对照
+#   4. 两个域名上的同一接口对比
+#   5. 结论判定
+#
+# 【一次性说明】诊断完成后可删除本文件，或保留为域名可用性巡检。
+# ============================================================================
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    name: 生产域名可达性诊断
+    runs-on: ubuntu-latest
+    steps:
+      - name: DNS 与接口可达性诊断
+        env:
+          PROD_DOMAIN: fengsheng.tech
+          PAGES_DOMAIN: fengsheng-ee9.pages.dev
+        run: |
+          set +e   # 关键：不能因单个 curl 失败就中止，诊断要跑完全部项
+          echo "=== 生产域名可达性诊断 · $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S') ==="
+          echo "runner region: $(curl -s --max-time 5 https://api.github.com/meta 2>/dev/null | head -c 0; echo unknown)"
+          echo ""
+
+          echo "──────── 1. 系统 DNS 解析 ────────"
+          echo "[getent ahosts $PROD_DOMAIN]"
+          getent ahosts "$PROD_DOMAIN" || echo "  ✗ 系统解析器解析失败（exit=$?）"
+          echo ""
+          echo "[getent ahosts $PAGES_DOMAIN]（对照组）"
+          getent ahosts "$PAGES_DOMAIN" || echo "  ✗ 对照组也解析失败"
+          echo ""
+
+          echo "──────── 2. 公共 DNS over HTTPS 解析 ────────"
+          for resolver in "https://dns.google/resolve" "https://cloudflare-dns.com/dns-query"; do
+            for d in "$PROD_DOMAIN" "$PAGES_DOMAIN"; do
+              R=$(curl -s --max-time 15 -H "accept: application/dns-json" "$resolver?name=$d&type=A" 2>/dev/null)
+              N=$(echo "$R" | grep -oE '"data":"[^"]+"' | head -4 | tr '\n' ' ')
+              S=$(echo "$R" | grep -oE '"Status":[0-9]+' | head -1)
+              echo "  $resolver | $d → ${S:-无响应} ${N:-无 A 记录}"
+            done
+          done
+          echo ""
+
+          echo "──────── 3. IPv4 / IPv6 显式测试 ────────"
+          echo "  [curl -4 $PROD_DOMAIN]"
+          curl -4 -s -o /dev/null -w "    HTTP %{http_code} | connect %{time_connect}s | total %{time_total}s\n" --max-time 20 "https://$PROD_DOMAIN/api/stats" 2>&1 || echo "    ✗ IPv4 连接失败 (exit=$?)"
+          echo "  [curl -6 $PROD_DOMAIN]"
+          curl -6 -s -o /dev/null -w "    HTTP %{http_code} | total %{time_total}s\n" --max-time 15 "https://$PROD_DOMAIN/api/stats" 2>&1 || echo "    ✗ IPv6 连接失败 (exit=$?)"
+          echo "  [curl -4 $PAGES_DOMAIN]（对照）"
+          curl -4 -s -o /dev/null -w "    HTTP %{http_code} | total %{time_total}s\n" --max-time 20 "https://$PAGES_DOMAIN/api/stats" 2>&1 || echo "    ✗ 对照组 IPv4 失败 (exit=$?)"
+          echo ""
+
+          echo "──────── 4. 埋点上报端点连通性（最关键）────────"
+          for host in "$PROD_DOMAIN" "$PAGES_DOMAIN"; do
+            echo "  [POST https://$host/api/events]"
+            CODE=$(curl -4 -s -o /tmp/ev.txt -w "%{http_code}" --max-time 20 -X POST \
+              -H "Content-Type: application/json" \
+              -d '{"uid":"mp_diag_probe","type":"diag_probe","product":"mini-program","page":"__diag__","data":{"probe":1}}' \
+              "https://$host/api/events" 2>/dev/null)
+            RC=$?
+            echo "    HTTP ${CODE:-无} | curl_exit=$RC | 响应: $(head -c 200 /tmp/ev.txt 2>/dev/null)"
+          done
+          echo ""
+
+          echo "──────── 5. 埋点聚合接口对比 ────────"
+          for host in "$PROD_DOMAIN" "$PAGES_DOMAIN"; do
+            for ep in "/api/stats/pages?product=mini-program&days=14" "/api/stats/events?product=mini-program&days=14" "/api/mp-stats"; do
+              CODE=$(curl -4 -s -o /tmp/r.txt -w "%{http_code}" --max-time 20 "https://$host$ep" 2>/dev/null)
+              RC=$?
+              echo "  $host$ep"
+              echo "    HTTP ${CODE:-无} | curl_exit=$RC | $(head -c 300 /tmp/r.txt 2>/dev/null)"
+            done
+          done
+          echo ""
+
+          echo "──────── 6. 现有接口兼容性 ────────"
+          for host in "$PROD_DOMAIN" "$PAGES_DOMAIN"; do
+            for ep in "/api/stats" "/api/stats/summary" "/api/stats/daily" "/api/health"; do
+              CODE=$(curl -4 -s -o /dev/null -w "%{http_code}" --max-time 20 "https://$host$ep" 2>/dev/null)
+              echo "  $host$ep → HTTP ${CODE:-无}"
+            done
+          done
+          echo ""
+
+          echo "=========================================="
+          echo "诊断结束。注意：POST /api/events 会写入 1 条 uid=mp_diag_probe 的探针事件，"
+          echo "product=mini-program、page=__diag__，会在页面热力榜里留下一行 __diag__（无害）。"
+          echo "=========================================="
+          exit 0
