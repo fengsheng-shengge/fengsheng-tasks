@@ -9,8 +9,16 @@
   - 「name 空 / name 非空」以服务端 mentions 解析结果为准
 
 用法：
-  python3 scripts/verify_roster_numbers.py            # 复算名册中的静态数字（离线）
-  python3 scripts/verify_roster_numbers.py --live     # 追加线上接口实测复检
+  python3 scripts/verify_roster_numbers.py            # 默认：离线复算（不打生产）
+  python3 scripts/verify_roster_numbers.py --live     # 线上最小验证（只打 1 个端点）
+  python3 scripts/verify_roster_numbers.py --live-all # 全端点（仅事故恢复后一次性用）
+
+⚠️ 用量纪律（2026-11-06，小鱼儿提醒「别验收加剧事故」）：
+  /api/stats/* 每次请求按 estimateRowsForEndpoint 估算约 1200~1300 行读取，
+  D1 免费额度 500 万行/天已被打穿一次 —— **验收本身在吃额度**。
+  因此本脚本默认**离线**（只复算名册与静态数字，不打生产）；
+  仅在关键结论变更时显式加 --live，且只打 1 个端点做最小验证。
+  线上验证必须读 X-Stats-Cache 头判断是旧缓存还是真查 D1。
 
 退出码：0 = 全部一致；1 = 存在不一致
 """
@@ -153,7 +161,15 @@ def main():
                     return line.split(':', 1)[1].strip()
             return None
 
-        for path, code_expected, desc in LIVE_ASSERTIONS:
+        # 用量节制（2026-11-06）：--live 只打 1 个端点做最小验证（默认 /api/stats/summary，
+        # 它 BYPASS 缓存 → 真打 D1，最能验到底账）；--live-all 才打全部。
+        targets = LIVE_ASSERTIONS
+        if '--live-all' not in sys.argv:
+            targets = [t for t in LIVE_ASSERTIONS if t[0] == '/api/stats/summary']
+            print('  [用量节制] --live 模式只打 1 个端点（/api/stats/summary，BYPASS 缓存可验底账）；'
+                  ' 全端点请显式用 --live-all')
+
+        for path, code_expected, desc in targets:
             actual, body, hdrs = http_probe(path, want_headers=path.startswith(CACHE_SENSITIVE))
             stale = path.startswith(CACHE_SENSITIVE) and cache_state_is_stale(hdrs)
             if stale and path == '/api/stats/events':
@@ -192,10 +208,13 @@ def main():
             if path == '/api/feedback-external':
                 print('       └ GET 空 body 返回:', body[:80])
 
-        # POST 合法 body 应 200
-        actual, body, _ = http_probe('/api/feedback-external', 'POST',
-                                      {'message': 'probe', 'source': 'probe'})
-        chk('/api/feedback-external POST 合法 body', actual, 200)
+        # POST 合法 body 应 200（feedback-external 不读 events 表，行读取代价低，但仍只在全端点模式下打）
+        if '--live-all' in sys.argv:
+            actual, body, _ = http_probe('/api/feedback-external', 'POST',
+                                          {'message': 'probe', 'source': 'probe'})
+            chk('/api/feedback-external POST 合法 body', actual, 200)
+        else:
+            print('  [用量节制] feedback-external POST 校验仅在 --live-all 下执行')
 
     print()
     print('=' * 78)
