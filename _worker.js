@@ -1291,7 +1291,14 @@ async function handleEvent(request, env) {
           Math.floor(ts / 1000)
         );
       });
-      if (batch.length) await env.DB.batch(batch);
+      try {
+        if (batch.length) await env.DB.batch(batch);
+      } catch (e) {
+        // 2026-11-05：写入失败原来被 catch 吞掉只回 {ok:true}，
+        // 调用方以为写成功了 —— 埋点在 D1 出问题时就是这样悄悄丢掉的。
+        console.error('events: DB write failed', e.message);
+        return jsonResponse({ ok: false, stored: 0, skipped, page_cleared: clearedPage, error: String(e && e.message || e) }, 503);
+      }
       if (skipped || clearedPage) {
         console.warn(`events: rejected ${skipped} event(s) with invalid product, cleared page on ${clearedPage} event(s)`);
       }
@@ -1302,6 +1309,7 @@ async function handleEvent(request, env) {
     }
   } catch (e) {
     console.error('events: write failed', e.message);
+    return jsonResponse({ ok: false, error: String(e && e.message || e) }, 503);
   }
   return jsonResponse({ ok: true });
 }
@@ -1348,7 +1356,7 @@ async function handleD1Diag(request, env) {
 //        ② isolate 内再存一份 memo，命中则完全不碰 D1
 //        ③ 失败响应（含 error 字段）不进缓存，避免把错误缓存住
 // ============================================================
-const STATS_CACHE_TTL = 300; // 秒
+const STATS_CACHE_TTL = 900; // 秒（15 分钟：288 次/天会打穿 500 万行额度，96 次/天安全）
 const _statsMemo = new Map(); // key → { at, body }
 
 function statsCacheKey(url) {
