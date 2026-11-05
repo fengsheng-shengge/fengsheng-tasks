@@ -80,25 +80,35 @@ def main():
         # 必须逐个模块下载后拼起来。
         raw = api('/accounts/%s/workers/scripts/%s/content' % (account, sid), token, raw=True)
         modules = []
-        if raw:
-            try:
-                meta = json.loads(raw.decode('utf-8', 'replace'))
-                if isinstance(meta, dict) and 'main_module' in meta:
+        raw_text = raw.decode('utf-8', 'replace') if raw else ''
+        try:
+            meta = json.loads(raw_text)
+            if isinstance(meta, dict):
+                if 'main_module' in meta:
                     modules = [meta['main_module']] + list(meta.get('modules') or [])
-                elif isinstance(meta, list):
-                    modules = meta
-            except Exception:
-                modules = []
+                elif 'result' in meta:
+                    modules = meta['result'] if isinstance(meta['result'], list) else []
+            elif isinstance(meta, list):
+                modules = meta
+        except Exception:
+            modules = []
         if not modules:
-            print('   未取到模块清单（返回 %d 字节）' % (len(raw) if raw else 0))
-            continue
+            # 模块清单取不到 → 直接把 /content 的返回当源码用（部分脚本是非模块化的）
+            if raw_text and 'main_module' not in raw_text:
+                modules = ['__raw__']
+            else:
+                print('   未取到模块清单（返回 %d 字节）' % (len(raw) if raw else 0))
+                continue
 
         text_parts = []
         for i, m in enumerate(modules):
             mname = m if isinstance(m, str) else m.get('name')
             mtype = 'esm' if (isinstance(m, str) or m.get('type') == 'esm') else 'commonjs'
-            blob = api('/accounts/%s/workers/scripts/%s/content/%s?module=%s'
-                       % (account, sid, mname, mtype), token, raw=True)
+            if mname == '__raw__':
+                blob = raw
+            else:
+                blob = api('/accounts/%s/workers/scripts/%s/content/%s?module=%s'
+                           % (account, sid, mname, mtype), token, raw=True)
             if not blob:
                 continue
             try:
@@ -150,7 +160,7 @@ def main():
                 continue
             print('   %s: %d 个 Function' % (pname, len(funcs)))
             for fn in funcs:
-                fname = fn.get('name')
+                fname = fn.get('name') if isinstance(fn, dict) else str(fn)
                 blob = api('/accounts/%s/pages/projects/%s/functions/%s/content'
                            % (account, pname, fname), token, raw=True)
                 if not blob:
