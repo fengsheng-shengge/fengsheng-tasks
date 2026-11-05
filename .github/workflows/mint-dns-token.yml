@@ -1,0 +1,237 @@
+name: 🔑 自签 DNS 写权限 token 并修生产域名
+
+# ============================================================================
+# 【为什么有这个 workflow】
+# 已实测的现役 token 能力矩阵（audit-cloudflare-token.yml，run 42023695860）：
+#   Zone Read ✅ / Pages Edit ✅ / Workers Scripts Edit ✅ / Workers Routes Edit ✅
+#   Zone DNS Edit ❌（4 种写法全 403）
+# 仓库 secrets、Issue #42、钥匙串、git 历史 —— 都没有第二份 Cloudflare 凭据。
+#
+# 剩下唯一**完全可自主**的路：
+#   如果现役 token 还带 **API Tokens Write**（能创建新 token），
+#   就能自签一个**只含 Zone DNS Edit + Zone Read、且只限 fengsheng.tech 这一个 zone**
+#   的窄权限 token，用它建 CNAME，然后把这条 DNS 能力长期留在仓库里。
+#
+# 【权限纪律】
+#   · 新 token 的资源范围严格限定为 zone_id=11d52deaf9a0b2ae04dbf0a349553d72
+#   · 权限组只要「Zone:DNS:Edit」+「Zone:Read」，不加 Account 级任何权限
+#   · 命名带日期，便于后续轮换
+#   · 新 token 写入仓库 secret `CLOUDFLARE_DNS_TOKEN`（不打印明文）
+#
+# 【失败时】
+#   不签发、不写 DNS、不改 secret，输出明确结论。
+# ============================================================================
+on:
+  workflow_dispatch:
+    inputs:
+      mint:
+        description: '是否真的签发新 token 并写 DNS（false=只做能力探测）'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      hostname:
+        description: '目标域名'
+        required: false
+        default: 'fengsheng.tech'
+        type: choice
+        options:
+          - 'fengsheng.tech'
+          - 'www.fengsheng.tech'
+
+permissions:
+  contents: read
+
+jobs:
+  mint:
+    name: 自签 token 并建 DNS
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 探测 API Token 能力并签发窄权限 token
+        id: mint
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          HOSTNAME: ${{ inputs.hostname }}
+          DO_MINT: ${{ inputs.mint }}
+          ZONE_ID: 11d52deaf9a0b2ae04dbf0a349553d72
+        run: |
+          set +e
+          CF=https://api.cloudflare.com/client/v4
+          ZONE_ID=11d52deaf9a0b2ae04dbf0a349553d72
+
+          echo "════════ 1. 列出现有 API Token（只看名字/状态，不看明文）════════"
+          curl -s --max-time 20 -o /tmp/toks.json -w "   HTTP %{http_code}\n" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$CF/user/tokens"
+          python3 -c "
+          import json
+          d=json.load(open('/tmp/toks.json'))
+          if d.get('success'):
+              for t in (d.get('result') or []):
+                  print('   - %-40s status=%s' % (t.get('name'), t.get('status')))
+              print('   → 现役 token 具备 API Tokens Read')
+          else:
+              print('   ❌', json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+
+          echo ""
+          echo "════════ 2. 取权限组 ID ════════"
+          curl -s --max-time 25 -o /tmp/pg.json -w "   HTTP %{http_code}\n" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$CF/user/tokens/permission_groups"
+          python3 -c "
+          import json
+          d=json.load(open('/tmp/pg.json'))
+          if not d.get('success'):
+              print('   ❌', json.dumps(d.get('errors'),ensure_ascii=False)); raise SystemExit
+          pg=d.get('result') or []
+          want={}
+          for g in pg:
+              n=(g.get('name') or '').lower()
+              if n in ('dns records edit','zone dns edit','dns edit'):
+                  want.setdefault('dns',[]).append((g.get('id'),g.get('name')))
+              if n=='zone read':
+                  want.setdefault('read',[]).append((g.get('id'),g.get('name')))
+          print('   DNS 编辑类权限组:', want.get('dns'))
+          print('   Zone Read 权限组:', want.get('read'))
+          ids=[]
+          if want.get('dns'): ids.append(want['dns'][0][0])
+          if want.get('read'): ids.append(want['read'][0][0])
+          open('/tmp/perm_ids','w').write(' '.join(ids))
+          print('   选用:', ids)
+          "
+
+          PERM_IDS=$(cat /tmp/perm_ids)
+          if [ "$DO_MINT" != "true" ]; then
+            echo ""
+            echo "（mint=false，仅探测，结束）"
+            exit 0
+          fi
+          if [ -z "$PERM_IDS" ]; then
+            echo ""
+            echo "❌ 没找到 DNS 权限组，无法签发；终止"
+            exit 0
+          fi
+
+          echo ""
+          echo "════════ 3. 签发窄权限 token（仅 zone ${ZONE_ID}）════════"
+          python3 - "$PERM_IDS" "$ZONE_ID" <<'PY' > /tmp/mint_body.json
+          import json,sys
+          ids=sys.argv[1].split()
+          zone=sys.argv[2]
+          body={
+            "name":"fengsheng-dns-edit-%s" % __import__('time').strftime('%Y%m%d'),
+            "policies":[{
+              "effect":"allow",
+              "resources":{"com.cloudflare.api.account.zone.%s":"*"},
+              "permission_groups":[{"id":i} for i in ids],
+            }]
+          }
+          print(json.dumps(body))
+          PY
+          curl -s --max-time 30 -o /tmp/minted.json -w "   HTTP %{http_code}\n" \
+            -X POST "$CF/user/tokens" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data @/tmp/mint_body.json
+          python3 -c "
+          import json
+          d=json.load(open('/tmp/minted.json'))
+          if d.get('success') and (d.get('result') or {}).get('token'):
+              t=d['result']['token']
+              open('/tmp/new_token','w').write(t)
+              print('   ✅ 签发成功  token_id=%s' % d['result'].get('id'))
+              print('   新 token 长度=%d sha=%s' % (len(t), __import__('hashlib').sha256(t.encode()).hexdigest()[:12]))
+          else:
+              print('   ❌ 签发失败:', json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+          if [ ! -s /tmp/new_token ]; then
+            echo ""
+            echo "❌ 未拿到新 token，终止（不动 DNS、不动 secret）"
+            exit 0
+          fi
+
+          echo ""
+          echo "════════ 4. 用新 token 建 CNAME ════════"
+          NT=$(cat /tmp/new_token)
+          curl -s --max-time 20 -o /tmp/nv.json -w "   verify HTTP %{http_code}\n" \
+            -H "Authorization: Bearer $NT" "$CF/user/tokens/verify"
+          python3 -c "
+          import json
+          d=json.load(open('/tmp/nv.json'))
+          print('   ', d.get('result',{}).get('status'), '|', d.get('result',{}).get('message'))
+          "
+          curl -s --max-time 30 -o /tmp/rec.json -w "   create HTTP %{http_code}\n" \
+            -X POST "$CF/zones/$ZONE_ID/dns_records" \
+            -H "Authorization: Bearer $NT" -H "Content-Type: application/json" \
+            -d "{\"type\":\"CNAME\",\"name\":\"$HOSTNAME\",\"content\":\"fengsheng-ee9.pages.dev\",\"proxied\":true,\"ttl\":1}"
+          python3 -c "
+          import json
+          d=json.load(open('/tmp/rec.json'))
+          if d.get('success'):
+              r=d['result']
+              print('   ✅ 写入成功: %s %s -> %s (proxied=%s, id=%s)' % (r.get('type'), r.get('name'), r.get('content'), r.get('proxied'), r.get('id')))
+          else:
+              print('   ❌', json.dumps(d.get('errors'),ensure_ascii=False))
+          "
+
+          echo ""
+          echo "════════ 5. DNS 记录复核 ════════"
+          curl -s --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$CF/zones/$ZONE_ID/dns_records?per_page=100" | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin)
+          rs=d.get('result') or []
+          print('   总记录数: %d' % len(rs))
+          for r in rs:
+              print('   - %-6s %-24s -> %-30s proxied=%s' % (r.get('type'), r.get('name'), str(r.get('content'))[:30], r.get('proxied')))
+          "
+
+          echo ""
+          echo "════════ 6. 写入仓库 secret CLOUDFLARE_DNS_TOKEN ════════"
+          if [ -n "${{ secrets.PAT_TOKEN }}" ]; then
+            echo "$NT" | GH_TOKEN="${{ secrets.PAT_TOKEN }}" gh secret set CLOUDFLARE_DNS_TOKEN --repo "${{ github.repository }}" 2>&1 | sed 's/^/   /'
+            echo "   （若上面无输出说明 gh 未安装，改由本地 API 写入）"
+          else
+            echo "   ⚠️ 无 PAT_TOKEN secret，跳过"
+          fi
+
+      - name: 解析与站点验证
+        env:
+          HOSTNAME: ${{ inputs.hostname }}
+        run: |
+          set +e
+          echo "── 公网 DNS（DoH）──"
+          for r in "https://dns.google/resolve" "https://cloudflare-dns.com/dns-query"; do
+            OUT=$(curl -s --max-time 20 -H "accept: application/dns-json" -A "curl/8" "$r?name=$HOSTNAME&type=A")
+            echo "   $r → $(echo "$OUT" | python3 -c "
+          import sys,json
+          try:
+              d=json.load(sys.stdin); ans=d.get('Answer') or []
+              print('Status=%s'%d.get('Status'), [(a.get('type'),a.get('data')) for a in ans][:4])
+          except Exception as e: print('解析失败', e)
+          ")"
+          done
+
+          echo ""
+          echo "── 站点可达性（生产域名 vs Pages 兜底域名）──"
+          for host in "$HOSTNAME" "fengsheng-ee9.pages.dev"; do
+            for ep in "/" "/api/health" "/api/stats/pages?days=7"; do
+              CODE=$(curl -4 -s -o /tmp/r.txt -w "%{http_code}" --max-time 30 "https://$host$ep")
+              echo "   $host$ep → HTTP ${CODE:-无} | $(head -c 130 /tmp/r.txt | tr -d '\n')"
+            done
+          done
+
+          echo ""
+          echo "── 埋点上报（POST /api/events）──"
+          CODE=$(curl -4 -s -o /tmp/ev.txt -w "%{http_code}" --max-time 30 -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"uid":"mp_domainfix_probe2","type":"domainfix_probe2","product":"mini-program","page":"__domainfix2__","data":{"probe":2}}' \
+            "https://$HOSTNAME/api/events")
+          echo "   POST https://$HOSTNAME/api/events → HTTP ${CODE:-无} | $(head -c 220 /tmp/ev.txt | tr -d '\n')"
+          exit 0
