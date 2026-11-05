@@ -8,7 +8,7 @@ name: 🔬 D1 额度真凶诊断
 #
 # 【为什么需要】
 # 2026-11-05 事故：额度被打穿后，UTC 00:00 已过（北京时间 08:00）仍处于锁死，
-#   说明恢复后又被打穿了第二次。只靠读代码猜不出真凶（CI/deploy 都不碰 D1），
+#   说明恢复后又被打穿了第二次。只靠读代码猜不出真凶（CI/deploy/巡检都不碰 D1），
 #   只能用官方 analytics 拿到「哪些 SQL 被执行、读了多少行」的实证。
 #
 # 【只读】本 workflow 只调用 GraphQL 查询接口，不做任何写操作。
@@ -20,11 +20,11 @@ on:
       hours:
         description: '回溯时长（小时）'
         required: false
-        default: '24'
+        default: '36'
       top:
         description: '输出条数'
         required: false
-        default: '25'
+        default: '30'
 
 permissions:
   contents: read
@@ -42,85 +42,143 @@ jobs:
           TOP: ${{ inputs.top }}
         run: |
           set -e
-          HOURS="${HOURS:-24}"
-          TOP="${TOP:-25}"
+          HOURS="${HOURS:-36}"
+          TOP="${TOP:-30}"
           echo "=== D1 额度诊断 · 回溯 ${HOURS} 小时 ==="
 
-          # GraphQL 只支持按绝对时间过滤 → 先算起点
-          SINCE=$(python3 -c "
-          import datetime, sys
-          h = int('$HOURS')
-          t = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=h)
-          print(t.strftime('%Y-%m-%dT%H:%M:%SZ'))
-          ")
-          echo "起点(UTC): $SINCE"
-          echo ""
-
-          # 变量：queryText 可能含引号，用 python 生成 JSON body 更安全
           cat > /tmp/gql.py <<'PY'
-          import json, os, sys, urllib.request
+          import json, os, sys, urllib.request, urllib.error, datetime
 
-          account = os.environ['CLOUDFLARE_ACCOUNT_ID']
+          account = os.environ.get('CLOUDFLARE_ACCOUNT_ID', '')
           token   = os.environ['CLOUDFLARE_API_TOKEN']
-          since   = os.environ['SINCE']
-          top     = int(os.environ.get('TOP', '25'))
+          hours   = int(os.environ.get('HOURS', '36'))
+          top     = int(os.environ.get('TOP', '30'))
+          since   = (datetime.datetime.now(datetime.timezone.utc)
+                     - datetime.timedelta(hours=hours)).strftime('%Y-%m-%dT%H:%M:%SZ')
 
-          # 按 queryText 聚合取 rows read；同时按 datetime 看时间分布
-          q = """
-          query($acct: String!, $since: TimeStamp!, $top: Int!) {
-            viewer { account(id: $acct) {
-              d1AnalyticsAdaptiveGroups(
-                limit: $top,
-                orderBy: [sum_rowsRead_DESC],
-                filter: { datetime_geq: $since }
-              ) {
-                dimensions { datetime queryText }
-                sum { rowsRead rowsWritten }
-              }
-            } }
-          }
-          """
-          body = json.dumps({
-              'query': q,
-              'variables': {'acct': account, 'since': since, 'top': top}
-          }).encode()
+          def gql(query, variables):
+              body = json.dumps({'query': query, 'variables': variables}).encode()
+              req = urllib.request.Request(
+                  'https://api.cloudflare.com/client/v4/graphql',
+                  data=body,
+                  headers={'Authorization': 'Bearer ' + token,
+                           'Content-Type': 'application/json'})
+              try:
+                  r = urllib.request.urlopen(req, timeout=90)
+                  return json.loads(r.read().decode())
+              except urllib.error.HTTPError as e:
+                  return {'__http__': e.code, '__body__': e.read().decode()[:600]}
+              except Exception as e:
+                  return {'__err__': str(e)}
 
-          req = urllib.request.Request(
-              'https://api.cloudflare.com/client/v4/graphql',
-              data=body,
-              headers={
-                  'Authorization': 'Bearer ' + token,
-                  'Content-Type': 'application/json',
-              })
-          try:
-              r = urllib.request.urlopen(req, timeout=60)
-              out = json.loads(r.read().decode())
-          except urllib.error.HTTPError as e:
-              print('❌ GraphQL HTTP', e.code, e.read().decode()[:800]); sys.exit(1)
+          print(f'起点(UTC): {since}')
+          print('')
 
-          if out.get('errors'):
-              print('❌ GraphQL errors:'); print(json.dumps(out['errors'], ensure_ascii=False)[:1200]); sys.exit(1)
+          # ── 步骤 1：schema 自探测，确认 viewer 下有哪些字段 ──
+          probe = gql('{ viewer { __typename } }', {})
+          if probe.get('errors'):
+              print('❌ GraphQL 不可用:', json.dumps(probe['errors'], ensure_ascii=False)[:400])
+              print(probe.get('__body__', ''))
+              sys.exit(1)
+          print('✅ GraphQL 连通（token 有 analytics 读权限）')
 
-          groups = (((out.get('data') or {}).get('viewer') or {}).get('account') or {}).get('d1AnalyticsAdaptiveGroups') or []
+          # ── 步骤 2：按 SQL 维度取 rowsRead ──
+          # 官方形态：viewer.accounts(filter:{accountTag}){ d1AnalyticsAdaptiveGroups{...} }
+          # 备用形态：viewer.account(id){...}（部分版本）
+          GROUPS = '''
+            d1AnalyticsAdaptiveGroups(
+              limit: $top,
+              orderBy: [sum_rowsRead_DESC],
+              filter: { datetime_geq: $since }
+            ) {
+              dimensions { datetime queryText }
+              sum { rowsRead rowsWritten }
+            }
+          '''
+          candidates = [
+              ('viewer.accounts + accountTag',
+               'query($tag: String!, $since: TimeStamp!, $top: Int!) { viewer { accounts(filter: {accountTag: $tag}) { %s } } }' % GROUPS,
+               {'tag': account, 'since': since, 'top': top}),
+              ('viewer.accounts (无 filter)',
+               'query($since: TimeStamp!, $top: Int!) { viewer { accounts { %s } } }' % GROUPS,
+               {'since': since, 'top': top}),
+              ('viewer.account(id)',
+               'query($acct: String!, $since: TimeStamp!, $top: Int!) { viewer { account(id: $acct) { %s } } }' % GROUPS,
+               {'acct': account, 'since': since, 'top': top}),
+          ]
+
+          groups = None
+          used = None
+          for name, q, variables in candidates:
+              out = gql(q, variables)
+              if out.get('__http__') or out.get('__err__'):
+                  print(f'  · {name}: 传输失败 {out.get("__http__") or out.get("__err__")}')
+                  continue
+              if out.get('errors'):
+                  print(f'  · {name}: {out["errors"][0].get("message","")[:110]}')
+                  continue
+              data = out.get('data') or {}
+              v = data.get('viewer') or {}
+              accs = v.get('accounts')
+              if isinstance(accs, list) and accs:
+                  g = (accs[0] or {}).get('d1AnalyticsAdaptiveGroups')
+              elif isinstance(accs, dict):
+                  g = accs.get('d1AnalyticsAdaptiveGroups')
+              else:
+                  g = (v.get('account') or {}).get('d1AnalyticsAdaptiveGroups')
+              if g is not None:
+                  groups, used = g, name
+                  break
+              print(f'  · {name}: 查询通了但无 d1AnalyticsAdaptiveGroups 字段')
+
+          if groups is None:
+              print('')
+              print('⚠ 三种 query 形态都拿不到数据 → 打印 schema 探测结果帮人工定位')
+              sch = gql('''{ __type(name: "Viewer") { fields { name type { name kind ofType { name } } } } }''', {})
+              if sch.get('data'):
+                  for f in (sch['data']['__type'] or {}).get('fields') or []:
+                      print('   viewer.', f['name'])
+              acc = gql('''{ __type(name: "Account") { fields { name } } }''', {})
+              if acc.get('data'):
+                  for f in (acc['data']['__type'] or {}).get('fields') or []:
+                      if 'd1' in f['name'].lower():
+                          print('   Account.', f['name'])
+              sys.exit(0)
+
+          print(f'✅ 形态命中：{used}')
           if not groups:
-              print('⚠ 无数据（可能该 API 需要更高权限的 token，或该时段确实没有查询）')
-              print(json.dumps(out, ensure_ascii=False)[:600]); sys.exit(0)
+              print('⚠ 该时段无任何 D1 查询记录')
+              sys.exit(0)
 
           total = sum((g.get('sum') or {}).get('rowsRead') or 0 for g in groups)
-          print(f'✅ 取到 {len(groups)} 组聚合，合计 rowsRead = {total:,}')
+          print(f'   {len(groups)} 组聚合，合计 rowsRead = {total:,}  （免费额度 5,000,000/天）')
           print('')
-          print('─'*100)
+          print('=' * 104)
           for i, g in enumerate(groups, 1):
               d = g.get('dimensions') or {}
               s = g.get('sum') or {}
               qt = ' '.join((d.get('queryText') or '').split())
-              if len(qt) > 150: qt = qt[:150] + '…'
-              print(f"{i:>3}. rowsRead={s.get('rowsRead') or 0:>10,}  rowsWritten={s.get('rowsWritten') or 0:>8,}  {d.get('datetime')}")
+              if len(qt) > 155: qt = qt[:155] + '…'
+              rr = s.get('rowsRead') or 0
+              print(f"{i:>3}. rowsRead={rr:>10,}  rowsWritten={s.get('rowsWritten') or 0:>8,}  {d.get('datetime')}")
               print(f"     {qt}")
-          print('─'*100)
-          print(f'※ 免费额度 5,000,000 rows/day。上面合计 {total:,} 行。')
+          print('=' * 104)
+
+          # ── 步骤 3：按天汇总，看哪一天被打穿 ──
+          dayq = '''query($tag: String!, $since: TimeStamp!, $top: Int!) { viewer { accounts(filter: {accountTag: $tag}) { d1AnalyticsAdaptiveGroups(limit: $top, orderBy: [sum_rowsRead_DESC], filter: { datetime_geq: $since }) { dimensions { date } sum { rowsRead } } } } }'''
+          dout = gql(dayq, {'tag': account, 'since': since, 'top': top})
+          if dout.get('data'):
+              ds = (((dout['data'] or {}).get('viewer') or {}).get('accounts') or [{}])[0].get('d1AnalyticsAdaptiveGroups') or []
+              if ds:
+                  print('')
+                  print('── 按天汇总 ──')
+                  for g in ds:
+                      print(f"   {((g.get('dimensions') or {}).get('date'))}: rowsRead = {(g.get('sum') or {}).get('rowsRead') or 0:,}")
+          else:
+              print('')
+              print('── 按天汇总：查询形态不适用，跳过 ──')
           PY
-          export SINCE
+          export HOURS TOP
           python3 /tmp/gql.py
 
       - name: 查询 D1 库清单与大小
@@ -135,7 +193,10 @@ jobs:
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database" \
             | python3 -c "
           import json,sys
-          d = json.load(sys.stdin)
+          try:
+              d = json.load(sys.stdin)
+          except Exception as e:
+              print('解析失败:', e); raise SystemExit
           if not d.get('success'):
               print('❌', json.dumps(d.get('errors'), ensure_ascii=False)[:400]); raise SystemExit
           for db in d.get('result', []):
