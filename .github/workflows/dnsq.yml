@@ -8,8 +8,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 查询各类型 DNS 记录
+        env:
+          PARSE: |
+            import json, sys
+            try:
+                d = json.load(open(sys.argv[1], encoding="utf-8"))
+            except Exception as e:
+                print("  parse fail:", e)
+                sys.exit(0)
+            print("  Status:", d.get("Status"))
+            ans = d.get("Answer") or []
+            if not ans:
+                print("   (no Answer record)")
+            for a in ans:
+                print("  ", a.get("type"), "->", a.get("data"), "(TTL", a.get("TTL"), ")")
         run: |
           set +e
+          echo "$PARSE" > /tmp/parse_dns.py
           for rt in A AAAA CNAME NS SOA MX TXT; do
             echo "----- fengsheng.tech  $rt -----"
             curl -s --max-time 15 -H "accept: application/dns-json" \
@@ -27,20 +42,3 @@ jobs:
             "https://dns.google/resolve?name=www.fengsheng.tech&type=A" -o /tmp/dns.json
           python3 /tmp/parse_dns.py /tmp/dns.json
           exit 0
-      - name: 写解析脚本
-        run: |
-          cat > /tmp/parse_dns.py <<'PYEOF'
-          import json, sys
-          try:
-              with open(sys.argv[1], encoding="utf-8") as fh:
-                  d = json.load(fh)
-          except Exception as e:
-              print("  parse fail:", e)
-              sys.exit(0)
-          print("  Status:", d.get("Status"))
-          ans = d.get("Answer") or []
-          if not ans:
-              print("   (no Answer record)")
-          for a in ans:
-              print("  ", a.get("type"), "->", a.get("data"), "(TTL", a.get("TTL"), ")")
-          PYEOF
