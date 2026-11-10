@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI 顾问 · 风声信息咨询 · 像销冠一样给您讲房</title>
+<title>AI 陪练 · 风声聚匠星云 · 经纪人练谈判/获客/带看</title>
 <style>
 :root{--ink:#1a3d24;--gold:#c9a962;--bg:#f7f5f0;--card:#fff;--line:#e8e3d8;--ink-soft:#5c6d62;--ok:#2d7a4a;--ai-blue:#4a6fa5;--danger:#b85c38}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -91,9 +91,20 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 
 <div class="hero">
-  <h1>🤖 AI 顾问 · 像销冠一样给您讲房</h1>
-  <p>线上公开入口 · 零模型规则版 · 每个回答带来源和时间 · 不做决策、不碰谈判、不承诺学区</p>
-  <div class="trust">🔒 安全承诺：所有回答追溯到风声 KB 词条 + CAP-SKILL · 红线 6 条 · 零编造</div>
+  <h1>🤖 AI 陪练 · 经纪人反串模拟</h1>
+  <p>选一个服务阶段 → AI 扮演客户刁难你 → 你用销冠 SOP 回答 → 每轮自动评分 + 红线检查</p>
+  <div class="trust">🔒 安全承诺：AI 不替你做决策 · 红线时刻提醒你 · 所有回答可追溯</div>
+</div>
+
+<!-- 阶段模式 banner（?stage=xxx 时显示） -->
+<div id="stage-mode-banner" style="display:none;background:linear-gradient(135deg,#2d4a3e,#3d5a4e);color:#fff;border-radius:12px;padding:16px 20px;margin-bottom:16px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+    <span style="font-size:18px" id="stage-banner-icon">💬</span>
+    <span style="font-size:15px;font-weight:700" id="stage-banner-title">带看议价 · 练习模式</span>
+    <span style="background:rgba(245,213,122,.2);color:#f5d57a;padding:2px 10px;border-radius:10px;font-size:10px;font-weight:600">经纪人反串</span>
+  </div>
+  <div style="font-size:12px;opacity:.85;line-height:1.6" id="stage-banner-desc">AI 现在是「挑剔客户」，会问你 5 个带看议价阶段的真实问题。你用经纪人的话回答，AI 会给你打分 + 红线检查。</div>
+  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap" id="stage-banner-qs"></div>
 </div>
 
 <!-- 演示场景切换 -->
@@ -261,7 +272,7 @@ function checkLeadHook(){
 }
 
 // === 演示场景 ===
-function runScenario(name, btn){
+function runScenario(name, btn, stageKey){
   document.querySelectorAll('.demo-switch button').forEach(b=>b.classList.remove('on'));
   if(btn) btn.classList.add('on');
   CHAT.innerHTML = '';
@@ -271,18 +282,147 @@ function runScenario(name, btn){
   document.getElementById('red-wrap').innerHTML = '';
   msgCount = 0;
 
-  var scripts = {
-    parent: ["我想找学区房，预算 650 万", "学区房值不值得买？会不会跌？", "大西洋新城这个小区怎么样？"],
-    commute: ["二手房税费怎么算？首套 300 万", "公积金能贷多少？", "通勤 20 分钟选哪个片区？"],
-    anxious: ["我妈说风水不好怎么办", "房价会跌吗？再等等？", "大西洋新城这个小区怎么样？有什么不好的？"],
-    cold: ["给我推荐最好的学区房", "这套房肯定会升值吧？", "我妈说风水不好怎么办"]
-  };
+  // 6 阶段脚本优先，兜底用旧演示场景
+  var scripts = {};
+  if(stageKey && STAGE_SCRIPTS[stageKey]){
+    scripts['stage-' + stageKey] = STAGE_SCRIPTS[stageKey].practiceQs;
+  } else {
+    scripts = {
+      parent: ["我想找学区房，预算 650 万", "学区房值不值得买？会不会跌？", "大西洋新城这个小区怎么样？"],
+      commute: ["二手房税费怎么算？首套 300 万", "公积金能贷多少？", "通勤 20 分钟选哪个片区？"],
+      anxious: ["我妈说风水不好怎么办", "房价会跌吗？再等等？", "大西洋新城这个小区怎么样？有什么不好的？"],
+      cold: ["给我推荐最好的学区房", "这套房肯定会升值吧？", "我妈说风水不好怎么办"]
+    };
+  }
 
-  CHAT.innerHTML = '<div class="msg ai">好的，这个场景我来演示。按销冠 SOP 一步步走，每个回答都可追溯。</div>';
-  scripts[name].forEach(function(q, i){
+  var key = stageKey ? ('stage-' + stageKey) : name;
+  CHAT.innerHTML = '<div class="msg ai">' + (stageKey ? 
+    '好，我现在是「' + STAGE_SCRIPTS[stageKey].title + '」阶段的挑剔客户，准备好接招吧！' :
+    '好的，这个场景我来演示。按销冠 SOP 一步步走，每个回答都可追溯。') + '</div>';
+  scripts[key].forEach(function(q, i){
     setTimeout(function(){ sendQ(q); }, 900 + i * 1100);
   });
 }
+
+// === 6 阶段经纪人反串脚本（数据来自 question_map 真实标题） ===
+const STAGE_SCRIPTS = {
+  prepare: {
+    icon: '📋',
+    title: '购房准备',
+    desc: 'AI 现在是「准备买房的客户」，还没搞清楚自己能不能买。你是经纪人，帮他算清楚。',
+    practiceQs: [
+      '我公积金能贷多少？首套和二套差多少？',
+      '首套房怎么认定？我之前有一套卖了算首套吗？',
+      '学区房怎么查对口学校？我想买个望京南的',
+      '预算超支了怎么办？650 万学区房首付差 50 万',
+      '要不要找中介？自己能谈吗？'
+    ]
+  },
+  market: {
+    icon: '🔍',
+    title: '了解市场',
+    desc: 'AI 现在是「挑花眼的客户」，想对比又怕被忽悠。你是经纪人，给真实数据。',
+    practiceQs: [
+      '我想等房价跌了再买，你觉得呢？',
+      '帮我对比一下大西洋新城和对面的季景沁园',
+      '新盘和二手房选哪个？我是首套',
+      '学区房值不值得买？会不会对口变？',
+      '怎么判断房价走势？你给我几个数据'
+    ]
+  },
+  invite: {
+    icon: '🏠',
+    title: '邀约带看',
+    desc: 'AI 现在是「忙到没空出门的客户」，抗拒带看。你是经纪人，怎么破？',
+    practiceQs: [
+      '我最近太忙了，等有空再说吧',
+      '我就随便看看，不急',
+      '你天天发消息烦不烦？我考虑好了找你',
+      '业主不让看房怎么办？说没钥匙',
+      '看了这套我还想再看看别的'
+    ]
+  },
+  negotiate: {
+    icon: '💬',
+    title: '带看议价',
+    desc: 'AI 现在是「带看完想压价的客户」，各种砍价理由。你是经纪人，怎么接？',
+    practiceQs: [
+      '太贵了，比周边小区贵 20 万',
+      '回去商量一下，不急',
+      '业主要价太高，你帮我砍到 680 万行不行？',
+      '隔壁小区比这个便宜，我再想想',
+      '我朋友说可以等业主急售再谈'
+    ]
+  },
+  transaction: {
+    icon: '💰',
+    title: '交易安全',
+    desc: 'AI 现在是「怕被骗的客户」，签约前各种担心。你是经纪人，怎么让他放心？',
+    practiceQs: [
+      '资金监管安全吗？钱打给谁？',
+      '首套房契税多少？怎么算的？',
+      '合同条款我看不懂，帮我解释一下',
+      '评估价比成交价低怎么办？贷款下不来？',
+      '卖方违约怎么办？我能拿到赔偿吗？'
+    ]
+  },
+  closing: {
+    icon: '🔄',
+    title: '过户交接',
+    desc: 'AI 现在是「快过户的客户」，担心户口、水电、尾款。你是经纪人，帮他顺。',
+    practiceQs: [
+      '过户后户口怎么迁？原业主不迁怎么办？',
+      '交房时要注意什么？原业主留的东西要吗？',
+      '尾款什么时候付？过户前还是后？',
+      '过户延期了怎么办？我赶时间住进去',
+      '入住后发现房子有问题，找谁？'
+    ]
+  }
+};
+
+// === URL 参数解析 + 自动初始化 ===
+(function initFromURL(){
+  const params = new URLSearchParams(window.location.search);
+  const stage = params.get('stage');
+  if(!stage || !STAGE_SCRIPTS[stage]) return;
+
+  const s = STAGE_SCRIPTS[stage];
+
+  // 显示 banner
+  const banner = document.getElementById('stage-mode-banner');
+  banner.style.display = 'block';
+  document.getElementById('stage-banner-icon').textContent = s.icon;
+  document.getElementById('stage-banner-title').textContent = s.title + ' · 练习模式';
+  document.getElementById('stage-banner-desc').textContent = s.desc;
+
+  // banner 里显示客户会问的 5 个问题（tag 形式）
+  const qsWrap = document.getElementById('stage-banner-qs');
+  s.practiceQs.forEach((q, i) => {
+    const tag = document.createElement('span');
+    tag.style.cssText = 'background:rgba(255,255,255,.12);color:#fff;padding:4px 12px;border-radius:12px;font-size:11px;cursor:pointer';
+    tag.textContent = (i+1) + '. ' + q;
+    tag.title = '点一下把这个问题发给 AI';
+    tag.onclick = () => sendQ(q);
+    qsWrap.appendChild(tag);
+  });
+
+  // 快捷菜单也换成该阶段的问题
+  const quickMenu = document.querySelector('.quick-menu');
+  if(quickMenu){
+    quickMenu.innerHTML = '<span style="font-size:11px;opacity:.85">💡 点一个客户问题开始练：</span>';
+    s.practiceQs.forEach(q => {
+      const b = document.createElement('button');
+      b.textContent = q.length > 20 ? q.slice(0,20) + '…' : q;
+      b.onclick = () => sendQ(q);
+      quickMenu.appendChild(b);
+    });
+  }
+
+  // 自动跑一遍阶段演示（3 秒后开始）
+  setTimeout(() => {
+    runScenario('stage-' + stage, null, stage);
+  }, 1500);
+})();
 
 // 初始
 updateTrace({id:0, skill:"—", sop:"—", dim:"—", red:false});

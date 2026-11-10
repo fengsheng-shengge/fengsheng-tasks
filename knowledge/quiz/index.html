@@ -247,7 +247,8 @@ function nextQ(){
 }
 function prevQ(){ if(state.cur>0){ state.cur--; renderQ(); } }
 function finish(){
-  var m=QUIZ[state.moduleIdx], s=m.scenes[state.sceneIdx];
+  var m=state.moduleIdx>=0 ? QUIZ[state.moduleIdx] : null;
+  var s=m ? m.scenes[state.sceneIdx] : null;
   var qs=state.qs, total=qs.length, right=0, wrongs=[];
   qs.forEach(function(q,i){
     var p=state.picks[i];
@@ -263,7 +264,8 @@ function finish(){
   var el=document.getElementById('stepResult');
   el.innerHTML='';
   var hero=document.createElement('div'); hero.className='result-hero';
-  hero.innerHTML='<div style="font-size:13px;color:var(--ink-soft)">'+m.domain+' · '+s.scene+'　完成</div>'+
+  var heroTop = state.stageName ? state.stageName + ' · 阶段微测　完成' : m.domain+' · '+s.scene+'　完成';
+  hero.innerHTML = '<div style="font-size:13px;color:var(--ink-soft)">'+heroTop+'</div>'+
     '<div class="result-score">'+pct+'<span style="font-size:20px">%</span></div>'+
     '<div class="result-level" style="color:'+tag+'">'+lvl+'</div>'+
     '<div class="result-sub">答对 '+right+' / '+total+' 题</div>'+
@@ -287,6 +289,95 @@ function finish(){
   }
 }
 renderModules();
+
+// === 6 阶段微测（经纪人练完 AI 陪练后测一下）===
+var STAGE_QUIZZES = {
+  prepare: {
+    name: '购房准备',
+    icon: '📋',
+    desc: '5 分钟微测 · 购房准备阶段你该先搞清楚的 3 件事',
+    questions: [
+      {type:'judge', stem:'客户问公积金能贷多少，你应该先告诉他"学区对口哪个"。', answer:false, explanation:'购房准备阶段客户最焦虑"我能不能买得起"——先把钱的数字摆出来（首付/月供/贷款额），比先讲学区管用。', entry:'把钱算透'},
+      {type:'choice', stem:'客户说"我之前有一套卖了，现在算首套吗"，正确做法是____。', options:['A. 直接说算首套，让他放心','B. 说"我帮您查一下北京住建委的认定标准"','C. 让客户自己去银行查','D. 说"不管首套二套，都是 30% 首付"'], answer:'B', explanation:'首套二套认定标准每年微调，必须查官方文件。经纪人说"直接算首套"是红线风险。', entry:'首套二套认定'},
+      {type:'judge', stem:'客户预算超支了，你应该帮他算"差多少+月供多还多少"，让他自己判断。', answer:true, explanation:'经纪人只给数字，不替客户做决策。算清楚差额和月供压力，让客户自己权衡。', entry:'预算超支怎么办'},
+      {type:'choice', stem:'购房准备阶段，你应该主动告诉客户的"坑"是____。', options:['A. 只讲好的，让客户尽快签','B. 社保够不够、限购吗、学区对口哪个、利率多少','C. 只说地段好','D. 等客户问了再回答'], answer:'B', explanation:'资格和影响因素（社保/限购/学区/利率）是购房准备必须先讲的——客户最慌"我到底能不能买"。', entry:'资格和影响因素'}
+    ]
+  },
+  market: {
+    name: '了解市场',
+    icon: '🔍',
+    desc: '5 分钟微测 · 市场对比阶段你该先搞清楚的事',
+    questions: [
+      {type:'judge', stem:'客户问"这个学区到底好不好"，你应该说"这个学区最好，98% 优秀率"。', answer:false, explanation:'不能说"最好"这种绝对词——应该说数据来源（朝阳区教委 2026-04 公示，优秀率 98%，近 3 年无变动），让客户自己判断。', entry:'学区房值不值得买'},
+      {type:'choice', stem:'客户要对比周边小区，你应该主动给他____。', options:['A. 挂牌价对比（网上随便能查的）','B. 真实成交价对比（链家成交数据）+ 每个小区 1 个真缺点','C. 只说你主推的小区好','D. 让客户自己去网上查'], answer:'B', explanation:'挂牌价是虚的，真实成交价才实。主动说每个小区 1 个缺点反而增信任。', entry:'对比周边小区'},
+      {type:'judge', stem:'客户说"等房价跌了再买"，你应该说"放心，肯定跌，再等等"。', answer:false, explanation:'不能替客户做涨跌判断——应该给 3 个理性参考（学区房刚需/规划利好/如果真跌能接受吗），让他自己想清楚。', entry:'等房价跌怎么办'}
+    ]
+  },
+  invite: {
+    name: '邀约带看',
+    icon: '🏠',
+    desc: '5 分钟微测 · 邀约带看阶段的抗拒处理',
+    questions: [
+      {type:'judge', stem:'客户说"最近太忙了，等有空再说"，你应该追问"那您到底什么时候有空？"。', answer:false, explanation:'客户说忙=抗拒。你应该先接住："哥您忙我理解，我这有户型图您先看看，等您有空了我再带您实地看"——接抗拒比逼问管用。', entry:'客户不愿出来看房'},
+      {type:'choice', stem:'邀约客户带看时，你应该给____。', options:['A. 开放式问题："您什么时候有空？"','B. 二选一："周二晚 7 点？还是周六上午 10 点？"','C. 让客户自己定时间','D. 说"随时可以来"'], answer:'B', explanation:'给选项别给问题。开放式问题让客户无限拖，二选一直接锁定时间。', entry:'邀约带看技巧'},
+      {type:'judge', stem:'邀约时先发户型图/实拍视频让客户在家先看，比硬逼他出来效果好。', answer:true, explanation:'客户还没信你——先发点东西让他在家筛一轮，降低出门心理门槛。', entry:'先做点东西过去'}
+    ]
+  },
+  negotiate: {
+    name: '带看议价',
+    icon: '💬',
+    desc: '5 分钟微测 · 谈判逼单阶段的接情绪技巧',
+    questions: [
+      {type:'judge', stem:'客户说"太贵了"，你第一句应该说"这个价格确实不贵，周边都这个价"。', answer:false, explanation:'先接情绪再谈钱——第一句应该是"哥我理解，这个价格确实要慎重"，然后再给数据。直接说"不贵"等于否定客户感受。', entry:'客户说太贵了怎么办'},
+      {type:'choice', stem:'客户说"回去商量一下"，你应该____。', options:['A. 问"跟谁商量？商量什么？"','B. 给选项：A 今天定帮你减 5 万 / B 旁边那套便宜 15 万但楼层差','C. 说"好的，您商量完联系我"然后走人','D. 替他做决定："别商量了，今天定吧"'], answer:'B', explanation:'给选项不是逼他走——A 和 B 都是真实可行的方案，让客户在你给的两个里选，不是让他滚。', entry:'回去商量一下怎么办'},
+      {type:'judge', stem:'情绪安抚（共情）可以由 AI 顾问代劳，经纪人只要算数据就行。', answer:false, explanation:'共情必须真人来——AI 可以帮你算差额、查数据，但不能替你跟客户说"哥我理解"。情绪这一步走了红线。', entry:'情绪安抚必须真人'}
+    ]
+  },
+  transaction: {
+    name: '交易安全',
+    icon: '💰',
+    desc: '5 分钟微测 · 交易签约阶段的透明化',
+    questions: [
+      {type:'judge', stem:'资金监管就是把钱打给中介，过户完中介再给业主。', answer:false, explanation:'资金监管是打给银行监管账户，不是中介账户！过户完成后银行自动打给业主——中介碰不到这笔钱。必须给客户讲清楚，打消他怕被骗的顾虑。', entry:'资金监管安全吗'},
+      {type:'choice', stem:'签合同前，你应该____。', options:['A. 让客户直接签，条款都是标准的','B. 一条一条念，把违约责任标红，让客户逐条确认','C. 只讲最重要的 3 条','D. 让客户自己回家看，看完再签'], answer:'B', explanation:'合同必须真人口头过一遍——客户签约那一刻最紧张，你越透明他越敢签。模糊的条款=恐惧源。', entry:'合同逐条念'},
+      {type:'judge', stem:'经纪人可以替客户决定"选商贷还是公积金贷"，只要替他算清楚了。', answer:false, explanation:'不能替客户做任何决策——只给数字让他自己选。商贷 vs 公积金的差别、各自优劣摆清楚，让客户签字确认"知道了、自己选的"。', entry:'不替客户做决策'}
+    ]
+  },
+  closing: {
+    name: '过户交接',
+    icon: '🔄',
+    desc: '5 分钟微测 · 过户交房阶段的收尾与跟进',
+    questions: [
+      {type:'judge', stem:'交房清单只要核对钥匙和房子空不空，水电燃气这些小事不用管。', answer:false, explanation:'交房清单必须逐项核对：物业/水电/燃气/户口/维修基金，一项项打勾。漏了一个就是未来的坑。', entry:'交房清单逐项核对'},
+      {type:'choice', stem:'尾款应该____。', options:['A. 过户前一次性付清','B. 留一部分（比如 5 万）等户口迁出再付','C. 交房当天全付','D. 让客户自己决定什么时候付'], answer:'B', explanation:'户口迁出是最容易出问题的——口头说会迁没用，白纸黑字+压几万块尾款约束。不压钱=原业主可能拖半年。', entry:'尾款压户口'},
+      {type:'judge', stem:'过户完成后就可以失联了，客户不会再找你。', answer:false, explanation:'过户后别失联——银行放款进度、房管局消息每周同步一次。今天这个客户，就是明天给你介绍新客户的人。', entry:'过户后别失联'}
+    ]
+  }
+};
+
+// === URL 直接进入阶段微测 ===
+(function initStageQuiz(){
+  var params = new URLSearchParams(window.location.search);
+  var stage = params.get('stage');
+  if(!stage || !STAGE_QUIZZES[stage]) return;
+
+  // 跳过模块选择，直接进答题
+  var sq = STAGE_QUIZZES[stage];
+  state.qs = sq.questions.map(function(q){ return Object.assign({}, q); });
+  state.stageName = sq.name;
+  state.cur = 0; state.picks = {}; state.answered = 0;
+
+  // 改标题
+  document.querySelector('.head h1').innerHTML = sq.icon + ' ' + sq.name + ' · 5 分钟微测';
+  document.querySelector('.head p').innerHTML = sq.desc;
+
+  document.getElementById('stepModule').classList.add('hidden');
+  document.getElementById('stepScene').classList.add('hidden');
+  document.getElementById('stepQuiz').classList.remove('hidden');
+  document.getElementById('quizTitle').textContent = sq.icon + ' ' + sq.name;
+
+  renderQ();
+})();
 </script>
 </body>
 </html>
