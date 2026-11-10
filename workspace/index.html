@@ -1915,7 +1915,7 @@
           return m.stage === stageKey && (currentConsumer === "all" || m.consumer === currentConsumer);
         }).slice(0, 3);
         learnHtml = stageSkills.map(function(m){
-          return '<a class="bp-learn-item" href="/knowledge/?stage=' + stageKey + '">' +
+          return '<a class="bp-learn-item" href="/knowledge/?stage=' + stageKey + '" onclick="markLearned(\'' + stageKey + '\',\'' + encodeURIComponent(m.title) + '\')">' +
                  m.title + '</a>';
         }).join("");
       }
@@ -1925,6 +1925,23 @@
       // 🚫 红线
       document.getElementById("lc-red").textContent = s.red;
     }
+
+    // 学习进度回写（去重计数，与成长档案同一口径）
+    function markLearned(stage, encTitle){
+      try{
+        var key = stage + '|' + decodeURIComponent(encTitle || '');
+        var ids = JSON.parse(localStorage.getItem('fs_learned_ids') || '[]');
+        if(ids.indexOf(key) >= 0) return;
+        ids.push(key);
+        localStorage.setItem('fs_learned_ids', JSON.stringify(ids.slice(-500)));
+        localStorage.setItem('fs_learn_progress', String(ids.length));
+        var sp = JSON.parse(localStorage.getItem('fs_stage_progress') || '{}');
+        sp[stage] = sp[stage] || {};
+        sp[stage].learn = { count: ((sp[stage].learn && sp[stage].learn.count) || 0) + 1, at: Date.now() };
+        localStorage.setItem('fs_stage_progress', JSON.stringify(sp));
+      }catch(e){}
+    }
+    window.markLearned = markLearned;
 
     // ===== 渲染阶段浏览面板 =====
     function renderStageBrowse(){
@@ -2333,9 +2350,9 @@
     const pathEl = document.getElementById('gb-path');
     const steps = [
       { done: hasTest,              label: '✅ 测评',           next: !hasTest,            link: '/care-test/', sub: '完成能力测评知道短板' },
-      { done: sceneCount > 0,       label: '🎭 练场景',         next: hasTest && sceneCount === 0, link: '/scene/',     sub: 'AI 模拟对话练谈判' },
-      { done: courseCount > 0,      label: '📚 学课程',         next: hasTest && sceneCount > 0 && courseCount === 0, link: '/academy/', sub: '补谈判提升课' },
-      { done: examCount > 0,        label: '🎯 通过考核',       next: false,               link: '#',           sub: 'Q4 季度考核（近期上线）' },
+      { done: sceneCount > 0,       label: '🤖 练场景',         next: hasTest && sceneCount === 0, link: '/ai-advisor/', sub: 'AI 模拟客户练 SOP' },
+      { done: courseCount > 0,      label: '📖 学知识',         next: hasTest && sceneCount > 0 && courseCount === 0, link: '/knowledge/', sub: '按阶段补知识底座' },
+      { done: examCount > 0,        label: '🎯 过微测',         next: false,               link: '/knowledge/quiz/', sub: '每阶段 5 分钟小测' },
     ];
     let pathHTML = '';
     steps.forEach((s, i) => {

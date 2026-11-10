@@ -244,6 +244,22 @@ function addMsg(text, isAI){
   CHAT.scrollTop = CHAT.scrollHeight;
 }
 
+// 练习进度回写（与工作台共用 localStorage 口径）
+function bumpPractice(){
+  try{
+    var n = parseInt(localStorage.getItem('fs_scene_count') || '0', 10) + 1;
+    localStorage.setItem('fs_scene_count', String(n));
+    var stage = new URLSearchParams(location.search).get('stage');
+    if(stage){
+      var sp = JSON.parse(localStorage.getItem('fs_stage_progress') || '{}');
+      sp[stage] = sp[stage] || {};
+      var prev = (sp[stage].practice && sp[stage].practice.count) || 0;
+      sp[stage].practice = { count: prev + 1, at: Date.now() };
+      localStorage.setItem('fs_stage_progress', JSON.stringify(sp));
+    }
+  }catch(e){}
+}
+
 function sendQ(text){
   if(!text) text = document.getElementById('user-input').value;
   if(!text.trim()) return;
@@ -251,6 +267,7 @@ function sendQ(text){
   addMsg(text, false);
   setTimeout(()=>processAI(text), 400);
   msgCount++;
+  bumpPractice();
   checkLeadHook();
 }
 

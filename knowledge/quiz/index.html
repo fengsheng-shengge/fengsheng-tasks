@@ -311,6 +311,20 @@ function finish(){
   var pct=Math.round(right/total*100);
   var lvl = pct>=90? '掌握优秀' : pct>=70? '基本掌握' : pct>=50? '有待加强' : '需要重学';
   var tag = lvl==='掌握优秀'? 'var(--green)' : lvl==='基本掌握'? 'var(--orange)' : 'var(--red)';
+  // 考核结果回写成长档案（与工作台共用 localStorage 口径）
+  try{
+    var cnt = parseInt(localStorage.getItem('fs_exam_count') || '0', 10) + 1;
+    localStorage.setItem('fs_exam_count', String(cnt));
+    var recs = JSON.parse(localStorage.getItem('fs_exam_records') || '[]');
+    recs.unshift({ stage: state.stageKey || '', score: pct, right: right, total: total, at: Date.now() });
+    localStorage.setItem('fs_exam_records', JSON.stringify(recs.slice(0, 20)));
+    if(state.stageKey){
+      var sp = JSON.parse(localStorage.getItem('fs_stage_progress') || '{}');
+      sp[state.stageKey] = sp[state.stageKey] || {};
+      sp[state.stageKey].exam = { score: pct, at: Date.now() };
+      localStorage.setItem('fs_stage_progress', JSON.stringify(sp));
+    }
+  }catch(e){}
   document.getElementById('stepQuiz').classList.add('hidden');
   document.getElementById('stepResult').classList.remove('hidden');
   var el=document.getElementById('stepResult');
@@ -321,6 +335,7 @@ function finish(){
     '<div class="result-score">'+pct+'<span style="font-size:20px">%</span></div>'+
     '<div class="result-level" style="color:'+tag+'">'+lvl+'</div>'+
     '<div class="result-sub">答对 '+right+' / '+total+' 题</div>'+
+    '<div class="result-sub" style="font-size:12px;color:var(--green)">✓ 成绩已记入工作台成长档案</div>'+
     '<div class="result-actions">'+
     '<button class="btn btn-primary" onclick="location.reload()">再测一次</button>'+
     '<button class="btn btn-ghost" onclick="location.href=\'/dictionary/\'">去词典温习</button></div>';
@@ -417,6 +432,7 @@ var STAGE_QUIZZES = {
   var sq = STAGE_QUIZZES[stage];
   state.qs = sq.questions.map(function(q){ return Object.assign({}, q); });
   state.stageName = sq.name;
+  state.stageKey = stage;
   state.cur = 0; state.picks = {}; state.answered = 0;
 
   // 改标题
