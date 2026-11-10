@@ -60,6 +60,41 @@
 
   footer{text-align:center;padding:20px;font-size:11px;color:var(--text-sub)}
   footer a{color:var(--brand-dark);text-decoration:none}
+
+  /* ===== 响应式：平板 ===== */
+  @media (max-width:900px){
+    .wrap{max-width:480px}
+  }
+
+  /* ===== 响应式：手机 ===== */
+  @media (max-width:768px){
+    .wrap{padding:16px 14px}
+    /* header 的负边距跟着 wrap 的 padding 走，否则会横向溢出 */
+    header{padding:24px 16px;margin:-16px -14px 16px;border-radius:0 0 20px 20px}
+    header h1{font-size:20px}
+    header p{font-size:12px}
+    .card{padding:16px;border-radius:14px}
+    .trust-score{font-size:32px}
+    .score-breakdown{gap:8px;margin-top:12px}
+    .score-item{padding:9px}
+    .score-item .num{font-size:17px}
+    .recommend-banner{flex-wrap:wrap;gap:10px}
+    .recommend-banner .info{min-width:0}
+    .recommend-banner .cta{width:100%;padding:10px 14px}
+    .source-list li{font-size:12px;gap:8px}
+    .source-list li .val{font-size:11px}
+    /* 输入框/下拉在 iOS 上字号 <16px 会触发聚焦缩放 */
+    #kbSearch,#leadName,#leadPhone,#leadIntent{font-size:16px !important}
+    img,video,canvas{max-width:100%;height:auto}
+  }
+
+  /* ===== 响应式：窄屏 ===== */
+  @media (max-width:380px){
+    header h1{font-size:18px}
+    .trust-score{font-size:28px}
+    .score-item .num{font-size:15px}
+    .recommend-banner .avatar{width:40px;height:40px;font-size:20px}
+  }
 </style>
 </head>
 <body>

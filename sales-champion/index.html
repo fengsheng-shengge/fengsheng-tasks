@@ -75,6 +75,47 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .foot-stats .l{font-size:11px;color:var(--ink-soft);margin-top:2px}
 
 .footer{text-align:center;color:var(--ink-soft);font-size:12px;padding:20px}
+
+/* ===== 响应式：平板 ===== */
+@media (max-width:900px){
+  .radar-wrap{grid-template-columns:1fr}
+  .radar-placeholder{width:100%;height:200px}
+  .scene-list{grid-template-columns:1fr}
+  .foot-stats{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ===== 响应式：手机 ===== */
+@media (max-width:768px){
+  .wrap{padding:18px 14px}
+  .nav{overflow-x:auto;flex-wrap:nowrap;gap:8px;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .nav::-webkit-scrollbar{display:none}
+  .nav a{flex:0 0 auto;white-space:nowrap;font-size:11px;padding:5px 10px}
+  .hero{flex-wrap:wrap;gap:14px;padding:22px 18px}
+  .hero .avatar{width:48px;height:48px;font-size:22px}
+  .hero .who h1{font-size:17px}
+  .hero .who p{font-size:12px}
+  .hero .who .stats{flex-wrap:wrap;gap:10px}
+  .radar-wrap{padding:16px;gap:14px}
+  .radar-placeholder{height:180px}
+  .dim-bar .nm{width:64px;font-size:11px}
+  .dim-bar .score{width:52px}
+  .filters{padding:12px;gap:8px}
+  .filters button{font-size:10px;padding:4px 9px}
+  .scene-head{flex-wrap:wrap;padding:12px 14px}
+  .scene-head .tags{flex-wrap:wrap}
+  .scene-body{padding:14px}
+  .foot-stats .n{font-size:18px}
+  .foot-stats .l{font-size:10px}
+  img,video,canvas{max-width:100%;height:auto}
+}
+
+/* ===== 响应式：窄屏 ===== */
+@media (max-width:380px){
+  .hero .who h1{font-size:15px}
+  .scene-head .t{font-size:12px}
+  .foot-stats{gap:8px;padding:12px}
+  .red-banner{font-size:11px}
+}
 </style>
 </head>
 <body>

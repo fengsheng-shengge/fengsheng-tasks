@@ -939,6 +939,136 @@
   .bp-check-text { flex: 1; }
   .bp-check-link { color: var(--primary); font-weight: 700; text-decoration: none; }
   .bp-check-link:hover { text-decoration: underline; }
+
+  /* ===== 响应式：平板 ===== */
+  @media (max-width: 900px) {
+    .ability-grid { grid-template-columns: repeat(2, 1fr); }
+    .ability-card-full { grid-column: span 2; }
+    .tools-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ===== 响应式：手机 ===== */
+  @media (max-width: 768px) {
+    /* 顶栏：logo 一行，导航单独一行横向滑动 */
+    .top-nav {
+      padding: 10px 14px;
+      flex-wrap: wrap;
+      gap: 8px;
+      row-gap: 10px;
+    }
+    .logo-area { flex: 1 1 auto; gap: 8px; min-width: 0; }
+    .logo-icon { width: 30px; height: 30px; font-size: 13px; border-radius: 7px; flex: 0 0 auto; }
+    .logo-text { font-size: 15px; }
+    .nav-links {
+      order: 3;
+      flex: 1 1 100%;
+      gap: 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a { flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
+    .nav-actions { flex: 0 0 auto; gap: 8px; }
+    .nav-actions .city-selector { font-size: 12px; }
+
+    /* 领域 Tab：横向滑动，避免挤压换行 */
+    .domain-tabs {
+      padding: 0 14px;
+      gap: 18px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .domain-tabs::-webkit-scrollbar { display: none; }
+    .domain-tab { flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
+
+    .position-bar { padding: 12px 14px; }
+
+    /* 主内容 */
+    .main { padding: 18px 14px; }
+
+    /* 价值引导 + 成长条 */
+    .value-intro { padding: 16px 14px; border-radius: 12px; }
+    .vi-title { font-size: 15px; line-height: 1.5; }
+    .vi-sub { font-size: 12px; }
+    .vi-actions { align-items: stretch; }
+    .vi-btn { flex: 1 1 100%; justify-content: center; }
+    .vi-or { text-align: center; }
+
+    .growth-bar { flex-direction: column; padding: 16px 14px; gap: 12px; }
+    .gb-user { flex-wrap: wrap; }
+    .gb-right { min-width: 0; } /* 原 200px 会把主内容挤扁 */
+    #welcome-back-bar { padding: 14px !important; }
+    #welcome-back-bar > div:first-child { flex-wrap: wrap; gap: 6px; }
+
+    /* 搜索区 */
+    .search-section { padding: 18px 14px; border-radius: 12px; }
+    .search-title { font-size: 16px; }
+    .search-subtitle { font-size: 12px; }
+    .search-box { gap: 8px; }
+    .search-input { min-width: 0; padding: 11px 12px; font-size: 13px; }
+    .search-btn { flex: 0 0 auto; padding: 11px 16px; font-size: 13px; }
+    .hot-questions span { font-size: 11px; padding: 4px 9px; }
+
+    .filter-zone { padding: 14px; border-radius: 12px; }
+    .filter-zone-row { gap: 8px; }
+    .filter-zone-title { flex: 0 0 100%; font-size: 12px; }
+    .consumer-filter { gap: 6px; }
+    .consumer-filter .cf-chip { font-size: 12px; padding: 6px 12px; }
+    .stage-tabs {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .stage-tabs::-webkit-scrollbar { display: none; }
+    .stage-tabs .st-tab { flex: 0 0 auto; padding: 8px 12px; font-size: 12px; }
+
+    /* 场景卡片 */
+    .scenario-head { padding: 12px 14px; }
+    .scenario-body { padding: 12px 14px 14px; }
+    .secondary-row { flex-direction: column; }
+    .secondary-col:first-child { border-right: none; border-bottom: 1px solid var(--line); }
+    .hook-soft { flex-wrap: wrap; }
+    .hook-soft-cta { flex: 1 1 100%; text-align: center; }
+    .speech-variant-copy { position: static; display: block; width: fit-content; margin: 8px 0 0 auto; }
+    .speech-variant.collapsed .speech-variant-copy { display: none; }
+
+    /* 测学练考评 */
+    .layered-header { padding: 12px 14px; }
+    .layered-title { font-size: 14px; }
+    .layered-body { padding: 12px 14px; }
+    .bp-card { padding: 10px 12px; }
+    .bp-row { grid-template-columns: 1fr; }
+
+    /* 能力画像 / 工具 / 进阶 */
+    .ability-section { padding: 16px 14px; }
+    .ability-grid { gap: 8px; }
+    .tools-grid { gap: 8px; }
+    .tool-card { padding: 12px 8px; }
+    .advance-grid { grid-template-columns: 1fr; }
+    .advance-card { padding: 14px; }
+    .advance-card-footer { flex-wrap: wrap; gap: 6px; }
+    .advance-intro { padding: 14px; }
+
+    .kb-stage-panel { padding: 14px; }
+    .kb-relations { padding: 10px 12px; }
+    .footer-note { padding: 24px 14px; }
+
+    img, video, canvas { max-width: 100%; height: auto; }
+  }
+
+  /* ===== 响应式：窄屏 ===== */
+  @media (max-width: 380px) {
+    .logo-text { font-size: 14px; }
+    .nav-links a { font-size: 11px; }
+    .vi-title { font-size: 14px; }
+    .gb-name { font-size: 14px; }
+    .consumer-filter .cf-chip { font-size: 11px; padding: 5px 10px; }
+    .tools-grid { gap: 6px; }
+  }
 </style>
 </head>
 <body>

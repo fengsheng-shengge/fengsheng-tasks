@@ -79,6 +79,50 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .trace-row .v{color:var(--ink-soft)}
 
 .footer{text-align:center;color:var(--ink-soft);font-size:12px;padding:20px}
+
+/* ===== 响应式：平板 ===== */
+@media (max-width:900px){
+  .wrap{padding:24px 18px}
+  .hero{padding:32px 24px}
+}
+/* ===== 响应式：手机 ===== */
+@media (max-width:768px){
+  .wrap{padding:18px 14px}
+  .nav{flex-wrap:nowrap;gap:8px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .nav::-webkit-scrollbar{display:none}
+  .nav a{flex:0 0 auto;font-size:11px;padding:5px 10px}
+  .hero{padding:24px 16px;border-radius:12px;margin-bottom:14px}
+  .hero h1{font-size:18px;line-height:1.4}
+  .hero p{font-size:12px}
+  .hero .trust{display:block;font-size:10px;line-height:1.6}
+  #stage-mode-banner{padding:14px !important}
+  .demo-switch{padding:12px;gap:8px}
+  .demo-switch .lbl{font-size:11px}
+  .demo-switch button{font-size:11px;padding:6px 10px}
+  .trace-panel{padding:12px}
+  .trace-panel h3{font-size:12px}
+  .trace-row{align-items:flex-start;gap:8px;font-size:11px}
+  .trace-row .v{min-width:0;overflow-wrap:anywhere}
+  .chat-header{flex-wrap:wrap;gap:6px;padding:12px 14px}
+  .chat-header h3{font-size:14px}
+  .chat-header .meta{font-size:10px}
+  .chat-body{padding:14px;min-height:320px;max-height:60vh}
+  .msg{max-width:92%;padding:10px 12px;font-size:12.5px;overflow-wrap:anywhere}
+  .kb-card{padding:10px;font-size:11.5px}
+  .quick-menu button{font-size:11px;padding:7px 11px}
+  .chat-input{padding:10px 12px;gap:8px}
+  .chat-input input{min-width:0;padding:9px 10px;font-size:12.5px}
+  .chat-input button{flex:0 0 auto;padding:9px 14px;font-size:12.5px}
+  .lead-hook{padding:12px}
+  .footer{padding:16px 14px}
+  img,video,canvas{max-width:100%;height:auto}
+}
+/* ===== 响应式：窄屏 ===== */
+@media (max-width:380px){
+  .nav a{font-size:10px;padding:4px 8px}
+  .hero h1{font-size:16px}
+  .msg{max-width:96%}
+}
 </style>
 </head>
 <body>

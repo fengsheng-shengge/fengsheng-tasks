@@ -24,6 +24,33 @@ h1{font-size:1.8rem;color:#fff;margin-bottom:8px;font-weight:700}
 .cta-sub{display:inline-block;padding:10px 20px;background:transparent;color:#9ca3af;border:1px solid #3a3a3a;border-radius:8px;text-decoration:none;font-size:0.85rem;transition:border-color .15s}
 .cta-sub:hover{border-color:#f59e0b;color:#f59e0b}
 .tag{display:inline-block;padding:4px 10px;background:#1f2937;border-radius:6px;font-size:0.75rem;color:#9ca3af;margin-top:20px}
+
+/* ===== 响应式：手机 ===== */
+@media (max-width: 900px){
+  /* body 是 flex 居中，页脚会跟主内容排成一行，这里改回正常文档流 */
+  body{display:block}
+  .container{max-width:600px;width:100%;margin:0 auto}
+}
+
+@media (max-width: 768px){
+  .container{width:100%;max-width:100%;padding:32px 18px}
+  .logo{font-size:2.4rem}
+  h1{font-size:1.5rem}
+  .subtitle{font-size:0.92rem;margin-bottom:24px}
+  .features{gap:10px;margin-bottom:24px}
+  .feature{padding:12px 14px}
+  .feature-text{font-size:0.85rem}
+  .cta-main{padding:15px 20px;font-size:1rem}
+  .cta-sub{display:block;padding:12px 16px}
+  .tag{font-size:0.7rem;line-height:1.7}
+  img,video,canvas{max-width:100%;height:auto}
+}
+
+@media (max-width: 380px){
+  h1{font-size:1.35rem}
+  .feature-text{font-size:0.8rem}
+  .tag{font-size:0.65rem}
+}
 </style>
 </head>
 <body>
