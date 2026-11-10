@@ -4107,7 +4107,7 @@ export default {
     }
 
     // Trailing-slash redirects
-    const trailingSlashRedirects = ['/knowledge', '/mentor', '/ip-design', '/reply', '/assessment', '/agent-assessment', '/breeder', '/s1-report', '/partner', '/care-test', '/quality-test', '/workspace'];
+    const trailingSlashRedirects = ['/knowledge', '/mentor', '/ip-design', '/reply', '/assessment', '/agent-assessment', '/breeder', '/s1-report', '/partner', '/care-test', '/quality-test', '/workspace', '/wotu'];
     if (trailingSlashRedirects.includes(path)) {
       return Response.redirect(`https://fengsheng.tech${path}/`, 301);
     }
@@ -4515,6 +4515,8 @@ export default {
         '/assessment/', '/s1-report/', '/showing-report/', '/agent-assessment/',
         '/academy', '/academy/',
         '/design-prototype', '/design-prototype/',
+        // 预备经纪人招生（沃土计划）
+        '/wotu', '/wotu/',
         // P1: 门店智能接待新页面
         '/ai-advisor', '/ai-advisor/', '/trust-package', '/trust-package/',
         '/sales-champion', '/sales-champion/',
