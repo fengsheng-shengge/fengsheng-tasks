@@ -116,6 +116,196 @@
     font-weight: 600;
   }
 
+  /* ===== 🆕 岗位身份 Banner — 第一眼看清楚你是谁 ===== */
+  .role-banner {
+    background: linear-gradient(135deg, #1a3d24 0%, #2d5a3f 50%, #3a6b4d 100%);
+    color: #fff;
+    padding: 20px 48px;
+    display: none;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 3px solid var(--gold);
+  }
+  .role-banner.visible { display: flex; animation: fadeIn 0.3s ease; }
+  .role-banner .rb-icon {
+    font-size: 40px;
+    width: 64px; height: 64px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    backdrop-filter: blur(4px);
+  }
+  .role-banner .rb-info { flex: 1; min-width: 0; }
+  .role-banner .rb-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .role-banner .rb-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .role-banner .rb-name .rb-domain-tag {
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--gold);
+    color: #1a3d24;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .role-banner .rb-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+    max-width: 520px;
+  }
+  .role-banner .rb-switch {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .role-banner .rb-switch-title {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 6px;
+    width: 100%;
+  }
+  .role-banner .rb-switch-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.75);
+    border: 1px solid rgba(255,255,255,0.18);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .role-banner .rb-switch-pill:hover {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+  }
+  .role-banner .rb-switch-pill.active {
+    background: var(--gold);
+    color: #1a3d24;
+    border-color: var(--gold);
+    font-weight: 700;
+  }
+
+  /* ===== 🆕 客户服务阶段 Timeline — 页面主骨架 ===== */
+  .journey-timeline {
+    background: #f8f6f0;
+    border-bottom: 1px solid var(--line);
+    padding: 0 48px;
+    display: none;
+  }
+  .journey-timeline.visible { display: block; animation: fadeIn 0.3s ease; }
+  .jt-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding-top: 12px;
+    padding-bottom: 6px;
+  }
+  .jt-stages {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding-bottom: 12px;
+    overflow-x: auto;
+  }
+  .jt-stage {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+  }
+  .jt-step {
+    flex-shrink: 0;
+    padding: 10px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 130px;
+    background: transparent;
+    border: 2px solid transparent;
+    position: relative;
+  }
+  .jt-step:hover {
+    background: rgba(26,61,36,0.06);
+  }
+  .jt-step .jt-step-icon {
+    font-size: 22px;
+    width: 36px; height: 36px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid var(--line);
+    transition: all 0.2s;
+  }
+  .jt-step .jt-step-text { display: flex; flex-direction: column; gap: 2px; }
+  .jt-step .jt-step-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #555;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .jt-step .jt-step-desc {
+    font-size: 10px;
+    color: #999;
+    white-space: nowrap;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s;
+  }
+  .jt-step.jt-active {
+    background: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 4px 16px rgba(26,61,36,0.18);
+    transform: translateY(-2px);
+  }
+  .jt-step.jt-active .jt-step-icon {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+  }
+  .jt-step.jt-active .jt-step-name {
+    color: var(--primary);
+    font-size: 15px;
+  }
+  .jt-step.jt-active .jt-step-desc {
+    color: var(--primary);
+    opacity: 0.8;
+  }
+  .jt-step.jt-done .jt-step-icon {
+    background: var(--primary-bg);
+    border-color: var(--primary);
+    opacity: 0.7;
+  }
+  .jt-arrow {
+    flex-shrink: 0;
+    font-size: 18px;
+    color: #ccc;
+    padding: 0 4px;
+    display: flex; align-items: center;
+  }
+
   .domain-tag {
     font-size: 10px;
     background: rgba(255,255,255,0.15);
@@ -986,6 +1176,19 @@
 
     .position-bar { padding: 12px 14px; }
 
+    /* 🆕 岗位 Banner + Timeline 响应式 */
+    .role-banner { padding: 16px 14px; flex-wrap: wrap; gap: 12px; }
+    .role-banner .rb-icon { width: 48px; height: 48px; font-size: 28px; border-radius: 12px; }
+    .role-banner .rb-name { font-size: 17px; }
+    .role-banner .rb-desc { font-size: 11px; max-width: none; }
+    .role-banner .rb-switch { flex: 0 0 100%; }
+    .journey-timeline { padding: 0 14px; }
+    .jt-step { min-width: auto; padding: 8px 10px; }
+    .jt-step .jt-step-icon { width: 28px; height: 28px; font-size: 16px; }
+    .jt-step .jt-step-name { font-size: 12px; }
+    .jt-step .jt-step-desc { display: none; }
+    .jt-arrow { font-size: 14px; padding: 0 2px; }
+
     /* 主内容 */
     .main { padding: 18px 14px; }
 
@@ -1109,6 +1312,29 @@
     <div id="position-pills"></div>
   </div>
 
+  <!-- 🆕 岗位身份 Banner — 一眼看清你是谁 -->
+  <div class="role-banner" id="role-banner">
+    <div class="rb-icon" id="rb-icon">🏠</div>
+    <div class="rb-info">
+      <div class="rb-label">当前岗位 / ROLE</div>
+      <div class="rb-name">
+        <span id="rb-name">买卖经纪人</span>
+        <span class="rb-domain-tag" id="rb-domain-tag">交易服务</span>
+      </div>
+      <div class="rb-desc" id="rb-desc">撮合买卖双方完成房产交易——从客户到访、带看、议价到签约过户的全流程服务者。</div>
+    </div>
+    <div class="rb-switch">
+      <div class="rb-switch-title">切换其他岗位</div>
+      <div id="rb-switch-pills"></div>
+    </div>
+  </div>
+
+  <!-- 🆕 客户服务阶段 Timeline — 页面主骨架 -->
+  <div class="journey-timeline" id="journey-timeline">
+    <div class="jt-label">💫 客户服务全流程 — 走到哪一步了？</div>
+    <div class="jt-stages" id="jt-stages"></div>
+  </div>
+
   <!-- 主内容 -->
   <div class="main">
 
@@ -1196,12 +1422,11 @@
           </div>
         </div>
 
-        <!-- Row 2: 阶段 Tab -->
-        <div class="filter-zone-row">
-          <span class="filter-zone-title">🏠 走到哪一步</span>
-          <div class="stage-tabs" id="stage-tabs"></div>
-        </div>
+        <!-- Row 2 原阶段 Tab 已提升为页面骨架 Timeline（#journey-timeline） -->
       </div>
+
+      <!-- 隐藏保留给旧 JS renderStageTabs() 兼容（不再可见） -->
+      <div id="stage-tabs" style="display:none"></div>
 
       <!-- ===== 搜索命中面板（有搜索才显示） ===== -->
       <div class="result-panel" id="result-panel">
@@ -1463,8 +1688,116 @@
     var sopData = null;        // 🆕 sales-sop.json
     var stageLayerData = null; // 🆕 阶段三层拆解数据（素养/服务/红线/checklist）
 
-    // ===== 阶段 Tab 数据 =====
-    var STAGES = [
+    // ===== 🆕 多岗位阶段数据（租赁 LEASE + 新房 NEW_HOME） =====
+    var POSITION_STAGES = {
+      LEASE: [
+        { key: "l1", icon: "📢", name: "房源发布", desc: "业主委托、房源上线", kb:"pre" },
+        { key: "l2", icon: "📞", name: "带看预约", desc: "客户来电、匹配房源、约看协调", kb:"pre" },
+        { key: "l3", icon: "🏠", name: "现场带看", desc: "带看路线、卖点讲解、带看记录", kb:"mid" },
+        { key: "l4", icon: "💬", name: "签约谈判", desc: "租金议价、合同条款、意向书", kb:"mid" },
+        { key: "l5", icon: "🔄", name: "入住交接", desc: "水电过户、验房确认、退租管理", kb:"post" }
+      ],
+      NEW_HOME: [
+        { key: "n1", icon: "👋", name: "售楼处接待", desc: "客户来访、需求挖掘、置业推荐", kb:"pre" },
+        { key: "n2", icon: "🗺️", name: "沙盘讲解", desc: "区域规划、楼盘定位、价格体系", kb:"pre" },
+        { key: "n3", icon: "🏠", name: "样板间带看", desc: "户型讲解、装修标准、对比竞品", kb:"pre" },
+        { key: "n4", icon: "🔢", name: "认筹排号", desc: "认筹政策、排号选房、锁定房源", kb:"mid" },
+        { key: "n5", icon: "💰", name: "认购签约", desc: "认购合同、首付贷款、签约交付", kb:"mid" },
+        { key: "n6", icon: "🔑", name: "交房入住", desc: "交房手续、验房收房、售后维护", kb:"post" }
+      ]
+    };
+    var POSITION_STAGE_TO_DIMS = {
+      LEASE: {
+        l1: { primary: ["INSIGHT","ACQUISITION"], secondary: ["SOLUTION","FULFILLMENT"] },
+        l2: { primary: ["ACQUISITION","INSIGHT"], secondary: ["NEGOTIATION","SOLUTION"] },
+        l3: { primary: ["SOLUTION","ACQUISITION"], secondary: ["NEGOTIATION","INSIGHT"] },
+        l4: { primary: ["NEGOTIATION","SOLUTION"], secondary: ["FULFILLMENT","INSIGHT"] },
+        l5: { primary: ["FULFILLMENT","SOLUTION"], secondary: ["AFTERSALE","NEGOTIATION"] }
+      },
+      NEW_HOME: {
+        n1: { primary: ["ACQUISITION","INSIGHT"], secondary: ["SOLUTION","NEGOTIATION"] },
+        n2: { primary: ["SOLUTION","INSIGHT"], secondary: ["ACQUISITION","FULFILLMENT"] },
+        n3: { primary: ["SOLUTION","ACQUISITION"], secondary: ["INSIGHT","NEGOTIATION"] },
+        n4: { primary: ["NEGOTIATION","ACQUISITION"], secondary: ["FULFILLMENT","SOLUTION"] },
+        n5: { primary: ["FULFILLMENT","NEGOTIATION"], secondary: ["SOLUTION","INSIGHT"] },
+        n6: { primary: ["FULFILLMENT","AFTERSALE"], secondary: ["SOLUTION","DIGITAL"] }
+      }
+    };
+    var POSITION_LAYER_DATA = {
+      LEASE: {
+        l1: { actions: ["① 先跟业主聊清楚：他为啥出租？空了多久了？期望租金多少？能不能接受长租？",
+                         "② 拍照+录视频+量面积：房源没图等于不存在，至少 5 张不同角度+1 个 30 秒视频",
+                         "③ 房源描述写人话：别写「南北通透采光好」——写「下午阳台能晒 4 小时太阳，适合晾衣服」"],
+              why:"业主找你不是要你挂机，是要你帮他租出去。你的专业体现在你比他更清楚怎么包装这套房子",
+              practiceScene:"业主说：我这套 3 居室，给你 7000 底价，一个月内帮我租出去行不行？",
+              red:"别替业主承诺「这个价肯定能租」——只说「我帮你挂出去，有 3 个意向客户我先让你看」" },
+        l2: { actions: ["① 先筛再约：电话里先问预算、地段、租期——别浪费双方时间约了个根本不合适的",
+                         "② 给选项别给问题：别说「你哪天有空」——直接问「周三晚 7 点？还是周六上午 10 点？」",
+                         "③ 约完发确认：短信/微信把时间、地点、要不要带身份证、钥匙在哪都写清楚"],
+              why:"客户约看爽约率 30%+——你约得越具体，他放鸽子的概率越低",
+              practiceScene:"客户说：我想找个离地铁近的，预算 5000 左右，有合适的吗？",
+              red:"别在电话里报具体地址——等他到了附近再发定位，防同行截客" },
+        l3: { actions: ["① 带看路线先想清楚：从小区大门到房子一路上能路过什么好设施（超市/地铁/公园）先给他指出来",
+                         "② 带看不只看房子：还要看邻居（敲一家门问问住得怎么样）、看楼里楼道（干不干净）、看楼下保安态度",
+                         "③ 带完看让他在房子里自己待 5 分钟：别一直跟着叨叨，让他自己感受一下能不能住得舒服"],
+              why:"客户租房子租的是「住进去的感觉」，不是冰冷的平米数。你陪他一起去想象住在这里的样子",
+              practiceScene:"客户看完房子说：房子还行，但我感觉有点小贵，再想想吧",
+              red:"别替业主砍价——砍价是后面签约谈判的事，带看只负责让他喜欢上这套" },
+        l4: { actions: ["① 先问清楚他的真实需求：押一付三能接受吗？要租多久？能不能养宠物？",
+                         "② 租金谈判先给理由不给硬砍：别说「能不能少 500」——说「这套 6500 行不行？我帮你跟业主争取一下，条件是你一次签一年」",
+                         "③ 合同一条一条念：别让他直接签，重点条款（租期、退租、维修责任）标红一条一条讲"],
+              why:"客户签合同那一刻最紧张——你越透明他越敢签。模糊的条款都是雷",
+              practiceScene:"客户说：租金 6500 我能接受，但能不能押一付一？",
+              red:"别替客户答应「我帮你问问业主同不同意」然后就消失——有消息必须在 24 小时内回复" },
+        l5: { actions: ["① 入住交接清单一项项打勾：家具家电、水电燃表读数、钥匙数量、门禁卡——全拍照留底",
+                         "② 退租条款提前讲清楚：什么情况扣押金、什么情况不扣、提前多久说退租",
+                         "③ 入住后 3 天回访一次：有没有什么问题？热水器会不会用？水电能不能正常用？"],
+              why:"入住交接是你最后一次留好印象的机会——租客觉得你靠谱，下次续租还找你，还会介绍朋友",
+              practiceScene:"租客打电话说：热水器坏了，这是谁修？",
+              red:"别替业主承诺什么——维修责任按合同来，别自己拍胸脯说「我帮你找人修」" }
+      },
+      NEW_HOME: {
+        n1: { actions: ["① 先别推销，先聊：哥/姐贵姓？是第一次来看吗？家里几口人？是首套还是换房？",
+                         "② 把需求记下来：预算多少？要几房？在意学区还是地铁？什么时候入住？",
+                         "③ 推荐的时候别一股脑全说：先推最符合他需求的 1-2 个户型，别一口气把 10 个户型全讲一遍"],
+              why:"客户走进售楼处是带着戒心的——你越像朋友聊天，他越敢把真实需求告诉你",
+              practiceScene:"客户进门说：我就随便看看，不用给我介绍",
+              red:"别在客户没明确说之前就说「这套最好卖，赶紧定」——会让他觉得你在催他" },
+        n2: { actions: ["① 沙盘讲解先讲大环境：先讲区域配套（地铁/医院/商圈/学校），再讲楼盘本身——因为大环境决定升值空间",
+                         "② 价格体系讲人话：别说「均价 5 万 2」——说「89 平 2 居大概 450 万，118 平 3 居大概 610 万，每层差价大概 20 万」",
+                         "③ 主动说一个缺点：比如「这边离主干道近，低楼层可能有点噪音」——说了缺点反而显你专业"],
+              why:"沙盘讲解的核心是「让客户想象自己住在这里的样子」——数字不如画面",
+              practiceScene:"客户问：这个小区为什么比隔壁贵 3000 一平？",
+              red:"别瞎承诺「这条地铁明年一定通」——只说「规划里有，预计 2027 年开工，以政府公告为准」" },
+        n3: { actions: ["① 样板间带你体验不是带你逛：进客厅先让他坐 5 分钟感受采光，进厨房让他打开抽屉试试",
+                         "② 对比竞品要客观：别说「隔壁那套是垃圾」——说「隔壁那套优点是总价低 20 万，但缺点是南北不通透、冬天要开空调」",
+                         "③ 装修标准讲清楚：哪些是送的、哪些要自己装、品牌型号是什么——别模糊说「精装」"],
+              why:"样板间是最能让客户心动的地方——但心动之后要让他理性，不然回家就后悔",
+              practiceScene:"客户看完样板间说：这个户型确实不错，但感觉得房率有点低？",
+              red:"别替开发商承诺「送面积」——以合同里的户型图和附件为准" },
+        n4: { actions: ["① 认筹政策别绕弯子：认筹多少钱？排号怎么排？选房按什么顺序？能不能退？全说清楚",
+                         "② 锁房的好处和风险都讲：好处是你排在前面能挑好楼层好户型；风险是如果开盘价比你预期高你要不要认？",
+                         "③ 排号后每周更一次进度：「下周能拿到预售证了」「选房日大概定在 X 号」——别让客户瞎等"],
+              why:"认筹排号是客户第一次掏钱——他掏之前必须想清楚，掏之后必须踏实",
+              practiceScene:"客户问：认筹交 5 万选不上房能退吗？",
+              red:"别替开发商说「肯定能退」——只说「认筹协议里写了，开盘后 7 天内可全额退，以协议为准」" },
+        n5: { actions: ["① 认购合同带他逐条看：重点是房款、付款时间、交付日期、违约责任——标红一条一条讲",
+                         "② 贷款预算算到分：首付多少？月供多少？贷 30 年和 25 年差多少？商贷和公积金差多少？给他一张表签字",
+                         "③ 签约后别失联：银行贷款进度、网签状态、合同盖章情况每周说一声"],
+              why:"签约那一刻是客户最紧张的时刻——几百万的事，你越透明他越放心",
+              practiceScene:"客户说：首付 200 万我得卖一套房子凑，贷款能先申请着吗？",
+              red:"别替客户做贷款决策——只给各家银行的利率对比表，让他自己选" },
+        n6: { actions: ["① 交房前 3 天确认：「XX 哥/姐，下周三交房，记得带身份证和银行卡，我在售楼处门口等你」",
+                         "② 验房一项项核对：墙面、门窗、水电、地暖、防水——带个空鼓锤敲一遍，拍照留底",
+                         "③ 交房后一个月回访：住得怎么样？有没有什么问题？物业联系方式给了吗？"],
+              why:"交房不是终点——今天这个客户，就是明天给你介绍新客户的人。新房客户介绍率比二手房高 3 倍",
+              practiceScene:"客户验房说：客厅墙面有一块空鼓，你们修还是让我自己修？",
+              red:"别替开发商拍板「我让工程部明天来」——帮他记下问题反馈给物业，跟进结果给客户" }
+      }
+    };
+
+    // ===== 阶段 Tab 数据（默认：买卖经纪人） =====
+    var BASE_STAGES = [
       { key: "prepare",    icon: "📋", name: "购房准备",  desc: "预算测算、贷款资格",  kb:"pre" },
       { key: "market",     icon: "🔍", name: "了解市场",  desc: "片区行情、政策",     kb:"pre" },
       { key: "invite",     icon: "🏠", name: "邀约带看",  desc: "让客户愿意出门",     kb:"pre" },
@@ -1472,12 +1805,7 @@
       { key: "transaction",icon: "💰", name: "交易安全",  desc: "资金监管、税费",     kb:"mid" },
       { key: "closing",    icon: "🔄", name: "过户交接",  desc: "过户流程、售后",     kb:"post" }
     ];
-
-    // ===== 🆕 阶段 Tab → 服务者维度联动映射 =====
-    // primary = 墨绿实底（核心能力，必须有）
-    // secondary = 匠星金边（辅助能力，加分项）
-    // 未列出 = 灰掉（当前阶段不重要）
-    var STAGE_TO_DIMS = {
+    var BASE_STAGE_TO_DIMS = {
       prepare:     { primary: ["INSIGHT","SOLUTION"],   secondary: ["ACQUISITION","NEGOTIATION"] },
       market:      { primary: ["INSIGHT","ACQUISITION"], secondary: ["SOLUTION","NEGOTIATION"] },
       invite:      { primary: ["ACQUISITION","NEGOTIATION"], secondary: ["INSIGHT","SOLUTION"] },
@@ -1485,6 +1813,10 @@
       transaction: { primary: ["FULFILLMENT","SOLUTION"], secondary: ["NEGOTIATION","INSIGHT"] },
       closing:     { primary: ["FULFILLMENT","AFTERSALE"], secondary: ["DIGITAL","NEGOTIATION"] }
     };
+
+    // 当前生效的阶段 / 维度映射（会随岗位切换而被覆盖）
+    var STAGES = BASE_STAGES.slice();
+    var STAGE_TO_DIMS = JSON.parse(JSON.stringify(BASE_STAGE_TO_DIMS));
 
     // ===== 去重：场景卡底部已展示的 KB entry ids =====
     var _kbCardEntryIds = new Set();
@@ -1543,8 +1875,11 @@
     // 每个阶段的素养层 + 服务层（AI vs 真人）+ 红线 + checklist
     // 服务层的 AI 能做 / 真人必须做 / 红线来自 sales-sop.trust_actions 的 AI/HL/MF
     // 素养层 + checklist 是从 v2.1 设计原型 + 样本里抽象出来的
+    // 原始买卖经纪人三层数据备份（供岗位切换后恢复）
+    var BASE_STAGE_LAYER_DATA = null;
+
                 function initStageLayerData(){
-      stageLayerData = {
+      var data = {
         prepare: {
           actions: [
             "① 先问清楚：他买房是为啥？结婚？孩子上学？换大的？还是纯投资？",
@@ -1606,6 +1941,8 @@
           red:"别替客户承诺「户口一定能迁」——得看合同写没写"
         }
       };
+      BASE_STAGE_LAYER_DATA = JSON.parse(JSON.stringify(data));
+      stageLayerData = data;
       renderLayeredView(currentStage);
     }
 
@@ -1858,6 +2195,7 @@
     function selectStage(stageKey, suppressRender){
       currentStage = stageKey;
       syncStageTabHighlight();
+      syncJourneyTimelineHighlight(); // 🆕 Timeline 也同步高亮
       if(!suppressRender){
         renderStageTabs();  // 刷新计数
         renderStageBrowse();
@@ -1910,7 +2248,9 @@
 
       // 📖 学一学：从 question_map 动态筛 3 条（去 CAP-SKILL 编号，只显示问题标题）
       var learnHtml = "";
-      if(questionMap){
+      var pid = (document.querySelector(".position-pill.active") || {}).getAttribute ? (document.querySelector(".position-pill.active").getAttribute("data-position") || "") : "";
+      var isPositionStage = !!POSITION_STAGES[pid];
+      if(questionMap && !isPositionStage){
         var stageSkills = questionMap.mapping.filter(function(m){
           return m.stage === stageKey && (currentConsumer === "all" || m.consumer === currentConsumer);
         }).slice(0, 3);
@@ -1919,7 +2259,11 @@
                  m.title + '</a>';
         }).join("");
       }
-      if(!learnHtml) learnHtml = '<div style="font-size:11px;color:#999">暂无本阶段知识条目</div>';
+      if(!learnHtml){
+        learnHtml = isPositionStage
+          ? '<div style="font-size:11px;color:#999">📚 租赁/新房专属知识库建设中<br>AI 模拟练一练已为本阶段开放</div>'
+          : '<div style="font-size:11px;color:#999">暂无本阶段知识条目</div>';
+      }
       document.getElementById("lc-learn").innerHTML = learnHtml;
 
       // 🚫 红线
@@ -1959,7 +2303,13 @@
       if(tagEl) tagEl.textContent = consumerInfo.icon + " " + consumerInfo.label;
 
       if(scenes.length === 0){
-        cardsWrap.innerHTML = '<div class="empty-hint">这个阶段暂无场景话术，试试切到「全部」看看 · 或选其他服务对象</div>';
+        var pid = (document.querySelector(".position-pill.active") || {}).getAttribute ? (document.querySelector(".position-pill.active").getAttribute("data-position") || "") : "";
+        var isPositionStage = !!POSITION_STAGES[pid];
+        if(isPositionStage){
+          cardsWrap.innerHTML = '<div class="empty-hint">📚 本阶段场景话术库建设中，先看上方「三层拆解」里的核心动作和真实场景吧！</div>';
+        } else {
+          cardsWrap.innerHTML = '<div class="empty-hint">这个阶段暂无场景话术，试试切到「全部」看看 · 或选其他服务对象</div>';
+        }
         return;
       }
 
@@ -2174,7 +2524,161 @@
         "的7维度专项测评——10分钟出能力报告，告诉你哪里强哪里弱，该先补什么。";
       goBtn.href = "/care-test/?domain=" + domainId + "&position=" + position.position_id;
 
-      highlightAbilityForStage(); // 🆕 切岗位后也重新联动
+      // 🆕 岗位切换 → 重渲染阶段体系
+      switchPositionStageSystem(position.position_id);
+
+      // 🆕 岗位身份 Banner
+      renderRoleBanner(domainId, position);
+
+      highlightAbilityForStage(); // 切岗位后也重新联动
+    }
+
+    // 🆕 根据岗位 ID 切换 STAGES / STAGE_TO_DIMS / stageLayerData
+    function switchPositionStageSystem(positionId){
+      var pid = positionId || "";
+      var needsNewSystem = !!POSITION_STAGES[pid];
+
+      if(needsNewSystem){
+        STAGES = POSITION_STAGES[pid].slice();
+        STAGE_TO_DIMS = JSON.parse(JSON.stringify(POSITION_STAGE_TO_DIMS[pid]));
+        // 三层拆解：从 POSITION_LAYER_DATA 复制
+        stageLayerData = JSON.parse(JSON.stringify(POSITION_LAYER_DATA[pid]));
+      } else {
+        // 恢复买卖经纪人体系
+        STAGES = BASE_STAGES.slice();
+        STAGE_TO_DIMS = JSON.parse(JSON.stringify(BASE_STAGE_TO_DIMS));
+        stageLayerData = BASE_STAGE_LAYER_DATA ? JSON.parse(JSON.stringify(BASE_STAGE_LAYER_DATA)) : stageLayerData;
+      }
+
+      // 重置 currentStage 为新体系第一个
+      var firstKey = STAGES[0] ? STAGES[0].key : "negotiate";
+      var currentExists = STAGES.some(function(s){ return s.key === currentStage; });
+      if(!currentExists){
+        currentStage = firstKey;
+      }
+
+      // 全刷新（只刷新阶段体系和三层，场景卡数量会自然变成 0 或空态）
+      renderStageTabs();
+      syncStageTabHighlight();
+      renderStageBrowse();
+      renderJourneyTimeline();   // 🆕 Timeline 也同步刷新
+      if(typeof loadKBStagePicks === "function") loadKBStagePicks();
+      highlightAbilityForStage();
+      renderLayeredView(currentStage);
+    }
+
+    // 🆕 岗位元数据（icon + 描述）—— domains JSON 里没有，这里兜底
+    var POSITION_META = {
+      BROKER:   { icon: "🏠", name: "买卖经纪人", desc: "撮合买卖双方完成房产交易——从客户到访、带看、议价到签约过户的全流程服务者。" },
+      LEASE:    { icon: "🔑", name: "租赁管家",   desc: "住房租赁撮合与租后协办——租客匹配、带看、签约规范、押金维修责任、续租退租全链条。" },
+      NEW_HOME: { icon: "🏗️", name: "新房置业",   desc: "新房售楼处全流程服务——客户来访、沙盘样板间讲解、认筹选房、认购签约、交房验收。" },
+      PM:       { icon: "🏢", name: "资管经理",   desc: "商业物业资产管理——租金收缴、租户维护、设施运维、资产增值。" },
+      DESIGNER: { icon: "🎨", name: "家装设计师", desc: "家居装修设计——需求沟通、方案设计、选材报价、施工协调、软装搭配。" }
+    };
+
+    // 🆕 渲染岗位身份 Banner
+    function renderRoleBanner(domainId, position){
+      var banner = document.getElementById("role-banner");
+      var domain = modelData && modelData.domains ? modelData.domains[domainId] : null;
+      if(!banner || !domain || !position){
+        if(banner) banner.classList.remove("visible");
+        return;
+      }
+      banner.classList.add("visible");
+
+      var meta = POSITION_META[position.position_id] || {
+        icon: position.dimensions && position.dimensions[0] ? position.dimensions[0].dim_icon : "👤",
+        name: position.position_name,
+        desc: position.description || ""
+      };
+
+      document.getElementById("rb-icon").textContent = meta.icon;
+      document.getElementById("rb-name").textContent = position.position_name;
+      document.getElementById("rb-domain-tag").textContent = domain.domain_name || "";
+      document.getElementById("rb-desc").textContent = meta.desc;
+
+      // 切换按钮：列出同 domain 下所有岗位，除当前选中
+      var pillsWrap = document.getElementById("rb-switch-pills");
+      if(pillsWrap){
+        var otherPositions = domain.positions.filter(function(p){ return p.position_id !== position.position_id; });
+        pillsWrap.innerHTML = otherPositions.map(function(p){
+          var m = POSITION_META[p.position_id] || { icon: "👤" };
+          return '<span class="rb-switch-pill" data-position="' + p.position_id + '" onclick="window.__rbSwitchPosition(\'' + domainId + '\',\'' + p.position_id + '\')">' +
+                 m.icon + ' ' + p.position_name + '</span>';
+        }).join("");
+      }
+    }
+
+    // 🆕 岗位 Banner 切换按钮的全局回调
+    window.__rbSwitchPosition = function(domainId, positionId){
+      var domain = modelData.domains[domainId];
+      if(!domain) return;
+      var target = domain.positions.find(function(p){ return p.position_id === positionId; });
+      if(!target) return;
+      localStorage.setItem(POS_KEY, positionId);
+      // 同步激活 position-pills
+      document.querySelectorAll(".position-pill").forEach(function(p){
+        p.classList.toggle("active", p.getAttribute("data-position") === positionId);
+      });
+      renderPosition(domainId, target);
+    };
+
+    // 🆕 渲染客户服务阶段 Timeline
+    function renderJourneyTimeline(){
+      var wrap = document.getElementById("jt-stages");
+      var timeline = document.getElementById("journey-timeline");
+      if(!wrap || !STAGES.length){
+        if(timeline) timeline.classList.remove("visible");
+        return;
+      }
+      if(timeline) timeline.classList.add("visible");
+
+      // 生成 timeline DOM（每两个 step 之间加箭头）
+      var html = "";
+      STAGES.forEach(function(s, idx){
+        var isActive = s.key === currentStage;
+        var isPast = STAGES.some(function(x, i){ return x.key === currentStage && i > idx; });
+        var cls = "jt-step" + (isActive ? " jt-active" : (isPast ? " jt-done" : ""));
+        html +=
+          '<div class="jt-stage" data-key="' + s.key + '">' +
+            '<div class="' + cls + '" data-stage="' + s.key + '">' +
+              '<div class="jt-step-icon">' + s.icon + '</div>' +
+              '<div class="jt-step-text">' +
+                '<div class="jt-step-name">' + s.name + '</div>' +
+                '<div class="jt-step-desc">' + (s.desc || "") + '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        if(idx < STAGES.length - 1){
+          html += '<span class="jt-arrow">→</span>';
+        }
+      });
+      wrap.innerHTML = html;
+
+      // 绑定点击事件
+      wrap.querySelectorAll(".jt-step").forEach(function(step){
+        step.addEventListener("click", function(){
+          var stageKey = this.getAttribute("data-stage");
+          if(stageKey) selectStage(stageKey);
+        });
+      });
+    }
+
+    // 🆕 同步 Timeline 高亮（切阶段时调用）
+    function syncJourneyTimelineHighlight(){
+      var wrap = document.getElementById("jt-stages");
+      if(!wrap) return;
+      var activeIdx = STAGES.findIndex(function(s){ return s.key === currentStage; });
+      wrap.querySelectorAll(".jt-step").forEach(function(step){
+        var key = step.getAttribute("data-stage");
+        var idx = STAGES.findIndex(function(s){ return s.key === key; });
+        step.classList.remove("jt-active", "jt-done");
+        if(key === currentStage){
+          step.classList.add("jt-active");
+        } else if(idx > -1 && idx < activeIdx){
+          step.classList.add("jt-done");
+        }
+      });
     }
 
     /* ===== 🆕 三面板联动：阶段 Tab → 能力画像高亮 ===== */
