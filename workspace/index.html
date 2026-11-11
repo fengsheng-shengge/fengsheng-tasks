@@ -320,7 +320,42 @@
     max-width: 1000px;
     margin: 0 auto;
     padding: 32px 48px;
+    transition: padding 0.25s ease;
   }
+  /* 岗位选中后 compact 模式：Timeline 和解决方案紧贴 */
+  .main.compact { padding-top: 8px; }
+  .main.compact > #value-intro,
+  .main.compact > #growth-bar,
+  .main.compact > #welcome-back-bar,
+  .main.compact > .search-section,
+  .main.compact > .result-panel,
+  .main.compact > #stage-tabs,
+  .main.compact > .ability-section,
+  .main.compact > .tools-section,
+  .main.compact > .advance-section,
+  .main.compact > .footer-note,
+  .main.compact > .stage-browse-panel { display: none !important; }
+
+  /* 🔽 展开/收起高级区切换按钮 */
+  .jt-toggle-advanced {
+    display: none;
+    position: absolute;
+    right: 48px;
+    top: 14px;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 3px 10px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    font-weight: 500;
+    transition: all 0.15s;
+    z-index: 5;
+  }
+  .jt-toggle-advanced:hover { color: var(--primary); border-color: var(--primary); }
+  .journey-timeline.has-position { display: block; position: relative; }
+  .journey-timeline.has-position .jt-toggle-advanced { display: inline-block; }
 
   /* 1. 问题入口（最核心） */
   .search-section {
@@ -1341,6 +1376,7 @@
   <!-- 🆕 客户服务阶段 Timeline — 页面主骨架 -->
   <div class="journey-timeline" id="journey-timeline">
     <div class="jt-label">💫 客户服务全流程 — 走到哪一步了？</div>
+    <span class="jt-toggle-advanced" id="jt-toggle-advanced" onclick="toggleAdvancedZone()">🔽 展开高级区</span>
     <div class="jt-stages" id="jt-stages"></div>
   </div>
 
@@ -1442,6 +1478,7 @@
         <div class="result-hint">🔍 搜索命中 <span id="result-count">0</span> 条 · 点击展开看话术</div>
         <div id="scenario-cards"></div>
       </div>
+    </div>  <!-- ✅ 关闭 search-section（之前漏了，导致 layered-section 嵌套进去） -->
 
     <!-- ===== 🆕 这个阶段我该做什么（经纪人视角 · 测学练考评） ===== -->
     <div class="layered-section" id="layered-section">
@@ -2315,6 +2352,17 @@
         highlightAbilityForStage(); // 🆕 三面板联动：能力画像高亮
         renderLayeredView(stageKey); // 🆕 切阶段 → 刷新三层拆解
       }
+      // 🆕 切阶段后如果在 compact 模式，把 layered-section 滚到 viewport 中部
+      // 让 Timeline（已高亮的阶段）和解决方案同时可见，避免"点了还得滚"
+      try {
+        var main = document.querySelector(".main");
+        var ls = document.getElementById("layered-section");
+        if(main && main.classList.contains("compact") && ls){
+          var rect = ls.getBoundingClientRect();
+          var target = window.scrollY + rect.top - 20;
+          window.scrollTo({ top: target, behavior: "smooth" });
+        }
+      } catch(e) {}
     }
 
     // 简化：consumer-filter 不再驱动 Timeline 切换（每个岗位只有一套固定工作流）
@@ -2621,6 +2669,12 @@
         else t.classList.remove("active");
       });
       renderDomain(savedDomain);
+
+      // 🆕 恢复用户上次的 compact/展开偏好（默认 compact）
+      var savedCompact = localStorage.getItem("fs_compact_mode");
+      if(savedCompact === "0"){
+        setTimeout(function(){ applyCompactMode(false); }, 0);
+      }
     }
 
     function renderDomain(domainId){
@@ -2694,8 +2748,43 @@
       // 🆕 岗位身份 Banner
       renderRoleBanner(domainId, position);
 
+      // 🆕 岗位选中后自动进入 compact 模式：隐藏中间引导块，Timeline 紧贴解决方案
+      applyCompactMode(true);
+
       highlightAbilityForStage(); // 切岗位后也重新联动
     }
+
+    // 🆕 compact 模式切换：岗位选中 → 隐藏 value-intro/growth-bar/search-section，
+    // 让 Timeline 直接紧贴 layered-section，避免上下大滑动
+    function applyCompactMode(enable){
+      var main = document.querySelector(".main");
+      var timeline = document.getElementById("journey-timeline");
+      var toggle = document.getElementById("jt-toggle-advanced");
+      if(!main || !timeline) return;
+      if(enable){
+        main.classList.add("compact");
+        timeline.classList.add("has-position");
+        if(toggle) toggle.textContent = "🔼 收起高级区";
+      } else {
+        main.classList.remove("compact");
+        timeline.classList.remove("has-position");
+        if(toggle) toggle.textContent = "🔽 展开高级区";
+      }
+      // 持久化偏好：用户明确 toggle 过就记住
+      if(typeof enable === "boolean" && arguments.length > 1){
+        // 外部调用 toggle 时第二个参数为 true 表示"用户主动改"
+        if(arguments[1]) localStorage.setItem("fs_compact_mode", enable ? "1" : "0");
+      }
+    }
+
+    // 全局：用户点 Timeline 右侧按钮 toggle
+    window.toggleAdvancedZone = function(){
+      var main = document.querySelector(".main");
+      if(!main) return;
+      var enable = !main.classList.contains("compact");
+      applyCompactMode(enable, true);
+      localStorage.setItem("fs_compact_mode", enable ? "1" : "0");
+    };
 
     // 🆕 岗位元数据（icon + 描述）—— domains JSON 里没有，这里兜底
     var POSITION_META = {
