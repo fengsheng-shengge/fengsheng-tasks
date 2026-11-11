@@ -1126,6 +1126,13 @@
   .bp-footer { background: var(--bg); border: 1px solid var(--line); padding: 10px 16px; }
   .bp-red { font-size: 11px; color: #c44a32; background: #fef0ed; border-radius: 6px; padding: 6px 10px; margin-bottom: 8px; line-height: 1.6; }
   .bp-red::before { content: "🚫 红线："; font-weight: 700; }
+  .bp-confusion { background: #fff8e1; border: 1px solid #ffe082; }
+  .bp-confusion .bp-title { color: #b8860b; }
+  .bp-confusion .bp-icon { color: #d4a017; }
+  .bp-confusion-text { font-size: 12.5px; color: #8a6d1c; line-height: 1.7; font-weight: 500; font-style: italic; }
+  .bp-refs { font-size: 11px; color: var(--body); margin-bottom: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+  .bp-refs-label { color: #888; margin-right: 2px; }
+  .bp-ref-chip { font-family: monospace; font-size: 10.5px; color: var(--primary); background: var(--primary-bg); border: 1px solid var(--primary); border-radius: 4px; padding: 1px 6px; }
   .bp-check { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--body); }
   .bp-check-icon { font-size: 14px; }
   .bp-check-text { flex: 1; }
@@ -1453,6 +1460,12 @@
           <ol class="bp-actions-list" id="lc-actions"></ol>
         </div>
 
+        <!-- 🤔 我现在最纠结什么（服务者视角痛点） -->
+        <div class="bp-card bp-confusion" id="bp-confusion-card" style="display:none">
+          <div class="bp-head"><span class="bp-icon">🤔</span><span class="bp-title">我现在最纠结的是</span></div>
+          <div class="bp-confusion-text" id="lc-confusion"></div>
+        </div>
+
         <!-- 💡 为什么这么做 -->
         <div class="bp-card bp-why">
           <div class="bp-head"><span class="bp-icon">💡</span><span class="bp-title">为什么这么做</span></div>
@@ -1476,6 +1489,7 @@
         <!-- 🚫 红线 + ✅ 小测提示 -->
         <div class="bp-card bp-footer">
           <div class="bp-red" id="lc-red"></div>
+          <div class="bp-refs" id="lc-refs" style="display:none"></div>
           <div class="bp-check">
             <span class="bp-check-icon">✅</span>
             <span class="bp-check-text">这个阶段的小测 5 分钟就能完成，帮你验收学得怎么样</span>
@@ -1912,7 +1926,9 @@
     };
 
 
-    var STAGE_TO_DIMS = JSON.parse(JSON.stringify(BASE_STAGE_TO_DIMS));
+    var STAGE_TO_DIMS = JSON.parse(JSON.stringify(BROKER_DIMS));  // 默认 BROKER，后续 switchPositionTimeline 会覆盖
+    var STAGES = BROKER_STAGES.slice();  // ⚠️ 必须声明！switchPositionTimeline 会重新赋值
+    var POSITION_STAGES = { BROKER: true, LEASE: true, NEW_HOME: true };  // 三个岗位都走专属 Timeline
 
     // ===== 去重：场景卡底部已展示的 KB entry ids =====
     var _kbCardEntryIds = new Set();
@@ -1928,7 +1944,7 @@
 
     // ===== 当前筛选状态 =====
     var currentConsumer = "all";
-    var currentStage = "negotiate";  // 默认选带看议价（场景最多）
+    var currentStage = "b1";  // 默认 BROKER 第一阶段，switchPositionTimeline 会覆盖
 
     // 1. 加载维度模型
     fetch("/data/v3/dimensions_multi.json")
@@ -2360,6 +2376,18 @@
         return "<li>" + a + "</li>";
       }).join("");
 
+      // 🤔 服务者视角痛点（confusion）
+      var confCard = document.getElementById("bp-confusion-card");
+      var confEl = document.getElementById("lc-confusion");
+      if(confCard && confEl){
+        if(s.confusion){
+          confEl.textContent = s.confusion;
+          confCard.style.display = "";
+        } else {
+          confCard.style.display = "none";
+        }
+      }
+
       // 💡 为什么这么做
       document.getElementById("lc-why").textContent = s.why;
 
@@ -2390,6 +2418,20 @@
 
       // 🚫 红线
       document.getElementById("lc-red").textContent = s.red;
+
+      // 🔗 关联能力项 refs
+      var refsEl = document.getElementById("lc-refs");
+      if(refsEl){
+        if(s.refs && s.refs.length){
+          refsEl.innerHTML = '<span class="bp-refs-label">🔗 关联能力项：</span>' +
+            s.refs.map(function(r){
+              return '<span class="bp-ref-chip">' + r + '</span>';
+            }).join("");
+          refsEl.style.display = "";
+        } else {
+          refsEl.style.display = "none";
+        }
+      }
     }
 
     // 学习进度回写（去重计数，与成长档案同一口径）
