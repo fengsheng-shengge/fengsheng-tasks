@@ -1796,14 +1796,14 @@
       }
     };
 
-    // ===== 阶段 Tab 数据（默认：买卖经纪人） =====
+    // ===== 阶段 Tab 数据（默认：买卖经纪人 × 购房客户 buyer） =====
     var BASE_STAGES = [
-      { key: "prepare",    icon: "📋", name: "购房准备",  desc: "预算测算、贷款资格",  kb:"pre" },
-      { key: "market",     icon: "🔍", name: "了解市场",  desc: "片区行情、政策",     kb:"pre" },
-      { key: "invite",     icon: "🏠", name: "邀约带看",  desc: "让客户愿意出门",     kb:"pre" },
-      { key: "negotiate",  icon: "💬", name: "带看议价",  desc: "异议处理、价格谈判", kb:"mid" },
-      { key: "transaction",icon: "💰", name: "交易安全",  desc: "资金监管、税费",     kb:"mid" },
-      { key: "closing",    icon: "🔄", name: "过户交接",  desc: "过户流程、售后",     kb:"post" }
+      { key: "prepare",    icon: "📋", name: "购房准备",  desc: "我能买得起吗？资格够吗？", kb:"pre" },
+      { key: "market",     icon: "🔍", name: "了解市场",  desc: "这个片区值多少钱？",     kb:"pre" },
+      { key: "invite",     icon: "🏠", name: "邀约带看",  desc: "约中介去看看房子",       kb:"pre" },
+      { key: "negotiate",  icon: "💬", name: "带看议价",  desc: "看中了，砍砍价",         kb:"mid" },
+      { key: "transaction",icon: "💰", name: "交易安全",  desc: "首付给谁？钱安全吗？",   kb:"mid" },
+      { key: "closing",    icon: "🔄", name: "过户交接",  desc: "房子什么时候归我？",     kb:"post" }
     ];
     var BASE_STAGE_TO_DIMS = {
       prepare:     { primary: ["INSIGHT","SOLUTION"],   secondary: ["ACQUISITION","NEGOTIATION"] },
@@ -1812,6 +1812,195 @@
       negotiate:   { primary: ["NEGOTIATION","INSIGHT"], secondary: ["SOLUTION","FULFILLMENT"] },
       transaction: { primary: ["FULFILLMENT","SOLUTION"], secondary: ["NEGOTIATION","INSIGHT"] },
       closing:     { primary: ["FULFILLMENT","AFTERSALE"], secondary: ["DIGITAL","NEGOTIATION"] }
+    };
+
+    // ===== 🆕 买卖经纪人 × 售房业主 seller（消费者视角：我想卖→定价→挂牌→接待带看→议价→签约→过户拿钱） =====
+    var BROKER_SELLER_STAGES = [
+      { key: "s1", icon: "📊", name: "定价评估", desc: "我这套房子值多少钱？挂多少合适？", kb:"pre" },
+      { key: "s2", icon: "📝", name: "挂牌委托", desc: "让中介帮我挂出去，签居间合同",       kb:"pre" },
+      { key: "s3", icon: "👋", name: "接待带看", desc: "有人来看房了，我开门配合",           kb:"pre" },
+      { key: "s4", icon: "💬", name: "议价谈判", desc: "有人出价了，能接受吗？还是等等？",   kb:"mid" },
+      { key: "s5", icon: "✍️", name: "签约收定", desc: "谈成了，签合同，收定金",             kb:"mid" },
+      { key: "s6", icon: "🔑", name: "过户收尾", desc: "网签面签过户，尾款什么时候到账",     kb:"post" }
+    ];
+    var BROKER_SELLER_DIMS = {
+      s1: { primary: ["INSIGHT","SOLUTION"], secondary: ["ACQUISITION","FULFILLMENT"] },
+      s2: { primary: ["FULFILLMENT","SOLUTION"], secondary: ["INSIGHT","DIGITAL"] },
+      s3: { primary: ["SOLUTION","INSIGHT"], secondary: ["ACQUISITION","NEGOTIATION"] },
+      s4: { primary: ["NEGOTIATION","INSIGHT"], secondary: ["SOLUTION","FULFILLMENT"] },
+      s5: { primary: ["FULFILLMENT","NEGOTIATION"], secondary: ["SOLUTION","INSIGHT"] },
+      s6: { primary: ["FULFILLMENT","AFTERSALE"], secondary: ["DIGITAL","SOLUTION"] }
+    };
+    var BROKER_SELLER_LAYER = {
+      s1: { actions: ["① 帮业主摸清楚市场价：同小区近 3 个月成交多少套？挂多少？成交多少？找 3 套类似房源做对比表给他",
+                       "② 跟业主聊清楚：为啥卖？急不急？卖了钱去哪？心里最低能接受多少？——这些决定了挂牌策略",
+                       "③ 帮业主算好「到手价」：挂牌价 - 中介费 - 税费 - 贷款剩余 = 业主实际能拿到手多少钱"],
+            why:"业主第一反应往往是「我觉得我家值 500 万」——你得用真实市场数据打回来，不然挂半年没人看他还觉得你没做事",
+            practiceScene:"业主说：小区挂牌都 480 万以上，你帮我挂 500 万，两个月必须卖出去",
+            red:"别替业主承诺「两个月肯定卖」——只说「我帮你按市场价挂，有 3 个意向客户先让你看，2 周没人看我们再一起调价」" },
+      s2: { actions: ["① 证件收齐：身份证、房产证、户口本、结婚证、贷款结清证明——缺一不可，拍正反面存档",
+                       "② 居间合同逐条念清楚：中介费多少？什么时候付？独家代理还是多家委托？签多久？",
+                       "③ 挂牌价别顺着业主来：他说 500 万，你可以帮他挂 498 万——数字尾数给人「便宜」的心理感"],
+            why:"挂牌是你跟业主正式合作的起点——合同条款讲清楚，他才会觉得你靠谱",
+            practiceScene:"业主说：行，那就挂 500 万，你帮我弄吧，合同我就不看了直接签",
+            red:"别让业主不看合同就签——你不说清楚，到时候中介费纠纷，锅你背" },
+      s3: { actions: ["① 带看前 1 天跟业主确认：XX 哥/姐，明天下午 3 点有 2 组客户来看，您方便在家吗？钥匙给我就行",
+                       "② 提醒业主提前收拾一下：把杂物收起来、衣服叠好、厨房垃圾倒掉、喷点空气清新剂——乱糟糟的房子客户会压价 5%",
+                       "③ 带看后当天就反馈：XX 哥/姐，今天那 2 组客户，一组挺感兴趣说回去商量，另一组觉得厨房小了点，我明天跟进"],
+            why:"业主最怕等——挂出去 2 周没消息，下次再也不找你。你哪怕只是带看了 1 次、客户没看上，也要告诉他",
+            practiceScene:"业主说：挂了 3 周了，怎么连个打电话的都没有？你到底有没有在推？",
+            red:"别在业主群里乱发房源——邻居可能故意捣乱，同行也可能截客" },
+      s4: { actions: ["① 分别摸底：先跟买家摸底最高能出多少，再跟业主摸底最低能接多少，中间差多少，谁愿意让一步",
+                       "② 给业主「买家画像」：别只说「有人出价 465 万」——要说「买家是一对小夫妻，刚需首套，首付 200 万，工作稳定，看了 3 次了，真心想买」",
+                       "③ 让业主觉得「是他在谈」：别说「买家只肯出 465 万」——说「买家出 465 万，但我跟他聊了能再凑 5 万，您看 470 万能接受吗」"],
+            why:"业主最烦你拿买家压他「人家就出 465 万你看着办」——你得让他觉得你在帮他争取，而不是帮买家砍他价",
+            practiceScene:"买家出价 465 万，业主最低 475 万，中间差 10 万，谁都不肯让",
+            red:"别替自己减佣「我给你打 8 折」——中介费是你的命根子，要么给服务升级，要么不打折" },
+      s5: { actions: ["① 签约别在业主家或买家家——去门店，合同一条条念，重点条款标红",
+                       "② 重点条款讲清楚：成交价多少？定金多少、什么时候付？首付什么时候付？尾款怎么付？谁出中介费？",
+                       "③ 签约后立刻跟进：定金有没有打进来？打进来了告诉业主——XX 哥/姐，5 万定金今天到您账了，您查一下"],
+            why:"签约那一刻业主和买家都紧张——你越透明越稳，签约后立刻反馈，两边都踏实",
+            practiceScene:"签约当天买家说：我得再想想，能不能今天先不签？",
+            red:"别替买家给业主打包票「他肯定能凑齐首付」——万一他凑不齐，业主找你" },
+      s6: { actions: ["① 网签前跟业主确认：贷款批了吗？批了多少？首付什么时候到？——别等网签那天才说贷款没批下来",
+                       "② 过户当天全程跟着：带齐证件，帮着填表格、跟银行面签、跟房管局对接，业主和买家只需要签字就行",
+                       "③ 尾款到账第一时间通知：XX 哥/姐，尾款 400 万今天到您账号了，交接完成了"],
+            why:"过户是业主最操心的环节——他怕贷款批不下来、尾款拿不到、过户出问题。你帮他盯着每一步，他觉得你是真的靠谱",
+            practiceScene:"业主说：过户完了，尾款什么时候能到？我等着钱换房呢",
+            red:"别替买家垫资「我先帮你出 30 万」——你垫了万一他还不上，你认栽" }
+    };
+
+    // ===== 🆕 租赁管家 × 租客 renter（消费者视角：我要租房→想租啥样→筛房源→约看→谈价→搬进去） =====
+    var LEASE_RENTER_STAGES = [
+      { key: "r1", icon: "🧭", name: "找房需求", desc: "我要找什么样的？预算多少？", kb:"pre" },
+      { key: "r2", icon: "🔍", name: "房源筛选", desc: "中介给的房源里挑几个合适的",       kb:"pre" },
+      { key: "r3", icon: "📞", name: "预约看房", desc: "挑中的约时间去看",               kb:"pre" },
+      { key: "r4", icon: "🏠", name: "实地考察", desc: "到房子里看看真实情况",           kb:"mid" },
+      { key: "r5", icon: "💬", name: "谈价签约", desc: "租金/押金/租期谈拢签合同",       kb:"mid" },
+      { key: "r6", icon: "🛏️", name: "搬进入住", desc: "搬东西、水电过户、入住",         kb:"post" }
+    ];
+    var LEASE_RENTER_DIMS = {
+      r1: { primary: ["INSIGHT","ACQUISITION"], secondary: ["SOLUTION","NEGOTIATION"] },
+      r2: { primary: ["SOLUTION","INSIGHT"], secondary: ["ACQUISITION","FULFILLMENT"] },
+      r3: { primary: ["ACQUISITION","NEGOTIATION"], secondary: ["INSIGHT","FULFILLMENT"] },
+      r4: { primary: ["SOLUTION","ACQUISITION"], secondary: ["NEGOTIATION","INSIGHT"] },
+      r5: { primary: ["NEGOTIATION","INSIGHT"], secondary: ["FULFILLMENT","SOLUTION"] },
+      r6: { primary: ["FULFILLMENT","AFTERSALE"], secondary: ["DIGITAL","NEGOTIATION"] }
+    };
+    var LEASE_RENTER_LAYER = {
+      r1: { actions: ["① 别直接问「你要多大的」——先聊：哥/姐是一个人住还是跟家人？打算住多久？预算范围大概？",
+                       "② 挖潜台词：他说预算 5000 左右其实上限可能 5500；他说近地铁就行其实想走路不超过 5 分钟",
+                       "③ 把需求写下来：姓名、电话、微信、什么时候要入住、能接受什么押金方式"],
+            why:"租客自己也说不清楚要什么是常态——你的价值在于帮他把模糊的「我要找个差不多的」变成具体的「XX 小区 2 居 5500 以内 地铁 5 分钟」",
+            practiceScene:"客户说：我想找个差不多的，预算也没什么特别的，你给我推荐几套就行",
+            red:"别在需求没挖清楚之前就开始推荐——推荐错了浪费双方时间" },
+      r2: { actions: ["① 按他的需求精准筛：地段+户型+预算+租期+押金方式，筛出 3-5 套，太多他挑花眼",
+                       "② 每套都发照片+视频+租金+押金+位置截图，微信打包，让他先线上筛一遍再约",
+                       "③ 主动推荐一套「超预算但超值」的：这套 5500，比您预算多 500，但多一个阳台，晾衣服特别方便，要不要一起看看？"],
+            why:"租客最怕你推给他一堆乱七八糟的——你筛得越精准，他越愿意出来看房",
+            practiceScene:"客户说：你给我找几套，我周末有空看",
+            red:"别把房东还没确认的房源发给客户——万一房东说不租了，你尴尬" },
+      r3: { actions: ["① 约看房先确认房东：XX 哥/姐，XX 小区那套，周三晚 7 点带租客来看，您方便吗？钥匙在哪？",
+                       "② 给选项别给问题：别说「你哪天有空」——直接问「周三晚 7 点？还是周六上午 10 点？」",
+                       "③ 约完发确认：短信/微信把时间、地点、要不要带身份证、看房费用谁出都写清楚"],
+            why:"租客约看爽约率 30%+——你约得越具体，他放鸽子的概率越低",
+            practiceScene:"客户说：我最近工作忙，看房时间不太好定",
+            red:"别在电话里报具体门牌号——等他到了附近再发定位，防同行截客" },
+      r4: { actions: ["① 带看路线先想清楚：从小区大门到房子一路上能路过什么好设施先指出来——超市/地铁/公园",
+                       "② 带看不只看房子：带他去敲隔壁门问问这个小区住得怎么样、看楼下保安态度、看楼道干不干净",
+                       "③ 带完让他在房子里自己待 5 分钟：别一直跟着叨叨，让他自己感受一下能不能住得舒服"],
+            why:"租客租的是「住进去的感觉」，不是冰冷的平米数——你陪他一起去想象住在这里的样子",
+            practiceScene:"客户看完说：房子还行，但我感觉有点小贵，再想想吧",
+            red:"别替房东砍价——砍价是后面谈判的事，带看只负责让他喜欢上这套" },
+      r5: { actions: ["① 先问清楚他的真实底线：最高能接受多少？押一付一能接受吗？要租多久？能不能养宠物？",
+                       "② 谈判先给理由不给硬砍：别说能不能少 500——说「这套 6300 行不行？我帮你跟业主争取，条件是签一年」",
+                       "③ 合同一条一条念：重点讲租期、退租、维修责任、押金退还，标红一条一条讲"],
+            why:"租客签合同那一刻最紧张——你越透明他越敢签。模糊的条款都是雷",
+            practiceScene:"客户说：租金 6000 我能接受，但能不能押一付一？押二付二我真的拿不出来",
+            red:"别替客户答应「我帮你问问业主同不同意」然后消失——有消息必须 24 小时内回复" },
+      r6: { actions: ["① 入住交接清单一项项打勾：家具家电、水电燃表读数、钥匙数量、门禁卡——全拍照留底，双方签字",
+                       "② 搬家前 1 天再确认：XX 哥/姐，明天下午 2 点我帮你开门，记得带身份证",
+                       "③ 入住后 3 天回访：有没有什么问题？热水器会不会用？要不要我帮你找物业？"],
+            why:"入住交接是你最后一次留好印象的机会——租客觉得你靠谱，下次续租还找你，还会介绍朋友",
+            practiceScene:"租客打电话说：我今天搬进来，但水电燃还没过户，物业也联系不上，怎么办？",
+            red:"别替房东承诺维修「我帮你找人修」——维修责任按合同来，你只负责协调" }
+    };
+
+    // ===== 🆕 租赁管家 × 房东 landlord（消费者视角：我有房→能租多少→挂出去→有人来看→靠谱吗→签合同→收租金+退租） =====
+    var LEASE_LANDLORD_STAGES = [
+      { key: "l1", icon: "📊", name: "租金定价", desc: "我这套能租多少钱？要不要配家具？", kb:"pre" },
+      { key: "l2", icon: "📝", name: "挂牌委托", desc: "找中介帮我挂出去",                 kb:"pre" },
+      { key: "l3", icon: "👋", name: "接待看房", desc: "有人来看房了，我开门配合",         kb:"pre" },
+      { key: "l4", icon: "🔍", name: "核验租客", desc: "这个租客靠谱吗？有收入证明吗？",   kb:"pre" },
+      { key: "l5", icon: "✍️", name: "签约收定", desc: "条件谈拢，签合同，收押金",         kb:"mid" },
+      { key: "l6", icon: "🔄", name: "履约退租", desc: "收租金、维护房屋、退租验房",       kb:"post" }
+    ];
+    var LEASE_LANDLORD_DIMS = {
+      l1: { primary: ["INSIGHT","SOLUTION"], secondary: ["FULFILLMENT","ACQUISITION"] },
+      l2: { primary: ["FULFILLMENT","SOLUTION"], secondary: ["INSIGHT","DIGITAL"] },
+      l3: { primary: ["SOLUTION","INSIGHT"], secondary: ["ACQUISITION","NEGOTIATION"] },
+      l4: { primary: ["INSIGHT","FULFILLMENT"], secondary: ["SOLUTION","NEGOTIATION"] },
+      l5: { primary: ["FULFILLMENT","NEGOTIATION"], secondary: ["SOLUTION","INSIGHT"] },
+      l6: { primary: ["FULFILLMENT","AFTERSALE"], secondary: ["NEGOTIATION","SOLUTION"] }
+    };
+    var LEASE_LANDLORD_LAYER = {
+      l1: { actions: ["① 帮业主摸清楚租金行情：同小区近 3 个月 2 居租多少？3 居租多少？精装/毛坯差多少？配家具/不配差多少？",
+                       "② 跟业主聊清楚出租条件：能接受长租还是短租？能不能养宠物？能不能转租？",
+                       "③ 帮业主算好「净租金」：租金 - 物业费 - 家具折旧 - 可能的维修 = 业主每个月真正能拿到手多少钱"],
+            why:"业主第一反应往往是「我想租 7500」——你得用真实市场数据告诉他这个价能不能租出去",
+            practiceScene:"业主说：我这套 3 居室，给你 7000 底价，一个月内帮我租出去行不行？",
+            red:"别替业主承诺「一个月肯定租」——只说「我帮你挂出去，有 3 个意向客户先让你看」" },
+      l2: { actions: ["① 证件收齐：身份证、房产证——拍正反面存档，确认他是产权人",
+                       "② 居间合同逐条念：中介费一个月租金？什么时候付？独家还是多家？签多久？",
+                       "③ 跟业主一起确认房源描述：是不是符合实际？家具家电清单列清楚"],
+            why:"挂牌是你跟业主正式合作的起点——合同条款讲清楚，他才会觉得你靠谱",
+            practiceScene:"业主说：行，那就挂 7000，你帮我弄吧，合同我就不看了直接签",
+            red:"别让业主不看合同就签——你不说清楚，到时候中介费纠纷，锅你背" },
+      l3: { actions: ["① 带看前 1 天跟业主确认：XX 哥/姐，明天周六上午 10 点有 2 组租客来看，钥匙给我就行，不用您在家",
+                       "② 提醒业主收拾一下：把杂物收起来、厨房垃圾倒掉、喷点空气清新剂——乱糟糟的房子租客会压价",
+                       "③ 带看后当天反馈：XX 哥/姐，今天那 2 组租客，一组是刚毕业的大学生预算 6500，另一组是夫妻预算 7000 想长租 2 年"],
+            why:"业主最怕等——挂出去 2 周没消息，下次再也不找你",
+            practiceScene:"业主说：挂了 3 周了，怎么连个打电话的都没有？",
+            red:"别在业主群里乱发房源——邻居可能故意捣乱，同行也可能截客" },
+      l4: { actions: ["① 租客看完别急着让业主表态——先帮业主筛：XX 哥/姐，刚才那租客在互联网公司做运营，月薪 2 万+，想长租 2 年，挺靠谱",
+                       "② 帮业主核实：要租客的工作证明、收入流水、身份证复印件——收齐存好，防租客跑路",
+                       "③ 给业主出判断：我觉得这个租客靠谱，理由是大厂工作、预算够、想长租。上次那个只租 6 个月的您不是不太愿意吗？"],
+            why:"业主最怕租客不靠谱——拖欠租金、养宠物、把房子弄乱。你帮他把好第一关，他下次还找你",
+            practiceScene:"业主说：只要有人出得起价就行，我不挑租客",
+            red:"别替业主乱接不靠谱的租客——比如没收入证明的、用途可疑的" },
+      l5: { actions: ["① 合同条款跟业主逐条确认：租期多久？押金方式？租金涨不涨？维修责任怎么分？提前退租怎么算？",
+                       "② 押金让租客直接转给业主——别进你账户，你只是居间人，转账截图你要存档",
+                       "③ 签约后跟业主说清楚后续：什么时候收第一笔租金？水电燃气什么时候过户？"],
+            why:"签约是业主和租客都紧张的时刻——你帮他们把条款一条条讲清楚，两边都踏实",
+            practiceScene:"业主说：合同你帮我弄吧，押金就先放你那",
+            red:"别替业主收押金进自己账户——容易说不清，也违反中介规定" },
+      l6: { actions: ["① 租金到期前 3 天帮业主提醒租客：XX 哥/姐，这个月租金该交啦，转给业主 6200 元就行，记得备注月份",
+                       "② 租金收到后帮业主确认：XX 哥/姐，XX 租客的 6200 元租金今天到账了，您查一下",
+                       "③ 退租前 7 天提醒双方，验房一项项核对，有损坏当场说清楚扣不扣押金"],
+            why:"业主最烦收租金和处理退租——催也不是不催也不是。你帮他盯着，他下次续租/空出来还找你",
+            practiceScene:"业主说：租金逾期 10 天了，租客也不接我电话，怎么办？",
+            red:"别替业主垫租金「我先帮你垫上」——你垫了万一租客跑路，你认栽" }
+    };
+
+    // ===== 岗位×服务对象 → 阶段体系 映射表 =====
+    var CONSUMER_STAGE_SYSTEMS = {
+      BROKER: {
+        buyer:   { stages: BASE_STAGES,               dims: BASE_STAGE_TO_DIMS,     layer: null },
+        seller:  { stages: BROKER_SELLER_STAGES,       dims: BROKER_SELLER_DIMS,     layer: BROKER_SELLER_LAYER }
+      },
+      LEASE: {
+        renter:  { stages: LEASE_RENTER_STAGES,        dims: LEASE_RENTER_DIMS,      layer: LEASE_RENTER_LAYER },
+        landlord:{ stages: LEASE_LANDLORD_STAGES,      dims: LEASE_LANDLORD_DIMS,    layer: LEASE_LANDLORD_LAYER }
+      },
+      NEW_HOME: {
+        buyer:   { stages: POSITION_STAGES.NEW_HOME,  dims: POSITION_STAGE_TO_DIMS.NEW_HOME, layer: POSITION_LAYER_DATA.NEW_HOME }
+      }
+    };
+    var POSITION_DEFAULT_CONSUMER = { BROKER: "buyer", LEASE: "renter", NEW_HOME: "buyer" };
+    var POSITION_ALLOWED_CONSUMERS = {
+      BROKER:   ["buyer", "seller"],
+      LEASE:    ["renter", "landlord"],
+      NEW_HOME: ["buyer"]
     };
 
     // 当前生效的阶段 / 维度映射（会随岗位切换而被覆盖）
@@ -2207,16 +2396,87 @@
 
     function selectConsumer(consumerKey, suppressRender){
       currentConsumer = consumerKey;
-      syncStageTabHighlight();
+
+      // 🆕 「全部」服务对象直接拒绝——服务流程不存在"全部"这个概念
+      if(consumerKey === "all"){
+        var pid = document.querySelector(".position-pill.active")?.getAttribute("data-position") || "BROKER";
+        currentConsumer = POSITION_DEFAULT_CONSUMER[pid] || "buyer";
+        syncConsumerFilterActive();
+      } else {
+        syncConsumerFilterActive();
+      }
+
+      // 🆕 切服务对象 = 切阶段体系（不同客户走完全不同的服务流程）
+      var positionId = document.querySelector(".position-pill.active")?.getAttribute("data-position") || "BROKER";
+      switchStageSystem(positionId, currentConsumer);
+
       if(!suppressRender){
-        renderStageTabs();  // 刷新计数
+        renderStageTabs();
         renderStageBrowse();
-        loadKBStagePicks(); // 🆕 切消费者 → 重拉 KB 精选
-        highlightAbilityForStage(); // 🆕 消费者切换也刷新
-        renderLayeredView(currentStage); // 🆕 切消费者 → 三层也刷新（技能层受影响）
-        // 清空搜索结果（因为筛选条件变了，搜索结果可能不再对）
+        loadKBStagePicks();
+        highlightAbilityForStage();
+        renderLayeredView(currentStage);
         document.getElementById("result-panel").classList.remove("show");
       }
+    }
+
+    // 🆕 同步 consumer-filter active 状态
+    function syncConsumerFilterActive(){
+      document.querySelectorAll(".consumer-filter .cf-chip").forEach(function(chip){
+        chip.classList.toggle("active", chip.getAttribute("data-consumer") === currentConsumer);
+      });
+    }
+
+    // 🆕 联动 consumer-filter：岗位切换时只显示这个岗位允许的服务对象
+    function renderConsumerFilterForPosition(positionId){
+      var allowed = POSITION_ALLOWED_CONSUMERS[positionId] || ["buyer","seller","renter","landlord"];
+      var filter = document.getElementById("consumer-filter");
+      if(!filter) return;
+      filter.querySelectorAll(".cf-chip").forEach(function(chip){
+        var ckey = chip.getAttribute("data-consumer");
+        if(ckey === "all"){
+          chip.style.display = "none";
+        } else {
+          chip.style.display = allowed.indexOf(ckey) >= 0 ? "" : "none";
+        }
+      });
+      if(allowed.indexOf(currentConsumer) < 0){
+        currentConsumer = POSITION_DEFAULT_CONSUMER[positionId] || allowed[0];
+      }
+      syncConsumerFilterActive();
+    }
+
+    // 🆕 根据岗位 + 服务对象 切换阶段体系
+    function switchStageSystem(positionId, consumerKey){
+      var pid = positionId || "BROKER";
+      var ckey = consumerKey || POSITION_DEFAULT_CONSUMER[pid] || "buyer";
+
+      var system = CONSUMER_STAGE_SYSTEMS[pid];
+      if(system && system[ckey]){
+        var s = system[ckey];
+        STAGES = s.stages.slice();
+        STAGE_TO_DIMS = JSON.parse(JSON.stringify(s.dims));
+        if(s.layer){
+          stageLayerData = JSON.parse(JSON.stringify(s.layer));
+        }
+      } else {
+        STAGES = BASE_STAGES.slice();
+        STAGE_TO_DIMS = JSON.parse(JSON.stringify(BASE_STAGE_TO_DIMS));
+      }
+
+      var firstKey = STAGES[0] ? STAGES[0].key : "negotiate";
+      var currentExists = STAGES.some(function(s){ return s.key === currentStage; });
+      if(!currentExists){
+        currentStage = firstKey;
+      }
+
+      renderStageTabs();
+      syncStageTabHighlight();
+      renderStageBrowse();
+      renderJourneyTimeline();
+      if(typeof loadKBStagePicks === "function") loadKBStagePicks();
+      highlightAbilityForStage();
+      renderLayeredView(currentStage);
     }
 
     // ===== 🆕 渲染阶段三层拆解（素养×技能×服务 × 数字员工分野） =====
@@ -2524,47 +2784,14 @@
         "的7维度专项测评——10分钟出能力报告，告诉你哪里强哪里弱，该先补什么。";
       goBtn.href = "/care-test/?domain=" + domainId + "&position=" + position.position_id;
 
-      // 🆕 岗位切换 → 重渲染阶段体系
-      switchPositionStageSystem(position.position_id);
+      // 🆕 岗位切换 → 联动 consumer-filter + 重渲染阶段体系（岗位×服务对象矩阵）
+      renderConsumerFilterForPosition(position.position_id);
+      switchStageSystem(position.position_id, currentConsumer);
 
       // 🆕 岗位身份 Banner
       renderRoleBanner(domainId, position);
 
       highlightAbilityForStage(); // 切岗位后也重新联动
-    }
-
-    // 🆕 根据岗位 ID 切换 STAGES / STAGE_TO_DIMS / stageLayerData
-    function switchPositionStageSystem(positionId){
-      var pid = positionId || "";
-      var needsNewSystem = !!POSITION_STAGES[pid];
-
-      if(needsNewSystem){
-        STAGES = POSITION_STAGES[pid].slice();
-        STAGE_TO_DIMS = JSON.parse(JSON.stringify(POSITION_STAGE_TO_DIMS[pid]));
-        // 三层拆解：从 POSITION_LAYER_DATA 复制
-        stageLayerData = JSON.parse(JSON.stringify(POSITION_LAYER_DATA[pid]));
-      } else {
-        // 恢复买卖经纪人体系
-        STAGES = BASE_STAGES.slice();
-        STAGE_TO_DIMS = JSON.parse(JSON.stringify(BASE_STAGE_TO_DIMS));
-        stageLayerData = BASE_STAGE_LAYER_DATA ? JSON.parse(JSON.stringify(BASE_STAGE_LAYER_DATA)) : stageLayerData;
-      }
-
-      // 重置 currentStage 为新体系第一个
-      var firstKey = STAGES[0] ? STAGES[0].key : "negotiate";
-      var currentExists = STAGES.some(function(s){ return s.key === currentStage; });
-      if(!currentExists){
-        currentStage = firstKey;
-      }
-
-      // 全刷新（只刷新阶段体系和三层，场景卡数量会自然变成 0 或空态）
-      renderStageTabs();
-      syncStageTabHighlight();
-      renderStageBrowse();
-      renderJourneyTimeline();   // 🆕 Timeline 也同步刷新
-      if(typeof loadKBStagePicks === "function") loadKBStagePicks();
-      highlightAbilityForStage();
-      renderLayeredView(currentStage);
     }
 
     // 🆕 岗位元数据（icon + 描述）—— domains JSON 里没有，这里兜底
