@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Evidence Schema v0.1 — 组件验证页</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: #f0f2f5; padding: 20px; }
+  h1 { font-size: 20px; color: #222; margin: 0 0 6px; }
+  .meta { font-size: 12px; color: #888; margin-bottom: 16px; }
+  .card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  .card h2 { font-size: 15px; color: #333; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0; }
+  .kv { display: grid; grid-template-columns: 140px 1fr; gap: 4px 16px; font-size: 13px; }
+  .kv dt { color: #888; }
+  .kv dd { margin: 0; color: #333; font-family: Menlo, Consolas, monospace; font-size: 12px; }
+  .entry-box { padding: 10px; background: #fafafa; border-radius: 6px; margin-bottom: 8px; }
+  .entry-id { font-size: 11px; color: #999; font-family: Menlo, monospace; }
+  .entry-name { font-weight: 600; color: #222; margin: 2px 0 8px; font-size: 14px; }
+  .expiry-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
+  .expiry-fresh { background: #d4edda; color: #155724; }
+  .expiry-soft { background: #fff3cd; color: #856404; }
+  .expiry-hard { background: #f8d7da; color: #721c24; }
+</style>
+</head>
+<body>
+
+<h1>🔗 Evidence Schema v0.1 — 组件验证页</h1>
+<div class="meta">
+  加载 entries.json（6143 条） → EvidenceAdapter.adaptEntry → EvidenceLink.render 渲染<br>
+  小扣子 W1 产出 · 小包子 schema v0.1 契约驱动 · 2026-11-11
+</div>
+
+<div id="stats" class="card">
+  <h2>📊 全局统计（桥接层输出）</h2>
+  <div class="kv" id="stats-body">加载中...</div>
+</div>
+
+<div id="samples" class="card">
+  <h2>🧪 5 条代表性 entry 渲染效果</h2>
+  <div id="samples-body"></div>
+</div>
+
+<div id="expiry-check" class="card">
+  <h2>⏰ 过期阻断验证 — 72 条软过期 entry</h2>
+  <div id="expiry-body">加载中...</div>
+</div>
+
+<script src="/lib/evidence/data-adapter.js"></script>
+<script src="/lib/evidence/evidence-link.js"></script>
+<script>
+const Adapter = window.EvidenceAdapter;
+const Link = window.EvidenceLink;
+
+fetch('/data/entries.json')
+  .then(r => r.json())
+  .then(all => {
+    // 1. 全局统计
+    const filtered = Adapter.filterAndAdaptAll(all, { drop_hard: true, expire_soft: true });
+    const withUrl = filtered.filter(e => e.evidence.some(ev => ev.url));
+    const withTwoPlus = filtered.filter(e => e.evidence.length >= 2);
+    const zero = filtered.filter(e => e.evidence.length === 0);
+    const softExpired = filtered.filter(e => e._expired);
+
+    const statsHTML = `
+      <dt>原始 entries.json</dt><dd>${all.length} 条</dd>
+      <dt>适配后（去重）</dt><dd>${filtered.length} 条</dd>
+      <dt>≥2 条 evidence</dt><dd>${withTwoPlus.length} 条 (${(withTwoPlus.length/all.length*100).toFixed(1)}%)</dd>
+      <dt>有可点击 URL (M4)</dt><dd><span style="color:#c44a32;font-weight:600">${withUrl.length} 条 (${(withUrl.length/all.length*100).toFixed(2)}%)</span> ← 批量补链目标</dd>
+      <dt>软过期降权</dt><dd>${softExpired.length} 条（主要 DATA 类 >30d）</dd>
+      <dt>L3 硬拦截</dt><dd>${filtered.filter(e=>e._dropped).length} 条（待小酒窝儿清单）</dd>
+      <dt>无 evidence 兜底</dt><dd>${zero.length} 条</dd>
+    `;
+    document.getElementById('stats-body').innerHTML = statsHTML;
+
+    // 2. 5 条代表性 entry 渲染
+    const sampleIds = ['CAR-CMP-CASE-001', 'LIV-PMG-002', 'PST-KEY-006', 'DATA-MKT-001', 'EXT-INH-291'];
+    const samples = sampleIds.map(id => all.find(e => e.id === id)).filter(Boolean);
+    const sb = document.getElementById('samples-body');
+    for (const raw of samples) {
+      const adapted = Adapter.adaptEntry(raw);
+      const expiry = Adapter.assessExpiry(adapted);
+      const box = document.createElement('div');
+      box.className = 'entry-box';
+      box.innerHTML = `
+        <div class="entry-id">${adapted.entry_id} · entry_type=${adapted.entry_type} ${adapted.b_level_tag ? '· B级' : ''}</div>
+        <div class="entry-name">${raw.name || adapted.entry_id}
+          <span class="expiry-badge expiry-${expiry.status === 'fresh' ? 'fresh' : expiry.status === 'soft_expired' ? 'soft' : 'hard'}">
+            ${expiry.status === 'fresh' ? '新鲜' : expiry.status === 'soft_expired' ? `软过期 ${expiry.days}d` : '硬拦截'}
+          </span>
+        </div>
+      `;
+      const evidenceHost = document.createElement('div');
+      Link.render(evidenceHost, adapted, { show_export: false });
+      box.appendChild(evidenceHost);
+      sb.appendChild(box);
+    }
+
+    // 3. 过期阻断验证（展示 3 条软过期）
+    const eb = document.getElementById('expiry-body');
+    eb.innerHTML = `<div style="margin-bottom:12px;font-size:13px;color:#666;">软过期 entries 展示 3 条（数据均 >30 天，DATA 类）：</div>`;
+    const first3 = softExpired.slice(0, 3);
+    for (const raw of first3) {
+      const adapted = Adapter.adaptEntry(raw);
+      const expiry = raw._expiry || {};
+      const box = document.createElement('div');
+      box.className = 'entry-box';
+      box.innerHTML = `
+        <div class="entry-id">${raw.id} · entry_type=${raw.entryType || raw.entry_type}</div>
+        <div class="entry-name">${raw.name || raw.id}
+          <span class="expiry-badge expiry-soft">软过期 ${raw._expiry?.days || '?'}d (${raw._expiry?.reason || ''})</span>
+        </div>
+      `;
+      const evHost = document.createElement('div');
+      Link.render(evHost, adapted, { show_export: false });
+      box.appendChild(evHost);
+      eb.appendChild(box);
+    }
+  })
+  .catch(err => {
+    document.body.innerHTML += `<div style="color:red;padding:20px;">加载失败: ${err.message}</div>`;
+    console.error(err);
+  });
+</script>
+</body>
+</html>
