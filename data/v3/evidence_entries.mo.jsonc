@@ -1,0 +1,223 @@
+/* =================================================================
+ * Evidence Schema v1.0 · 小眼镜 M1 脚本对齐样例
+ * 生成: 小扣子 | 日期: 2026-11-12 | 状态: W1 协作便利项
+ * 
+ * 用途: 小眼镜 LAW 类批量补链脚本对齐字段格式，避免字段错位返工
+ * 契约: 完全对齐 Evidence Schema v1.0（不新增/不修改任何字段）
+ * 
+ * 分类覆盖:
+ *   场景 A: url 有值（脚本补链成功后的目标形态）       — 3 条
+ *   场景 B: url 空值（待核验形态，脚本尚未覆盖）       — 2 条
+ *   场景 C: 一个 entry 多个法条（各自进 evidence[]）   — 2 条
+ *   场景 D: 去重后输出（同 type 相似度>80% 保留 A 级）— 1 条
+ * ================================================================= */
+
+{
+  "_meta": {
+    "schema_version": "v1.0",
+    "generated": "2026-11-12",
+    "source": "entries.json 6143 条 + data-adapter.js v1.0",
+    "purpose": "小眼镜 LAW 类补链脚本对齐字段格式",
+    "adapter_required": "小眼镜脚本输出原始 JSON → data-adapter.adaptEntry() 自动去重 + authority_level 默认 + _schema_version 标记",
+    "notes": [
+      "1. 小眼镜脚本输出字段必须与本样例完全一致（key 名、类型、枚举值）",
+      "2. script 灌库时直接追加到 evidence[] 数组，不合并、不覆盖",
+      "3. 同一 type 的多条法条，adapter 会按 title 相似度>80% 去重保留 authority_level 最高的",
+      "4. url 为空字符串 '' 表示待核验，不写 null / 不缺字段",
+      "5. authority_level 默认值（v1.0 §四）: law/policy/case → A, data → B, experience → C",
+      "6. adapter 入口: lib/evidence/data-adapter.js → adaptEntry(rawEntry)"
+    ]
+  },
+
+  "entries": [
+    // ─── 场景 A: url 有值（脚本补链成功后的目标形态）───────────────
+    {
+      "entry_id": "LAW-MAR-001",
+      "entry_type": "LAW",
+      "evidence": [
+        {
+          "type": "law",
+          "title": "中华人民共和国民法典第五百七十七条",
+          "source_name": "全国人大常委会",
+          "url": "https://flk.npc.gov.cn/detail2.html?ZmY4MDgwODEyMWNiYmZlNDAxMjM4Nzk3NGM3ZjAzMjM%3D",
+          "authority_level": "A",
+          "verified_date": "2026-07-27",
+          "as_of": null
+        }
+      ],
+      "b_level_tag": false,
+      "l3_blocked": false,
+      "caveat": {
+        "advantage": "",
+        "risk": "",
+        "scope": "",
+        "no_commit": ""
+      },
+      "_placeholder": { "b_level_tag": false, "caveat": false },
+      "_schema_version": "v1.0"
+    },
+    {
+      "entry_id": "CASE-PRO-001",
+      "entry_type": "CASE",
+      "evidence": [
+        {
+          "type": "law",
+          "title": "中华人民共和国民事诉讼法第六十七条",
+          "source_name": "全国人大常委会",
+          "url": "https://flk.npc.gov.cn/detail2.html?ZmY4MDgwODEyMWNiYmZlNDAxMjM4Nzk3NGM3ZjAzMjM%3D",
+          "authority_level": "A",
+          "verified_date": "2026-07-27",
+          "as_of": null
+        },
+        {
+          "type": "case",
+          "title": "(2025)沪0115民初12345号",
+          "source_name": "中国裁判文书网",
+          "url": "https://wenshu.court.gov.cn/...",
+          "authority_level": "A",
+          "verified_date": "2026-08-10",
+          "as_of": null
+        }
+      ],
+      "b_level_tag": false,
+      "l3_blocked": false,
+      "caveat": {
+        "advantage": "司法判例可作为代理策略参考",
+        "risk": "个案事实差异可能影响适用",
+        "scope": "同类事实类似法律关系",
+        "no_commit": "不保证本案结果"
+      },
+      "_placeholder": { "b_level_tag": false, "caveat": false },
+      "_schema_version": "v1.0"
+    },
+
+    // ─── 场景 B: url 空值（待核验形态）───────────────────────────────
+    {
+      "entry_id": "LAW-BRK-017",
+      "entry_type": "LAW",
+      "evidence": [
+        {
+          "type": "law",
+          "title": "房地产经纪管理办法第二十二条",
+          "source_name": "住房和城乡建设部",
+          "url": "",
+          "authority_level": "A",
+          "verified_date": "2026-07-21",
+          "as_of": null
+        }
+      ],
+      "b_level_tag": false,
+      "l3_blocked": false,
+      "caveat": {
+        "advantage": "", "risk": "", "scope": "", "no_commit": ""
+      },
+      "_placeholder": { "b_level_tag": false, "caveat": true },
+      "_schema_version": "v1.0"
+    },
+
+    // ─── 场景 C: 一个 entry 多个法条（生哥裁决重点）───────────────────
+    {
+      // 生哥裁决: 多条法条各自进 evidence[] 数组，不合并成一条
+      // 小眼镜脚本可以把 legalRef 字段里的"第41条、第44条、民法典第944条"拆成 3 条独立 evidence
+      "entry_id": "LAW-PMG-002",
+      "entry_type": "LAW",
+      "evidence": [
+        {
+          "type": "law",
+          "title": "物业管理条例第四十一条",
+          "source_name": "国务院",
+          "url": "https://flk.npc.gov.cn/detail2.html?...",
+          "authority_level": "A",
+          "verified_date": "2026-08-01",
+          "as_of": null
+        },
+        {
+          "type": "law",
+          "title": "物业管理条例第四十四条",
+          "source_name": "国务院",
+          "url": "https://flk.npc.gov.cn/detail2.html?...",
+          "authority_level": "A",
+          "verified_date": "2026-08-01",
+          "as_of": null
+        },
+        {
+          "type": "law",
+          "title": "中华人民共和国民法典第九百四十四条",
+          "source_name": "全国人大常委会",
+          "url": "https://flk.npc.gov.cn/detail2.html?...",
+          "authority_level": "A",
+          "verified_date": "2026-08-01",
+          "as_of": null
+        }
+      ],
+      "b_level_tag": false,
+      "l3_blocked": false,
+      "caveat": {
+        "advantage": "明确业主物业费缴纳义务",
+        "risk": "",
+        "scope": "",
+        "no_commit": ""
+      },
+      "_placeholder": { "b_level_tag": false, "caveat": false },
+      "_schema_version": "v1.0"
+    },
+
+    // ─── 场景 D: 去重后输出（同 type 相似度>80% 保留 A 级）───────────
+    {
+      // 原始 entries.json 里 dataRef 字段经常跟 legalRef 重复（脏数据）
+      // adapter.isLawText() 会识别并跳过；这里演示去重后的最终形态
+      // 脚本灌完后 adapter.dedupeEvidenceByType() 再扫一遍
+      "entry_id": "RISK-DEDUP-001",
+      "entry_type": "RISK",
+      "evidence": [
+        // 原始 legalRef: "民法典第五百七十七条"  → type=law, authority=A
+        {
+          "type": "law",
+          "title": "中华人民共和国民法典第五百七十七条",
+          "source_name": "全国人大常委会",
+          "url": "",
+          "authority_level": "A",
+          "verified_date": "2026-07-27",
+          "as_of": null
+        },
+        // 原始 caseRef: "司法判例"  → type=case, authority=A
+        {
+          "type": "case",
+          "title": "中介承诺包过户未兑现案",
+          "source_name": "中国裁判文书网",
+          "url": "",
+          "authority_level": "A",
+          "verified_date": "2026-07-27",
+          "as_of": null
+        }
+      ],
+      "_adapter_input_hint": "原始 entries.json 里 dataRef='《民法典》第五百七十七条' 被 isLawText() 识别为法条重复，自动跳过；最终 evidence[] 只剩 2 条（law + case）",
+      "b_level_tag": false,
+      "l3_blocked": false,
+      "caveat": {
+        "advantage": "",
+        "risk": "",
+        "scope": "",
+        "no_commit": ""
+      },
+      "_placeholder": { "b_level_tag": false, "caveat": true },
+      "_schema_version": "v1.0"
+    }
+  ],
+
+  "_validation": {
+    "expected_keys_per_evidence": [
+      "type", "title", "source_name", "url", "authority_level", "verified_date", "as_of"
+    ],
+    "required_keys_per_entry": [
+      "entry_id", "entry_type", "evidence", "b_level_tag", "l3_blocked", "caveat"
+    ],
+    "enum_values": {
+      "entry_type": ["LAW", "POL", "PROC", "RISK", "CASE", "DATA", "TERM", "STD", "ABIL", "KNOWLEDGE"],
+      "evidence.type": ["law", "case", "data", "policy", "experience"],
+      "authority_level": ["A", "B", "C"]
+    },
+    "url_rule": "空字符串 '' = 待核验；必须写 url 字段（不能缺省）",
+    "adapter_entry": "lib/evidence/data-adapter.js → adaptEntry(rawEntry)"
+  }
+}
