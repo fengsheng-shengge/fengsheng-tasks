@@ -1,0 +1,179 @@
+{
+  "_meta": {
+    "schema_version": "v1.0",
+    "generated": "2026-11-12",
+    "source": "entries.json 6143 条 + lib/evidence/data-adapter.js v1.0",
+    "purpose": "小眼镜 M1 LAW 类补链脚本对齐字段格式，避免字段错位返工",
+    "adapter_entry": "adaptEntry(rawEntry) in lib/evidence/data-adapter.js",
+    "coverage": {
+      "场景A_url有值_脚本成功目标形态": 3,
+      "场景B_url空值_待核验形态": 1,
+      "场景C_一个entry多法条_生哥裁决重点": 1,
+      "场景D_去重后输出_同type相似度80pct保留A级": 1
+    },
+    "notes": [
+      "1. 字段完全对齐 Evidence Schema v1.0，不新增/不修改任何字段",
+      "2. 多条法条各自进 evidence[] 数组，不合并（生哥裁决）",
+      "3. url 空值写 ''（空字符串），不写 null / 不缺字段",
+      "4. authority_level 默认: law/policy/case→A, data→B, experience→C（v1.0 表四）",
+      "5. adapter 自动去重: 同 type + title 相似度>80% 保留 authority_level 最高的（v1.0 三）",
+      "6. adapter 自动打标: _schema_version='v1.0' + _placeholder",
+      "7. 小眼镜脚本灌库时直接追加到 evidence[]，跑 adapter.filterAndAdaptAll() 自动对齐"
+    ]
+  },
+
+  "_validation": {
+    "required_keys_per_entry": ["entry_id", "entry_type", "evidence", "b_level_tag", "l3_blocked", "caveat"],
+    "required_keys_per_evidence": ["type", "title", "source_name", "url", "authority_level", "verified_date", "as_of"],
+    "enum_entry_type": ["LAW", "POL", "PROC", "RISK", "CASE", "DATA", "TERM", "STD", "ABIL", "KNOWLEDGE", "INFO", "SUM"],
+    "enum_evidence_type": ["law", "case", "data", "policy", "experience"],
+    "enum_authority_level": ["A", "B", "C"],
+    "url_rule": "空字符串''=待核验，必须写 url 字段不能缺省"
+  },
+
+  "entries": [
+    {
+      "_scenario": "场景A_url有值_脚本成功目标形态",
+      "entry_id": "LAW-MAR-001",
+      "entry_type": "LAW",
+      "evidence": [
+        {
+          "type": "law",
+          "title": "中华人民共和国民法典第五百七十七条",
+          "source_name": "全国人大常委会",
+          "url": "https://flk.npc.gov.cn/detail2.html?ZmY4MDgwODEyMWNiYmZlNDAxMjM4Nzk3NGM3ZjAzMjM%3D",
+          "authority_level": "A",
+          "verified_date": "2026-07-27",
+          "as_of": null
+        }
+      ],
+      "b_level_tag": false,
+      "l3_blocked": false,
+      "caveat": { "advantage": "", "risk": "", "scope": "", "no_commit": "" }
+    },
+    {
+      "_scenario": "场景A_url有值_脚本成功目标形态",
+      "entry_id": "CASE-PRO-001",
+      "entry_type": "CASE",
+      "evidence": [
+        {
+          "type": "law",
+          "title": "中华人民共和国民事诉讼法第六十七条",
+          "source_name": "全国人大常委会",
+          "url": "https://flk.npc.gov.cn/detail2.html?example_url_here",
+          "authority_level": "A",
+          "verified_date": "2026-07-27",
+          "as_of": null
+        },
+        {
+          "type": "case",
+          "title": "(2025)沪0115民初12345号",
+          "source_name": "中国裁判文书网",
+          "url": "https://wenshu.court.gov.cn/example",
+          "authority_level": "A",
+          "verified_date": "2026-08-10",
+          "as_of": null
+        }
+      ],
+      "b_level_tag": false,
+      "l3_blocked": false,
+      "caveat": {
+        "advantage": "司法判例可作为代理策略参考",
+        "risk": "个案事实差异可能影响适用",
+        "scope": "同类事实类似法律关系",
+        "no_commit": "不保证本案结果"
+      }
+    },
+    {
+      "_scenario": "场景B_url空值_待核验形态",
+      "entry_id": "LAW-BRK-017",
+      "entry_type": "LAW",
+      "evidence": [
+        {
+          "type": "law",
+          "title": "房地产经纪管理办法第二十二条",
+          "source_name": "住房和城乡建设部",
+          "url": "",
+          "authority_level": "A",
+          "verified_date": "2026-07-21",
+          "as_of": null
+        }
+      ],
+      "b_level_tag": false,
+      "l3_blocked": false,
+      "caveat": { "advantage": "", "risk": "", "scope": "", "no_commit": "" }
+    },
+    {
+      "_scenario": "场景C_一个entry多法条_生哥裁决重点",
+      "_hint": "生哥裁决: 多条法条各自进 evidence[]，adapter.dedupeEvidenceByType() 自动同type去重",
+      "entry_id": "LAW-PMG-002",
+      "entry_type": "LAW",
+      "evidence": [
+        {
+          "type": "law",
+          "title": "物业管理条例第四十一条",
+          "source_name": "国务院",
+          "url": "https://flk.npc.gov.cn/detail2.html?example_41",
+          "authority_level": "A",
+          "verified_date": "2026-08-01",
+          "as_of": null
+        },
+        {
+          "type": "law",
+          "title": "物业管理条例第四十四条",
+          "source_name": "国务院",
+          "url": "https://flk.npc.gov.cn/detail2.html?example_44",
+          "authority_level": "A",
+          "verified_date": "2026-08-01",
+          "as_of": null
+        },
+        {
+          "type": "law",
+          "title": "中华人民共和国民法典第九百四十四条",
+          "source_name": "全国人大常委会",
+          "url": "https://flk.npc.gov.cn/detail2.html?example_944",
+          "authority_level": "A",
+          "verified_date": "2026-08-01",
+          "as_of": null
+        }
+      ],
+      "b_level_tag": false,
+      "l3_blocked": false,
+      "caveat": {
+        "advantage": "明确业主物业费缴纳义务",
+        "risk": "",
+        "scope": "",
+        "no_commit": ""
+      }
+    },
+    {
+      "_scenario": "场景D_去重后输出_同type相似度80pct保留A级",
+      "_hint": "原始 entries.json dataRef 经常是法条重复（脏数据），adapter.isLawText() 自动跳过",
+      "entry_id": "RISK-DEDUP-001",
+      "entry_type": "RISK",
+      "evidence": [
+        {
+          "type": "law",
+          "title": "中华人民共和国民法典第五百七十七条",
+          "source_name": "全国人大常委会",
+          "url": "",
+          "authority_level": "A",
+          "verified_date": "2026-07-27",
+          "as_of": null
+        },
+        {
+          "type": "case",
+          "title": "中介承诺包过户未兑现案",
+          "source_name": "中国裁判文书网",
+          "url": "",
+          "authority_level": "A",
+          "verified_date": "2026-07-27",
+          "as_of": null
+        }
+      ],
+      "b_level_tag": false,
+      "l3_blocked": false,
+      "caveat": { "advantage": "", "risk": "", "scope": "", "no_commit": "" }
+    }
+  ]
+}
