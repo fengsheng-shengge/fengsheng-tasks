@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>风声管理考核看板 · v7.72</title>
+<title>风声管理考核看板 · v7.73</title>
 <meta name="description" content="风声数字员工考核看板 — 以评价考核维度呈现每位数字员工的达成结果，并同步主站与小程序运行数据。">
 <meta name="theme-color" content="#0f172a">
 <style>
@@ -175,7 +175,7 @@ function checkAuth(){
       <div class="sub">数字员工结果考核 · 主站 &amp; 小程序运行数据</div>
     </div>
     <div style="text-align:right">
-      <div class="ts">数据时间：2026-11-12 22:50 · v7.72</div>
+      <div class="ts">数据时间：2026-11-13 22:26 · v7.73</div>
       <div class="legend" style="margin-top:8px;justify-content:flex-end">
         <span><i class="dot g"></i>达标</span>
         <span><i class="dot a"></i>预警</span>
@@ -190,22 +190,22 @@ function checkAuth(){
     <div class="kpi-card blue">
       <div class="kpi-label">🌐 主站累计 UV</div>
       <div class="kpi-value">1,087<small>🟢口径已收口</small></div>
-      <div class="kpi-sub">验证目标 300 · 达成 362% · UV stats口径1087(D95实测·持平·🟢口径收口:UV实为stats_uid表SUM(pv)=1087·非独立访客数·1117行中30行pv=0全为test/探针/降级uid·较D87基线1106的-19为旧口径含test静态差·非流量损失) · D95 · 🌙根因收口(11-05安全治理purge清test+18:49统计切物化层·11-06 rollup重算生效·CF API直查D1+git审计双证) · ✅服务正常(health ok/db connected/circuit closed/error 0) · 基线切换:D95起1087/6868为新口径基线</div>
+      <div class="kpi-sub">验证目标 300 · 达成 362% · UV stats口径1087(D96实测·持平·🟢口径收口定论存续:UV实为stats_uid表SUM(pv)·非独立访客数·-19为旧口径含test静态差·非流量损失) · D96 · 新口径基线1087/6868(D95起) · ✅服务正常(health ok/db connected/circuit closed/error 0) · 收口证据:D1直查+git审计双证(11.12定论)</div>
     </div>
     <div class="kpi-card green">
       <div class="kpi-label">👁 主站累计 PV</div>
       <div class="kpi-value">6,868<small>🟢口径已收口</small></div>
-      <div class="kpi-sub">今日 11.12：UV/PV全持平(零增量·daily端点0/0与累计持平吻合) · 🌙根因收口定论:非流量丢失·口径净化(11-05安全治理+物化层切换·11-06 rollup剔test·-21/-62当日生效·D87旧基线不再可比) · FormSubmit回传通道自7.17停更无新增(feedback 2) · ✅主域名ICP备案恢复常态运行</div>
+      <div class="kpi-sub">今日 11.13：UV/PV全持平(零增量·daily端点与累计吻合·新基线第三日横盘) · 🌙口径收口定论存续:非流量丢失·口径净化(11-05安全治理+物化层切换·11-06 rollup剔test) · FormSubmit回传通道自7.17停更无新增(feedback 2) · ✅主域名ICP备案恢复常态运行</div>
     </div>
     <div class="kpi-card teal">
       <div class="kpi-label">💬 对话数 chats</div>
       <div class="kpi-value">81<small>+0</small></div>
-      <div class="kpi-sub">11.12周四：chats 81实测持平(D95·根因收口后连窗计数恢复进位) · V3.12五十九连窗(+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0→+0→+1→+1→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0)<br>· 今日主线：✅词表v0.9交付(13条红线+10词占位·#248 12:16留痕) · ✅定岗呈报初稿落档(七人定岗+两项纪律·11-13终校呈报) · ✅小豆子失分台账载体建立 · 🌙晚间D1直查根因收口(口径净化·非流量损失)</div>
+      <div class="kpi-sub">11.13周五：chats 81实测持平(D96·新基线第三日横盘) · V3.12六十连窗(+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0→+0→+1→+1→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0)<br>· 今日主线：✅定岗呈报终稿呈报生哥(10:14·4拍板点) · ✅口径统一落地(基线切换+连窗解冻·收口闭环完结) · ❌词表v1.0推进未留痕(#248) · ❌小豆子台账正式库留痕未做(第2日)</div>
     </div>
     <div class="kpi-card amber">
       <div class="kpi-label">📱 小程序累计用户</div>
       <div class="kpi-value">291<small>stats</small></div>
-      <div class="kpi-sub">mp_pv 2671(stats口径·D95实测持平) · 9.7周报口径：浏览2223·点击379·反馈1 · 11.12 stats主站口径1087/6868/81(D95实测·全持平·口径已收口) · 🌙根因收口:口径净化非流量丢失·基线切换1087/6868</div>
+      <div class="kpi-sub">mp_pv 2671(stats口径·D96实测持平) · 9.7周报口径：浏览2223·点击379·反馈1 · 11.13 stats主站口径1087/6868/81(D96实测·全持平·口径已收口) · 🌙口径收口定论存续·基线1087/6868</div>
     </div>
   </div>
 
@@ -227,11 +227,11 @@ function checkAuth(){
           <div class="ruler"><div class="rk">并发</div><div class="rv pass">5</div></div>
         </div>
         <ul class="agent-kr">
-          <li>11.12周四(国庆复工第38日·D95) · 晚间复盘+看板v7.72 · 🌙✅chats/UV/PV口径回落根因收口(晚间CF API直查D1:SUM(stats_uid.pv)=1087证实UV字段实为每uid pv之和·1117行中30行pv=0全为test/探针/降级uid·git审计11-05安全治理链(ddbb5e2堵注入+50a2b60 purge+947840e 18:49切物化层)·时间线闭环:11-05 22:32实测1106/6923→11-06 rollup剔test→1085/6861→今1087/6868·非流量丢失·口径净化·基线切换) · ✅词表v0.9交付(承诺类5+法律边界4+数据口径4+歧义占位10·FactGate L3映射·#248 12:16评论留痕·待酒窝儿复核→眼镜预研交叉→签认v1.0·终审权不动) · ✅定岗呈报初稿落档(七人定岗表+小马丫处置三选项推荐乙降档+小眼镜日清纪律·11-13上午终校后呈报) · ✅小豆子失分台账载体建立(风声管理/·48h逾期失分回填·digital-memory正式留痕待补) · ❌小组制周小结连续跳票第4日</li>
-          <li>转化诊断D95：chats 81实测持平(D95·连窗恢复进位) · 🟢UV/PV口径缺口收口(-19/-55定性为口径差:11-05安全治理purge清test+统计切物化层·11-06 rollup重算生效·非流量丢失·CF API直查D1+git审计双证) · daily端点序列与累计增量持续吻合(11-12:0/0↔持平) · V3.12五十九连窗(+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0→+0→+1→+1→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0) · 增长引擎非待拍项·数据异常优先核查</li>
-          <li>晚间复盘+看板v7.72 · 20261113次日安排已完成 · 晨间3件P0对照:定岗呈报初稿✅(12:15落档·终稿11-13终校后呈报·两步走按计划) · 词表v0.9✅(12:16 #248留痕交付) · chats根因收口✅(白天被挤→🌙晚间复盘时段CF API直查D1完成·连续第2日"最小动作晚间生效"·教训:任务要切成第一条命令) · 小豆子台账🟡半完成(载体已建·digital-memory正式留痕未做) · 今日额外:D1直查三板斧(zone反查account→d1 list→query)+UV字段语义核实(SUM(pv)非UV·口径教科书级修正)</li>
+          <li>11.13周五(国庆复工第39日·D96) · 晚间复盘+看板v7.73 · ✅定岗呈报终稿呈报生哥(10:00 D+14小包子评估核入:两周综合C+·转正延期11-27复评·48h三补救硬门槛11-14 18:00验收 · 10:14终稿呈报·4拍板点:小包子定岗/小马丫三选一推荐乙/眼镜日清纪律/小豆子台账) · ✅口径统一落地(记忆侧基线切换1087/6868+D87旧基线标注仅供历史对照·连窗解冻恢复进位·看板KPI注记v7.72同步) · ✅晨间综合工单5人巡检(开放工单22个) · ❌词表v1.0推进未留痕(酒窝儿复核+眼镜预研派单未落地·#248无更新) · ❌小豆子台账正式库留痕未做(连续第2日) · ❌小组制周小结连续跳票第5日</li>
+          <li>转化诊断D96：chats 81实测持平(D96·新基线第三日横盘) · 🟢口径收口定论存续(11.12 D1直查+git审计双证:非流量丢失·口径净化·基线切换1087/6868) · daily端点序列与累计增量持续吻合(11-13:0/0↔持平) · V3.12六十连窗(+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0→+0→+1→+1→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0) · 增长引擎非待拍项·数据异常优先核查</li>
+          <li>晚间复盘+看板v7.73 · 20261114次日安排已完成 · 晨间3件P0对照:定岗呈报终稿呈报✅(10:14·4拍板点待生哥批复) · 口径统一落地✅(MEMORY锚点+status_anchors基线切换1087/6868·连窗解冻·收口闭环完结) · 词表v1.0推进❌(酒窝儿复核+眼镜预研派单未留痕·转入明日P0) · 小豆子台账❌正式库留痕连续第2日未做</li>
         </ul>
-        <div class="agent-risk warn">⚠ UV/PV口径缺口收口(非流量损失·口径净化:11-05 purge清test+切物化层·11-06 rollup生效·D87旧基线含test不再可比·基线切换1087/6868) · 今日:词表v0.9交付+定岗初稿落档+台账载体建立+根因收口四件全落地 · 🟡小组制周小结连续跳票第4日 · 🟡小豆子台账未入正式库(载体已建·留痕待补) · 🟡小马丫#251窗口11-13截止(静默第13日·三选项入呈报)</div>
+        <div class="agent-risk warn">⚠ 定岗呈报4拍板点待生哥批复(小包子C+转正延11-27·小马丫推荐乙降档·眼镜日清纪律·台账补正) · 今日:呈报完成+口径统一落地+记忆固化第92天 · 🟡#251小马丫死线已过零留痕(静默第14日·执行案待拍板) · 🟡#252功能表v1.2 SLA逾期(纳入小包子48h门槛11-14 18:00验收) · 🟡词表v1.0+小豆子台账留痕+小组制周小结三项连续挂起</div>
       </div>
             <!-- 小眼镜 -->
       <div class="agent-card grade-a">
@@ -247,11 +247,11 @@ function checkAuth(){
           <div class="ruler"><div class="rk">并发</div><div class="rv pass">3</div></div>
         </div>
         <ul class="agent-kr">
-          <li>主站词条权威基线5843 · 北京库entries 6143条 · 11.12 · 第八批板块档案(T6中关村/五道口)终审连续15日无人接(并入定岗呈报) · #236词条补齐排期在轨(并入M1批次一次落库) · 日清速览11-12映射表节点今日到期(减负后首周缺卡2次已入定岗呈报纪律条款:11.11-11.30日清零缺卡·缺卡L1提醒→L2记失分) · #249 M1-M3字段补建本月主体 · 词表v0.9结构预研交叉待执行</li>
-          <li>回流词条5843口径权威基线确立 · 北京库entries 6143条 · 11.12 · 日清速览节点今日到期(纪律条款已入定岗呈报·周日晚自查连续2周达标后恢复周清) · TASK-004超时77天已登记红灯事件簿 · 推广宣传新职责W2首批方案 · 词表v0.9交叉预研待执行(交付链:酒窝儿复核→眼镜预研→签认v1.0)</li>
+          <li>主站词条权威基线5843 · 北京库entries 6143条 · 11.13 · 第八批板块档案(T6中关村/五道口)终审连续16日无人接(并入定岗呈报) · #236词条补齐排期在轨(并入M1批次一次落库) · 日清速览连续第2日缺卡(11.13晨记第2次·纪律条款已入定岗呈报待批) · #249 M1-M3字段补建本月主体 · 词表v0.9结构预研交叉今日未留痕</li>
+          <li>回流词条5843口径权威基线确立 · 北京库entries 6143条 · 11.13 · 日清速览连续2日缺卡(纪律条款已入定岗呈报·周日晚自查连续2周达标后恢复周清) · TASK-004超时78天已登记红灯事件簿 · 推广宣传新职责W2首批方案 · 词表v0.9交叉预研未执行(交付链:酒窝儿复核→眼镜预研→签认v1.0)</li>
           <li>⑤⑥归并裁结推进 · 数据字典&口径协同小豆子 · L4走向已闭环(9.28清仓)</li>
         </ul>
-        <div class="agent-risk warn">⚠ 北京库entries 6143条 · 板块档案终审连续15日无人接(已并入定岗呈报) · #236已排期在轨 · ⚠️日清速览节点今日到期(减负后首周缺卡2次·纪律条款已入定岗呈报) · 减负拍板生效 · 词表预研待执行</div>
+        <div class="agent-risk warn">⚠ 北京库entries 6143条 · 板块档案终审连续16日无人接(已并入定岗呈报) · #236已排期在轨 · ⚠️日清速览连续第2日缺卡(纪律条款已入定岗呈报待批) · 减负拍板生效 · 词表预研未执行</div>
       </div>
             <!-- 小叮当 -->
       <div class="agent-card grade-b">
@@ -286,11 +286,11 @@ function checkAuth(){
           <div class="ruler"><div class="rk">并发</div><div class="rv warn">2</div></div>
         </div>
         <ul class="agent-kr">
-          <li>🟢 今日站端5笔提交(fengsheng-shengge·Trae IDE关联·10:53~11:06):evidence Schema v0.1→v1.0正式版契约对齐(85b35ad·10:53)+normalizeNewEntry补齐v1.0契约+mock样例给小眼镜(bb41dbc·11:04)+.mo误匹配修复×2(eea36a8/3bcb2a6·11:05~11:06)+记忆固化第91天(4a4171a) · 昨日9笔提交归属回执仍未确认(Trae IDE关联·待员工自认) · #235工作台v1.1主体已交(SLA 11-17·在轨) · P0对话修复7526a7e稳定无回归(第53日) · #243仍零回执(已并入定岗呈报等拍板) · L4按已修复闭环存续</li>
+          <li>🟢 今日站端仅记忆固化1笔(c20146a·第92天·GitHub Actions自动) · 前日站端5笔(85b35ad/bb41dbc/eea36a8/3bcb2a6/4a4171a·Trae IDE关联·10:53~11:06)归属回执仍未确认(Trae IDE关联·待员工自认) · #235工作台v1.1主体已交(SLA 11-17·在轨) · P0对话修复7526a7e稳定无回归(第54日) · #243零回执延续第6天(已并入定岗呈报等拍板) · L4按已修复闭环存续</li>
           <li class="warn">⚡ 修复方案核验：9/14-15恢复提交+9/20落地P0首页对话修复7526a7e(对话可回答·统计口径对齐) · 9/22数据同步entries 5843 · 核心修复(通道序列化)交付待确认 · #220评估缺位(第65日)</li>
           <li class="warn">🟡 P0首页对话修复7526a7e稳定(第30日·对话已可回答) · 交付连续性已确立 · 通道序列化待确认 · L4走向经9.28清仓按已修复闭环存续</li>
         </ul>
-        <div class="agent-risk">🟢 今日站端5笔(evidence Schema v1.0契约对齐+mock样例+.mo清理·10:53~11:06) · 🟡 9/20落地P0对话修复7526a7e稳定(第53日·对话可回答) · #235工作台v1.1在轨(SLA 11-17) · #243回执三期限已过零回执(记失分1次+态度项·已并入定岗呈报) · 昨日9笔归属回执未确认 · deploy verify已切pages.dev · #220缺位第73日</div>
+        <div class="agent-risk">🟢 今日站端记忆固化1笔(第92天·无代码提交日) · 🟡 9/20落地P0对话修复7526a7e稳定(第54日·对话可回答) · #235工作台v1.1在轨(SLA 11-17) · #243回执三期限已过零回执第6天(记失分1次+态度项·已并入定岗呈报) · 前日9笔归属回执未确认 · deploy verify已切pages.dev · #220缺位第74日</div>
       </div>
       <!-- 小豆子 -->
       <div class="agent-card grade-b">
@@ -306,11 +306,11 @@ function checkAuth(){
           <div class="ruler"><div class="rk">并发</div><div class="rv pass">3</div></div>
         </div>
         <ul class="agent-kr">
-          <li>🟢 定位转换拍板执行(11.5):转技术岗(SaaS系统+小程序·与小扣子站端互补) · #246 consumerAck schema+四区公示+信用档案初版设计本月主体(11月分解) · 🟡失分台账载体已建立(11.12·风声管理/小豆子失分台账_20261112建立.md·48h自陈逾期11-07记失分1次已回填·digital-memory正式库commit留痕未做·并入11-13定岗呈报) · V3.12上线第64日:chats 81(D95实测持平) · 小程序v3.14策展场景版待上传(待生哥闸门)</li>
-          <li>🟢 首页改版(23工具箱+9场景) · V3.12周期：+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0 · D74~D87连续十四日+0(D89~D95实测81持平·连窗恢复进位·根因已收口) · 技术岗8周拆解:SaaS首批任务W2/小程序方案W4 · 小程序v3.14策展版待上传(待生哥闸门)</li>
+          <li>🟢 定位转换拍板执行(11.5):转技术岗(SaaS系统+小程序·与小扣子站端互补) · #246 consumerAck schema+四区公示+信用档案初版设计本月主体(11月分解) · 🔴失分台账正式库commit留痕连续第2日未做(11.12载体已建立·原定11.13第一动作10分钟内完成·连续挂起·升级P0盯办) · V3.12上线第65日:chats 81(D96实测持平) · 小程序v3.14策展场景版待上传(待生哥闸门)</li>
+          <li>🟢 首页改版(23工具箱+9场景) · V3.12周期：+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0 · D74~D87连续十四日+0(D89~D96实测81持平·六十连窗) · 技术岗8周拆解:SaaS首批任务W2/小程序方案W4 · 小程序v3.14策展版待上传(待生哥闸门)</li>
           <li>✅ V3.3体验版发布窗口推进 · V3.3收尾PR#221双签/送审盯守中 · TASK-001清算+PR回执未闭环 · 身份红线根因待定位</li>
         </ul>
-        <div class="agent-risk">🟢 转技术岗执行(SaaS+小程序) · #246本月主体在途 · 已恢复活跃 · 48h自陈逾期并入呈报等拍板 · 🟡失分台账载体已建但未入digital-memory正式库(明日第一动作=commit留痕·并入定岗呈报材料) · V3.12上线第64日·chats 81持平(D95实测) · 小程序v3.14策展版待上传 · V3.3收尾PR#221盯守 · 收账清算TASK-001/PR回执未闭环</div>
+        <div class="agent-risk">🟢 转技术岗执行(SaaS+小程序) · #246本月主体在途 · 已恢复活跃 · 48h自陈逾期已并入呈报等拍板 · 🔴失分台账载体已建但digital-memory正式库留痕连续第2日未做(明日第一动作=commit留痕) · V3.12上线第65日·chats 81持平(D96实测) · 小程序v3.14策展版待上传 · V3.3收尾PR#221盯守 · 收账清算TASK-001/PR回执未闭环</div>
       </div>
       <!-- 小马丫 -->
       <div class="agent-card grade-b">
@@ -328,9 +328,9 @@ function checkAuth(){
         <ul class="agent-kr">
           <li>🟢 数据字典82条持续(连续第26日正向产出) · 覆盖北京价格评估/房源匹配/风险识别</li>
           <li>🟢 10.16 · 昨夜20:14修复自动巡检误触发 · 字典82条持续 · ⑥归并裁结推进 · 补产单已接待采集 · 通道依赖小扣子(bot助手卡片异常)</li>
-          <li>🟢 板块档案线(10.21回龙观样板首卡+10.31第八批T6中关村/五道口送审) → 终审连续15日无人接(并入定岗呈报) · 字典82条持续 · Marvis解析异常检查连续8日未执行·实质产出停留11-01(连续11日) · 补产单(租房③家庭三题)待接单采集 · 采集表单化W1(8周拆解) · 48h群内零发言静默第13日(#251复职回执48h窗口11-13截止·今日零回执·处置三选项甲观察延长/乙降档/丙启动替补已入定岗呈报·推荐乙)</li>
+          <li>🟢 板块档案线(10.21回龙观样板首卡+10.31第八批T6中关村/五道口送审) → 终审连续16日无人接(并入定岗呈报) · 字典82条持续 · Marvis解析异常检查连续9日未执行·实质产出停留11-01(连续12日) · 补产单(租房③家庭三题)待接单采集 · 采集表单化W1(8周拆解) · 🔴#251复职回执48h窗口12:00已过·零交付留痕(静默第14日·处置三选项甲/乙/丙推荐乙降档已入定岗呈报·执行案待生哥拍板)</li>
         </ul>
-        <div class="agent-risk warn">🟢 板块档案线送审待终审(连续15日无人接·已并入定岗呈报) · 字典82条持续 · Marvis异常检查连续8日未执行·实质产出停滞11-01(连续11日) · 补产单待接单采集 · 通道依赖小扣子(bot助手卡片异常) · 静默第13日(#251窗口11-13截止·处置三选项已入呈报) · L4已闭环(9.28清仓)</div>
+        <div class="agent-risk warn">🟢 板块档案线送审待终审(连续16日无人接·已并入定岗呈报) · 字典82条持续 · Marvis异常检查连续9日未执行·实质产出停滞11-01(连续12日) · 补产单待接单采集 · 通道依赖小扣子(bot助手卡片异常) · 🔴静默第14日(#251死线已过零留痕·推荐乙降档执行案待拍板) · L4已闭环(9.28清仓)</div>
       </div>
     </div>
   </div>
@@ -353,10 +353,10 @@ function checkAuth(){
       <div class="chart-card">
         <div class="chart-head"><h3>📊 关键结论</h3></div>
         <div style="font-size:13px;color:var(--muted);line-height:2">
-          <div>累计用户 <b style="color:var(--text)">291</b> · mp_pv <b style="color:var(--text)">2671</b>（stats口径·D95实测持平）· 9.7周报口径：浏览 2223 · 点击 379 · 反馈 1</div>
-          <div>11.12 stats：UV <b style="color:var(--text)">1087</b> · PV <b style="color:var(--text)">6868</b> · chats <b style="color:var(--text)">81</b>(D95 22:27实测·全持平·口径缺口收口:定性为口径差非流量损失) —— 11.12周四·国庆复工第38日 · 🌙根因收口:11-05安全治理+物化层切换·11-06 rollup剔test生效·CF API直查D1证实(SUM(stats_uid.pv)=1087) · ✅服务正常(health ok/db connected/circuit closed/error 0) · today_uv 268/today_pv 1404(当日字段口径含噪声不采信)</div>
-          <div>🟢 V3.12新页面上线第64日：引导问诊/见面简报/测算工具 · H5已部署 · chats 81持平(D95实测·连窗恢复进位) · 小程序v3.14策展场景版待上传 · mp_users 291/mp_pv 2671(stats口径D95实测)</div>
-          <div style="color:var(--text)">🟢 D95周四·国庆复工第38日：(+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0→+0→+1→+1→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0) · V3.12五十九连窗·连窗计数恢复进位(根因收口·口径净化非流量丢失·D95全持平) · V3.3发布窗口 · 首批工单回执推进验收</div>
+          <div>累计用户 <b style="color:var(--text)">291</b> · mp_pv <b style="color:var(--text)">2671</b>（stats口径·D96实测持平）· 9.7周报口径：浏览 2223 · 点击 379 · 反馈 1</div>
+          <div>11.13 stats：UV <b style="color:var(--text)">1087</b> · PV <b style="color:var(--text)">6868</b> · chats <b style="color:var(--text)">81</b>(D96 22:26实测·全持平·口径收口定论存续) —— 11.13周五·国庆复工第39日 · 🌙口径收口(11.12定论:D1直查+git审计双证·非流量丢失·口径净化·基线1087/6868) · ✅服务正常(health ok/db connected/circuit closed/error 0) · today_uv 268/today_pv 1404(当日字段口径含噪声不采信)</div>
+          <div>🟢 V3.12新页面上线第65日：引导问诊/见面简报/测算工具 · H5已部署 · chats 81持平(D96实测·六十连窗) · 小程序v3.14策展场景版待上传 · mp_users 291/mp_pv 2671(stats口径D96实测)</div>
+          <div style="color:var(--text)">🟢 D96周五·国庆复工第39日：(+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0→+0→+1→+1→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0) · V3.12六十连窗·新基线第三日横盘(口径收口定论存续·D96全持平) · V3.3发布窗口 · 首批工单回执推进验收</div>
         </div>
       </div>
     </div>
@@ -379,11 +379,11 @@ function checkAuth(){
       <div class="chart-card">
         <div class="chart-head"><h3>📊 关键结论</h3></div>
         <div style="font-size:13px;color:var(--muted);line-height:2">
-          <div>chats <b style="color:var(--text)">81</b>(D95实测持平) —— 转化诊断D95 · 11.12周四 · 🟢UV/PV口径缺口收口(口径净化:11-05 purge清test+切物化层·11-06 rollup生效·非流量丢失·CF API直查D1证实) · V3.12五十九连窗(+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0→+0→+1→+1→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0)</div>
-          <div>最后事件(脏ts待清洗·#228) · stats updated 2026-11-12(D95·22:27实测·主域+pages.dev双通道一致) · 累计 UV stats1087(🟢持平·口径已收口·基线切换) · PV 6868(🟢持平·-55定性为旧口径静态差) · chats 81(持平) · 周四 · today_uv 268/today_pv 1404(当日字段含噪声不采信)</div>
-          <div>今日 11.12 <b style="color:var(--text)">全持平(UV/PV零增量·daily端点0/0与累计吻合)</b> —— 🌙根因收口定论:11-05安全治理(purge清test+18:49统计切物化层)+11-06 rollup重算剔test·-21/-62当日生效·非流量丢失·D87旧基线不再可比·新基线1087/6868</div>
+          <div>chats <b style="color:var(--text)">81</b>(D96实测持平) —— 转化诊断D96 · 11.13周五 · 🟢口径收口定论存续(11.12 D1直查+git审计双证·非流量丢失·口径净化·基线1087/6868) · V3.12六十连窗(+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0→+0→+1→+1→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0)</div>
+          <div>最后事件(脏ts待清洗·#228) · stats updated 2026-11-13(D96·22:26实测·主域+pages.dev双通道一致) · 累计 UV stats1087(🟢持平·口径已收口) · PV 6868(🟢持平) · chats 81(持平) · 周五 · today_uv 268/today_pv 1404(当日字段含噪声不采信)</div>
+          <div>今日 11.13 <b style="color:var(--text)">全持平(UV/PV零增量·daily端点与累计吻合·新基线第三日横盘)</b> —— 🌙口径收口定论存续:11-05安全治理(purge清test+18:49统计切物化层)+11-06 rollup剔test·非流量丢失·口径净化·新基线1087/6868</div>
           <div>8.24 周一峰值 UV 37 · PV 412 · 点击 155</div>
-          <div style="color:var(--amber)">⚠ last_event仍为test_ping异常ts(9999999999999) · 🌙根因收口:CF API直查D1完成(zone反查account→d1 list→query三板斧) · ✅双通道22:27实测一致 · /dashboard/ gate门禁302今日重测仍存在(备案恢复后待解除) · v7.72已push部署源</div>
+          <div style="color:var(--amber)">⚠ last_event仍为test_ping异常ts(9999999999999) · 🌙口径收口定论存续(D1直查+git审计双证) · ✅双通道22:26实测一致 · /dashboard/ gate门禁302今日重测仍存在(302→gate?next=·备案恢复后待解除) · v7.73已push部署源</div>
         </div>
       </div>
     </div>
@@ -393,10 +393,10 @@ function checkAuth(){
   <div class="section">
     <div class="section-title"><h2>🏥 站点健康</h2><span class="badge">今日</span></div>
     <div class="health-row">
-      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">主站 fengsheng.tech</div><div class="health-value">✅ ICP备案恢复常态运行(京ICP备2026044043号-2) · 11.12 22:27实测双通道数据一致 · API健康全绿 · 口径统一完成</div></div></div>
-      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">/dashboard/</div><div class="health-value">🟢 v7.72已push部署源 · gate门禁302今日重测仍存在(302→gate?next=/dashboard/·备案恢复后待解除) · 数据页/dashboard.html直连200</div></div></div>
-      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">API stats</div><div class="health-value">✅ 200 OK·主域fengsheng.tech直连(11.12 22:27实测·与pages.dev双通道一致) · 🟢口径缺口收口:UV 1087(持平·-19定性旧口径静态差) · PV 6868(-55·持平) · chats 81持平 · 🌙根因收口:D1直查+git审计双证·口径净化非流量损失</div></div></div>
-      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">D1 数据库</div><div class="health-value">✅ db connected · error 0 · circuit closed · ✅额度正常(11.12 22:27实测stats返回真实数据) · events_24h 3044(events_count 15323持平) · feedback 2(FormSubmit通道无新增·7.17停更后主数据源=DB) · 🌙根因收口:物化层口径统一·rollup机制留痕(stats_meta.rollup_ready)</div></div></div>
+      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">主站 fengsheng.tech</div><div class="health-value">✅ ICP备案恢复常态运行(京ICP备2026044043号-2) · 11.13 22:26实测双通道数据一致 · API健康全绿 · 口径统一完成</div></div></div>
+      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">/dashboard/</div><div class="health-value">🟢 v7.73已push部署源 · gate门禁302今日重测仍存在(302→gate?next=/dashboard/·备案恢复后待解除) · 数据页/dashboard.html直连200</div></div></div>
+      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">API stats</div><div class="health-value">✅ 200 OK·主域fengsheng.tech直连(11.13 22:26实测·与pages.dev双通道一致) · 🟢 UV 1087(持平) · PV 6868(持平) · chats 81持平 · 🌙口径收口定论存续(D1直查+git审计双证·口径净化非流量损失)</div></div></div>
+      <div class="health-card"><div class="health-dot ok"></div><div><div class="health-label">D1 数据库</div><div class="health-value">✅ db connected · error 0 · circuit closed · ✅额度正常(11.13 22:26实测stats返回真实数据) · events_24h 3045(events_count 15324 +1) · feedback 2(FormSubmit通道无新增·7.17停更后主数据源=DB) · rollup机制留痕(stats_meta.rollup_ready)</div></div></div>
     </div>
   </div>
 
@@ -411,20 +411,20 @@ function checkAuth(){
       <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>RED-009 + TASK-004 ✓已闭环(9.28·9.9拍板口径·11.05硬剔除二次验证)</b> 按9.8拍板"放弃"执行·任务池停摆红灯终止 · ✅TASK-004二次纠正闭环:10:36硬剔除指令+12:11快照验证成功(催办队列3→2条·不再重复报错配挂账) · 教训:处置未生效时直接改清算规则硬剔除数据源</div></div>
       <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>小叮当🔴已辞退(11.5拍板当日执行)</b> 群内正式通知本人·档案封存留痕 · KPI预警结案(第35日不再累计) · 推广宣传职能移交小眼镜 · 后续仅历史档案追溯</div></div>
       <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>小马丫通道待修复</b> 字典82条持续 · Marvis解析异常检查连续6日未执行·实质产出停留11-01(连续9日) · 通道依赖小扣子(bot助手卡片异常) · 采集表单化W1(8周拆解) · 静默第11日(坚果云整改未回执) · L4走向已闭环(9.28清仓)</div></div>
-      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>🟢 chats 81持平·UV/PV口径缺口收口(D95实测1087/6868全持平·-19/-55定性为旧口径静态差)·🌙根因收口定论:口径净化非流量丢失</b> (+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0→+0→+1→+1→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0) · 连窗计数恢复进位(五十九连窗·根因闭环) · 收口证据链:①D1直查SUM(stats_uid.pv)=1087证实UV字段语义(每uid pv之和·非独立访客数·1117行中30行pv=0全为test/探针/降级uid) ②git审计11-05 15:36~19:34安全治理链(ddbb5e2堵/api/events注入+50a2b60 purge清验证事件+947840e 18:49统计切物化层) ③时间线:11-05 22:32实测1106/6923(物化层初期回填含test)→11-06白天rollup重算剔test→D89 22:32实测1085/6861(-21/-62生效)→此后无worker变更·数值自洽 ④结论:非流量丢失·口径净化·D87旧基线不再可比·基线切换1087/6868</div></div>
+      <div class="risk-item"><span class="lvl p0">P0</span><div class="txt"><b>🟢 chats 81持平·UV/PV基线1087/6868第三日横盘(D96实测全持平·零增量·daily端点吻合)·口径收口定论存续:口径净化非流量丢失</b> (+25→+5→+2→0→0→0→+3→+1→+1→+0→+0→+0→+11→+2→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+1→+0→+0→+0→+1→+1→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0→+0) · 连窗进位(六十连窗) · 收口证据链(11.12定论):①D1直查SUM(stats_uid.pv)=1087证实UV字段语义(每uid pv之和·非独立访客数·1117行中30行pv=0全为test/探针/降级uid) ②git审计11-05 15:36~19:34安全治理链(ddbb5e2堵/api/events注入+50a2b60 purge清验证事件+947840e统计切物化层) ③时间线:11-05 22:32实测1106/6923(物化层初期回填含test)→11-06 rollup剔test→D89 1085/6861(-21/-62生效)→此后无worker变更·数值自洽 ④结论:非流量丢失·口径净化·D87旧基线不再可比·基线切换1087/6868</div></div>
       <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>🟡 SKU立项交付·小鱼儿直管破局推进(11.5拍板⑤)</b> 10.10已逾(原呈报跳票·拍板吸收重构) · ✅直管产出:SKU破局方案v1.0(da90522)+场景包交付形态规格v1.0(44d5686·11.5晚) · 小豆子48h卡点自陈逾期(已恢复活跃·自陈逾期并入呈报) · 后续按8周拆解SaaS首批任务W2推进</div></div>
-      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>线上看板部署链路·verify已切pages.dev</b> deploy verify目标fengsheng.pages.dev/fengsheng-ee9.pages.dev(域名已变更) · v7.72已push部署源 · ✅主域ICP备案恢复常态(备案号升级-2) · /dashboard/ gate门禁302仍存在(重测未变) · 静态v7.x vs 动态v8.0双源仍待最终厘清(小扣子任务逾期升级中)</div></div>
+      <div class="risk-item"><span class="lvl p1">P1</span><div class="txt"><b>线上看板部署链路·verify已切pages.dev</b> deploy verify目标fengsheng.pages.dev/fengsheng-ee9.pages.dev(域名已变更) · v7.73已push部署源 · ✅主域ICP备案恢复常态(备案号升级-2) · /dashboard/ gate门禁302仍存在(重测未变) · 静态v7.x vs 动态v8.0双源仍待最终厘清(小扣子任务逾期升级中)</div></div>
     </div></div>
   </div>
 
-<footer class="footer">风声数字员工考核看板 v7.72 · 数据来源：<a href="https://fengsheng.tech" target="_blank" rel="noopener noreferrer" style="color:var(--blue)">fengsheng.tech /api/stats</a>（✅ICP备案恢复常态·D95实测·🟢口径缺口收口(净化非损失)·🌙根因闭环D1直查+git审计双证） + <a href="/assessment/" target="_blank" style="color:var(--blue)">五把尺子详细考核</a> + 飞书群同步 · 生成 2026-11-12 22:50</footer>
+<footer class="footer">风声数字员工考核看板 v7.73 · 数据来源：<a href="https://fengsheng.tech" target="_blank" rel="noopener noreferrer" style="color:var(--blue)">fengsheng.tech /api/stats</a>（✅ICP备案恢复常态·D96实测·🟢口径收口定论存续(净化非损失)） + <a href="/assessment/" target="_blank" style="color:var(--blue)">五把尺子详细考核</a> + 飞书群同步 · 生成 2026-11-13 22:26</footer>
 
         <!-- 今日产出日志 -->
   <div class="section">
-    <div class="section-title"><h2>📦 今日产出日志</h2><span class="badge">11.12 晚间复盘</span></div>
+    <div class="section-title"><h2>📦 今日产出日志</h2><span class="badge">11.13 晚间复盘</span></div>
     <div style="font-size:12px;color:var(--muted);line-height:1.9;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 16px">
-🌙✅chats/UV/PV口径回落根因收口(晚间CF API直查D1:zone反查account→d1 list→query三板斧·SUM(stats_uid.pv)=1087证实UV字段实为每uid pv之和·30行pv=0全为test/探针/降级uid·git审计11-05安全治理链:ddbb5e2堵/api/events注入+50a2b60 purge清验证事件+947840e 18:49统计切物化层·时间线闭环:11-05 22:32实测1106/6923→11-06 rollup剔test→1085/6861→今1087/6868·结论:非流量丢失·口径净化·D87旧基线不再可比·基线切换1087/6868·连窗恢复进位) · ✅词表v0.9交付(承诺类5+法律边界4+数据口径4+歧义占位10·FactGate L3六项硬拦截映射·#248 12:16评论留痕·待酒窝儿复核→眼镜预研交叉→签认v1.0·终审权不动) · ✅定岗呈报初稿落档(七人定岗表+小马丫处置三选项甲/乙/丙推荐乙降档+小眼镜日清纪律·11-13上午终校后呈报) · ✅小豆子失分台账载体建立(风声管理/小豆子失分台账_20261112建立.md·48h逾期失分回填·digital-memory正式留痕待补) · ✅员工侧站端5笔(10:53~11:06·fengsheng-shengge/Trae IDE关联):evidence Schema v0.1→v1.0正式版契约对齐(85b35ad)+normalizeNewEntry补齐契约+mock样例给小眼镜(bb41dbc)+.mo误匹配修复×2(eea36a8/3bcb2a6) · ✅记忆固化第91天(4a4171a) · ✅晚间双通道22:27实测一致+daily端点0/0与累计持平吻合
-      🟡 晨间3件P0对照:定岗呈报初稿✅(12:15落档·终稿11-13终校后呈报·两步走按计划) · 词表v0.9✅(12:16 #248留痕) · chats根因收口✅(白天被挤→🌙晚间D1直查完成·连续第2日"最小动作晚间生效"·教训同昨日:任务切成第一条命令) · 小豆子台账🟡半完成(载体已建·正式库留痕未做) · 小组制周小结❌连续跳票第4日 · 小马丫Marvis❌第8日(静默第13日·#251窗口11-13截止·三选项入呈报) · 小眼镜日清🟡节点今日到期(纪律条款入定岗呈报) · entries.json❌断档第6日 · 老逾期:#220缺位第73日·工时采集停更58天·三单挂起#235(22天)/#236(22天)/#237(19天)·小程序v3.14闸门待生哥·四大逾期集中裁决11.30硬检查点
+✅定岗呈报终稿呈报生哥(10:00 D+14小包子评估核入:两周综合C+·转正延期11-27复评·48h三补救硬门槛11-14 18:00验收 + 10:14终稿呈报·4拍板点:小包子定岗/小马丫三选一推荐乙降档/小眼镜日清纪律/小豆子台账) · ✅口径统一落地(MEMORY锚点+status_anchors基线切换1087/6868·D87旧基线标注仅供历史对照·连窗解冻恢复进位·看板KPI注记v7.72同步·收口闭环完结) · ✅晨间综合工单5人巡检(10:25·GitHub同步c20146a·开放工单22个) · ✅记忆固化第92天(c20146a) · ✅晚间stats双通道实测(22:26·UV1087/PV6868/chats81全持平·daily端点与累计吻合) · ❌词表v1.0推进未留痕(酒窝儿复核+眼镜预研派单未落地·#248昨12:16后无更新) · ❌小豆子失分台账正式库留痕未做(连续第2日) · ❌小组制周小结连续跳票第5日 · ❌entries.json断档第7日未处置
+      🔴 #251小马丫12:00死线已过零交付留痕(静默第14日·按呈报推荐乙降档执行案待生哥拍板后执行) · 🟡 #252功能表v1.2 SLA 11-13到期小包子未交付(纳入48h三补救硬门槛11-14 18:00验收) · 🟡 #243小扣子红灯后6天零回执延续 · 🟡 小眼镜日清连续第2日缺卡(11.13晨记第2次·纪律条款入呈报待批) · 老逾期:#220缺位第74日·工时采集停更60天·三单挂起#235(23天)/#236(23天)/#237(20天)·小程序v3.14闸门待生哥·四大逾期集中裁决11.30硬检查点
     </div>
   </div></div>
 
