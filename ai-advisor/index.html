@@ -318,6 +318,7 @@ function processAI(text){
 }
 
 function updateTrace(match){
+  if (!match.kbs) match.kbs = [];   // 防御性兜底
   TRACE.innerHTML = '';
   TRACE.innerHTML += '<div class="trace-row"><span class="step">1</span><span class="s">question_map 匹配</span><span class="v">id=' + match.id + ' · title 关键词=' + Object.keys(QMAP).find(k=>QMAP[k].id===match.id) + '</span></div>';
   TRACE.innerHTML += '<div class="trace-row"><span class="step">2</span><span class="s">SOP 信任动作</span><span class="v"><b>' + match.sop + '</b> ' + (match.sop.indexOf('TRUST')===0 ? ['破冰·连接','证明·专业','共情·接住','引导·低压力'][parseInt(match.sop.split('-')[1])-1] : '红线拦截') + '</span></div>';
@@ -489,6 +490,6 @@ const STAGE_SCRIPTS = {
 })();
 
 // 初始
-updateTrace({id:0, skill:"—", sop:"—", dim:"—", red:false});
+updateTrace({id:0, skill:"—", sop:"—", dim:"—", red:false, kbs:[]});
 </script>
 </html>
