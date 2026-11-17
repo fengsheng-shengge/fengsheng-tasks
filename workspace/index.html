@@ -357,105 +357,108 @@
   .journey-timeline.has-position { display: block; position: relative; }
   .journey-timeline.has-position .jt-toggle-advanced { display: inline-block; }
 
-  /* 🆕 循证知识库 Evidence section（M1 12.31）*/
+  /* 🆕 循证知识库 Evidence section（M1 12.31）— 折叠低调版 */
   .evidence-section {
-    background: linear-gradient(135deg, #f0f7ff 0%, #fafafa 60%);
-    border: 1px solid #dbeafe;
-    border-radius: 16px;
-    padding: 20px 24px;
-    margin-bottom: 20px;
-    transition: all 0.3s ease;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0;
+    margin-bottom: 14px;
+    background: #fafafa;
   }
-  .evidence-header { margin-bottom: 16px; }
-  .evidence-title-row {
+  /* Header 一行：可点击折叠 */
+  .evidence-header {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
   }
-  .evidence-icon { font-size: 24px; flex-shrink: 0; }
-  .evidence-title-text { flex: 1; }
-  .evidence-h1 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #1e3a5f;
-    margin-bottom: 2px;
-  }
-  .evidence-h2 {
-    font-size: 12px;
-    color: #64748b;
-    font-weight: 400;
-  }
-  .evidence-badge {
+  .evidence-header:hover { background: #f0f0f0; }
+  .evidence-toggle-icon {
     font-size: 11px;
+    color: var(--muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .evidence-toggle-icon.open { transform: rotate(90deg); }
+  .evidence-header-label {
+    font-size: 12px;
     font-weight: 600;
-    color: #1e40af;
-    background: #dbeafe;
-    padding: 3px 10px;
-    border-radius: 12px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .evidence-header-badge {
+    font-size: 11px;
+    color: var(--muted);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .evidence-role-subtitle {
-    font-size: 12px;
-    color: #64748b;
-    margin-top: 8px;
-    padding-left: 0;
+  .evidence-header-sub {
+    font-size: 11px;
+    color: var(--muted);
+    opacity: 0.7;
   }
-  .evidence-cards {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-  .evidence-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
+  /* Content：默认折叠 */
+  .evidence-content {
+    display: none;
+    border-top: 1px solid var(--line);
     padding: 12px 14px;
+    background: #fff;
   }
-  .evidence-card-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: #334155;
+  .evidence-content.open { display: block; }
+
+  .evidence-card {
+    background: #fafafa;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
     margin-bottom: 8px;
+  }
+  .evidence-card:last-child { margin-bottom: 0; }
+  .evidence-card-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
     line-height: 1.4;
   }
   .evidence-footer {
-    margin-top: 12px;
+    margin-top: 10px;
     text-align: right;
   }
   .evidence-footer-link {
-    font-size: 12px;
-    color: #2563eb;
+    font-size: 11px;
+    color: var(--primary);
     text-decoration: none;
     font-weight: 500;
   }
   .evidence-footer-link:hover { text-decoration: underline; }
 
-  /* EvidenceLink 组件样式覆盖（让它跟 workspace 主题协调）*/
+  /* EvidenceLink 样式覆盖（低调灰色系）*/
   .evidence-section .ev-panel {
-    border: none;
-    border-radius: 0;
-    padding: 0;
-    margin: 0;
-    background: transparent;
+    border: none; border-radius: 0; padding: 0; margin: 0; background: transparent;
   }
   .evidence-section .ev-panel-title { display: none; }
-  .evidence-section .ev-list { gap: 6px; }
+  .evidence-section .ev-list { gap: 5px; }
   .evidence-section .ev-item {
-    padding: 8px 10px;
-    border-left: 3px solid #3b82f6;
-    background: #f8fafc;
-    border-radius: 0 6px 6px 0;
+    padding: 5px 8px;
+    border-left: 2px solid var(--line);
+    background: #fff;
+    border-radius: 0 4px 4px 0;
   }
+  .evidence-section .ev-item-clickable { border-left-color: #94a3b8; }
+  .evidence-section .ev-item-clickable:hover { background: #f1f5f9; }
   .evidence-section .ev-badge {
-    font-size: 10px;
-    padding: 2px 7px;
+    font-size: 9.5px;
+    padding: 1px 6px;
   }
-  .evidence-section .ev-title {
-    font-size: 12.5px;
-  }
-  .evidence-section .ev-meta {
-    font-size: 11px;
-    color: #94a3b8;
+  .evidence-section .ev-title { font-size: 11.5px; color: #475569; }
+  .evidence-section .ev-meta { font-size: 10.5px; color: #94a3b8; }
+
   }
 
   /* 1. 问题入口（最核心） */
@@ -1536,24 +1539,21 @@
       <div id="wb-summary" style="font-size:12px;color:#555;line-height:1.6;"></div>
     </div>
 
-    <!-- 🆕 循证知识库 Evidence 区（M1 12.31 上线）-->
+    <!-- 🆕 循证知识库 Evidence 区（M1 12.31 上线）— 折叠低调版 -->
     <div class="evidence-section" id="evidence-section">
-      <div class="evidence-header">
-        <div class="evidence-title-row">
-          <span class="evidence-icon">🔗</span>
-          <div class="evidence-title-text">
-            <div class="evidence-h1">循证知识库</div>
-            <div class="evidence-h2">句句带依据 · 每条结论都能溯源</div>
-          </div>
-          <span class="evidence-badge" id="evidence-count-badge">加载中...</span>
+      <div class="evidence-header" id="evidence-header" onclick="document.getElementById('evidence-content').classList.toggle('open'); document.getElementById('evidence-toggle').classList.toggle('open');">
+        <span class="evidence-toggle-icon" id="evidence-toggle">▶</span>
+        <span class="evidence-header-label">🔗 循证依据</span>
+        <span class="evidence-header-badge" id="evidence-count-badge">加载中...</span>
+        <span class="evidence-header-sub" id="evidence-role-subtitle">· 点击展开</span>
+      </div>
+      <div class="evidence-content" id="evidence-content">
+        <div class="evidence-cards" id="evidence-cards">
+          <!-- EvidenceLink 动态渲染 -->
         </div>
-        <div class="evidence-role-subtitle" id="evidence-role-subtitle">买卖经纪人核心证据</div>
-      </div>
-      <div class="evidence-cards" id="evidence-cards">
-        <!-- EvidenceLink 动态渲染 -->
-      </div>
-      <div class="evidence-footer">
-        <a href="/knowledge/" class="evidence-footer-link">📚 进入知识底座看全部 6143 条 →</a>
+        <div class="evidence-footer">
+          <a href="/knowledge/" class="evidence-footer-link">📚 进入知识底座 →</a>
+        </div>
       </div>
     </div>
 
