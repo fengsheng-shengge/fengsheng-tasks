@@ -357,6 +357,107 @@
   .journey-timeline.has-position { display: block; position: relative; }
   .journey-timeline.has-position .jt-toggle-advanced { display: inline-block; }
 
+  /* 🆕 循证知识库 Evidence section（M1 12.31）*/
+  .evidence-section {
+    background: linear-gradient(135deg, #f0f7ff 0%, #fafafa 60%);
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+  }
+  .evidence-header { margin-bottom: 16px; }
+  .evidence-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .evidence-icon { font-size: 24px; flex-shrink: 0; }
+  .evidence-title-text { flex: 1; }
+  .evidence-h1 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 2px;
+  }
+  .evidence-h2 {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 400;
+  }
+  .evidence-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: #1e40af;
+    background: #dbeafe;
+    padding: 3px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+  .evidence-role-subtitle {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 8px;
+    padding-left: 0;
+  }
+  .evidence-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .evidence-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .evidence-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .evidence-footer {
+    margin-top: 12px;
+    text-align: right;
+  }
+  .evidence-footer-link {
+    font-size: 12px;
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .evidence-footer-link:hover { text-decoration: underline; }
+
+  /* EvidenceLink 组件样式覆盖（让它跟 workspace 主题协调）*/
+  .evidence-section .ev-panel {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+  }
+  .evidence-section .ev-panel-title { display: none; }
+  .evidence-section .ev-list { gap: 6px; }
+  .evidence-section .ev-item {
+    padding: 8px 10px;
+    border-left: 3px solid #3b82f6;
+    background: #f8fafc;
+    border-radius: 0 6px 6px 0;
+  }
+  .evidence-section .ev-badge {
+    font-size: 10px;
+    padding: 2px 7px;
+  }
+  .evidence-section .ev-title {
+    font-size: 12.5px;
+  }
+  .evidence-section .ev-meta {
+    font-size: 11px;
+    color: #94a3b8;
+  }
+
   /* 1. 问题入口（最核心） */
   .search-section {
     background: var(--card);
@@ -1435,6 +1536,27 @@
       <div id="wb-summary" style="font-size:12px;color:#555;line-height:1.6;"></div>
     </div>
 
+    <!-- 🆕 循证知识库 Evidence 区（M1 12.31 上线）-->
+    <div class="evidence-section" id="evidence-section">
+      <div class="evidence-header">
+        <div class="evidence-title-row">
+          <span class="evidence-icon">🔗</span>
+          <div class="evidence-title-text">
+            <div class="evidence-h1">循证知识库</div>
+            <div class="evidence-h2">句句带依据 · 每条结论都能溯源</div>
+          </div>
+          <span class="evidence-badge" id="evidence-count-badge">加载中...</span>
+        </div>
+        <div class="evidence-role-subtitle" id="evidence-role-subtitle">买卖经纪人核心证据</div>
+      </div>
+      <div class="evidence-cards" id="evidence-cards">
+        <!-- EvidenceLink 动态渲染 -->
+      </div>
+      <div class="evidence-footer">
+        <a href="/knowledge/" class="evidence-footer-link">📚 进入知识底座看全部 6143 条 →</a>
+      </div>
+    </div>
+
     <!-- 1. 问题入口（最核心） -->
     <div class="search-section">
       <div class="search-title">遇到客户服务的难题了？</div>
@@ -1729,6 +1851,10 @@
     </div>
 
   <!-- 底部 -->
+  <!-- 🆕 Evidence Schema v1.0 证据链组件（M1 12.31 上线）-->
+  <script src="/lib/evidence/data-adapter.js" defer></script>
+  <script src="/lib/evidence/evidence-link.js" defer></script>
+
   <!-- 能力模型切换 JS -->
   <script>
   (function(){
@@ -1740,6 +1866,7 @@
     var questionMap = null;
     var sopData = null;        // 🆕 sales-sop.json
     var stageLayerData = null; // 阶段三层拆解数据
+    var rawEntriesCache = null; // 🆕 Evidence entries.json 缓存（M1 12.31）
 
     // ===== 三套岗位固定 Timeline（服务者视角，严格对齐 data/domains/岗位体系.json 的 coreScenes）=====
     // 每个岗位一套，不再分服务对象分支——服务者在工作中是同时对接双方的
@@ -2017,6 +2144,16 @@
       .then(function(data){
         sopData = data;
         initStageLayerData();
+      })
+      .catch(function(){});
+
+    // 4. 🆕 Evidence：加载 entries.json + 预计算适配数据（M1 12.31）
+    fetch("/data/v3/entries.json")
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(entries){
+        if(!entries || !window.EvidenceAdapter) return;
+        rawEntriesCache = window.EvidenceAdapter.filterAndAdaptAll(entries, { drop_hard: false });
+        renderWorkspaceEvidence(); // 首屏渲染 Broker 默认证据
       })
       .catch(function(){});
 
@@ -2403,6 +2540,86 @@
       if(typeof loadKBStagePicks === "function") loadKBStagePicks();
       highlightAbilityForStage();
       renderLayeredView(currentStage);
+      renderWorkspaceEvidence(pid); // 🆕 Evidence 区跟岗位同步刷新
+    }
+
+    // ===== 🆕 Evidence 循证区渲染（M1 12.31）=====
+    function renderWorkspaceEvidence(positionId){
+      var pid = positionId || "BROKER";
+      var container = document.getElementById("evidence-cards");
+      var roleSubtitle = document.getElementById("evidence-role-subtitle");
+      var countBadge = document.getElementById("evidence-count-badge");
+      if(!container) return;
+
+      // 角色 → 证据筛选策略（不同岗位核心风险不同）
+      var ROLE_EVIDENCE_STRATEGY = {
+        BROKER:   { preferTypes: ["LAW","RISK","CASE"], subtitle: "买卖经纪人核心证据：红线法条+判例" },
+        LEASE:    { preferTypes: ["LAW","RISK","POL"],  subtitle: "租赁顾问核心证据：双边约束+政策" },
+        NEW_HOME: { preferTypes: ["LAW","RISK","DATA"],  subtitle: "新房置业核心证据：销售合规+价格数据" }
+      };
+      var strat = ROLE_EVIDENCE_STRATEGY[pid] || ROLE_EVIDENCE_STRATEGY.BROKER;
+      if(roleSubtitle) roleSubtitle.textContent = strat.subtitle;
+
+      // 数据未就绪 → 占位
+      if(!rawEntriesCache || !window.EvidenceLink){
+        container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">⏳ 正在加载循证知识...</div>';
+        return;
+      }
+
+      // 按策略筛选：偏好类型 + 有 evidence + 非占位
+      var pool = rawEntriesCache.filter(function(e){
+        return strat.preferTypes.indexOf(e.entry_type) >= 0 &&
+               e.evidence && e.evidence.length >= 1;
+      });
+
+      // 排序：authority_level A 优先 > severity hard 优先
+      var AUTH_RANK = { A: 3, B: 2, C: 1 };
+      pool.sort(function(a, b){
+        var aAuth = Math.max.apply(null, a.evidence.map(function(ev){ return AUTH_RANK[ev.authority_level] || 0; }));
+        var bAuth = Math.max.apply(null, b.evidence.map(function(ev){ return AUTH_RANK[ev.authority_level] || 0; }));
+        if(bAuth !== aAuth) return bAuth - aAuth;
+        // 次序：severity hard 优先
+        var aHard = a.severity === "hard" ? 1 : 0;
+        var bHard = b.severity === "hard" ? 1 : 0;
+        return bHard - aHard;
+      });
+
+      // 取前 3 条
+      var top3 = pool.slice(0, 3);
+
+      // 更新 badge：总数 + 映射命中率（可点击 URL 占比）
+      var totalEntries = rawEntriesCache.length;
+      var hasUrl = rawEntriesCache.filter(function(e){
+        return e.evidence.some(function(ev){ return ev.url && ev.url.length > 0; });
+      }).length;
+      var hitRate = totalEntries > 0 ? Math.round(hasUrl / totalEntries * 100) : 0;
+      if(countBadge){
+        countBadge.textContent = "🔗 已入库 " + totalEntries.toLocaleString() + " 条 · 链接覆盖率 " + hitRate + "%";
+      }
+
+      // 渲染
+      container.innerHTML = "";
+      top3.forEach(function(entry){
+        var card = document.createElement("div");
+        card.className = "evidence-card";
+        card.innerHTML = '<div class="evidence-card-title">' + escapeHtml(entry.title || entry.entry_id) + '</div>';
+        container.appendChild(card);
+
+        // EvidenceLink 渲染证据链
+        if(window.EvidenceLink && typeof window.EvidenceLink.render === "function"){
+          window.EvidenceLink.render(card, entry);
+        }
+      });
+
+      if(top3.length === 0){
+        container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">该岗位暂未匹配到核心证据，先看知识库吧 →</div>';
+      }
+    }
+
+    function escapeHtml(str){
+      var div = document.createElement("div");
+      div.textContent = str || "";
+      return div.innerHTML;
     }
 
     // ===== 🆕 渲染阶段三层拆解（素养×技能×服务 × 数字员工分野） =====
