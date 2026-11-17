@@ -164,39 +164,92 @@
 
   /* ===== 响应式：手机 ===== */
   @media (max-width: 768px) {
-    .topbar { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
-    .topbar-brand { font-size: 13px; flex: 1 1 auto; min-width: 0; }
-    .topbar-back { font-size: 12px; padding: 5px 10px; flex: 0 0 auto; }
-    .hero { padding: 40px 18px 36px; }
-    .hero h1 { font-size: 24px; }
-    .hero-sub { font-size: 14px; margin-bottom: 24px; }
-    .hero-cta { display: block; padding: 14px 24px; }
-    .section, .care-section { padding: 36px 16px; }
-    .section-title { font-size: 20px; }
-    .section-sub { font-size: 13px; margin-bottom: 22px; }
+    /* 顶栏 */
+    .topbar { padding: 12px 14px; gap: 10px; align-items: stretch; }
+    .topbar-brand { font-size: 13px; align-items: center; }
+    .topbar-back { font-size: 13px; padding: 8px 14px; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    /* Hero */
+    .hero { padding: 40px 18px 32px; }
+    .hero-badge { margin-bottom: 14px; }
+    .hero h1 { font-size: 24px; letter-spacing: -0.3px; }
+    .hero-sub { font-size: 14px; margin-bottom: 22px; line-height: 1.5; }
+    .hero-cta { display: block; padding: 15px 24px; font-size: 17px; min-height: 48px; line-height: 1; box-shadow: 0 4px 16px rgba(251,191,36,.5); }
+    /* 触摸目标修复（Apple 推荐 44px 最小触摸热区）*/
+    .hero-cta-small {
+      display: inline-block; padding: 10px 16px;
+      font-size: 14px; min-height: 44px; line-height: 22px;
+      text-decoration: none; opacity: .85;
+    }
+    /* Section 通用 */
+    .section, .care-section { padding: 32px 16px; }
+    .section-title { font-size: 20px; letter-spacing: -0.3px; margin-bottom: 10px; }
+    .section-sub { font-size: 13px; margin-bottom: 22px; line-height: 1.5; }
+    /* 7 件事卡片 */
     .care-grid { gap: 10px; }
-    .care-card { padding: 16px 14px; }
-    .care-num { font-size: 24px; margin-bottom: 6px; }
-    .care-title { font-size: 14px; }
-    .care-desc { font-size: 12px; }
+    .care-card { padding: 16px 15px; border-radius: 12px; }
+    .care-num { font-size: 26px; margin-bottom: 4px; }
+    .care-title { font-size: 15px; line-height: 1.35; margin-bottom: 4px; }
+    .care-desc { font-size: 13px; line-height: 1.55; }
+    /* 认证后 4 件 */
     .benefits { gap: 10px; }
-    .benefit { padding: 13px 10px; }
-    .benefit-title { font-size: 12px; }
+    .benefit { padding: 15px 12px; border-radius: 11px; }
+    .benefit-emoji { font-size: 26px; margin-bottom: 8px; }
+    .benefit-title { font-size: 14px; line-height: 1.35; }
+    .ben-guarantee { margin-top: 16px; padding: 15px 18px; font-size: 13px; line-height: 1.6; border-radius: 10px; }
+    /* Mentor */
     .mentors { gap: 10px; }
-    .mentor { padding: 14px; }
-    .faq-q { font-size: 13px; padding: 15px 0; }
+    .mentor { padding: 14px; border-radius: 11px; }
+    .mentor-avatar { width: 40px; height: 40px; font-size: 18px; }
+    .mentor-name { font-size: 14px; }
+    .mentor-title { font-size: 12px; }
+    .mentor-bio { font-size: 13px; line-height: 1.55; }
+    /* 时间轴 */
+    .tl-section { padding: 36px 16px; }
+    .timeline { padding-left: 28px; }
+    .tl-day { font-size: 12px; padding: 3px 10px; margin-bottom: 5px; }
+    .tl-title { font-size: 14px; line-height: 1.35; }
+    .tl-desc { font-size: 13px; line-height: 1.5; }
+    /* 实训不是培训 */
+    .diff-grid { gap: 12px; }
+    .diff-item { padding: 16px; border-radius: 11px; }
+    .diff-num { font-size: 22px; }
+    .diff-title { font-size: 14px; line-height: 1.35; margin-bottom: 4px; }
+    .diff-desc { font-size: 13px; line-height: 1.55; }
+    /* FAQ */
+    .faq-q { font-size: 14px; padding: 16px 0; min-height: 44px; display: flex; align-items: center; line-height: 1.4; }
+    .faq-q::after { font-size: 24px; flex-shrink: 0; margin-left: 12px; }
+    .faq-a { font-size: 13px; padding-bottom: 20px; line-height: 1.6; }
+    /* 降门槛 banner */
+    .no-risk { padding: 26px 18px; }
+    .no-risk-big { font-size: 16px; line-height: 1.5; }
+    .no-risk-sub { font-size: 13px; margin-top: 4px; }
+    /* Final CTA */
     .final-cta { padding: 40px 18px 36px; }
-    .final-cta h2 { font-size: 19px; }
-    .final-cta p { margin-bottom: 22px; }
-    .final-cta-btn { display: block; padding: 14px 24px; }
-    .no-risk { padding: 24px 18px; }
-    .no-risk-big { font-size: 16px; }
+    .final-cta h2 { font-size: 20px; }
+    .final-cta p { font-size: 14px; margin-bottom: 24px; line-height: 1.5; }
+    .final-cta-btn { display: block; padding: 15px 24px; font-size: 17px; min-height: 50px; line-height: 1; }
+    /* Footer — 触摸目标修复 */
+    footer { padding: 28px 16px 36px; }
+    footer > div:first-child { font-size: 13px; line-height: 1.6; margin-bottom: 6px; }
+    footer a {
+      display: inline-block;
+      min-height: 32px;
+      line-height: 32px;
+      padding: 0 6px;
+    }
+    /* 图片保护 */
     img, video, canvas { max-width: 100%; height: auto; }
   }
   @media (max-width: 480px) {
-    .care-grid, .benefits, .mentors { grid-template-columns: 1fr; }
+    .care-grid, .benefits, .mentors { grid-template-columns: 1fr; gap: 10px; }
     .hero h1 { font-size: 22px; }
     .topbar-brand { font-size: 12px; }
+    .topbar-back { font-size: 12px; padding: 8px 12px; }
+    .hero-cta { font-size: 16px; padding: 14px 22px; }
+    .hero-cta-small { font-size: 13px; padding: 10px 14px; min-height: 40px; }
+    .care-card { padding: 16px; }
+    .final-cta-btn { font-size: 16px; padding: 14px 22px; }
+    .section-title { font-size: 19px; }
   }
 </style>
 </head>
