@@ -38,6 +38,19 @@
     align-items: center;
     border-bottom: 1px solid var(--line);
   }
+  /* 🔒 内部预览水印 banner */
+  .internal-beta-banner {
+    position: sticky; top: 0; z-index: 999;
+    background: linear-gradient(90deg, #c9a962 0%, #e67e22 100%);
+    color: #fff;
+    font-size: 12px; font-weight: 600;
+    padding: 8px 48px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .internal-beta-banner .ib-icon { font-size: 14px; }
+  .internal-beta-banner .ib-text { flex: 1; letter-spacing: 0.5px; }
+  .internal-beta-banner .ib-close { cursor: pointer; opacity: 0.7; font-size: 14px; }
+  .internal-beta-banner .ib-close:hover { opacity: 1; }
   .logo-area { display: flex; align-items: center; gap: 12px; }
   .logo-icon {
     width: 32px; height: 32px;
@@ -426,6 +439,37 @@
     margin-bottom: 6px;
     line-height: 1.4;
   }
+  /* ============ EvidenceLink 组件样式（蓝图 C1） ============ */
+  .evidence-link { margin-top: 6px; }
+  .evidence-link.compact .el-card { padding: 6px 8px; font-size: 11px; }
+  .evidence-link .el-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 4px;
+    transition: all .15s;
+  }
+  .evidence-link .el-card:hover { border-color: #c9a962; box-shadow: 0 2px 8px rgba(201,169,98,.12); }
+  .evidence-link .el-card.expired { opacity: .75; background: #fffbeb; border-color: #fcd34d; }
+  .evidence-link .el-head { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 4px; }
+  .evidence-link .el-type { font-size: 10px; font-weight: 600; color: #52525b; background: #f4f4f5; padding: 2px 6px; border-radius: 4px; }
+  .evidence-link .el-auth { font-size: 10px; font-weight: 600; }
+  .evidence-link .el-title { font-size: 11px; color: #1f2937; line-height: 1.4; margin-bottom: 3px; word-break: break-all; }
+  .evidence-link .el-meta { font-size: 10px; color: #9ca3af; margin-bottom: 3px; }
+  .evidence-link .el-meta .el-date { margin-left: 4px; }
+  .evidence-link .el-link { font-size: 10px; color: #c9a962; text-decoration: none; font-weight: 500; }
+  .evidence-link .el-link:hover { text-decoration: underline; }
+  .evidence-link .el-link.pending { color: #cbd5e1; cursor: default; text-decoration: none; }
+  .evidence-link .el-badge { font-size: 9px; padding: 1px 5px; border-radius: 3px; margin-left: auto; font-weight: 500; }
+  .evidence-link .el-badge.expired { background: #fef3c7; color: #92400e; }
+  .evidence-link .el-badge.b-level { background: #fef9c3; color: #854d0e; }
+  .evidence-link .el-caveat { margin-top: 5px; padding-top: 5px; border-top: 1px dashed #e5e7eb; display: flex; gap: 4px; flex-wrap: wrap; }
+  .evidence-link .caveat { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 500; }
+  .evidence-link .caveat.risk { background: #fef2f2; color: #b91c1c; }
+  .evidence-link .caveat.no-commit { background: #fef3c7; color: #92400e; }
+  .evidence-link .caveat.scope { background: #eff6ff; color: #1d4ed8; }
+  .evidence-link .el-disclaimer { font-size: 10px; color: #94a3b8; margin-top: 6px; font-style: italic; line-height: 1.4; }
   .evidence-footer {
     margin-top: 10px;
     text-align: right;
@@ -1265,6 +1309,13 @@
   .bp-footer { background: var(--bg); border: 1px solid var(--line); padding: 10px 16px; }
   .bp-red { font-size: 11px; color: #c44a32; background: #fef0ed; border-radius: 6px; padding: 6px 10px; margin-bottom: 8px; line-height: 1.6; }
   .bp-red::before { content: "🚫 红线："; font-weight: 700; }
+  .vtag { display: inline-block; background: #264653; color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 4px; letter-spacing: 0.3px; vertical-align: middle; }
+  .vtag + * { margin-left: 3px; }
+  .values-bar { background: linear-gradient(90deg, #1a3d24 0%, #264653 100%); color: #fff; border-radius: 12px; padding: 10px 16px; margin-bottom: 16px; font-size: 12px; line-height: 1.8; }
+  .values-bar strong { color: #ffd166; font-weight: 700; }
+  .values-bar .vb-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .values-bar .vb-item { display: inline-block; margin-right: 10px; }
+  .values-bar .vb-item::before { content: "▸ "; color: #ffd166; }
   .bp-confusion { background: #fff8e1; border: 1px solid #ffe082; }
   .bp-confusion .bp-title { color: #b8860b; }
   .bp-confusion .bp-icon { color: #d4a017; }
@@ -1445,6 +1496,13 @@
     </div>
   </div>
 
+  <!-- 🔒 内部预览水印（G1，12.31 边界）-->
+  <div class="internal-beta-banner">
+    <span class="ib-icon">🔒</span>
+    <span class="ib-text">内部预览 · 仅内部账号可见 · 2026-12-31 上线 · 不宣称对外循证</span>
+    <span class="ib-close" onclick="this.parentElement.style.display='none'" title="临时隐藏">✕</span>
+  </div>
+
   <!-- 领域Tab -->
   <div class="domain-tabs" id="domain-tabs">
     <div class="domain-tab active" data-domain="TRANSACTION" data-phase="NOW">🏠 交易服务</div>
@@ -1490,7 +1548,7 @@
     <!-- ===== 🆕 价值引导区（经纪人打开 5 秒看懂） ===== -->
     <div class="value-intro" id="value-intro">
       <h2 class="vi-title">这个站就干一件事：<span class="vi-highlight">你陪客户到哪一步了？点一下，我告诉你下一步该干啥</span></h2>
-      <p class="vi-sub">不用背话术，不用瞎摸索。选阶段 → 看 3 个引导问题 → AI 模拟客户练一把 → 5 分钟小测</p>
+      <p class="vi-sub">不用背话术，不用瞎摸索。选阶段 → 看 3 个引导问题 → 模拟客户练一把 → 5 分钟小测</p>
       <div class="vi-actions">
         <a class="vi-btn vi-btn-primary" href="/care-test/">🎯 5 分钟出你的「丢单预警」</a>
         <span class="vi-or">或</span>
@@ -1613,6 +1671,15 @@
         <span class="layered-toggle">▼</span>
       </div>
       <div class="layered-body" id="layered-body">
+        <!-- 📌 赢得托付 · 服务者四条底线 -->
+        <div class="values-bar">
+          <div class="vb-title">🏆 赢得托付的四条底线 · 每一次服务都重新赢得</div>
+          <span class="vb-item"><strong>难而正确</strong>：不隐瞒、不编造——客户随时可验证</span>
+          <span class="vb-item"><strong>消费者中心</strong>：不骚扰、不施压——客户随时可退出</span>
+          <span class="vb-item"><strong>专业者赢</strong>：不造假、不降价——用专业赢下一单托付</span>
+          <span class="vb-item"><strong>并肩奋斗</strong>：不抢单、不诋毁——对比自由，选择权在客户</span>
+        </div>
+
         <!-- 🎯 核心动作 4 步 -->
         <div class="bp-card bp-actions">
           <div class="bp-head"><span class="bp-icon">🎯</span><span class="bp-title">你现在按顺序做这 4 件事</span></div>
@@ -1634,7 +1701,7 @@
         <!-- 🤖 练一练 + 📖 学一学（并排） -->
         <div class="bp-row">
           <div class="bp-card bp-practice">
-            <div class="bp-head"><span class="bp-icon">🤖</span><span class="bp-title">练一练</span><span class="bp-sub">AI 模拟客户</span></div>
+            <div class="bp-head"><span class="bp-icon">🤖</span><span class="bp-title">练一练</span><span class="bp-sub">模拟客户</span></div>
             <div class="bp-practice-scene" id="lc-practice-scene"></div>
             <a class="bp-cta" href="/ai-advisor/" target="_blank" id="lc-practice-link">开始练习 →</a>
           </div>
@@ -1677,7 +1744,7 @@
         <div class="kb-stage-header" onclick="toggleKBStage()">
           <div class="kb-stage-title">
             <span>📚 知识底座 · 本阶段精选</span>
-            <span class="kb-stage-tag">匠星金 · AI 精选</span>
+            <span class="kb-stage-tag">匠星金 · 精选</span>
           </div>
           <div class="kb-stage-actions">
             <a class="kb-stage-more" href="/knowledge/" target="_blank" onclick="event.stopPropagation()">进入知识底座 →</a>
@@ -1778,21 +1845,21 @@
       </div>
     </div>
 
-    <!-- 进阶区：AI 助理培养 + 管理者入口 -->
+    <!-- 进阶区：智能助理培养 + 管理者入口 -->
     <div class="advance-section">
       <div class="advance-header">
         <div class="advance-title">🚀 进阶能力</div>
       </div>
       <div class="advance-grid">
-        <!-- 卡片 1: AI 助理培养（匠星金 = AI 产出侧） -->
+        <!-- 卡片 1: 智能助理培养（匠星金 = 工具产出侧） -->
         <div class="advance-card gold" data-intro="intro-ai">
           <div class="advance-card-top">
             <div class="advance-icon">🤖</div>
-            <div class="advance-card-name">培养你的 AI 助理</div>
+            <div class="advance-card-name">培养你的智能助理</div>
           </div>
           <div class="advance-card-desc">
             7 天培养营，从 0 到白银级助理。<br>
-            不是"用个 AI 助手"，是**你带出一个专属协作伙伴**。
+            不是"用个智能助手"，是**你带出一个专属协作伙伴**。
           </div>
           <div class="advance-card-tags">
             <span>5 级认证</span>
@@ -1827,11 +1894,11 @@
         </div>
       </div>
 
-      <!-- 锚点介绍区：AI 助理培养 -->
+      <!-- 锚点介绍区：智能助理培养 -->
       <div class="advance-intro gold-theme" id="intro-ai">
         <span class="close" onclick="document.getElementById('intro-ai').classList.remove('show')">×</span>
-        <h4>🤖 为什么要"培养"AI 助理，而不只是"用"？</h4>
-        <p>大模型人人可用，但**用出水平的人不到 5%**。大多数人停留在"你问我答"阶段——AI 始终是工具。少数人让 AI 变成了协作伙伴：它能记住你的偏好、替你执行流程、主动提醒你该做什么。</p>
+        <h4>🤖 为什么要"培养"智能助理，而不只是"用"？</h4>
+        <p>大模型人人可用，但**用出水平的人不到 5%**。大多数人停留在"你问我答"阶段——工具始终是工具。少数人让工具变成了协作伙伴：它能记住你的偏好、替你执行流程、主动提醒你该做什么。</p>
         <p><strong>培养营 7 天课表</strong>：D1 身份建构 → D2-3 认知对齐（主人画像 + 行业）→ D4 记忆体系 → D5 工具接入 → D6 经验沉淀 → D7 白银级验收</p>
         <p><strong>五级认证体系</strong>：白银（有身份有铁律）→ 黄金（能协作有记忆）→ 铂金（自动进化）→ 钻石（行业定制）。五把尺子量化达标才能升级：输出量 / 任务复杂度 / 技能复用 / 运行时长 / 并发度。</p>
         <p style="color:#8a7040;font-weight:600;margin-top:10px;">产品：培养营 ¥999（7天）→ 进阶营 ¥2,999（30天）→ 认证考核 ¥1,999 → 进化陪跑 ¥499/月</p>
@@ -1898,7 +1965,7 @@
             why:"业主往往觉得自己家是独一无二的——你得用同户型、同楼层、同装修的近期成交价去对比，他才服",
             practiceScene:"业主说：小区挂牌都 480 万以上，你帮我挂 500 万，两个月必须卖出去",
             refs: ["ABIL-BJ-001","ABIL-BJ-002"],
-            red:"别替业主承诺「两个月肯定卖」——只说「我帮你挂 498 万（尾数暗示便宜），2 周没带看我们一起调价」" },
+            red:"🚨 别替业主承诺「两个月肯定卖」——只说「我帮你挂 498 万，2 周没带看我们一起调价」。<strong class=vtag>【难而正确】</strong>短期舒服换长期信任崩塌" },
       b2: { actions: ["① 别直接问「预算多少」——先聊：哥/姐家里几口人？买房给谁住？工作在哪？学区在意吗？",
                        "② 挖潜台词：他说「总价 450 万以内」实际可能能凑到 480 万；他说「近地铁就行」其实想走路不超过 5 分钟",
                        "③ 客户画像写下来：来源渠道、购房动机、家庭结构、首付来源、贷款资格——记清楚不遗忘"],
@@ -1906,7 +1973,7 @@
             why:"客户自己也说不清楚要什么是常态——你的价值在于把模糊的「差不多」变成具体的「XX 小区 3 居 450 万 地铁 5 分钟」",
             practiceScene:"客户说：我想买个差不多的，预算也没什么特别的，你给我推荐几套就行",
             refs: ["ABIL-BJ-003","ABIL-BJ-004"],
-            red:"别在需求没挖清楚之前就开始推房子——推错了浪费双方时间，还会让客户觉得你不懂他" },
+            red:"🚨 别在需求没挖清楚之前就推房子——推错了浪费双方时间，客户只会觉得你不懂他。<strong class=vtag>【消费者中心】</strong>先理解，再推荐" },
       b3: { actions: ["① 带看路线先想清楚：从小区大门到房子一路上能路过什么好设施（地铁/超市/小学）先给他指出来",
                        "② 带看不只看房子：敲一家邻居门问问住得怎么样、看楼道干不干净、看楼下保安态度——让他感受到这个社区",
                        "③ 带完让他自己待 5 分钟：别一直跟着叨叨，让他坐在客厅里感受一下采光和通风"],
@@ -1914,7 +1981,7 @@
             why:"客户说「再想想」有 70% 是觉得贵或有顾虑——你得主动问「是觉得哪方面不太满意？」而不是等着他主动说",
             practiceScene:"客户看完说：房子还行，但我感觉有点小贵，再想想吧",
             refs: ["ABIL-BJ-005","ABIL-BJ-004"],
-            red:"别替业主砍价——砍价是后面谈判的事，带看只负责让他喜欢上这套" },
+            red:"🚨 别替业主砍价——砍价是谈判阶段的事，带看只负责让客户喜欢上这套。<strong class=vtag>【难而正确】</strong>分阶段做正确的事" },
       b4: { actions: ["① 双边分别摸底：跟买家摸最高能出多少、首付什么时候到；跟业主摸最低能接多少、急不急卖——中间差多少、谁愿意让一步",
                        "② 给业主「买家画像」：别说「有人出价 465 万」——说「买家是刚需首套，首付 200 万已到位，看了 3 次真心想买」",
                        "③ 让业主觉得「是他在谈」：别说「买家只肯出 465 万」——说「买家出 465 万但能再凑 5 万，您看 470 万能接受吗」"],
@@ -1922,7 +1989,7 @@
             why:"业主最烦你拿买家压他「人家就出 465 万你看着办」——你得让他觉得你在帮他争取，而不是帮买家砍他价",
             practiceScene:"买家出价 465 万，业主说「低于 475 万不卖，急用钱 480 万净得」，两边僵住了",
             refs: ["ABIL-BJ-005"],
-            red:"别替自己减佣「我给你打 8 折」——中介费是你的命根子，要么给服务升级（帮他多推 3 个渠道），要么不打折" },
+            red:"🚨 别替自己减佣「我给你打 8 折」——中介费是你的专业价值，要么给服务升级要么不打折。<strong class=vtag>【专业者赢】</strong>降价=贬值" },
       b5: { actions: ["① 签约别在业主家或买家家——去门店，合同一条条念，重点条款标红",
                        "② 重点条款讲清楚：成交价多少、定金多少什么时候付、首付什么时候到、尾款怎么付、谁出中介费",
                        "③ 签约后立刻跟进：定金有没有打进来？打进来了告诉业主「XX 哥/姐，5 万定金今天到您账了」"],
@@ -1930,7 +1997,7 @@
             why:"签约那一刻两边都紧张——你越透明越稳，签约后主动反馈能让两边都踏实",
             practiceScene:"签约当天买家说：首付还差 20 万得卖一套房子凑，贷款能先申请着吗？",
             refs: ["ABIL-GEN-009"],
-            red:"别替买家给业主打包票「他肯定能凑齐首付」——万一他凑不齐，业主找你，锅你背" },
+            red:"🚨 别替买家给业主打包票「他肯定能凑齐首付」——万一凑不齐锅你背。<strong class=vtag>【难而正确】</strong>只陈述事实，不做担保" },
       b6: { actions: ["① 网签前跟两边确认：贷款批了吗？批了多少？首付什么时候到？别等网签那天才说没批下来",
                        "② 过户当天全程跟着：带齐证件，帮着填表格、跟银行面签、跟房管局对接——两边只需要签字",
                        "③ 尾款到账第一时间通知业主：「XX 哥/姐，尾款 400 万今天到您账号了，查一下，交接完成」"],
@@ -1938,7 +2005,7 @@
             why:"过户是业主最操心的环节——他怕尾款拿不到、贷款出问题。你帮他盯着每一步，他下次卖还找你，还会介绍朋友",
             practiceScene:"业主说：过户完了，尾款什么时候能到？我等着钱换房呢",
             refs: ["ABIL-GEN-017"],
-            red:"别替买家垫资「我先帮你出 30 万」——你垫了万一他还不上，你认栽，还违反中介规定" }
+            red:"🚨 别替买家垫资「我先帮你出 30 万」——垫了还不上你认栽，还违反中介规定。<strong class=vtag>【难而正确】</strong>不碰客户资金，只做专业服务" },
     };
 
     // ───── 2. 租赁顾问 LEASE ─────
@@ -1963,12 +2030,12 @@
     var LEASE_LAYER = {
       l1: { actions: ["① 每天固定 1 小时电话回访老业主：XX 哥/姐，您那套房子还空着吗？近期想出租吗？",
                        "② 房源没图等于不存在：至少 5 张不同角度 + 1 个 30 秒视频——业主自己拍的不行，你去现场拍",
-                       "③ 租客获客多渠道：贝壳/安居客 + 本地租房群 + 朋友圈 + 门店值守，3 个渠道同时跑"],
-            confusion:"我挂了 3 套房源到贝壳，每天只有 1-2 个咨询，同行挂的比我少但咨询比我多——我的房源描述哪里有问题？",
+                       "③ 租客获客多渠道：主流租房平台 + 本地租房群 + 朋友圈 + 门店值守，3 个渠道同时跑"],
+            confusion:"我挂了 3 套房源到平台，每天只有 1-2 个咨询，同行挂的比我少但咨询比我多——我的房源描述哪里有问题？",
             why:"租赁市场的获客成本远高于买卖——你得同时维护业主端（房源从哪来）和租客端（客户从哪来），两边都不能断",
             practiceScene:"业主说：我这套 3 居室，给你 7000 底价，一个月内帮我租出去行不行？",
             refs: ["ABIL-ZL-001"],
-            red:"别替业主承诺「一个月肯定租」——只说「我帮你挂出去，有 3 个意向客户先让你看」" },
+            red:"🚨 别替业主承诺「一个月肯定租」——只说「我帮你挂出去，有 3 个意向先让你看」。<strong class=vtag>【难而正确】</strong>不做无法兑现的承诺" },
       l2: { actions: ["① 租客画像别直接问「预算多少」——先聊：哥/姐是一个人住还是跟家人？打算住多久？能接受合租吗？",
                        "② 房东预期要摸透：能接受长租还是短租？能不能养宠物？租金希望一次付多久？",
                        "③ 价格带做功课：同小区 2 居/3 居最近成交租金多少——别瞎报，报错了两边都尴尬"],
@@ -1976,7 +2043,7 @@
             why:"租客说的预算往往是他想花的，不是他能花的——你得帮他把需求和预算拉到同一水平线上",
             practiceScene:"租客说：我想找个近地铁的两居室，预算 5000 以内，家具要全配",
             refs: ["ABIL-ZL-002"],
-            red:"别在需求没匹配上就约带看——约了 5 次都没看上，两边时间都浪费了" },
+            red:"🚨 别在需求没匹配上就约带看——约了 5 次都没看上，两边时间都浪费。<strong class=vtag>【消费者中心】</strong>先精准匹配再行动" },
       l3: { actions: ["① 带看前同时跟两边确认：跟业主「XX 哥/姐，周三晚 7 点带租客来看，钥匙给我」；跟租客「XX 哥/姐，周三晚 7 点我带你看房，地铁 5 分钟到」",
                        "② 带看路线先想清楚：从地铁出来怎么走到小区？小区里哪栋楼最快？路上能路过什么好设施？",
                        "③ 带完让租客自己待 5 分钟：别一直跟着叨叨，让他坐在客厅里感受一下能不能住得舒服"],
@@ -1984,7 +2051,7 @@
             why:"租客说「再看看」有 60% 是还想比价——你得主动跟进「这房子我手上只有这一套，XX 小区同户型已经租到 6800 了」",
             practiceScene:"租客看完说：房子还行，我再看看其他的，有合适的联系你",
             refs: ["ABIL-ZL-003","ABIL-ZL-002"],
-            red:"别在电话里报具体门牌号——等租客到了附近再发定位，防同行截客" },
+            red:"🚨 别在电话里报具体门牌号——等租客到附近再发定位，防同行截客。<strong class=vtag>【并肩奋斗】</strong>行业生态要维护" },
       l4: { actions: ["① 租金谈判先给理由不给硬砍：租客说「能不能少 300」——别说「不行」，说「这套 6500 是业主底价，我帮你争取到 6300，条件是你一次签一年」",
                        "② 押金方式分别谈：租客想押一付一 → 跟业主说押一付二行不行？业主想押一付三 → 跟租客说能不能押一付二？",
                        "③ 维修责任说清楚：正常老化物业/业主出，人为损坏租客出——合同里列清楚"],
@@ -1992,7 +2059,7 @@
             why:"租赁谈判的核心不是租金，是条件组合——你可以用「签一年换押一付二」「租金让 200 换提前退租 30 天通知」等条件交换",
             practiceScene:"租客说：租金 6500 我能接受，但能不能押一付一？押二付二我真拿不出来",
             refs: ["ABIL-ZL-003"],
-            red:"别替租客答应「我帮你问问业主」然后消失——有消息必须 24 小时内回复" },
+            red:"🚨 别替租客答应后消失——有消息必须 24 小时内回复。<strong class=vtag>【消费者中心】</strong>服务不到位=失去信任" },
       l5: { actions: ["① 合同一条一条念：重点讲租期、退租条件、维修责任、押金退还规则——标红一条一条讲",
                        "② 押金让租客直接转给业主——别进你账户，你只是居间人，转账截图你要存档",
                        "③ 入住交接清单打勾：家具家电、水电燃表读数、钥匙数量、门禁卡——全拍照留底，双方签字"],
@@ -2000,7 +2067,7 @@
             why:"押金必须直接转给业主——你代收等于你担保，万一业主不退租客找你，你背锅",
             practiceScene:"业主说：合同你帮我弄吧，押金就先放你那",
             refs: ["ABIL-ZL-004"],
-            red:"别替业主收押金进自己账户——容易说不清，也违反中介规定" },
+            red:"🚨 别替业主收押金进自己账户——说不清还违规。<strong class=vtag>【专业者赢】</strong>不碰客户资金边界" },
       l6: { actions: ["① 租金到期前 3 天提醒租客：「XX 哥/姐，这个月租金该交啦，转给业主 6500 元就行，记得备注月份」",
                        "② 租金收到后帮业主确认：「XX 哥/姐，XX 租客的 6500 元租金今天到账了，您查一下」",
                        "③ 退租前 7 天提醒双方，验房一项项核对，有损坏当场说清楚扣不扣押金"],
@@ -2008,7 +2075,7 @@
             why:"租后维护是你跟业主/租客建立长期信任的关键——帮业主收租金、帮租客修东西，下次续租/空出来两边都找你",
             practiceScene:"业主说：租金逾期 10 天了，租客也不接我电话，怎么办？",
             refs: ["ABIL-ZL-004","ABIL-GEN-019"],
-            red:"别替业主垫租金「我先帮你垫上」——你垫了万一租客跑路，你认栽" }
+            red:"🚨 别替业主垫租金——垫了万一租客跑路你认栽。<strong class=vtag>【难而正确】</strong>不碰资金" }
     };
 
     // ───── 3. 新房置业顾问 NEW_HOME ─────
@@ -2039,7 +2106,7 @@
             why:"新房置业顾问的生存根本是获客——开发商给你的带客量是有限的，你自己能拉多少客，决定了你能拿多少佣金",
             practiceScene:"渠道经理说：这个月你带看量不够，再完不成要扣底薪",
             refs: ["ABIL-XF-001","ABIL-XF-004"],
-            red:"别在朋友圈发虚假信息「XX 楼盘最后 3 套」——如果还有房，客户回来找你算账" },
+            red:"🚨 别在朋友圈发虚假「最后 3 套」——有房客户回来算账。<strong class=vtag>【真实坦荡】</strong>自媒体内容要真实" },
       n2: { actions: ["① 客户进门先别推销，先聊：哥/姐贵姓？是第一次来看吗？家里几口人？是首套还是换房？",
                        "② 快速分类：10 句话之内判断他是刚需首套、改善换房还是投资保值——不同类型讲法完全不一样",
                        "③ 把需求记下来：预算、要几房、在意学区还是地铁、什么时候入住——写下来不遗忘"],
@@ -2047,7 +2114,7 @@
             why:"客户走进售楼处是带着戒心的——你越像朋友聊天，他越敢把真实需求告诉你。「随便看看」有 60% 是真买房，只是防备心强",
             practiceScene:"客户进门说：我就随便看看，不用给我介绍",
             refs: ["ABIL-XF-002"],
-            red:"别在客户没明确说之前就说「这套最好卖，赶紧定」——会让他觉得你在催他，反而走了" },
+            red:"🚨 别催客户「赶紧定」——会让他觉得被施压反而走。<strong class=vtag>【消费者中心】</strong>让客户自己决策" },
       n3: { actions: ["① 沙盘讲解先讲大环境：先讲区域配套（地铁/医院/商圈/学校），再讲楼盘本身——大环境决定升值空间",
                        "② 价格体系讲人话：别说「均价 5 万 2」——说「89 平 2 居大概 450 万，118 平 3 居大概 610 万，每层差价 20 万」",
                        "③ 主动说一个缺点：比如「这边离主干道近，低楼层可能有点噪音」——说了缺点反而显你专业，不会让他觉得销售在吹牛"],
@@ -2055,7 +2122,7 @@
             why:"客户对比竞品是必然的——你主动帮他分析差异（我们容积率更低/学区更好/得房率更高），比他自己在网上查靠谱得多",
             practiceScene:"客户问：这个小区为什么比隔壁贵 3000 一平？",
             refs: ["ABIL-XF-003","ABIL-XF-002"],
-            red:"别瞎承诺「这条地铁明年一定通」——只说「规划里有，预计 2027 年开工，以政府公告为准」" },
+            red:"🚨 别瞎承诺「地铁明年一定通」——只说「规划里有，以政府公告为准」。<strong class=vtag>【难而正确】</strong>不确定的事别打包票" },
       n4: { actions: ["① 样板间是让他体验不是让他逛：进客厅先让他坐 5 分钟感受采光，进厨房让他打开抽屉试试",
                        "② 装修标准讲清楚：哪些是送的（瓷砖/橱柜/洁具品牌型号）、哪些要自己装——别模糊说「精装」",
                        "③ 带完样板间别让他马上走：找个沙发坐下来，给他倒杯水，聊一聊他刚才看了最满意哪一点"],
@@ -2063,7 +2130,7 @@
             why:"新房是大宗消费，客户犹豫很正常——你要帮他降低决策压力，而不是催他「今天不定明天就没了」",
             practiceScene:"客户看完样板间说：这个户型确实不错，但我得回去跟老婆商量一下",
             refs: ["ABIL-XF-003"],
-            red:"别替开发商承诺「送面积」「送车位」——以合同里的户型图和附件为准" },
+            red:"🚨 别替开发商承诺「送面积」「送车位」——以合同附件为准。<strong class=vtag>【难而正确】</strong>只讲合同写的" },
       n5: { actions: ["① 认筹政策别绕弯子：认筹多少钱？排号怎么排？选房按什么顺序？能不能退？全说清楚",
                        "② 锁房的好处和风险都讲：好处是你排在前面能挑好楼层好户型；风险是如果开盘价比你预期高你要不要认？",
                        "③ 排号后每周更一次进度：「下周能拿到预售证了」「选房日大概定在 X 号」——别让客户瞎等"],
@@ -2071,7 +2138,7 @@
             why:"认筹排号是客户第一次掏钱——他掏之前必须想清楚，掏之后必须踏实。你让他踏实了，他会给你介绍朋友",
             practiceScene:"客户问：认筹交 5 万选不上房能退吗？开盘价比我预期高我能不买吗？",
             refs: ["ABIL-XF-004"],
-            red:"别替开发商说「肯定能退」——只说「认筹协议里写了，开盘后 7 天内可全额退，以协议为准」" },
+            red:"🚨 别替开发商说「肯定能退」——只说「以认筹协议为准」。<strong class=vtag>【专业者赢】</strong>协议是最终依据" },
       n6: { actions: ["① 认购合同带他逐条看：重点是房款、付款时间、交付日期、违约责任——标红一条一条讲",
                        "② 贷款预算算到分：首付多少？月供多少？贷 30 年和 25 年差多少？商贷和公积金差多少？给他一张表签字",
                        "③ 签约后别失联：银行贷款进度、网签状态、合同盖章情况每周说一声"],
@@ -2079,7 +2146,7 @@
             why:"开发商和客户之间的压力最终落到你身上——你得两头协调，既不拖欠开发商的首付进度，又不让客户觉得你在逼他",
             practiceScene:"客户说：首付 200 万我得卖一套房子凑，贷款能先申请着吗？",
             refs: ["ABIL-XF-004"],
-            red:"别替客户做贷款决策——只给各家银行的利率对比表，让他自己选" }
+            red:"🚨 别替客户做贷款决策——只给利率对比，让他自己选。<strong class=vtag>【消费者中心】</strong>信息给全，决策给客户" }
     };
 
     // ===== 岗位 → Timeline 映射表（一套岗位一套 Timeline）=====
@@ -2147,15 +2214,48 @@
       })
       .catch(function(){});
 
-    // 4. 🆕 Evidence：加载 entries.json + 预计算适配数据（M1 12.31）
-    fetch("/data/v3/entries.json")
-      .then(function(r){ return r.ok ? r.json() : null; })
-      .then(function(entries){
-        if(!entries || !window.EvidenceAdapter) return;
-        rawEntriesCache = window.EvidenceAdapter.filterAndAdaptAll(entries, { drop_hard: false });
-        renderWorkspaceEvidence(); // 首屏渲染 Broker 默认证据
+    // 4. Evidence：按 entryType 分片按需拉取（替代全量 14MB fetch）
+    // 架构：manifest.json → 按岗位 preferTypes 并行拉分片 → 合并 → filterAndAdaptAll
+    // 原始 entries.json 只读保留，分片失败自动回退全量（兼容兜底）
+    var evidenceShardCache = {};   // type → 原始 entries 数组缓存
+    var _evidenceManifest = null;
+
+    function ensureEvidenceShards(types) {
+      types = types || [];
+      var toFetch = types.filter(function(t){ return !evidenceShardCache[t]; });
+      if (toFetch.length === 0) { _rebuildRawCache(); return Promise.resolve(); }
+      return Promise.all(toFetch.map(function(t){
+        return fetch("/data/v3/split/shards/" + t + ".json")
+          .then(function(r){ return r.ok ? r.json() : []; })
+          .catch(function(){ return []; });
+      })).then(function(results){
+        toFetch.forEach(function(t, i){ evidenceShardCache[t] = results[i] || []; });
+        _rebuildRawCache();
+      });
+    }
+
+    function _rebuildRawCache() {
+      var all = [];
+      for (var t in evidenceShardCache) { all = all.concat(evidenceShardCache[t]); }
+      if (all.length > 0 && window.EvidenceAdapter) {
+        rawEntriesCache = window.EvidenceAdapter.filterAndAdaptAll(all, { drop_hard: false });
+      }
+    }
+
+    // 初始化：加载 manifest → 拉 BROKER 默认 3 分片
+    fetch("/data/v3/split/manifest.json")
+      .then(function(r){ return r.ok ? r.json() : Promise.reject("no manifest"); })
+      .then(function(manifest){
+        _evidenceManifest = manifest;
+        var defaultTypes = (manifest.role_preference_map && manifest.role_preference_map.BROKER) || ["LAW","RISK","CASE"];
+        return ensureEvidenceShards(defaultTypes);
       })
-      .catch(function(){});
+      .then(function(){ renderWorkspaceEvidence("BROKER"); })
+      .catch(function(err){
+        console.warn("[Evidence] 分片加载失败:", err);
+        var el = document.getElementById("evidence-cards");
+        if(el) el.innerHTML = '<div style="font-size:12px;color:#e67e22;padding:10px;">⚠️ 循证数据暂时未就绪，请稍后刷新重试</div>';
+      });
 
     // ===== 🆕 阶段三层拆解数据真数据 =====
     // 每个阶段的素养层 + 服务层（AI vs 真人）+ 红线 + checklist
@@ -2174,7 +2274,7 @@
           ],
           why:"客户现在最慌的是「我能不能买得起」——你先把数字摆出来，比带看 10 套房都管用",
           practiceScene:"客户问：公积金能贷多少？首套和二套差多少？",
-          red:"别替客户做「选首套还是二套」的决定——只给数字让他自己选"
+          red:"🚨 别替客户做「首套二套」决策——只给数字让他选。<strong class=vtag>【消费者中心】</strong>给信息不替选"
         },
         market: {
           actions: [
@@ -2184,7 +2284,7 @@
           ],
           why:"客户觉得你靠谱，不是因为你懂，是因为你说的话「有根有据」——别拿挂牌价瞎忽悠",
           practiceScene:"客户问：要对比周边小区怎么办？这个学区到底怎么样？",
-          red:"别跟客户说「这个学区最好」——只给数据和来源"
+          red:"🚨 别跟客户说「这个学区最好」——只给数据和来源。<strong class=vtag>【难而正确】</strong>用数据说话，不主观评价"
         },
         invite: {
           actions: [
@@ -2194,7 +2294,7 @@
           ],
           why:"客户不愿出来不是讨厌你，是还没信你——接住他的抗拒比硬逼他管用",
           practiceScene:"客户说：最近太忙了，等有空再说吧",
-          red:"别自己约带看时间——约时间必须真人发消息"
+          red:"🚨 别让工具自己约带看时间——必须真人发消息。<strong class=vtag>【专业者赢】</strong>系统辅助不替代服务"
         },
         negotiate: {
           actions: [
@@ -2204,7 +2304,7 @@
           ],
           why:"客户犹豫 = 情绪没接住。先接情绪再给数据，最后那一锤必须真人上",
           practiceScene:"客户说：太贵了，回去商量一下。",
-          red:"情绪安抚必须真人来——AI 可以帮你算数据，但不能替你共情"
+          red:"🚨 情绪安抚必须真人来——系统算数据但不替你共情。<strong class=vtag>【消费者中心】</strong>专业有温度"
         },
         transaction: {
           actions: [
@@ -2214,7 +2314,7 @@
           ],
           why:"客户签约那一刻最紧张——你越透明他越敢签。模糊的钱和模糊的时间都是恐惧源",
           practiceScene:"客户问：资金监管安全吗？我应该先签还是先交钱？",
-          red:"别替客户签合同——合同必须真人口头过一遍"
+          red:"🚨 别替客户签合同——合同必须真人口头过一遍。<strong class=vtag>【难而正确】</strong>重要环节亲力亲为"
         },
         closing: {
           actions: [
@@ -2224,7 +2324,7 @@
           ],
           why:"交房不是终点——今天这个客户，就是明天给你介绍新客户的人",
           practiceScene:"客户问：过户后户口怎么迁？物业交接要注意什么？",
-          red:"别替客户承诺「户口一定能迁」——得看合同写没写"
+          red:"🚨 别替客户承诺「户口一定能迁」——看合同写没写。<strong class=vtag>【难而正确】</strong>只讲合同约定的事"
         }
       };
       BASE_STAGE_LAYER_DATA = JSON.parse(JSON.stringify(data));
@@ -2560,11 +2660,13 @@
       var strat = ROLE_EVIDENCE_STRATEGY[pid] || ROLE_EVIDENCE_STRATEGY.BROKER;
       if(roleSubtitle) roleSubtitle.textContent = strat.subtitle;
 
-      // 数据未就绪 → 占位
-      if(!rawEntriesCache || !window.EvidenceLink){
-        container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">⏳ 正在加载循证知识...</div>';
-        return;
-      }
+      // 先确保所需分片已就绪（已缓存则同步返回，缺失则增量 fetch）
+      ensureEvidenceShards(strat.preferTypes).then(function(){
+        // 数据未就绪 → 占位
+        if(!rawEntriesCache || !window.EvidenceLink){
+          container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">⏳ 正在加载循证知识...</div>';
+          return;
+        }
 
       // 按策略筛选：偏好类型 + 有 evidence + 非占位
       var pool = rawEntriesCache.filter(function(e){
@@ -2605,15 +2707,20 @@
         card.innerHTML = '<div class="evidence-card-title">' + escapeHtml(entry.title || entry.entry_id) + '</div>';
         container.appendChild(card);
 
-        // EvidenceLink 渲染证据链
+        // EvidenceLink 渲染证据链（蓝图 C1）：组件返回 HTML 字符串，追加到卡片
         if(window.EvidenceLink && typeof window.EvidenceLink.render === "function"){
-          window.EvidenceLink.render(card, entry);
+          var evHtml = window.EvidenceLink.render(entry, { compact: true, max: 3 });
+          if(evHtml) card.innerHTML += evHtml;
         }
+        // 🆕 跨页查证：跳到 knowledge 搜索完整词条
+        var q = entry.title || entry.name || entry.entry_id || "";
+        if(q) card.innerHTML += '<a href="/knowledge/?q=' + encodeURIComponent(q) + '" target="_blank" rel="noopener" style="display:block;margin-top:8px;font-size:11px;color:#1a3d24;text-decoration:none;opacity:.7">🔎 去知识底座查证 →</a>';
       });
 
       if(top3.length === 0){
         container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">该岗位暂未匹配到核心证据，先看知识库吧 →</div>';
       }
+      }); // end ensureEvidenceShards().then()
     }
 
     function escapeHtml(str){
@@ -2676,7 +2783,7 @@
       }
       if(!learnHtml){
         learnHtml = isPositionStage
-          ? '<div style="font-size:11px;color:#999">📚 租赁/新房专属知识库建设中<br>AI 模拟练一练已为本阶段开放</div>'
+          ? '<div style="font-size:11px;color:#999">📚 租赁/新房专属知识库建设中<br>模拟练一练已为本阶段开放</div>'
           : '<div style="font-size:11px;color:#999">暂无本阶段知识条目</div>';
       }
       document.getElementById("lc-learn").innerHTML = learnHtml;
@@ -3290,7 +3397,7 @@
     const pathEl = document.getElementById('gb-path');
     const steps = [
       { done: hasTest,              label: '✅ 测评',           next: !hasTest,            link: '/care-test/', sub: '完成能力测评知道短板' },
-      { done: sceneCount > 0,       label: '🤖 练场景',         next: hasTest && sceneCount === 0, link: '/ai-advisor/', sub: 'AI 模拟客户练 SOP' },
+      { done: sceneCount > 0,       label: '🤖 练场景',         next: hasTest && sceneCount === 0, link: '/ai-advisor/', sub: '模拟客户练 SOP' },
       { done: courseCount > 0,      label: '📖 学知识',         next: hasTest && sceneCount > 0 && courseCount === 0, link: '/knowledge/', sub: '按阶段补知识底座' },
       { done: examCount > 0,        label: '🎯 过微测',         next: false,               link: '/knowledge/quiz/', sub: '每阶段 5 分钟小测' },
     ];

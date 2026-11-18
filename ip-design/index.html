@@ -258,7 +258,7 @@ textarea#ipText:focus{border-color:var(--primary)}
     <div class="tool" onclick="openTool('avatar')">
       <div class="tool-ico">🎨</div>
       <div class="tool-name">头像设计</div>
-      <div class="tool-desc">6 种风格·免费 AI 生成</div>
+      <div class="tool-desc">6 种风格·免费生成</div>
     </div>
     <div class="tool" onclick="openTool('position')">
       <div class="tool-ico">📌</div>
@@ -333,7 +333,7 @@ textarea#ipText:focus{border-color:var(--primary)}
 
 <!-- ===== 底部 ===== -->
 <div style="max-width:var(--maxw);margin:0 auto;padding:12px 20px;border-top:1px solid rgba(201,169,98,.12);font-size:11px;color:#888;line-height:1.7;text-align:center">
-    ⚠️ 免责声明：本工具提供的IP设计内容基于AI生成，仅供参考，不构成专业设计建议。用户应自行判断并承担使用结果的全部责任。
+    ⚠️ 免责声明：本工具提供的IP设计内容由系统生成，仅供参考，不构成专业设计建议。用户应自行判断并承担使用结果的全部责任。
   </div>
 <footer class="footer">
   <div class="brand-line">🌬️ 风声信息咨询 · 帮助服务者贴近消费者的认知</div>
@@ -372,7 +372,7 @@ async function doGen(){
       ${STYLES.map((s,i)=>`<div class="avatar loading" data-idx="${i}">${s}</div>`).join('')}
     </div>
     <div style="padding:12px;background:var(--surface);border-radius:8px;font-size:12px;color:var(--ink-3);line-height:1.7">
-      💡 当前为<strong>前端预览</strong>(基于风格色系)。<br>真实 AI 生成需接通大模型 API——<a href="/knowledge/?tab=talent">路线图见知识底座</a>。
+      💡 当前为<strong>前端预览</strong>(基于风格色系)。<br>真实生成需接通大模型 API——<a href="/knowledge/?tab=talent">路线图见知识底座</a>。
     </div>`;
   $('overlay').classList.add('show');
 
@@ -398,7 +398,7 @@ function getStyleBg(i){
 function openTool(name){
   $('overlay').classList.add('show');
   const data = {
-    avatar:{t:'头像设计',b:'点上面输入框,描述你的角色(性别/年龄/发型/穿搭/气质),AI 生成 6 种风格头像。当前为前端预览版,真实生成需等后端 API 接通。'},
+    avatar:{t:'头像设计',b:'点上面输入框,描述你的角色(性别/年龄/发型/穿搭/气质),系统生成 6 种风格头像。当前为前端预览版,真实生成需等后端 API 接通。'},
     position:{t:'定位语卡',b:`<div style="padding:14px;background:var(--surface);border-radius:8px"><div style="font-size:12px;color:var(--ink-3);margin-bottom:6px">示例</div><b>我是<span style="color:var(--accent)">[名字]</span>,专注<span style="color:var(--primary)">[区域/客群]</span>,帮<span style="color:var(--primary)">[客户类型]</span>用<span style="color:var(--accent)">[独特方法]</span>解决<span style="color:var(--primary)">[核心痛点]</span>。</b><div style="margin-top:8px;font-size:12px;color:var(--ink-3)">字数 ≤ 30,一气呵成读完</div></div>`},
     script:{t:'话术库',b:`<b>3 段开场白</b><div style="padding:8px 12px;background:var(--surface);border-radius:6px;margin:6px 0">· 朋友圈:"我是 X,过去 3 年帮 200+ 家庭选对房。今天开始记录我的方法论,关注不迷路。"</div><div style="padding:8px 12px;background:var(--surface);border-radius:6px;margin:6px 0">· 客户群:"群里的朋友好,我是 X,以后会在群里分享……"</div><div style="padding:8px 12px;background:var(--surface);border-radius:6px;margin:6px 0">· 自我介绍:"您好,我是 X,做 X 区域 X 年,擅长……"</div>`},
     case:{t:'案例库',b:`<b>3 类故事 × 4 步改写</b><br><br>① 痛点场景 → ② 你的介入 → ③ 客户的变化 → ④ 给观众的启发<br><br><div style="padding:10px;background:var(--surface);border-radius:6px;font-size:13px"><b>示例</b>:"上个月张姐急着在女儿上学前落户,预算紧,看房 2 个月没下手。我帮她拆出 3 个硬指标+3 个软指标,3 天定房,现在每天接送孙女 15 分钟。"</div>`},

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>报名 · 沃土计划</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="login-page">
+  <div class="login-visual">
+    <div class="login-visual-inner">
+      <h1>加入沃土计划<br>成为预备经纪人</h1>
+      <div class="sub">7 天实训 · 0 基础入行 · 结业即出能力档案<br>师徒带教 3 个月独立上岗</div>
+      <div class="feat">
+        <div class="feat-item"><span class="dot"></span>每天真刀真枪实操，不是听课</div>
+        <div class="feat-item"><span class="dot"></span>助教一对一带练打分</div>
+        <div class="feat-item"><span class="dot"></span>结业出四维能力报告</div>
+        <div class="feat-item"><span class="dot"></span>推荐门店 + 师傅结对带教</div>
+      </div>
+      <div style="margin-top:22px;"><a href="https://www.fengsheng.tech/wotu/" style="color:#4ade80; text-decoration:none; font-size:13px;">← 返回风声主站</a></div>
+    </div>
+  </div>
+
+  <div class="login-form-side">
+    <div class="login-form-box">
+      <h2>填写报名信息</h2>
+      <div class="sub">我们将自动为您生成账号，请妥善保存密码</div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for cat, msg in messages %}
+            <div class="flash {{ cat }}">{{ msg }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('register') }}">
+        <div class="form-group">
+          <label class="form-label">姓名</label>
+          <input class="form-input" type="text" name="name" value="{{ name or '' }}" placeholder="真实姓名" required autofocus>
+        </div>
+        <div class="form-group">
+          <label class="form-label">手机号</label>
+          <input class="form-input" type="tel" name="phone" value="{{ phone or '' }}" placeholder="11 位手机号" pattern="\d{11}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">所在学校（或城市）</label>
+          <input class="form-input" type="text" name="school" value="{{ school or '' }}" placeholder="例：北京某某大学" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">设置密码</label>
+          <input class="form-input" type="password" name="password" minlength="6" placeholder="至少 6 位" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:11px; font-size:14.5px;">📥 提交报名</button>
+      </form>
+
+      <div style="text-align:center; margin-top:14px; font-size:13px; color:#6B7280;">已有账号？<a href="{{ url_for('login') }}" style="color:#0F7B4F; text-decoration:none;">直接登录 →</a></div>
+
+      {% if icp_no or gongan_no %}
+      <div style="text-align:center; margin-top:16px; font-size:12px; color:#9CA3AF;">
+        {% if icp_no %}<a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:#9CA3AF; text-decoration:none;">{{ icp_no }}</a>{% endif %}
+        {% if gongan_no %}{% if icp_no %}<span style="margin:0 6px;">|</span>{% endif %}<a href="https://beian.mps.gov.cn/" target="_blank" rel="noopener" style="color:#9CA3AF; text-decoration:none;">{{ gongan_no }}</a>{% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+</body>
+</html>

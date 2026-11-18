@@ -25,16 +25,18 @@ html{scroll-behavior:smooth}
 body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
 a{color:inherit;text-decoration:none}
 
-/* Nav */
-.nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.88);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
-.nav-inner{max-width:1240px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:32px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;white-space:nowrap}
-.brand-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--p),var(--p-light));display:grid;place-items:center;color:white;font-weight:800;flex-shrink:0}
-.brand a{display:flex;align-items:center;gap:10px}
-.nav-links{display:flex;gap:4px;flex:1;flex-wrap:wrap}
-.nav-link{padding:8px 16px;border-radius:8px;font-size:14px;color:var(--ink-soft);transition:all .2s;white-space:nowrap}
-.nav-link:hover{background:rgba(26,61,36,0.06);color:var(--p)}
-.nav-link.active{color:var(--p);font-weight:600;background:rgba(26,61,36,0.08)}
+/* Nav — 统一 fs-top-nav（与 knowledge/workspace/ai-advisor 对齐） */
+.fs-top-nav{position:sticky;top:0;z-index:100;background:#f7f5f0;border-bottom:1px solid #e8e4da;padding:10px 32px;display:flex;align-items:center;gap:20px}
+.fs-top-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.fs-top-mark{width:30px;height:30px;background:#1a3d24;color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.fs-top-name{font-size:14px;font-weight:700;color:#1a3d24;white-space:nowrap}
+.fs-top-links{display:flex;gap:14px;font-size:13px;flex-wrap:wrap;flex:1;justify-content:center}
+.fs-top-links a{color:#555;text-decoration:none;white-space:nowrap}
+.fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
+.fs-top-actions{display:flex;align-items:center;gap:10px;font-size:13px;flex-shrink:0}
+.fs-top-city{cursor:pointer;color:#555;white-space:nowrap}
+.fs-top-avatar{width:30px;height:30px;background:#faf5ea;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px}
+@media(max-width:960px){.fs-top-links{display:none}.fs-top-city{display:none}}
 
 /* Hero */
 .hero{position:relative;padding:60px 32px 40px;max-width:1240px;margin:0 auto;overflow:hidden}
@@ -109,6 +111,8 @@ a{color:inherit;text-decoration:none}
 .entry-card .ec-badge.soft{background:rgba(90,107,101,0.12);color:var(--ink-soft)}
 .entry-card .ec-badge.type{background:rgba(26,61,36,0.08);color:var(--p)}
 .entry-card .ec-consumer{font-size:12px;color:var(--wood);font-style:italic;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.entry-card .ec-goto{display:block;margin-top:8px;font-size:11px;color:#1a3d24;text-decoration:none;opacity:.7;transition:opacity .15s;padding-top:8px;border-top:1px dashed var(--line)}
+.entry-card .ec-goto:hover{opacity:1;font-weight:600}
 
 /* Empty state */
 .empty-state{text-align:center;padding:60px 20px;color:var(--ink-soft)}
@@ -183,23 +187,23 @@ footer a{color:var(--p)}
 </head>
 <body>
 
-<!-- Nav -->
-<nav class="nav">
-  <div class="nav-inner">
-    <div class="brand">
-      <a href="/">
-        <div class="brand-mark">风</div>
-        <span>风声</span>
-      </a>
-    </div>
-    <div class="nav-links">
-      <a href="/" class="nav-link">首页</a>
-      <a href="/knowledge/" class="nav-link">知识底座</a>
-      <a href="/scene/" class="nav-link active">场景导航</a>
-      <a href="/search/" class="nav-link">搜索</a>
-      <a href="/decoder/" class="nav-link">客户解码器</a>
-      <a href="/mentor/" class="nav-link">开单导师</a>
-    </div>
+<!-- Nav — 统一 fs-top-nav（与 knowledge/workspace/ai-advisor 对齐）-->
+<nav class="fs-top-nav">
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声信息咨询</span></a>
+  <div class="fs-top-links">
+    <a href="/">首页</a>
+    <a href="/workspace/">工作台</a>
+    <a href="/knowledge/">知识底座</a>
+    <a href="/curation/">策展引擎</a>
+    <a href="/decoder/">话术解码</a>
+    <a href="/care-test/">能力测评</a>
+    <a class="active" href="/scene/">场景导航</a>
+    <a href="/ai-advisor/">话术陪练</a>
+    <a href="/academy/">学习成长</a>
+  </div>
+  <div class="fs-top-actions">
+    <span class="fs-top-city" onclick="alert('当前以北京为样板城市，多城市数据接入中')">📍 北京 ▾</span>
+    <span class="fs-top-avatar">👤</span>
   </div>
 </nav>
 
@@ -667,6 +671,8 @@ function renderCurrentLayer() {
           ${e.entryType ? `<span class="ec-badge type">${TYPE_LABELS[e.entryType] || e.entryType}</span>` : ''}
         </div>
         ${consumerQ ? `<div class="ec-consumer">💬 ${escapeHtml(consumerQ)}</div>` : ''}
+        ${/* 🆕 跨页查证：点击卡片内的链接阻止冒泡 */''}
+        <a class="ec-goto" href="/knowledge/?q=${encodeURIComponent(e.name)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔎 去知识底座查证 →</a>
       </div>
     `;
   }).join('');

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI 陪练 · 风声聚匠星云 · 经纪人练谈判/获客/带看</title>
+<title>话术陪练 · 风声聚匠星云 · 经纪人练谈判/获客/带看</title>
 <style>
 :root{--ink:#1a3d24;--gold:#c9a962;--bg:#f7f5f0;--card:#fff;--line:#e8e3d8;--ink-soft:#5c6d62;--ok:#2d7a4a;--ai-blue:#4a6fa5;--danger:#b85c38}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -41,6 +41,8 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .kb-card .kb-src{font-size:10px;color:var(--ink-soft);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
 .kb-card .kb-short{background:rgba(184,92,56,.08);border-left-color:var(--danger);border-left-width:3px;border-left-style:solid;padding:8px;border-radius:0 6px 6px 0;margin-top:8px;font-size:11px;color:var(--danger)}
 .kb-card .kb-short::before{content:"⚠️ 短板必填：";font-weight:600}
+.kb-card .kb-link{display:block;margin-top:8px;padding-top:6px;border-top:1px dashed var(--line);font-size:10px;color:var(--ai-blue);text-decoration:none;opacity:.8;transition:opacity .15s}
+.kb-card .kb-link:hover{opacity:1;font-weight:600}
 
 /* 快捷选择菜单 */
 .quick-menu{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -123,21 +125,53 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
   .hero h1{font-size:16px}
   .msg{max-width:96%}
 }
+/* ============ 全局导航（与 knowledge/workspace 统一） ============ */
+.fs-top-nav{position:sticky;top:0;z-index:100;background:#f7f5f0;border-bottom:1px solid #e8e4da;padding:10px 32px;display:flex;align-items:center;gap:20px}
+.fs-top-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.fs-top-mark{width:30px;height:30px;background:#1a3d24;color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.fs-top-name{font-size:14px;font-weight:700;color:#1a3d24;white-space:nowrap}
+.fs-top-links{display:flex;gap:14px;font-size:13px;flex-wrap:wrap;flex:1;justify-content:center}
+.fs-top-links a{color:#555;text-decoration:none;white-space:nowrap}
+.fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
+.fs-top-actions{display:flex;align-items:center;gap:10px;font-size:13px;flex-shrink:0}
+.fs-top-city{cursor:pointer;color:#555;white-space:nowrap}
+.fs-top-avatar{width:30px;height:30px;background:#faf5ea;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px}
+@media(max-width:960px){.fs-top-links{display:none}.fs-top-city{display:none}}
 </style>
 </head>
 <body>
+
+<nav class="fs-top-nav">
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声信息咨询</span></a>
+  <div class="fs-top-links">
+    <a href="/">首页</a>
+    <a href="/workspace/">工作台</a>
+    <a href="/knowledge/">知识底座</a>
+    <a href="/curation/">策展引擎</a>
+    <a href="/decoder/">话术解码</a>
+    <a href="/care-test/">能力测评</a>
+    <a href="/scene/">场景导航</a>
+    <a class="active" href="/ai-advisor/">话术陪练</a>
+    <a href="/academy/">学习成长</a>
+  </div>
+  <div class="fs-top-actions">
+    <span class="fs-top-city" onclick="alert('当前以北京为样板城市，多城市数据接入中')">📍 北京 ▾</span>
+    <span class="fs-top-avatar">👤</span>
+  </div>
+</nav>
+
 <div class="wrap">
 
 <div class="nav">
   <a href="./index.html">① 总览矩阵</a>
-  <a href="./ai-advisor.html" class="active">② AI 顾问落地页</a>
+  <a href="./ai-advisor.html" class="active">② 话术陪练落地页</a>
   <a href="./sales-champion.html">③ 销冠示范库</a>
 </div>
 
 <div class="hero">
-  <h1>🤖 AI 陪练 · 经纪人反串模拟</h1>
-  <p>选一个服务阶段 → AI 扮演客户刁难你 → 你用销冠 SOP 回答 → 每轮自动评分 + 红线检查</p>
-  <div class="trust">🔒 安全承诺：AI 不替你做决策 · 红线时刻提醒你 · 所有回答可追溯</div>
+  <h1>🤖 话术陪练 · 经纪人反串模拟</h1>
+  <p>选一个服务阶段 → 模拟客户刁难你 → 你用销冠 SOP 回答 → 每轮自动评分 + 红线检查</p>
+  <div class="trust">🔒 安全承诺：系统不替你做决策 · 红线时刻提醒你 · 所有回答可追溯</div>
 </div>
 
 <!-- 阶段模式 banner（?stage=xxx 时显示） -->
@@ -147,7 +181,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
     <span style="font-size:15px;font-weight:700" id="stage-banner-title">带看议价 · 练习模式</span>
     <span style="background:rgba(245,213,122,.2);color:#f5d57a;padding:2px 10px;border-radius:10px;font-size:10px;font-weight:600">经纪人反串</span>
   </div>
-  <div style="font-size:12px;opacity:.85;line-height:1.6" id="stage-banner-desc">AI 现在是「挑剔客户」，会问你 5 个带看议价阶段的真实问题。你用经纪人的话回答，AI 会给你打分 + 红线检查。</div>
+  <div style="font-size:12px;opacity:.85;line-height:1.6" id="stage-banner-desc">模拟客户现在「挑剔你」，会问你 5 个带看议价阶段的真实问题。你用经纪人的话回答，系统会给你打分 + 红线检查。</div>
   <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap" id="stage-banner-qs"></div>
 </div>
 
@@ -175,12 +209,12 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <!-- 对话主区 -->
 <div class="chat-wrap">
   <div class="chat-header">
-    <h3>🤖 AI 顾问 · 销冠接待</h3>
+    <h3>🤖 话术陪练 · 销冠接待</h3>
     <div class="meta">复刻望京南李姐 · 7 年销冠 · 学区房 62%</div>
     <div class="trust-badge">🔒 可追溯</div>
   </div>
   <div class="chat-body" id="chat-body">
-    <div class="msg ai">您好！我是 AI 顾问，复刻了风声望京南店李姐的销冠经验。<br><br>我可以帮您了解：学区房、二手房流程、贷款税费、小区优缺点等。<br><br>👇 选一个您最关心的，或者直接打字问我。</div>
+    <div class="msg ai">您好！我是模拟陪练，复刻了风声望京南店李姐的销冠经验。<br><br>我可以帮您了解：学区房、二手房流程、贷款税费、小区优缺点等。<br><br>👇 选一个您最关心的，或者直接打字问我。</div>
     <div class="quick-menu">
       <button onclick="sendQ('我想找学区房，预算 650 万')">🏫 学区房 650 万</button>
       <button onclick="sendQ('二手房税费怎么算？')">💰 税费计算</button>
@@ -226,7 +260,7 @@ const QMAP = {
     {t:"⚠️ 短板必填 · 西临广顺北晚高峰噪音", body:"晚高峰 18-19 点实测 52dB（比小区内部高 8dB）。但关窗基本听不到，物业最近加了两层隔音棉。", src:"来源：噪音仪实测 · 2026-10 · 店长每周测一次", short:true},
     {t:"大西洋新城 · 物业费与口碑", body:"3.5 元/㎡·月，业主评分 4.7/5（30 位近期带看业主访谈）。物业反应快，公共区域维护好。", src:"来源：业主访谈 · 2026-09"}
   ]},
-  "风水": {id:-1, skill:"红线拦截", sop:"RED-01/06", dim:"红线", answer:"⚠️ AI 顾问说明：风水问题属于主观判断范畴，我没有专业能力做推荐。<br><br>如果您在意这类问题，<b>建议请专业风水师现场看</b>，或者我们带您实地感受一下采光、通风、朝向。<br><br>我能帮您的：<br>• 小区实测数据（采光时长/通风/噪音）<br>• 同户型业主的真实评价<br>• 楼层/朝向的客观优劣势对比", kbs:[], red:true},
+  "风水": {id:-1, skill:"红线拦截", sop:"RED-01/06", dim:"红线", answer:"⚠️ 顾问说明：风水问题属于主观判断范畴，我没有专业能力做推荐。<br><br>如果您在意这类问题，<b>建议请专业风水师现场看</b>，或者我们带您实地感受一下采光、通风、朝向。<br><br>我能帮您的：<br>• 小区实测数据（采光时长/通风/噪音）<br>• 同户型业主的真实评价<br>• 楼层/朝向的客观优劣势对比", kbs:[], red:true},
   "跌": {id:27, skill:"CAP-SKILL-205", sop:"TRUST-03", dim:"需求洞察", answer:"姐您这个担心我完全理解——我当时买房也是睡不好觉。<br><br>给您 3 个理性参考：<br>1. <b>学区房刚需</b>：望京南学区房近 3 年波动 ±2%<br>2. <b>规划利好</b>：14 号线支线段 2028 通车，板块价值预计涨 8-12%<br>3. <b>如果真跌了能接受吗？</b>——这个问题您先想清楚<br><br>其实最实在的建议：选一个您住进去不后悔的小区，比纠结涨跌重要。", kbs:[
     {t:"14 号线支线段规划", body:"东侧 1.2km 有支线段施工中，预计 2028 年通车。通车后板块价值预计涨幅 8-12%。", src:"来源：市规划委公示 · 2026-08-15"}
   ]}
@@ -280,7 +314,7 @@ function matchQuery(text){
   // 默认：知识底座通用答复
   return {id:0, skill:"CAP-SKILL-???", sop:"TRUST-02", dim:"通用",
     answer:"这个问题我需要更多信息才能精准回答。您可以：<br>1. 看看上面的快速入口有没有您关心的<br>2. 或者说具体一点（比如'首套 650 万学区房'）<br><br>我的所有回答都来自风声望京南店的本地知识库，每条带来源和时间。", kbs:[
-    {t:"未匹配关键词", body:"建议用'学区/税费/大西洋新城/房价跌'等关键词精确匹配", src:"来源：规则版 AI 顾问 · 关键词匹配模式"}
+    {t:"未匹配关键词", body:"建议用'学区/税费/大西洋新城/房价跌'等关键词精确匹配", src:"来源：规则匹配模式 · 关键词检索"}
   ]};
 }
 
@@ -306,12 +340,20 @@ function processAI(text){
       html += '<div>' + kb.body + '</div>';
       html += '<div class="kb-src">' + kb.src + '</div>';
       if(kb.short) html += '<div class="kb-short">这条是短板，必须主动说</div>';
+      // 🆕 跨页查证链接：跳到 knowledge 页面自动搜索
+      var searchKey = (kb.t || '').split(' · ')[0] || match.answer.slice(0,10);
+      html += '<a class="kb-link" href="/knowledge/?q=' + encodeURIComponent(searchKey) + '" target="_blank" rel="noopener">🔎 在知识底座查证 →</a>';
       html += '</div>';
     });
   }
   html += '<div class="cap-ref">';
   html += '<span class="sop">🔗 SOP 动作：' + match.sop + '</span> · ';
-  html += '<span class="cap">CAP-SKILL：' + match.skill + '</span> · ';
+  // 🆕 CAP-SKILL 可跳到测评
+  var capHref = '/care-test/';
+  if(match.skill.indexOf('CAP-SKILL-1')===0) capHref = '/care-test/';
+  else if(match.skill.indexOf('CAP-SKILL-2')===0) capHref = '/care-test/';
+  else if(match.skill.indexOf('CAP-SKILL-3')===0) capHref = '/care-test/';
+  html += '<span class="cap"><a href="' + capHref + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">CAP-SKILL：' + match.skill + ' → 测一下</a></span> · ';
   html += '<span class="kb">维度：' + match.dim + '</span>';
   html += '</div>';
 
@@ -332,7 +374,7 @@ function checkLeadHook(){
   if(msgCount >= 3 && !leadTriggered){
     leadTriggered = true;
     setTimeout(function(){
-      document.getElementById('lead-hook-wrap').innerHTML = '<div class="lead-hook"><h4>✨ 聊了好一会儿了？</h4><p>我给您生成一份<b>专属信任包</b>——把今天聊的学区/税费/小区都整理进去了，扫码就能带走，回家跟家人慢慢商量。</p><button onclick="alert(\'轻留资：扫码带走信任包（匿名）。这个能力已经接到页面里了，等 P1 上线 Workers AI 后会更流畅。\')">📱 扫码带走</button></div>';
+      document.getElementById('lead-hook-wrap').innerHTML = '<div class="lead-hook"><h4>✨ 聊了好一会儿了？</h4><p>我给您生成一份<b>专属信任包</b>——把今天聊的学区/税费/小区都整理进去了，扫码就能带走，回家跟家人慢慢商量。</p><button onclick="alert(\'轻留资：扫码带走信任包（匿名）。这个能力已经接到页面里了，后续接通云服务后会更流畅。\')">📱 扫码带走</button></div>';
     }, 1500);
   }
 }
@@ -375,7 +417,7 @@ const STAGE_SCRIPTS = {
   prepare: {
     icon: '📋',
     title: '购房准备',
-    desc: 'AI 现在是「准备买房的客户」，还没搞清楚自己能不能买。你是经纪人，帮他算清楚。',
+    desc: '模拟客户现在「准备买房」，还没搞清楚自己能不能买。你是经纪人，帮他算清楚。',
     practiceQs: [
       '我公积金能贷多少？首套和二套差多少？',
       '首套房怎么认定？我之前有一套卖了算首套吗？',
@@ -387,7 +429,7 @@ const STAGE_SCRIPTS = {
   market: {
     icon: '🔍',
     title: '了解市场',
-    desc: 'AI 现在是「挑花眼的客户」，想对比又怕被忽悠。你是经纪人，给真实数据。',
+    desc: '模拟客户现在「挑花眼」，想对比又怕被忽悠。你是经纪人，给真实数据。',
     practiceQs: [
       '我想等房价跌了再买，你觉得呢？',
       '帮我对比一下大西洋新城和对面的季景沁园',
@@ -399,7 +441,7 @@ const STAGE_SCRIPTS = {
   invite: {
     icon: '🏠',
     title: '邀约带看',
-    desc: 'AI 现在是「忙到没空出门的客户」，抗拒带看。你是经纪人，怎么破？',
+    desc: '模拟客户现在「忙到没空出门」，抗拒带看。你是经纪人，怎么破？',
     practiceQs: [
       '我最近太忙了，等有空再说吧',
       '我就随便看看，不急',
@@ -411,7 +453,7 @@ const STAGE_SCRIPTS = {
   negotiate: {
     icon: '💬',
     title: '带看议价',
-    desc: 'AI 现在是「带看完想压价的客户」，各种砍价理由。你是经纪人，怎么接？',
+    desc: '模拟客户现在「带看完想压价」，各种砍价理由。你是经纪人，怎么接？',
     practiceQs: [
       '太贵了，比周边小区贵 20 万',
       '回去商量一下，不急',
@@ -423,7 +465,7 @@ const STAGE_SCRIPTS = {
   transaction: {
     icon: '💰',
     title: '交易安全',
-    desc: 'AI 现在是「怕被骗的客户」，签约前各种担心。你是经纪人，怎么让他放心？',
+    desc: '模拟客户现在「怕被骗」，签约前各种担心。你是经纪人，怎么让他放心？',
     practiceQs: [
       '资金监管安全吗？钱打给谁？',
       '首套房契税多少？怎么算的？',
@@ -435,7 +477,7 @@ const STAGE_SCRIPTS = {
   closing: {
     icon: '🔄',
     title: '过户交接',
-    desc: 'AI 现在是「快过户的客户」，担心户口、水电、尾款。你是经纪人，帮他顺。',
+    desc: '模拟客户现在「快过户」，担心户口、水电、尾款。你是经纪人，帮他顺。',
     practiceQs: [
       '过户后户口怎么迁？原业主不迁怎么办？',
       '交房时要注意什么？原业主留的东西要吗？',
@@ -467,7 +509,7 @@ const STAGE_SCRIPTS = {
     const tag = document.createElement('span');
     tag.style.cssText = 'background:rgba(255,255,255,.12);color:#fff;padding:4px 12px;border-radius:12px;font-size:11px;cursor:pointer';
     tag.textContent = (i+1) + '. ' + q;
-    tag.title = '点一下把这个问题发给 AI';
+    tag.title = '点一下把这个问题发给陪练';
     tag.onclick = () => sendQ(q);
     qsWrap.appendChild(tag);
   });

@@ -1,0 +1,3111 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+沃土计划 · 校园实训考核系统（网页端）
+Flask + SQLite · 学员工作台 + PM 交付包导出
+数据库只读，不改动 wotu_full.db
+"""
+import os
+import io
+import csv
+import math
+import zipfile
+import hashlib
+import sqlite3
+from datetime import datetime, timedelta
+from functools import wraps
+
+from flask import (Flask, g, render_template, request, redirect,
+                   url_for, session, flash, Response, jsonify, send_from_directory)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "wotu_full.db")
+UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024  # 100MB
+# 密钥：环境变量优先，否则自动生成并写入文件（重启后保持一致）
+_key_file = os.path.join(BASE_DIR, ".secret_key")
+if os.environ.get("WOTU_SECRET_KEY"):
+    app.secret_key = os.environ["WOTU_SECRET_KEY"]
+elif os.path.exists(_key_file):
+    with open(_key_file, "r") as f:
+        app.secret_key = f.read().strip()
+else:
+    app.secret_key = hashlib.sha256(os.urandom(32)).hexdigest()
+    with open(_key_file, "w") as f:
+        f.write(app.secret_key)
+app.permanent_session_lifetime = __import__("datetime").timedelta(hours=8)
+
+# 登录失败记录（简单限速）
+_login_attempts = {}
+
+
+# ─── 健康检查（运维探活，无需登录）───
+@app.route("/healthz")
+def healthz():
+    try:
+        db = get_db()
+        db.execute("SELECT 1").fetchone()
+        return jsonify({"status": "ok", "service": "wotu", "db": True}), 200
+    except Exception:
+        return jsonify({"status": "error", "service": "wotu", "db": False}), 500
+
+
+# ─── 全局模板变量：备案号 / 系统配置 ───
+@app.context_processor
+def inject_global_config():
+    try:
+        cfg = dict(get_db().execute("SELECT key, value FROM system_config").fetchall())
+    except Exception:
+        cfg = {}
+    return {"icp_no": cfg.get("icp_no", ""),
+            "gongan_no": cfg.get("gongan_no", ""),
+            "site_name": "沃土计划"}
+
+
+# ─── 数据库 ───
+def get_db():
+    if "db" not in g:
+        g.db = sqlite3.connect(DB_PATH, timeout=15)
+        g.db.row_factory = sqlite3.Row
+        # 多 worker 部署下降低写锁冲突
+        try:
+            g.db.execute("PRAGMA busy_timeout=15000")
+            g.db.execute("PRAGMA journal_mode=WAL")
+        except sqlite3.OperationalError:
+            pass
+    return g.db
+
+
+@app.teardown_appcontext
+def close_db(exc):
+    db = g.pop("db", None)
+    if db:
+        db.close()
+
+
+def hash_pwd(p):
+    return hashlib.sha256(p.encode()).hexdigest()
+
+
+# ─── 身份映射：stu001 ↔ S001 ───
+def sid_for_user(user_id):
+    """登录账号映射到业务 SID"""
+    if user_id.startswith("stu"):
+        return "S" + user_id[3:].zfill(3)
+    return None
+
+
+# ─── 登录装饰器 ───
+def login_required(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if "user_id" not in session:
+            return redirect(url_for("login", next=request.path))
+        return fn(*args, **kwargs)
+    return wrapper
+
+
+def role_required(*roles):
+    def deco(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            if "user_id" not in session:
+                return redirect(url_for("login"))
+            if session.get("role") not in roles:
+                flash("无权限访问该页面", "error")
+                return redirect(url_for("dashboard"))
+            return fn(*args, **kwargs)
+        return wrapper
+    return deco
+
+
+def current_user():
+    if "user_id" not in session:
+        return None
+    row = get_db().execute(
+        "SELECT user_id, role, display_name FROM campus_user_role WHERE user_id=?",
+        (session["user_id"],)).fetchone()
+    return row
+
+
+# ─── 审计日志（关键操作留痕）───
+def _audit(db, operate_type, change_summary, sid=""):
+    try:
+        db.execute("""INSERT INTO campus_audit_log (sid, operator_id, operate_type, change_summary, operate_time)
+                      VALUES (?,?,?,?,?)""",
+            (sid, session.get("user_id", ""), operate_type, change_summary,
+             datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        db.commit()
+    except Exception:
+        pass
+
+
+def _get_config_int(db, key, default):
+    r = db.execute("SELECT value FROM system_config WHERE key=?", (key,)).fetchone()
+    try:
+        return int(r["value"]) if r else default
+    except (TypeError, ValueError):
+        return default
+
+
+# ─── 雷达图 SVG（内联，无外部依赖）───
+def radar_svg(m1, m2, m3, m4, size=260):
+    """四维雷达图：M1 上 / M2 右 / M3 下 / M4 左"""
+    m1, m2, m3, m4 = (m1 or 0), (m2 or 0), (m3 or 0), (m4 or 0)
+    cx, cy, R = 130, 130, 90
+    axes = [
+        ("M1", m1, -90),
+        ("M2", m2,   0),
+        ("M3", m3,  90),
+        ("M4", m4, 180),
+    ]
+    def pt(val, angle_deg, r_scale=1.0):
+        a = math.radians(angle_deg)
+        r = (val / 100.0) * R * r_scale
+        return cx + r * math.cos(a), cy + r * math.sin(a)
+
+    parts = [f'<svg width="{size}" height="{size}" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">']
+    # 背景网格（3 层）
+    for ring in (0.33, 0.66, 1.0):
+        pts = []
+        for _, _, ang in axes:
+            x, y = pt(100, ang, ring)
+            pts.append(f"{x:.1f},{y:.1f}")
+        parts.append(f'<polygon points="{" ".join(pts)}" fill="none" stroke="#E5E7EB" stroke-width="1"/>')
+    # 轴线
+    for name, val, ang in axes:
+        x, y = pt(100, ang)
+        parts.append(f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="#E5E7EB" stroke-width="1"/>')
+        lx, ly = pt(118, ang)
+        parts.append(f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="middle" dominant-baseline="middle" '
+                     f'font-size="12" font-weight="600" fill="#374151">{name}</text>')
+        parts.append(f'<text x="{lx:.1f}" y="{ly+14:.1f}" text-anchor="middle" dominant-baseline="middle" '
+                     f'font-size="10" fill="#9CA3AF">{val:.0f}</text>')
+    # 数据多边形
+    data_pts = []
+    for _, val, ang in axes:
+        x, y = pt(val, ang)
+        data_pts.append(f"{x:.1f},{y:.1f}")
+    parts.append(f'<polygon points="{" ".join(data_pts)}" fill="rgba(15,123,79,0.18)" stroke="#0F7B4F" stroke-width="2"/>')
+    for _, val, ang in axes:
+        x, y = pt(val, ang)
+        parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.5" fill="#0F7B4F"/>')
+    parts.append("</svg>")
+    return "".join(parts)
+
+
+# ─── 试卷配置（P001-P008，每卷三组：单选SC/多选MC/判断TF）───
+CHOICE_DOCUMENTS = {
+    'P001': ('P001_SC', 'P001_MC', 'P001_TF'),
+    'P002': ('P002_SC', 'P002_MC', 'P002_TF'),
+    'P003': ('P003_SC', 'P003_MC', 'P003_TF'),
+    'P004': ('P004_SC', 'P004_MC', 'P004_TF'),
+    'P005': ('P005_SC', 'P005_MC', 'P005_TF'),
+    'P006': ('P006_SC', 'P006_MC', 'P006_TF'),
+    'P007': ('P007_SC', 'P007_MC', 'P007_TF'),
+    'P008': ('P008_SC', 'P008_MC', 'P008_TF'),
+}
+WEIGHT = {'单选': round(2.5 * 100 / 110, 4), '多选': round(5.0 * 100 / 110, 4), '判断': round(2.5 * 100 / 110, 4)}
+PAPER_TITLES = {
+    'P001': 'Day1 · 职业素养与行业认知',
+    'P002': 'Day2 · 租赁业务基础',
+    'P003': 'Day3 · 租赁进阶与资金安全',
+    'P004': 'Day4 · 买卖业务基础',
+    'P005': 'Day5 · 买卖进阶与签约',
+    'P006': 'Day6 · 自媒体与获客',
+    'P007': 'Day7 · 售后服务与客诉',
+    'P008': '结业大考 · 综合卷',
+}
+
+
+# ─── 路由：登录 ───
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    demo_mode = _get_config_int(get_db(), "demo_mode", 1)
+    if request.method == "POST":
+        uid = request.form.get("user_id", "").strip()
+        pwd = request.form.get("password", "")
+        # 简单限速：同一IP 5分钟内失败5次锁定
+        ip = request.remote_addr
+        now = datetime.now()
+        attempts = _login_attempts.get(ip, [])
+        attempts = [t for t in attempts if (now - t).total_seconds() < 300]
+        if len(attempts) >= 5:
+            flash("尝试次数过多，请5分钟后再试", "error")
+            return render_template("login.html", demo_mode=demo_mode), 429
+        row = get_db().execute(
+            "SELECT user_id, role, display_name, password_hash, managed_class_ids FROM campus_user_role WHERE user_id=?",
+            (uid,)).fetchone()
+        if not row or row["password_hash"] != hash_pwd(pwd):
+            attempts.append(now)
+            _login_attempts[ip] = attempts
+            flash("账号或密码错误", "error")
+            return render_template("login.html", demo_mode=demo_mode), 401
+        # 登录成功清空失败记录
+        _login_attempts.pop(ip, None)
+        session.permanent = True
+        session["user_id"] = row["user_id"]
+        session["role"] = row["role"]
+        session["display_name"] = row["display_name"]
+        session["managed_class_ids"] = row["managed_class_ids"] or ""
+        return redirect(request.args.get("next") or url_for("dashboard"))
+    return render_template("login.html", demo_mode=demo_mode)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("已退出登录", "info")
+    return redirect(url_for("login"))
+
+
+# ─── 学生自助注册（公开）───
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """新学员自助注册入口：填姓名+手机号+学校 → 自动生成 stuXXX 账号 → 跳到登录页"""
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        phone = request.form.get("phone", "").strip()
+        school = request.form.get("school", "").strip()
+        pwd = request.form.get("password", "").strip()
+
+        errors = []
+        if not name:
+            errors.append("请填写姓名")
+        if not phone or not phone.isdigit() or len(phone) < 11:
+            errors.append("请填写正确的手机号")
+        if not pwd or len(pwd) < 6:
+            errors.append("密码至少 6 位")
+        if errors:
+            for e in errors:
+                flash(e, "error")
+            return render_template("register.html", name=name, phone=phone, school=school), 400
+
+        db = get_db()
+        # 手机号去重
+        exists = db.execute("SELECT sid FROM campus_student WHERE phone=?", (phone,)).fetchone()
+        if exists:
+            flash("该手机号已注册，请直接登录", "error")
+            return render_template("register.html", name=name, school=school), 400
+
+        # 生成账号 stuXXX（取最大 stu 序号 +1）
+        max_uid = db.execute(
+            "SELECT user_id FROM campus_user_role WHERE user_id LIKE 'stu%' "
+            "ORDER BY CAST(substr(user_id,4) AS INTEGER) DESC LIMIT 1").fetchone()
+        next_num = int(max_uid["user_id"][3:]) + 1 if max_uid else 1
+        new_uid = f"stu{next_num:03d}"
+        new_sid = f"S{next_num:03d}"
+
+        db.execute(
+            "INSERT INTO campus_user_role (user_id, role, display_name, password_hash) "
+            "VALUES (?,?,?,?)",
+            (new_uid, "student", name, hash_pwd(pwd)))
+        db.execute(
+            "INSERT INTO campus_student (sid, name, school, phone, created_at) "
+            "VALUES (?,?,?,?,?)",
+            (new_sid, name, school, phone, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        db.commit()
+
+        flash(f"注册成功！账号 {new_uid}，初始密码已按您填的设置。请登录进入实训营。", "success")
+        return redirect(url_for("login"))
+
+    return render_template("register.html")
+
+
+# ─── 根路径：未登录 → 报名引导，已登录 → dashboard ───
+@app.route("/")
+def index():
+    if "user_id" in session:
+        return redirect(url_for("dashboard"))
+    return render_template("landing.html")
+
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    role = session.get("role")
+    if role == "student":
+        return redirect(url_for("student_dashboard"))
+    elif role == "pm":
+        return redirect(url_for("pm_dashboard"))
+    elif role == "coach":
+        return redirect(url_for("coach_dashboard"))
+    elif role == "expert":
+        return redirect(url_for("expert_dashboard"))
+    elif role == "teacher":
+        return redirect(url_for("teacher_dashboard"))
+    elif role == "mentor":
+        return redirect(url_for("mentor_dashboard"))
+    else:
+        flash("该角色工作台暂未开放", "info")
+        return redirect(url_for("login"))
+
+
+# ─── 学员工作台 ───
+# 每天 = 3个子任务：📖学习材料 + ✍️实操提交 + 📝知识测验
+TASK_DEFS = [
+    {
+        "day": 1, "title": "职业素养·PDCA闭环", "module": "价值观 · 闭环工作法 · 非暴力沟通",
+        "paper": "P001",
+        "goal": "建立房产经纪人职业认知，理解贝壳价值观，掌握PDCA工作方法，完成第一次客户需求调研。",
+        "skills": ["理解执业红线与信息保护", "掌握PDCA闭环思维", "能设计并执行一份客户调研"],
+        "tools": ["纸笔/备忘录记录", "微信采访亲友", "阅读《经纪人执业红线手册》"],
+        "steps": [
+            "阅读贝壳价值观四条：客户至上、诚实可信、合作共赢、拼搏进取",
+            "学习PDCA循环：Plan计划→Do执行→Check检查→Act改进",
+            "找1-2位有购房/租房经历的亲友，设计3-5个调研问题",
+            "完成采访，记录客户核心需求（预算/区域/顾虑）",
+            "复盘：调研中哪里做得好、哪里可以改进",
+        ],
+        "safety": "⚠️ 采访中不得泄露客户隐私，不得承诺无法兑现的条件，严格遵守信息保护要求。",
+        "deliverables": [
+            {"name": "调研计划", "desc": "写下你的调研对象、采访提纲、预计时间安排"},
+            {"name": "客户需求记录", "desc": "整理采访记录：客户预算、意向区域、核心顾虑、决策人"},
+            {"name": "复盘总结", "desc": "PDCA复盘：你发现了什么规律？下次怎么改进？"},
+            {"name": "演练·访谈提问录音", "type": "drill", "media": "audio",
+             "desc": "录一段30-60秒的访谈提问片段（你向受访者提问的2-3个问题），练习提问质量与倾听语气。",
+             "privacy": "隐私合规：受访者用化名（如'我的同学'）；不得录音中说出真实姓名、手机号、门牌地址；只录提问，不录受访者完整隐私信息。"},
+        ],
+        "study": "阅读《经纪人执业红线手册》，理解PDCA闭环管理（Plan-Do-Check-Act）。贝壳价值观：客户至上、诚实可信、合作共赢、拼搏进取。",
+        "practice": "PDCA房产需求调研：采访身边1-2位有购房/租房经历的亲友，按交付节点逐项提交。",
+    },
+    {
+        "day": 2, "title": "贝壳业务认知", "module": "一体三翼 · 全周期业务 · 产品矩阵",
+        "paper": "P002",
+        "goal": "理解贝壳一体三翼战略版图，能按客户人生阶段匹配对应业务，形成全周期服务意识。",
+        "skills": ["说清贝壳一体三翼业务结构", "按人生阶段匹配居住服务", "定位自己作为预备经纪人的角色"],
+        "tools": ["贝壳找房APP", "被窝家装APP", "贝壳惠居小程序"],
+        "steps": [
+            "下载/打开贝壳找房APP，浏览二手房、新房、租赁三大板块",
+            "了解一体三翼：二手/新房/租赁为一体，家装/惠居/贝好家为三翼",
+            "思考：一个人从毕业到养老，每个阶段需要什么居住服务",
+            "整理成业务地图（文字描述即可）",
+        ],
+        "safety": "⚠️ 业务介绍必须基于贝壳官方口径，不得自行承诺交易条件或费用。",
+        "deliverables": [
+            {"name": "一体三翼业务图", "desc": "用文字或脑图描述贝壳业务版图，标注各板块关系"},
+            {"name": "人生阶段匹配表", "desc": "职场萌新→恋爱→成家→多孩→养老，每个阶段对应贝壳什么业务"},
+            {"name": "个人服务定位", "desc": "你作为预备经纪人，能为客户提供什么全周期服务？200字以内"},
+            {"name": "演练·讲业务录音", "type": "drill", "media": "audio",
+             "desc": "录一段1-2分钟讲解音频：用'一个人从毕业到成家'的故事线，把贝壳各业务讲给客户听（练习把业务讲得通俗、有画面感）。",
+             "privacy": "隐私合规：全程讲虚构客户故事，不得出现真实人名/公司内部数据；业务口径以贝壳官方公开介绍为准。"},
+        ],
+        "study": "学习贝壳一体三翼战略：二手/新房/租赁为一体，家装/惠居/贝好家为三翼。",
+        "practice": "贝壳业务认知报告：按交付节点逐项提交。",
+    },
+    {
+        "day": 3, "title": "电话沟通与门店接待", "module": "电话礼仪 · 信任建立 · 线下接待",
+        "paper": "P003",
+        "goal": "掌握电话沟通六步法，能写出专业的电话沟通话术，建立初步客户信任。",
+        "skills": ["电话开场与礼仪", "倾听并记录客户需求", "自然引导加微信", "门店接待全流程"],
+        "tools": ["手机（模拟通话）", "备忘录（记录客户信息）", "贝壳找房APP（查房源）"],
+        "steps": [
+            "学习电话沟通六步：开场→倾听→应答→信任→引导加微→收尾",
+            "设定客户画像：李先生，32岁，三口之家，预算120-140万，三居室，关注学区",
+            "撰写逐字版话术脚本，至少5轮对话",
+            "重点练习：如何自然加微信而不引起客户反感",
+        ],
+        "safety": "⚠️ 电话中不得骚扰客户，不得隐瞒房源缺陷，不得夸大学区/配套信息。",
+        "deliverables": [
+            {"name": "客户画像卡", "desc": "写下客户基本信息、核心需求、预算约束、决策风格"},
+            {"name": "电话话术脚本", "desc": "逐字版沟通话术，至少5轮对话，含开场/需求挖掘/专业解答/引导加微"},
+            {"name": "接待流程清单", "desc": "门店接待从迎接送到送别的完整步骤清单（至少6步）"},
+            {"name": "演练·模拟通话录音", "type": "drill", "media": "audio",
+             "desc": "录一段2-3分钟模拟电话：按话术脚本演'你给客户打第一通电话'（可让亲友扮演客户，或一人分饰两角）。要点：开场自然→挖需求→专业应答→自然引导加微。",
+             "privacy": "隐私合规：客户用虚构身份（如'李客户'）；不得在通话中报真实手机号、门牌号；不录真实联系人信息；亲友扮演者只称'我朋友'。"},
+        ],
+        "study": "学习电话沟通礼仪六步法和门店接待全流程。",
+        "practice": "电话沟通剧本：按交付节点逐项提交。",
+    },
+    {
+        "day": 4, "title": "商圈跑盘·AI楼书创作", "module": "线上跑盘 · 手绘地图 · AI工具应用",
+        "paper": "P004",
+        "goal": "掌握商圈调研方法，能独立完成一个商圈的基础调研，并使用AI工具辅助生成楼书。",
+        "skills": ["用贝壳找房采集楼盘信息", "用地图核实配套", "手绘商圈图", "AI工具辅助内容生产"],
+        "tools": ["贝壳找房APP", "高德/百度地图", "AI写作工具（豆包/文心一言等）", "纸笔手绘"],
+        "steps": [
+            "选一个北京商圈（回龙观/望京/通州任选）",
+            "用贝壳找房采集该商圈3-5个楼盘基础信息",
+            "用地图核实交通（地铁/公交）、学校、商业、医疗配套",
+            "手绘一张商圈示意图（拍照上传或文字描述）",
+            "用AI工具生成楼盘楼书初稿，再人工校对修改",
+        ],
+        "safety": "⚠️ AI生成内容必须人工核实，不得直接照搬；房价/学区/配套信息以官方为准。",
+        "deliverables": [
+            {"name": "商圈调研记录", "desc": "选定商圈+3-5个楼盘基础信息（年代/物业/户数/均价）"},
+            {"name": "配套盘点", "desc": "交通/学校/商业/医疗四项配套分别列出"},
+            {"name": "AI楼书+校对说明", "desc": "AI生成的楼书全文 + 你人工修改了哪些地方、为什么改"},
+            {"name": "演练·实地跑盘记录", "type": "drill", "media": "image",
+             "desc": "到选定的商圈实地走一圈，拍2-3张实景照（小区门头/周边配套/街道环境），配一段100字以内的跑盘观察（你现场看到了什么线上查不到的信息？）。",
+             "privacy": "隐私合规：只拍公共区域外景；不拍路人正脸、不拍车牌、不拍门牌号、不拍住宅室内；如拍到行人请避开或裁掉。"},
+        ],
+        "study": "学习商圈调研四步法和AI工具应用。",
+        "practice": "AI楼书创作：按交付节点逐项提交。",
+    },
+    {
+        "day": 5, "title": "面对面沟通·VR带看", "module": "首次沟通 · VR讲房 · 房源分析",
+        "paper": "P005",
+        "goal": "能对一套真实房源做专业分析，并写出VR带看讲解话术。",
+        "skills": ["房源优劣势分析", "客群匹配判断", "VR带看讲解", "应对客户提问"],
+        "tools": ["贝壳找房APP（找真实房源）", "VR带看功能体验", "录音设备（模拟讲解）"],
+        "steps": [
+            "在贝壳找房选一套真实在售房源",
+            "记录房源基本信息（户型/面积/价格/楼层/朝向）",
+            "分析至少3个优势+3个劣势",
+            "判断适配人群（刚需/改善/投资/养老）",
+            "写一段2分钟VR带看讲解话术并模拟练习",
+        ],
+        "safety": "⚠️ 不得隐瞒房源硬伤（采光/噪音/漏水等），劣势要主动告知客户。",
+        "deliverables": [
+            {"name": "房源档案", "desc": "选定房源链接/编号+基本信息"},
+            {"name": "优劣势分析", "desc": "至少3个优势+3个劣势，客观真实"},
+            {"name": "VR讲解话术", "desc": "2分钟讲解稿，开头抓注意力+中间讲亮点+结尾引导下一步"},
+            {"name": "演练·VR讲房录音", "type": "drill", "media": "audio",
+             "desc": "对着你选的房源（VR模式或户型图），录一段2分钟真实讲房：开头30秒抓注意力→中间讲3个亮点（户型/采光/配套）→结尾引导下一步（约看/加微信）。",
+             "privacy": "隐私合规：只讲房源公开信息（面积/户型/价格/配套）；不得编造业主信息、业主隐私、成交底价；不得报真实业主姓名。"},
+        ],
+        "study": "学习首次客业沟通要点和VR带看流程。",
+        "practice": "房源分析报告：按交付节点逐项提交。",
+    },
+    {
+        "day": 6, "title": "顾问式营销", "module": "DPIE法则 · 房价分析 · 决策引导",
+        "paper": "P006",
+        "goal": "掌握DPIE顾问式营销法，能应对客户常见顾虑（如房价观望），用数据和专业引导决策。",
+        "skills": ["DPIE四步法", "用数据支撑判断", "客户顾虑诊断", "沟通话术撰写"],
+        "tools": ["贝壳找房成交数据", "国家统计局/住建局公开数据", "计算器（算账）"],
+        "steps": [
+            "学习DPIE：Diagnose诊断→Propose提案→Implement实施→Evaluate评价",
+            "客户场景：\"现在房价一直在降，我想再等等\"",
+            "诊断：客户到底在担心什么？（买跌不买涨？资金不足？不信任？）",
+            "找2-3个数据支撑你的判断（成交价走势、挂牌量、利率等）",
+            "写出完整应对话术",
+        ],
+        "safety": "⚠️ 不得预测房价涨跌，不得承诺\"抄底\"，数据必须注明来源和时间。",
+        "deliverables": [
+            {"name": "客户顾虑诊断", "desc": "客户说\"再等等\"背后真正担心的是什么？至少分析2种可能"},
+            {"name": "数据支撑", "desc": "你查了哪些数据？来源是什么？得出什么结论？"},
+            {"name": "应对话术", "desc": "DPIE四步完整话术，自然不推销，站在客户角度"},
+            {"name": "演练·异议应对录音", "type": "drill", "media": "audio",
+             "desc": "和亲友/同学演一段3-5分钟对话：对方扮演客户坚持'房价还会降，再等等'，你用DPIE法则应对（诊断→数据→方案→引导）。练习'不争辩、接得住、有数据'。",
+             "privacy": "隐私合规：对话中客户姓名用虚构（如'王客户'）；数据引用于官方公开渠道并说明来源；不得承诺房价涨跌、不得虚构成交记录。"},
+        ],
+        "study": "学习DPIE顾问式营销四步法。",
+        "practice": "客户顾虑应对：按交付节点逐项提交。",
+    },
+    {
+        "day": 7, "title": "自媒体获客", "module": "小红书图文 · 抖音短视频 · 居住IP",
+        "paper": "P007",
+        "goal": "掌握房产内容获客基本方法，能产出一篇小红书笔记或一条短视频脚本。",
+        "skills": ["选题策划", "标题写作（数字+痛点+悬念）", "小红书图文笔记", "短视频脚本结构"],
+        "tools": ["小红书APP", "抖音APP", "手机拍摄", "文案编辑工具"],
+        "steps": [
+            "学习双平台逻辑：小红书重图文种草，抖音重视觉冲击",
+            "选定一个选题（如某商圈房源推荐/购房避坑指南）",
+            "写标题：必须有数字+痛点+悬念",
+            "写正文/脚本：3-5个核心卖点，真实不硬广",
+            "设计结尾行动引导（点赞/评论/私信）",
+        ],
+        "safety": "⚠️ 内容不得虚假宣传，不得使用未经授权的房源图片，不得侵犯他人隐私。",
+        "deliverables": [
+            {"name": "选题与标题", "desc": "选定平台+选题+最终标题（标题要吸引人）"},
+            {"name": "内容正文/脚本", "desc": "小红书正文 或 抖音60秒脚本（含开头钩子+卖点+行动引导）"},
+            {"name": "发布策略", "desc": "你打算什么时候发？怎么蹭话题？怎么回复评论？"},
+            {"name": "演练·真实内容产出", "type": "drill", "media": "video",
+             "desc": "真正产出一条内容：①拍一条15-30秒短视频（讲一个房源/一条购房避坑知识）并上传；或②真实发布一篇小红书图文，上传发布截图。",
+             "privacy": "隐私合规：不拍客户正脸、不拍业主信息；房源信息用公开房源；不泄露客户隐私；如用他人素材需获授权，禁止搬运。"},
+        ],
+        "study": "学习房产经纪人双平台运营方法。",
+        "practice": "获客内容创作：按交付节点逐项提交。",
+    },
+]
+
+
+@app.route("/dashboard/student")
+@login_required
+@role_required("student")
+def student_dashboard():
+    uid = session["user_id"]
+    sid = sid_for_user(uid) or uid
+    db = get_db()
+
+    # 最新有效成绩
+    cert = db.execute(
+        "SELECT * FROM campus_cert_result WHERE sid=? AND is_valid=1 "
+        "ORDER BY cert_id DESC LIMIT 1", (sid,)).fetchone()
+
+    # 学员姓名
+    stu = db.execute("SELECT name FROM campus_student WHERE sid=?", (sid,)).fetchone()
+    name = stu["name"] if stu else sid
+
+    # 7 天任务完成状态
+    tasks = []
+    done_count = 0
+    for tdef in TASK_DEFS:
+        day = tdef["day"]
+        total_deliv = len(tdef["deliverables"])
+        # 实操：所有交付节点都提交了才算完成
+        submitted = db.execute(
+            "SELECT COUNT(DISTINCT deliverable_index) c FROM practice_submission WHERE sid=? AND day=?",
+            (sid, day)).fetchone()["c"]
+        practice_done = submitted >= total_deliv
+        # 测验是否已做
+        qr = db.execute(
+            "SELECT score FROM campus_quiz_result WHERE sid=? AND quiz_group=?",
+            (sid, tdef["paper"])).fetchone()
+        quiz_done = bool(qr)
+        quiz_score = qr["score"] if qr else None
+
+        day_done = practice_done and quiz_done
+        if day_done:
+            done_count += 1
+        sub = []
+        sub.append(("学习材料", True, "已完成"))
+        sub.append(("交付节点", practice_done, f"{submitted}/{total_deliv}已交" if submitted else "未提交"))
+        sub.append(("知识测验", quiz_done, f"{quiz_score:.0f}分" if quiz_score else "未做"))
+
+        tasks.append({
+            "day": day, "title": tdef["title"], "module": tdef["module"],
+            "paper": tdef["paper"], "done": day_done,
+            "current": (day == done_count + 1 and not day_done),
+            "subs": sub,
+        })
+
+    radar = radar_svg(
+        cert["m1_score"] if cert else 0,
+        cert["m2_score"] if cert else 0,
+        cert["m3_score"] if cert else 0,
+        cert["m4_score"] if cert else 0,
+    )
+    exam_cfg = db.execute("SELECT active_paper, is_open FROM exam_config WHERE id=1").fetchone()
+    # 积分与排名（助教激励）
+    points = _points_summary(db, sid)
+    # 督导通知（助教发给我、待我跟进）
+    my_supervisions = db.execute(
+        "SELECT * FROM supervision_log WHERE sid=? AND status='pending' ORDER BY id DESC LIMIT 10",
+        (sid,)).fetchall()
+    # 我的标杆作品（被导师/助教推荐）
+    my_showcases = db.execute("""
+        SELECT sw.*, cs.name AS stu_name FROM showcase_work sw
+        LEFT JOIN campus_student cs ON sw.sid=cs.sid
+        WHERE sw.sid=? ORDER BY sw.id DESC LIMIT 10""", (sid,)).fetchall()
+    # 校友身份卡（已结业入会）
+    my_alumni = db.execute("SELECT * FROM alumni WHERE sid=?", (sid,)).fetchone()
+    # 今日日程和公告
+    my_class = db.execute("SELECT class_id FROM campus_student WHERE sid=?", (sid,)).fetchone()
+    cid = my_class["class_id"] if my_class else "class01"
+    today_schedule = db.execute("SELECT * FROM class_schedule WHERE class_id=? ORDER BY time_slot", (cid,)).fetchall()
+    announcements = db.execute("SELECT * FROM announcement WHERE class_id=? ORDER BY created_at DESC LIMIT 5", (cid,)).fetchall()
+    user = {"display_name": session.get("display_name"), "role": "student", "sid": sid}
+    banner = {
+        "title": "沃土计划 · 预备经纪人实训营",
+        "vision": "让每一次实训都长出真本事：测知识、学方法、练技能、考能力、评画像，最终拿到一份能证明自己的能力档案。",
+        "expect_title": "致学员 · 今天的演练，是明天的第一单",
+        "expect_desc": "你将在 7 天里像真正的经纪人一样跑商圈、打电话、做楼书、接待客户。完成全部实操与考核，你将带着四维能力画像和上岗建议走出实训营——我们已经为你铺好「技能盘点 → 师傅结对 → 3 个月陪跑」的独立上岗之路。",
+        "theme": "green",
+        "features": [
+            {"icon": "📚", "name": "每日任务", "desc": "学习→实操→测验闭环", "url": url_for("student_study")},
+            {"icon": "🎤", "name": "实操演练", "desc": "录音/跑盘/话术交付", "url": url_for("student_practice")},
+            {"icon": "📝", "name": "知识测验", "desc": "7天随堂测验", "url": url_for("student_quizzes")},
+            {"icon": "📊", "name": "我的测评", "desc": "四维能力画像", "url": url_for("student_eval")},
+            {"icon": "🎓", "name": "结业证书", "desc": "定级与上岗建议", "url": url_for("student_cert")},
+            {"icon": "🚀", "name": "上岗陪跑", "desc": "结对师傅·3个月陪跑", "url": url_for("student_followup")},
+        ],
+    }
+    return render_template("student_dashboard.html",
+                           user=user, active="dashboard",
+                           cert=cert or {}, tasks=tasks,
+                           done_count=done_count, radar_svg=radar,
+                           exam_paper=exam_cfg["active_paper"] if exam_cfg else None,
+                           exam_open=bool(exam_cfg["is_open"]) if exam_cfg else False,
+                           today_schedule=today_schedule, announcements=announcements,
+                           points=points, my_supervisions=my_supervisions,
+                           my_showcases=my_showcases, my_alumni=my_alumni,
+                           banner=banner)
+
+
+# ─── 做题：GET 展示题目 / POST 判分提交 ───
+# ─── 每日任务详情 ───
+@app.route("/day/<int:day_num>")
+@login_required
+@role_required("student")
+def day_detail(day_num):
+    if day_num < 1 or day_num > 7:
+        flash("无效的天数", "error")
+        return redirect(url_for("student_dashboard"))
+    tdef = TASK_DEFS[day_num - 1]
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    # 已提交的各交付节点
+    submissions = {}
+    for row in db.execute(
+        "SELECT deliverable_index, content, attachment_path, created_at FROM practice_submission WHERE sid=? AND day=? ORDER BY id",
+        (sid, day_num)).fetchall():
+        submissions[row["deliverable_index"]] = {"content": row["content"], "attachment_path": row["attachment_path"], "created_at": row["created_at"]}
+    # 测验成绩
+    qr = db.execute(
+        "SELECT score FROM campus_quiz_result WHERE sid=? AND quiz_group=?",
+        (sid, tdef["paper"])).fetchone()
+    return render_template("day_detail.html", tdef=tdef, day_num=day_num,
+                           submissions=submissions, quiz_score=qr["score"] if qr else None)
+
+
+@app.route("/day/<int:day_num>/practice", methods=["POST"])
+@login_required
+@role_required("student")
+def practice_submit(day_num):
+    content = request.form.get("content", "").strip()
+    deliv_idx = int(request.form.get("deliverable_index", 0))
+    if not content and "attachment" not in request.files:
+        flash("请填写内容或上传附件", "error")
+        return redirect(url_for("day_detail", day_num=day_num))
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    # 处理文件上传
+    attachment_path = None
+    f = request.files.get("attachment")
+    if f and f.filename:
+        ext = os.path.splitext(f.filename)[1].lower()
+        allowed = {".jpg", ".jpeg", ".png", ".gif", ".pdf", ".mp4", ".mov", ".doc", ".docx", ".txt", ".zip", ".pptx",
+                   ".mp3", ".wav", ".m4a", ".aac", ".webm", ".ogg"}
+        if ext not in allowed:
+            flash(f"不支持的文件格式 {ext}，支持：图片/音频/视频/PDF/文档/zip", "error")
+            return redirect(url_for("day_detail", day_num=day_num))
+        fname = f"{sid}_d{day_num}_n{deliv_idx}_{datetime.now().strftime('%Y%m%d%H%M%S')}{ext}"
+        f.save(os.path.join(UPLOAD_DIR, fname))
+        attachment_path = fname
+    # 同节点已有提交就更新，否则插入
+    existing = db.execute(
+        "SELECT id, attachment_path FROM practice_submission WHERE sid=? AND day=? AND deliverable_index=?",
+        (sid, day_num, deliv_idx)).fetchone()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if existing:
+        # 新上传附件则替换，否则保留原附件
+        new_att = attachment_path or existing["attachment_path"]
+        db.execute(
+            "UPDATE practice_submission SET content=?, attachment_path=?, created_at=? WHERE id=?",
+            (content, new_att, now, existing["id"]))
+    else:
+        db.execute(
+            "INSERT INTO practice_submission (sid, day, deliverable_index, content, attachment_path, created_at) VALUES (?,?,?,?,?,?)",
+            (sid, day_num, deliv_idx, content, attachment_path, now))
+    db.commit()
+    flash(f"交付节点「{TASK_DEFS[day_num-1]['deliverables'][deliv_idx]['name']}」已提交", "success")
+    return redirect(url_for("day_detail", day_num=day_num))
+
+
+@app.route("/quiz/<paper_id>", methods=["GET", "POST"])
+@login_required
+@role_required("student")
+def quiz(paper_id):
+    if paper_id not in CHOICE_DOCUMENTS:
+        flash("无效的试卷编号", "error")
+        return redirect(url_for("student_dashboard"))
+
+    uid = session["user_id"]
+    sid = sid_for_user(uid) or uid
+    db = get_db()
+
+    # POST：判分提交
+    if request.method == "POST":
+        total, score_sum, detail_rows = 0, 0.0, []
+        for grp in CHOICE_DOCUMENTS[paper_id]:
+            rows = db.execute(
+                "SELECT qid, question_no, quiz_type, answer FROM quiz_bank_choice WHERE quiz_group=? ORDER BY question_no",
+                (grp,)).fetchall()
+            for row in rows:
+                qid, qtype, correct_ans = row["qid"], row["quiz_type"], (row["answer"] or "").strip().upper()
+                if qtype == "多选":
+                    user_list = [v.upper() for v in request.form.getlist(f"q_{qid}")]
+                    user_ans = "".join(sorted(user_list))
+                    is_ok = bool(user_ans) and sorted(user_list) == sorted(correct_ans)
+                else:
+                    user_ans = (request.form.get(f"q_{qid}", "") or "").strip().upper()
+                    is_ok = user_ans == correct_ans
+                total += 1
+                if is_ok:
+                    score_sum += WEIGHT.get(qtype, 0)
+                detail_rows.append((sid, paper_id, grp, row["question_no"], user_ans or None, 1 if is_ok else 0))
+
+        # 必须答全36题
+        if total < 36 or any(r[4] is None for r in detail_rows):
+            flash("答题不完整，请完成全部36题后再提交", "error")
+            return redirect(url_for("quiz", paper_id=paper_id))
+
+        # UPSERT 主记录到 campus_quiz_result（quiz_group 用 paper_id）
+        db.execute(
+            "INSERT INTO campus_quiz_result (sid, quiz_group, score, create_at) VALUES (?, ?, ?, ?) "
+            "ON CONFLICT(sid, quiz_group) DO UPDATE SET score=excluded.score, create_at=excluded.create_at",
+            (sid, paper_id, round(score_sum, 2), datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        # 明细
+        for r in detail_rows:
+            db.execute(
+                "INSERT OR IGNORE INTO quiz_choice_detail (sid, paper_id, quiz_group, question_no, user_answer, is_correct) VALUES (?,?,?,?,?,?)",
+                r)
+        db.commit()
+        flash(f"{PAPER_TITLES[paper_id]} 提交成功，得分 {round(score_sum, 2)}", "success")
+        return redirect(url_for("student_dashboard"))
+
+    # GET：展示题目
+    cfg = db.execute("SELECT active_paper, is_open FROM exam_config WHERE id=1").fetchone()
+    is_exam_paper = cfg and paper_id == cfg["active_paper"]
+    exam_locked = is_exam_paper and not cfg["is_open"]
+
+    if exam_locked:
+        flash("结训大考尚未开启，请等待项目组通知", "warn")
+        return redirect(url_for("student_dashboard"))
+
+    questions = []
+    for grp in CHOICE_DOCUMENTS[paper_id]:
+        rows = db.execute(
+            "SELECT qid, quiz_group, question_no, quiz_type, category, content, opt_a, opt_b, opt_c, opt_d, answer, explanation "
+            "FROM quiz_bank_choice WHERE quiz_group=? ORDER BY question_no", (grp,)).fetchall()
+        for r in rows:
+            questions.append(dict(r))
+
+    # 查是否已做过
+    done_row = db.execute(
+        "SELECT score FROM campus_quiz_result WHERE sid=? AND quiz_group=?", (sid, paper_id)).fetchone()
+    done_score = done_row["score"] if done_row else None
+
+    return render_template("quiz.html", paper_id=paper_id,
+                           paper_title=PAPER_TITLES[paper_id],
+                           questions=questions, total=len(questions),
+                           done_score=done_score,
+                           exam_mode=is_exam_paper)
+
+
+# ─── PM 工作台 ───
+def latest_certs(db):
+    """每个 sid 取最新一条 is_valid=1"""
+    rows = db.execute(
+        "SELECT c.* FROM campus_cert_result c "
+        "INNER JOIN (SELECT sid, MAX(cert_id) AS max_id FROM campus_cert_result WHERE is_valid=1 GROUP BY sid) m "
+        "ON c.cert_id = m.max_id ORDER BY c.sid").fetchall()
+    return rows
+
+
+@app.route("/dashboard/pm")
+@login_required
+@role_required("pm")
+def pm_dashboard():
+    db = get_db()
+    rows = latest_certs(db)
+    risk_sids = {r["sid"] for r in db.execute("SELECT DISTINCT sid FROM campus_risk_action").fetchall()}
+    name_map = {r["sid"]: r["name"] for r in db.execute("SELECT sid, name FROM campus_student").fetchall()}
+
+    table_rows = []
+    grades = {"S": 0, "A": 0, "B": 0, "C": 0, "D": 0}
+    pass_count = 0
+    for r in rows:
+        g = r["grade"] or "D"
+        grades[g] = grades.get(g, 0) + 1
+        if r["is_pass"]:
+            pass_count += 1
+        table_rows.append({
+            "sid": r["sid"], "name": name_map.get(r["sid"]),
+            "m1_score": r["m1_score"], "m2_score": r["m2_score"],
+            "m3_score": r["m3_score"], "m4_score": r["m4_score"],
+            "total_score": r["total_score"], "grade": g,
+            "is_pass": r["is_pass"], "cert_no": r["cert_no"],
+            "has_risk": r["sid"] in risk_sids,
+        })
+
+    valid = len(rows)
+    stats = {
+        "total": db.execute("SELECT COUNT(*) c FROM campus_student").fetchone()["c"] or valid,
+        "valid": valid,
+        "pass_count": pass_count,
+        "pass_rate": round(pass_count / valid * 100, 1) if valid else 0,
+        "grade_s": grades.get("S", 0),
+        "grade_a": grades.get("A", 0),
+        "grade_b": grades.get("B", 0),
+        "grade_c": grades.get("C", 0),
+        "grade_a_plus": grades.get("S", 0) + grades.get("A", 0),
+        "risk_count": len(risk_sids),
+    }
+    user = {"display_name": session.get("display_name"), "role": "pm"}
+    banner = {
+        "title": "沃土计划 · 预备经纪人实训营",
+        "vision": "项目组是沃土的总指挥部：从实训运营、人才评价到上岗陪跑与校友生态，让每一批学员都形成可沉淀的组织资产。",
+        "expect_title": "致项目组 · 你是这个生态的掌舵人",
+        "expect_desc": "你俯瞰全营：把握班级通过率与质量红线，跟踪结业学员的上岗转化，终审优秀学员与标杆案例，并把积分规则等业务参数握在手中。数据在，则决策有据；档案在，则人才可追。",
+        "theme": "rose",
+        "features": [
+            {"icon": "📊", "name": "数据总览", "desc": "通过率·定级分布", "url": url_for("pm_dashboard")},
+            {"icon": "🗂", "name": "学员档案", "desc": "画像·实操·陪跑", "url": url_for("pm_students")},
+            {"icon": "🚀", "name": "上岗跟踪", "desc": "结对·陪跑看板", "url": url_for("pm_onboard")},
+            {"icon": "🏆", "name": "优秀学员", "desc": "S/A候选·提名终审", "url": url_for("pm_excellent")},
+            {"icon": "🎓", "name": "校友会", "desc": "校友档案·表现记录", "url": url_for("pm_alumni")},
+            {"icon": "📚", "name": "标杆案例集", "desc": "作品库·zip导出", "url": url_for("pm_showcase")},
+        ],
+    }
+    return render_template("pm_dashboard.html",
+                           user=user, active="pm_dashboard",
+                           stats=stats, rows=table_rows, banner=banner)
+
+
+# ─── 交付包导出：四件套 zip ───
+@app.route("/api/pm/export")
+@login_required
+def pm_export():
+    if session.get("role") != "pm":
+        return jsonify({"error": "仅项目组可操作"}), 403
+    db = get_db()
+    rows = latest_certs(db)
+    risk_sids = {r["sid"] for r in db.execute("SELECT DISTINCT sid FROM campus_risk_action").fetchall()}
+    name_map = {r["sid"]: r["name"] for r in db.execute("SELECT sid, name FROM campus_student").fetchall()}
+
+    # ── summary.csv ──
+    grades = {"S": 0, "A": 0, "B": 0, "C": 0, "D": 0}
+    pass_count = 0
+    m_sum = [0.0, 0.0, 0.0, 0.0]
+    for r in rows:
+        g = r["grade"] or "D"
+        grades[g] = grades.get(g, 0) + 1
+        if r["is_pass"]:
+            pass_count += 1
+        for i, k in enumerate(["m1_score", "m2_score", "m3_score", "m4_score"]):
+            m_sum[i] += r[k] or 0
+    valid = len(rows)
+    summary_buf = io.StringIO()
+    w = csv.writer(summary_buf)
+    w.writerow(["沃土计划 · 交付包汇总"])
+    w.writerow(["导出时间", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
+    w.writerow(["有效学员数", valid])
+    w.writerow(["通过人数", pass_count])
+    w.writerow(["通过率%", round(pass_count / valid * 100, 1) if valid else 0])
+    w.writerow(["定级分布", f"S={grades.get('S',0)}  A={grades.get('A',0)}  B={grades.get('B',0)}  C={grades.get('C',0)}  D={grades.get('D',0)}"])
+    w.writerow(["风险人数", len(risk_sids)])
+    w.writerow(["四维均值",
+                f"M1={m_sum[0]/valid:.1f}" if valid else "M1=—",
+                f"M2={m_sum[1]/valid:.1f}" if valid else "M2=—",
+                f"M3={m_sum[2]/valid:.1f}" if valid else "M3=—",
+                f"M4={m_sum[3]/valid:.1f}" if valid else "M4=—"])
+
+    # ── detail.csv ──
+    detail_buf = io.StringIO()
+    w = csv.writer(detail_buf)
+    w.writerow(["sid", "姓名", "M1价值观", "M2业务实操", "M3 AI应用", "M4媒体作品",
+                "综合分", "定级", "是否通过", "证书号", "风险标记"])
+    for r in rows:
+        w.writerow([
+            r["sid"], name_map.get(r["sid"], ""),
+            r["m1_score"] or 0, r["m2_score"] or 0, r["m3_score"] or 0, r["m4_score"] or 0,
+            r["total_score"] or 0, r["grade"] or "D",
+            "通过" if r["is_pass"] else "未通过",
+            r["cert_no"] or "",
+            "风险" if r["sid"] in risk_sids else "",
+        ])
+
+    # ── audit.csv ──
+    audit_buf = io.StringIO()
+    w = csv.writer(audit_buf)
+    w.writerow(["时间", "学员SID", "操作人", "操作类型", "内容"])
+    for r in db.execute(
+        "SELECT operate_time, sid, operator_id, operate_type, change_summary "
+        "FROM campus_audit_log ORDER BY operate_time DESC LIMIT 500"):
+        w.writerow([r["operate_time"], r["sid"] or "", r["operator_id"] or "",
+                    r["operate_type"], r["change_summary"] or ""])
+
+    # ── report.html（内联 SVG 雷达，可打印）──
+    cards = []
+    for r in rows:
+        radar = radar_svg(r["m1_score"], r["m2_score"], r["m3_score"], r["m4_score"], size=220)
+        g = r["grade"] or "D"
+        g_color = {"S": "#92400E", "A": "#166534", "B": "#1E40AF", "C": "#991B1B", "D": "#4B5563"}.get(g, "#4B5563")
+        risk = r["sid"] in risk_sids
+        cards.append(f"""
+        <div class="report-card">
+          <div class="report-head">
+            <div>
+              <div class="report-name">{name_map.get(r['sid'], '学员')}</div>
+              <div class="report-sid">{r['sid']} · 证书号 {r['cert_no'] or '未签发'}</div>
+            </div>
+            <div class="report-grade" style="color:{g_color}">{g}</div>
+          </div>
+          <div class="report-body">
+            {radar}
+            <div class="report-scores">
+              <div class="rs-row"><span>M1 价值观素养</span><b>{r['m1_score'] or 0:.1f}</b></div>
+              <div class="rs-row"><span>M2 业务实操</span><b>{r['m2_score'] or 0:.1f}</b></div>
+              <div class="rs-row"><span>M3 AI 应用</span><b>{r['m3_score'] or 0:.1f}</b></div>
+              <div class="rs-row"><span>M4 媒体作品</span><b>{r['m4_score'] or 0:.1f}</b></div>
+              <div class="rs-row total"><span>综合分</span><b>{r['total_score'] or 0:.1f}</b></div>
+              <div class="rs-row"><span>是否通过</span><b>{'通过' if r['is_pass'] else '未通过'}</b></div>
+              {'<div class="rs-row risk"><span>风险提示</span><b>需关注</b></div>' if risk else ''}
+            </div>
+          </div>
+        </div>""")
+
+    report_html = f"""<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><title>沃土计划 · 学员能力档案</title>
+<style>
+  body {{ font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background:#F3F4F6; margin:0; padding:24px; color:#111827; }}
+  h1 {{ font-size:22px; margin:0 0 4px; }} .meta {{ color:#6B7280; font-size:13px; margin-bottom:22px; }}
+  .grid {{ display:grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap:18px; }}
+  .report-card {{ background:#fff; border:1px solid #E5E7EB; border-radius:10px; padding:20px; break-inside:avoid; }}
+  .report-head {{ display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid #E5E7EB; padding-bottom:12px; margin-bottom:14px; }}
+  .report-name {{ font-size:17px; font-weight:700; }} .report-sid {{ font-size:12px; color:#6B7280; margin-top:2px; }}
+  .report-grade {{ font-size:36px; font-weight:800; line-height:1; }}
+  .report-body {{ display:flex; gap:18px; align-items:center; }}
+  .report-scores {{ flex:1; }}
+  .rs-row {{ display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #F3F4F6; font-size:13.5px; }}
+  .rs-row.total b {{ color:#0F7B4F; font-size:16px; }} .rs-row.risk b {{ color:#DC2626; }}
+  @media print {{ body {{ background:#fff; padding:0; }} .report-card {{ border:none; }} }}
+</style></head>
+<body>
+<h1>沃土计划 · 学员能力档案包</h1>
+<div class="meta">导出时间 {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} · 共 {valid} 人 · 数据来源 campus_cert_result（is_valid=1）</div>
+<div class="grid">{''.join(cards)}</div>
+</body></html>"""
+
+    # ── 打包 zip ──
+    mem = io.BytesIO()
+    with zipfile.ZipFile(mem, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("summary.csv", "\ufeff" + summary_buf.getvalue())
+        zf.writestr("detail.csv", "\ufeff" + detail_buf.getvalue())
+        zf.writestr("audit.csv", "\ufeff" + audit_buf.getvalue())
+        zf.writestr("report.html", report_html)
+    mem.seek(0)
+    fname = f"wotu_delivery_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
+    return Response(
+        mem.getvalue(),
+        mimetype="application/zip",
+        headers={"Content-Disposition": f"attachment;filename={fname}"},
+    )
+
+
+# ─── PM 考卷管理 ───
+@app.route("/pm/exam-config", methods=["GET", "POST"])
+@login_required
+@role_required("pm")
+def pm_exam_config():
+    db = get_db()
+    if request.method == "POST":
+        paper = request.form.get("active_paper", "P008")
+        is_open = 1 if request.form.get("is_open") else 0
+        db.execute(
+            "UPDATE exam_config SET active_paper=?, is_open=?, updated_at=? WHERE id=1",
+            (paper, is_open, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        db.commit()
+        flash(f"考卷已更新：{PAPER_TITLES.get(paper, paper)}，状态={'已开启' if is_open else '已关闭'}", "success")
+        return redirect(url_for("pm_dashboard"))
+
+    cfg = db.execute("SELECT * FROM exam_config WHERE id=1").fetchone()
+    papers = [(k, PAPER_TITLES[k]) for k in CHOICE_DOCUMENTS.keys()]
+    return render_template("exam_config.html", cfg=cfg, papers=papers)
+
+
+# ─── 助教工作台 ───
+@app.route("/dashboard/coach")
+@login_required
+@role_required("coach")
+def coach_dashboard():
+    db = get_db()
+    # 所有学员
+    students = db.execute("SELECT sid, name FROM campus_student ORDER BY sid").fetchall()
+    # 学习活跃度：最近 7 天有学习打卡的学员（活跃天数）
+    seven_days = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
+    active_map = {r["sid"]: r["c"] for r in db.execute(
+        "SELECT sid, COUNT(DISTINCT substr(created_at,1,10)) c FROM study_activity "
+        "WHERE created_at >= ? AND act_type='study_checkin' GROUP BY sid", (seven_days,)).fetchall()}
+    # 所有提交+审核
+    subs = db.execute("""
+        SELECT ps.*, pr.score, pr.comment, pr.reviewer, pr.reviewed_at
+        FROM practice_submission ps
+        LEFT JOIN practice_review pr ON ps.id = pr.submission_id
+    """).fetchall()
+    # 索引: (sid, day, node) -> sub
+    sub_map = {}
+    for s in subs:
+        sub_map[(s["sid"], s["day"], s["deliverable_index"] or 0)] = s
+    # 构建矩阵
+    matrix = []
+    total_nodes = 0
+    pending_nodes = 0
+    for stu in students:
+        row = {"sid": stu["sid"], "name": stu["name"], "days": []}
+        for tdef in TASK_DEFS:
+            day = tdef["day"]
+            nodes = []
+            for j, d in enumerate(tdef["deliverables"]):
+                total_nodes += 1
+                s = sub_map.get((stu["sid"], day, j))
+                node = {"name": d["name"], "submitted": bool(s),
+                        "reviewed": bool(s and s["reviewed_at"]),
+                        "score": s["score"] if s else None,
+                        "sub_id": s["id"] if s else None}
+                if s and not s["reviewed_at"]:
+                    pending_nodes += 1
+                nodes.append(node)
+            row["days"].append({"day": day, "title": tdef["title"], "nodes": nodes})
+        matrix.append(row)
+    reviewed_nodes = total_nodes - pending_nodes
+    deliv_names = {}
+    for i, t in enumerate(TASK_DEFS):
+        for j, d in enumerate(t["deliverables"]):
+            deliv_names[(i+1, j)] = d["name"]
+    user = {"display_name": session.get("display_name"), "role": "coach"}
+    banner = {
+        "title": "沃土计划 · 预备经纪人实训营",
+        "vision": "助教是「教—练—评」闭环的引擎：用带教指南带节奏，用督导纠偏差，用审核把质量，用积分与评选点燃动力。",
+        "expect_title": "致助教 · 你是学员从「知道」到「做到」的摆渡人",
+        "expect_desc": "7 天实训里，学员能不能把话术变成真本事，很大程度取决于你的带练密度。请按任务指南推进三环节带教，及时督导预警学员、认真审核每份实操，并用积分激励和优秀评选让每一个进步都被看见。",
+        "theme": "purple",
+        "features": [
+            {"icon": "📖", "name": "任务指南", "desc": "带教三环节·Day1-7", "url": url_for("coach_task_guide")},
+            {"icon": "📡", "name": "督导工作台", "desc": "预警五色·写督导", "url": url_for("coach_supervise")},
+            {"icon": "📏", "name": "评分锚点", "desc": "P0服务动作量化参照", "url": url_for("coach_rubric")},
+            {"icon": "🏅", "name": "积分激励", "desc": "结算·手动加减·排行", "url": url_for("coach_points")},
+            {"icon": "🏆", "name": "优秀评选", "desc": "轮次提名·标杆候选", "url": url_for("coach_excellent")},
+            {"icon": "🗂", "name": "学员总览", "desc": "带练矩阵·交付节点", "url": url_for("coach_dashboard")},
+        ],
+    }
+    return render_template("coach_dashboard.html", matrix=matrix,
+                           pending=pending_nodes, reviewed=reviewed_nodes,
+                           total=total_nodes, deliv_names=deliv_names, tasks=TASK_DEFS,
+                           user=user, active="coach_dashboard",
+                           day_titles={i+1: TASK_DEFS[i]["title"] for i in range(7)},
+                           active_map=active_map,
+                           banner=banner)
+
+
+@app.route("/coach/review/<int:sub_id>", methods=["GET", "POST"])
+@login_required
+@role_required("coach")
+def coach_review(sub_id):
+    db = get_db()
+    row = db.execute("""
+        SELECT ps.*, cs.name as student_name
+        FROM practice_submission ps
+        LEFT JOIN campus_student cs ON ps.sid = cs.sid
+        WHERE ps.id=?""", (sub_id,)).fetchone()
+    if not row:
+        flash("提交记录不存在", "error")
+        return redirect(url_for("coach_dashboard"))
+
+    if request.method == "POST":
+        score = int(request.form.get("score", 0))
+        comment = request.form.get("comment", "").strip()
+        reviewer = session.get("display_name", session["user_id"])
+        # 演练节点能力维度分（可选）
+        def _f(v):
+            try:
+                return int(float(v))
+            except (TypeError, ValueError):
+                return None
+        drill_speak = _f(request.form.get("drill_speak"))
+        drill_content = _f(request.form.get("drill_content"))
+        drill_logic = _f(request.form.get("drill_logic"))
+        # 已有审核记录就更新，否则插入
+        existing = db.execute("SELECT id FROM practice_review WHERE submission_id=?", (sub_id,)).fetchone()
+        if existing:
+            db.execute("UPDATE practice_review SET score=?, comment=?, reviewer=?, reviewed_at=?, drill_speak=?, drill_content=?, drill_logic=? WHERE submission_id=?",
+                       (score, comment, reviewer, datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        drill_speak, drill_content, drill_logic, sub_id))
+        else:
+            db.execute("INSERT INTO practice_review (submission_id, sid, day, score, comment, reviewer, reviewed_at, drill_speak, drill_content, drill_logic) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                       (sub_id, row["sid"], row["day"], score, comment, reviewer,
+                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        drill_speak, drill_content, drill_logic))
+        db.commit()
+        flash("审核完成", "success")
+        return redirect(url_for("coach_dashboard"))
+
+    review = db.execute("SELECT * FROM practice_review WHERE submission_id=?", (sub_id,)).fetchone()
+    tdef = TASK_DEFS[row["day"] - 1]
+    deliv = tdef["deliverables"][row["deliverable_index"]] if (row["deliverable_index"] is not None and row["deliverable_index"] < len(tdef["deliverables"])) else None
+    user = {"display_name": session.get("display_name"), "role": "coach"}
+    return render_template("coach_review.html", sub=row, review=review,
+                           tdef=tdef, deliv=deliv, user=user, active="coach_dashboard",
+                           day_titles={i+1: TASK_DEFS[i]["title"] for i in range(7)})
+
+
+# ═══ 助教：任务指南 / 督导工作台 / 积分激励 / 优秀评选 ═══
+
+def _points_summary(db, sid):
+    """学员积分汇总与排名"""
+    rows = db.execute("SELECT sid, SUM(points) AS total FROM points_record GROUP BY sid").fetchall()
+    ranking = sorted(rows, key=lambda r: r["total"] or 0, reverse=True)
+    my_total = db.execute("SELECT COALESCE(SUM(points),0) FROM points_record WHERE sid=?", (sid,)).fetchone()[0]
+    my_rank = next((i+1 for i, r in enumerate(ranking) if r["sid"] == sid), None)
+    detail = db.execute("SELECT * FROM points_record WHERE sid=? ORDER BY id DESC LIMIT 20", (sid,)).fetchall()
+    return {"total": my_total, "rank": my_rank, "count": len(ranking), "detail": detail}
+
+
+@app.route("/coach/task-guide")
+@login_required
+@role_required("coach")
+def coach_task_guide():
+    """7天实操任务带教指南：目标/技能/步骤/交付要求/演练带教要点"""
+    guide_tips = {
+        "演练前": "先讲解本日任务背景与交付标准（读TASK_DEFS目标），再示范演练节点的要点，给学生5分钟准备。",
+        "演练中": "观察学生的表达流畅度、内容专业度、逻辑结构；录音/录像类演练注意提醒隐私红线（化名、不录真实信息）。",
+        "演练后": "按三维能力打分（表达/内容/逻辑），先肯定再给1-2条具体改进建议，让学生复述改进点。",
+    }
+    user = {"display_name": session.get("display_name"), "role": "coach"}
+    return render_template("coach_task_guide.html", tasks=TASK_DEFS, guide_tips=guide_tips,
+                           user=user, active="coach_task_guide",
+                           day_titles={i+1: TASK_DEFS[i]["title"] for i in range(7)})
+
+
+@app.route("/coach/supervise")
+@login_required
+@role_required("coach")
+def coach_supervise():
+    """督导工作台：全班进度总览 + 预警 + 督导记录"""
+    db = get_db()
+    students = db.execute("SELECT sid, name FROM campus_student ORDER BY sid").fetchall()
+    subs = db.execute("""
+        SELECT ps.sid, ps.day, ps.deliverable_index, pr.score, pr.reviewed_at
+        FROM practice_submission ps LEFT JOIN practice_review pr ON ps.id=pr.submission_id""").fetchall()
+    logs = db.execute("SELECT * FROM supervision_log ORDER BY id DESC LIMIT 50").fetchall()
+    log_map = {}
+    for l in logs:
+        log_map.setdefault((l["sid"], l["day_no"] or 0), []).append(l)
+    total_nodes = len([d for t in TASK_DEFS for d in t["deliverables"]])
+    rows = []
+    pending_sub, pending_rev, low_score = 0, 0, 0
+    for stu in students:
+        done_nodes = set()
+        pending_nodes = set()
+        low_nodes = []
+        for s in subs:
+            if s["sid"] != stu["sid"]:
+                continue
+            key = (s["day"], s["deliverable_index"] or 0)
+            if s["reviewed_at"]:
+                done_nodes.add(key)
+                if (s["score"] or 0) < 60:
+                    low_nodes.append(key)
+            else:
+                pending_nodes.add(key)
+        sub_days = len({(s["day"]) for s in subs if s["sid"] == stu["sid"]})
+        done_count = len(done_nodes)
+        pending_count = len(pending_nodes)
+        pending_sub += pending_count
+        low_score += len(low_nodes)
+        rate = round(done_count / total_nodes * 100, 1)
+        # 预警等级
+        warn = ""
+        if pending_count > 0:
+            warn = "🟡 有未审核"
+            pending_rev += 0
+        if sub_days == 0:
+            warn = "🔴 未开始"
+        elif done_count == 0 and pending_count > 0:
+            warn = "🟠 只交未审"
+        elif rate < 60:
+            warn = "🔴 进度落后"
+        elif low_nodes:
+            warn = "🟠 低分需辅导"
+        elif rate == 100:
+            warn = "🟢 全部完成"
+        logs_for_stu = log_map.get((stu["sid"], 0), [])
+        rows.append({"sid": stu["sid"], "name": stu["name"], "sub_days": sub_days,
+                     "done": done_count, "pending": pending_count,
+                     "total": total_nodes, "rate": rate, "warn": warn, "logs": logs_for_stu})
+    rows.sort(key=lambda r: r["rate"])
+    user = {"display_name": session.get("display_name"), "role": "coach"}
+    return render_template("coach_supervise.html", rows=rows, logs=logs, warn_stats={
+        "pending": pending_sub, "low": low_score, "n": len(students)},
+        user=user, active="coach_supervise",
+        day_titles={i+1: TASK_DEFS[i]["title"] for i in range(7)})
+
+
+@app.route("/coach/supervise/add", methods=["POST"])
+@login_required
+@role_required("coach")
+def coach_supervise_add():
+    db = get_db()
+    sid = request.form.get("sid", "")
+    day_no = request.form.get("day_no", "")
+    content = request.form.get("content", "").strip()
+    if not sid or not content:
+        flash("请填写学员与督导内容", "error")
+        return redirect(url_for("coach_supervise"))
+    db.execute("""INSERT INTO supervision_log (sid, day_no, content, status, created_by, created_at)
+                  VALUES (?,?,?,?,?,?)""",
+        (sid, int(day_no) if day_no.isdigit() else 0, content, "pending",
+         session.get("display_name") or "助教", datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash(f"已向 {sid} 发出督导记录", "success")
+    return redirect(url_for("coach_supervise"))
+
+
+@app.route("/coach/supervise/done/<int:log_id>", methods=["POST"])
+@login_required
+@role_required("coach")
+def coach_supervise_done(log_id):
+    db = get_db()
+    db.execute("UPDATE supervision_log SET status='done' WHERE id=?", (log_id,))
+    db.commit()
+    flash("督导事项已标记完成", "success")
+    return redirect(url_for("coach_supervise"))
+
+
+@app.route("/coach/points")
+@login_required
+@role_required("coach")
+def coach_points():
+    """积分激励：排名 + 明细 + 规则"""
+    db = get_db()
+    students = db.execute("SELECT sid, name FROM campus_student ORDER BY sid").fetchall()
+    rank_rows = []
+    for s in students:
+        p = _points_summary(db, s["sid"])
+        rank_rows.append({"sid": s["sid"], "name": s["name"], "total": p["total"]})
+    rank_rows.sort(key=lambda r: r["total"], reverse=True)
+    for i, r in enumerate(rank_rows):
+        r["rank"] = i + 1
+    recent = db.execute("SELECT * FROM points_record ORDER BY id DESC LIMIT 30").fetchall()
+    user = {"display_name": session.get("display_name"), "role": "coach"}
+    return render_template("coach_points.html", ranks=rank_rows, recent=recent,
+                           students=students, user=user, active="coach_points",
+                           day_titles={i+1: TASK_DEFS[i]["title"] for i in range(7)})
+
+
+@app.route("/coach/points/add", methods=["POST"])
+@login_required
+@role_required("coach")
+def coach_points_add():
+    """手动加减分"""
+    db = get_db()
+    sid = request.form.get("sid", "")
+    points = int(request.form.get("points", "0"))
+    reason = request.form.get("reason", "").strip()
+    if not sid or not reason:
+        flash("请填写学员、分数与原因", "error")
+        return redirect(url_for("coach_points"))
+    db.execute("""INSERT INTO points_record (sid, day_no, action_type, points, reason, created_by, created_at)
+                  VALUES (?,?,?,?,?,?,?)""",
+        (sid, 0, "manual", points, reason, session.get("display_name") or "助教",
+         datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash(f"已为 {sid} 调整 {'+'+str(points) if points>0 else str(points)} 分", "success")
+    return redirect(url_for("coach_points"))
+
+
+@app.route("/coach/points/settle", methods=["POST"])
+@login_required
+@role_required("coach")
+def coach_points_settle():
+    """按规则自动结算积分（幂等：同一 sid+day+action 不重复加分；分值从 system_config 读取）"""
+    db = get_db()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    coach = session.get("display_name") or "助教"
+    P_SUBMIT = _get_config_int(db, "points_submit", 3)
+    P_DRILL = _get_config_int(db, "points_drill", 5)
+    P_85 = _get_config_int(db, "points_review85", 10)
+    P_60 = _get_config_int(db, "points_review60", 5)
+    P_FULL = _get_config_int(db, "points_attendance", 20)
+    students = db.execute("SELECT sid FROM campus_student").fetchall()
+    subs = db.execute("""
+        SELECT ps.sid, ps.day, ps.deliverable_index, pr.score, pr.reviewed_at,
+               (SELECT COUNT(*) FROM practice_review pr2 WHERE pr2.submission_id=ps.id) AS reviewed
+        FROM practice_submission ps
+        LEFT JOIN practice_review pr ON pr.submission_id=ps.id""").fetchall()
+    total_nodes = len([d for t in TASK_DEFS for d in t["deliverables"]])
+    added = 0
+
+    def _grant(sid, day_no, action, points, reason):
+        nonlocal added
+        exists = db.execute("""SELECT id FROM points_record WHERE sid=? AND day_no=? AND action_type=?""",
+                            (sid, day_no, action)).fetchone()
+        if not exists:
+            db.execute("""INSERT INTO points_record (sid, day_no, action_type, points, reason, created_by, created_at)
+                          VALUES (?,?,?,?,?,?,?)""", (sid, day_no, action, points, reason, coach, now))
+            added += 1
+
+    for stu in students:
+        sid = stu["sid"]
+        stu_subs = [s for s in subs if s["sid"] == sid]
+        done_days = set()
+        all_submitted = len(stu_subs) >= total_nodes
+        for s in stu_subs:
+            # 按天：有提交 +P_SUBMIT
+            _grant(sid, s["day"], "submit", P_SUBMIT, f"Day{s['day']} 提交实操交付节点")
+            done_days.add(s["day"])
+            # 演练节点额外 +P_DRILL
+            if s["deliverable_index"] is not None and s["deliverable_index"] == 3:
+                _grant(sid, s["day"], "drill", P_DRILL, f"Day{s['day']} 完成演练节点")
+            # 审核评分
+            if s["reviewed"]:
+                score = s["score"] or 0
+                if score >= 85:
+                    _grant(sid, s["day"], "review85", P_85, f"Day{s['day']} 实操评分 {score} 分（优秀）")
+                elif score >= 60:
+                    _grant(sid, s["day"], "review60", P_60, f"Day{s['day']} 实操评分 {score} 分（合格）")
+        if all_submitted:
+            _grant(sid, 0, "attendance", P_FULL, "7天实操全勤完成")
+    db.commit()
+    _audit(db, "积分结算", f"自动结算积分，新增 {added} 条记录")
+    flash(f"积分结算完成：新增 {added} 条积分记录", "success")
+    return redirect(url_for("coach_points"))
+
+
+@app.route("/coach/excellent")
+@login_required
+@role_required("coach")
+def coach_excellent():
+    """优秀评选：候选排名 + 推荐"""
+    db = get_db()
+    students = db.execute("SELECT sid, name FROM campus_student ORDER BY sid").fetchall()
+    # 每个学员的积分/任务完成数/均分
+    cands = []
+    for s in students:
+        p = _points_summary(db, s["sid"])
+        stu_subs = db.execute("""SELECT ps.day, pr.score FROM practice_submission ps
+                                 LEFT JOIN practice_review pr ON ps.id=pr.submission_id
+                                 WHERE ps.sid=?""", (s["sid"],)).fetchall()
+        reviewed = [x for x in stu_subs if x["score"] is not None]
+        avg = round(sum(x["score"] for x in reviewed) / len(reviewed), 1) if reviewed else 0
+        done = len({x["day"] for x in stu_subs})
+        cands.append({"sid": s["sid"], "name": s["name"], "points": p["total"],
+                      "task_done": done, "task_total": 7, "avg": avg})
+    cands.sort(key=lambda r: (r["points"], r["avg"]), reverse=True)
+    for i, c in enumerate(cands):
+        c["rank"] = i + 1
+    nominations = db.execute("SELECT * FROM excellent_nomination ORDER BY id DESC LIMIT 50").fetchall()
+    nom_map = {(n["sid"], n["round_name"]): n for n in nominations}
+    user = {"display_name": session.get("display_name"), "role": "coach"}
+    return render_template("coach_excellent.html", cands=cands, nominations=nominations,
+                           nom_map=nom_map, user=user, active="coach_excellent",
+                           day_titles={i+1: TASK_DEFS[i]["title"] for i in range(7)})
+
+
+@app.route("/coach/excellent/nominate", methods=["POST"])
+@login_required
+@role_required("coach")
+def coach_excellent_nominate():
+    db = get_db()
+    sid = request.form.get("sid", "")
+    round_name = request.form.get("round_name", "").strip()
+    reason = request.form.get("reason", "").strip()
+    if not sid or not round_name:
+        flash("请填写评选轮次与学员", "error")
+        return redirect(url_for("coach_excellent"))
+    p = _points_summary(db, sid)
+    stu_subs = db.execute("""SELECT ps.day, pr.score FROM practice_submission ps
+                             LEFT JOIN practice_review pr ON ps.id=pr.submission_id
+                             WHERE ps.sid=?""", (sid,)).fetchall()
+    reviewed = [x for x in stu_subs if x["score"] is not None]
+    avg = round(sum(x["score"] for x in reviewed) / len(reviewed), 1) if reviewed else 0
+    done = len({x["day"] for x in stu_subs})
+    db.execute("""INSERT INTO excellent_nomination (sid, round_name, reason, points_total, task_done, avg_score, status, created_by, created_at)
+                  VALUES (?,?,?,?,?,?,?,?,?)
+                  ON CONFLICT(sid, round_name) DO UPDATE SET reason=excluded.reason, points_total=excluded.points_total,
+                    task_done=excluded.task_done, avg_score=excluded.avg_score, status='nominated', created_by=excluded.created_by""",
+        (sid, round_name, reason, p["total"], done, avg, "nominated",
+         session.get("display_name") or "助教", datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash(f"已将 {sid} 推荐为「{round_name}」优秀学员", "success")
+    return redirect(url_for("coach_excellent"))
+
+
+# ─── 专家工作台 ───
+@app.route("/dashboard/expert")
+@login_required
+@role_required("expert")
+def expert_dashboard():
+    db = get_db()
+    certs = db.execute("""
+        SELECT c.*, s.name as student_name
+        FROM campus_cert_result c
+        LEFT JOIN campus_student s ON c.sid = s.sid
+        WHERE c.is_valid=1
+        ORDER BY c.total_score DESC
+    """).fetchall()
+    # 审核统计
+    stats = {
+        "total": len(certs),
+        "pass": sum(1 for c in certs if c["is_pass"]),
+        "risk": sum(1 for c in certs if c["will_risk_flag"]),
+    }
+    # 助教审核过的实操数
+    review_count = db.execute("SELECT COUNT(*) c FROM practice_review").fetchone()["c"]
+    user = {"display_name": session.get("display_name"), "role": "expert"}
+    banner = {
+        "title": "沃土计划 · 预备经纪人实训营",
+        "vision": "专家是把关人：用一致的评分锚点守住结业质量，让每一张证书都经得起行业检验。",
+        "expect_title": "致专家 · 你是质量的最后一道关",
+        "expect_desc": "你的终审决定一张证书的含金量。请对照服务动作量化锚点评分，复核助教实操审核与软实力评价，重点审查 S/A 级学员的结业判定——严而有据，是我们对行业的承诺。",
+        "theme": "indigo",
+        "features": [
+            {"icon": "🏛", "name": "结业终审", "desc": "S/A 级重点复核", "url": url_for("expert_dashboard")},
+            {"icon": "🎯", "name": "测评总览", "desc": "结业统计·通过率", "url": url_for("expert_dashboard")},
+        ],
+    }
+    return render_template("expert_dashboard.html", certs=certs, stats=stats,
+                           review_count=review_count, user=user, active="expert_dashboard",
+                           banner=banner)
+
+
+# ─── 世赛三条：P0 服务动作量化锚点（助教打分参照）───
+@app.route("/coach/rubric")
+@login_required
+@role_required("coach", "expert")
+def coach_rubric():
+    db = get_db()
+    rubrics = db.execute("SELECT * FROM soft_skill_rubric").fetchall()
+    user = {"display_name": session.get("display_name"), "role": session.get("role")}
+    return render_template("rubric.html", rubrics=rubrics, user=user, active="coach_dashboard")
+
+
+# ─── 世赛三条：P1 情景应变关卡 ───
+# 学员抽题
+@app.route("/scenario/draw", methods=["GET", "POST"])
+@login_required
+@role_required("student")
+def scenario_draw():
+    db = get_db()
+    sid = sid_for_user(session["user_id"])
+    today = request.args.get("day", type=int, default=5)
+
+    if request.method == "POST":
+        # 随机抽一道当天的题
+        sc = db.execute(
+            "SELECT * FROM scenario_stress_bank WHERE day=? ORDER BY RANDOM() LIMIT 1",
+            (today,)).fetchone()
+        if not sc:
+            sc = db.execute("SELECT * FROM scenario_stress_bank ORDER BY RANDOM() LIMIT 1").fetchone()
+        if not sc:
+            flash("暂无情景题库", "error")
+            return redirect(url_for("student_dashboard"))
+        session["current_scenario"] = dict(sc)
+        return redirect(url_for("Scenario_practice"))
+
+    scenarios = db.execute("SELECT * FROM scenario_stress_bank").fetchall()
+    user = {"display_name": session.get("display_name"), "role": "student"}
+    return render_template("scenario_list.html", scenarios=scenarios, user=user, active="scenario")
+
+
+@app.route("/scenario/practice", methods=["GET", "POST"])
+@login_required
+@role_required("student")
+def Scenario_practice():
+    sc = session.get("current_scenario")
+    if not sc:
+        flash("请先抽取情景题", "error")
+        return redirect(url_for("scenario_draw"))
+
+    db = get_db()
+    sid = sid_for_user(session["user_id"])
+
+    if request.method == "POST":
+        response = request.form.get("response", "").strip()
+        # 存入 phase_evidence 作为新证据类型
+        db.execute("""INSERT INTO phase_evidence
+            (student_sid, phase_mode, evidence_type, score_module, score_step, risk_tag, notes, created_at, submit_status)
+            VALUES (?,?,?,?,?,?,?,?,?)""",
+            (sid, "scenario", "scenario_stress", f"day{sc['day']}", "", "",
+             f"【情景：{sc['title']}】突发：{sc['surprise']}\n我的应对：{response}",
+             datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "submitted"))
+        db.commit()
+        session.pop("current_scenario", None)
+        flash("情景应变已提交，等待助教评分", "success")
+        return redirect(url_for("student_dashboard"))
+
+    user = {"display_name": session.get("display_name"), "role": "student"}
+    return render_template("scenario_practice.html", sc=sc, user=user, active="scenario")
+
+
+# 助教端：情景应变打分
+@app.route("/coach/scenario")
+@login_required
+@role_required("coach")
+def coach_scenario_list():
+    db = get_db()
+    rows = db.execute("""
+        SELECT e.evidence_id, e.student_sid, e.notes, e.created_at,
+               e.score_step, e.risk_tag, s.name as student_name
+        FROM phase_evidence e
+        LEFT JOIN campus_student s ON e.student_sid = s.sid
+        WHERE e.evidence_type='scenario_stress'
+        ORDER BY e.created_at DESC
+    """).fetchall()
+    user = {"display_name": session.get("display_name"), "role": "coach"}
+    return render_template("coach_scenario.html", rows=rows, user=user, active="coach_scenario")
+
+
+@app.route("/coach/scenario/score/<int:eid>", methods=["POST"])
+@login_required
+@role_required("coach")
+def coach_scenario_score(eid):
+    db = get_db()
+    steps_score = request.form.get("steps_score", 0)
+    comment = request.form.get("comment", "")
+    db.execute("UPDATE phase_evidence SET score_step=?, notes=notes||? WHERE evidence_id=?",
+               (steps_score, f"\n【助教评分】{steps_score}分 | 评语：{comment}", eid))
+    db.commit()
+    flash("情景应变评分已提交", "success")
+    return redirect(url_for("coach_scenario_list"))
+
+
+# ─── 世赛三条：P2 软实力主观分（四标尺双角色）───
+@app.route("/soft_review/<sid>", methods=["GET", "POST"])
+@login_required
+@role_required("coach", "expert")
+def soft_review(sid):
+    db = get_db()
+    if request.method == "POST":
+        empathy = int(request.form.get("empathy", 0))
+        adapt = int(request.form.get("adapt", 0))
+        express = int(request.form.get("express", 0))
+        service = int(request.form.get("service", 0))
+        practical_score = int(request.form.get("practical_score", 0))
+        practical_comment = request.form.get("practical_comment", "")
+        scenario_score = int(request.form.get("scenario_score", 0))
+        scenario_comment = request.form.get("scenario_comment", "")
+        overall = request.form.get("comment", "")
+        work_advice = request.form.get("work_advice", "")
+        reviewer = session.get("display_name")
+        role = session.get("role")
+        db.execute("""INSERT INTO soft_review_score
+            (sid, empathy_score, adapt_score, express_score, service_score, reviewer, reviewer_role, comment, created_at)
+            VALUES (?,?,?,?,?,?,?,?,?)""",
+            (sid, empathy, adapt, express, service, reviewer, role, overall,
+             datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        db.execute("""INSERT INTO expert_review
+            (sid, practical_score, practical_comment, scenario_score, scenario_comment,
+             empathy_score, adapt_score, express_score, service_score, overall_comment, reviewer, created_at)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (sid, practical_score, practical_comment, scenario_score, scenario_comment,
+             empathy, adapt, express, service, overall, reviewer,
+             datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        # 上岗建议写入证书（转化衔接）
+        if work_advice:
+            db.execute("UPDATE campus_cert_result SET work_advice=? WHERE sid=? AND is_valid=1",
+                       (work_advice, sid))
+        db.commit()
+        flash("综合评审已提交", "success")
+        return redirect(url_for("expert_dashboard"))
+
+    history = db.execute(
+        "SELECT * FROM soft_review_score WHERE sid=? ORDER BY created_at DESC", (sid,)).fetchall()
+    student = db.execute("SELECT * FROM campus_student WHERE sid=?", (sid,)).fetchone()
+    # 学员综合实操提交（day=8）
+    practical = db.execute("SELECT * FROM practice_submission WHERE sid=? AND day=8", (sid,)).fetchone()
+    # 学员日常实操提交+助教审核
+    daily_subs = db.execute("""
+        SELECT ps.*, pr.score as coach_score, pr.comment as coach_comment, pr.reviewer,
+               pr.drill_speak, pr.drill_content, pr.drill_logic
+        FROM practice_submission ps
+        LEFT JOIN practice_review pr ON ps.id = pr.submission_id
+        WHERE ps.sid=? AND ps.day<8 ORDER BY ps.day, ps.deliverable_index
+    """, (sid,)).fetchall()
+    # 理论考试成绩
+    theory = db.execute("SELECT * FROM campus_quiz_result WHERE sid=? ORDER BY rowid DESC LIMIT 1", (sid,)).fetchone()
+    # 最新证书
+    cert = db.execute("SELECT * FROM campus_cert_result WHERE sid=? AND is_valid=1 ORDER BY cert_id DESC LIMIT 1", (sid,)).fetchone()
+    user = {"display_name": session.get("display_name"), "role": session.get("role")}
+    return render_template("soft_review.html", sid=sid, history=history,
+                           student=student, user=user, active="expert_dashboard",
+                           practical=practical, daily_subs=daily_subs,
+                           theory=theory, cert=cert)
+
+
+# ─── 班主任工作台 ───
+@app.route("/dashboard/teacher")
+@login_required
+@role_required("teacher")
+def teacher_dashboard():
+    db = get_db()
+    # 班主任管的班级
+    managed = session.get("managed_class_ids", "class01")
+    class_ids = [c.strip() for c in managed.split(",") if c.strip()]
+    # 学员列表
+    stu_rows = db.execute(
+        "SELECT s.*, c.total_score, c.grade, c.is_pass FROM campus_student s "
+        "LEFT JOIN campus_cert_result c ON c.sid=s.sid AND c.cert_id = (SELECT MAX(cert_id) FROM campus_cert_result c2 WHERE c2.sid=s.sid AND c2.is_valid=1) "
+        "WHERE s.class_id IN (%s) ORDER BY s.sid" % ",".join("?"*len(class_ids)),
+        class_ids).fetchall()
+    # 每个学员每天完成情况
+    students = []
+    for s in stu_rows:
+        d = dict(s)
+        day_status = []
+        for day in range(1, 8):
+            total_deliv = len(TASK_DEFS[day-1]["deliverables"])
+            submitted = db.execute(
+                "SELECT COUNT(DISTINCT deliverable_index) c FROM practice_submission WHERE sid=? AND day=?",
+                (s["sid"], day)).fetchone()["c"]
+            qr = db.execute(
+                "SELECT score FROM campus_quiz_result WHERE sid=? AND quiz_group=?",
+                (s["sid"], TASK_DEFS[day-1]["paper"])).fetchone()
+            day_status.append({
+                "day": day,
+                "title": TASK_DEFS[day-1]["title"],
+                "deliv_done": submitted,
+                "deliv_total": total_deliv,
+                "quiz_done": bool(qr),
+                "done": submitted >= total_deliv and bool(qr),
+            })
+        d["days"] = day_status
+        d["done_days"] = sum(1 for x in day_status if x["done"])
+        students.append(d)
+    # 待结对提醒（已结业未结对）
+    unpaired = db.execute("""
+        SELECT s.sid, s.name, s.student_status FROM campus_student s
+        WHERE s.class_id IN (%s) AND s.sid IN (SELECT sid FROM campus_cert_result WHERE is_pass=1 AND is_valid=1)
+        AND s.sid NOT IN (SELECT sid FROM mentorship WHERE status='active')
+        ORDER BY s.sid""" % ",".join("?"*len(class_ids)), class_ids).fetchall()
+    user = {"display_name": session.get("display_name"), "role": "teacher"}
+    banner = {
+        "title": "沃土计划 · 预备经纪人实训营",
+        "vision": "班主任是实训营的操盘手：管进度、抓质量、保转化，让每个学员都按时走到结业与上岗。",
+        "expect_title": "致班主任 · 班级的进度与温度，都在你手上",
+        "expect_desc": "你负责班级全流程运营：跟踪 7 天实训进度、审核实操评分、组织月度陪跑评估，并把优秀的学员推向结业与上岗。用批量导入省下机械操作，把时间留给真正需要关注的学员。",
+        "theme": "blue",
+        "features": [
+            {"icon": "📊", "name": "班级总览", "desc": "进度·通过·预警", "url": url_for("teacher_dashboard")},
+            {"icon": "🗂", "name": "学员档案", "desc": "明细·画像·证书", "url": url_for("teacher_students")},
+            {"icon": "🚀", "name": "陪跑管理", "desc": "月度评估·店长复核", "url": url_for("teacher_followup", sid="S001")},
+            {"icon": "📥", "name": "批量导入", "desc": "CSV 一键建班", "url": url_for("teacher_students_import")},
+            {"icon": "📤", "name": "导出表格", "desc": "成绩/进度导出", "url": url_for("teacher_students_export")},
+        ],
+    }
+    return render_template("teacher_dashboard.html", students=students,
+                           user=user, active="teacher_dashboard",
+                           unpaired_count=len(unpaired),
+                           banner=banner)
+
+
+# ─── PM：学员档案管理 ───
+@app.route("/pm/students")
+@login_required
+@role_required("pm")
+def pm_students():
+    db = get_db()
+    q = request.args.get("q", "").strip()
+    status = request.args.get("status", "")
+    sql = "SELECT s.*, c.total_score, c.grade, c.is_pass, c.cert_no, c.is_valid, c.will_risk_flag FROM campus_student s LEFT JOIN campus_cert_result c ON c.sid=s.sid AND c.cert_id = (SELECT MAX(cert_id) FROM campus_cert_result c2 WHERE c2.sid=s.sid AND c2.is_valid=1) WHERE 1=1"
+    params = []
+    if q:
+        sql += " AND (s.sid LIKE ? OR s.name LIKE ?)"
+        params += [f"%{q}%", f"%{q}%"]
+    if status == "passed":
+        sql += " AND c.is_pass=1"
+    elif status == "failed":
+        sql += " AND c.is_pass=0"
+    elif status == "risk":
+        sql += " AND (c.will_risk_flag=1 OR s.sid IN (SELECT DISTINCT sid FROM campus_risk_action))"
+    sql += " ORDER BY s.sid"
+    rows = db.execute(sql, params).fetchall()
+    students = []
+    for r in rows:
+        d = dict(r)
+        d["has_risk"] = bool(d["will_risk_flag"])
+        students.append(d)
+    user = {"display_name": session.get("display_name"), "role": "pm"}
+    return render_template("pm_students.html", students=students, q=q, status=status,
+                           user=user, active="pm_students")
+
+
+@app.route("/pm/student/<sid>")
+@login_required
+@role_required("pm")
+def pm_student_detail(sid):
+    db = get_db()
+    student = db.execute("SELECT * FROM campus_student WHERE sid=?", (sid,)).fetchone()
+    if not student:
+        flash("学员不存在", "danger")
+        return redirect(url_for("pm_students"))
+    cert = db.execute("SELECT * FROM campus_cert_result WHERE sid=? AND is_valid=1 ORDER BY cert_id DESC LIMIT 1", (sid,)).fetchone()
+    submissions = db.execute("SELECT * FROM practice_submission WHERE sid=? ORDER BY day", (sid,)).fetchall()
+    reviews = db.execute("SELECT r.*, p.day FROM practice_review r JOIN practice_submission p ON r.submission_id=p.id WHERE r.sid=? ORDER BY p.day", (sid,)).fetchall()
+    soft_scores = db.execute("SELECT * FROM soft_review_score WHERE sid=? ORDER BY created_at DESC", (sid,)).fetchall()
+    risks = db.execute("SELECT * FROM campus_risk_action WHERE sid=? ORDER BY rowid DESC", (sid,)).fetchall()
+    evidences = db.execute("SELECT * FROM phase_evidence WHERE student_sid=? ORDER BY created_at DESC LIMIT 20", (sid,)).fetchall()
+    mentor = db.execute("SELECT * FROM mentorship WHERE sid=?", (sid,)).fetchone()
+    followups = db.execute("SELECT * FROM monthly_followup WHERE sid=? ORDER BY month_no", (sid,)).fetchall()
+    # 实操能力综合分（参考维度，不参与定级）：实操三维均分60% + 情景应变25% + 测验15%
+    def _num(x):
+        try:
+            return float(x)
+        except (TypeError, ValueError):
+            return None
+    drill_scores = [v for v in ([_num(r["drill_speak"]) for r in reviews] +
+                   [_num(r["drill_content"]) for r in reviews] +
+                   [_num(r["drill_logic"]) for r in reviews]) if v is not None]
+    drill_avg = round(sum(drill_scores)/len(drill_scores), 1) if drill_scores else None
+    scen_scores = [v for v in [_num(r[0]) for r in db.execute(
+        "SELECT score_step FROM phase_evidence WHERE student_sid=? AND score_step IS NOT NULL", (sid,)).fetchall()] if v is not None]
+    scen_avg = round(sum(scen_scores)/len(scen_scores), 1) if scen_scores else None
+    quiz_scores = [v for v in [_num(r[0]) for r in db.execute(
+        "SELECT score FROM campus_quiz_result WHERE sid=?", (sid,)).fetchall()] if v is not None]
+    quiz_avg = round(sum(quiz_scores)/len(quiz_scores), 1) if quiz_scores else None
+    comp_score = None
+    if drill_avg is not None:
+        comp_score = round(drill_avg*0.6 + (scen_avg or quiz_avg or 0)*0.25 + (quiz_avg or 0)*0.15, 1)
+    user = {"display_name": session.get("display_name"), "role": "pm"}
+    return render_template("pm_student_detail.html", student=student, cert=cert,
+                           submissions=submissions, reviews=reviews, soft_scores=soft_scores,
+                           risks=risks, evidences=evidences, user=user, active="pm_students",
+                           mentor=mentor, followups=followups, drill_avg=drill_avg,
+                           scen_avg=scen_avg, quiz_avg=quiz_avg, comp_score=comp_score,
+                           day_titles={i+1: TASK_DEFS[i]["title"] for i in range(7)})
+
+
+# ─── PM：上岗跟踪总览（结业转化看板）───
+@app.route("/pm/onboard")
+@login_required
+@role_required("pm")
+def pm_onboard():
+    db = get_db()
+    # 结业学员 + 结对/陪跑状态
+    rows = db.execute("""
+        SELECT s.sid, s.name, s.school, s.student_status,
+               c.grade, c.is_pass, c.cert_no,
+               m.mentor_name, m.store_name, m.start_date AS pair_date,
+               (SELECT COUNT(*) FROM monthly_followup f WHERE f.sid=s.sid AND f.status='done') AS done_months,
+               (SELECT COUNT(*) FROM onboard_skill sk WHERE sk.sid=s.sid) AS skill_total,
+               (SELECT COUNT(*) FROM onboard_skill sk WHERE sk.sid=s.sid AND sk.mastered=1) AS skill_mastered
+        FROM campus_student s
+        LEFT JOIN campus_cert_result c ON c.sid=s.sid AND c.cert_id = (SELECT MAX(cert_id) FROM campus_cert_result c2 WHERE c2.sid=s.sid AND c2.is_valid=1)
+        LEFT JOIN mentorship m ON s.sid=m.sid
+        WHERE c.is_pass=1
+        ORDER BY s.sid""").fetchall()
+    stats = {
+        "passed": len(rows),
+        "paired": sum(1 for r in rows if r["mentor_name"]),
+        "unpaired": sum(1 for r in rows if not r["mentor_name"]),
+        "m1_done": sum(1 for r in rows if r["done_months"] >= 1),
+        "m3_done": sum(1 for r in rows if r["done_months"] >= 3),
+    }
+    user = {"display_name": session.get("display_name"), "role": "pm"}
+    return render_template("pm_onboard.html", rows=rows, stats=stats,
+                           user=user, active="pm_onboard")
+
+
+# ─── PM：结业认证管理 ───
+@app.route("/pm/cert")
+@login_required
+@role_required("pm")
+def pm_cert():
+    db = get_db()
+    rows = latest_certs(db)
+    name_map = {r["sid"]: r["name"] for r in db.execute("SELECT sid, name FROM campus_student").fetchall()}
+    risk_sids = {r["sid"] for r in db.execute("SELECT DISTINCT sid FROM campus_risk_action").fetchall()}
+    certs = []
+    for r in rows:
+        d = dict(r)
+        d["name"] = name_map.get(r["sid"], "—")
+        d["has_risk"] = r["sid"] in risk_sids
+        certs.append(d)
+    pending = [c for c in certs if not c.get("cert_no")]
+    issued = [c for c in certs if c.get("cert_no")]
+    user = {"display_name": session.get("display_name"), "role": "pm"}
+    return render_template("pm_cert.html", certs=certs, pending=pending, issued=issued,
+                           user=user, active="pm_cert")
+
+
+@app.route("/pm/cert/action", methods=["POST"])
+@login_required
+@role_required("pm")
+def pm_cert_action():
+    db = get_db()
+    sid = request.form.get("sid")
+    action = request.form.get("action")  # pass / reject
+    if not sid:
+        flash("参数错误", "danger")
+        return redirect(url_for("pm_cert"))
+    cert = db.execute("SELECT * FROM campus_cert_result WHERE sid=? AND is_valid=1 ORDER BY cert_id DESC LIMIT 1", (sid,)).fetchone()
+    if not cert:
+        flash("该学员暂无成绩", "danger")
+        return redirect(url_for("pm_cert"))
+    cert_id = cert["cert_id"]
+    if action == "pass":
+        cert_no = f"WOTU-2026-{sid}-{cert_id:03d}"
+        db.execute("UPDATE campus_cert_result SET is_pass=1, cert_no=?, reject_msg=NULL WHERE cert_id=?", (cert_no, cert_id))
+        flash(f"已通过认证，证书号：{cert_no}", "success")
+    elif action == "reject":
+        reason = request.form.get("reject_msg", "未达标")
+        db.execute("UPDATE campus_cert_result SET is_pass=0, reject_msg=? WHERE cert_id=?", (reason, cert_id))
+        flash(f"已驳回：{reason}", "warn")
+    db.commit()
+    return redirect(url_for("pm_cert"))
+
+
+# ─── 学员：学 · 课程学习 ───
+@app.route("/study")
+@login_required
+@role_required("student", "teacher", "pm")
+def student_study():
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    # 学习行为打卡：同一学员同一天只记一条"学习打卡"（防刷）
+    today = datetime.now().strftime("%Y-%m-%d")
+    hit = db.execute("SELECT 1 FROM study_activity WHERE sid=? AND act_type='study_checkin' AND created_at LIKE ?",
+                     (sid, today + "%")).fetchone()
+    if not hit:
+        db.execute("INSERT INTO study_activity (sid, act_type, detail, created_at) VALUES (?,?,?,?)",
+                   (sid, "study_checkin", "进入课程学习页", datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        db.commit()
+    days = []
+    for tdef in TASK_DEFS:
+        qr = db.execute("SELECT score FROM campus_quiz_result WHERE sid=? AND quiz_group=?",
+                        (sid, tdef["paper"])).fetchone()
+        days.append({
+            "day": tdef["day"], "title": tdef["title"], "module": tdef["module"],
+            "study": tdef["study"], "skills": tdef["skills"],
+            "done": bool(qr), "score": qr["score"] if qr else None,
+        })
+    materials = db.execute("SELECT * FROM course_material ORDER BY day, created_at DESC").fetchall()
+    user = {"display_name": session.get("display_name"), "role": session.get("role")}
+    return render_template("student_study.html", days=days, user=user, active="study", materials=materials)
+
+
+# ─── 学员：练 · 实操训练 ───
+@app.route("/practice")
+@login_required
+@role_required("student")
+def student_practice():
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    days = []
+    for tdef in TASK_DEFS:
+        total = len(tdef["deliverables"])
+        sub = db.execute(
+            "SELECT deliverable_index, content, created_at FROM practice_submission WHERE sid=? AND day=?",
+            (sid, tdef["day"])).fetchall()
+        submitted = {r["deliverable_index"]: r for r in sub}
+        done_count = len(submitted)
+        days.append({
+            "day": tdef["day"], "title": tdef["title"], "module": tdef["module"],
+            "deliverables": tdef["deliverables"],
+            "submitted": submitted, "done_count": done_count, "total": total,
+        })
+    user = {"display_name": session.get("display_name"), "role": "student"}
+    return render_template("student_practice.html", days=days, user=user, active="practice")
+
+
+# ─── 学员：测 · 知识测验 ───
+@app.route("/quizzes")
+@login_required
+@role_required("student")
+def student_quizzes():
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    quizzes = []
+    for tdef in TASK_DEFS:
+        qr = db.execute("SELECT * FROM campus_quiz_result WHERE sid=? AND quiz_group=?",
+                        (sid, tdef["paper"])).fetchall()
+        best = max([r["score"] for r in qr], default=None)
+        quizzes.append({
+            "day": tdef["day"], "title": tdef["title"], "paper": tdef["paper"],
+            "best": best, "times": len(qr),
+        })
+    user = {"display_name": session.get("display_name"), "role": "student"}
+    return render_template("student_quizzes.html", quizzes=quizzes, user=user, active="quiz")
+
+
+# ─── 学员：考 · 结训大考 ───
+@app.route("/exam")
+@login_required
+@role_required("student")
+def student_exam():
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    cfg = db.execute("SELECT * FROM exam_config WHERE id=1").fetchone()
+    exam_open = bool(cfg and cfg["is_open"])
+    paper = cfg["active_paper"] if cfg else None
+
+    # 模块1：理论考试
+    theory = None
+    if paper:
+        groups = CHOICE_DOCUMENTS.get(paper, [])
+        theory = db.execute(
+            f"SELECT score FROM campus_quiz_result WHERE sid=? AND quiz_group IN ({','.join('?'*len(groups))}) ORDER BY score DESC LIMIT 1",
+            (sid, *groups)).fetchone()
+
+    # 模块2：综合实操（租赁业务全流程，day=8）
+    practical = db.execute(
+        "SELECT * FROM practice_submission WHERE sid=? AND day=8 ORDER BY id DESC LIMIT 1",
+        (sid,)).fetchone()
+    practical_review = db.execute(
+        "SELECT * FROM practice_review WHERE sid=? AND day=8 ORDER BY id DESC LIMIT 1",
+        (sid,)).fetchone()
+
+    # 模块3：情景应变
+    scenario_done = db.execute(
+        "SELECT COUNT(*) c FROM scenario_attempts WHERE sid=?", (sid,)).fetchone()["c"] if db.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='scenario_attempts'").fetchone() else 0
+    # 简化：看session里有没有抽题记录
+    scenario_state = session.get("current_scenario")
+
+    user = {"display_name": session.get("display_name"), "role": "student"}
+    return render_template("student_exam.html", cfg=cfg, exam_open=exam_open, paper=paper,
+                           theory=theory, practical=practical, practical_review=practical_review,
+                           scenario_done=scenario_done, scenario_state=scenario_state,
+                           user=user, active="exam")
+
+
+@app.route("/exam/practical", methods=["POST"])
+@login_required
+@role_required("student")
+def exam_practical_submit():
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    content = request.form.get("content", "").strip()
+    db = get_db()
+    existing = db.execute("SELECT id, attachment_path FROM practice_submission WHERE sid=? AND day=8", (sid,)).fetchone()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # 处理文件
+    attachment_path = existing["attachment_path"] if existing else None
+    f = request.files.get("attachment")
+    if f and f.filename:
+        ext = os.path.splitext(f.filename)[1].lower()
+        allowed = {".pdf",".doc",".docx",".ppt",".pptx",".jpg",".jpeg",".png",".mp4",".mov",".zip"}
+        if ext in allowed:
+            fname = f"exam_{sid}_{datetime.now().strftime('%Y%m%d%H%M%S')}{ext}"
+            f.save(os.path.join(UPLOAD_DIR, fname))
+            attachment_path = fname
+    if not content and not attachment_path:
+        flash("请填写方案说明或上传交付物", "error")
+        return redirect(url_for("student_exam"))
+    if existing:
+        db.execute("UPDATE practice_submission SET content=?, attachment_path=?, created_at=? WHERE id=?",
+                   (content, attachment_path, now, existing["id"]))
+    else:
+        db.execute("INSERT INTO practice_submission (sid, day, deliverable_index, content, attachment_path, created_at) VALUES (?,?,?,?,?,?)",
+                   (sid, 8, 0, content, attachment_path, now))
+    db.commit()
+    flash("综合实操方案已提交，等待助教/专家评审", "success")
+    return redirect(url_for("student_exam"))
+
+
+# ─── 学员：评 · 能力画像 ───
+@app.route("/eval")
+@login_required
+@role_required("student")
+def student_eval():
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    cert = db.execute("SELECT * FROM campus_cert_result WHERE sid=? AND is_valid=1 ORDER BY cert_id DESC LIMIT 1",
+                     (sid,)).fetchone()
+    soft = db.execute("SELECT * FROM soft_review_score WHERE sid=? ORDER BY created_at DESC",
+                      (sid,)).fetchall()
+    radar = radar_svg(
+        cert["m1_score"] if cert else 0,
+        cert["m2_score"] if cert else 0,
+        cert["m3_score"] if cert else 0,
+        cert["m4_score"] if cert else 0,
+    )
+    user = {"display_name": session.get("display_name"), "role": "student"}
+    return render_template("student_eval.html", cert=cert or {}, soft=soft,
+                           radar_svg=radar, user=user, active="eval")
+
+
+# ─── 学员：我的证书 ───
+@app.route("/my-cert")
+@login_required
+@role_required("student")
+def student_cert():
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    cert = db.execute("SELECT * FROM campus_cert_result WHERE sid=? AND is_valid=1 ORDER BY cert_id DESC LIMIT 1",
+                     (sid,)).fetchone()
+    # 我的申诉记录
+    my_appeals = db.execute(
+        "SELECT * FROM campus_appeal WHERE sid=? ORDER BY appeal_id DESC LIMIT 10", (sid,)).fetchall()
+    user = {"display_name": session.get("display_name"), "role": "student"}
+    return render_template("student_cert.html", cert=cert or {}, user=user, active="cert",
+                           my_appeals=my_appeals)
+
+
+@app.route("/my-appeal", methods=["POST"])
+@login_required
+@role_required("student")
+def student_appeal_submit():
+    """学员对结业结果提交申诉（进入专家处理队列）"""
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    cert = db.execute("SELECT * FROM campus_cert_result WHERE sid=? AND is_valid=1 ORDER BY cert_id DESC LIMIT 1",
+                     (sid,)).fetchone()
+    reason = request.form.get("appeal_reason", "").strip()
+    if not reason:
+        flash("请填写申诉理由", "error")
+        return redirect(url_for("student_cert"))
+    if cert is None:
+        flash("暂无有效的结业成绩可申诉", "error")
+        return redirect(url_for("student_cert"))
+    # 同一证书只允许一条待处理申诉
+    exist = db.execute(
+        "SELECT * FROM campus_appeal WHERE sid=? AND origin_cert_result_id=? AND deal_status='pending'",
+        (sid, cert["cert_id"])).fetchone()
+    if exist:
+        flash("该成绩已有一条待处理申诉，请等待处理结果", "error")
+        return redirect(url_for("student_cert"))
+    db.execute("""INSERT INTO campus_appeal (sid, origin_cert_result_id, appeal_reason, submit_time,
+                  deal_status, window_hours, created_at)
+                  VALUES (?,?,?,?,?,?,?)""",
+        (sid, cert["cert_id"], reason, datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+         "pending", 48, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    _audit(db, "成绩申诉", f"对结业结果提交申诉：{reason[:30]}", sid)
+    flash("申诉已提交，专家将在 48 小时内处理，可在本页查看进度", "success")
+    return redirect(url_for("student_cert"))
+
+
+@app.route("/expert/appeal")
+@login_required
+@role_required("expert")
+def expert_appeal_list():
+    db = get_db()
+    pending = db.execute("""
+        SELECT a.*, s.name AS stu_name FROM campus_appeal a
+        LEFT JOIN campus_student s ON a.sid=s.sid
+        WHERE a.deal_status='pending' ORDER BY a.appeal_id DESC""").fetchall()
+    handled = db.execute("""
+        SELECT a.*, s.name AS stu_name FROM campus_appeal a
+        LEFT JOIN campus_student s ON a.sid=s.sid
+        WHERE a.deal_status IN ('resolved','rejected') ORDER BY a.appeal_id DESC LIMIT 30""").fetchall()
+    user = {"display_name": session.get("display_name"), "role": "expert"}
+    return render_template("expert_appeal_list.html", pending=pending, handled=handled,
+                           user=user, active="expert_appeal")
+
+
+@app.route("/expert/appeal/<int:appeal_id>", methods=["GET", "POST"])
+@login_required
+@role_required("expert")
+def expert_appeal_handle(appeal_id):
+    """专家处理学员申诉：查看原成绩与申诉理由，接受重审/驳回"""
+    db = get_db()
+    appeal = db.execute("SELECT * FROM campus_appeal WHERE appeal_id=?", (appeal_id,)).fetchone()
+    if not appeal:
+        flash("申诉不存在", "error")
+        return redirect(url_for("expert_dashboard"))
+    if request.method == "POST":
+        action = request.form.get("action", "")
+        comment = request.form.get("handle_comment", "").strip()
+        if action == "reject":
+            db.execute("""UPDATE campus_appeal SET deal_status='rejected', deal_operator=?,
+                          appeal_reason=appeal_reason||char(10)||'【处理意见】'||? WHERE appeal_id=?""",
+                (session["user_id"], comment or "经复核维持原判定", appeal_id))
+            _audit(db, "申诉处理", f"驳回申诉 #{appeal_id}：{comment[:30]}", appeal["sid"])
+            flash("已驳回该申诉（维持原判定）", "info")
+        elif action == "accept":
+            db.execute("""UPDATE campus_appeal SET deal_status='resolved', deal_operator=?,
+                          appeal_reason=appeal_reason||char(10)||'【处理意见】'||? WHERE appeal_id=?""",
+                (session["user_id"], comment or "接受申诉，已重新核定", appeal_id))
+            _audit(db, "申诉处理", f"接受申诉并复核 #{appeal_id}：{comment[:30]}", appeal["sid"])
+            flash("已接受申诉并标记为复核完成（可在成绩页调整该学员成绩后重发证书）", "success")
+        db.commit()
+        return redirect(url_for("expert_dashboard"))
+    # 原成绩详情
+    origin = db.execute("SELECT * FROM campus_cert_result WHERE cert_id=?", (appeal["origin_cert_result_id"],)).fetchone()
+    stu = db.execute("SELECT * FROM campus_student WHERE sid=?", (appeal["sid"],)).fetchone()
+    user = {"display_name": session.get("display_name"), "role": "expert"}
+    return render_template("expert_appeal.html", appeal=appeal, origin=origin, stu=stu,
+                           user=user, active="expert_appeal")
+
+
+# ─── 学员：上岗技能清单（结业后自我盘点）───
+@app.route("/my-skills", methods=["GET", "POST"])
+@login_required
+@role_required("student")
+def student_skills():
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    if request.method == "POST":
+        mastered = request.form.getlist("mastered")  # 勾选的skill_id列表
+        # 更新勾选项为已掌握，其余为需补强
+        for row in db.execute("SELECT id FROM onboard_skill WHERE sid=?", (sid,)).fetchall():
+            db.execute("UPDATE onboard_skill SET mastered=?, updated_at=? WHERE id=?",
+                       (1 if str(row["id"]) in mastered else 0,
+                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"), row["id"]))
+        db.commit()
+        flash("技能清单已保存，请与带教师傅逐项核对", "success")
+        return redirect(url_for("student_skills"))
+    skills = db.execute("SELECT * FROM onboard_skill WHERE sid=? ORDER BY skill_tag, id", (sid,)).fetchall()
+    if not skills:
+        # 首次进入：从7天任务初始化
+        for tdef in TASK_DEFS:
+            for sk in tdef["skills"]:
+                db.execute("INSERT OR IGNORE INTO onboard_skill (sid, skill_tag, skill_name, mastered, source) VALUES (?,?,?,0,'task')",
+                           (sid, tdef["module"].split("·")[0].strip()[:10], sk))
+        db.commit()
+        skills = db.execute("SELECT * FROM onboard_skill WHERE sid=? ORDER BY skill_tag, id", (sid,)).fetchall()
+    mastered_count = sum(1 for s in skills if s["mastered"])
+    user = {"display_name": session.get("display_name"), "role": "student", "sid": sid}
+    return render_template("student_skills.html", skills=skills,
+                           mastered_count=mastered_count, total=len(skills),
+                           user=user, active="skills")
+
+
+# ─── 学员：上岗陪跑进度（1-3个月跟踪）───
+@app.route("/my-followup")
+@login_required
+@role_required("student")
+def student_followup():
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    stu = db.execute("SELECT * FROM campus_student WHERE sid=?", (sid,)).fetchone()
+    mentor = db.execute("SELECT * FROM mentorship WHERE sid=?", (sid,)).fetchone()
+    followups = db.execute("SELECT * FROM monthly_followup WHERE sid=? ORDER BY month_no", (sid,)).fetchall()
+    cert = db.execute("SELECT * FROM campus_cert_result WHERE sid=? AND is_valid=1 ORDER BY cert_id DESC LIMIT 1",
+                     (sid,)).fetchone()
+    # 技能掌握率
+    sk = db.execute("SELECT COUNT(*) c, SUM(mastered) m FROM onboard_skill WHERE sid=?", (sid,)).fetchone()
+    mastery = round((sk["m"] or 0) / sk["c"] * 100) if sk["c"] else 0
+    user = {"display_name": session.get("display_name"), "role": "student", "sid": sid}
+    return render_template("student_followup.html", stu=stu, mentor=mentor,
+                           followups=followups, cert=cert or {}, mastery=mastery,
+                           user=user, active="followup")
+
+
+@app.route("/my-followup/self", methods=["POST"])
+@login_required
+@role_required("student")
+def student_followup_self():
+    """学员月度自评：先自评，导师/班主任评分后可对比"""
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    month_no = int(request.form.get("month_no", "1"))
+    self_score = int(request.form.get("self_score", "0"))
+    self_comment = request.form.get("self_comment", "").strip()
+    progress = request.form.get("progress", "").strip()
+    db.execute("""INSERT INTO monthly_followup (sid, month_no, self_score, self_comment, status, created_at)
+                  VALUES (?,?,?,?,?,?)
+                  ON CONFLICT(sid, month_no) DO UPDATE SET
+                    self_score=excluded.self_score,
+                    self_comment=excluded.self_comment""",
+        (sid, month_no, self_score,
+         (self_comment + ("\n【进展】" + progress if progress else "")),
+         "pending", datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    _audit(db, "学员自评", f"第{month_no}个月自评 {self_score} 分", sid)
+    flash(f"第{month_no}个月自评已提交", "success")
+    return redirect(url_for("student_followup"))
+
+
+@app.route("/my-supervision/done/<int:log_id>", methods=["POST"])
+@login_required
+@role_required("student")
+def student_supervision_done(log_id):
+    """学员回执：确认督导事项已完成"""
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    log = db.execute("SELECT * FROM supervision_log WHERE id=?", (log_id,)).fetchone()
+    if not log or log["sid"] != sid:
+        flash("无权操作该督导记录", "error")
+        return redirect(url_for("student_dashboard"))
+    db.execute("UPDATE supervision_log SET status='done' WHERE id=?", (log_id,))
+    db.commit()
+    _audit(db, "督导回执", f"确认完成督导事项 #{log_id}", sid)
+    flash("已确认完成该督导事项，谢谢反馈！", "success")
+    return redirect(url_for("student_dashboard"))
+
+
+# ─── PM：账号管理 ───
+@app.route("/pm/users")
+@login_required
+@role_required("pm")
+def pm_users():
+    db = get_db()
+    rows = db.execute("SELECT user_id, role, display_name, managed_class_ids, created_at FROM campus_user_role ORDER BY role, user_id").fetchall()
+    user = {"display_name": session.get("display_name"), "role": "pm"}
+    return render_template("pm_users.html", users=rows, user=user, active="pm_users")
+
+
+@app.route("/pm/users/add", methods=["POST"])
+@login_required
+@role_required("pm")
+def pm_user_add():
+    db = get_db()
+    uid = request.form.get("user_id", "").strip()
+    pwd = request.form.get("password", "123456")
+    role = request.form.get("role", "student")
+    name = request.form.get("display_name", uid)
+    classes = request.form.get("managed_class_ids", "")
+    if not uid or role not in ["student", "coach", "expert", "pm", "teacher"]:
+        flash("参数错误", "danger")
+        return redirect(url_for("pm_users"))
+    try:
+        db.execute(
+            "INSERT INTO campus_user_role (user_id, role, managed_class_ids, display_name, created_at, password_hash) VALUES (?,?,?,?,?,?)",
+            (uid, role, classes, name, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), hash_pwd(pwd)))
+        db.commit()
+        flash(f"账号 {uid} 已创建（{role}）", "success")
+    except Exception as e:
+        flash(f"创建失败：{e}", "danger")
+    return redirect(url_for("pm_users"))
+
+
+@app.route("/pm/users/reset", methods=["POST"])
+@login_required
+@role_required("pm")
+def pm_user_reset():
+    db = get_db()
+    uid = request.form.get("user_id")
+    pwd = request.form.get("password", "123456")
+    db.execute("UPDATE campus_user_role SET password_hash=? WHERE user_id=?", (hash_pwd(pwd), uid))
+    db.commit()
+    flash(f"已重置 {uid} 密码为 {pwd}", "success")
+    return redirect(url_for("pm_users"))
+
+
+# ─── 批量导入学员（CSV）公共逻辑 ───
+def import_students_csv(db, content, default_class_id):
+    """解析 CSV 并批量创建学员+账号，返回 (ok_count, skip_count, errors)"""
+    import io as _io
+    reader = csv.DictReader(_io.StringIO(content))
+    ok, skip, errors = 0, 0, []
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    for i, row in enumerate(reader, start=2):
+        sid = (row.get("sid") or "").strip()
+        name = (row.get("name") or "").strip()
+        if not sid or not name:
+            errors.append(f"第{i}行：sid/姓名不能为空")
+            continue
+        cls = (row.get("class_id") or "").strip() or default_class_id
+        try:
+            exists = db.execute("SELECT sid FROM campus_student WHERE sid=?", (sid,)).fetchone()
+            if exists:
+                db.execute("""UPDATE campus_student SET name=?, school=?, major=?, gender=?, phone=?, wechat=?, class_id=?, updated_at=? WHERE sid=?""",
+                    (name, (row.get("school") or "").strip(), (row.get("major") or "").strip(),
+                     (row.get("gender") or "").strip(), (row.get("phone") or "").strip(),
+                     (row.get("wechat") or "").strip(), cls, now, sid))
+                skip += 1
+            else:
+                db.execute("""INSERT INTO campus_student (sid, name, class_id, student_status, school, major, phone, wechat, gender, enroll_date, created_at, updated_at)
+                              VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+                    (sid, name, cls, "在训", (row.get("school") or "").strip(), (row.get("major") or "").strip(),
+                     (row.get("phone") or "").strip(), (row.get("wechat") or "").strip(),
+                     (row.get("gender") or "").strip(), now[:10], now, now))
+                # 建登录账号（密码默认 123456）
+                acc = db.execute("SELECT user_id FROM campus_user_role WHERE user_id=?", (sid,)).fetchone()
+                if not acc:
+                    db.execute("""INSERT INTO campus_user_role (user_id, role, managed_class_ids, display_name, created_at, password_hash)
+                                  VALUES (?,?,?,?,?,?)""",
+                        (sid, "student", cls, name, now, hash_pwd("123456")))
+                ok += 1
+        except Exception as e:
+            errors.append(f"第{i}行：{e}")
+    db.commit()
+    return ok, skip, errors
+
+
+# ─── 班主任：学员成绩明细（只读）+ 批量导入/导出 ───
+@app.route("/teacher/students")
+@login_required
+@role_required("teacher")
+def teacher_students():
+    db = get_db()
+    managed = session.get("managed_class_ids", "class01")
+    class_ids = [c.strip() for c in managed.split(",") if c.strip()]
+    rows = db.execute("""
+        SELECT s.*, c.total_score, c.grade, c.is_pass, c.cert_no, c.work_advice,
+               m.mentor_name, m.store_name,
+               (SELECT COUNT(*) FROM practice_submission ps WHERE ps.sid=s.sid) AS sub_count
+        FROM campus_student s
+        LEFT JOIN campus_cert_result c ON c.sid=s.sid AND c.cert_id = (SELECT MAX(cert_id) FROM campus_cert_result c2 WHERE c2.sid=s.sid AND c2.is_valid=1)
+        LEFT JOIN mentorship m ON s.sid=m.sid
+        WHERE s.class_id IN (%s) ORDER BY s.sid""" % ",".join("?"*len(class_ids)), class_ids).fetchall()
+    return render_template("teacher_students.html", students=rows,
+                           user={"display_name":session.get("display_name"),"role":"teacher"},
+                           active="teacher_students", class_ids=",".join(class_ids))
+
+
+@app.route("/teacher/students/export")
+@login_required
+@role_required("teacher")
+def teacher_students_export():
+    db = get_db()
+    managed = session.get("managed_class_ids", "class01")
+    class_ids = [c.strip() for c in managed.split(",") if c.strip()]
+    rows = db.execute("""
+        SELECT s.sid, s.name, s.school, s.major, s.gender, s.phone, s.student_status,
+               c.grade, c.is_pass, c.cert_no, c.total_score, c.work_advice,
+               m.mentor_name, m.store_name
+        FROM campus_student s
+        LEFT JOIN campus_cert_result c ON c.sid=s.sid AND c.cert_id = (SELECT MAX(cert_id) FROM campus_cert_result c2 WHERE c2.sid=s.sid AND c2.is_valid=1)
+        LEFT JOIN mentorship m ON s.sid=m.sid
+        WHERE s.class_id IN (%s) ORDER BY s.sid""" % ",".join("?"*len(class_ids)), class_ids).fetchall()
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["学号","姓名","学校","专业","性别","手机号","状态","定级","是否通过","证书号","综合分","上岗建议","师傅","门店"])
+    for r in rows:
+        w.writerow([r["sid"], r["name"], r["school"] or "", r["major"] or "", r["gender"] or "",
+                    r["phone"] or "", r["student_status"] or "", r["grade"] or "",
+                    "通过" if r["is_pass"] else ("未通过" if r["is_pass"]==0 else ""),
+                    r["cert_no"] or "", r["total_score"] or "", r["work_advice"] or "",
+                    r["mentor_name"] or "", r["store_name"] or ""])
+    resp = Response(buf.getvalue().encode("utf-8-sig"), mimetype="text/csv")
+    resp.headers["Content-Disposition"] = "attachment; filename=students.csv"
+    return resp
+
+
+@app.route("/teacher/students/import", methods=["POST"])
+@login_required
+@role_required("teacher")
+def teacher_students_import():
+    f = request.files.get("file")
+    if not f or not f.filename:
+        flash("请选择 CSV 文件", "danger")
+        return redirect(url_for("teacher_students"))
+    content = f.read().decode("utf-8-sig", errors="replace")
+    managed = session.get("managed_class_ids", "class01")
+    default_cls = managed.split(",")[0].strip()
+    ok, skip, errors = import_students_csv(get_db(), content, default_cls)
+    msg = f"导入完成：新增 {ok} 人，跳过重复 {skip} 人" + (f"，{len(errors)} 行有误" if errors else "")
+    flash(msg, "success" if ok else "warn")
+    if errors:
+        flash("；".join(errors[:5]), "danger")
+    return redirect(url_for("teacher_students"))
+
+
+# ─── PM：学员总表/陪跑跟踪导出 + 批量导入 ───
+@app.route("/pm/students/export")
+@login_required
+@role_required("pm")
+def pm_students_export():
+    db = get_db()
+    rows = db.execute("""
+        SELECT s.sid, s.name, s.class_id, s.school, s.major, s.gender, s.phone, s.student_status,
+               c.grade, c.is_pass, c.cert_no, c.total_score, c.work_advice,
+               m.mentor_name, m.store_name
+        FROM campus_student s
+        LEFT JOIN campus_cert_result c ON c.sid=s.sid AND c.cert_id = (SELECT MAX(cert_id) FROM campus_cert_result c2 WHERE c2.sid=s.sid AND c2.is_valid=1)
+        LEFT JOIN mentorship m ON s.sid=m.sid
+        ORDER BY s.sid""").fetchall()
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["学号","姓名","班级","学校","专业","性别","手机号","状态","定级","是否通过","证书号","综合分","上岗建议","师傅","门店"])
+    for r in rows:
+        w.writerow([r["sid"], r["name"], r["class_id"] or "", r["school"] or "", r["major"] or "",
+                    r["gender"] or "", r["phone"] or "", r["student_status"] or "", r["grade"] or "",
+                    "通过" if r["is_pass"] else ("未通过" if r["is_pass"]==0 else ""),
+                    r["cert_no"] or "", r["total_score"] or "", r["work_advice"] or "",
+                    r["mentor_name"] or "", r["store_name"] or ""])
+    resp = Response(buf.getvalue().encode("utf-8-sig"), mimetype="text/csv")
+    resp.headers["Content-Disposition"] = "attachment; filename=all_students.csv"
+    return resp
+
+
+@app.route("/pm/onboard/export")
+@login_required
+@role_required("pm")
+def pm_onboard_export():
+    db = get_db()
+    rows = db.execute("""
+        SELECT s.sid, s.name, s.class_id, c.grade, c.cert_no,
+               m.mentor_name, m.store_name, m.start_date,
+               (SELECT COUNT(*) FROM monthly_followup f WHERE f.sid=s.sid AND f.status='done') AS done_months,
+               (SELECT COUNT(*) FROM onboard_skill sk WHERE sk.sid=s.sid) AS skill_total,
+               (SELECT COUNT(*) FROM onboard_skill sk WHERE sk.sid=s.sid AND sk.mastered=1) AS skill_mastered
+        FROM campus_student s
+        LEFT JOIN campus_cert_result c ON c.sid=s.sid AND c.cert_id = (SELECT MAX(cert_id) FROM campus_cert_result c2 WHERE c2.sid=s.sid AND c2.is_valid=1)
+        LEFT JOIN mentorship m ON s.sid=m.sid
+        WHERE c.is_pass=1 ORDER BY s.sid""").fetchall()
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["学号","姓名","班级","定级","证书号","师傅","门店","结对日期","完成陪跑月数","技能掌握数/总数"])
+    for r in rows:
+        w.writerow([r["sid"], r["name"], r["class_id"] or "", r["grade"] or "", r["cert_no"] or "",
+                    r["mentor_name"] or "", r["store_name"] or "", r["start_date"] or "",
+                    r["done_months"] or 0, f"{r['skill_mastered'] or 0}/{r['skill_total'] or 0}"])
+    resp = Response(buf.getvalue().encode("utf-8-sig"), mimetype="text/csv")
+    resp.headers["Content-Disposition"] = "attachment; filename=onboard_tracking.csv"
+    return resp
+
+
+# ═══ PM：优秀学员档案 / 校友会 / 标杆案例集 ═══
+def _auto_register_alumni(db):
+    """已结业学员自动收录进校友会（幂等）"""
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rows = db.execute("""
+        SELECT s.sid, s.name, c.grade, c.cert_no FROM campus_student s
+        JOIN campus_cert_result c ON s.sid=c.sid AND c.is_valid=1
+        WHERE c.is_pass=1""").fetchall()
+    n = 0
+    for r in rows:
+        exists = db.execute("SELECT sid FROM alumni WHERE sid=?", (r["sid"],)).fetchone()
+        if not exists:
+            db.execute("""INSERT INTO alumni (sid, name, grade, grad_date, alumni_level, status, created_at)
+                          VALUES (?,?,?,?,?,?,?)""",
+                (r["sid"], r["name"], r["grade"], now[:10], "普通校友", "active", now))
+            n += 1
+    db.commit()
+    return n
+
+
+@app.route("/pm/alumni")
+@login_required
+@role_required("pm")
+def pm_alumni():
+    db = get_db()
+    _auto_register_alumni(db)
+    rows = db.execute("SELECT * FROM alumni ORDER BY id DESC").fetchall()
+    perf_map = {}
+    for a in rows:
+        p = db.execute("SELECT * FROM alumni_performance WHERE sid=? ORDER BY record_month DESC LIMIT 1",
+                       (a["sid"],)).fetchone()
+        perf_map[a["sid"]] = p
+    stats = {"total": len(rows),
+             "on_job": sum(1 for r in rows if r["company"]),
+             "active": sum(1 for r in rows if r["status"] == "active")}
+    return render_template("pm_alumni.html", alumni=rows, perf_map=perf_map, stats=stats,
+                           user={"display_name":session.get("display_name"),"role":"pm"},
+                           active="pm_alumni")
+
+@app.route("/pm/alumni/update", methods=["POST"])
+@login_required
+@role_required("pm")
+def pm_alumni_update():
+    db = get_db()
+    sid = request.form.get("sid","")
+    db.execute("""UPDATE alumni SET company=?, position=?, alumni_level=?, contact_note=?, status=? WHERE sid=?""",
+        (request.form.get("company",""), request.form.get("position",""),
+         request.form.get("alumni_level","普通校友"), request.form.get("contact_note",""),
+         request.form.get("status","active"), sid))
+    db.commit()
+    flash("校友档案已更新", "success")
+    return redirect(url_for("pm_alumni"))
+
+@app.route("/pm/alumni/performance", methods=["POST"])
+@login_required
+@role_required("pm")
+def pm_alumni_performance():
+    db = get_db()
+    sid = request.form.get("sid","")
+    db.execute("""INSERT INTO alumni_performance (sid, record_month, performance_score, metric_tags, comment, evaluator, created_at)
+                  VALUES (?,?,?,?,?,?,?)""",
+        (sid, request.form.get("record_month",""), int(request.form.get("performance_score","0")),
+         request.form.get("metric_tags",""), request.form.get("comment",""),
+         session.get("display_name") or "PM", datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash("表现记录已保存", "success")
+    return redirect(url_for("pm_alumni"))
+
+
+@app.route("/pm/excellent")
+@login_required
+@role_required("pm")
+def pm_excellent():
+    db = get_db()
+    # 自动候选：S/A 级学员（取最新结业记录）
+    cands = db.execute("""
+        SELECT s.sid, s.name, s.school, s.major, c.grade, c.total_score, c.work_advice,
+               (SELECT COUNT(*) FROM showcase_work sw WHERE sw.sid=s.sid) AS works_count
+        FROM campus_student s
+        JOIN campus_cert_result c ON c.sid=s.sid AND c.cert_id = (
+            SELECT MAX(cert_id) FROM campus_cert_result c2 WHERE c2.sid=s.sid AND c2.is_valid=1)
+        WHERE c.grade IN ('S','A') ORDER BY c.total_score DESC""").fetchall()
+    # 助教提名待 PM 终审
+    pending_noms = db.execute("""
+        SELECT n.*, s.name AS stu_name FROM excellent_nomination n
+        LEFT JOIN campus_student s ON n.sid=s.sid
+        WHERE n.status='nominated' ORDER BY n.id DESC""").fetchall()
+    confirmed_noms = db.execute("""
+        SELECT n.*, s.name AS stu_name FROM excellent_nomination n
+        LEFT JOIN campus_student s ON n.sid=s.sid
+        WHERE n.status IN ('confirmed','rejected') ORDER BY n.id DESC LIMIT 30""").fetchall()
+    return render_template("pm_excellent.html", candidates=cands,
+                           pending_noms=pending_noms, confirmed_noms=confirmed_noms,
+                           user={"display_name":session.get("display_name"),"role":"pm"},
+                           active="pm_excellent")
+
+
+@app.route("/pm/excellent/confirm", methods=["POST"])
+@login_required
+@role_required("pm")
+def pm_excellent_confirm():
+    db = get_db()
+    nom_id = int(request.form.get("nom_id", "0"))
+    action = request.form.get("action", "")
+    nom = db.execute("SELECT * FROM excellent_nomination WHERE id=?", (nom_id,)).fetchone()
+    if not nom:
+        flash("提名不存在", "error")
+        return redirect(url_for("pm_excellent"))
+    if action == "confirm":
+        db.execute("UPDATE excellent_nomination SET status='confirmed' WHERE id=?", (nom_id,))
+        # 联动校友会：升级为骨干校友
+        db.execute("UPDATE alumni SET alumni_level='骨干校友' WHERE sid=?", (nom["sid"],))
+        _audit(db, "优秀学员确认", f"确认 {nom['sid']} 为「{nom['round_name']}」优秀学员", nom["sid"])
+        flash(f"已确认 {nom['sid']} 入选优秀学员，并升级为骨干校友", "success")
+    elif action == "reject":
+        db.execute("UPDATE excellent_nomination SET status='rejected' WHERE id=?", (nom_id,))
+        flash(f"已驳回 {nom['sid']} 的提名", "info")
+    db.commit()
+    return redirect(url_for("pm_excellent"))
+
+
+@app.route("/pm/showcase")
+@login_required
+@role_required("pm")
+def pm_showcase():
+    db = get_db()
+    rows = db.execute("""
+        SELECT sw.*, s.name AS stu_name FROM showcase_work sw
+        LEFT JOIN campus_student s ON sw.sid=s.sid
+        ORDER BY sw.id DESC""").fetchall()
+    return render_template("pm_showcase.html", works=rows,
+                           user={"display_name":session.get("display_name"),"role":"pm"},
+                           active="pm_showcase")
+
+
+@app.route("/pm/showcase/export")
+@login_required
+@role_required("pm")
+def pm_showcase_export():
+    """导出标杆案例集：说明页 + 作品附件，打包 zip"""
+    db = get_db()
+    rows = db.execute("""
+        SELECT sw.*, s.name AS stu_name FROM showcase_work sw
+        LEFT JOIN campus_student s ON sw.sid=s.sid ORDER BY sw.id""").fetchall()
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        # 说明页
+        lines = ["沃土计划 · 标杆案例集", "导出时间: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "", ""]
+        for w in rows:
+            lines.append(f"【{w['stu_name'] or w['sid']} · {w['title']}】")
+            lines.append(f"  学员: {w['sid']}  推荐人: {w['recommend_by'] or '—'}")
+            if w["description"]:
+                lines.append(f"  推荐理由: {w['description']}")
+            lines.append(f"  作品文件: {w['attachment_path'] or '—'}")
+            lines.append("")
+        zf.writestr("标杆案例集说明.txt", "\n".join(lines).encode("utf-8"))
+        # 附件
+        added = set()
+        for w in rows:
+            p = w["attachment_path"]
+            if p and p not in added and os.path.exists(os.path.join(UPLOAD_DIR, p)):
+                zf.write(os.path.join(UPLOAD_DIR, p), f"works/{w['sid']}_{p}")
+                added.add(p)
+    resp = Response(buf.getvalue(), mimetype="application/zip")
+    resp.headers["Content-Disposition"] = "attachment; filename=showcase_works.zip"
+    return resp
+
+
+@app.route("/pm/students/import", methods=["POST"])
+@login_required
+@role_required("pm")
+def pm_students_import():
+    f = request.files.get("file")
+    if not f or not f.filename:
+        flash("请选择 CSV 文件", "danger")
+        return redirect(url_for("pm_students"))
+    content = f.read().decode("utf-8-sig", errors="replace")
+    ok, skip, errors = import_students_csv(get_db(), content, "class01")
+    msg = f"导入完成：新增 {ok} 人，跳过重复 {skip} 人" + (f"，{len(errors)} 行有误" if errors else "")
+    flash(msg, "success" if ok else "warn")
+    if errors:
+        flash("；".join(errors[:5]), "danger")
+    return redirect(url_for("pm_students"))
+
+
+# ─── 附件访问 ───
+@app.route("/uploads/<path:filename>")
+@login_required
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_DIR, filename)
+
+
+# ─── 学员：我的档案 ───
+@app.route("/my-profile", methods=["GET", "POST"])
+@login_required
+@role_required("student")
+def student_profile():
+    sid = sid_for_user(session["user_id"]) or session["user_id"]
+    db = get_db()
+    if request.method == "POST":
+        db.execute("""UPDATE campus_student SET
+            name=?, gender=?, school=?, major=?, phone=?, wechat=?, updated_at=?
+            WHERE sid=?""",
+            (request.form.get("name",""), request.form.get("gender",""),
+             request.form.get("school",""), request.form.get("major",""),
+             request.form.get("phone",""), request.form.get("wechat",""),
+             datetime.now().strftime("%Y-%m-%d %H:%M:%S"), sid))
+        db.commit()
+        flash("档案已保存", "success")
+        return redirect(url_for("student_profile"))
+    stu = db.execute("SELECT * FROM campus_student WHERE sid=?", (sid,)).fetchone()
+    user = {"display_name": session.get("display_name"), "role": "student"}
+    return render_template("student_profile.html", stu=stu, user=user, active="profile")
+
+
+# ─── PM：编辑学员档案 ───
+@app.route("/pm/student/<sid>/edit", methods=["POST"])
+@login_required
+@role_required("pm")
+def pm_student_edit(sid):
+    db = get_db()
+    db.execute("""UPDATE campus_student SET
+        name=?, class_id=?, mentor_id=?, student_status=?, school=?, major=?, phone=?, wechat=?
+        WHERE sid=?""",
+        (request.form.get("name",""), request.form.get("class_id",""),
+         request.form.get("mentor_id",""), request.form.get("student_status",""),
+         request.form.get("school",""), request.form.get("major",""),
+         request.form.get("phone",""), request.form.get("wechat",""), sid))
+    db.commit()
+    flash(f"学员 {sid} 档案已更新", "success")
+    return redirect(url_for("pm_student_detail", sid=sid))
+
+
+# ─── 班主任：日程/公告/讲师 ───
+@app.route("/teacher/schedule")
+@login_required
+@role_required("teacher")
+def teacher_schedule():
+    db = get_db()
+    rows = db.execute("SELECT * FROM class_schedule WHERE class_id='class01' ORDER BY day, time_slot").fetchall()
+    return render_template("teacher_schedule.html", user={"display_name":session.get("display_name"),"role":"teacher"}, active="schedule", rows=rows)
+
+@app.route("/teacher/schedule/add", methods=["POST"])
+@login_required
+@role_required("teacher")
+def teacher_schedule_add():
+    db = get_db()
+    db.execute("INSERT INTO class_schedule (class_id, day, time_slot, title, content, instructor, created_at) VALUES (?,?,?,?,?,?,?)",
+        ("class01", request.form.get("day",1), request.form.get("time_slot",""),
+         request.form.get("title",""), request.form.get("content",""),
+         request.form.get("instructor",""), datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash("日程已添加", "success")
+    return redirect(url_for("teacher_schedule"))
+
+@app.route("/teacher/announce")
+@login_required
+@role_required("teacher")
+def teacher_announce():
+    db = get_db()
+    rows = db.execute("SELECT * FROM announcement WHERE class_id='class01' ORDER BY created_at DESC").fetchall()
+    return render_template("teacher_announce.html", user={"display_name":session.get("display_name"),"role":"teacher"}, active="announce", rows=rows)
+
+@app.route("/teacher/announce/add", methods=["POST"])
+@login_required
+@role_required("teacher")
+def teacher_announce_add():
+    db = get_db()
+    db.execute("INSERT INTO announcement (class_id, title, content, publisher, created_at) VALUES (?,?,?,?,?)",
+        ("class01", request.form.get("title",""), request.form.get("content",""),
+         session.get("display_name","班主任"), datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash("公告已发布", "success")
+    return redirect(url_for("teacher_announce"))
+
+# ─── 课程资料上传（PM/班主任）───
+@app.route("/material/upload", methods=["POST"])
+@login_required
+@role_required("teacher", "pm")
+def material_upload():
+    f = request.files.get("file")
+    if not f or not f.filename:
+        flash("请选择文件", "error")
+        return redirect(url_for("student_study"))
+    ext = os.path.splitext(f.filename)[1].lower()
+    allowed = {".pdf",".doc",".docx",".ppt",".pptx",".jpg",".jpeg",".png",".mp4",".mov",".zip",".txt"}
+    if ext not in allowed:
+        flash("不支持的文件格式", "error")
+        return redirect(url_for("student_study"))
+    fname = f"material_{datetime.now().strftime('%Y%m%d%H%M%S')}{ext}"
+    f.save(os.path.join(UPLOAD_DIR, fname))
+    db = get_db()
+    db.execute("INSERT INTO course_material (day, title, description, file_path, file_type, uploaded_by, created_at) VALUES (?,?,?,?,?,?,?)",
+        (request.form.get("day",1), request.form.get("title",""), request.form.get("description",""),
+         fname, ext.lstrip("."), session.get("display_name"),
+         datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash("课件已上传", "success")
+    return redirect(url_for("student_study"))
+
+
+# ─── PM：班级管理 ───
+@app.route("/pm/classes")
+@login_required
+@role_required("pm")
+def pm_classes():
+    db = get_db()
+    classes = db.execute("SELECT * FROM campus_class ORDER BY created_at DESC").fetchall()
+    batches = db.execute("SELECT * FROM campus_batch ORDER BY created_at DESC").fetchall()
+    return render_template("pm_classes.html", user={"display_name":session.get("display_name"),"role":"pm"}, active="pm_classes", classes=classes, batches=batches)
+
+@app.route("/pm/classes/add", methods=["POST"])
+@login_required
+@role_required("pm")
+def pm_class_add():
+    db = get_db()
+    cid = request.form.get("class_id", "").strip()
+    if not cid:
+        flash("请填写班级编号", "danger")
+        return redirect(url_for("pm_classes"))
+    if db.execute("SELECT 1 FROM campus_class WHERE class_id=?", (cid,)).fetchone():
+        flash(f"班级 {cid} 已存在，请更换编号", "danger")
+        return redirect(url_for("pm_classes"))
+    db.execute("INSERT INTO campus_class VALUES (?,?,?,?,?,?,?,?)",
+        (cid, request.form.get("class_name",""),
+         request.form.get("batch_id",""), request.form.get("teacher_id",""),
+         request.form.get("start_date",""), request.form.get("end_date",""),
+         "active", datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash("班级已创建", "success")
+    return redirect(url_for("pm_classes"))
+
+@app.route("/pm/batch/add", methods=["POST"])
+@login_required
+@role_required("pm")
+def pm_batch_add():
+    db = get_db()
+    bid = request.form.get("batch_id", "").strip()
+    if not bid:
+        flash("请填写批次编号", "danger")
+        return redirect(url_for("pm_classes"))
+    if db.execute("SELECT 1 FROM campus_batch WHERE batch_id=?", (bid,)).fetchone():
+        flash(f"批次 {bid} 已存在，请更换编号", "danger")
+        return redirect(url_for("pm_classes"))
+    db.execute("INSERT INTO campus_batch VALUES (?,?,?,?,?,?,?,?)",
+        (bid, request.form.get("batch_name",""),
+         request.form.get("year",2026), request.form.get("season",""),
+         request.form.get("start_date",""), request.form.get("end_date",""),
+         "active", datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash("批次已创建", "success")
+    return redirect(url_for("pm_classes"))
+
+# ─── PM：系统设置 ───
+@app.route("/pm/settings", methods=["GET", "POST"])
+@login_required
+@role_required("pm")
+def pm_settings():
+    db = get_db()
+    if request.method == "POST":
+        for k in ["pass_score", "cert_prefix", "icp_no", "gongan_no", "demo_mode",
+                  "points_submit", "points_drill", "points_review85", "points_review60", "points_attendance"]:
+            # 只更新本次提交的字段，避免缺字段时把已有配置清空
+            if k in request.form:
+                db.execute("INSERT OR REPLACE INTO system_config VALUES (?,?)", (k, request.form.get(k, "")))
+        db.commit()
+        _audit(db, "系统设置", "更新系统配置（含积分规则）")
+        flash("设置已保存", "success")
+        return redirect(url_for("pm_settings"))
+    config = dict(db.execute("SELECT key, value FROM system_config").fetchall())
+    # 待清空业务数据统计（供初始化区块展示）
+    _tables_info = []
+    for t in _RESET_TABLES:
+        try:
+            n = db.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0]
+            if n > 0:
+                _tables_info.append((t, n))
+        except Exception:
+            pass
+    return render_template("pm_settings.html", user={"display_name":session.get("display_name"),"role":"pm"}, active="pm_settings", config=config, tables=_tables_info)
+
+
+# ─── PM：系统初始化（清空业务数据，保留题库/账号/配置）───
+# 业务数据表：清空；保留表：题库/账号/配置/任务定义/评分锚点/情景题库
+_RESET_TABLES = [
+    "practice_submission", "practice_review",
+    "campus_quiz_result", "campus_quiz_result_old", "quiz_choice_detail",
+    "campus_cert_result", "expert_review", "soft_review_score",
+    "phase_evidence", "campus_appeal", "campus_risk_action",
+    "campus_audit_log", "campus_student", "campus_class_stat",
+    "class_schedule", "announcement", "course_material",
+    "campus_virtual_material", "instructor",
+    "campus_batch", "campus_class",
+]
+
+@app.route("/pm/init-system", methods=["GET", "POST"])
+@login_required
+@role_required("pm")
+def pm_init_system():
+    db = get_db()
+    if request.method == "POST":
+        confirm = request.form.get("confirm", "").strip()
+        if confirm != "清空并初始化":
+            flash("确认词输入错误，未执行任何操作", "error")
+            return redirect(url_for("pm_settings"))
+        try:
+            for t in _RESET_TABLES:
+                db.execute(f"DELETE FROM {t}")
+            # 重置自增计数
+            try:
+                for r in db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('practice_submission','practice_review','announcement','class_schedule','instructor')").fetchall():
+                    db.execute(f"DELETE FROM sqlite_sequence WHERE name=?", (r["name"],))
+            except Exception:
+                pass
+            db.commit()
+            flash(f"系统已初始化：已清空 {len(_RESET_TABLES)} 类业务数据，题库/账号/系统配置已保留", "success")
+        except Exception as e:
+            db.rollback()
+            flash(f"初始化失败：{e}", "error")
+        return redirect(url_for("pm_settings"))
+    # GET 直接回设置页（初始化表单集成在设置页）
+    return redirect(url_for("pm_settings"))
+
+
+# ─── 班主任：讲师管理 ───
+@app.route("/teacher/instructors")
+@login_required
+@role_required("teacher")
+def teacher_instructors():
+    db = get_db()
+    rows = db.execute("SELECT * FROM instructor ORDER BY id").fetchall()
+    return render_template("teacher_instructors.html", user={"display_name":session.get("display_name"),"role":"teacher"}, active="instructors", rows=rows)
+
+@app.route("/teacher/instructors/add", methods=["POST"])
+@login_required
+@role_required("teacher")
+def teacher_instructor_add():
+    f = request.files.get("file")
+    fname = None
+    if f and f.filename:
+        ext = os.path.splitext(f.filename)[1].lower()
+        if ext in {".pdf",".doc",".docx",".jpg",".png",".zip"}:
+            fname = f"ins_{datetime.now().strftime('%Y%m%d%H%M%S')}{ext}"
+            f.save(os.path.join(UPLOAD_DIR, fname))
+    db = get_db()
+    db.execute("INSERT INTO instructor (name, role, phone, module, expertise, responsibilities, file_path, status, bio, created_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
+        (request.form.get("name",""), request.form.get("role",""), request.form.get("phone",""),
+         request.form.get("module",""), request.form.get("expertise",""),
+         request.form.get("responsibilities",""), fname, "active",
+         request.form.get("bio",""), datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash("讲师已添加", "success")
+    return redirect(url_for("teacher_instructors"))
+
+
+# ─── 班主任：带教管理（师徒结对 + 月度陪跑评估）───
+@app.route("/teacher/mentorship")
+@login_required
+@role_required("teacher")
+def teacher_mentorship():
+    db = get_db()
+    pairs = db.execute("""
+        SELECT m.*, s.name AS stu_name, s.school, s.student_status
+        FROM mentorship m LEFT JOIN campus_student s ON m.sid=s.sid
+        ORDER BY m.id DESC""").fetchall()
+    # 已结业未结对的学员（可结对候选）
+    unpaired = db.execute("""
+        SELECT sid, name, school FROM campus_student
+        WHERE student_status IN ('已结业','在训') AND sid NOT IN (SELECT sid FROM mentorship WHERE status='active')
+        ORDER BY sid""").fetchall()
+    return render_template("teacher_mentorship.html",
+                           user={"display_name":session.get("display_name"),"role":"teacher"},
+                           active="mentorship", pairs=pairs, unpaired=unpaired)
+
+@app.route("/teacher/mentorship/add", methods=["POST"])
+@login_required
+@role_required("teacher")
+def teacher_mentorship_add():
+    db = get_db()
+    db.execute("""INSERT OR REPLACE INTO mentorship (sid, mentor_id, mentor_name, store_name, start_date, status, created_at)
+                  VALUES (?,?,?,?,?,?,?)""",
+        (request.form.get("sid",""), request.form.get("mentor_id",""),
+         request.form.get("mentor_name",""), request.form.get("store_name",""),
+         request.form.get("start_date",""), "active",
+         datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash("师徒结对成功", "success")
+    return redirect(url_for("teacher_mentorship"))
+
+@app.route("/teacher/followup/<sid>")
+@login_required
+@role_required("teacher")
+def teacher_followup(sid):
+    db = get_db()
+    stu = db.execute("SELECT * FROM campus_student WHERE sid=?", (sid,)).fetchone()
+    mentor = db.execute("SELECT * FROM mentorship WHERE sid=?", (sid,)).fetchone()
+    rows = db.execute("SELECT * FROM monthly_followup WHERE sid=? ORDER BY month_no", (sid,)).fetchall()
+    return render_template("teacher_followup_detail.html", stu=stu, mentor=mentor, rows=rows,
+                           user={"display_name":session.get("display_name"),"role":"teacher"},
+                           active="mentorship")
+
+@app.route("/teacher/followup/save", methods=["POST"])
+@login_required
+@role_required("teacher")
+def teacher_followup_save():
+    db = get_db()
+    sid = request.form.get("sid","")
+    month_no = int(request.form.get("month_no","1"))
+    # 师傅/店长填写（学员自评由学员端填写）
+    mentor_score = request.form.get("mentor_score") or None
+    store_score = request.form.get("store_score") or None
+    goal = request.form.get("goal","")
+    task_list = request.form.get("task_list","")
+    comment = request.form.get("comment","")
+    db.execute("""INSERT INTO monthly_followup (sid, month_no, goal, task_list, mentor_score, store_score, mentor_comment, status, created_at)
+                  VALUES (?,?,?,?,?,?,?,?,?)
+                  ON CONFLICT(sid, month_no) DO UPDATE SET
+                    goal=excluded.goal, task_list=excluded.task_list,
+                    mentor_score=excluded.mentor_score, store_score=excluded.store_score,
+                    mentor_comment=excluded.mentor_comment,
+                    status=excluded.status""",
+        (sid, month_no, goal, task_list,
+         int(mentor_score) if mentor_score else None,
+         int(store_score) if store_score else None,
+         comment,
+         "done" if (mentor_score and store_score) else "pending",
+         datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash(f"第{month_no}个月评估已保存", "success")
+    return redirect(url_for("teacher_followup", sid=sid))
+
+
+# ═══ 业务导师角色（师傅/雇主/店长）═══
+@app.route("/dashboard/mentor")
+@login_required
+@role_required("mentor")
+def mentor_dashboard():
+    db = get_db()
+    mentor_id = session["user_id"]
+    # 我的学员（active 结对）
+    students = db.execute("""
+        SELECT m.sid, s.name, s.school, s.major, s.student_status,
+               c.grade, c.cert_no,
+               (SELECT COUNT(*) FROM monthly_followup f WHERE f.sid=m.sid AND f.status='done') AS done_months,
+               (SELECT COUNT(*) FROM monthly_followup f WHERE f.sid=m.sid) AS total_months
+        FROM mentorship m
+        LEFT JOIN campus_student s ON m.sid=s.sid
+        LEFT JOIN campus_cert_result c ON c.sid=m.sid AND c.cert_id = (
+            SELECT MAX(cert_id) FROM campus_cert_result c2 WHERE c2.sid=m.sid AND c2.is_valid=1)
+        WHERE m.mentor_id=? AND m.status='active' ORDER BY m.sid""", (mentor_id,)).fetchall()
+    # 待指导（有月评估未填 mentor_score）
+    pending = db.execute("""
+        SELECT f.sid, f.month_no, f.goal, s.name FROM monthly_followup f
+        JOIN mentorship m ON f.sid=m.sid
+        JOIN campus_student s ON f.sid=s.sid
+        WHERE m.mentor_id=? AND f.mentor_score IS NULL ORDER BY f.sid, f.month_no""", (mentor_id,)).fetchall()
+    profile = db.execute("SELECT * FROM mentor_profile WHERE mentor_id=?", (mentor_id,)).fetchone()
+    banner = {
+        "title": "沃土计划 · 预备经纪人实训营",
+        "vision": "业务导师是把实训营的「合格」变成门店的「胜任」：用真实业务带教，让徒弟三个月后能独立开单。",
+        "expect_title": "致业务导师 · 把徒弟带成能独当一面的经纪人",
+        "expect_desc": "你接手的是已通过考核的学员。请用月度目标带节奏、用真实场景做示范、用表现记录留痕迹，并在关键时刻向项目组推荐值得全营学习的标杆作品——徒弟的每一次成长，都会被系统与校友会记住。",
+        "theme": "orange",
+        "features": [
+            {"icon": "🧑‍🤝‍🧑", "name": "我的学员", "desc": "结对带教·进度一览", "url": url_for("mentor_dashboard")},
+            {"icon": "📋", "name": "月度指导", "desc": "目标制定·评分评价", "url": url_for("mentor_dashboard")},
+            {"icon": "📈", "name": "上岗表现", "desc": "师傅/店长/雇主记录", "url": url_for("mentor_dashboard")},
+            {"icon": "🏆", "name": "标杆推荐", "desc": "推荐优秀作品", "url": url_for("mentor_showcase")},
+        ],
+    }
+    return render_template("mentor_dashboard.html", students=students, pending=pending, profile=profile,
+                           user={"display_name":session.get("display_name"),"role":"mentor"},
+                           active="mentor_dashboard", banner=banner)
+
+
+@app.route("/mentor/student/<sid>")
+@login_required
+@role_required("mentor")
+def mentor_student_detail(sid):
+    db = get_db()
+    mentor_id = session["user_id"]
+    # 校验结对关系
+    pair = db.execute("SELECT * FROM mentorship WHERE sid=? AND mentor_id=? AND status='active'",
+                      (sid, mentor_id)).fetchone()
+    if not pair:
+        flash("无权查看该学员", "error")
+        return redirect(url_for("mentor_dashboard"))
+    stu = db.execute("SELECT * FROM campus_student WHERE sid=?", (sid,)).fetchone()
+    cert = db.execute("SELECT * FROM campus_cert_result WHERE sid=? AND is_valid=1 ORDER BY cert_id DESC LIMIT 1",
+                      (sid,)).fetchone()
+    followups = db.execute("SELECT * FROM monthly_followup WHERE sid=? ORDER BY month_no", (sid,)).fetchall()
+    performances = db.execute("SELECT * FROM alumni_performance WHERE sid=? ORDER BY record_month DESC", (sid,)).fetchall()
+    # 学员提交的作品（供导师查看/推荐标杆）
+    works = db.execute("""SELECT ps.*, tdef.title AS task_title FROM practice_submission ps
+                          JOIN campus_task tdef ON ps.day=tdef.day_no
+                          WHERE ps.sid=? AND ps.attachment_path IS NOT NULL ORDER BY ps.day""", (sid,)).fetchall()
+    showcased = {w["attachment_path"] for w in db.execute(
+        "SELECT attachment_path FROM showcase_work WHERE sid=?", (sid,)).fetchall()}
+    return render_template("mentor_student_detail.html", stu=stu, cert=cert or {},
+                           followups=followups, performances=performances,
+                           works=works, showcased=showcased, pair=pair,
+                           user={"display_name":session.get("display_name"),"role":"mentor"},
+                           active="mentor_dashboard")
+
+
+@app.route("/mentor/eval", methods=["POST"])
+@login_required
+@role_required("mentor")
+def mentor_eval():
+    db = get_db()
+    sid = request.form.get("sid","")
+    month_no = int(request.form.get("month_no","1"))
+    score = int(request.form.get("score","0"))
+    comment = request.form.get("comment","")
+    guidance = request.form.get("guidance","")
+    mentor_id = session["user_id"]
+    pair = db.execute("SELECT * FROM mentorship WHERE sid=? AND mentor_id=? AND status='active'",
+                      (sid, mentor_id)).fetchone()
+    if not pair:
+        flash("无权操作该学员", "error")
+        return redirect(url_for("mentor_dashboard"))
+    db.execute("""INSERT INTO monthly_followup (sid, month_no, mentor_score, mentor_comment, status, created_at)
+                  VALUES (?,?,?,?,?,?)
+                  ON CONFLICT(sid, month_no) DO UPDATE SET
+                    mentor_score=excluded.mentor_score,
+                    mentor_comment=excluded.mentor_comment,
+                    status=CASE WHEN monthly_followup.store_score IS NOT NULL THEN 'done' ELSE 'pending' END""",
+        (sid, month_no, score, comment + ("\n【指导】" + guidance if guidance else ""),
+         "done" if request.form.get("store_confirmed") else "pending",
+         datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash(f"已提交第{month_no}个月指导评价", "success")
+    return redirect(url_for("mentor_student_detail", sid=sid))
+
+
+@app.route("/mentor/performance", methods=["POST"])
+@login_required
+@role_required("mentor")
+def mentor_performance():
+    db = get_db()
+    sid = request.form.get("sid","")
+    record_month = request.form.get("record_month","")
+    score = int(request.form.get("performance_score","0"))
+    tags = request.form.get("metric_tags","")
+    comment = request.form.get("comment","")
+    role_type = request.form.get("role_type","师傅")
+    mentor_id = session["user_id"]
+    pair = db.execute("SELECT * FROM mentorship WHERE sid=? AND mentor_id=? AND status='active'",
+                      (sid, mentor_id)).fetchone()
+    if not pair:
+        flash("无权操作该学员", "error")
+        return redirect(url_for("mentor_dashboard"))
+    db.execute("""INSERT INTO alumni_performance (sid, record_month, performance_score, metric_tags, comment, evaluator, role_type, created_at)
+                  VALUES (?,?,?,?,?,?,?,?)""",
+        (sid, record_month, score, tags, comment, session.get("display_name") or mentor_id,
+         role_type, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    _audit(db, "上岗表现", f"{record_month} 表现分 {score}（{role_type}）", sid)
+    flash("上岗表现记录已保存", "success")
+    return redirect(url_for("mentor_student_detail", sid=sid))
+
+
+@app.route("/mentor/showcase", methods=["POST"])
+@login_required
+@role_required("mentor")
+def mentor_showcase():
+    db = get_db()
+    sid = request.form.get("sid","")
+    attachment = request.form.get("attachment_path","")
+    day_no = request.form.get("day_no","")
+    title = request.form.get("title","")
+    desc = request.form.get("desc","")
+    category = request.form.get("category","")
+    reason = request.form.get("recommend_reason","") or desc
+    mentor_id = session["user_id"]
+    pair = db.execute("SELECT * FROM mentorship WHERE sid=? AND mentor_id=? AND status='active'",
+                      (sid, mentor_id)).fetchone()
+    if not pair:
+        flash("无权操作该学员", "error")
+        return redirect(url_for("mentor_dashboard"))
+    # 媒体类型推断
+    ext = os.path.splitext(attachment)[1].lower()
+    media = {"mp3":"audio","wav":"audio","m4a":"audio","mp4":"video","mov":"video","jpg":"image","jpeg":"image","png":"image","gif":"image","pdf":"pdf","zip":"zip","doc":"doc","docx":"doc"}.get(ext, "other")
+    db.execute("""INSERT INTO showcase_work (sid, title, description, day_no, deliverable_index, media_type, attachment_path, recommend_by, category, recommend_reason, created_at, recommended_at)
+                  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+        (sid, title, desc, day_no or None, None, media, attachment,
+         session.get("display_name") or mentor_id, category, reason,
+         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+         datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    db.commit()
+    flash("已推荐为标杆作品", "success")
+    return redirect(url_for("mentor_student_detail", sid=sid))
+
+
+if __name__ == "__main__":
+    print(f"[沃土计划] http://127.0.0.1:5001  (账号 stu001/pm001 密码 123456)")
+    app.run(host="0.0.0.0", port=5001, debug=False)

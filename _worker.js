@@ -4094,11 +4094,18 @@ export default {
     }
 
     // Orphaned pages redirect
-    const orphanedPaths = ['/guide/', '/mini-program/', '/knowledge-v3-fourpillars/'];
+    const orphanedPaths = ['/guide/', '/mini-program/', '/knowledge-v3-fourpillars/', '/clients/', '/clients'];
     for (const orphanPath of orphanedPaths) {
       if (path === orphanPath || path.startsWith(orphanPath)) {
         return Response.redirect('https://fengsheng.tech/', 301);
       }
+    }
+    // Dead links → specific targets
+    if (path === '/practice/' || path === '/practice') {
+      return Response.redirect('https://fengsheng.tech/knowledge/quiz/', 301);
+    }
+    if (path === '/quiz/' || path === '/quiz') {
+      return Response.redirect('https://fengsheng.tech/knowledge/quiz/', 301);
     }
 
     // IP Design POST (before trailing-slash redirect)
@@ -4502,7 +4509,7 @@ export default {
     if (isHtml && !path.includes('.')) {
       const KNOWN_ROUTES = new Set([
         '/', '/about', '/agent-academy', '/assessment', '/agent-assessment', '/breeder', '/care-test',
-        '/clients', '/curation', '/dashboard', '/dashboard-manager', '/decoder', '/dictionary', '/entry', '/favorites', '/history',
+        '/curation', '/dashboard', '/dashboard-manager', '/decoder', '/dictionary', '/entry', '/favorites', '/history',
         '/ip-design', '/knowledge', '/management',
         '/mentor', '/partner', '/privacy', '/purchase', '/quality-test', '/reply',
         '/s1-report', '/scene', '/search', '/shuowenjiedao', '/skills', '/standard', '/survey',
@@ -4511,7 +4518,7 @@ export default {
         '/knowledge/quiz/', '/toolkit/methodology', '/toolkit/methodology/',
         '/gate', '/gate/',
         '/breeder/', '/care-test/', '/about/', '/agent-academy/', '/curation/', '/dashboard-manager/', '/purchase/', '/toolkit/',
-        '/clients/', '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
+        '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
         '/assessment/', '/s1-report/', '/showing-report/', '/agent-assessment/',
         '/academy', '/academy/',
         '/design-prototype', '/design-prototype/',
@@ -4725,20 +4732,20 @@ async function handleAiAdvisor(request, env) {
 
   // 2. 红线检查（6 条）— 任何一条触发即停机
   const REDLINES = sop?.redlines_global || [
-    'RED-01: AI 不做最终决策',
-    'RED-02: AI 不碰价格谈判',
-    'RED-03: AI 不做强留资',
-    'RED-04: AI 不碰隐私信息',
-    'RED-05: AI 不承诺学区/政策',
+    'RED-01: 系统不做最终决策',
+    'RED-02: 系统不碰价格谈判',
+    'RED-03: 系统不做强留资',
+    'RED-04: 系统不碰隐私信息',
+    'RED-05: 系统不承诺学区/政策',
     'RED-06: 所有输出必须可追溯',
   ];
 
   const redlineHits = [];
   const msg = message.toLowerCase();
   const REDLINE_CHECKS = [
-    { id: 'RED-02', pattern: /(多少钱一平米|单价|总价|报价|价格|优惠多少|能便宜|能降)/, msg: '价格/报价类问题，AI 只能给市场行情不能谈价' },
+    { id: 'RED-02', pattern: /(多少钱一平米|单价|总价|报价|价格|优惠多少|能便宜|能降)/, msg: '价格/报价类问题，系统只能给市场行情不能谈价' },
     { id: 'RED-03', pattern: /(手机号|留个电话|加个微信|约看房|什么时候来看|地址发我)/, msg: '强留资/邀约类问题，必须真人经纪人跟进' },
-    { id: 'RED-05', pattern: /(肯定|保证|承诺|百分百|一定|对口学区|学区肯定|政策不会变|以后不会变)/, msg: '承诺类表述触发红线，AI 不能给确定性承诺' },
+    { id: 'RED-05', pattern: /(肯定|保证|承诺|百分百|一定|对口学区|学区肯定|政策不会变|以后不会变)/, msg: '承诺类表述触发红线，系统不能给确定性承诺' },
     { id: 'RED-04', pattern: /(身份证|银行卡号|密码|征信报告|银行流水|收入证明|隐私)/, msg: '隐私信息类问题，请当面沟通' },
   ];
 

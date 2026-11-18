@@ -123,7 +123,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 
 <div class="nav">
   <a href="./index.html">① 总览矩阵</a>
-  <a href="./ai-advisor.html">② AI 顾问落地页</a>
+  <a href="./ai-advisor.html">② 话术陪练落地页</a>
   <a href="./sales-champion.html" class="active">③ 销冠示范库</a>
 </div>
 
@@ -132,7 +132,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
   <div class="avatar">李</div>
   <div class="who">
     <h1>🏆 销冠示范库 · 望京南店 · 李姐</h1>
-    <p>7 年门店销冠 · 学区房占比 62% · 累计成交 68 套。<br>每个真实场景 → "李姐怎么做" → SOP 动作追溯 → CAP-SKILL 编号 → AI 对话回放。<br><b>你跟她的差距，就是你该练的地方。</b></p>
+    <p>7 年门店销冠 · 学区房占比 62% · 累计成交 68 套。<br>每个真实场景 → "李姐怎么做" → SOP 动作追溯 → CAP-SKILL 编号 → 对话回放。<br><b>你跟她的差距，就是你该练的地方。</b></p>
     <div class="stats">
       <span><b>68</b> 套成交</span>
       <span><b>62%</b> 学区房占比</span>
@@ -177,7 +177,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 
 <!-- 红线提示 -->
 <div class="red-banner">
-  <b>🔴 红线提醒</b>：以下 5 类场景，<b>AI 可以给变体，但最终必须真人执行</b>：<br>
+  <b>🔴 红线提醒</b>：以下 5 类场景，<b>系统可以给变体，但最终必须真人执行</b>：<br>
   强留资（约带看时段）· 即兴异议应对（客户突然说"我妈说风水不好"）· 强共情沟通 · 合同修改谈判 · 业主价格谈判
 </div>
 
@@ -273,8 +273,8 @@ function render(){
         '<div class="question"><b>场景：</b>' + x.title + ' · <b>客户类型：</b>' + x.persona + ' · <b>阶段：</b>' + x.stage + '</div>' +
         '<div class="champion-demo"><h5>🏆 李姐怎么做</h5><p>' + x.champion + '</p></div>' +
         '<div class="sop-trace">🔗 <b>SOP 追溯：' + x.sop + '</b> · <b>CAP-SKILL：' + x.skill + '</b> · <b>阶段：' + x.stage + '</b> · <b>线上可测评</b></div>' +
-        (x.red ? '<div style="background:rgba(184,92,56,.06);border-left:3px solid var(--danger);padding:8px 10px;border-radius:0 6px 6px 0;font-size:11px;color:var(--danger);margin-bottom:10px">🔴 <b>红线场景</b>：AI 可以给话术变体，但最终执行必须真人亲自</div>' : '') +
-        '<div class="ai-replay"><h5>🤖 AI 对话回放（纯前端模拟）</h5>' +
+        (x.red ? '<div style="background:rgba(184,92,56,.06);border-left:3px solid var(--danger);padding:8px 10px;border-radius:0 6px 6px 0;font-size:11px;color:var(--danger);margin-bottom:10px">🔴 <b>红线场景</b>：系统可以给话术变体，但最终执行必须真人亲自</div>' : '') +
+        '<div class="ai-replay"><h5>🤖 陪练对话回放（纯前端模拟）</h5>' +
           replay(x) +
         '</div>' +
       '</div>' +
@@ -285,8 +285,8 @@ function render(){
 function replay(x){
   var personaMap = {rational:'理性客户 · 看数据看对比',emotional:'感性客户 · 看故事看感觉',anxious:'焦虑客户 · 怕买贵怕买错'};
   return '<div class="rp-line me">👤 客户（' + personaMap[x.persona] + '）：' + x.title.replace('怎么办','') + '</div>' +
-    '<div class="rp-line">🤖 AI 顾问（规则版）：匹配 question_map → id=' + x.id + ' → 推荐 TRUST-03 共情接住阶段 → 输出 3 个话术变体</div>' +
-    '<div class="rp-line">🏆 李姐：AI 给的是参考版本，我会根据客户的微表情选合适的那个，并即兴微调。</div>';
+    '<div class="rp-line">🤖 陪练系统（规则版）：匹配 question_map → id=' + x.id + ' → 推荐 TRUST-03 共情接住阶段 → 输出 3 个话术变体</div>' +
+    '<div class="rp-line">🏆 李姐：系统给的是参考版本，我会根据客户的微表情选合适的那个，并即兴微调。</div>';
 }
 
 function toggle(el){ el.classList.toggle('open'); }

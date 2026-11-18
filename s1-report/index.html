@@ -1413,14 +1413,14 @@ function renderDimInputs(){
     return `<div class="dim-section">
       <div class="dim-header">
         <div class="dim-name">${DIM_ICONS[d]} ${d}</div>
-        <button class="dim-score-btn" onclick="aiFill('${d}')">🤖 AI补充</button>
+        <button class="dim-score-btn" onclick="aiFill('${d}')">🤖 智能补充</button>
       </div>
       <textarea id="dim_${d}" rows="2" maxlength="200"
         placeholder="${esc(hintStr)}"
         oninput="trackEvent('fill_dim_observation',{dim:'${d}'});randomFeedback('fillDim');this.nextElementSibling.textContent=this.value.length+'/200'"
         style="width:100%"></textarea>
       <div class="char-count">0/200</div>
-      <div class="ai-hint" onclick="aiFill('${d}')">💡 不知道怎么写？让AI帮你补充一条</div>
+      <div class="ai-hint" onclick="aiFill('${d}')">💡 不知道怎么写？让系统帮你补充一条</div>
     </div>`;
   }).join('');
 }
@@ -2313,7 +2313,7 @@ document.querySelector('.daily-box')?.addEventListener('click',(e)=>{
 
 
     <footer style="text-align:center;padding:24px 0 16px;font-size:12px;color:#999;border-top:1px solid #eee;margin-top:40px;">
-      <p style="margin:4px 0;">本报告由 AI 辅助生成，仅供参考，不构成专业评估建议。</p>
+      <p style="margin:4px 0;">本报告由系统辅助生成，仅供参考，不构成专业评估建议。</p>
       <p style="margin:4px 0;">© 2026 风声信息咨询 · <a href="/" style="color:#666;">风声首页</a> · <a href="/privacy/" style="color:#666;">隐私政策</a> · <a href="/terms/" style="color:#666;">用户协议</a></p>
 </footer>
 <!-- fs-module-guide -->

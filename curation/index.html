@@ -350,19 +350,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
       <div class="review-actions">
         <button class="btn-send" id="btnSend" disabled onclick="publishReport()">◆ 发送给客户</button>
         <a class="btn-draft" href="/knowledge/">📚 去知识库查更多词条</a>
-        <span class="review-status" id="reviewStatus">当前状态：AI 初稿（金色标记）</span>
+        <span class="review-status" id="reviewStatus">当前状态：系统初稿（金色标记）</span>
       </div>
       <!-- 版本历史 -->
       
       <!-- v1.1 驭AI三级交互面板（真人复核通过后解锁）-->
       <div class="jy-panel" id="jyPanel" style="display:none">
-        <div class="jy-hint"><strong>驭AI三级交互：</strong>合格「会用AI」→ 优秀「善审AI」→ 卓越「能养AI」。下面三个按钮，是你拿到 AI 初稿后可以迭代提升的快捷方式。</div>
+        <div class="jy-hint"><strong>驭工具三级交互：</strong>合格「会用工具」→ 优秀「善审工具」→ 卓越「能养工具」。下面三个按钮，是你拿到系统初稿后可以迭代提升的快捷方式。</div>
         <div class="jy-btns">
           <button class="jy-btn" id="jyBtnBasic" onclick="jyRefine('basic')">
             <span class="jy-icon">🥉</span>
             <span class="jy-meta">
               <span class="jy-title">基础润色 · 合格级</span>
-              <span class="jy-sub">让 AI 再优化一遍措辞与结构</span>
+              <span class="jy-sub">让系统再优化一遍措辞与结构</span>
             </span>
           </button>
           <button class="jy-btn" id="jyBtnBatch" onclick="jyRefine('batch')">
@@ -376,13 +376,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
             <span class="jy-icon">🥇</span>
             <span class="jy-meta">
               <span class="jy-title">反哺知识库 · 卓越级</span>
-              <span class="jy-sub">把 AI 初稿的问题反馈进知识底座</span>
+              <span class="jy-sub">把系统初稿的问题反馈进知识底座</span>
             </span>
           </button>
         </div>
         <div class="jy-iter-bar" id="jyIterBar" style="display:none">
           <span class="iter-dot"></span>
-          <span>本次已驭AI迭代 <span class="iter-count" id="jyIterCount">0</span> 次</span>
+          <span>本次已驭工具迭代 <span class="iter-count" id="jyIterCount">0</span> 次</span>
           <span class="iter-label">每次迭代自动对比改动，保留历史版本</span>
         </div>
       </div>
@@ -391,7 +391,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
       <div class="feedback-modal" id="feedbackModal">
         <div class="feedback-box">
           <h4>🥇 卓越级反哺 · 把问题反馈给知识底座</h4>
-          <div style="font-size:12px;color:var(--ts);margin-bottom:6px">你在本次策展中发现了 AI 初稿的错误/遗漏/不准之处，请记录下来。后续知识底座会据此迭代。</div>
+          <div style="font-size:12px;color:var(--ts);margin-bottom:6px">你在本次策展中发现了系统初稿的错误/遗漏/不准之处，请记录下来。后续知识底座会据此迭代。</div>
           <textarea id="feedbackText" placeholder="比如：entry CAR-CMP-001 的「承诺包过户」案例在 2023 年民法典修正案后判决标准有变化……"></textarea>
           <div class="fb-actions">
             <button class="fb-cancel" onclick="closeFeedbackModal()">取消</button>
@@ -402,9 +402,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 
 <div class="version-bar">
         <span>📜 版本历史：</span>
-        <span class="version-chip ai">v1 · AI 初稿（生成时间自动记录）</span>
+        <span class="version-chip ai">v1 · 系统初稿（生成时间自动记录）</span>
         <span class="version-chip" id="verHumanChip" style="display:none">v2 · 真人已审</span>
-        <span class="version-chip current">当前：AI 初稿</span>
+        <span class="version-chip current">当前：系统初稿</span>
       </div>
     </div>
 
@@ -507,7 +507,10 @@ function normalizeEntry(e) {
     consumerQ: e.consumerQ||'', oneLineAnswer: e.oneLineAnswer||'',
     corePoint: Array.isArray(e.corePoint) ? e.corePoint : (e.corePoint ? [e.corePoint] : []),
     def: e.def||'', legalRef: e.legalRef||'', consumerBenefit: e.consumerBenefit||'',
-    tags: e.tags||{}, subScene: e.subScene||'', domain: e.domain||''
+    tags: e.tags||{}, subScene: e.subScene||'', domain: e.domain||'',
+    // 🆕 EvidenceLink 所需字段（蓝图 C1）
+    source: e.source||'', source_url: e.source_url||'',
+    authority: e.authority||'', lastVerified: e.lastVerified||''
   }
 }
 
@@ -566,7 +569,8 @@ function generateCurationFromEntries(input, entriesByGroup) {
     legalRef: isRealLegal(x.e.legalRef) ? x.e.legalRef : null,
     hasLegal: isRealLegal(x.e.legalRef),
     entryId: x.e.id,
-    severity: x.e.severity || "soft"
+    severity: x.e.severity || "soft",
+    _raw: x.e  // 🆕 完整 entry 供 EvidenceLink 使用（蓝图 C1）
   }))
 
   // 4) 带
@@ -853,7 +857,7 @@ function renderResult(result) {
   document.getElementById('result-head').classList.add('ai-draft')
   document.getElementById('reviewPanel').classList.remove('human-reviewed')
   document.getElementById('verHumanChip').style.display = 'none'
-  document.querySelector('.version-chip.current').textContent = '当前：AI 初稿'
+  document.querySelector('.version-chip.current').textContent = '当前：系统初稿'
   document.querySelector('.version-chip.current').className = 'version-chip current'
 
   // 头部（金色角标 + 铁律文案）
@@ -869,7 +873,7 @@ function renderResult(result) {
     ${result.dimensionLabels.length ? '<div class="rh-dims">' + result.dimensionLabels.map(d => '<span class="dim-tag">' + escHtml(d) + '</span>').join('') + '</div>' : ''}
     ${result.freeText ? '<div style="font-size:12px;color:var(--ts);margin-top:6px">自由诉求：' + escHtml(result.freeText) + '</div>' : ''}
     <div class="honesty">${escHtml(result.honesty.note)}</div>
-    <div class="iron-rule">AI 初稿 · 真人复核 · 方可发送给客户（双主体铁律）</div>
+    <div class="iron-rule">系统初稿 · 真人复核 · 方可发送给客户（双主体铁律）</div>
   `
 
   // 风险汇总条
@@ -931,9 +935,16 @@ function renderResult(result) {
         '<div class="say-title">' + escHtml(s.title) + rb + '</div>' +
         '<div class="say-point">' + escHtml(s.point) + '</div>' +
         (s.detail ? '<div class="say-detail">' + escHtml(s.detail) + '</div>' : '') +
-        '<span class="ref ' + (s.hasLegal ? 'ref-ok' : 'ref-wait') + '">' +
-          (s.hasLegal ? '真实法源 ✓ ' + escHtml(s.legalRef) : '经验要点 · 依据整理中') +
-        '</span>' + confirmBox +
+        (function(){
+          // 🆕 EvidenceLink 渲染证据链（蓝图 C1）：组件就绪则用组件，否则兜底
+          if (window.EvidenceLink && typeof window.EvidenceLink.render === 'function' && s._raw) {
+            var elHtml = window.EvidenceLink.render(s._raw, { compact: true, max: 2 });
+            if (elHtml) return '<span class="ref ref-ok">' + elHtml + '</span>';
+          }
+          return '<span class="ref ' + (s.hasLegal ? 'ref-ok' : 'ref-wait') + '">' +
+            (s.hasLegal ? '真实法源 ✓ ' + escHtml(s.legalRef) : '经验要点 · 依据整理中') +
+          '</span>';
+        })() + confirmBox +
       '</div>'
     }).join('')
   } else {
@@ -1038,7 +1049,7 @@ function updateReviewStatus() {
     sendBtn.disabled = true
     hintEl.textContent = '⚠️ 还有 ' + pending + ' 项高风险未确认'
     hintEl.style.color = 'var(--danger)'
-    statusEl.textContent = '当前状态：AI 初稿（金色标记）'
+    statusEl.textContent = '当前状态：系统初稿（金色标记）'
   }
 }
 
@@ -1152,7 +1163,7 @@ var jyIterCount = 0;
 function jyRefine(level) {
   // 三种级别模拟不同程度的精调（实际对接后端时换成 fetch API）
   var panels = {
-    basic: '🥉 基础润色已触发：AI 正在重新润色措辞、统一专业风格、检查标点……',
+    basic: '🥉 基础润色已触发：系统正在重新润色措辞、统一专业风格、检查标点……',
     batch: '🥈 批量精调已触发：逐段落对齐行业标杆话术、对比真实判例、标注可迭代项……',
   };
   var msg = panels[level];
@@ -1164,7 +1175,7 @@ function jyRefine(level) {
     var sayTitle = document.querySelector('#say-list .say-title');
     if (sayTitle) {
       var tag = document.createElement('span');
-      tag.textContent = ' · AI 润色 #' + jyIterCount;
+      tag.textContent = ' · 工具润色 #' + jyIterCount;
       tag.style.fontSize = '10px';
       tag.style.color = 'var(--gold)';
       tag.style.fontWeight = '700';
@@ -1214,7 +1225,7 @@ function onHumanReviewed() {
   // 重置迭代计数
   jyIterCount = 0;
   document.getElementById('jyIterBar').style.display = 'none';
-  // 同步切换 result-head：金色 AI 初稿 → 墨绿真人已审
+  // 同步切换 result-head：金色系统初稿 → 墨绿真人已审
   var rh = document.getElementById('result-head');
   if (rh) { rh.classList.remove('ai-draft'); rh.classList.add('human-reviewed'); }
   // 复核面板边框也变
@@ -1244,7 +1255,7 @@ function renderJyBar() {
     <div class="jy-bar-inner">
       <div class="star-badge">${stars}</div>
       <div class="jy-rank">${user.rank}</div>
-      <div class="jy-desc">驭AI等级：${user.rank}「${user.star<=1?'会用AI':user.star<=3?'善审AI':'能养AI'}」</div>
+      <div class="jy-desc">驭工具等级：${user.rank}「${user.star<=1?'会用工具':user.star<=3?'善审工具':'能养工具'}」</div>
       <div class="jy-pct">驾驭力 <b>${user.score}</b>/100</div>
     </div>
   `;
@@ -1298,5 +1309,41 @@ document.addEventListener('DOMContentLoaded', renderJyBar);
   <div><a href="https://beian.miit.gov.cn" target="_blank" rel="noopener" style="color:#8a9a90;text-decoration:none;">京ICP备2026044043号-2</a></div>
   <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802051263" rel="noreferrer" target="_blank" style="color:#8a9a90;text-decoration:none;"><img src="/assets/beian/beian-icon.png" alt="" style="width:14px;height:14px;vertical-align:-2px;margin-right:3px;">京公网安备11010802051263号</a>
 </footer>
+
+<!-- EvidenceLink 证据链组件（蓝图 C1） -->
+<script src="/lib/evidence/data-adapter.js" defer></script>
+<script src="/lib/evidence/evidence-link.js" defer></script>
+<script>
+// 🆕 curation 页面 EvidenceLink 异步补渲染（defer 加载完成后替换兜底文本）
+(function(){
+  var tries = 0;
+  var timer = setInterval(function(){
+    tries++;
+    if (window.EvidenceLink && typeof window.EvidenceLink.render === 'function') {
+      clearInterval(timer);
+      // generateCurationFromEntries 执行后 result 会存在全局 scope
+      try {
+        if (typeof result !== 'undefined' && result.say) {
+          result.say.forEach(function(s){
+            if (s._raw) {
+              var el = window.EvidenceLink.render(s._raw, { compact: true, max: 2 });
+              if (el) {
+                // 找到对应 say-item 的 ref span 并替换
+                document.querySelectorAll('.say-item').forEach(function(item){
+                  var title = item.querySelector('.say-title');
+                  if (title && title.textContent.trim() === s.title.trim()) {
+                    var refSpan = item.querySelector('.ref');
+                    if (refSpan) refSpan.innerHTML = el;
+                  }
+                });
+              }
+            }
+          });
+        }
+      } catch(e) {}
+    } else if (tries > 30) { clearInterval(timer); }
+  }, 50);
+})();
+</script>
 </body>
 </html>

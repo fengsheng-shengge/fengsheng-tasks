@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>风声聚匠星云 | 经纪人能力外挂</title>
+<title>风声聚匠星云 · 循证服务 · 经纪人工具箱 | 每句话敢点开看依据</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -53,6 +53,12 @@
   .nav-links a { color: var(--body); text-decoration: none; }
   .nav-links a:hover { color: var(--primary); }
   .nav-actions { display: flex; gap: 12px; align-items: center; }
+  /* 🔒 内部预览水印 banner（G1，12.31 边界）*/
+  .internal-beta-banner{position:sticky;top:0;z-index:999;background:linear-gradient(90deg,#c9a962 0%,#e67e22 100%);color:#fff;font-size:12px;font-weight:600;padding:8px 48px;display:flex;align-items:center;gap:12px}
+  .internal-beta-banner .ib-icon{font-size:14px}
+  .internal-beta-banner .ib-text{flex:1;letter-spacing:.5px}
+  .internal-beta-banner .ib-close{cursor:pointer;opacity:.7;font-size:14px}
+  .internal-beta-banner .ib-close:hover{opacity:1}
   .nav-user { font-size: 13px; color: var(--body); }
   .btn-gold {
     background: var(--gold); color: var(--primary-dark);
@@ -317,19 +323,30 @@
       <div class="logo-icon">风</div>
       <div>
         <span class="logo-text">风声聚匠星云</span>
-        <span class="logo-sub">居住服务人才能力基础设施平台</span>
+        <span class="logo-sub">循证服务 · 经纪人工具箱</span>
       </div>
     </div>
     <div class="nav-links">
-      <a href="#pain">你的痛点</a>
-      <a href="#ability">核心能力</a>
-      <a href="#coverage">覆盖领域</a>
-      <a href="#rule">标准来源</a>
+      <a href="#pain">痛点</a>
+      <a href="#ability">能力</a>
+      <a href="/knowledge/">知识底座</a>
+      <a href="/curation/">策展引擎</a>
+      <a href="/decoder/">话术解码</a>
+      <a href="/care-test/">能力测评</a>
+      <a href="/scene/">场景导航</a>
+      <a href="/workspace/">工作台</a>
     </div>
     <div class="nav-actions">
       <a href="/wotu/" class="btn-green">🎓 校园招募</a>
       <a href="/workspace/" class="btn-gold">进入经纪人工作台</a>
     </div>
+  </div>
+
+  <!-- 🔒 内部预览水印（G1，12.31 边界）-->
+  <div class="internal-beta-banner">
+    <span class="ib-icon">🔒</span>
+    <span class="ib-text">内部预览 · 仅内部账号可见 · 2026-12-31 上线 · 不宣称对外循证</span>
+    <span class="ib-close" onclick="this.parentElement.style.display='none'" title="临时隐藏">✕</span>
   </div>
 
   <!-- 领域Tab通栏 -->
@@ -343,7 +360,7 @@
 
   <!-- Hero -->
   <div class="hero">
-    <div class="hero-badge">居住服务人才能力基础设施平台</div>
+    <div class="hero-badge">循证服务 · 经纪人工具箱 · 每句话敢点开看依据</div>
     <h1 class="hero-title">
       通过独立价值<br>
       <span>赢得尊严</span>
@@ -354,9 +371,9 @@
     </p>
     <div class="hero-actions">
       <a href="/workspace/" class="btn-lg-gold">先从经纪人开始体验</a>
-      <a href="#vision" class="btn-lg-outline">看看我们要去哪</a>
+      <a href="/knowledge/" class="btn-lg-outline">🔍 怎么验证这个人？点开看证据</a>
     </div>
-    <div class="hero-note">AI产出 · 真人复核 · 方才发送</div>
+    <div class="hero-note">工具生成 · 真人复核 · 每句话敢点开看依据</div>
   </div>
 
   <!-- 今天你能拿到什么（脚踏实地） -->
@@ -388,15 +405,15 @@
     </div>
 
     <div class="solution-grid">
-      <a href="/curation/" class="solution-card">
-        <div class="solution-icon">⚡</div>
-        <div class="solution-title">策展引擎</div>
-        <div class="solution-desc">一键生成置业方案，10分钟搞定原来2小时的活</div>
-      </a>
       <a href="/knowledge/" class="solution-card">
         <div class="solution-icon">📖</div>
         <div class="solution-title">知识底座</div>
-        <div class="solution-desc"><span data-count="entries">—</span>条专业词条，税费政策秒出答案</div>
+        <div class="solution-desc"><span data-count="entries">—</span>条词条，税费政策秒出答案</div>
+      </a>
+      <a href="/curation/" class="solution-card">
+        <div class="solution-icon">⚡</div>
+        <div class="solution-title">策展引擎</div>
+        <div class="solution-desc">一键生成置业方案，10分钟搞定2小时的活</div>
       </a>
       <a href="/decoder/" class="solution-card">
         <div class="solution-icon">💬</div>
@@ -407,6 +424,16 @@
         <div class="solution-icon">📊</div>
         <div class="solution-title">能力测评</div>
         <div class="solution-desc">10分钟测出短板，知道该补什么</div>
+      </a>
+      <a href="/scene/" class="solution-card">
+        <div class="solution-icon">🎬</div>
+        <div class="solution-title">场景导航</div>
+        <div class="solution-desc">买卖/租赁/新房全流程场景剧本，遇到就翻</div>
+      </a>
+      <a href="/workspace/" class="solution-card">
+        <div class="solution-icon">🏆</div>
+        <div class="solution-title">经纪人工作台</div>
+        <div class="solution-desc">每一次服务都重新赢得托付，证据链随身带</div>
       </a>
     </div>
   </div>
@@ -429,8 +456,8 @@
       </div>
       <div class="ability-card">
         <div class="ability-num">🤖</div>
-        <div class="ability-name">驭AI能力</div>
-        <div class="ability-desc">会用→善审→能养，AI用得越好效率越高</div>
+        <div class="ability-name">会用智能工具</div>
+        <div class="ability-desc">会用→善审→能养，用好工具效率越高</div>
       </div>
       <div class="ability-card">
         <div class="ability-num">📈</div>
@@ -467,7 +494,7 @@
           <div style="padding: 12px; background: var(--bg); border-radius: 8px;">
             <div style="font-size: 13px; font-weight: 600; margin-bottom: 2px;">👥 产品/技术伙伴</div>
             <div style="font-size: 11px; color: var(--muted); line-height: 1.5;">
-              认同AI武装人、长期做基础设施
+              认同工具武装人、长期做基础设施
             </div>
           </div>
           <div style="padding: 12px; background: var(--bg); border-radius: 8px;">
@@ -572,27 +599,30 @@
 
   <!-- 页脚 -->
   <div class="footer">
-    风声聚匠星云 · 居住服务人才能力基础设施平台<br>
+    风声聚匠星云 · 循证服务 · 经纪人工具箱<br>
     © 2026 fengsheng.tech
   </div>
 
 <script>
   // 真实数据绑定：entries.json 计数 → 知识底座词条数
+  // 先渲染静态基线值（避免首屏空占位闪数），再异步从 /api/knowledge-stats 校正
   (function(){
+    // Step 1: 立刻渲染静态基线（SSR-like，保证首屏有值）
+    document.querySelectorAll('[data-count="entries"]').forEach(function(el){
+      el.textContent = '6,143';
+    });
+    // Step 2: 异步校正（数据加载后覆盖基线值）
     fetch('/api/knowledge-stats')
       .then(function(r){ return r.json(); })
       .then(function(data){
         var total = 0;
         if (data && typeof data === 'object' && data.total_entries) { total = data.total_entries; }
-        if (total === 0) { total = 6143; } // 兜底：与 /api/knowledge-stats 同源（SSOT）
+        if (total === 0) { return; } // 无新数据 → 保留基线值
         document.querySelectorAll('[data-count="entries"]').forEach(function(el){
           el.textContent = total.toLocaleString();
         });
       })
-      .catch(function(){
-        document.querySelectorAll('[data-count="entries"]').forEach(function(el){
-          el.textContent = '6143';
-        });
+      .catch(function(){ /* fetch 失败 → 保留基线值，不闪 0 */ });
       });
   })();
 </script>
