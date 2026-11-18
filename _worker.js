@@ -4094,7 +4094,7 @@ export default {
     }
 
     // Orphaned pages redirect
-    const orphanedPaths = ['/guide/', '/mini-program/', '/knowledge-v3-fourpillars/'];
+    const orphanedPaths = ['/guide/', '/mini-program/', '/knowledge-v3-fourpillars/', '/clients/', '/clients', '/practice/', '/practice', '/quiz/', '/quiz'];
     for (const orphanPath of orphanedPaths) {
       if (path === orphanPath || path.startsWith(orphanPath)) {
         return Response.redirect('https://fengsheng.tech/', 301);
@@ -4502,7 +4502,7 @@ export default {
     if (isHtml && !path.includes('.')) {
       const KNOWN_ROUTES = new Set([
         '/', '/about', '/agent-academy', '/assessment', '/agent-assessment', '/breeder', '/care-test',
-        '/clients', '/curation', '/dashboard', '/dashboard-manager', '/decoder', '/dictionary', '/entry', '/favorites', '/history',
+        '/curation', '/dashboard', '/dashboard-manager', '/decoder', '/dictionary', '/entry', '/favorites', '/history',
         '/ip-design', '/knowledge', '/management',
         '/mentor', '/partner', '/privacy', '/purchase', '/quality-test', '/reply',
         '/s1-report', '/scene', '/search', '/shuowenjiedao', '/skills', '/standard', '/survey',
@@ -4511,7 +4511,7 @@ export default {
         '/knowledge/quiz/', '/toolkit/methodology', '/toolkit/methodology/',
         '/gate', '/gate/',
         '/breeder/', '/care-test/', '/about/', '/agent-academy/', '/curation/', '/dashboard-manager/', '/purchase/', '/toolkit/',
-        '/clients/', '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
+        '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
         '/assessment/', '/s1-report/', '/showing-report/', '/agent-assessment/',
         '/academy', '/academy/',
         '/design-prototype', '/design-prototype/',
