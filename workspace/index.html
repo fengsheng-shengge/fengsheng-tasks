@@ -439,6 +439,37 @@
     margin-bottom: 6px;
     line-height: 1.4;
   }
+  /* ============ EvidenceLink 组件样式（蓝图 C1） ============ */
+  .evidence-link { margin-top: 6px; }
+  .evidence-link.compact .el-card { padding: 6px 8px; font-size: 11px; }
+  .evidence-link .el-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 4px;
+    transition: all .15s;
+  }
+  .evidence-link .el-card:hover { border-color: #c9a962; box-shadow: 0 2px 8px rgba(201,169,98,.12); }
+  .evidence-link .el-card.expired { opacity: .75; background: #fffbeb; border-color: #fcd34d; }
+  .evidence-link .el-head { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 4px; }
+  .evidence-link .el-type { font-size: 10px; font-weight: 600; color: #52525b; background: #f4f4f5; padding: 2px 6px; border-radius: 4px; }
+  .evidence-link .el-auth { font-size: 10px; font-weight: 600; }
+  .evidence-link .el-title { font-size: 11px; color: #1f2937; line-height: 1.4; margin-bottom: 3px; word-break: break-all; }
+  .evidence-link .el-meta { font-size: 10px; color: #9ca3af; margin-bottom: 3px; }
+  .evidence-link .el-meta .el-date { margin-left: 4px; }
+  .evidence-link .el-link { font-size: 10px; color: #c9a962; text-decoration: none; font-weight: 500; }
+  .evidence-link .el-link:hover { text-decoration: underline; }
+  .evidence-link .el-link.pending { color: #cbd5e1; cursor: default; text-decoration: none; }
+  .evidence-link .el-badge { font-size: 9px; padding: 1px 5px; border-radius: 3px; margin-left: auto; font-weight: 500; }
+  .evidence-link .el-badge.expired { background: #fef3c7; color: #92400e; }
+  .evidence-link .el-badge.b-level { background: #fef9c3; color: #854d0e; }
+  .evidence-link .el-caveat { margin-top: 5px; padding-top: 5px; border-top: 1px dashed #e5e7eb; display: flex; gap: 4px; flex-wrap: wrap; }
+  .evidence-link .caveat { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 500; }
+  .evidence-link .caveat.risk { background: #fef2f2; color: #b91c1c; }
+  .evidence-link .caveat.no-commit { background: #fef3c7; color: #92400e; }
+  .evidence-link .caveat.scope { background: #eff6ff; color: #1d4ed8; }
+  .evidence-link .el-disclaimer { font-size: 10px; color: #94a3b8; margin-top: 6px; font-style: italic; line-height: 1.4; }
   .evidence-footer {
     margin-top: 10px;
     text-align: right;
@@ -2689,9 +2720,10 @@
         card.innerHTML = '<div class="evidence-card-title">' + escapeHtml(entry.title || entry.entry_id) + '</div>';
         container.appendChild(card);
 
-        // EvidenceLink 渲染证据链
+        // EvidenceLink 渲染证据链（蓝图 C1）：组件返回 HTML 字符串，追加到卡片
         if(window.EvidenceLink && typeof window.EvidenceLink.render === "function"){
-          window.EvidenceLink.render(card, entry);
+          var evHtml = window.EvidenceLink.render(entry, { compact: true, max: 3 });
+          if(evHtml) card.innerHTML += evHtml;
         }
       });
 
