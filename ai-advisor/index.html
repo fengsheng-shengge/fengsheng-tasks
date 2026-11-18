@@ -41,6 +41,8 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .kb-card .kb-src{font-size:10px;color:var(--ink-soft);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
 .kb-card .kb-short{background:rgba(184,92,56,.08);border-left-color:var(--danger);border-left-width:3px;border-left-style:solid;padding:8px;border-radius:0 6px 6px 0;margin-top:8px;font-size:11px;color:var(--danger)}
 .kb-card .kb-short::before{content:"⚠️ 短板必填：";font-weight:600}
+.kb-card .kb-link{display:block;margin-top:8px;padding-top:6px;border-top:1px dashed var(--line);font-size:10px;color:var(--ai-blue);text-decoration:none;opacity:.8;transition:opacity .15s}
+.kb-card .kb-link:hover{opacity:1;font-weight:600}
 
 /* 快捷选择菜单 */
 .quick-menu{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -338,12 +340,20 @@ function processAI(text){
       html += '<div>' + kb.body + '</div>';
       html += '<div class="kb-src">' + kb.src + '</div>';
       if(kb.short) html += '<div class="kb-short">这条是短板，必须主动说</div>';
+      // 🆕 跨页查证链接：跳到 knowledge 页面自动搜索
+      var searchKey = (kb.t || '').split(' · ')[0] || match.answer.slice(0,10);
+      html += '<a class="kb-link" href="/knowledge/?q=' + encodeURIComponent(searchKey) + '" target="_blank" rel="noopener">🔎 在知识底座查证 →</a>';
       html += '</div>';
     });
   }
   html += '<div class="cap-ref">';
   html += '<span class="sop">🔗 SOP 动作：' + match.sop + '</span> · ';
-  html += '<span class="cap">CAP-SKILL：' + match.skill + '</span> · ';
+  // 🆕 CAP-SKILL 可跳到测评
+  var capHref = '/care-test/';
+  if(match.skill.indexOf('CAP-SKILL-1')===0) capHref = '/care-test/';
+  else if(match.skill.indexOf('CAP-SKILL-2')===0) capHref = '/care-test/';
+  else if(match.skill.indexOf('CAP-SKILL-3')===0) capHref = '/care-test/';
+  html += '<span class="cap"><a href="' + capHref + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">CAP-SKILL：' + match.skill + ' → 测一下</a></span> · ';
   html += '<span class="kb">维度：' + match.dim + '</span>';
   html += '</div>';
 

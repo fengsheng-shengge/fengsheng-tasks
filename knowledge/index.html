@@ -1542,6 +1542,19 @@ loadEntriesData();  // 动态从 /api/knowledge-stats 加载 (按需加载模式
 renderRoles();
 renderQualityCards();
 loadCityArch();     // 北京样板城市知识架构
+
+// 🆕 URL 参数 ?q= 触发自动搜索（支持从 ai-advisor / scene 等跨页跳转查证）
+(function(){
+  const q = new URLSearchParams(location.search).get('q');
+  if(q && q.trim()){
+    const input = document.getElementById('searchInput');
+    if(input){
+      input.value = q.trim();
+      // 等 loadEntriesData 完成后再搜（debounce 1 帧）
+      setTimeout(() => doSearch(q.trim()), 200);
+    }
+  }
+})();
 </script>
   <!-- EvidenceLink 证据链组件（蓝图 C1）-->
   <script src="/lib/evidence/data-adapter.js" defer></script>
