@@ -108,6 +108,10 @@ main{flex:1;max-width:1240px;width:100%;margin:0 auto;padding:32px 32px 60px}
 .result-card + .result-card{border-top:none}
 .result-card:hover{background:rgba(247,244,239,0.5);border-color:rgba(26,61,36,0.2)}
 .result-card:hover + .result-card{border-top-color:rgba(26,61,36,0.2)}
+.result-goto{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);font-size:12px;color:var(--ink-soft);transition:all .15s}
+.result-goto a{color:var(--p);font-weight:600}
+.result-goto:hover{color:var(--p)}
+.result-goto .rg-count{color:var(--ink-3);font-size:11px}
 .result-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
 .result-name{font-size:16px;font-weight:700;color:var(--ink);flex:1;min-width:0}
 .result-score{font-size:11px;font-weight:700;color:white;background:var(--p);padding:3px 8px;border-radius:6px;flex-shrink:0}
@@ -713,7 +717,9 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
           html += '<span class="highlight-tag">' + highlightLabel(h) + '</span>';
         }
       }
-      html += '</div></div>';
+      html += '</div>' +
+        '<div class="result-goto"><a href="/knowledge/?q=' + encodeURIComponent(r.name || state.query) + '">🔎 去知识底座查证依据 →</a></div>' +
+        '</div>';
     }
     $resultsList.innerHTML = html;
     $emptyState.style.display = 'none';
