@@ -130,14 +130,14 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 
 <div class="nav">
   <a href="./index.html">① 总览矩阵</a>
-  <a href="./ai-advisor.html" class="active">② AI 顾问落地页</a>
+  <a href="./ai-advisor.html" class="active">② 话术陪练落地页</a>
   <a href="./sales-champion.html">③ 销冠示范库</a>
 </div>
 
 <div class="hero">
   <h1>🤖 话术陪练 · 经纪人反串模拟</h1>
-  <p>选一个服务阶段 → AI 扮演客户刁难你 → 你用销冠 SOP 回答 → 每轮自动评分 + 红线检查</p>
-  <div class="trust">🔒 安全承诺：AI 不替你做决策 · 红线时刻提醒你 · 所有回答可追溯</div>
+  <p>选一个服务阶段 → 模拟客户刁难你 → 你用销冠 SOP 回答 → 每轮自动评分 + 红线检查</p>
+  <div class="trust">🔒 安全承诺：系统不替你做决策 · 红线时刻提醒你 · 所有回答可追溯</div>
 </div>
 
 <!-- 阶段模式 banner（?stage=xxx 时显示） -->
@@ -175,12 +175,12 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <!-- 对话主区 -->
 <div class="chat-wrap">
   <div class="chat-header">
-    <h3>🤖 AI 顾问 · 销冠接待</h3>
+    <h3>🤖 话术陪练 · 销冠接待</h3>
     <div class="meta">复刻望京南李姐 · 7 年销冠 · 学区房 62%</div>
     <div class="trust-badge">🔒 可追溯</div>
   </div>
   <div class="chat-body" id="chat-body">
-    <div class="msg ai">您好！我是 AI 顾问，复刻了风声望京南店李姐的销冠经验。<br><br>我可以帮您了解：学区房、二手房流程、贷款税费、小区优缺点等。<br><br>👇 选一个您最关心的，或者直接打字问我。</div>
+    <div class="msg ai">您好！我是模拟陪练，复刻了风声望京南店李姐的销冠经验。<br><br>我可以帮您了解：学区房、二手房流程、贷款税费、小区优缺点等。<br><br>👇 选一个您最关心的，或者直接打字问我。</div>
     <div class="quick-menu">
       <button onclick="sendQ('我想找学区房，预算 650 万')">🏫 学区房 650 万</button>
       <button onclick="sendQ('二手房税费怎么算？')">💰 税费计算</button>
@@ -280,7 +280,7 @@ function matchQuery(text){
   // 默认：知识底座通用答复
   return {id:0, skill:"CAP-SKILL-???", sop:"TRUST-02", dim:"通用",
     answer:"这个问题我需要更多信息才能精准回答。您可以：<br>1. 看看上面的快速入口有没有您关心的<br>2. 或者说具体一点（比如'首套 650 万学区房'）<br><br>我的所有回答都来自风声望京南店的本地知识库，每条带来源和时间。", kbs:[
-    {t:"未匹配关键词", body:"建议用'学区/税费/大西洋新城/房价跌'等关键词精确匹配", src:"来源：规则版 AI 顾问 · 关键词匹配模式"}
+    {t:"未匹配关键词", body:"建议用'学区/税费/大西洋新城/房价跌'等关键词精确匹配", src:"来源：规则匹配模式 · 关键词检索"}
   ]};
 }
 
@@ -332,7 +332,7 @@ function checkLeadHook(){
   if(msgCount >= 3 && !leadTriggered){
     leadTriggered = true;
     setTimeout(function(){
-      document.getElementById('lead-hook-wrap').innerHTML = '<div class="lead-hook"><h4>✨ 聊了好一会儿了？</h4><p>我给您生成一份<b>专属信任包</b>——把今天聊的学区/税费/小区都整理进去了，扫码就能带走，回家跟家人慢慢商量。</p><button onclick="alert(\'轻留资：扫码带走信任包（匿名）。这个能力已经接到页面里了，等 P1 上线 Workers AI 后会更流畅。\')">📱 扫码带走</button></div>';
+      document.getElementById('lead-hook-wrap').innerHTML = '<div class="lead-hook"><h4>✨ 聊了好一会儿了？</h4><p>我给您生成一份<b>专属信任包</b>——把今天聊的学区/税费/小区都整理进去了，扫码就能带走，回家跟家人慢慢商量。</p><button onclick="alert(\'轻留资：扫码带走信任包（匿名）。这个能力已经接到页面里了，后续接通云服务后会更流畅。\')">📱 扫码带走</button></div>';
     }, 1500);
   }
 }
@@ -467,7 +467,7 @@ const STAGE_SCRIPTS = {
     const tag = document.createElement('span');
     tag.style.cssText = 'background:rgba(255,255,255,.12);color:#fff;padding:4px 12px;border-radius:12px;font-size:11px;cursor:pointer';
     tag.textContent = (i+1) + '. ' + q;
-    tag.title = '点一下把这个问题发给 AI';
+    tag.title = '点一下把这个问题发给陪练';
     tag.onclick = () => sendQ(q);
     qsWrap.appendChild(tag);
   });
