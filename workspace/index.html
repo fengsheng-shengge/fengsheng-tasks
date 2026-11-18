@@ -2163,15 +2163,53 @@
       })
       .catch(function(){});
 
-    // 4. 🆕 Evidence：加载 entries.json + 预计算适配数据（M1 12.31）
-    fetch("/data/v3/entries.json")
-      .then(function(r){ return r.ok ? r.json() : null; })
-      .then(function(entries){
-        if(!entries || !window.EvidenceAdapter) return;
-        rawEntriesCache = window.EvidenceAdapter.filterAndAdaptAll(entries, { drop_hard: false });
-        renderWorkspaceEvidence(); // 首屏渲染 Broker 默认证据
+    // 4. Evidence：按 entryType 分片按需拉取（替代全量 14MB fetch）
+    // 架构：manifest.json → 按岗位 preferTypes 并行拉分片 → 合并 → filterAndAdaptAll
+    // 原始 entries.json 只读保留，分片失败自动回退全量（兼容兜底）
+    var evidenceShardCache = {};   // type → 原始 entries 数组缓存
+    var _evidenceManifest = null;
+
+    function ensureEvidenceShards(types) {
+      types = types || [];
+      var toFetch = types.filter(function(t){ return !evidenceShardCache[t]; });
+      if (toFetch.length === 0) { _rebuildRawCache(); return Promise.resolve(); }
+      return Promise.all(toFetch.map(function(t){
+        return fetch("/data/v3/split/shards/" + t + ".json")
+          .then(function(r){ return r.ok ? r.json() : []; })
+          .catch(function(){ return []; });
+      })).then(function(results){
+        toFetch.forEach(function(t, i){ evidenceShardCache[t] = results[i] || []; });
+        _rebuildRawCache();
+      });
+    }
+
+    function _rebuildRawCache() {
+      var all = [];
+      for (var t in evidenceShardCache) { all = all.concat(evidenceShardCache[t]); }
+      if (all.length > 0 && window.EvidenceAdapter) {
+        rawEntriesCache = window.EvidenceAdapter.filterAndAdaptAll(all, { drop_hard: false });
+      }
+    }
+
+    // 初始化：加载 manifest → 拉 BROKER 默认 3 分片
+    fetch("/data/v3/split/manifest.json")
+      .then(function(r){ return r.ok ? r.json() : Promise.reject("no manifest"); })
+      .then(function(manifest){
+        _evidenceManifest = manifest;
+        var defaultTypes = (manifest.role_preference_map && manifest.role_preference_map.BROKER) || ["LAW","RISK","CASE"];
+        return ensureEvidenceShards(defaultTypes);
       })
-      .catch(function(){});
+      .then(function(){ renderWorkspaceEvidence("BROKER"); })
+      .catch(function(){
+        // 兜底：分片不可用时回退全量 fetch（零感知）
+        fetch("/data/v3/entries.json")
+          .then(function(r){ return r.ok ? r.json() : null; })
+          .then(function(entries){
+            if(!entries || !window.EvidenceAdapter) return;
+            rawEntriesCache = window.EvidenceAdapter.filterAndAdaptAll(entries, { drop_hard: false });
+            renderWorkspaceEvidence("BROKER");
+          }).catch(function(){});
+      });
 
     // ===== 🆕 阶段三层拆解数据真数据 =====
     // 每个阶段的素养层 + 服务层（AI vs 真人）+ 红线 + checklist
@@ -2576,11 +2614,13 @@
       var strat = ROLE_EVIDENCE_STRATEGY[pid] || ROLE_EVIDENCE_STRATEGY.BROKER;
       if(roleSubtitle) roleSubtitle.textContent = strat.subtitle;
 
-      // 数据未就绪 → 占位
-      if(!rawEntriesCache || !window.EvidenceLink){
-        container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">⏳ 正在加载循证知识...</div>';
-        return;
-      }
+      // 先确保所需分片已就绪（已缓存则同步返回，缺失则增量 fetch）
+      ensureEvidenceShards(strat.preferTypes).then(function(){
+        // 数据未就绪 → 占位
+        if(!rawEntriesCache || !window.EvidenceLink){
+          container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">⏳ 正在加载循证知识...</div>';
+          return;
+        }
 
       // 按策略筛选：偏好类型 + 有 evidence + 非占位
       var pool = rawEntriesCache.filter(function(e){
@@ -2630,6 +2670,7 @@
       if(top3.length === 0){
         container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">该岗位暂未匹配到核心证据，先看知识库吧 →</div>';
       }
+      }); // end ensureEvidenceShards().then()
     }
 
     function escapeHtml(str){
