@@ -4094,11 +4094,18 @@ export default {
     }
 
     // Orphaned pages redirect
-    const orphanedPaths = ['/guide/', '/mini-program/', '/knowledge-v3-fourpillars/', '/clients/', '/clients', '/practice/', '/practice', '/quiz/', '/quiz'];
+    const orphanedPaths = ['/guide/', '/mini-program/', '/knowledge-v3-fourpillars/', '/clients/', '/clients'];
     for (const orphanPath of orphanedPaths) {
       if (path === orphanPath || path.startsWith(orphanPath)) {
         return Response.redirect('https://fengsheng.tech/', 301);
       }
+    }
+    // Dead links → specific targets
+    if (path === '/practice/' || path === '/practice') {
+      return Response.redirect('https://fengsheng.tech/knowledge/quiz/', 301);
+    }
+    if (path === '/quiz/' || path === '/quiz') {
+      return Response.redirect('https://fengsheng.tech/knowledge/quiz/', 301);
     }
 
     // IP Design POST (before trailing-slash redirect)
