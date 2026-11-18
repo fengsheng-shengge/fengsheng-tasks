@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>沃土计划 · 预备经纪人实训营</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="login-page">
+  <div class="login-visual">
+    <div class="login-visual-inner">
+      <h1>沃土计划<br>预备经纪人实训营</h1>
+      <div class="sub">0 基础入行房产服务，7 天从校园到上岗<br>测学练考评闭环，结业拿到能力档案与上岗推荐。</div>
+      <div class="feat">
+        <div class="feat-item"><span class="dot"></span>📅 7 天高强度实训，每天有真交付</div>
+        <div class="feat-item"><span class="dot"></span>👨‍🏫 助教一对一带练打分</div>
+        <div class="feat-item"><span class="dot"></span>🎯 结业即出四维能力报告</div>
+        <div class="feat-item"><span class="dot"></span>🤝 推荐门店 + 师傅结对带教 3 个月</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="login-form-side">
+    <div class="login-form-box">
+      <h2>🎯 我要报名</h2>
+      <div class="sub">填写 3 项信息，系统自动为您生成账号</div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for cat, msg in messages %}
+            <div class="flash {{ cat }}">{{ msg }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <a href="{{ url_for('register') }}" class="btn btn-primary" style="width:100%; justify-content:center; padding:14px; font-size:15px; text-align:center; display:block; text-decoration:none;">立即报名 →</a>
+
+      <div style="margin:16px 0; text-align:center; color:#9CA3AF; font-size:12px;">— 或者 —</div>
+
+      <a href="{{ url_for('login') }}" class="btn btn-default" style="width:100%; justify-content:center; padding:14px; font-size:14px; text-align:center; display:block; text-decoration:none; border:1px solid #E5E7EB;">🔑 已有账号 · 直接登录</a>
+
+      <div style="text-align:center; margin-top:14px; font-size:13px; color:#6B7280;">想先了解一下？<a href="https://www.fengsheng.tech/wotu/" style="color:#0F7B4F; text-decoration:none;">看实训营详情 →</a></div>
+
+      {% if icp_no or gongan_no %}
+      <div style="text-align:center; margin-top:16px; font-size:12px; color:#9CA3AF;">
+        {% if icp_no %}<a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:#9CA3AF; text-decoration:none;">{{ icp_no }}</a>{% endif %}
+        {% if gongan_no %}{% if icp_no %}<span style="margin:0 6px;">|</span>{% endif %}<a href="https://beian.mps.gov.cn/" target="_blank" rel="noopener" style="color:#9CA3AF; text-decoration:none;">{{ gongan_no }}</a>{% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+</body>
+</html>
