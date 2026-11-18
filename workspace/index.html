@@ -2712,6 +2712,9 @@
           var evHtml = window.EvidenceLink.render(entry, { compact: true, max: 3 });
           if(evHtml) card.innerHTML += evHtml;
         }
+        // 🆕 跨页查证：跳到 knowledge 搜索完整词条
+        var q = entry.title || entry.name || entry.entry_id || "";
+        if(q) card.innerHTML += '<a href="/knowledge/?q=' + encodeURIComponent(q) + '" target="_blank" rel="noopener" style="display:block;margin-top:8px;font-size:11px;color:#1a3d24;text-decoration:none;opacity:.7">🔎 去知识底座查证 →</a>';
       });
 
       if(top3.length === 0){
