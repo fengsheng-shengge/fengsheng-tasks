@@ -321,10 +321,14 @@
       </div>
     </div>
     <div class="nav-links">
-      <a href="#pain">你的痛点</a>
-      <a href="#ability">核心能力</a>
-      <a href="#coverage">覆盖领域</a>
-      <a href="#rule">标准来源</a>
+      <a href="#pain">痛点</a>
+      <a href="#ability">能力</a>
+      <a href="/knowledge/">知识底座</a>
+      <a href="/curation/">策展引擎</a>
+      <a href="/decoder/">话术解码</a>
+      <a href="/care-test/">能力测评</a>
+      <a href="/scene/">场景导航</a>
+      <a href="/workspace/">工作台</a>
     </div>
     <div class="nav-actions">
       <a href="/wotu/" class="btn-green">🎓 校园招募</a>
@@ -354,9 +358,9 @@
     </p>
     <div class="hero-actions">
       <a href="/workspace/" class="btn-lg-gold">先从经纪人开始体验</a>
-      <a href="#vision" class="btn-lg-outline">看看我们要去哪</a>
+      <a href="/knowledge/" class="btn-lg-outline">🔍 怎么验证这个人？点开看证据</a>
     </div>
-    <div class="hero-note">AI产出 · 真人复核 · 方才发送</div>
+    <div class="hero-note">AI产出 · 真人复核 · 每句话敢点开看依据</div>
   </div>
 
   <!-- 今天你能拿到什么（脚踏实地） -->
@@ -388,15 +392,15 @@
     </div>
 
     <div class="solution-grid">
-      <a href="/curation/" class="solution-card">
-        <div class="solution-icon">⚡</div>
-        <div class="solution-title">策展引擎</div>
-        <div class="solution-desc">一键生成置业方案，10分钟搞定原来2小时的活</div>
-      </a>
       <a href="/knowledge/" class="solution-card">
         <div class="solution-icon">📖</div>
         <div class="solution-title">知识底座</div>
-        <div class="solution-desc"><span data-count="entries">—</span>条专业词条，税费政策秒出答案</div>
+        <div class="solution-desc"><span data-count="entries">—</span>条词条，税费政策秒出答案</div>
+      </a>
+      <a href="/curation/" class="solution-card">
+        <div class="solution-icon">⚡</div>
+        <div class="solution-title">策展引擎</div>
+        <div class="solution-desc">一键生成置业方案，10分钟搞定2小时的活</div>
       </a>
       <a href="/decoder/" class="solution-card">
         <div class="solution-icon">💬</div>
@@ -407,6 +411,16 @@
         <div class="solution-icon">📊</div>
         <div class="solution-title">能力测评</div>
         <div class="solution-desc">10分钟测出短板，知道该补什么</div>
+      </a>
+      <a href="/scene/" class="solution-card">
+        <div class="solution-icon">🎬</div>
+        <div class="solution-title">场景导航</div>
+        <div class="solution-desc">买卖/租赁/新房全流程场景剧本，遇到就翻</div>
+      </a>
+      <a href="/workspace/" class="solution-card">
+        <div class="solution-icon">🏆</div>
+        <div class="solution-title">经纪人工作台</div>
+        <div class="solution-desc">每一次服务都重新赢得托付，证据链随身带</div>
       </a>
     </div>
   </div>
@@ -578,21 +592,24 @@
 
 <script>
   // 真实数据绑定：entries.json 计数 → 知识底座词条数
+  // 先渲染静态基线值（避免首屏空占位闪数），再异步从 /api/knowledge-stats 校正
   (function(){
+    // Step 1: 立刻渲染静态基线（SSR-like，保证首屏有值）
+    document.querySelectorAll('[data-count="entries"]').forEach(function(el){
+      el.textContent = '6,143';
+    });
+    // Step 2: 异步校正（数据加载后覆盖基线值）
     fetch('/api/knowledge-stats')
       .then(function(r){ return r.json(); })
       .then(function(data){
         var total = 0;
         if (data && typeof data === 'object' && data.total_entries) { total = data.total_entries; }
-        if (total === 0) { total = 6143; } // 兜底：与 /api/knowledge-stats 同源（SSOT）
+        if (total === 0) { return; } // 无新数据 → 保留基线值
         document.querySelectorAll('[data-count="entries"]').forEach(function(el){
           el.textContent = total.toLocaleString();
         });
       })
-      .catch(function(){
-        document.querySelectorAll('[data-count="entries"]').forEach(function(el){
-          el.textContent = '6143';
-        });
+      .catch(function(){ /* fetch 失败 → 保留基线值，不闪 0 */ });
       });
   })();
 </script>
