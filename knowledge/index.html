@@ -275,6 +275,31 @@ a{color:inherit;text-decoration:none}
 .modal-cta-btn:hover{background:var(--p-light)}
 .modal-cta-btn.secondary{background:white;color:var(--p);border:1px solid var(--line)}
 
+/* ============ EvidenceLink 组件样式（蓝图 C1） ============ */
+.evidence-link{margin-top:2px}
+.evidence-link.compact .el-card{padding:8px 10px;font-size:12px}
+.evidence-link .el-card{background:var(--cream,#fafaf7);border:1px solid var(--line,#e5e7eb);border-radius:8px;padding:10px 12px;margin-bottom:6px;transition:all .15s}
+.evidence-link .el-card:hover{border-color:var(--gold,#c9a962);box-shadow:0 2px 8px rgba(201,169,98,.12)}
+.evidence-link .el-card.expired{opacity:.8;background:#fffbeb;border-color:#fcd34d}
+.evidence-link .el-head{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:4px}
+.evidence-link .el-type{font-size:10px;font-weight:600;color:#52525b;background:#f4f4f5;padding:2px 6px;border-radius:4px}
+.evidence-link .el-auth{font-size:10px;font-weight:600}
+.evidence-link .el-title{font-size:12px;color:#1f2937;line-height:1.4;margin-bottom:3px;word-break:break-all}
+.evidence-link.compact .el-title{font-size:11px}
+.evidence-link .el-meta{font-size:11px;color:#9ca3af;margin-bottom:3px}
+.evidence-link .el-link{font-size:11px;color:#c9a962;text-decoration:none;font-weight:500}
+.evidence-link .el-link:hover{text-decoration:underline}
+.evidence-link .el-link.pending{color:#cbd5e1;cursor:default;text-decoration:none}
+.evidence-link .el-badge{font-size:9px;padding:1px 5px;border-radius:3px;margin-left:auto;font-weight:500}
+.evidence-link .el-badge.expired{background:#fef3c7;color:#92400e}
+.evidence-link .el-badge.b-level{background:#fef9c3;color:#854d0e}
+.evidence-link .el-caveat{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);display:flex;gap:4px;flex-wrap:wrap}
+.evidence-link .caveat{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:500}
+.evidence-link .caveat.risk{background:#fef2f2;color:#b91c1c}
+.evidence-link .caveat.no-commit{background:#fef3c7;color:#92400e}
+.evidence-link .caveat.scope{background:#eff6ff;color:#1d4ed8}
+.evidence-link .el-disclaimer{font-size:10px;color:#94a3b8;margin-top:6px;font-style:italic;line-height:1.4}
+
 /* ===== Domain Browser (弹窗内) ===== */
 .domain-browser{margin-top:12px}
 .subscene-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
@@ -865,6 +890,12 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
           </div>
         </div>
       </div>
+      <div class="modal-section">
+        <div class="modal-section-title">🔗 证据链 · 每条带来源</div>
+        <div id="modalEvidence">
+          <div style="font-size:12px;color:var(--ink-soft)">加载中...</div>
+        </div>
+      </div>
       <div class="modal-cta">
         <button class="modal-cta-btn" onclick="closeEntry()">📚 看完整词条</button>
         <button class="modal-cta-btn secondary" onclick="closeEntry()">🤖 唤起助手副驾</button>
@@ -1161,7 +1192,7 @@ function openEntry(entryId){
   const entryDef = data.def || data.detail || data.oneLineAnswer || '';
   const entryConsumer = data.consumer || data.consumerQ || '';
   const entryServicer = data.servicer || data.posSpeech || data.brokerUsage || '';
-  showEntry({icon:entryIcon, title:entryTitle, id:data.id||entryId, def:entryDef, consumer:entryConsumer, servicer:entryServicer});
+  showEntry({icon:entryIcon, title:entryTitle, id:data.id||entryId, def:entryDef, consumer:entryConsumer, servicer:entryServicer, _raw:data});
 }
 
 /* ===== 域浏览器状态 ===== */
@@ -1364,6 +1395,28 @@ function showEntryDetail(data){
   }
   document.getElementById('modalConsumerQuote').textContent = data.consumer || '';
   document.getElementById('modalServicerQuote').textContent = data.servicer || '';
+  // 🔗 证据链渲染（蓝图 C1）
+  const evBox = document.getElementById('modalEvidence');
+  const evSection = evBox.closest('.modal-section');
+  const raw = data._raw;
+  if(raw && window.EvidenceLink && window.EvidenceAdapter){
+    try{
+      const html = window.EvidenceLink.render(raw, { compact: true, max: 5, showCaveat: true });
+      if(html){
+        evBox.innerHTML = html;
+        evSection.style.display = 'block';
+      }else{
+        evBox.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);font-style:italic">此词条暂无标注证据链</div>';
+        evSection.style.display = 'block';
+      }
+    }catch(err){
+      console.warn('[EvidenceLink] 渲染失败', err);
+      evBox.innerHTML = '<div style="font-size:12px;color:var(--ink-soft)">证据链加载异常</div>';
+    }
+  }else{
+    evBox.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);font-style:italic">此词条暂无标注证据链</div>';
+    evSection.style.display = 'block';
+  }
   // 显示 CTA
   const ctaSection = document.querySelector('#entryModal .modal-cta');
   if(ctaSection) ctaSection.style.display = 'flex';
@@ -1439,6 +1492,8 @@ function showSearchResults(query, results){
   document.getElementById('modalDef').style.display = 'block';
   const prosconsSection = document.querySelector('#entryModal .proscons').closest('.modal-section');
   if(prosconsSection) prosconsSection.style.display = 'none';
+  const evSection = document.getElementById('modalEvidence')?.closest('.modal-section');
+  if(evSection) evSection.style.display = 'none';
   const ctaSection = document.querySelector('#entryModal .modal-cta');
   if(ctaSection) ctaSection.style.display = 'none';
   document.getElementById('entryModal').classList.add('active');
@@ -1488,6 +1543,9 @@ renderRoles();
 renderQualityCards();
 loadCityArch();     // 北京样板城市知识架构
 </script>
+  <!-- EvidenceLink 证据链组件（蓝图 C1）-->
+  <script src="/lib/evidence/data-adapter.js" defer></script>
+  <script src="/lib/evidence/evidence-link.js" defer></script>
   <!-- 全站数据追踪器 -->
   <script src="/tracker.js" async></script>
 
