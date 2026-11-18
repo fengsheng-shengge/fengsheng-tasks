@@ -135,40 +135,37 @@
 </head>
 <body>
 <!-- 风声统一导航栏 -->
-<nav class="fs-nav">
-  <a href="/" class="fs-nav-brand">🌬️ <span>风声</span></a>
-  <div class="fs-nav-links">
+<nav class="fs-top-nav">
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声信息咨询</span></a>
+  <div class="fs-top-links">
     <a href="/">首页</a>
     <a href="/workspace/">工作台</a>
     <a href="/knowledge/">知识底座</a>
     <a href="/curation/">策展引擎</a>
     <a href="/decoder/">话术解码</a>
     <a class="active" href="/care-test/">能力测评</a>
+    <a href="/scene/">场景导航</a>
+    <a href="/ai-advisor/">话术陪练</a>
     <a href="/academy/">学习成长</a>
   </div>
-  <div class="fs-nav-actions">
+  <div class="fs-top-actions">
     <span class="fs-top-city" onclick="alert('当前以北京为样板城市，多城市数据接入中')">📍 北京 ▾</span>
     <span class="fs-top-avatar">👤</span>
   </div>
-  <button class="fs-nav-menu" onclick="this.parentElement.classList.toggle('open')">☰</button>
 </nav>
 <style>
-.fs-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 52px; background: #fff; border-bottom: 1px solid rgba(26,61,36,.09); position: sticky; top: 0; z-index: 100; }
-.fs-nav-brand { font-size: 16px; font-weight: 700; color: #1a3d24; text-decoration: none; display: flex; align-items: center; gap: 4px; }
-.fs-nav-links { display: flex; gap: 6px; }
-.fs-nav-links a { padding: 5px 10px; font-size: 12px; color: #555; text-decoration: none; border-radius: 6px; transition: all .15s; white-space: nowrap; }
-.fs-nav-links a:hover { background: rgba(26,61,36,.06); color: #1a3d24; }
-.fs-nav-menu { display: none; background: none; border: none; font-size: 20px; cursor: pointer; color: #1a3d24; padding: 8px; }
-.fs-nav-actions { display: flex; align-items: center; gap: 10px; font-size: 13px; }
-.fs-nav-actions .fs-top-city { color: #555; cursor: pointer; white-space: nowrap; }
-.fs-nav-actions .fs-top-avatar { width: 30px; height: 30px; background: #faf5ea; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; }
-.fs-nav-links a.active { background: rgba(26,61,36,.06); color: #1a3d24; font-weight: 600; }
-@media (max-width: 767px) {
-  .fs-nav-links { display: none; position: absolute; top: 52px; left: 0; right: 0; background: #fff; flex-direction: column; padding: 10px; border-bottom: 1px solid rgba(26,61,36,.09); box-shadow: 0 4px 12px rgba(0,0,0,.08); }
-  .fs-nav.open .fs-nav-links { display: flex; }
-  .fs-nav-menu { display: block; }
-  .fs-nav-actions { display: none; }
-}
+/* ============ 全局导航（与 knowledge/workspace/scene 统一 fs-top-nav） ============ */
+.fs-top-nav{position:sticky;top:0;z-index:100;background:#f7f5f0;border-bottom:1px solid #e8e4da;padding:10px 32px;display:flex;align-items:center;gap:20px}
+.fs-top-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.fs-top-mark{width:30px;height:30px;background:#1a3d24;color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.fs-top-name{font-size:14px;font-weight:700;color:#1a3d24;white-space:nowrap}
+.fs-top-links{display:flex;gap:14px;font-size:13px;flex-wrap:wrap;flex:1;justify-content:center}
+.fs-top-links a{color:#555;text-decoration:none;white-space:nowrap}
+.fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
+.fs-top-actions{display:flex;align-items:center;gap:10px;font-size:13px;flex-shrink:0}
+.fs-top-city{cursor:pointer;color:#555;white-space:nowrap}
+.fs-top-avatar{width:30px;height:30px;background:#faf5ea;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px}
+@media(max-width:960px){.fs-top-links{display:none}.fs-top-city{display:none}}
 </style>
 
 
