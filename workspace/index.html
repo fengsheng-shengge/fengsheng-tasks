@@ -2251,23 +2251,10 @@
         return ensureEvidenceShards(defaultTypes);
       })
       .then(function(){ renderWorkspaceEvidence("BROKER"); })
-      .catch(function(){
-        // 兜底：分片不可用时回退全量 fetch（零感知）
-        fetch("/data/v3/entries.json")
-          .then(function(r){ return r.ok ? r.json() : null; })
-          .then(function(entries){
-            if(!entries || !window.EvidenceAdapter) {
-              // 双路径全挂 → 给明确提示
-              var el = document.getElementById("evidence-cards");
-              if(el) el.innerHTML = '<div style="font-size:12px;color:#e67e22;padding:10px;">⚠️ 循证数据暂时未就绪，请稍后刷新重试</div>';
-              return;
-            }
-            rawEntriesCache = window.EvidenceAdapter.filterAndAdaptAll(entries, { drop_hard: false });
-            renderWorkspaceEvidence("BROKER");
-          }).catch(function(){
-            var el = document.getElementById("evidence-cards");
-            if(el) el.innerHTML = '<div style="font-size:12px;color:#e67e22;padding:10px;">⚠️ 循证数据暂时未就绪，请稍后刷新重试</div>';
-          });
+      .catch(function(err){
+        console.warn("[Evidence] 分片加载失败:", err);
+        var el = document.getElementById("evidence-cards");
+        if(el) el.innerHTML = '<div style="font-size:12px;color:#e67e22;padding:10px;">⚠️ 循证数据暂时未就绪，请稍后刷新重试</div>';
       });
 
     // ===== 🆕 阶段三层拆解数据真数据 =====
