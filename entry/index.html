@@ -34,14 +34,18 @@ html{scroll-behavior:smooth}
 body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 
-/* ===== Nav ===== */
-.nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.88);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
-.nav-inner{max-width:1240px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:40px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
-.brand-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--p),var(--p-light));display:grid;place-items:center;color:white;font-weight:800;flex-shrink:0}
-.back-link{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:14px;color:var(--ink-soft);transition:all .2s;margin-left:auto}
-.back-link:hover{background:rgba(26,61,36,0.06);color:var(--p)}
-.back-link svg{flex-shrink:0}
+/* ===== Nav — 统一 fs-top-nav（与 knowledge/workspace 对齐） ===== */
+.fs-top-nav{position:sticky;top:0;z-index:100;background:#f7f5f0;border-bottom:1px solid #e8e4da;padding:10px 32px;display:flex;align-items:center;gap:20px}
+.fs-top-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.fs-top-mark{width:30px;height:30px;background:#1a3d24;color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.fs-top-name{font-size:14px;font-weight:700;color:#1a3d24;white-space:nowrap}
+.fs-top-links{display:flex;gap:14px;font-size:13px;flex-wrap:wrap;flex:1;justify-content:center}
+.fs-top-links a{color:#555;text-decoration:none;white-space:nowrap}
+.fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
+.fs-top-actions{display:flex;align-items:center;gap:10px;font-size:13px;flex-shrink:0}
+.fs-top-city{cursor:pointer;color:#555;white-space:nowrap}
+.fs-top-avatar{width:30px;height:30px;background:#faf5ea;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px}
+@media(max-width:960px){.fs-top-links{display:none}.fs-top-city{display:none}}
 
 /* ===== Page Layout ===== */
 .page{max-width:1240px;margin:0 auto;padding:40px 32px;display:grid;grid-template-columns:1fr 340px;gap:32px;min-height:60vh}
@@ -260,17 +264,22 @@ body.has-bottom-bar{padding-bottom:70px}
 </head>
 <body>
 
-<!-- ===== Nav ===== -->
-<nav class="nav">
-  <div class="nav-inner">
-    <a href="/knowledge/" class="brand">
-      <div class="brand-mark">风</div>
-      <span>风声</span>
-    </a>
-    <a href="/knowledge/" class="back-link">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      <span>返回知识底座</span>
-    </a>
+<!-- ===== Nav — 统一 fs-top-nav（与 knowledge/workspace 对齐） ===== -->
+<nav class="fs-top-nav">
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声信息咨询</span></a>
+  <div class="fs-top-links">
+    <a href="/">首页</a>
+    <a href="/workspace/">工作台</a>
+    <a class="active" href="/knowledge/">知识底座</a>
+    <a href="/curation/">策展引擎</a>
+    <a href="/decoder/">话术解码</a>
+    <a href="/care-test/">能力测评</a>
+    <a href="/scene/">场景导航</a>
+    <a href="/ai-advisor/">话术陪练</a>
+    <a href="/academy/">学习成长</a>
+  </div>
+  <div class="fs-top-actions">
+    <a href="/knowledge/" style="font-size:13px;color:#1a3d24;text-decoration:none">← 返回知识底座</a>
   </div>
 </nav>
 
@@ -448,25 +457,37 @@ body.has-bottom-bar{padding-bottom:70px}
       bHtml = '<div class="fs-empty">暂无消费者利益信息</div>';
     }
 
-    // E - Evidence: legalRef + dataRef + caseRef
+    // E - Evidence: legalRef + dataRef + caseRef → EvidenceLink 组件渲染（蓝图 C1）
+    // 先用兜底纯文本渲染（EvidenceLink 由 defer script 异步加载），稍后组件就绪后替换
     let eHtml = '';
     if (entry.legalRef) {
       const refs = Array.isArray(entry.legalRef) ? entry.legalRef : [entry.legalRef];
       eHtml += '<div class="fs-ref">';
-      refs.forEach(r => {
-        eHtml += `<div class="ref-item">${escapeHtml(r)}</div>`;
-      });
+      refs.forEach(r => { eHtml += `<div class="ref-item">${escapeHtml(r)}</div>`; });
       eHtml += '</div>';
     }
-    if (entry.dataRef) {
-      eHtml += `<div class="fs-body" style="margin-top:8px;font-size:13px">数据引证：${escapeHtml(entry.dataRef)}</div>`;
-    }
-    if (entry.caseRef) {
-      eHtml += `<div class="fs-body" style="margin-top:4px;font-size:13px">案例引证：${escapeHtml(entry.caseRef)}</div>`;
-    }
-    if (!eHtml) {
-      eHtml = '<div class="fs-empty">暂无引证信息</div>';
-    }
+    if (entry.dataRef) eHtml += `<div class="fs-body" style="margin-top:8px;font-size:13px">数据引证：${escapeHtml(entry.dataRef)}</div>`;
+    if (entry.caseRef) eHtml += `<div class="fs-body" style="margin-top:4px;font-size:13px">案例引证：${escapeHtml(entry.caseRef)}</div>`;
+    if (!eHtml) eHtml = '<div class="fs-empty">暂无引证信息</div>';
+
+    // 稍后 EvidenceLink defer 加载完成后替换为组件渲染
+    (function(deferredEntry){
+      var tries = 0;
+      var timer = setInterval(function(){
+        tries++;
+        if (window.EvidenceLink && typeof window.EvidenceLink.render === 'function') {
+          clearInterval(timer);
+          var newHtml = window.EvidenceLink.render(deferredEntry, { showCaveat: true });
+          if (newHtml) {
+            // 找到 evidence section 并替换（fabe-card 里的 E section）
+            var sections = document.querySelectorAll('.fabe-section');
+            if (sections.length >= 5) sections[4].innerHTML = '<div class="fs-head"><span class="fs-letter e">E</span><span class="fs-label">证据链</span><span class="fs-sub">每条带来源+时间+验证状态</span></div>' + newHtml;
+          }
+        } else if (tries > 20) {
+          clearInterval(timer);
+        }
+      }, 50);
+    })(entry);
 
     const fabeCardHtml = `
       <div class="fabe-card">
@@ -845,6 +866,10 @@ body.has-bottom-bar{padding-bottom:70px}
   loadEntry();
 })();
 </script>
+
+<!-- EvidenceLink 证据链组件（蓝图 C1）：桥接旧字段 → Schema v1.0，渲染证据链 HTML -->
+<script src="/lib/evidence/data-adapter.js" defer></script>
+<script src="/lib/evidence/evidence-link.js" defer></script>
 
 <footer style="text-align:center;padding:24px 16px 32px;font-size:12px;color:#8a9a90;line-height:1.8;">
   <div>风声信息咨询 · 经纪人成长陪练 · 让好经纪人被看见</div>
