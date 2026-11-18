@@ -2,3 +2,3537 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+风声聚匠星云 | 经纪人能力外挂
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #1a3d24;
+    --primary-light: #2d5a3d;
+    --primary-dark: #12291a;
+    --primary-bg: #e8f0e9;
+    --gold: #c9a962;
+    --gold-bg: #faf5ea;
+    --ink: #1a1a1a;
+    --body: #555;
+    --muted: #999;
+    --line: #e8e4da;
+    --bg: #f7f5f0;
+    --card: #ffffff;
+    --warning: #e67e22;
+    --success: #27ae60;
+  }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  /* 顶栏 */
+  .top-nav {
+    background: var(--bg);
+    padding: 12px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+  }
+  .logo-area { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--primary); color: #fff;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .logo-text { font-size: 15px; font-weight: 700; color: var(--primary); }
+  .nav-links { display: flex; gap: 20px; font-size: 13px; }
+  .nav-links a { color: var(--body); text-decoration: none; }
+  .nav-links a.active { color: var(--primary); font-weight: 600; }
+  .nav-actions { display: flex; gap: 12px; align-items: center; font-size: 13px; }
+  .avatar {
+    width: 32px; height: 32px;
+    background: var(--gold-bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  /* 领域Tab */
+  .domain-tabs {
+    background: var(--primary);
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 44px;
+  }
+  .domain-tab {
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    padding: 12px 0;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .domain-tab.active {
+    color: #fff;
+    border-bottom-color: var(--gold);
+    font-weight: 600;
+  }
+  /* ===== 岗位选择器 ===== */
+  .position-bar {
+    background: white;
+    border-bottom: 1px solid var(--line);
+    padding: 14px 48px;
+    display: none; /* 默认隐藏，JS 控制 */
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .position-bar.visible { display: flex; animation: fadeIn 0.3s ease; }
+  .position-bar-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-right: 4px;
+    font-weight: 500;
+  }
+  .position-pill {
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    background: #f5f3ec;
+    color: var(--body);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .position-pill:hover { background: var(--primary-bg); color: var(--primary); }
+  .position-pill.active {
+    background: var(--gold-bg);
+    color: var(--primary);
+    border-color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* ===== 🆕 岗位身份 Banner — 第一眼看清楚你是谁 ===== */
+  .role-banner {
+    background: linear-gradient(135deg, #1a3d24 0%, #2d5a3f 50%, #3a6b4d 100%);
+    color: #fff;
+    padding: 20px 48px;
+    display: none;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 3px solid var(--gold);
+  }
+  .role-banner.visible { display: flex; animation: fadeIn 0.3s ease; }
+  .role-banner .rb-icon {
+    font-size: 40px;
+    width: 64px; height: 64px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    backdrop-filter: blur(4px);
+  }
+  .role-banner .rb-info { flex: 1; min-width: 0; }
+  .role-banner .rb-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .role-banner .rb-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .role-banner .rb-name .rb-domain-tag {
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--gold);
+    color: #1a3d24;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .role-banner .rb-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+    max-width: 520px;
+  }
+  .role-banner .rb-switch {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .role-banner .rb-switch-title {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 6px;
+    width: 100%;
+  }
+  .role-banner .rb-switch-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.75);
+    border: 1px solid rgba(255,255,255,0.18);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .role-banner .rb-switch-pill:hover {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+  }
+  .role-banner .rb-switch-pill.active {
+    background: var(--gold);
+    color: #1a3d24;
+    border-color: var(--gold);
+    font-weight: 700;
+  }
+
+  /* ===== 🆕 客户服务阶段 Timeline — 页面主骨架 ===== */
+  .journey-timeline {
+    background: #f8f6f0;
+    border-bottom: 1px solid var(--line);
+    padding: 0 48px;
+    display: none;
+  }
+  .journey-timeline.visible { display: block; animation: fadeIn 0.3s ease; }
+  .jt-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding-top: 12px;
+    padding-bottom: 6px;
+  }
+  .jt-stages {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding-bottom: 12px;
+    overflow-x: auto;
+  }
+  .jt-stage {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+  }
+  .jt-step {
+    flex-shrink: 0;
+    padding: 10px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 130px;
+    background: transparent;
+    border: 2px solid transparent;
+    position: relative;
+  }
+  .jt-step:hover {
+    background: rgba(26,61,36,0.06);
+  }
+  .jt-step .jt-step-icon {
+    font-size: 22px;
+    width: 36px; height: 36px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid var(--line);
+    transition: all 0.2s;
+  }
+  .jt-step .jt-step-text { display: flex; flex-direction: column; gap: 2px; }
+  .jt-step .jt-step-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #555;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .jt-step .jt-step-desc {
+    font-size: 10px;
+    color: #999;
+    white-space: nowrap;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s;
+  }
+  .jt-step.jt-active {
+    background: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 4px 16px rgba(26,61,36,0.18);
+    transform: translateY(-2px);
+  }
+  .jt-step.jt-active .jt-step-icon {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+  }
+  .jt-step.jt-active .jt-step-name {
+    color: var(--primary);
+    font-size: 15px;
+  }
+  .jt-step.jt-active .jt-step-desc {
+    color: var(--primary);
+    opacity: 0.8;
+  }
+  .jt-step.jt-done .jt-step-icon {
+    background: var(--primary-bg);
+    border-color: var(--primary);
+    opacity: 0.7;
+  }
+  .jt-arrow {
+    flex-shrink: 0;
+    font-size: 18px;
+    color: #ccc;
+    padding: 0 4px;
+    display: flex; align-items: center;
+  }
+
+  .domain-tag {
+    font-size: 10px;
+    background: rgba(255,255,255,0.15);
+    padding: 2px 6px;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.5);
+    margin-left: 4px;
+  }
+
+  /* 主内容 */
+  .main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 48px;
+    transition: padding 0.25s ease;
+  }
+  /* 岗位选中后 compact 模式：Timeline 和解决方案紧贴 */
+  .main.compact { padding-top: 8px; }
+  .main.compact > #value-intro,
+  .main.compact > #growth-bar,
+  .main.compact > #welcome-back-bar,
+  .main.compact > .search-section,
+  .main.compact > .result-panel,
+  .main.compact > #stage-tabs,
+  .main.compact > .ability-section,
+  .main.compact > .tools-section,
+  .main.compact > .advance-section,
+  .main.compact > .footer-note,
+  .main.compact > .stage-browse-panel { display: none !important; }
+
+  /* 🔽 展开/收起高级区切换按钮 */
+  .jt-toggle-advanced {
+    display: none;
+    position: absolute;
+    right: 48px;
+    top: 14px;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 3px 10px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    font-weight: 500;
+    transition: all 0.15s;
+    z-index: 5;
+  }
+  .jt-toggle-advanced:hover { color: var(--primary); border-color: var(--primary); }
+  .journey-timeline.has-position { display: block; position: relative; }
+  .journey-timeline.has-position .jt-toggle-advanced { display: inline-block; }
+
+  /* 🆕 循证知识库 Evidence section（M1 12.31）— 折叠低调版 */
+  .evidence-section {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0;
+    margin-bottom: 14px;
+    background: #fafafa;
+  }
+  /* Header 一行：可点击折叠 */
+  .evidence-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .evidence-header:hover { background: #f0f0f0; }
+  .evidence-toggle-icon {
+    font-size: 11px;
+    color: var(--muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .evidence-toggle-icon.open { transform: rotate(90deg); }
+  .evidence-header-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .evidence-header-badge {
+    font-size: 11px;
+    color: var(--muted);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .evidence-header-sub {
+    font-size: 11px;
+    color: var(--muted);
+    opacity: 0.7;
+  }
+  /* Content：默认折叠 */
+  .evidence-content {
+    display: none;
+    border-top: 1px solid var(--line);
+    padding: 12px 14px;
+    background: #fff;
+  }
+  .evidence-content.open { display: block; }
+
+  .evidence-card {
+    background: #fafafa;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .evidence-card:last-child { margin-bottom: 0; }
+  .evidence-card-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .evidence-footer {
+    margin-top: 10px;
+    text-align: right;
+  }
+  .evidence-footer-link {
+    font-size: 11px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .evidence-footer-link:hover { text-decoration: underline; }
+
+  /* EvidenceLink 样式覆盖（低调灰色系）*/
+  .evidence-section .ev-panel {
+    border: none; border-radius: 0; padding: 0; margin: 0; background: transparent;
+  }
+  .evidence-section .ev-panel-title { display: none; }
+  .evidence-section .ev-list { gap: 5px; }
+  .evidence-section .ev-item {
+    padding: 5px 8px;
+    border-left: 2px solid var(--line);
+    background: #fff;
+    border-radius: 0 4px 4px 0;
+  }
+  .evidence-section .ev-item-clickable { border-left-color: #94a3b8; }
+  .evidence-section .ev-item-clickable:hover { background: #f1f5f9; }
+  .evidence-section .ev-badge {
+    font-size: 9.5px;
+    padding: 1px 6px;
+  }
+  .evidence-section .ev-title { font-size: 11.5px; color: #475569; }
+  .evidence-section .ev-meta { font-size: 10.5px; color: #94a3b8; }
+
+  }
+
+  /* 1. 问题入口（最核心） */
+  .search-section {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  }
+  .search-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .search-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .search-box {
+    display: flex;
+    gap: 10px;
+  }
+  .search-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus {
+    border-color: var(--primary);
+  }
+  .search-btn {
+    background: var(--primary);
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ===== Search result panel ===== */
+  .result-panel { display: none; margin-top: 18px; animation: fadeIn 0.3s ease; }
+  .result-panel.show { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  .result-hint { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
+  .result-hint span { color: var(--ink); }
+  .scenario-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; overflow: hidden; transition: all 0.2s; }
+  .scenario-card.open { border-color: var(--gold); box-shadow: 0 2px 12px rgba(201,169,98,0.1); }
+  .scenario-head { padding: 14px 18px; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; background: #fafaf7; transition: background 0.15s; user-select: none; }
+  .scenario-card.open .scenario-head { background: var(--gold-bg); }
+  .scenario-icon { width: 28px; height: 28px; background: var(--primary); border-radius: 6px; display: grid; place-items: center; color: var(--gold); font-size: 13px; flex-shrink: 0; }
+  .scenario-main { flex: 1; min-width: 0; }
+  .scenario-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 3px; line-height: 1.4; }
+  .scenario-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: var(--muted); }
+  .scenario-meta .sc-dim { background: var(--primary-bg); color: var(--primary); padding: 1px 8px; border-radius: 3px; font-weight: 500; }
+  .scenario-chevron { font-size: 18px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+  .scenario-card.open .scenario-chevron { transform: rotate(90deg); color: var(--gold); }
+  .scenario-body { display: none; padding: 14px 18px 18px; border-top: 1px solid var(--line); }
+  .scenario-card.open .scenario-body { display: block; }
+  .solution-line { font-size: 13px; color: var(--body); padding: 8px 12px; background: #fafaf7; border-radius: 6px; border-left: 3px solid var(--muted); margin-bottom: 12px; }
+  .speech-list { margin-bottom: 14px; }
+  .speech-variant { background: #fafaf7; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; position: relative; transition: border-color 0.2s; }
+  .speech-variant.collapsed { border-color: var(--line); background: #fdfcf8; }
+  .speech-variant-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; cursor: pointer; user-select: none; padding: 2px 0; }
+  .speech-variant-label { font-size: 12px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 6px; }
+  .speech-variant-label::before { content: '›'; font-size: 14px; color: var(--muted); transition: transform 0.2s; display: inline-block; }
+  .speech-variant.collapsed .speech-variant-label::before { transform: rotate(90deg); color: var(--gold); }
+  .speech-variant-tag { font-size: 10px; color: var(--primary); background: var(--primary-bg); padding: 2px 8px; border-radius: 3px; font-weight: 500; flex-shrink: 0; }
+  .speech-variant-body { font-size: 13px; line-height: 1.75; color: var(--body); background: var(--card); border-left: 3px solid var(--gold); padding: 10px 12px; border-radius: 0 6px 6px 0; margin-top: 8px; transition: max-height 0.25s ease, opacity 0.2s; overflow: hidden; max-height: 600px; opacity: 1; }
+  .speech-variant.collapsed .speech-variant-body { max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; margin-top: 0; border-left-color: transparent; }
+  .speech-variant-copy { position: absolute; bottom: 10px; right: 12px; font-size: 11px; font-weight: 500; color: var(--primary); background: var(--primary-bg); border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: all 0.15s, opacity 0.2s; }
+  .speech-variant.collapsed .speech-variant-copy { opacity: 0; pointer-events: none; }
+  .speech-variant-copy:hover { background: var(--primary); color: #fff; }
+  .secondary-row { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+  .secondary-col { flex: 1; padding: 12px 14px; }
+  .secondary-col:first-child { border-right: 1px solid var(--line); }
+  .secondary-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
+  .secondary-item { font-size: 13px; color: var(--body); padding: 3px 0; cursor: pointer; }
+  .secondary-item:hover { color: var(--primary); }
+  .hook-soft { display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: var(--bg); border: 1px dashed var(--line); border-radius: 8px; }
+  .hook-soft-emoji { font-size: 16px; flex-shrink: 0; }
+  .hook-soft-copy { flex: 1; }
+  .hook-soft-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .hook-soft-desc { font-size: 12px; color: var(--muted); }
+  .hook-soft-cta { font-size: 12px; font-weight: 600; color: #fff; background: var(--primary); border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; }
+  .hook-soft-cta:hover { background: var(--primary-light); }
+
+  /* ===== 知识底座关联区块 ===== */
+  .kb-relations {
+    margin: 10px 0;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, #faf5ea 0%, #fff 100%);
+    border: 1px solid #c9a962;
+    border-radius: 10px;
+  }
+  .kb-relations-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #8a7040;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed rgba(201,169,98,0.3);
+  }
+  .kb-relations-hint { font-size: 10px; font-weight: 400; color: #999; }
+  .kb-item {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(201,169,98,0.15);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .kb-item:last-child { border-bottom: none; }
+  .kb-item:hover { transform: translateX(3px); }
+  .kb-item-name { font-size: 12px; font-weight: 600; color: #1a3d24; margin-bottom: 3px; }
+  .kb-item-alias { font-size: 11px; color: #8a7040; }
+  .kb-item-cp { font-size: 11px; color: #555; margin-top: 4px; line-height: 1.5; }
+  .kb-item-cp strong { color: #1a3d24; }
+  .kb-empty { font-size: 11px; color: #999; text-align: center; padding: 6px 0; }
+  .kb-loading { font-size: 11px; color: #c9a962; text-align: center; padding: 6px 0; animation: kb-pulse 1.5s infinite; }
+  @keyframes kb-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  /* ===== 🆕 知识底座 · 阶段精选面板 ===== */
+  .kb-stage-panel {
+    margin: 20px 0 0;
+    background: linear-gradient(135deg, #fffdf5 0%, #fef7e7 100%);
+    border: 1.5px solid #c9a962;
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .kb-stage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1.5px dashed rgba(201,169,98,0.4);
+  }
+  .kb-stage-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a3d24;
+  }
+  .kb-stage-tag {
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #c9a962 0%, #a8873f 100%);
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+  }
+  .kb-stage-more {
+    font-size: 12px;
+    color: #8a7040;
+    text-decoration: none;
+    font-weight: 500;
+    margin-right: 10px;
+  }
+  .kb-stage-more:hover { color: #c9a962; }
+  .kb-stage-actions { display: flex; align-items: center; gap: 6px; }
+  .kb-stage-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #faf0d7; color: #8a7040; font-size: 11px; font-weight: 700;
+    cursor: pointer; user-select: none; transition: transform .2s;
+  }
+  .kb-stage-panel.collapsed .kb-stage-toggle { transform: rotate(180deg); }
+  .kb-stage-panel.collapsed .kb-stage-body { display: none; }
+  .kb-stage-body { display: flex; flex-direction: column; gap: 8px; }
+  .kb-stage-loading, .kb-stage-empty {
+    text-align: center;
+    padding: 14px;
+    font-size: 12px;
+    color: #8a7040;
+  }
+  .kb-stage-loading { animation: kb-pulse 1.5s infinite; }
+  .kb-pick {
+    background: #fff;
+    border: 1px solid rgba(201,169,98,0.35);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .kb-pick:hover {
+    border-color: #c9a962;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(201,169,98,0.15);
+  }
+  .kb-pick-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .kb-pick-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a3d24;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .kb-pick-domain {
+    font-size: 10px;
+    font-weight: 500;
+    color: #8a7040;
+    background: #faf0d7;
+    padding: 1px 7px;
+    border-radius: 3px;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+  .kb-pick-q {
+    font-size: 11.5px;
+    color: #555;
+    line-height: 1.55;
+    margin-bottom: 4px;
+  }
+  .kb-pick-q strong { color: #c9a962; }
+  .kb-pick-cp {
+    font-size: 11.5px;
+    color: #1a3d24;
+    font-weight: 500;
+    line-height: 1.55;
+    margin-bottom: 6px;
+  }
+  .kb-pick-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .kb-pick-tag {
+    font-size: 10px;
+    color: #8a7040;
+    background: #faf0d7;
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+  .kb-pick-link {
+    font-size: 11px;
+    color: #c9a962;
+    font-weight: 500;
+  }
+
+  .empty-hint { text-align: center; padding: 30px; color: var(--muted); font-size: 13px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+
+  /* ===== Consumer filter + Stage tabs 外包区域 ===== */
+  .filter-zone {
+    margin-top: 18px;
+    padding: 16px 18px 14px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  .filter-zone-row {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+  }
+  .filter-zone-row + .filter-zone-row {
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px dashed var(--line);
+  }
+  .filter-zone-title {
+    font-size: 13px; font-weight: 700; color: var(--primary); white-space: nowrap;
+    padding-right: 4px;
+  }
+
+  /* ===== Consumer filter (type chips) — 强化版 ===== */
+  .consumer-filter { display: none !important; } /* 2026-11-11 隐藏：每个岗位只有一套固定 Timeline，不再需要"选服务对象" */
+  .consumer-filter-retained { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  /* consumer-filter 原始样式已废弃，保留类名避免历史 JS 报错 */
+  .consumer-filter .cf-chip {
+    font-size: 13px; padding: 7px 18px; border-radius: 20px; cursor: pointer;
+    background: var(--bg); color: var(--body); border: 1px solid var(--line);
+    transition: all 0.2s ease; font-weight: 600; user-select: none;
+  }
+  .consumer-filter .cf-chip:hover {
+    background: var(--primary-bg); color: var(--primary);
+    border-color: var(--primary); transform: translateY(-1px);
+  }
+  .consumer-filter .cf-chip.active {
+    background: var(--primary); color: #fff; border-color: var(--primary);
+    font-weight: 700; box-shadow: 0 2px 8px rgba(26,61,36,0.3);
+    transform: translateY(-1px);
+  }
+
+  /* ===== Stage tabs (journey stages) — 强化版 ===== */
+  .stage-tabs {
+    display: flex; gap: 4px; flex-wrap: wrap;
+    background: var(--bg); border-radius: 12px; padding: 5px;
+    border: 1px solid var(--line);
+  }
+  .stage-tabs .st-tab {
+    flex: 0 0 auto; text-align: center; padding: 10px 18px;
+    font-size: 13px; border-radius: 9px; cursor: pointer; color: var(--body);
+    transition: all 0.2s ease; font-weight: 600; white-space: nowrap; user-select: none;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .stage-tabs .st-tab:hover {
+    color: var(--primary); background: var(--primary-bg);
+    transform: translateY(-1px);
+  }
+  .stage-tabs .st-tab.active {
+    background: var(--card); color: var(--primary); font-weight: 700;
+    box-shadow: 0 2px 6px rgba(26,61,36,0.15);
+    border: 1px solid rgba(26,61,36,0.15);
+  }
+  .stage-tabs .st-tab .st-icon { font-size: 14px; }
+  .stage-tabs .st-tab .st-count {
+    font-size: 11px; background: var(--gold-bg); color: #8a7040;
+    padding: 1px 8px; border-radius: 10px; font-weight: 700;
+    border: 1px solid rgba(201,169,98,0.3);
+  }
+
+  /* ===== Stage browse panel (always visible now) ===== */
+  .stage-browse-panel { display: block; margin-top: 14px; animation: fadeIn 0.3s ease; }
+  .stage-browse-hint { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+  .st-hint-left { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+  .st-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #faf0d7; color: #8a7040; font-size: 11px; font-weight: 700;
+    transition: transform .2s; flex-shrink: 0;
+  }
+  .stage-browse-panel.collapsed .st-toggle { transform: rotate(180deg); }
+  .stage-browse-panel.collapsed #stage-scenario-cards { display: none; }
+  .stage-browse-hint span { color: var(--ink); }
+  .stage-browse-hint .st-consumer-tag { background: var(--primary-bg); color: var(--primary); padding: 2px 8px; border-radius: 3px; font-size: 10px; margin-left: 6px; font-weight: 600; }
+
+  .hot-questions {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .hot-questions span {
+    display: inline-block;
+    background: var(--bg);
+    padding: 4px 12px;
+    border-radius: 16px;
+    margin-right: 6px;
+    margin-top: 6px;
+    cursor: pointer;
+    color: var(--body);
+  }
+  .hot-questions span:hover {
+    background: var(--primary-bg);
+    color: var(--primary);
+  }
+
+  /* 能力画像 */
+  .ability-section {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    border: 1px solid var(--line);
+  }
+  .ability-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .ability-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+  .ability-go-btn {
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .ability-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .ability-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .ability-card {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+  .ability-card:hover {
+    background: var(--primary-bg);
+    border-color: var(--primary);
+  }
+  .ability-card-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .ability-card-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .ability-card-count {
+    font-size: 10px;
+    color: var(--primary);
+    font-weight: 500;
+  }
+  .ability-card-full {
+    grid-column: span 3;
+  }
+
+  /* ===== 🆕 阶段 Tab 联动：能力画像维度高亮 ===== */
+  .ability-card.dim-primary {
+    border: 2px solid #1a3d24;
+    background: linear-gradient(135deg, #e8f0ea 0%, #f5f8f6 100%);
+    box-shadow: 0 2px 10px rgba(26,61,36,0.15);
+  }
+  .ability-card.dim-primary .ability-card-name { color: #1a3d24; font-weight: 700; }
+  .ability-card.dim-primary::after {
+    content: "核心";
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    background: #1a3d24;
+    padding: 1px 6px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+  }
+  .ability-card { position: relative; } /* for ::after */
+
+  .ability-card.dim-secondary {
+    border: 2px solid #c9a962;
+    background: linear-gradient(135deg, #fdf9ef 0%, #fffbf3 100%);
+  }
+  .ability-card.dim-secondary .ability-card-name { color: #8a7040; }
+  .ability-card.dim-secondary::after {
+    content: "辅助";
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 9px;
+    font-weight: 600;
+    color: #fff;
+    background: #c9a962;
+    padding: 1px 6px;
+    border-radius: 8px;
+  }
+
+  .ability-card.dim-muted {
+    opacity: 0.45;
+    filter: grayscale(0.3);
+    background: #f5f5f5;
+    border-color: #e0e0e0;
+  }
+  .ability-card.dim-muted .ability-card-name { color: #aaa; }
+
+  .stage-dim-hint {
+    display: block;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(0,0,0,0.15);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .stage-dim-hint .dim-primary {
+    color: #1a3d24;
+    font-weight: 700;
+    background: #e8f0ea;
+    padding: 1px 7px;
+    border-radius: 4px;
+    margin-right: 6px;
+  }
+  .stage-dim-hint .dim-secondary {
+    color: #8a7040;
+    font-weight: 600;
+    background: #faf0d7;
+    padding: 1px 7px;
+    border-radius: 4px;
+  }
+  .ability-tip {
+    background: var(--gold-bg);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--body);
+    line-height: 1.6;
+  }
+  .ability-tip strong {
+    color: var(--primary);
+  }
+
+  /* 底部工具入口 */
+  .tools-section {
+    margin-bottom: 40px;
+  }
+  .tools-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--body);
+    margin-bottom: 10px;
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .tool-card {
+    background: var(--card);
+    border-radius: 10px;
+    padding: 14px 10px;
+    text-align: center;
+    border: 1px solid #f0ede5;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--ink);
+    display: block;
+  }
+  .tool-card:hover {
+    border-color: var(--line);
+  }
+  .tool-icon { font-size: 20px; margin-bottom: 4px; }
+
+  /* ===== 进阶区 ===== */
+  .advance-section {
+    margin-bottom: 40px;
+  }
+  .advance-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .advance-title {
+    font-size: 13px; font-weight: 600; color: var(--body);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .advance-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .advance-card {
+    display: block; text-decoration: none;
+    background: var(--card); border-radius: 14px; padding: 18px 20px;
+    border: 1px solid var(--line);
+    transition: all 0.2s; cursor: pointer;
+  }
+  .advance-card:hover {
+    border-color: var(--primary); transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26,61,36,0.08);
+  }
+  .advance-card.gold:hover {
+    border-color: var(--gold);
+    box-shadow: 0 4px 12px rgba(201,169,98,0.15);
+  }
+  .advance-card-top {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .advance-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: grid; place-items: center; font-size: 18px; flex-shrink: 0;
+  }
+  .advance-card:not(.gold) .advance-icon {
+    background: var(--primary-bg); color: var(--primary);
+  }
+  .advance-card.gold .advance-icon {
+    background: var(--gold-bg); color: #8a7040;
+  }
+  .advance-card-name {
+    font-size: 15px; font-weight: 700; color: var(--ink);
+  }
+  .advance-card:not(.gold) .advance-card-name { color: var(--primary); }
+  .advance-card.gold .advance-card-name { color: #8a7040; }
+  .advance-card-desc {
+    font-size: 12px; color: var(--body); line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .advance-card-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .advance-card-tags span {
+    font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 10px;
+  }
+  .advance-card:not(.gold) .advance-card-tags span {
+    background: var(--primary-bg); color: var(--primary);
+  }
+  .advance-card.gold .advance-card-tags span {
+    background: var(--gold-bg); color: #8a7040;
+  }
+  .advance-card-footer {
+    margin-top: 12px; font-size: 11px; color: var(--muted);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .advance-card-footer .btn-go {
+    font-size: 12px; font-weight: 600;
+    padding: 5px 14px; border-radius: 16px;
+    background: var(--primary); color: #fff; text-decoration: none;
+  }
+  .advance-card.gold .advance-card-footer .btn-go {
+    background: var(--gold); color: #fff;
+  }
+  .advance-card-footer .btn-go:hover { opacity: 0.85; }
+
+  /* 锚点介绍区 */
+  .advance-intro {
+    display: none;
+    background: var(--bg); border-radius: 14px; padding: 20px 24px;
+    border: 1px solid var(--line); margin-top: 12px;
+  }
+  .advance-intro.show { display: block; animation: fadeIn 0.3s ease; }
+  .advance-intro h4 {
+    font-size: 14px; font-weight: 700; color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .advance-intro.gold-theme h4 { color: #8a7040; }
+  .advance-intro p { font-size: 13px; color: var(--body); line-height: 1.8; margin-bottom: 6px; }
+  .advance-intro .close {
+    float: right; cursor: pointer; color: var(--muted); font-size: 18px;
+    line-height: 1;
+  }
+  .advance-intro .close:hover { color: var(--primary); }
+  .tool-name { font-size: 12px; font-weight: 500; }
+  .tool-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .footer-note {
+    text-align: center;
+    padding: 32px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  /* ===== v3.4 成长进度总览条 ===== */
+  .growth-bar {
+    background: linear-gradient(135deg, #1a3d24 0%, #2d5a3d 100%);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 16px;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(26,61,36,0.15);
+  }
+  .gb-left { flex: 1; min-width: 0; }
+  .gb-right {
+    background: rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 12px 16px;
+    min-width: 200px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .gb-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .gb-avatar { font-size: 20px; }
+  .gb-name { font-size: 15px; font-weight: 700; }
+  .gb-domain {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.12);
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .gb-level-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 10px;
+  }
+  .gb-level-badge[data-level="L1"] { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); }
+  .gb-level-badge[data-level="L2"] { background: #f5deb3; color: #5c4a1a; }
+  .gb-level-badge[data-level="L3"] { background: #c9a962; color: #1a3d24; }
+  .gb-level-badge[data-level="L4"] { background: linear-gradient(90deg,#c9a962,#f5deb3); color: #1a3d24; }
+  .gb-level-badge[data-level="L5"] { background: linear-gradient(90deg,#c9a962,#f5deb3,#c9a962); color: #1a3d24; box-shadow: 0 0 12px rgba(201,169,98,0.5); }
+
+  .gb-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .gb-progress-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .gb-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #c9a962, #f5deb3);
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+  .gb-progress-pct { font-size: 13px; font-weight: 700; color: #c9a962; min-width: 38px; text-align: right; }
+
+  .gb-path {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-size: 11px;
+  }
+  .gb-path-step { color: rgba(255,255,255,0.55); }
+  .gb-path-done { color: #c9a962; font-weight: 600; }
+  .gb-path-current { color: #fff; font-weight: 600; }
+  .gb-path-arrow { color: rgba(255,255,255,0.3); font-size: 9px; }
+
+  .gb-next-label { font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  .gb-next-item {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f5deb3;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .gb-next-item:hover { color: #fff; }
+  .gb-next-sub { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+
+  /* ===== 🆕 价值引导区 ===== */
+  .value-intro { background: linear-gradient(135deg, #1a343f 0%, #2d5a4a 100%); border-radius: 16px; padding: 18px 22px; margin-bottom: 12px; color: #fff; }
+  .vi-title { font-size: 16px; font-weight: 800; margin: 0 0 6px; letter-spacing: 0.3px; line-height: 1.5; }
+  .vi-highlight { color: var(--gold); }
+  .vi-sub { font-size: 12.5px; color: rgba(255,255,255,0.75); margin: 0 0 12px; line-height: 1.6; }
+  .vi-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .vi-btn { padding: 9px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; }
+  .vi-btn-primary { background: var(--gold); color: #2d1f00; box-shadow: 0 4px 12px rgba(201,169,98,0.35); }
+  .vi-btn-ghost { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.25); }
+  .vi-or { font-size: 11px; color: rgba(255,255,255,0.5); }
+  .gb-onboard { background: linear-gradient(135deg, #1a343f 0%, #3d5a3a 100%); }
+
+  /* ===== 🆕 经纪人视角 · 测学练考评 ===== */
+  .layered-section { background: var(--card); border-radius: 16px; border: 1px solid var(--line); margin-bottom: 20px; overflow: hidden; }
+  .layered-header { padding: 14px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: linear-gradient(135deg, #f0f5f2 0%, #e8f0ea 100%); transition: background 0.2s; user-select: none; border-bottom: 1px solid var(--line); }
+  .layered-header:hover { background: linear-gradient(135deg, #e5ede7 0%, #f0f5f2 100%); }
+  .layered-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 800; color: var(--primary); }
+  .layered-title span:first-child { font-size: 18px; }
+  .layered-trust { font-size: 10px; font-weight: 700; background: var(--gold-bg); color: #8a7040; padding: 3px 10px; border-radius: 12px; letter-spacing: 0.3px; }
+  .layered-toggle { margin-left: auto; font-size: 12px; color: var(--muted); transition: transform 0.2s; }
+  .layered-body { padding: 16px 20px; display: grid; gap: 12px; }
+  .layered-body.collapsed { display: none; }
+
+  .bp-card { border-radius: 10px; padding: 12px 16px; }
+  .bp-head { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .bp-icon { font-size: 15px; }
+  .bp-title { font-size: 13px; font-weight: 800; color: var(--ink); }
+  .bp-sub { font-size: 10px; color: var(--muted); margin-left: auto; font-weight: 500; }
+
+  /* 🎯 核心动作 */
+  .bp-actions { background: var(--primary); color: #fff; }
+  .bp-actions .bp-head { margin-bottom: 8px; }
+  .bp-actions .bp-title { color: var(--gold); }
+  .bp-actions .bp-icon { color: var(--gold); }
+  .bp-actions-list { padding-left: 20px; margin: 0; }
+  .bp-actions-list li { font-size: 13px; color: rgba(255,255,255,0.92); padding: 4px 0; line-height: 1.65; font-weight: 500; }
+  .bp-actions-list li::marker { color: var(--gold); font-weight: 700; }
+
+  /* 💡 为什么 */
+  .bp-why { background: var(--gold-bg); border: 1px solid #e8dcc0; }
+  .bp-why .bp-title { color: #8a7040; }
+  .bp-why .bp-icon { color: #c9a962; }
+  .bp-why-text { font-size: 12.5px; color: #7a6030; line-height: 1.7; font-weight: 500; }
+  .bp-why-text strong { color: #5a4220; }
+
+  /* 🤖 练 + 📖 学 并排 */
+  .bp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .bp-practice { background: #eef4f8; border: 1px solid #c5d8e3; }
+  .bp-practice .bp-title { color: #264653; }
+  .bp-practice .bp-icon { color: #264653; }
+  .bp-practice-scene { background: #fff; border: 1px dashed #a8c0d0; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--body); margin-bottom: 10px; line-height: 1.6; font-style: italic; }
+  .bp-learn { background: var(--primary-bg); border: 1px solid #c5d8ca; }
+  .bp-learn .bp-title { color: var(--primary); }
+  .bp-learn .bp-icon { color: var(--primary); }
+  .bp-learn-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+  .bp-learn-item { font-size: 11.5px; color: var(--body); padding: 5px 8px; background: #fff; border-radius: 6px; border-left: 2px solid var(--primary); text-decoration: none; display: block; transition: transform 0.15s; line-height: 1.4; }
+  .bp-learn-item:hover { transform: translateX(2px); color: var(--primary); }
+
+  .bp-cta { display: block; text-align: center; background: #264653; color: #fff; text-decoration: none; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 700; transition: background 0.15s; }
+  .bp-cta:hover { background: #1a343f; }
+  .bp-cta-alt { background: var(--primary); }
+  .bp-cta-alt:hover { background: var(--primary-light); }
+
+  /* 红线 + 小测 */
+  .bp-footer { background: var(--bg); border: 1px solid var(--line); padding: 10px 16px; }
+  .bp-red { font-size: 11px; color: #c44a32; background: #fef0ed; border-radius: 6px; padding: 6px 10px; margin-bottom: 8px; line-height: 1.6; }
+  .bp-red::before { content: "🚫 红线："; font-weight: 700; }
+  .vtag { display: inline-block; background: #264653; color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 4px; letter-spacing: 0.3px; vertical-align: middle; }
+  .vtag + * { margin-left: 3px; }
+  .values-bar { background: linear-gradient(90deg, #1a3d24 0%, #264653 100%); color: #fff; border-radius: 12px; padding: 10px 16px; margin-bottom: 16px; font-size: 12px; line-height: 1.8; }
+  .values-bar strong { color: #ffd166; font-weight: 700; }
+  .values-bar .vb-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .values-bar .vb-item { display: inline-block; margin-right: 10px; }
+  .values-bar .vb-item::before { content: "▸ "; color: #ffd166; }
+  .bp-confusion { background: #fff8e1; border: 1px solid #ffe082; }
+  .bp-confusion .bp-title { color: #b8860b; }
+  .bp-confusion .bp-icon { color: #d4a017; }
+  .bp-confusion-text { font-size: 12.5px; color: #8a6d1c; line-height: 1.7; font-weight: 500; font-style: italic; }
+  .bp-refs { font-size: 11px; color: var(--body); margin-bottom: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+  .bp-refs-label { color: #888; margin-right: 2px; }
+  .bp-ref-chip { font-family: monospace; font-size: 10.5px; color: var(--primary); background: var(--primary-bg); border: 1px solid var(--primary); border-radius: 4px; padding: 1px 6px; }
+  .bp-check { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--body); }
+  .bp-check-icon { font-size: 14px; }
+  .bp-check-text { flex: 1; }
+  .bp-check-link { color: var(--primary); font-weight: 700; text-decoration: none; }
+  .bp-check-link:hover { text-decoration: underline; }
+
+  /* ===== 响应式：平板 ===== */
+  @media (max-width: 900px) {
+    .ability-grid { grid-template-columns: repeat(2, 1fr); }
+    .ability-card-full { grid-column: span 2; }
+    .tools-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ===== 响应式：手机 ===== */
+  @media (max-width: 768px) {
+    /* 顶栏：logo 一行，导航单独一行横向滑动 */
+    .top-nav {
+      padding: 10px 14px;
+      flex-wrap: wrap;
+      gap: 8px;
+      row-gap: 10px;
+    }
+    .logo-area { flex: 1 1 auto; gap: 8px; min-width: 0; }
+    .logo-icon { width: 30px; height: 30px; font-size: 13px; border-radius: 7px; flex: 0 0 auto; }
+    .logo-text { font-size: 15px; }
+    .nav-links {
+      order: 3;
+      flex: 1 1 100%;
+      gap: 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a { flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
+    .nav-actions { flex: 0 0 auto; gap: 8px; }
+    .nav-actions .city-selector { font-size: 12px; }
+
+    /* 领域 Tab：横向滑动，避免挤压换行 */
+    .domain-tabs {
+      padding: 0 14px;
+      gap: 18px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .domain-tabs::-webkit-scrollbar { display: none; }
+    .domain-tab { flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
+
+    .position-bar { padding: 12px 14px; }
+
+    /* 🆕 岗位 Banner + Timeline 响应式 */
+    .role-banner { padding: 16px 14px; flex-wrap: wrap; gap: 12px; }
+    .role-banner .rb-icon { width: 48px; height: 48px; font-size: 28px; border-radius: 12px; }
+    .role-banner .rb-name { font-size: 17px; }
+    .role-banner .rb-desc { font-size: 11px; max-width: none; }
+    .role-banner .rb-switch { flex: 0 0 100%; }
+    .journey-timeline { padding: 0 14px; }
+    .jt-step { min-width: auto; padding: 8px 10px; }
+    .jt-step .jt-step-icon { width: 28px; height: 28px; font-size: 16px; }
+    .jt-step .jt-step-name { font-size: 12px; }
+    .jt-step .jt-step-desc { display: none; }
+    .jt-arrow { font-size: 14px; padding: 0 2px; }
+
+    /* 主内容 */
+    .main { padding: 18px 14px; }
+
+    /* 价值引导 + 成长条 */
+    .value-intro { padding: 16px 14px; border-radius: 12px; }
+    .vi-title { font-size: 15px; line-height: 1.5; }
+    .vi-sub { font-size: 12px; }
+    .vi-actions { align-items: stretch; }
+    .vi-btn { flex: 1 1 100%; justify-content: center; }
+    .vi-or { text-align: center; }
+
+    .growth-bar { flex-direction: column; padding: 16px 14px; gap: 12px; }
+    .gb-user { flex-wrap: wrap; }
+    .gb-right { min-width: 0; } /* 原 200px 会把主内容挤扁 */
+    #welcome-back-bar { padding: 14px !important; }
+    #welcome-back-bar > div:first-child { flex-wrap: wrap; gap: 6px; }
+
+    /* 搜索区 */
+    .search-section { padding: 18px 14px; border-radius: 12px; }
+    .search-title { font-size: 16px; }
+    .search-subtitle { font-size: 12px; }
+    .search-box { gap: 8px; }
+    .search-input { min-width: 0; padding: 11px 12px; font-size: 13px; }
+    .search-btn { flex: 0 0 auto; padding: 11px 16px; font-size: 13px; }
+    .hot-questions span { font-size: 11px; padding: 4px 9px; }
+
+    .filter-zone { padding: 14px; border-radius: 12px; }
+    .filter-zone-row { gap: 8px; }
+    .filter-zone-title { flex: 0 0 100%; font-size: 12px; }
+    .consumer-filter { gap: 6px; }
+    .consumer-filter .cf-chip { font-size: 12px; padding: 6px 12px; }
+    .stage-tabs {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .stage-tabs::-webkit-scrollbar { display: none; }
+    .stage-tabs .st-tab { flex: 0 0 auto; padding: 8px 12px; font-size: 12px; }
+
+    /* 场景卡片 */
+    .scenario-head { padding: 12px 14px; }
+    .scenario-body { padding: 12px 14px 14px; }
+    .secondary-row { flex-direction: column; }
+    .secondary-col:first-child { border-right: none; border-bottom: 1px solid var(--line); }
+    .hook-soft { flex-wrap: wrap; }
+    .hook-soft-cta { flex: 1 1 100%; text-align: center; }
+    .speech-variant-copy { position: static; display: block; width: fit-content; margin: 8px 0 0 auto; }
+    .speech-variant.collapsed .speech-variant-copy { display: none; }
+
+    /* 测学练考评 */
+    .layered-header { padding: 12px 14px; }
+    .layered-title { font-size: 14px; }
+    .layered-body { padding: 12px 14px; }
+    .bp-card { padding: 10px 12px; }
+    .bp-row { grid-template-columns: 1fr; }
+
+    /* 能力画像 / 工具 / 进阶 */
+    .ability-section { padding: 16px 14px; }
+    .ability-grid { gap: 8px; }
+    .tools-grid { gap: 8px; }
+    .tool-card { padding: 12px 8px; }
+    .advance-grid { grid-template-columns: 1fr; }
+    .advance-card { padding: 14px; }
+    .advance-card-footer { flex-wrap: wrap; gap: 6px; }
+    .advance-intro { padding: 14px; }
+
+    .kb-stage-panel { padding: 14px; }
+    .kb-relations { padding: 10px 12px; }
+    .footer-note { padding: 24px 14px; }
+
+    img, video, canvas { max-width: 100%; height: auto; }
+  }
+
+  /* ===== 响应式：窄屏 ===== */
+  @media (max-width: 380px) {
+    .logo-text { font-size: 14px; }
+    .nav-links a { font-size: 11px; }
+    .vi-title { font-size: 14px; }
+    .gb-name { font-size: 14px; }
+    .consumer-filter .cf-chip { font-size: 11px; padding: 5px 10px; }
+    .tools-grid { gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 顶栏 -->
+  <div class="top-nav">
+    <div class="logo-area">
+      <div class="logo-icon">风</div>
+      <span class="logo-text">风声聚匠星云</span>
+    </div>
+    <div class="nav-links">
+      <a href="/">首页</a>
+      <a href="/workspace/" class="active">工作台</a>
+      <a href="/knowledge/">知识底座</a>
+      <a href="/curation/">策展引擎</a>
+      <a href="/decoder/">话术解码</a>
+      <a href="/care-test/">能力测评</a>
+      <a href="/academy/">学习成长</a>
+    </div>
+    <div class="nav-actions">
+      <span class="city-selector" onclick="alert('选择服务城市：匹配当地政策/税费/贷款/商圈数据')">📍 北京 ▾</span>
+      <div class="avatar">👤</div>
+    </div>
+  </div>
+
+  <!-- 领域Tab -->
+  <div class="domain-tabs" id="domain-tabs">
+    <div class="domain-tab active" data-domain="TRANSACTION" data-phase="NOW">🏠 交易服务</div>
+    <div class="domain-tab" data-domain="ASSET" data-phase="P2">🔑 资产运营 <span class="domain-tag">即将</span></div>
+    <div class="domain-tab" data-domain="DECOR" data-phase="P2">🛠 家装服务 <span class="domain-tag">即将</span></div>
+    <div class="domain-tab" data-domain="AFTER" data-phase="P2">🔧 后市场服务 <span class="domain-tag">即将</span></div>
+    <div class="domain-tab" data-domain="SPECIAL" data-phase="P3">🌿 特殊居住 <span class="domain-tag">即将</span></div>
+  </div>
+
+  <!-- 岗位选择器（选了板块后出现） -->
+  <div class="position-bar" id="position-bar">
+    <span class="position-bar-label">选择岗位：</span>
+    <div id="position-pills"></div>
+  </div>
+
+  <!-- 🆕 岗位身份 Banner — 一眼看清你是谁 -->
+  <div class="role-banner" id="role-banner">
+    <div class="rb-icon" id="rb-icon">🏠</div>
+    <div class="rb-info">
+      <div class="rb-label">当前岗位 / ROLE</div>
+      <div class="rb-name">
+        <span id="rb-name">买卖经纪人</span>
+        <span class="rb-domain-tag" id="rb-domain-tag">交易服务</span>
+      </div>
+      <div class="rb-desc" id="rb-desc">撮合买卖双方完成房产交易——从客户到访、带看、议价到签约过户的全流程服务者。</div>
+    </div>
+    <div class="rb-switch">
+      <div class="rb-switch-title">切换其他岗位</div>
+      <div id="rb-switch-pills"></div>
+    </div>
+  </div>
+
+  <!-- 🆕 客户服务阶段 Timeline — 页面主骨架 -->
+  <div class="journey-timeline" id="journey-timeline">
+    <div class="jt-label">💫 客户服务全流程 — 走到哪一步了？</div>
+    <span class="jt-toggle-advanced" id="jt-toggle-advanced" onclick="toggleAdvancedZone()">🔽 展开高级区</span>
+    <div class="jt-stages" id="jt-stages"></div>
+  </div>
+
+  <!-- 主内容 -->
+  <div class="main">
+
+    <!-- ===== 🆕 价值引导区（经纪人打开 5 秒看懂） ===== -->
+    <div class="value-intro" id="value-intro">
+      <h2 class="vi-title">这个站就干一件事：<span class="vi-highlight">你陪客户到哪一步了？点一下，我告诉你下一步该干啥</span></h2>
+      <p class="vi-sub">不用背话术，不用瞎摸索。选阶段 → 看 3 个引导问题 → AI 模拟客户练一把 → 5 分钟小测</p>
+      <div class="vi-actions">
+        <a class="vi-btn vi-btn-primary" href="/care-test/">🎯 5 分钟出你的「丢单预警」</a>
+        <span class="vi-or">或</span>
+        <span class="vi-btn vi-btn-ghost" onclick="document.querySelector('#stage-tabs .st-tab[data-stage=\\\"negotiate\\\"]')?.click(); document.getElementById('layered-section')?.scrollIntoView({behavior:'smooth', block:'start'});">💬 直接点"谈判逼单"试试</span>
+      </div>
+    </div>
+
+    <!-- 🆕 v3.4：成长进度总览条（页面最顶部，用户第一眼看到） -->
+    <div class="growth-bar" id="growth-bar">
+      <div class="gb-left">
+        <div class="gb-user">
+          <span class="gb-avatar">👤</span>
+          <span class="gb-name">师傅</span>
+          <span class="gb-domain" id="gb-domain-tag">买卖经纪人</span>
+          <span class="gb-level-badge" id="gb-level-badge">🥉 见习</span>
+        </div>
+        <div class="gb-progress-row">
+          <div class="gb-progress-bar">
+            <div class="gb-progress-fill" id="gb-progress-fill" style="width:0%"></div>
+          </div>
+          <div class="gb-progress-pct" id="gb-progress-pct">0%</div>
+        </div>
+        <div class="gb-path" id="gb-path">
+          <span class="gb-path-step gb-path-done">✅ 测评</span>
+          <span class="gb-path-arrow">→</span>
+          <span class="gb-path-step">🎭 练场景</span>
+          <span class="gb-path-arrow">→</span>
+          <span class="gb-path-step">📚 学课程</span>
+          <span class="gb-path-arrow">→</span>
+          <span class="gb-path-step">🎯 通过考核</span>
+        </div>
+      </div>
+      <div class="gb-right">
+        <div class="gb-next-label">⚡ 下一步推荐</div>
+        <div class="gb-next-item" id="gb-next-item">开始能力测评 →</div>
+        <div class="gb-next-sub" id="gb-next-sub">测完知道自己哪块弱</div>
+      </div>
+    </div>
+
+    <!-- v3.0：二次访问问候条（有测评记录才显示） -->
+    <div id="welcome-back-bar" style="display:none;margin-bottom:18px;padding:16px 20px;background:linear-gradient(135deg,#e8f0e9,#faf5ea);border:1px solid rgba(201,169,98,0.3);border-radius:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="font-size:14px;font-weight:700;color:#1a3d24;" id="wb-title">👋 欢迎回来，师傅</div>
+        <a href="/care-test/" style="font-size:11px;color:#1a3d24;text-decoration:none;font-weight:500;">去做完整 35 题 →</a>
+      </div>
+      <div id="wb-summary" style="font-size:12px;color:#555;line-height:1.6;"></div>
+    </div>
+
+    <!-- 🆕 循证知识库 Evidence 区（M1 12.31 上线）— 折叠低调版 -->
+    <div class="evidence-section" id="evidence-section">
+      <div class="evidence-header" id="evidence-header" onclick="document.getElementById('evidence-content').classList.toggle('open'); document.getElementById('evidence-toggle').classList.toggle('open');">
+        <span class="evidence-toggle-icon" id="evidence-toggle">▶</span>
+        <span class="evidence-header-label">🔗 循证依据</span>
+        <span class="evidence-header-badge" id="evidence-count-badge">加载中...</span>
+        <span class="evidence-header-sub" id="evidence-role-subtitle">· 点击展开</span>
+      </div>
+      <div class="evidence-content" id="evidence-content">
+        <div class="evidence-cards" id="evidence-cards">
+          <!-- EvidenceLink 动态渲染 -->
+        </div>
+        <div class="evidence-footer">
+          <a href="/knowledge/" class="evidence-footer-link">📚 进入知识底座 →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. 问题入口（最核心） -->
+    <div class="search-section">
+      <div class="search-title">遇到客户服务的难题了？</div>
+      <div class="search-subtitle">直接问，1分钟给你专业答案——税费、政策、贷款、沟通话术</div>
+      <div class="search-box">
+        <input type="text" class="search-input" placeholder="比如：首套房契税怎么算？客户嫌贵怎么回？">
+        <button class="search-btn">搜一下</button>
+      </div>
+      <div class="hot-questions">
+        🔥 热门问题：
+        <span>首套房契税税率</span>
+        <span>公积金贷款额度</span>
+        <span>客户砍价怎么应对</span>
+        <span>带看后怎么跟进</span>
+        <span>二手房税费明细</span>
+        <span>限购政策查询</span>
+      </div>
+
+      <!-- ===== 筛选区：包成独立卡片 ===== -->
+      <div class="filter-zone">
+        <!-- Row 1: 服务对象 -->
+        <div class="filter-zone-row">
+          <span class="filter-zone-title">👤 服务对象</span>
+          <div class="consumer-filter" id="consumer-filter">
+            <span class="cf-chip active" data-consumer="all">全部</span>
+            <span class="cf-chip" data-consumer="buyer">👤 购房</span>
+            <span class="cf-chip" data-consumer="seller">🏠 售房</span>
+            <span class="cf-chip" data-consumer="renter">🧑 租房</span>
+            <span class="cf-chip" data-consumer="landlord">🔑 出租</span>
+          </div>
+        </div>
+
+        <!-- Row 2 原阶段 Tab 已提升为页面骨架 Timeline（#journey-timeline） -->
+      </div>
+
+      <!-- 隐藏保留给旧 JS renderStageTabs() 兼容（不再可见） -->
+      <div id="stage-tabs" style="display:none"></div>
+
+      <!-- ===== 搜索命中面板（有搜索才显示） ===== -->
+      <div class="result-panel" id="result-panel">
+        <div class="result-hint">🔍 搜索命中 <span id="result-count">0</span> 条 · 点击展开看话术</div>
+        <div id="scenario-cards"></div>
+      </div>
+    </div>  <!-- ✅ 关闭 search-section（之前漏了，导致 layered-section 嵌套进去） -->
+
+    <!-- ===== 🆕 这个阶段我该做什么（经纪人视角 · 测学练考评） ===== -->
+    <div class="layered-section" id="layered-section">
+      <div class="layered-header" onclick="document.getElementById('layered-body').classList.toggle('collapsed')">
+        <div class="layered-title">
+          <span id="layered-stage-icon">🏠</span>
+          <span id="layered-stage-name">带看议价</span>
+          <span class="layered-trust" id="layered-trust">为什么这么做</span>
+        </div>
+        <span class="layered-toggle">▼</span>
+      </div>
+      <div class="layered-body" id="layered-body">
+        <!-- 📌 赢得托付 · 服务者四条底线 -->
+        <div class="values-bar">
+          <div class="vb-title">🏆 赢得托付的四条底线 · 每一次服务都重新赢得</div>
+          <span class="vb-item"><strong>难而正确</strong>：不隐瞒、不编造——客户随时可验证</span>
+          <span class="vb-item"><strong>消费者中心</strong>：不骚扰、不施压——客户随时可退出</span>
+          <span class="vb-item"><strong>专业者赢</strong>：不造假、不降价——用专业赢下一单托付</span>
+          <span class="vb-item"><strong>并肩奋斗</strong>：不抢单、不诋毁——对比自由，选择权在客户</span>
+        </div>
+
+        <!-- 🎯 核心动作 4 步 -->
+        <div class="bp-card bp-actions">
+          <div class="bp-head"><span class="bp-icon">🎯</span><span class="bp-title">你现在按顺序做这 4 件事</span></div>
+          <ol class="bp-actions-list" id="lc-actions"></ol>
+        </div>
+
+        <!-- 🤔 我现在最纠结什么（服务者视角痛点） -->
+        <div class="bp-card bp-confusion" id="bp-confusion-card" style="display:none">
+          <div class="bp-head"><span class="bp-icon">🤔</span><span class="bp-title">我现在最纠结的是</span></div>
+          <div class="bp-confusion-text" id="lc-confusion"></div>
+        </div>
+
+        <!-- 💡 为什么这么做 -->
+        <div class="bp-card bp-why">
+          <div class="bp-head"><span class="bp-icon">💡</span><span class="bp-title">为什么这么做</span></div>
+          <div class="bp-why-text" id="lc-why"></div>
+        </div>
+
+        <!-- 🤖 练一练 + 📖 学一学（并排） -->
+        <div class="bp-row">
+          <div class="bp-card bp-practice">
+            <div class="bp-head"><span class="bp-icon">🤖</span><span class="bp-title">练一练</span><span class="bp-sub">AI 模拟客户</span></div>
+            <div class="bp-practice-scene" id="lc-practice-scene"></div>
+            <a class="bp-cta" href="/ai-advisor/" target="_blank" id="lc-practice-link">开始练习 →</a>
+          </div>
+          <div class="bp-card bp-learn">
+            <div class="bp-head"><span class="bp-icon">📖</span><span class="bp-title">学一学</span><span class="bp-sub">点进知识底座</span></div>
+            <div class="bp-learn-list" id="lc-learn"></div>
+            <a class="bp-cta bp-cta-alt" href="/knowledge/" target="_blank">进入知识底座 →</a>
+          </div>
+        </div>
+
+        <!-- 🚫 红线 + ✅ 小测提示 -->
+        <div class="bp-card bp-footer">
+          <div class="bp-red" id="lc-red"></div>
+          <div class="bp-refs" id="lc-refs" style="display:none"></div>
+          <div class="bp-check">
+            <span class="bp-check-icon">✅</span>
+            <span class="bp-check-text">这个阶段的小测 5 分钟就能完成，帮你验收学得怎么样</span>
+            <a class="bp-check-link" href="/care-test/">去测 →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <!-- ===== 阶段浏览面板（永远可见，空态 + 有搜索都展示） ===== -->
+      <div class="stage-browse-panel" id="stage-browse" style="display:none">
+        <div class="stage-browse-hint" onclick="toggleStageBrowse()" title="点击收起/展开">
+          <div class="st-hint-left">
+            <span id="browse-stage-name">💬 带看议价</span>
+            阶段 ·
+            <span id="browse-stage-count">0</span> 个场景
+            <span class="st-consumer-tag" id="browse-consumer-tag">👤 购房客户</span>
+          </div>
+          <span class="st-toggle" id="st-toggle">▼</span>
+        </div>
+        <div id="stage-scenario-cards"></div>
+      </div>
+
+      <!-- ===== 🆕 知识底座 · 本阶段精选（切 Tab 主动加载） ===== -->
+      <div class="kb-stage-panel" id="kb-stage-panel" style="display:none">
+        <div class="kb-stage-header" onclick="toggleKBStage()">
+          <div class="kb-stage-title">
+            <span>📚 知识底座 · 本阶段精选</span>
+            <span class="kb-stage-tag">匠星金 · AI 精选</span>
+          </div>
+          <div class="kb-stage-actions">
+            <a class="kb-stage-more" href="/knowledge/" target="_blank" onclick="event.stopPropagation()">进入知识底座 →</a>
+            <span class="kb-stage-toggle" id="kb-stage-toggle" title="收起/展开">▼</span>
+          </div>
+        </div>
+        <div class="kb-stage-body" id="kb-stage-body">
+          <div class="kb-stage-loading">⏳ 正在匹配本阶段核心词条...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 能力画像 -->
+    <div class="ability-section">
+      <div class="ability-header">
+        <div class="ability-title">📊 你的能力画像</div>
+        <a id="ability-go-btn" class="ability-go-btn" href="/care-test/">去做测评 →</a>
+      </div>
+      <div class="ability-subtitle">按客户服务全流程的7个维度，帮你看清哪里强、哪里弱、该补什么</div>
+      
+      <div class="ability-grid" id="ability-grid">
+        <!-- JS 根据选中的板块+岗位动态渲染 -->
+      </div>
+
+      <!-- 兜底：默认买卖经纪人（JS 加载失败时显示） -->
+      <noscript>
+      <div class="ability-grid">
+        <div class="ability-card">
+          <div class="ability-card-name">① 获客触达</div>
+          <div class="ability-card-desc">个人品牌、职业形象、渠道获客</div>
+          <div class="ability-card-count">📋 能力标准 · 按岗位适配</div>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">② 需求洞察</div>
+          <div class="ability-card-desc">客户画像、共情理解、场景判断</div>
+          <div class="ability-card-count">📋 能力标准 · 按岗位适配</div>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">③ 专业方案</div>
+          <div class="ability-card-desc">知识匹配、房源策展、税费贷款</div>
+          <div class="ability-card-count">📋 能力标准 · 按岗位适配</div>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">④ 带看谈判</div>
+          <div class="ability-card-desc">表达沟通、异议处理、价格谈判</div>
+          <div class="ability-card-count">📋 能力标准 · 按岗位适配</div>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">⑤ 交易履约</div>
+          <div class="ability-card-desc">流程把控、合同风险、全程指导</div>
+          <div class="ability-card-count">📋 能力标准 · 按岗位适配</div>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">⑥ 售后复购</div>
+          <div class="ability-card-desc">主动关怀、复购引导、转介绍</div>
+          <div class="ability-card-count">📋 能力标准 · 按岗位适配</div>
+        </div>
+        <div class="ability-card ability-card-full">
+          <div class="ability-card-name">⟡ ⑦ 数字化协同（贯穿全周期）</div>
+          <div class="ability-card-desc">AI工具使用、数据复核、反馈迭代</div>
+          <div class="ability-card-count">📋 能力标准 · 按岗位适配</div>
+        </div>
+      </div>
+
+      </div>
+      </noscript>
+
+      <!-- 测评引导（JS 动态改文案） -->
+      <div class="ability-tip" id="ability-tip">
+        <strong id="ability-tip-emoji">💡</strong> <span id="ability-tip-text">10分钟出你的能力报告——告诉你7个维度各多少分，最大的短板是什么，该先补什么。</span>
+      </div>
+    </div>
+
+    <!-- 底部工具入口 -->
+    <div class="tools-section">
+      <div class="tools-title">🧰 常用工具</div>
+      <div class="tools-grid">
+        <a href="/curation/" class="tool-card">
+          <div class="tool-icon">⚡</div>
+          <div class="tool-name">策展引擎</div>
+          <div class="tool-sub">一键生成房源方案</div>
+        </a>
+        <a href="/decoder/" class="tool-card">
+          <div class="tool-icon">💬</div>
+          <div class="tool-name">话术解码</div>
+          <div class="tool-sub">客户问题怎么答</div>
+        </a>
+        <a href="/knowledge/" class="tool-card">
+          <div class="tool-icon">📖</div>
+          <div class="tool-name">知识底座</div>
+          <div class="tool-sub">6143条专业词条</div>
+        </a>
+        <a href="/care-test/" class="tool-card">
+          <div class="tool-icon">📊</div>
+          <div class="tool-name">能力测评</div>
+          <div class="tool-sub">7维度能力报告</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- 进阶区：AI 助理培养 + 管理者入口 -->
+    <div class="advance-section">
+      <div class="advance-header">
+        <div class="advance-title">🚀 进阶能力</div>
+      </div>
+      <div class="advance-grid">
+        <!-- 卡片 1: AI 助理培养（匠星金 = AI 产出侧） -->
+        <div class="advance-card gold" data-intro="intro-ai">
+          <div class="advance-card-top">
+            <div class="advance-icon">🤖</div>
+            <div class="advance-card-name">培养你的 AI 助理</div>
+          </div>
+          <div class="advance-card-desc">
+            7 天培养营，从 0 到白银级助理。<br>
+            不是"用个 AI 助手"，是**你带出一个专属协作伙伴**。
+          </div>
+          <div class="advance-card-tags">
+            <span>5 级认证</span>
+            <span>五把尺子评估</span>
+            <span>7 天实战</span>
+          </div>
+          <div class="advance-card-footer">
+            <span>助理是副产品，培养能力才是产品</span>
+            <span class="btn-go">了解 →</span>
+          </div>
+        </div>
+
+        <!-- 卡片 2: 管理者 / 数字员工（墨绿 = 组织/真人决策侧） -->
+        <div class="advance-card" data-intro="intro-mgr">
+          <div class="advance-card-top">
+            <div class="advance-icon">👥</div>
+            <div class="advance-card-name">管理数字员工团队</div>
+          </div>
+          <div class="advance-card-desc">
+            从 L2 手动协同进化到 L5 自闭环组织。<br>
+            工单自动流转 · 组织记忆持续积累 · 零人工调度日常迭代。
+          </div>
+          <div class="advance-card-tags">
+            <span>L2→L5 路谱</span>
+            <span>工单流转</span>
+            <span>协同进化</span>
+          </div>
+          <div class="advance-card-footer">
+            <span>为管理者和骨干准备的组织级工具</span>
+            <span class="btn-go">了解 →</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 锚点介绍区：AI 助理培养 -->
+      <div class="advance-intro gold-theme" id="intro-ai">
+        <span class="close" onclick="document.getElementById('intro-ai').classList.remove('show')">×</span>
+        <h4>🤖 为什么要"培养"AI 助理，而不只是"用"？</h4>
+        <p>大模型人人可用，但**用出水平的人不到 5%**。大多数人停留在"你问我答"阶段——AI 始终是工具。少数人让 AI 变成了协作伙伴：它能记住你的偏好、替你执行流程、主动提醒你该做什么。</p>
+        <p><strong>培养营 7 天课表</strong>：D1 身份建构 → D2-3 认知对齐（主人画像 + 行业）→ D4 记忆体系 → D5 工具接入 → D6 经验沉淀 → D7 白银级验收</p>
+        <p><strong>五级认证体系</strong>：白银（有身份有铁律）→ 黄金（能协作有记忆）→ 铂金（自动进化）→ 钻石（行业定制）。五把尺子量化达标才能升级：输出量 / 任务复杂度 / 技能复用 / 运行时长 / 并发度。</p>
+        <p style="color:#8a7040;font-weight:600;margin-top:10px;">产品：培养营 ¥999（7天）→ 进阶营 ¥2,999（30天）→ 认证考核 ¥1,999 → 进化陪跑 ¥499/月</p>
+        <p style="margin-top:6px;color:var(--muted);font-size:11px;">📋 完整方案（5级认证体系 / 五把尺子评估 / 培养营课表）整理中，近期上线</p>
+      </div>
+
+      <!-- 锚点介绍区：管理者 / 数字员工 -->
+      <div class="advance-intro" id="intro-mgr">
+        <span class="close" onclick="document.getElementById('intro-mgr').classList.remove('show')">×</span>
+        <h4>👥 数字员工协同进化 · 5 级路谱</h4>
+        <p><strong>当前</strong>：L2 手动协同（小鱼儿手动派活，1 人调度 6 人，瓶颈在我）</p>
+        <p><strong>目标 L5 自闭环组织</strong>：需求进入 → 自动识别类型 → 自动分派 → 自动流转 → 自动品控 → 自动部署 → 自动验证。日常迭代零人工调度。</p>
+        <p><strong>核心机制</strong>：标准工单自动流转 / 品控审核 + 自动打回 / 组织记忆每次协同自动沉淀 / 异常自动升级通知人类介入。</p>
+        <p style="color:var(--primary);font-weight:600;margin-top:10px;">什么时候开放？正在走 L2→L3 工单标准化，预计 Q4 对团队骨干内测，2027 Q1 对外开放。</p>
+        <p style="margin-top:6px;color:var(--muted);font-size:11px;">📋 完整路谱（L2→L5 5级进化 / 工单流转 / 组织记忆）整理中，近期上线</p>
+      </div>
+    </div>
+
+  <!-- 底部 -->
+  <!-- 🆕 Evidence Schema v1.0 证据链组件（M1 12.31 上线）-->
+  <script src="/lib/evidence/data-adapter.js" defer></script>
+  <script src="/lib/evidence/evidence-link.js" defer></script>
+
+  <!-- 能力模型切换 JS -->
+  <script>
+  (function(){
+    "use strict";
+
+    var DOM_KEY = "fs_workspace_domain";
+    var POS_KEY = "fs_workspace_position";
+    var modelData = null;
+    var questionMap = null;
+    var sopData = null;        // 🆕 sales-sop.json
+    var stageLayerData = null; // 阶段三层拆解数据
+    var rawEntriesCache = null; // 🆕 Evidence entries.json 缓存（M1 12.31）
+
+    // ===== 三套岗位固定 Timeline（服务者视角，严格对齐 data/domains/岗位体系.json 的 coreScenes）=====
+    // 每个岗位一套，不再分服务对象分支——服务者在工作中是同时对接双方的
+
+    // ───── 1. 买卖经纪人 BROKER ─────
+    // 岗位卡 coreScenes: 房源开发与核验 → 客户需求解码 → 带看讲解 → 谈判斡旋 → 签约协办 → 按揭过户交房
+    // 维度权重: SOLUTION 0.20 + NEGOTIATION 0.20 并重（专业知识硬 + 谈判会）
+    var BROKER_STAGES = [
+      { key: "b1", icon: "📢", name: "房源开发核验", desc: "房源拓展、业主委托、房源核验建档", kb:"pre" },
+      { key: "b2", icon: "👁️", name: "客户需求解码", desc: "客户来源、动机、预算、学区/地段偏好", kb:"pre" },
+      { key: "b3", icon: "🏠", name: "带看讲解",   desc: "带看路线、卖点呈现、异议收集",   kb:"mid" },
+      { key: "b4", icon: "💬", name: "谈判斡旋",   desc: "双边摸底、价格协商、条件交换",   kb:"mid" },
+      { key: "b5", icon: "📝", name: "签约协办",   desc: "合同讲解、资金监管、网签面签",   kb:"mid" },
+      { key: "b6", icon: "🔑", name: "过户交房",   desc: "过户流程、按揭跟进、交接验房",   kb:"post" }
+    ];
+    var BROKER_DIMS = {
+      b1: { primary: ["ACQUISITION","INSIGHT"], secondary: ["SOLUTION","FULFILLMENT"] },
+      b2: { primary: ["INSIGHT","SOLUTION"], secondary: ["ACQUISITION","NEGOTIATION"] },
+      b3: { primary: ["SOLUTION","NEGOTIATION"], secondary: ["INSIGHT","ACQUISITION"] },
+      b4: { primary: ["NEGOTIATION","INSIGHT"], secondary: ["SOLUTION","FULFILLMENT"] },
+      b5: { primary: ["FULFILLMENT","SOLUTION"], secondary: ["NEGOTIATION","INSIGHT"] },
+      b6: { primary: ["FULFILLMENT","AFTERSALE"], secondary: ["DIGITAL","SOLUTION"] }
+    };
+    var BROKER_LAYER = {
+      b1: { actions: ["① 每天固定 2 小时扫盘：同小区近 3 天新挂牌、成交价多少、谁在挂牌——行情熟才敢接业主委托",
+                       "② 业主委托先查档：房产证真假、有没有抵押/查封、是不是本人——别替业主兜底",
+                       "③ 房源核验拍照留底：房产证页、业主身份证、户型图、现状——存系统里，以后纠纷有证据"],
+            confusion:"我带业主去看同小区成交价，他说「我家比他家好，我要卖 500 万」，怎么回应让他接受市场价？",
+            why:"业主往往觉得自己家是独一无二的——你得用同户型、同楼层、同装修的近期成交价去对比，他才服",
+            practiceScene:"业主说：小区挂牌都 480 万以上，你帮我挂 500 万，两个月必须卖出去",
+            refs: ["ABIL-BJ-001","ABIL-BJ-002"],
+            red:"🚨 别替业主承诺「两个月肯定卖」——只说「我帮你挂 498 万，2 周没带看我们一起调价」。<strong class=vtag>【难而正确】</strong>短期舒服换长期信任崩塌" },
+      b2: { actions: ["① 别直接问「预算多少」——先聊：哥/姐家里几口人？买房给谁住？工作在哪？学区在意吗？",
+                       "② 挖潜台词：他说「总价 450 万以内」实际可能能凑到 480 万；他说「近地铁就行」其实想走路不超过 5 分钟",
+                       "③ 客户画像写下来：来源渠道、购房动机、家庭结构、首付来源、贷款资格——记清楚不遗忘"],
+            confusion:"客户说「我就想买个差不多的」但又不肯说具体需求，怎么挖他的真实预算和学区偏好？",
+            why:"客户自己也说不清楚要什么是常态——你的价值在于把模糊的「差不多」变成具体的「XX 小区 3 居 450 万 地铁 5 分钟」",
+            practiceScene:"客户说：我想买个差不多的，预算也没什么特别的，你给我推荐几套就行",
+            refs: ["ABIL-BJ-003","ABIL-BJ-004"],
+            red:"🚨 别在需求没挖清楚之前就推房子——推错了浪费双方时间，客户只会觉得你不懂他。<strong class=vtag>【消费者中心】</strong>先理解，再推荐" },
+      b3: { actions: ["① 带看路线先想清楚：从小区大门到房子一路上能路过什么好设施（地铁/超市/小学）先给他指出来",
+                       "② 带看不只看房子：敲一家邻居门问问住得怎么样、看楼道干不干净、看楼下保安态度——让他感受到这个社区",
+                       "③ 带完让他自己待 5 分钟：别一直跟着叨叨，让他坐在客厅里感受一下采光和通风"],
+            confusion:"带看路上客户一直没说话，看完说「再想想吧」——我怎么判断他到底是真犹豫还是根本没看上？",
+            why:"客户说「再想想」有 70% 是觉得贵或有顾虑——你得主动问「是觉得哪方面不太满意？」而不是等着他主动说",
+            practiceScene:"客户看完说：房子还行，但我感觉有点小贵，再想想吧",
+            refs: ["ABIL-BJ-005","ABIL-BJ-004"],
+            red:"🚨 别替业主砍价——砍价是谈判阶段的事，带看只负责让客户喜欢上这套。<strong class=vtag>【难而正确】</strong>分阶段做正确的事" },
+      b4: { actions: ["① 双边分别摸底：跟买家摸最高能出多少、首付什么时候到；跟业主摸最低能接多少、急不急卖——中间差多少、谁愿意让一步",
+                       "② 给业主「买家画像」：别说「有人出价 465 万」——说「买家是刚需首套，首付 200 万已到位，看了 3 次真心想买」",
+                       "③ 让业主觉得「是他在谈」：别说「买家只肯出 465 万」——说「买家出 465 万但能再凑 5 万，您看 470 万能接受吗」"],
+            confusion:"买家出价 465 万、业主最低 475 万，中间差 10 万，谁都不肯让——我怎么撮合？中介费还能不能保住？",
+            why:"业主最烦你拿买家压他「人家就出 465 万你看着办」——你得让他觉得你在帮他争取，而不是帮买家砍他价",
+            practiceScene:"买家出价 465 万，业主说「低于 475 万不卖，急用钱 480 万净得」，两边僵住了",
+            refs: ["ABIL-BJ-005"],
+            red:"🚨 别替自己减佣「我给你打 8 折」——中介费是你的专业价值，要么给服务升级要么不打折。<strong class=vtag>【专业者赢】</strong>降价=贬值" },
+      b5: { actions: ["① 签约别在业主家或买家家——去门店，合同一条条念，重点条款标红",
+                       "② 重点条款讲清楚：成交价多少、定金多少什么时候付、首付什么时候到、尾款怎么付、谁出中介费",
+                       "③ 签约后立刻跟进：定金有没有打进来？打进来了告诉业主「XX 哥/姐，5 万定金今天到您账了」"],
+            confusion:"买家说「我得再想想能不能今天先不签」，业主那边已经等了 3 天了——怎么平衡两边的情绪？",
+            why:"签约那一刻两边都紧张——你越透明越稳，签约后主动反馈能让两边都踏实",
+            practiceScene:"签约当天买家说：首付还差 20 万得卖一套房子凑，贷款能先申请着吗？",
+            refs: ["ABIL-GEN-009"],
+            red:"🚨 别替买家给业主打包票「他肯定能凑齐首付」——万一凑不齐锅你背。<strong class=vtag>【难而正确】</strong>只陈述事实，不做担保" },
+      b6: { actions: ["① 网签前跟两边确认：贷款批了吗？批了多少？首付什么时候到？别等网签那天才说没批下来",
+                       "② 过户当天全程跟着：带齐证件，帮着填表格、跟银行面签、跟房管局对接——两边只需要签字",
+                       "③ 尾款到账第一时间通知业主：「XX 哥/姐，尾款 400 万今天到您账号了，查一下，交接完成」"],
+            confusion:"业主说过户完了但尾款迟迟没到，买家那边说银行还在走流程——我怎么催银行又不让业主觉得我在敷衍他？",
+            why:"过户是业主最操心的环节——他怕尾款拿不到、贷款出问题。你帮他盯着每一步，他下次卖还找你，还会介绍朋友",
+            practiceScene:"业主说：过户完了，尾款什么时候能到？我等着钱换房呢",
+            refs: ["ABIL-GEN-017"],
+            red:"🚨 别替买家垫资「我先帮你出 30 万」——垫了还不上你认栽，还违反中介规定。<strong class=vtag>【难而正确】</strong>不碰客户资金，只做专业服务" },
+    };
+
+    // ───── 2. 租赁顾问 LEASE ─────
+    // 岗位卡 coreScenes: 租客需求匹配 → 房源带看 → 租赁合同签订 → 押金与维修责任说明 → 续租退租协调
+    // 维度权重: INSIGHT 0.20 最高（要双边洞察），其他 5 维平均 0.15
+    var LEASE_STAGES = [
+      { key: "l1", icon: "📢", name: "双边获客",   desc: "业主端挂牌拓展 + 租客端渠道获客", kb:"pre" },
+      { key: "l2", icon: "👁️", name: "需求匹配",   desc: "租客画像 + 房东预期 + 价格带摸底", kb:"pre" },
+      { key: "l3", icon: "🏠", name: "带看协调",   desc: "匹配房源 + 带看路线 + 卖点讲解",   kb:"mid" },
+      { key: "l4", icon: "💬", name: "双边谈判",   desc: "租金押金 + 租期条件 + 维修责任",   kb:"mid" },
+      { key: "l5", icon: "📝", name: "签约交接",   desc: "合同规范 + 押金流转 + 入住清单",   kb:"mid" },
+      { key: "l6", icon: "🤝", name: "租后维护",   desc: "续租提醒 + 租金催收 + 退租协调",   kb:"post" }
+    ];
+    var LEASE_DIMS = {
+      l1: { primary: ["ACQUISITION","INSIGHT"], secondary: ["SOLUTION","FULFILLMENT"] },
+      l2: { primary: ["INSIGHT","SOLUTION"], secondary: ["ACQUISITION","NEGOTIATION"] },
+      l3: { primary: ["SOLUTION","NEGOTIATION"], secondary: ["INSIGHT","ACQUISITION"] },
+      l4: { primary: ["NEGOTIATION","INSIGHT"], secondary: ["FULFILLMENT","SOLUTION"] },
+      l5: { primary: ["FULFILLMENT","NEGOTIATION"], secondary: ["INSIGHT","AFTERSALE"] },
+      l6: { primary: ["AFTERSALE","FULFILLMENT"], secondary: ["DIGITAL","INSIGHT"] }
+    };
+    var LEASE_LAYER = {
+      l1: { actions: ["① 每天固定 1 小时电话回访老业主：XX 哥/姐，您那套房子还空着吗？近期想出租吗？",
+                       "② 房源没图等于不存在：至少 5 张不同角度 + 1 个 30 秒视频——业主自己拍的不行，你去现场拍",
+                       "③ 租客获客多渠道：主流租房平台 + 本地租房群 + 朋友圈 + 门店值守，3 个渠道同时跑"],
+            confusion:"我挂了 3 套房源到平台，每天只有 1-2 个咨询，同行挂的比我少但咨询比我多——我的房源描述哪里有问题？",
+            why:"租赁市场的获客成本远高于买卖——你得同时维护业主端（房源从哪来）和租客端（客户从哪来），两边都不能断",
+            practiceScene:"业主说：我这套 3 居室，给你 7000 底价，一个月内帮我租出去行不行？",
+            refs: ["ABIL-ZL-001"],
+            red:"🚨 别替业主承诺「一个月肯定租」——只说「我帮你挂出去，有 3 个意向先让你看」。<strong class=vtag>【难而正确】</strong>不做无法兑现的承诺" },
+      l2: { actions: ["① 租客画像别直接问「预算多少」——先聊：哥/姐是一个人住还是跟家人？打算住多久？能接受合租吗？",
+                       "② 房东预期要摸透：能接受长租还是短租？能不能养宠物？租金希望一次付多久？",
+                       "③ 价格带做功课：同小区 2 居/3 居最近成交租金多少——别瞎报，报错了两边都尴尬"],
+            confusion:"租客说「我预算 5000 以内」但又要近地铁、新装修、家具全配——这个预算根本找不到，怎么跟他说？",
+            why:"租客说的预算往往是他想花的，不是他能花的——你得帮他把需求和预算拉到同一水平线上",
+            practiceScene:"租客说：我想找个近地铁的两居室，预算 5000 以内，家具要全配",
+            refs: ["ABIL-ZL-002"],
+            red:"🚨 别在需求没匹配上就约带看——约了 5 次都没看上，两边时间都浪费。<strong class=vtag>【消费者中心】</strong>先精准匹配再行动" },
+      l3: { actions: ["① 带看前同时跟两边确认：跟业主「XX 哥/姐，周三晚 7 点带租客来看，钥匙给我」；跟租客「XX 哥/姐，周三晚 7 点我带你看房，地铁 5 分钟到」",
+                       "② 带看路线先想清楚：从地铁出来怎么走到小区？小区里哪栋楼最快？路上能路过什么好设施？",
+                       "③ 带完让租客自己待 5 分钟：别一直跟着叨叨，让他坐在客厅里感受一下能不能住得舒服"],
+            confusion:"租客看完房子说「还不错，我再看看其他的」——我怎么判断他是真要比较还是已经看上了在等我降价？",
+            why:"租客说「再看看」有 60% 是还想比价——你得主动跟进「这房子我手上只有这一套，XX 小区同户型已经租到 6800 了」",
+            practiceScene:"租客看完说：房子还行，我再看看其他的，有合适的联系你",
+            refs: ["ABIL-ZL-003","ABIL-ZL-002"],
+            red:"🚨 别在电话里报具体门牌号——等租客到附近再发定位，防同行截客。<strong class=vtag>【并肩奋斗】</strong>行业生态要维护" },
+      l4: { actions: ["① 租金谈判先给理由不给硬砍：租客说「能不能少 300」——别说「不行」，说「这套 6500 是业主底价，我帮你争取到 6300，条件是你一次签一年」",
+                       "② 押金方式分别谈：租客想押一付一 → 跟业主说押一付二行不行？业主想押一付三 → 跟租客说能不能押一付二？",
+                       "③ 维修责任说清楚：正常老化物业/业主出，人为损坏租客出——合同里列清楚"],
+            confusion:"业主说「租金 6500 一分不能少，押一付三」，租客说「我能接受 6500 但只能押一付一」——怎么找中间方案？",
+            why:"租赁谈判的核心不是租金，是条件组合——你可以用「签一年换押一付二」「租金让 200 换提前退租 30 天通知」等条件交换",
+            practiceScene:"租客说：租金 6500 我能接受，但能不能押一付一？押二付二我真拿不出来",
+            refs: ["ABIL-ZL-003"],
+            red:"🚨 别替租客答应后消失——有消息必须 24 小时内回复。<strong class=vtag>【消费者中心】</strong>服务不到位=失去信任" },
+      l5: { actions: ["① 合同一条一条念：重点讲租期、退租条件、维修责任、押金退还规则——标红一条一条讲",
+                       "② 押金让租客直接转给业主——别进你账户，你只是居间人，转账截图你要存档",
+                       "③ 入住交接清单打勾：家具家电、水电燃表读数、钥匙数量、门禁卡——全拍照留底，双方签字"],
+            confusion:"业主说「押金就先放你那，等退租了你再还给租客」——我能替他管押金吗？出了问题算谁的？",
+            why:"押金必须直接转给业主——你代收等于你担保，万一业主不退租客找你，你背锅",
+            practiceScene:"业主说：合同你帮我弄吧，押金就先放你那",
+            refs: ["ABIL-ZL-004"],
+            red:"🚨 别替业主收押金进自己账户——说不清还违规。<strong class=vtag>【专业者赢】</strong>不碰客户资金边界" },
+      l6: { actions: ["① 租金到期前 3 天提醒租客：「XX 哥/姐，这个月租金该交啦，转给业主 6500 元就行，记得备注月份」",
+                       "② 租金收到后帮业主确认：「XX 哥/姐，XX 租客的 6500 元租金今天到账了，您查一下」",
+                       "③ 退租前 7 天提醒双方，验房一项项核对，有损坏当场说清楚扣不扣押金"],
+            confusion:"租金逾期 10 天了，租客也不接电话，业主说「你帮我催一下」——我怎么催又不让业主觉得我在敷衍？",
+            why:"租后维护是你跟业主/租客建立长期信任的关键——帮业主收租金、帮租客修东西，下次续租/空出来两边都找你",
+            practiceScene:"业主说：租金逾期 10 天了，租客也不接我电话，怎么办？",
+            refs: ["ABIL-ZL-004","ABIL-GEN-019"],
+            red:"🚨 别替业主垫租金——垫了万一租客跑路你认栽。<strong class=vtag>【难而正确】</strong>不碰资金" }
+    };
+
+    // ───── 3. 新房置业顾问 NEW_HOME ─────
+    // 岗位卡 coreScenes: 案场接待 → 沙盘样板间讲解 → 竞品对比分析 → 认购签约协办 → 按揭跟进
+    // 维度权重: SOLUTION 0.25 最核心（楼盘知识硬）+ ACQUISITION 0.20（获客强），INSIGHT 只有 0.10（开发商销售不需要深度挖）
+    // 服务对象：只有购房客户（开发商销售，无第二方！）
+    var NEW_HOME_STAGES = [
+      { key: "n1", icon: "📣", name: "渠道获客",   desc: "拓客渠道、圈层营销、带看邀约",   kb:"pre" },
+      { key: "n2", icon: "🧭", name: "案场破冰",   desc: "寒暄接待、需求初判、快速分类",   kb:"pre" },
+      { key: "n3", icon: "🗺️", name: "沙盘讲解",   desc: "区域价值、楼盘定位、价格体系",   kb:"pre" },
+      { key: "n4", icon: "🏠", name: "样板带看",   desc: "户型体验、装修标准、对比竞品",   kb:"pre" },
+      { key: "n5", icon: "🔢", name: "认购锁定",   desc: "认筹政策、排号选房、房源锁定",   kb:"mid" },
+      { key: "n6", icon: "✍️", name: "签约履约",   desc: "认购合同、首付贷款、交房维护",   kb:"mid" }
+    ];
+    var NEW_HOME_DIMS = {
+      n1: { primary: ["ACQUISITION","SOLUTION"], secondary: ["INSIGHT","AFTERSALE"] },
+      n2: { primary: ["ACQUISITION","INSIGHT"], secondary: ["SOLUTION","NEGOTIATION"] },
+      n3: { primary: ["SOLUTION","NEGOTIATION"], secondary: ["ACQUISITION","INSIGHT"] },
+      n4: { primary: ["SOLUTION","NEGOTIATION"], secondary: ["ACQUISITION","INSIGHT"] },
+      n5: { primary: ["NEGOTIATION","FULFILLMENT"], secondary: ["SOLUTION","ACQUISITION"] },
+      n6: { primary: ["FULFILLMENT","AFTERSALE"], secondary: ["SOLUTION","DIGITAL"] }
+    };
+    var NEW_HOME_LAYER = {
+      n1: { actions: ["① 每天固定 2 小时做渠道：小红书发楼盘笔记、本地购房群分享样板间视频、老客户介绍送家电",
+                       "② 圈层营销要精准：附近写字楼、事业单位、学校门口——这些是真买房的人",
+                       "③ 带看邀约要具体：别说「有空来看」——说「这周六上午 10 点我带您看样板间，我在售楼处门口等您，记得带身份证」"],
+            confusion:"我每天发 5 条朋友圈、跑 3 个渠道，但带看量还是上不去——到底是渠道不对还是话术不对？",
+            why:"新房置业顾问的生存根本是获客——开发商给你的带客量是有限的，你自己能拉多少客，决定了你能拿多少佣金",
+            practiceScene:"渠道经理说：这个月你带看量不够，再完不成要扣底薪",
+            refs: ["ABIL-XF-001","ABIL-XF-004"],
+            red:"🚨 别在朋友圈发虚假「最后 3 套」——有房客户回来算账。<strong class=vtag>【真实坦荡】</strong>自媒体内容要真实" },
+      n2: { actions: ["① 客户进门先别推销，先聊：哥/姐贵姓？是第一次来看吗？家里几口人？是首套还是换房？",
+                       "② 快速分类：10 句话之内判断他是刚需首套、改善换房还是投资保值——不同类型讲法完全不一样",
+                       "③ 把需求记下来：预算、要几房、在意学区还是地铁、什么时候入住——写下来不遗忘"],
+            confusion:"客户进门说「我就随便看看」「我朋友让我来看看」——怎么破冰让他愿意多说点？",
+            why:"客户走进售楼处是带着戒心的——你越像朋友聊天，他越敢把真实需求告诉你。「随便看看」有 60% 是真买房，只是防备心强",
+            practiceScene:"客户进门说：我就随便看看，不用给我介绍",
+            refs: ["ABIL-XF-002"],
+            red:"🚨 别催客户「赶紧定」——会让他觉得被施压反而走。<strong class=vtag>【消费者中心】</strong>让客户自己决策" },
+      n3: { actions: ["① 沙盘讲解先讲大环境：先讲区域配套（地铁/医院/商圈/学校），再讲楼盘本身——大环境决定升值空间",
+                       "② 价格体系讲人话：别说「均价 5 万 2」——说「89 平 2 居大概 450 万，118 平 3 居大概 610 万，每层差价 20 万」",
+                       "③ 主动说一个缺点：比如「这边离主干道近，低楼层可能有点噪音」——说了缺点反而显你专业，不会让他觉得销售在吹牛"],
+            confusion:"客户问「隔壁楼盘比你们便宜 3000 一平，为什么？」——我怎么说才能既诚实又不让他跑隔壁去？",
+            why:"客户对比竞品是必然的——你主动帮他分析差异（我们容积率更低/学区更好/得房率更高），比他自己在网上查靠谱得多",
+            practiceScene:"客户问：这个小区为什么比隔壁贵 3000 一平？",
+            refs: ["ABIL-XF-003","ABIL-XF-002"],
+            red:"🚨 别瞎承诺「地铁明年一定通」——只说「规划里有，以政府公告为准」。<strong class=vtag>【难而正确】</strong>不确定的事别打包票" },
+      n4: { actions: ["① 样板间是让他体验不是让他逛：进客厅先让他坐 5 分钟感受采光，进厨房让他打开抽屉试试",
+                       "② 装修标准讲清楚：哪些是送的（瓷砖/橱柜/洁具品牌型号）、哪些要自己装——别模糊说「精装」",
+                       "③ 带完样板间别让他马上走：找个沙发坐下来，给他倒杯水，聊一聊他刚才看了最满意哪一点"],
+            confusion:"客户看完样板间眼睛发亮，但又说「回去跟家人商量一下」——我怎么判断他是真心想商量还是在等我降价？",
+            why:"新房是大宗消费，客户犹豫很正常——你要帮他降低决策压力，而不是催他「今天不定明天就没了」",
+            practiceScene:"客户看完样板间说：这个户型确实不错，但我得回去跟老婆商量一下",
+            refs: ["ABIL-XF-003"],
+            red:"🚨 别替开发商承诺「送面积」「送车位」——以合同附件为准。<strong class=vtag>【难而正确】</strong>只讲合同写的" },
+      n5: { actions: ["① 认筹政策别绕弯子：认筹多少钱？排号怎么排？选房按什么顺序？能不能退？全说清楚",
+                       "② 锁房的好处和风险都讲：好处是你排在前面能挑好楼层好户型；风险是如果开盘价比你预期高你要不要认？",
+                       "③ 排号后每周更一次进度：「下周能拿到预售证了」「选房日大概定在 X 号」——别让客户瞎等"],
+            confusion:"客户认筹了之后说「我还想再等等，开盘价说不定会降」——怎么处理这个心态？开发商催我赶紧清筹",
+            why:"认筹排号是客户第一次掏钱——他掏之前必须想清楚，掏之后必须踏实。你让他踏实了，他会给你介绍朋友",
+            practiceScene:"客户问：认筹交 5 万选不上房能退吗？开盘价比我预期高我能不买吗？",
+            refs: ["ABIL-XF-004"],
+            red:"🚨 别替开发商说「肯定能退」——只说「以认筹协议为准」。<strong class=vtag>【专业者赢】</strong>协议是最终依据" },
+      n6: { actions: ["① 认购合同带他逐条看：重点是房款、付款时间、交付日期、违约责任——标红一条一条讲",
+                       "② 贷款预算算到分：首付多少？月供多少？贷 30 年和 25 年差多少？商贷和公积金差多少？给他一张表签字",
+                       "③ 签约后别失联：银行贷款进度、网签状态、合同盖章情况每周说一声"],
+            confusion:"客户首付 200 万要卖一套房子凑，他说「我先申请着，等卖了再付首付」——但开发商催我尽快收齐首付，我怎么协调？",
+            why:"开发商和客户之间的压力最终落到你身上——你得两头协调，既不拖欠开发商的首付进度，又不让客户觉得你在逼他",
+            practiceScene:"客户说：首付 200 万我得卖一套房子凑，贷款能先申请着吗？",
+            refs: ["ABIL-XF-004"],
+            red:"🚨 别替客户做贷款决策——只给利率对比，让他自己选。<strong class=vtag>【消费者中心】</strong>信息给全，决策给客户" }
+    };
+
+    // ===== 岗位 → Timeline 映射表（一套岗位一套 Timeline）=====
+    var POSITION_TIMELINE = {
+      BROKER:   { stages: BROKER_STAGES,   dims: BROKER_DIMS,   layer: BROKER_LAYER   },
+      LEASE:    { stages: LEASE_STAGES,    dims: LEASE_DIMS,    layer: LEASE_LAYER    },
+      NEW_HOME: { stages: NEW_HOME_STAGES, dims: NEW_HOME_DIMS, layer: NEW_HOME_LAYER }
+    };
+
+
+    var STAGE_TO_DIMS = JSON.parse(JSON.stringify(BROKER_DIMS));  // 默认 BROKER，后续 switchPositionTimeline 会覆盖
+    var STAGES = BROKER_STAGES.slice();  // ⚠️ 必须声明！switchPositionTimeline 会重新赋值
+    var POSITION_STAGES = { BROKER: true, LEASE: true, NEW_HOME: true };  // 三个岗位都走专属 Timeline
+
+    // ===== 去重：场景卡底部已展示的 KB entry ids =====
+    var _kbCardEntryIds = new Set();
+
+    // ===== 消费者名称映射 =====
+    var CONSUMER_NAMES = {
+      all:     { label: "全部",     icon: "👤" },
+      buyer:   { label: "购房客户", icon: "👤" },
+      seller:  { label: "售房业主", icon: "🏠" },
+      renter:  { label: "租房客户", icon: "🧑" },
+      landlord:{ label: "出租业主", icon: "🔑" }
+    };
+
+    // ===== 当前筛选状态 =====
+    var currentConsumer = "all";
+    var currentStage = "b1";  // 默认 BROKER 第一阶段，switchPositionTimeline 会覆盖
+
+    // 1. 加载维度模型
+    fetch("/data/v3/dimensions_multi.json")
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(data){
+        if(!data) return;
+        modelData = data;
+        init();
+      })
+      .catch(function(){});
+
+    // 2. 加载问题拆解引擎
+    fetch("/data/v3/question_map.json")
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(data){
+        if(!data) return;
+        questionMap = data;
+        // 给老数据补默认字段
+        questionMap.mapping.forEach(function(m){
+          if(!m.consumer) m.consumer = "buyer";
+          if(!m.stage) m.stage = "negotiate";
+        });
+        bindStageControls();   // 阶段 Tab + 类型筛选
+        bindSearch();          // 搜索
+        selectStage(currentStage);  // 触发初始渲染
+        bindAdvanceCards();        // 进阶区卡片交互
+      })
+      .catch(function(){});
+
+    // 3. 加载 sales-sop.json + 初始化阶段三层数据
+    fetch("/data/v3/sales-sop.json")
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(data){
+        sopData = data;
+        initStageLayerData();
+      })
+      .catch(function(){});
+
+    // 4. 🆕 Evidence：加载 entries.json + 预计算适配数据（M1 12.31）
+    fetch("/data/v3/entries.json")
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(entries){
+        if(!entries || !window.EvidenceAdapter) return;
+        rawEntriesCache = window.EvidenceAdapter.filterAndAdaptAll(entries, { drop_hard: false });
+        renderWorkspaceEvidence(); // 首屏渲染 Broker 默认证据
+      })
+      .catch(function(){});
+
+    // ===== 🆕 阶段三层拆解数据真数据 =====
+    // 每个阶段的素养层 + 服务层（AI vs 真人）+ 红线 + checklist
+    // 服务层的 AI 能做 / 真人必须做 / 红线来自 sales-sop.trust_actions 的 AI/HL/MF
+    // 素养层 + checklist 是从 v2.1 设计原型 + 样本里抽象出来的
+    // 原始买卖经纪人三层数据备份（供岗位切换后恢复）
+    var BASE_STAGE_LAYER_DATA = null;
+
+                function initStageLayerData(){
+      var data = {
+        prepare: {
+          actions: [
+            "① 先问清楚：他买房是为啥？结婚？孩子上学？换大的？还是纯投资？",
+            "② 把钱算透：首付掏多少？每月还多少？首套二套差几万？税+中介费一共要花多少？",
+            "③ 资格和坑先摸清：社保够不够？限不限购？学区对口哪个学校？现在利率多少？"
+          ],
+          why:"客户现在最慌的是「我能不能买得起」——你先把数字摆出来，比带看 10 套房都管用",
+          practiceScene:"客户问：公积金能贷多少？首套和二套差多少？",
+          red:"🚨 别替客户做「首套二套」决策——只给数字让他选。<strong class=vtag>【消费者中心】</strong>给信息不替选"
+        },
+        market: {
+          actions: [
+            "① 先搞清楚他最在意啥：要学区？还是总价不能超？还是一定要地铁口？",
+            "② 拉真实成交价对比：挂牌价是蒙人的，看真实成交！周边 3 个小区对比一下",
+            "③ 主动说缺点：别只吹好的，每个小区说一个真缺点——有噪音？车位少？学区可能变？"
+          ],
+          why:"客户觉得你靠谱，不是因为你懂，是因为你说的话「有根有据」——别拿挂牌价瞎忽悠",
+          practiceScene:"客户问：要对比周边小区怎么办？这个学区到底怎么样？",
+          red:"🚨 别跟客户说「这个学区最好」——只给数据和来源。<strong class=vtag>【难而正确】</strong>用数据说话，不主观评价"
+        },
+        invite: {
+          actions: [
+            "① 先接住他的抗拒：他说忙，你别逼问什么时候有空，先说「哥您忙我理解」",
+            "② 给选项别给问题：别说「你啥时候有空」，直接问「周二晚7点？还是周六上午10点？」",
+            "③ 先发点东西过去：户型图/小区实拍视频/报价表，让他在家先看看"
+          ],
+          why:"客户不愿出来不是讨厌你，是还没信你——接住他的抗拒比硬逼他管用",
+          practiceScene:"客户说：最近太忙了，等有空再说吧",
+          red:"🚨 别让 AI 自己约带看时间——必须真人发消息。<strong class=vtag>【专业者赢】</strong>AI 辅助不替代服务"
+        },
+        negotiate: {
+          actions: [
+            "① 先接情绪再谈钱：他说太贵了，你第一句别提价格，先说「哥我理解，这个得慎重」",
+            "② 给差额给意义：别说「贵20万」，说「贵20万=每月多还X块，但这个学区明年对口Y中学」",
+            "③ 给选项不是逼他走：A 今天定我帮你争取减5万 / B 旁边那套便宜15万但楼层差——让他选不是让他滚"
+          ],
+          why:"客户犹豫 = 情绪没接住。先接情绪再给数据，最后那一锤必须真人上",
+          practiceScene:"客户说：太贵了，回去商量一下。",
+          red:"🚨 情绪安抚必须真人来——AI 算数据但不替你共情。<strong class=vtag>【消费者中心】</strong>专业有温度"
+        },
+        transaction: {
+          actions: [
+            "① 合同一条一条念：别让他直接签，说「这条是付款时间，这条是违约责任我帮你标红了」",
+            "② 资金监管说清楚：钱打给银行监管账户，过户完银行自动打给业主——打消他怕被骗的顾虑",
+            "③ 税费算到分 + 时间排死：一张表签字，网签/面签/过户/放款每个节点谁干啥都写清楚"
+          ],
+          why:"客户签约那一刻最紧张——你越透明他越敢签。模糊的钱和模糊的时间都是恐惧源",
+          practiceScene:"客户问：资金监管安全吗？我应该先签还是先交钱？",
+          red:"🚨 别替客户签合同——合同必须真人口头过一遍。<strong class=vtag>【难而正确】</strong>重要环节亲力亲为"
+        },
+        closing: {
+          actions: [
+            "① 交房时一项项核对：物业/水电/燃气/户口/维修基金，一项项打勾别漏",
+            "② 户口迁出写合同里压钱：口头说会迁没用，白纸黑字+压几万块尾款",
+            "③ 过户后别失联：银行放款进度/房管局消息每周说一声，别签完就消失"
+          ],
+          why:"交房不是终点——今天这个客户，就是明天给你介绍新客户的人",
+          practiceScene:"客户问：过户后户口怎么迁？物业交接要注意什么？",
+          red:"🚨 别替客户承诺「户口一定能迁」——看合同写没写。<strong class=vtag>【难而正确】</strong>只讲合同约定的事"
+        }
+      };
+      BASE_STAGE_LAYER_DATA = JSON.parse(JSON.stringify(data));
+      stageLayerData = data;
+      renderLayeredView(currentStage);
+    }
+
+    // ===== 进阶区卡片点击展开锚点介绍 =====
+    function bindAdvanceCards(){
+      document.querySelectorAll(".advance-card").forEach(function(card){
+        card.addEventListener("click", function(){
+          var id = card.getAttribute("data-intro");
+          var intro = document.getElementById(id);
+          if(!intro) return;
+          // 关闭其他
+          document.querySelectorAll(".advance-intro.show").forEach(function(el){
+            if(el.id !== id) el.classList.remove("show");
+          });
+          // 切换当前
+          intro.classList.toggle("show");
+          if(intro.classList.contains("show")){
+            intro.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }
+        });
+      });
+    }
+
+    function bindSearch(){
+      var input = document.querySelector(".search-input");
+      var btn = document.querySelector(".search-btn");
+      var hotSpans = document.querySelectorAll(".hot-questions span");
+
+      function doSearch(){
+        var q = (input.value || "").trim();
+        if(!q || !questionMap) return;
+        var results = matchQuestions(q);
+
+        if(results.length === 0){
+          // 0 命中 → 隐藏 result-panel，展示阶段浏览（不显示 empty-hint）
+          var panel = document.getElementById("result-panel");
+          panel.classList.remove("show");
+          // 给用户提示后降级
+          flashToast("没搜到" + q + "？试试按下面的流程阶段浏览 →");
+          return;
+        }
+
+        // 有命中 → 置顶展示 + 自动对齐 Tab
+        // 1) 自动选中出现最多的阶段
+        var stageCount = {};
+        results.forEach(function(r){
+          var s = r.entry.stage || "negotiate";
+          stageCount[s] = (stageCount[s] || 0) + 1;
+        });
+        var bestStage = Object.keys(stageCount).reduce(function(a,b){
+          return (stageCount[a]||0) >= (stageCount[b]||0) ? a : b;
+        }, currentStage);
+        // 2) 自动选中出现最多的 consumer（如果 all 能覆盖多个，优先选具体的）
+        var conCount = {};
+        results.forEach(function(r){
+          var c = r.entry.consumer || "buyer";
+          conCount[c] = (conCount[c] || 0) + 1;
+        });
+        var bestConsumer = Object.keys(conCount).reduce(function(a,b){
+          return (conCount[a]||0) >= (conCount[b]||0) ? a : b;
+        }, "buyer");
+        // 如果 bestConsumer 只有 1 条，不如保持 all 方便
+        if((conCount[bestConsumer]||0) < 2) bestConsumer = "all";
+
+        selectConsumer(bestConsumer, true);  // 不自动刷新（等 renderResults）
+        selectStage(bestStage, true);       // 同上
+
+        renderResults(results);
+        renderStageBrowse();  // 阶段浏览也跟着刷新
+      }
+
+      btn.addEventListener("click", doSearch);
+      input.addEventListener("keydown", function(e){ if(e.key === "Enter") doSearch(); });
+
+      // 清空搜索时回到正常浏览模式
+      input.addEventListener("input", function(){
+        if(!input.value.trim()){
+          document.getElementById("result-panel").classList.remove("show");
+          renderStageBrowse();
+        }
+      });
+
+      // 热门问题点击直接搜
+      hotSpans.forEach(function(span){
+        span.addEventListener("click", function(){
+          input.value = span.textContent;
+          doSearch();
+        });
+        span.style.cursor = "pointer";
+      });
+    }
+
+    // 从中文 query 里提取 2-gram 和 3-gram 作为 token
+    function extractNgrams(text){
+      var tokens = [];
+      // 去掉常见标点和空
+      var clean = text.replace(/[，。！？、；：""''（）\s]/g, "");
+      for(var n=2; n<=3; n++){
+        for(var i=0; i<=clean.length-n; i++){
+          var t = clean.substring(i, i+n);
+          if(t.length === n) tokens.push(t);
+        }
+      }
+      // 去重
+      return tokens.filter(function(v,i,a){ return a.indexOf(v) === i; });
+    }
+
+    function matchQuestions(query){
+      if(!questionMap) return [];
+      var q = (query || "").toLowerCase();
+      if(!q) return [];
+      var tokens = extractNgrams(q);
+      var scored = [];
+
+      questionMap.mapping.forEach(function(m){
+        var score = 0;
+        var matched = [];
+        var matchedTokens = [];
+
+        m.keywords.forEach(function(kw){
+          var kwl = kw.toLowerCase();
+          // 1) 原有：整段 substring 匹配（最准，分最高）
+          if(kwl.indexOf(q) !== -1 || q.indexOf(kwl) !== -1){
+            score += kw.length >= 3 ? 5 : 4;
+            matched.push(kw);
+          } else {
+            // 2) n-gram 重叠：query 的 token 是 keyword 的子串，或 keyword 是 token 的子串
+            tokens.forEach(function(tok){
+              if(tok.indexOf(kwl) !== -1 || kwl.indexOf(tok) !== -1){
+                score += tok.length >= 3 ? 3 : 2;
+                matchedTokens.push(tok + "↔" + kw);
+              }
+            });
+          }
+        });
+
+        // 3) 标题和 solution 里也搜 token 重叠（弱信号）
+        var haystack = (m.solution + " " + (m.title || "")).toLowerCase();
+        tokens.forEach(function(tok){
+          if(haystack.indexOf(tok) !== -1){
+            score += 1;
+            matchedTokens.push(tok + "↔正文");
+          }
+        });
+
+        if(score > 0){
+          scored.push({
+            entry: m,
+            score: score,
+            matched: matched.length ? matched : matchedTokens,
+            tokenMatch: matchedTokens.length > 0
+          });
+        }
+      });
+
+      scored.sort(function(a, b){ return b.score - a.score; });
+      return scored.slice(0, 4);
+    }
+
+    function renderResults(results){
+      var panel = document.getElementById("result-panel");
+      var cardsWrap = document.getElementById("scenario-cards");
+      var countEl = document.getElementById("result-count");
+
+      // 0 命中不应该走到这里（doSearch 已提前 return），保险处理
+      if(!results || results.length === 0){
+        panel.classList.remove("show");
+        return;
+      }
+
+      countEl.textContent = results.length;
+      panel.classList.add("show");
+
+      cardsWrap.innerHTML = results.map(function(r, idx){
+        return buildCardHTML(r.entry, idx === 0);
+      }).join("");
+
+      // 绑定复制
+      cardsWrap.querySelectorAll(".speech-variant-copy").forEach(bindCopyBtn);
+    }
+
+    function getDimIcon(dimId){
+      var map = { 1:"📣", 2:"👁️", 3:"📐", 4:"💬", 5:"📝", 6:"🤝", 7:"🤖" };
+      return map[dimId] || "💡";
+    }
+
+    // ===== 阶段 Tab + 类型筛选初始化 =====
+    function bindStageControls(){
+      // 1) 渲染阶段 Tab
+      renderStageTabs();
+
+      // 2) 绑定类型筛选 chip
+      document.querySelectorAll(".consumer-filter .cf-chip").forEach(function(chip){
+        chip.addEventListener("click", function(){
+          var c = this.getAttribute("data-consumer");
+          selectConsumer(c);
+        });
+      });
+    }
+
+    function renderStageTabs(){
+      var wrap = document.getElementById("stage-tabs");
+      if(!wrap || !questionMap) return;
+      wrap.innerHTML = STAGES.map(function(s){
+        var count = countScenesInStage(s.key);
+        return '<div class="st-tab" data-stage="' + s.key + '">' +
+          '<span class="st-icon">' + s.icon + '</span>' + s.name +
+          (count > 0 ? '<span class="st-count">' + count + '</span>' : '') +
+        '</div>';
+      }).join("");
+      // 绑定点击
+      wrap.querySelectorAll(".st-tab").forEach(function(tab){
+        tab.addEventListener("click", function(){
+          selectStage(this.getAttribute("data-stage"));
+        });
+      });
+      // 高亮当前
+      syncStageTabHighlight();
+    }
+
+    function syncStageTabHighlight(){
+      document.querySelectorAll("#stage-tabs .st-tab").forEach(function(tab){
+        tab.classList.toggle("active", tab.getAttribute("data-stage") === currentStage);
+      });
+      // 同步 consumer chip
+      document.querySelectorAll(".consumer-filter .cf-chip").forEach(function(chip){
+        chip.classList.toggle("active", chip.getAttribute("data-consumer") === currentConsumer);
+      });
+    }
+
+    function countScenesInStage(stageKey){
+      if(!questionMap) return 0;
+      var list = questionMap.mapping.filter(function(m){
+        if(m.stage !== stageKey) return false;
+        if(currentConsumer !== "all" && m.consumer !== currentConsumer) return false;
+        return true;
+      });
+      return list.length;
+    }
+
+    function filterScenes(){
+      if(!questionMap) return [];
+      return questionMap.mapping.filter(function(m){
+        if(m.stage !== currentStage) return false;
+        if(currentConsumer !== "all" && m.consumer !== currentConsumer) return false;
+        return true;
+      });
+    }
+
+    function selectStage(stageKey, suppressRender){
+      currentStage = stageKey;
+      syncStageTabHighlight();
+      syncJourneyTimelineHighlight(); // 🆕 Timeline 也同步高亮
+      if(!suppressRender){
+        renderStageTabs();  // 刷新计数
+        renderStageBrowse();
+        loadKBStagePicks(); // 🆕 切阶段 → 拉 KB 精选
+        highlightAbilityForStage(); // 🆕 三面板联动：能力画像高亮
+        renderLayeredView(stageKey); // 🆕 切阶段 → 刷新三层拆解
+      }
+      // 🆕 切阶段后如果在 compact 模式，把 layered-section 滚到 viewport 中部
+      // 让 Timeline（已高亮的阶段）和解决方案同时可见，避免"点了还得滚"
+      try {
+        var main = document.querySelector(".main");
+        var ls = document.getElementById("layered-section");
+        if(main && main.classList.contains("compact") && ls){
+          var rect = ls.getBoundingClientRect();
+          var target = window.scrollY + rect.top - 20;
+          window.scrollTo({ top: target, behavior: "smooth" });
+        }
+      } catch(e) {}
+    }
+
+    // 简化：consumer-filter 不再驱动 Timeline 切换（每个岗位只有一套固定工作流）
+    function selectConsumer(consumerKey, suppressRender){
+      currentConsumer = consumerKey;
+      syncStageTabHighlight();
+      if(!suppressRender){
+        renderStageTabs();
+        renderStageBrowse();
+        loadKBStagePicks();
+        highlightAbilityForStage();
+        renderLayeredView(currentStage);
+        document.getElementById("result-panel").classList.remove("show");
+      }
+    }
+
+    // 岗位切换 → 加载该岗位固定 Timeline
+    function switchPositionTimeline(positionId){
+      var pid = positionId || "BROKER";
+      var system = POSITION_TIMELINE[pid];
+
+      if(system){
+        STAGES = system.stages.slice();
+        STAGE_TO_DIMS = JSON.parse(JSON.stringify(system.dims));
+        stageLayerData = JSON.parse(JSON.stringify(system.layer));
+      }
+
+      var firstKey = STAGES[0] ? STAGES[0].key : STAGES[0]?.key;
+      var currentExists = STAGES.some(function(s){ return s.key === currentStage; });
+      if(!currentExists){
+        currentStage = firstKey;
+      }
+
+      renderStageTabs();
+      syncStageTabHighlight();
+      renderStageBrowse();
+      renderJourneyTimeline();
+      if(typeof loadKBStagePicks === "function") loadKBStagePicks();
+      highlightAbilityForStage();
+      renderLayeredView(currentStage);
+      renderWorkspaceEvidence(pid); // 🆕 Evidence 区跟岗位同步刷新
+    }
+
+    // ===== 🆕 Evidence 循证区渲染（M1 12.31）=====
+    function renderWorkspaceEvidence(positionId){
+      var pid = positionId || "BROKER";
+      var container = document.getElementById("evidence-cards");
+      var roleSubtitle = document.getElementById("evidence-role-subtitle");
+      var countBadge = document.getElementById("evidence-count-badge");
+      if(!container) return;
+
+      // 角色 → 证据筛选策略（不同岗位核心风险不同）
+      var ROLE_EVIDENCE_STRATEGY = {
+        BROKER:   { preferTypes: ["LAW","RISK","CASE"], subtitle: "买卖经纪人核心证据：红线法条+判例" },
+        LEASE:    { preferTypes: ["LAW","RISK","POL"],  subtitle: "租赁顾问核心证据：双边约束+政策" },
+        NEW_HOME: { preferTypes: ["LAW","RISK","DATA"],  subtitle: "新房置业核心证据：销售合规+价格数据" }
+      };
+      var strat = ROLE_EVIDENCE_STRATEGY[pid] || ROLE_EVIDENCE_STRATEGY.BROKER;
+      if(roleSubtitle) roleSubtitle.textContent = strat.subtitle;
+
+      // 数据未就绪 → 占位
+      if(!rawEntriesCache || !window.EvidenceLink){
+        container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">⏳ 正在加载循证知识...</div>';
+        return;
+      }
+
+      // 按策略筛选：偏好类型 + 有 evidence + 非占位
+      var pool = rawEntriesCache.filter(function(e){
+        return strat.preferTypes.indexOf(e.entry_type) >= 0 &&
+               e.evidence && e.evidence.length >= 1;
+      });
+
+      // 排序：authority_level A 优先 > severity hard 优先
+      var AUTH_RANK = { A: 3, B: 2, C: 1 };
+      pool.sort(function(a, b){
+        var aAuth = Math.max.apply(null, a.evidence.map(function(ev){ return AUTH_RANK[ev.authority_level] || 0; }));
+        var bAuth = Math.max.apply(null, b.evidence.map(function(ev){ return AUTH_RANK[ev.authority_level] || 0; }));
+        if(bAuth !== aAuth) return bAuth - aAuth;
+        // 次序：severity hard 优先
+        var aHard = a.severity === "hard" ? 1 : 0;
+        var bHard = b.severity === "hard" ? 1 : 0;
+        return bHard - aHard;
+      });
+
+      // 取前 3 条
+      var top3 = pool.slice(0, 3);
+
+      // 更新 badge：总数 + 映射命中率（可点击 URL 占比）
+      var totalEntries = rawEntriesCache.length;
+      var hasUrl = rawEntriesCache.filter(function(e){
+        return e.evidence.some(function(ev){ return ev.url && ev.url.length > 0; });
+      }).length;
+      var hitRate = totalEntries > 0 ? Math.round(hasUrl / totalEntries * 100) : 0;
+      if(countBadge){
+        countBadge.textContent = "🔗 已入库 " + totalEntries.toLocaleString() + " 条 · 链接覆盖率 " + hitRate + "%";
+      }
+
+      // 渲染
+      container.innerHTML = "";
+      top3.forEach(function(entry){
+        var card = document.createElement("div");
+        card.className = "evidence-card";
+        card.innerHTML = '<div class="evidence-card-title">' + escapeHtml(entry.title || entry.entry_id) + '</div>';
+        container.appendChild(card);
+
+        // EvidenceLink 渲染证据链
+        if(window.EvidenceLink && typeof window.EvidenceLink.render === "function"){
+          window.EvidenceLink.render(card, entry);
+        }
+      });
+
+      if(top3.length === 0){
+        container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">该岗位暂未匹配到核心证据，先看知识库吧 →</div>';
+      }
+    }
+
+    function escapeHtml(str){
+      var div = document.createElement("div");
+      div.textContent = str || "";
+      return div.innerHTML;
+    }
+
+    // ===== 🆕 渲染阶段三层拆解（素养×技能×服务 × 数字员工分野） =====
+        function renderLayeredView(stageKey){
+      if(!stageLayerData) return;
+      var s = stageLayerData[stageKey];
+      if(!s) return;
+
+      var stageMeta = (STAGES.find(function(x){ return x.key === stageKey; }) || {});
+      var stageName = stageMeta.name || stageKey;
+
+      // 头部：阶段名 + "为什么这么做" 标签
+      document.getElementById("layered-stage-icon").textContent = stageMeta.icon || "📋";
+      document.getElementById("layered-stage-name").textContent = stageName + " · 先搞清楚这 3 件事";
+      document.getElementById("layered-trust").textContent = "为什么这么做";
+
+      // 🎯 核心动作 4 步
+      document.getElementById("lc-actions").innerHTML = s.actions.map(function(a){
+        return "<li>" + a + "</li>";
+      }).join("");
+
+      // 🤔 服务者视角痛点（confusion）
+      var confCard = document.getElementById("bp-confusion-card");
+      var confEl = document.getElementById("lc-confusion");
+      if(confCard && confEl){
+        if(s.confusion){
+          confEl.textContent = s.confusion;
+          confCard.style.display = "";
+        } else {
+          confCard.style.display = "none";
+        }
+      }
+
+      // 💡 为什么这么做
+      document.getElementById("lc-why").textContent = s.why;
+
+      // 🤖 练一练场景 + 动态加 ?stage 参数
+      document.getElementById("lc-practice-scene").textContent = s.practiceScene;
+      var pl = document.getElementById("lc-practice-link");
+      if(pl) pl.href = "/ai-advisor/?stage=" + stageKey;
+
+      // 📖 学一学：从 question_map 动态筛 3 条（去 CAP-SKILL 编号，只显示问题标题）
+      var learnHtml = "";
+      var pid = (document.querySelector(".position-pill.active") || {}).getAttribute ? (document.querySelector(".position-pill.active").getAttribute("data-position") || "") : "";
+      var isPositionStage = !!POSITION_STAGES[pid];
+      if(questionMap && !isPositionStage){
+        var stageSkills = questionMap.mapping.filter(function(m){
+          return m.stage === stageKey && (currentConsumer === "all" || m.consumer === currentConsumer);
+        }).slice(0, 3);
+        learnHtml = stageSkills.map(function(m){
+          return '<a class="bp-learn-item" href="/knowledge/?stage=' + stageKey + '" onclick="markLearned(\'' + stageKey + '\',\'' + encodeURIComponent(m.title) + '\')">' +
+                 m.title + '</a>';
+        }).join("");
+      }
+      if(!learnHtml){
+        learnHtml = isPositionStage
+          ? '<div style="font-size:11px;color:#999">📚 租赁/新房专属知识库建设中<br>AI 模拟练一练已为本阶段开放</div>'
+          : '<div style="font-size:11px;color:#999">暂无本阶段知识条目</div>';
+      }
+      document.getElementById("lc-learn").innerHTML = learnHtml;
+
+      // 🚫 红线
+      document.getElementById("lc-red").textContent = s.red;
+
+      // 🔗 关联能力项 refs
+      var refsEl = document.getElementById("lc-refs");
+      if(refsEl){
+        if(s.refs && s.refs.length){
+          refsEl.innerHTML = '<span class="bp-refs-label">🔗 关联能力项：</span>' +
+            s.refs.map(function(r){
+              return '<span class="bp-ref-chip">' + r + '</span>';
+            }).join("");
+          refsEl.style.display = "";
+        } else {
+          refsEl.style.display = "none";
+        }
+      }
+    }
+
+    // 学习进度回写（去重计数，与成长档案同一口径）
+    function markLearned(stage, encTitle){
+      try{
+        var key = stage + '|' + decodeURIComponent(encTitle || '');
+        var ids = JSON.parse(localStorage.getItem('fs_learned_ids') || '[]');
+        if(ids.indexOf(key) >= 0) return;
+        ids.push(key);
+        localStorage.setItem('fs_learned_ids', JSON.stringify(ids.slice(-500)));
+        localStorage.setItem('fs_learn_progress', String(ids.length));
+        var sp = JSON.parse(localStorage.getItem('fs_stage_progress') || '{}');
+        sp[stage] = sp[stage] || {};
+        sp[stage].learn = { count: ((sp[stage].learn && sp[stage].learn.count) || 0) + 1, at: Date.now() };
+        localStorage.setItem('fs_stage_progress', JSON.stringify(sp));
+      }catch(e){}
+    }
+    window.markLearned = markLearned;
+
+    // ===== 渲染阶段浏览面板 =====
+    function renderStageBrowse(){
+      var scenes = filterScenes();
+      var cardsWrap = document.getElementById("stage-scenario-cards");
+      var nameEl = document.getElementById("browse-stage-name");
+      var countEl = document.getElementById("browse-stage-count");
+      var tagEl = document.getElementById("browse-consumer-tag");
+
+      var stageInfo = STAGES.find(function(s){ return s.key === currentStage; });
+      var consumerInfo = CONSUMER_NAMES[currentConsumer] || CONSUMER_NAMES.all;
+
+      if(nameEl) nameEl.textContent = (stageInfo ? stageInfo.icon + " " + stageInfo.name : "");
+      if(countEl) countEl.textContent = scenes.length;
+      if(tagEl) tagEl.textContent = consumerInfo.icon + " " + consumerInfo.label;
+
+      if(scenes.length === 0){
+        var pid = (document.querySelector(".position-pill.active") || {}).getAttribute ? (document.querySelector(".position-pill.active").getAttribute("data-position") || "") : "";
+        var isPositionStage = !!POSITION_STAGES[pid];
+        if(isPositionStage){
+          cardsWrap.innerHTML = '<div class="empty-hint">📚 本阶段场景话术库建设中，先看上方「三层拆解」里的核心动作和真实场景吧！</div>';
+        } else {
+          cardsWrap.innerHTML = '<div class="empty-hint">这个阶段暂无场景话术，试试切到「全部」看看 · 或选其他服务对象</div>';
+        }
+        return;
+      }
+
+      cardsWrap.innerHTML = scenes.map(function(m, idx){
+        return buildCardHTML(m, idx === 0);
+      }).join("");
+
+      // 绑定复制
+      cardsWrap.querySelectorAll(".speech-variant-copy").forEach(bindCopyBtn);
+    }
+
+    // ===== 共用：构建场景卡 HTML =====
+    function buildCardHTML(m, isOpen){
+      var variants = m.speech_variants || [];
+      var tools = (m.tools || []).map(function(t){ return '<div class="secondary-item">' + t + ' →</div>'; }).join("");
+      var consumerInfo = CONSUMER_NAMES[m.consumer] || CONSUMER_NAMES.buyer;
+
+      var speechBlocks = variants.map(function(v, vi){
+        return '<div class="speech-variant">' +
+          '<div class="speech-variant-head" onclick="onVariantToggle(this)">' +
+            '<div class="speech-variant-label">版本 ' + String.fromCharCode(65+vi) + ' · ' + v.customer_type + '</div>' +
+            '<div class="speech-variant-tag">' + (v.tone || "") + '</div>' +
+          '</div>' +
+          '<div class="speech-variant-body">' + v.text + '</div>' +
+          '<button class="speech-variant-copy" data-text="' + encodeURIComponent(v.text) + '">一键复制</button>' +
+        '</div>';
+      }).join("");
+
+      return '<div class="scenario-card ' + (isOpen ? "open" : "") + '">' +
+        '<div class="scenario-head" onclick="onScToggle(this)">' +
+          '<div class="scenario-icon">' + getDimIcon(m.dim_id) + '</div>' +
+          '<div class="scenario-main">' +
+            '<div class="scenario-title">' + m.title +
+              '<span style="font-size:10px;background:var(--gold-bg);color:#8a7040;padding:1px 7px;border-radius:3px;margin-left:6px;font-weight:500;">' + consumerInfo.icon + ' ' + consumerInfo.label + '</span>' +
+            '</div>' +
+            '<div class="scenario-meta">' +
+              '<span class="sc-dim">' + m.dim_name + '</span>' +
+              '<span style="font-family:monospace;opacity:.6;">' + (m.skill_standard || "") + '</span>' +
+              '<span>' + variants.length + ' 个话术版本</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="scenario-chevron">›</div>' +
+        '</div>' +
+        '<div class="scenario-body">' +
+          '<div class="solution-line">' + m.solution + '</div>' +
+          '<div class="speech-list">' + speechBlocks + '</div>' +
+          (tools ?
+            '<div class="secondary-row"><div class="secondary-col"><div class="secondary-title">Tools</div>' + tools + '</div></div>' : ""
+          ) +
+          // 🆕 知识底座关联区块（占位，展开时异步加载）
+          '<div class="kb-relations" data-kb-keyword="' + (m.kb_query ? m.kb_query.keyword || '' : '') + '">' +
+            '<div class="kb-relations-header">' +
+              '<span>📚 来自知识底座</span>' +
+              '<span class="kb-relations-hint">关联词条 · 异步加载中...</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="hook-soft">' +
+            '<div class="hook-soft-emoji">🧩</div>' +
+            '<div class="hook-soft-copy">' +
+              '<div class="hook-soft-title">经常遇到这类问题？</div>' +
+              '<div class="hook-soft-desc">5 分钟测你这' + m.dim_name + '能丢几次单 · 对标 TOP 10% 经纪人</div>' +
+            '</div>' +
+            '<a class="hook-soft-cta" href="/care-test/?dim=' + m.dim_id + '">专项 5 题 →</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    // ===== 共用：绑定一键复制按钮 =====
+    function bindCopyBtn(btn){
+      btn.addEventListener("click", function(e){
+        e.stopPropagation();
+        var text = decodeURIComponent(btn.getAttribute("data-text"));
+        navigator.clipboard.writeText(text).then(function(){
+          btn.textContent = "已复制 ✓";
+          setTimeout(function(){ btn.textContent = "一键复制"; }, 1500);
+        });
+      });
+    }
+
+    // ===== 轻提示（0命中时用） =====
+    var _toastTimer = null;
+    function flashToast(msg){
+      var el = document.getElementById("flash-toast");
+      if(!el){
+        el = document.createElement("div");
+        el.id = "flash-toast";
+        el.style.cssText = "position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.15);opacity:0;transition:opacity .2s;";
+        document.body.appendChild(el);
+      }
+      el.textContent = msg;
+      el.style.opacity = "1";
+      if(_toastTimer) clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(function(){ el.style.opacity = "0"; }, 2500);
+    }
+
+    function init(){
+      var tabs = document.querySelectorAll("#domain-tabs .domain-tab");
+      var positionBar = document.getElementById("position-bar");
+      var pills = document.getElementById("position-pills");
+      var grid = document.getElementById("ability-grid");
+      var tipText = document.getElementById("ability-tip-text");
+      var goBtn = document.getElementById("ability-go-btn");
+
+      // 恢复上次选择
+      var savedDomain = localStorage.getItem(DOM_KEY) || "TRANSACTION";
+      var savedPosition = localStorage.getItem(POS_KEY);
+
+      // 🆕 未开放模块锁定：只允许恢复到已开放（NOW）板块，防止串台显示错误内容
+      var savedTab = Array.prototype.find.call(tabs, function(t){
+        return t.getAttribute("data-domain") === savedDomain;
+      });
+      if(savedTab && savedTab.getAttribute("data-phase") !== "NOW"){
+        savedDomain = "TRANSACTION";
+        savedPosition = null;
+        localStorage.setItem(DOM_KEY, savedDomain);
+        localStorage.removeItem(POS_KEY);
+      }
+
+      // 绑定板块切换
+      tabs.forEach(function(tab){
+        tab.addEventListener("click", function(){
+          var phase = this.getAttribute("data-phase");
+          var domain = this.getAttribute("data-domain");
+          if(phase !== "NOW"){
+            // 🆕 暂不开放：锁定态，不切换、不渲染错误内容，只提示
+            flashToast("「" + this.textContent.replace("即将","").trim() + "」模块内容建设中，当前可体验：交易服务");
+            return;
+          }
+          // 切换 active
+          tabs.forEach(function(t){ t.classList.remove("active"); });
+          this.classList.add("active");
+          localStorage.setItem(DOM_KEY, domain);
+          // 板块变了，清除岗位选择
+          localStorage.removeItem(POS_KEY);
+          savedPosition = null;
+          renderDomain(domain);
+        });
+      });
+
+      // 初始渲染 savedDomain
+      // 先把 tab 切到 savedDomain
+      tabs.forEach(function(t){
+        if(t.getAttribute("data-domain") === savedDomain) t.classList.add("active");
+        else t.classList.remove("active");
+      });
+      renderDomain(savedDomain);
+
+      // 🆕 恢复用户上次的 compact/展开偏好（默认 compact）
+      var savedCompact = localStorage.getItem("fs_compact_mode");
+      if(savedCompact === "0"){
+        setTimeout(function(){ applyCompactMode(false); }, 0);
+      }
+    }
+
+    function renderDomain(domainId){
+      var domain = modelData.domains[domainId];
+      var pills = document.getElementById("position-pills");
+      var positionBar = document.getElementById("position-bar");
+      var grid = document.getElementById("ability-grid");
+      var tipText = document.getElementById("ability-tip-text");
+      var goBtn = document.getElementById("ability-go-btn");
+
+      if(!domain) return;
+
+      // 渲染岗位 pills
+      pills.innerHTML = "";
+      domain.positions.forEach(function(pos){
+        var pill = document.createElement("div");
+        pill.className = "position-pill";
+        pill.setAttribute("data-position", pos.position_id);
+        pill.textContent = pos.position_name;
+        pill.addEventListener("click", function(){
+          localStorage.setItem(POS_KEY, pos.position_id);
+          // 切换 pills active
+          pills.querySelectorAll(".position-pill").forEach(function(p){
+            p.classList.remove("active");
+          });
+          pill.classList.add("active");
+          renderPosition(domainId, pos);
+        });
+        pills.appendChild(pill);
+      });
+      positionBar.classList.add("visible");
+
+      // 默认选第一个岗位（或恢复）
+      var savedPos = localStorage.getItem(POS_KEY);
+      var target = domain.positions.find(function(p){ return p.position_id === savedPos; }) || domain.positions[0];
+      // 高亮 pill
+      pills.querySelectorAll(".position-pill").forEach(function(p){
+        if(p.getAttribute("data-position") === target.position_id) p.classList.add("active");
+      });
+      renderPosition(domainId, target);
+    }
+
+    function renderPosition(domainId, position){
+      var grid = document.getElementById("ability-grid");
+      var tipText = document.getElementById("ability-tip-text");
+      var goBtn = document.getElementById("ability-go-btn");
+
+      // 渲染 7 维度卡
+      grid.innerHTML = "";
+      position.dimensions.forEach(function(dim){
+        var weight = Math.round(dim.weight * 100);
+        var card = document.createElement("div");
+        card.className = "ability-card" + (dim.dim_key === "DIGITAL" ? " ability-card-full" : "");
+        card.setAttribute("data-dim-key", dim.dim_key); // 🆕 供阶段联动用
+        card.innerHTML =
+          '<div class="ability-card-name">' + dim.dim_icon + " " + dim.dim_name + '</div>' +
+          '<div class="ability-card-desc">' + dim.dim_desc + '</div>' +
+          '<div class="ability-card-count">📋 ' + dim.standard_count + '条能力标准 · 权重 ' + weight + '%</div>';
+        grid.appendChild(card);
+      });
+
+      // 更新测评引导文案
+      var domainName = modelData.domains[domainId].domain_name;
+      tipText.textContent = "针对「" + domainName + "·" + position.position_name + "」" +
+        "的7维度专项测评——10分钟出能力报告，告诉你哪里强哪里弱，该先补什么。";
+      goBtn.href = "/care-test/?domain=" + domainId + "&position=" + position.position_id;
+
+      // 🆕 岗位切换 → 加载该岗位固定 Timeline + 全板刷新
+      switchPositionTimeline(position.position_id);
+
+      // 🆕 岗位身份 Banner
+      renderRoleBanner(domainId, position);
+
+      // 🆕 岗位选中后自动进入 compact 模式：隐藏中间引导块，Timeline 紧贴解决方案
+      applyCompactMode(true);
+
+      highlightAbilityForStage(); // 切岗位后也重新联动
+    }
+
+    // 🆕 compact 模式切换：岗位选中 → 隐藏 value-intro/growth-bar/search-section，
+    // 让 Timeline 直接紧贴 layered-section，避免上下大滑动
+    function applyCompactMode(enable){
+      var main = document.querySelector(".main");
+      var timeline = document.getElementById("journey-timeline");
+      var toggle = document.getElementById("jt-toggle-advanced");
+      if(!main || !timeline) return;
+      if(enable){
+        main.classList.add("compact");
+        timeline.classList.add("has-position");
+        if(toggle) toggle.textContent = "🔼 收起高级区";
+      } else {
+        main.classList.remove("compact");
+        timeline.classList.remove("has-position");
+        if(toggle) toggle.textContent = "🔽 展开高级区";
+      }
+      // 持久化偏好：用户明确 toggle 过就记住
+      if(typeof enable === "boolean" && arguments.length > 1){
+        // 外部调用 toggle 时第二个参数为 true 表示"用户主动改"
+        if(arguments[1]) localStorage.setItem("fs_compact_mode", enable ? "1" : "0");
+      }
+    }
+
+    // 全局：用户点 Timeline 右侧按钮 toggle
+    window.toggleAdvancedZone = function(){
+      var main = document.querySelector(".main");
+      if(!main) return;
+      var enable = !main.classList.contains("compact");
+      applyCompactMode(enable, true);
+      localStorage.setItem("fs_compact_mode", enable ? "1" : "0");
+    };
+
+    // 🆕 岗位元数据（icon + 描述）—— domains JSON 里没有，这里兜底
+    var POSITION_META = {
+      BROKER:   { icon: "🏠", name: "买卖经纪人", desc: "撮合买卖双方完成房产交易——从客户到访、带看、议价到签约过户的全流程服务者。" },
+      LEASE:    { icon: "🔑", name: "租赁管家",   desc: "住房租赁撮合与租后协办——租客匹配、带看、签约规范、押金维修责任、续租退租全链条。" },
+      NEW_HOME: { icon: "🏗️", name: "新房置业",   desc: "新房售楼处全流程服务——客户来访、沙盘样板间讲解、认筹选房、认购签约、交房验收。" },
+      PM:       { icon: "🏢", name: "资管经理",   desc: "商业物业资产管理——租金收缴、租户维护、设施运维、资产增值。" },
+      DESIGNER: { icon: "🎨", name: "家装设计师", desc: "家居装修设计——需求沟通、方案设计、选材报价、施工协调、软装搭配。" }
+    };
+
+    // 🆕 渲染岗位身份 Banner
+    function renderRoleBanner(domainId, position){
+      var banner = document.getElementById("role-banner");
+      var domain = modelData && modelData.domains ? modelData.domains[domainId] : null;
+      if(!banner || !domain || !position){
+        if(banner) banner.classList.remove("visible");
+        return;
+      }
+      banner.classList.add("visible");
+
+      var meta = POSITION_META[position.position_id] || {
+        icon: position.dimensions && position.dimensions[0] ? position.dimensions[0].dim_icon : "👤",
+        name: position.position_name,
+        desc: position.description || ""
+      };
+
+      document.getElementById("rb-icon").textContent = meta.icon;
+      document.getElementById("rb-name").textContent = position.position_name;
+      document.getElementById("rb-domain-tag").textContent = domain.domain_name || "";
+      document.getElementById("rb-desc").textContent = meta.desc;
+
+      // 切换按钮：列出同 domain 下所有岗位，除当前选中
+      var pillsWrap = document.getElementById("rb-switch-pills");
+      if(pillsWrap){
+        var otherPositions = domain.positions.filter(function(p){ return p.position_id !== position.position_id; });
+        pillsWrap.innerHTML = otherPositions.map(function(p){
+          var m = POSITION_META[p.position_id] || { icon: "👤" };
+          return '<span class="rb-switch-pill" data-position="' + p.position_id + '" onclick="window.__rbSwitchPosition(\'' + domainId + '\',\'' + p.position_id + '\')">' +
+                 m.icon + ' ' + p.position_name + '</span>';
+        }).join("");
+      }
+    }
+
+    // 🆕 岗位 Banner 切换按钮的全局回调
+    window.__rbSwitchPosition = function(domainId, positionId){
+      var domain = modelData.domains[domainId];
+      if(!domain) return;
+      var target = domain.positions.find(function(p){ return p.position_id === positionId; });
+      if(!target) return;
+      localStorage.setItem(POS_KEY, positionId);
+      // 同步激活 position-pills
+      document.querySelectorAll(".position-pill").forEach(function(p){
+        p.classList.toggle("active", p.getAttribute("data-position") === positionId);
+      });
+      renderPosition(domainId, target);
+    };
+
+    // 🆕 渲染客户服务阶段 Timeline
+    function renderJourneyTimeline(){
+      var wrap = document.getElementById("jt-stages");
+      var timeline = document.getElementById("journey-timeline");
+      if(!wrap || !STAGES.length){
+        if(timeline) timeline.classList.remove("visible");
+        return;
+      }
+      if(timeline) timeline.classList.add("visible");
+
+      // 生成 timeline DOM（每两个 step 之间加箭头）
+      var html = "";
+      STAGES.forEach(function(s, idx){
+        var isActive = s.key === currentStage;
+        var isPast = STAGES.some(function(x, i){ return x.key === currentStage && i > idx; });
+        var cls = "jt-step" + (isActive ? " jt-active" : (isPast ? " jt-done" : ""));
+        html +=
+          '<div class="jt-stage" data-key="' + s.key + '">' +
+            '<div class="' + cls + '" data-stage="' + s.key + '">' +
+              '<div class="jt-step-icon">' + s.icon + '</div>' +
+              '<div class="jt-step-text">' +
+                '<div class="jt-step-name">' + s.name + '</div>' +
+                '<div class="jt-step-desc">' + (s.desc || "") + '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        if(idx < STAGES.length - 1){
+          html += '<span class="jt-arrow">→</span>';
+        }
+      });
+      wrap.innerHTML = html;
+
+      // 绑定点击事件
+      wrap.querySelectorAll(".jt-step").forEach(function(step){
+        step.addEventListener("click", function(){
+          var stageKey = this.getAttribute("data-stage");
+          if(stageKey) selectStage(stageKey);
+        });
+      });
+    }
+
+    // 🆕 同步 Timeline 高亮（切阶段时调用）
+    function syncJourneyTimelineHighlight(){
+      var wrap = document.getElementById("jt-stages");
+      if(!wrap) return;
+      var activeIdx = STAGES.findIndex(function(s){ return s.key === currentStage; });
+      wrap.querySelectorAll(".jt-step").forEach(function(step){
+        var key = step.getAttribute("data-stage");
+        var idx = STAGES.findIndex(function(s){ return s.key === key; });
+        step.classList.remove("jt-active", "jt-done");
+        if(key === currentStage){
+          step.classList.add("jt-active");
+        } else if(idx > -1 && idx < activeIdx){
+          step.classList.add("jt-done");
+        }
+      });
+    }
+
+    /* ===== 🆕 三面板联动：阶段 Tab → 能力画像高亮 ===== */
+    function highlightAbilityForStage(){
+      var stageInfo = STAGES.find(function(s){ return s.key === currentStage; });
+      var mapping = STAGE_TO_DIMS[currentStage];
+      if (!stageInfo || !mapping) return;
+
+      var primarySet = {};
+      var secondarySet = {};
+      mapping.primary.forEach(function(k){ primarySet[k] = true; });
+      mapping.secondary.forEach(function(k){ secondarySet[k] = true; });
+
+      // 找到能力画像标题或引导文案，加"本阶段重点"提示
+      var tipText = document.getElementById("ability-tip-text");
+      if (tipText) {
+        var primaryNames = [];
+        var secondaryNames = [];
+        // 从 DOM 读取卡片名字（已经渲染了）
+        document.querySelectorAll("#ability-grid .ability-card").forEach(function(card){
+          var key = card.getAttribute("data-dim-key");
+          var nameEl = card.querySelector(".ability-card-name");
+          var name = nameEl ? nameEl.textContent.split(" ")[1] : key;
+          if (primarySet[key]) primaryNames.push(name);
+          else if (secondarySet[key]) secondaryNames.push(name);
+        });
+        if (primaryNames.length > 0) {
+          var hintText = '<br><span class="stage-dim-hint">📍 当前是「' + stageInfo.name + '」阶段 → ' +
+            '<span class="dim-primary">核心关注：' + primaryNames.join("、") + '</span>' +
+            (secondaryNames.length > 0 ? ' <span class="dim-secondary">辅助：' + secondaryNames.join("、") + '</span>' : '') +
+            '</span>';
+          // 在原有文案后面加提示（如果还没加）
+          var baseText = tipText.getAttribute("data-base-text");
+          if (!baseText) {
+            tipText.setAttribute("data-base-text", tipText.textContent);
+          }
+          tipText.innerHTML = tipText.getAttribute("data-base-text") + hintText;
+        }
+      }
+
+      // 给每个 ability-card 加阶段 class
+      document.querySelectorAll("#ability-grid .ability-card").forEach(function(card){
+        var key = card.getAttribute("data-dim-key");
+        card.classList.remove("dim-primary","dim-secondary","dim-muted");
+        if (primarySet[key]) card.classList.add("dim-primary");
+        else if (secondarySet[key]) card.classList.add("dim-secondary");
+        else card.classList.add("dim-muted");
+      });
+    }
+
+    // ===== v3.0：二次访问问候条 =====
+    function showWelcomeBack(){
+      var bar = document.getElementById('welcome-back-bar');
+      if(!bar) return;
+      var raw = localStorage.getItem('fs_care_profile');
+      if(!raw) return;
+
+      var profile;
+      try { profile = JSON.parse(raw); } catch(e) { return; }
+      if(!profile.avg || !profile.weakest_dim) return;
+
+      var daysAgo = 0;
+      if(profile.timestamp){
+        var diff = Date.now() - new Date(profile.timestamp).getTime();
+        daysAgo = Math.floor(diff / (1000*60*60*24));
+      }
+      var timeText = daysAgo === 0 ? '今天' : (daysAgo === 1 ? '昨天' : (daysAgo + ' 天前'));
+
+      var avg = profile.avg;
+      var sortedDims = Object.keys(avg).sort(function(a,b){ return avg[a] - avg[b]; });
+      var weakest = sortedDims[0];
+      var weakestScore = avg[weakest];
+      var secondDim = sortedDims[1] || '需求洞察';
+      var secondScore = avg[secondDim] || 50;
+
+      var modeText = profile.mode === 'focused' ? '专项' : '完整 7 维';
+
+      document.getElementById('wb-title').textContent = '👋 上次 ' + timeText + ' 做了' + modeText + '测评 · 综合 ' + profile.total + ' 分';
+      document.getElementById('wb-summary').innerHTML =
+        '🔧 最弱：<strong style="color:#c0392b;">' + weakest + ' ' + weakestScore + '分</strong>' +
+        '　·　次弱：<strong style="color:#e67e22;">' + secondDim + ' ' + secondScore + '分</strong>' +
+        '<br>' +
+        '👉 <a href="#" onclick="document.querySelector(\'.search-input\').value=\'' + getKeyword(weakest) + '\';document.querySelector(\'.search-btn\').click();return false;" style="color:#1a3d24;font-weight:600;text-decoration:none;">搜"' + weakest + '"的话术 →</a>' +
+        '　·　' +
+        '<a href="/scene/?dim=' + (getDimId(weakest) || 4) + '" style="color:#1a3d24;font-weight:500;text-decoration:none;">🎭 练场景</a>';
+
+      bar.style.display = 'block';
+    }
+
+    function getDimId(name){
+      var m = {'获客触达':1,'需求洞察':2,'专业方案':3,'带看谈判':4,'交易履约':5,'售后复购':6,'数字化协同':7};
+      return m[name];
+    }
+    function getKeyword(dim){
+      var m = {'获客触达':'怎么获客','需求洞察':'客户不信任怎么办','专业方案':'契税怎么算','带看谈判':'客户说太贵了','交易履约':'资金监管安全吗','售后复购':'老客户回访','数字化协同':'AI能帮我做什么'};
+      return m[dim] || '客户嫌贵';
+    }
+
+    // 启动时（两个 fetch 都回来了之后）显示问候条 + 成长进度条
+    setTimeout(function(){
+      showWelcomeBack();
+      initGrowthBar();
+    }, 600);
+
+  /* ===== v3.4 成长进度总览条逻辑 ===== */
+  const LEVELS = [
+    { id: 'L1', name: '见习',   minScore: 0,  needScene: 0,  needCourse: 0,  needExam: 0  },
+    { id: 'L2', name: '初级',   minScore: 65, needScene: 1,  needCourse: 1,  needExam: 0  },
+    { id: 'L3', name: '中级',   minScore: 75, needScene: 3,  needCourse: 2,  needExam: 1  },
+    { id: 'L4', name: '高级',   minScore: 85, needScene: 8,  needCourse: 4,  needExam: 1  },
+    { id: 'L5', name: '专家',   minScore: 95, needScene: 15, needCourse: 7,  needExam: 2  },
+  ];
+  const LEVEL_ICON = { L1: '🥉', L2: '🥈', L3: '🥇', L4: '⭐', L5: '💎' };
+
+  function initGrowthBar() {
+    const bar = document.getElementById('growth-bar');
+    if (!bar) return;
+
+    // 读 localStorage 数据
+    const profile = JSON.parse(localStorage.getItem('fs_care_profile') || 'null');
+    const sceneCount = parseInt(localStorage.getItem('fs_scene_count') || '0');
+    const courseCount = parseInt(localStorage.getItem('fs_learn_progress') || '0');
+    const examCount = parseInt(localStorage.getItem('fs_exam_count') || '0');
+    const domain = localStorage.getItem('fs_workspace_domain') || 'TRANSACTION';
+
+    // 读岗位
+    const pos = localStorage.getItem('fs_workspace_position') || 'BROKER';
+    const domainNames = { TRANSACTION:'交易服务', ASSET:'资产运营', DECOR:'家装服务', AFTER:'后市场服务', SPECIAL:'特殊居住' };
+    const posNames = { BROKER:'买卖经纪人', NEW_HOME:'新房顾问', LEASE:'租赁管家', PM:'资管经理', DESIGNER:'设计师' };
+    document.getElementById('gb-domain-tag').textContent = (domainNames[domain] || domain) + ' · ' + (posNames[pos] || pos);
+
+    // 计算当前等级
+    const hasTest = profile && profile.avg && Object.keys(profile.avg).length > 0;
+    const avgScore = hasTest ? Math.round(Object.values(profile.avg).reduce((s,v)=>s+v,0) / Object.values(profile.avg).length) : 0;
+
+    let currentLevelIdx = 0;
+    for (let i = LEVELS.length - 1; i >= 0; i--) {
+      const L = LEVELS[i];
+      if (avgScore >= L.minScore && sceneCount >= L.needScene && courseCount >= L.needCourse && examCount >= L.needExam) {
+        currentLevelIdx = i;
+        break;
+      }
+    }
+    const currentLevel = LEVELS[currentLevelIdx];
+    const nextLevel = LEVELS[currentLevelIdx + 1];
+
+    // 渲染等级徽章
+    const badge = document.getElementById('gb-level-badge');
+    badge.textContent = (LEVEL_ICON[currentLevel.id] || '🥉') + ' ' + currentLevel.name;
+    badge.dataset.level = currentLevel.id;
+
+    // 计算进度
+    let progress = 0;
+    if (!hasTest) {
+      progress = 0;
+    } else if (!nextLevel) {
+      progress = 100; // 专家满了
+    } else {
+      // 加权计算到下一级还差多少
+      const scoreProg = Math.min(1, Math.max(0, (avgScore - currentLevel.minScore) / (nextLevel.minScore - currentLevel.minScore))) * 0.4;
+      const sceneProg = nextLevel.needScene > 0 ? Math.min(1, sceneCount / nextLevel.needScene) * 0.25 : 0.25;
+      const courseProg = nextLevel.needCourse > 0 ? Math.min(1, courseCount / nextLevel.needCourse) * 0.2 : 0.2;
+      const examProg = nextLevel.needExam > 0 ? Math.min(1, examCount / nextLevel.needExam) * 0.15 : 0.15;
+      progress = Math.round((currentLevelIdx * 20) + (scoreProg + sceneProg + courseProg + examProg) * 20);
+    }
+    progress = Math.max(0, Math.min(100, progress));
+
+    // 渲染进度条
+    document.getElementById('gb-progress-fill').style.width = progress + '%';
+    document.getElementById('gb-progress-pct').textContent = progress + '%';
+
+    // 渲染路径（哪些步骤完成了）
+    const pathEl = document.getElementById('gb-path');
+    const steps = [
+      { done: hasTest,              label: '✅ 测评',           next: !hasTest,            link: '/care-test/', sub: '完成能力测评知道短板' },
+      { done: sceneCount > 0,       label: '🤖 练场景',         next: hasTest && sceneCount === 0, link: '/ai-advisor/', sub: 'AI 模拟客户练 SOP' },
+      { done: courseCount > 0,      label: '📖 学知识',         next: hasTest && sceneCount > 0 && courseCount === 0, link: '/knowledge/', sub: '按阶段补知识底座' },
+      { done: examCount > 0,        label: '🎯 过微测',         next: false,               link: '/knowledge/quiz/', sub: '每阶段 5 分钟小测' },
+    ];
+    let pathHTML = '';
+    steps.forEach((s, i) => {
+      if (i > 0) pathHTML += '<span class="gb-path-arrow">→</span>';
+      let cls = 'gb-path-step';
+      if (s.done) cls += ' gb-path-done';
+      else if (s.next) cls += ' gb-path-current';
+      pathHTML += '<span class="' + cls + '">' + s.label + '</span>';
+    });
+    pathEl.innerHTML = pathHTML;
+
+    // 下一步推荐（找到第一个没完成的）
+    const nextStep = steps.find(s => !s.done && (s.next || s.label.includes('测评'))) || steps[0];
+    const itemEl = document.getElementById('gb-next-item');
+    const subEl = document.getElementById('gb-next-sub');
+    itemEl.textContent = nextStep.label.replace(/^[✅🎭📚🎯]\s*/, '') + ' →';
+    itemEl.onclick = () => { if (nextStep.link && nextStep.link !== '#') window.location.href = nextStep.link; else alert(nextStep.sub); };
+    subEl.textContent = hasTest ? ('测评均分 ' + avgScore + ' · ' + nextStep.sub) : nextStep.sub;
+  }
+  /* ===== 场景卡 toggle + 知识底座异步加载 ===== */
+  const _loadedKbCards = new Set();
+  
+  function onScToggle(headEl) {
+    const card = headEl.parentElement;
+    card.classList.toggle('open');
+    if (card.classList.contains('open')) {
+      // 展开时触发知识底座加载
+      const kbEl = card.querySelector('.kb-relations');
+      if (kbEl && !_loadedKbCards.has(kbEl)) {
+        const kw = kbEl.dataset.kbKeyword || '';
+        if (kw) loadKBRelations(kbEl, kw);
+        _loadedKbCards.add(kbEl);
+      }
+    }
+  }
+
+  // ===== 单个话术版本折叠/展开 =====
+  function onVariantToggle(headEl) {
+    // 防止点到「一键复制」按钮时触发（按钮有 stopPropagation）
+    const variant = headEl.parentElement;
+    variant.classList.toggle('collapsed');
+  }
+
+  // 🆕 把 onclick 用到的函数挂到 window 上（IIFE 闭包内不会自动暴露到全局）
+  window.onScToggle = onScToggle;
+  window.onVariantToggle = onVariantToggle;
+
+  async function loadKBRelations(kbEl, keyword) {
+    try {
+      kbEl.innerHTML = '<div class="kb-relations-header"><span>📚 来自知识底座</span><span class="kb-relations-hint kb-loading">关联词条 · 匹配中...</span></div>';
+      const resp = await fetch('/api/search/v2?q=' + encodeURIComponent(keyword) + '&limit=3');
+      if (!resp.ok) throw new Error('fetch failed');
+      const data = await resp.json();
+      const results = data.results || [];
+      
+      // 🆕 收集 entry ids 用于去重
+      results.forEach(function(e){ if(e.id) _kbCardEntryIds.add(e.id); });
+
+      let itemsHTML = '';
+      if (results.length === 0) {
+        itemsHTML = '<div class="kb-empty">知识底座暂无此场景词条，近期补全</div>';
+      } else {
+        itemsHTML = results.map(function(e){
+          var alias = e.alias ? (e.alias[0] || '') : '';
+          var consumerQ = e.consumerQ || '';
+          var cpPreview = consumerQ 
+            ? '<div class="kb-item-cp">💡 <strong>客户问：</strong>' + consumerQ + '</div>'
+            : '';
+          return '<div class="kb-item" onclick="window.open(\'/entry/?id=' + e.id + '\',\'_blank\')">' +
+            '<div class="kb-item-name">' + e.name + '</div>' +
+            cpPreview +
+          '</div>';
+        }).join('');
+      }
+      
+      kbEl.innerHTML =
+        '<div class="kb-relations-header">' +
+          '<span>📚 来自知识底座</span>' +
+          '<span class="kb-relations-hint">' + results.length + ' 条关联词条</span>' +
+        '</div>' + itemsHTML;
+    } catch(err) {
+      kbEl.innerHTML =
+        '<div class="kb-relations-header">' +
+          '<span>📚 来自知识底座</span>' +
+          '<span class="kb-relations-hint">加载失败</span>' +
+        '</div>' +
+        '<div class="kb-empty">知识底座暂时不可用，稍后刷新试试</div>';
+    }
+  }
+
+  /* ===== 🆕 阶段 Tab 主动联动：拉 KB 精选（去重 + 增强版展示） ===== */
+  var _kbStageLastKey = ""; // 避免同阶段重复 fetch
+
+  /* 🆕 折叠/展开 KB 精选面板（挂到 window 以便 header onclick 调用） */
+  function toggleKBStage(){
+    var panel = document.getElementById("kb-stage-panel");
+    if (!panel) return;
+    panel.classList.toggle("collapsed");
+    // 不持久化，让用户每次进来默认都能看到
+  }
+  window.toggleKBStage = toggleKBStage;
+
+  /* 🆕 折叠/展开 阶段场景浏览面板 */
+  function toggleStageBrowse(){
+    var panel = document.getElementById("stage-browse");
+    if (!panel) return;
+    panel.classList.toggle("collapsed");
+  }
+  window.toggleStageBrowse = toggleStageBrowse;
+
+  async function loadKBStagePicks() {
+    var stageInfo = STAGES.find(function(s){ return s.key === currentStage; });
+    if (!stageInfo) return;
+    var kbStage = stageInfo.kb; // pre / mid / post
+    var body = document.getElementById("kb-stage-body");
+    if (!body) return;
+
+    // 防抖：同阶段不重复拉
+    var cacheKey = kbStage + "|" + currentConsumer;
+    if (cacheKey === _kbStageLastKey) return;
+    _kbStageLastKey = cacheKey;
+
+    body.innerHTML = '<div class="kb-stage-loading">⏳ 正在匹配「' + stageInfo.name + '」阶段核心词条...</div>';
+
+    try {
+      var url = '/api/entries?stage=' + kbStage + '&limit=15';
+      // 按 consumer 过滤（非 all 时加参数）
+      if (currentConsumer !== "all") {
+        var clientMap = { buyer: "buyer", seller: "owner", renter: "renter", landlord: "landlord" };
+        var ct = clientMap[currentConsumer];
+        if (ct) url += '&clientType=' + ct;
+      }
+      var resp = await fetch(url);
+      if (!resp.ok) throw new Error('fetch failed ' + resp.status);
+      var data = await resp.json();
+      var entries = (data && data.entries) || [];
+
+      // 去重：过滤掉场景卡底部已展示过的 entry
+      var fresh = entries.filter(function(e){ return !_kbCardEntryIds.has(e.id); });
+      // 场景卡没展示的 → 用全部（fresh 可能几乎等于 entries 因为场景卡底部是用户手动展开才加载的）
+      if (fresh.length < 3) fresh = entries;
+
+      // 🆕 取 top 10（用户反馈：比 5 条稍多些好，10 条以内合适）
+      var picks = fresh.slice(0, 10);
+
+      if (picks.length === 0) {
+        body.innerHTML = '<div class="kb-stage-empty">📭 知识底座里「' + stageInfo.name + '」阶段暂无匹配词条<br><span style="opacity:.6;font-size:12px;">我们正在补充，稍后再来看看 →</span></div>';
+        return;
+      }
+
+      body.innerHTML = picks.map(function(e){
+        var consumerQ = e.consumerQ || '';
+        var cpArr = e.cp || [];
+        var cpFirst = cpArr.length > 0 ? cpArr[0] : '';
+        var sceneDomain = e.sceneDomain || '';
+        var clientLabel = '';
+        if (e.tags && e.tags.clientType) {
+          var cl = e.tags.clientType[0];
+          var clMap = { buyer:'购房客户', owner:'业主', renter:'租客', landlord:'房东' };
+          clientLabel = clMap[cl] || cl;
+        }
+        return '<div class="kb-pick" onclick="window.open(\'/entry/?id=' + e.id + '\',\'_blank\')">' +
+          '<div class="kb-pick-head">' +
+            '<span class="kb-pick-name">' + e.name + '</span>' +
+            (sceneDomain ? '<span class="kb-pick-domain">' + sceneDomain + '</span>' : '') +
+          '</div>' +
+          (consumerQ ? '<div class="kb-pick-q">💡 <strong>客户：</strong>' + consumerQ + '</div>' : '') +
+          (cpFirst ? '<div class="kb-pick-cp">' + cpFirst + '</div>' : '') +
+          '<div class="kb-pick-footer">' +
+            (clientLabel ? '<span class="kb-pick-tag">👤 ' + clientLabel + '</span>' : '') +
+            '<span class="kb-pick-link">查看完整词条 →</span>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+    } catch(err) {
+      _kbStageLastKey = ""; // 允许重试
+      body.innerHTML = '<div class="kb-stage-empty">⚠️ 知识底座暂时不可用（' + (err.message || '') + '）<br><span style="opacity:.6;font-size:12px;">刷新页面试试</span></div>';
+    }
+  }
+  })();
+
+  // ===== 🆕 引导逻辑：无测评记录时把 0% 改成引导文案 =====
+  // setTimeout 延迟确保在所有异步数据加载（question_map fetch 等）完成后执行
+  setTimeout(function(){
+    var hasAssessment = false;
+    try {
+      for(var j=0; j<localStorage.length; j++){
+        var k = localStorage.key(j) || '';
+        if(k.indexOf('assessment') >= 0 || k.indexOf('care_test') >= 0 || k.indexOf('ability') >= 0 || k.indexOf('fs_dim_scores') >= 0){
+          hasAssessment = true; break;
+        }
+      }
+    } catch(e) {}
+
+    if(!hasAssessment){
+      var gb = document.getElementById('growth-bar');
+      if(gb) gb.classList.add('gb-onboard');
+      var pct = document.getElementById('gb-progress-pct');
+      if(pct) pct.textContent = '丢单预警';
+      var badge = document.getElementById('gb-level-badge');
+      if(badge) badge.textContent = '📌 5 分钟测丢单预警';
+      var fill = document.getElementById('gb-progress-fill');
+      if(fill) { fill.style.width = '8%'; fill.style.background = 'var(--gold)'; }
+      var nextLabel = document.querySelector('.gb-next-label');
+      if(nextLabel) { nextLabel.textContent = '🎯 第一步：'; nextLabel.style.color = 'var(--gold)'; }
+      var nextItem = document.getElementById('gb-next-item');
+      if(nextItem) { nextItem.innerHTML = '<a href="/care-test/" style="color:var(--gold);text-decoration:none">做 5 分钟测评 · 找你的薄弱项</a>'; }
+      var nextSub = document.getElementById('gb-next-sub');
+      if(nextSub) nextSub.textContent = '测完自动生成能力画像 → 切到对应阶段练';
+    }
+  }, 800);
+  </script>
+
+  <div class="footer-note">
+    风声聚匠星云 · 经纪人能力外挂辅助系统<br>
+    © 2026 fengsheng.tech
+  </div>
+
+
+<footer style="text-align:center;padding:24px 16px 32px;font-size:12px;color:#8a9a90;line-height:1.8;">
+  <div>风声信息咨询 · 经纪人成长陪练 · 让好经纪人被看见</div>
+  <div><a href="https://beian.miit.gov.cn" target="_blank" rel="noopener" style="color:#8a9a90;text-decoration:none;">京ICP备2026044043号-2</a></div>
+  <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802051263" rel="noreferrer" target="_blank" style="color:#8a9a90;text-decoration:none;"><img src="/assets/beian/beian-icon.png" alt="" style="width:14px;height:14px;vertical-align:-2px;margin-right:3px;">京公网安备11010802051263号</a>
+</footer>
+</body>
+</html>
