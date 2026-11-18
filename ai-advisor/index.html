@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI 陪练 · 风声聚匠星云 · 经纪人练谈判/获客/带看</title>
+<title>话术陪练 · 风声聚匠星云 · 经纪人练谈判/获客/带看</title>
 <style>
 :root{--ink:#1a3d24;--gold:#c9a962;--bg:#f7f5f0;--card:#fff;--line:#e8e3d8;--ink-soft:#5c6d62;--ok:#2d7a4a;--ai-blue:#4a6fa5;--danger:#b85c38}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -135,7 +135,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 
 <div class="hero">
-  <h1>🤖 AI 陪练 · 经纪人反串模拟</h1>
+  <h1>🤖 话术陪练 · 经纪人反串模拟</h1>
   <p>选一个服务阶段 → AI 扮演客户刁难你 → 你用销冠 SOP 回答 → 每轮自动评分 + 红线检查</p>
   <div class="trust">🔒 安全承诺：AI 不替你做决策 · 红线时刻提醒你 · 所有回答可追溯</div>
 </div>
@@ -147,7 +147,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
     <span style="font-size:15px;font-weight:700" id="stage-banner-title">带看议价 · 练习模式</span>
     <span style="background:rgba(245,213,122,.2);color:#f5d57a;padding:2px 10px;border-radius:10px;font-size:10px;font-weight:600">经纪人反串</span>
   </div>
-  <div style="font-size:12px;opacity:.85;line-height:1.6" id="stage-banner-desc">AI 现在是「挑剔客户」，会问你 5 个带看议价阶段的真实问题。你用经纪人的话回答，AI 会给你打分 + 红线检查。</div>
+  <div style="font-size:12px;opacity:.85;line-height:1.6" id="stage-banner-desc">模拟客户现在「挑剔你」，会问你 5 个带看议价阶段的真实问题。你用经纪人的话回答，系统会给你打分 + 红线检查。</div>
   <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap" id="stage-banner-qs"></div>
 </div>
 
@@ -226,7 +226,7 @@ const QMAP = {
     {t:"⚠️ 短板必填 · 西临广顺北晚高峰噪音", body:"晚高峰 18-19 点实测 52dB（比小区内部高 8dB）。但关窗基本听不到，物业最近加了两层隔音棉。", src:"来源：噪音仪实测 · 2026-10 · 店长每周测一次", short:true},
     {t:"大西洋新城 · 物业费与口碑", body:"3.5 元/㎡·月，业主评分 4.7/5（30 位近期带看业主访谈）。物业反应快，公共区域维护好。", src:"来源：业主访谈 · 2026-09"}
   ]},
-  "风水": {id:-1, skill:"红线拦截", sop:"RED-01/06", dim:"红线", answer:"⚠️ AI 顾问说明：风水问题属于主观判断范畴，我没有专业能力做推荐。<br><br>如果您在意这类问题，<b>建议请专业风水师现场看</b>，或者我们带您实地感受一下采光、通风、朝向。<br><br>我能帮您的：<br>• 小区实测数据（采光时长/通风/噪音）<br>• 同户型业主的真实评价<br>• 楼层/朝向的客观优劣势对比", kbs:[], red:true},
+  "风水": {id:-1, skill:"红线拦截", sop:"RED-01/06", dim:"红线", answer:"⚠️ 顾问说明：风水问题属于主观判断范畴，我没有专业能力做推荐。<br><br>如果您在意这类问题，<b>建议请专业风水师现场看</b>，或者我们带您实地感受一下采光、通风、朝向。<br><br>我能帮您的：<br>• 小区实测数据（采光时长/通风/噪音）<br>• 同户型业主的真实评价<br>• 楼层/朝向的客观优劣势对比", kbs:[], red:true},
   "跌": {id:27, skill:"CAP-SKILL-205", sop:"TRUST-03", dim:"需求洞察", answer:"姐您这个担心我完全理解——我当时买房也是睡不好觉。<br><br>给您 3 个理性参考：<br>1. <b>学区房刚需</b>：望京南学区房近 3 年波动 ±2%<br>2. <b>规划利好</b>：14 号线支线段 2028 通车，板块价值预计涨 8-12%<br>3. <b>如果真跌了能接受吗？</b>——这个问题您先想清楚<br><br>其实最实在的建议：选一个您住进去不后悔的小区，比纠结涨跌重要。", kbs:[
     {t:"14 号线支线段规划", body:"东侧 1.2km 有支线段施工中，预计 2028 年通车。通车后板块价值预计涨幅 8-12%。", src:"来源：市规划委公示 · 2026-08-15"}
   ]}
@@ -375,7 +375,7 @@ const STAGE_SCRIPTS = {
   prepare: {
     icon: '📋',
     title: '购房准备',
-    desc: 'AI 现在是「准备买房的客户」，还没搞清楚自己能不能买。你是经纪人，帮他算清楚。',
+    desc: '模拟客户现在「准备买房」，还没搞清楚自己能不能买。你是经纪人，帮他算清楚。',
     practiceQs: [
       '我公积金能贷多少？首套和二套差多少？',
       '首套房怎么认定？我之前有一套卖了算首套吗？',
@@ -387,7 +387,7 @@ const STAGE_SCRIPTS = {
   market: {
     icon: '🔍',
     title: '了解市场',
-    desc: 'AI 现在是「挑花眼的客户」，想对比又怕被忽悠。你是经纪人，给真实数据。',
+    desc: '模拟客户现在「挑花眼」，想对比又怕被忽悠。你是经纪人，给真实数据。',
     practiceQs: [
       '我想等房价跌了再买，你觉得呢？',
       '帮我对比一下大西洋新城和对面的季景沁园',
@@ -399,7 +399,7 @@ const STAGE_SCRIPTS = {
   invite: {
     icon: '🏠',
     title: '邀约带看',
-    desc: 'AI 现在是「忙到没空出门的客户」，抗拒带看。你是经纪人，怎么破？',
+    desc: '模拟客户现在「忙到没空出门」，抗拒带看。你是经纪人，怎么破？',
     practiceQs: [
       '我最近太忙了，等有空再说吧',
       '我就随便看看，不急',
@@ -411,7 +411,7 @@ const STAGE_SCRIPTS = {
   negotiate: {
     icon: '💬',
     title: '带看议价',
-    desc: 'AI 现在是「带看完想压价的客户」，各种砍价理由。你是经纪人，怎么接？',
+    desc: '模拟客户现在「带看完想压价」，各种砍价理由。你是经纪人，怎么接？',
     practiceQs: [
       '太贵了，比周边小区贵 20 万',
       '回去商量一下，不急',
@@ -423,7 +423,7 @@ const STAGE_SCRIPTS = {
   transaction: {
     icon: '💰',
     title: '交易安全',
-    desc: 'AI 现在是「怕被骗的客户」，签约前各种担心。你是经纪人，怎么让他放心？',
+    desc: '模拟客户现在「怕被骗」，签约前各种担心。你是经纪人，怎么让他放心？',
     practiceQs: [
       '资金监管安全吗？钱打给谁？',
       '首套房契税多少？怎么算的？',
@@ -435,7 +435,7 @@ const STAGE_SCRIPTS = {
   closing: {
     icon: '🔄',
     title: '过户交接',
-    desc: 'AI 现在是「快过户的客户」，担心户口、水电、尾款。你是经纪人，帮他顺。',
+    desc: '模拟客户现在「快过户」，担心户口、水电、尾款。你是经纪人，帮他顺。',
     practiceQs: [
       '过户后户口怎么迁？原业主不迁怎么办？',
       '交房时要注意什么？原业主留的东西要吗？',
