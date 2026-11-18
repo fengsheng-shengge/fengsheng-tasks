@@ -38,6 +38,19 @@
     align-items: center;
     border-bottom: 1px solid var(--line);
   }
+  /* 🔒 内部预览水印 banner */
+  .internal-beta-banner {
+    position: sticky; top: 0; z-index: 999;
+    background: linear-gradient(90deg, #c9a962 0%, #e67e22 100%);
+    color: #fff;
+    font-size: 12px; font-weight: 600;
+    padding: 8px 48px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .internal-beta-banner .ib-icon { font-size: 14px; }
+  .internal-beta-banner .ib-text { flex: 1; letter-spacing: 0.5px; }
+  .internal-beta-banner .ib-close { cursor: pointer; opacity: 0.7; font-size: 14px; }
+  .internal-beta-banner .ib-close:hover { opacity: 1; }
   .logo-area { display: flex; align-items: center; gap: 12px; }
   .logo-icon {
     width: 32px; height: 32px;
@@ -1450,6 +1463,13 @@
       <span class="city-selector" onclick="alert('选择服务城市：匹配当地政策/税费/贷款/商圈数据')">📍 北京 ▾</span>
       <div class="avatar">👤</div>
     </div>
+  </div>
+
+  <!-- 🔒 内部预览水印（G1，12.31 边界）-->
+  <div class="internal-beta-banner">
+    <span class="ib-icon">🔒</span>
+    <span class="ib-text">内部预览 · 仅内部账号可见 · 2026-12-31 上线 · 不宣称对外循证</span>
+    <span class="ib-close" onclick="this.parentElement.style.display='none'" title="临时隐藏">✕</span>
   </div>
 
   <!-- 领域Tab -->
