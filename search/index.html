@@ -931,6 +931,15 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
 
   // ========== Start ==========
   init();
+
+  // 🆕 蓝图 C1 兜底：defer 脚本（EvidenceAdapter/EvidenceLink）加载完后再渲染一次证据卡
+  // 内联脚本在 defer 前执行 → 初次 renderEvidenceForSearch 时 EvidenceLink 未就绪
+  // setTimeout 确保 defer 脚本执行完后再补渲染一次
+  setTimeout(function() {
+    if (window.EvidenceLink && window.EvidenceAdapter) {
+      renderEvidenceForSearch();
+    }
+  }, 200);
 })();
 </script>
 <!-- fs-module-guide -->
