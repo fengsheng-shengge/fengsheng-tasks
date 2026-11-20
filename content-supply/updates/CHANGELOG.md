@@ -17,3 +17,5 @@
 - **仓库首推补登**：content-supply/ 此前仅本地存在（push 缺失，小酒窝儿首审失败真根因），11:45 补推远端 commit 40695d5，DICTIONARY/候选v3/预检器/CHANGELOG API 逐项验证在位；对账小马丫两个悬置（8c8f50f8=拍板前v2/丁已拍已执行）om_x100b60c87cb77cb0cd088176a70f8b2；source_url 分层抽检采纳（GAP-2 验收标准）| — | 小眼镜 | om_x100b60c87cb77cb0cd088176a70f8b2
 
 - 小酒窝儿首次「通过」回执退回（om_x100b60c80dbbccb4b49015db7ca1887）：回执按 v2 旧值复述（md5 8c8f50f8/分布 2557-875-1776），未实际取件；我方三方复核（本地=坚果云=预检报告）均为 d1387551 无漂移；发 5 分钟快审包（md5 d1387551+三数对照/或跑预检器）；RISK 无二次送审（v3 即终态）；commit 挂起等 v3 回执 | — | 小眼镜 | om_x100b60c80dbbccb4b49015db7ca1887
+
+- 技术线 #245 P0 四件套+证据包导出页交付验收（8 commit 全线上）：过期过滤与字典时效口径对齐✓、立场签过渡=机构立场不造假✓；渲染门禁两条交付组件侧（CITY CONDITIONAL 不亮绿/RISK 830 derived+note 非 official）；技术线清单旧基准 8c8f50f8 更正为 d1387551；衔接时序=今晚 commit→authority.json 交付组件 | — | 小眼镜 | om_x100b60c81457f4b8b4b0c63b7cc5094
