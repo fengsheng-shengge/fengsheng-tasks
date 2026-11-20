@@ -333,7 +333,24 @@ function gradeOf(pct) {
 
 function startExam(dim) {
   var db = EXAM_DB[dim];
-  currentExam = { dim: dim, idx: 0, answers: new Array(db.total).fill(null), review: null };
+  // 每次开考：题目整体顺序 shuffle + 每题选项顺序 shuffle
+  var shuffledQs = db.questions.slice();
+  for (var i = shuffledQs.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = shuffledQs[i]; shuffledQs[i] = shuffledQs[j]; shuffledQs[j] = t;
+  }
+  shuffledQs = shuffledQs.map(function(q){
+    var opts = q.opts.slice();
+    var correctText = opts[q.a];  // 记住正确答案的"文本"
+    for (var k = opts.length - 1; k > 0; k--) {
+      var jj = Math.floor(Math.random() * (k + 1));
+      var tt = opts[k]; opts[k] = opts[jj]; opts[jj] = tt;
+    }
+    var newA = opts.indexOf(correctText);  // 正确答案新索引
+    return { q: q.q, opts: opts, a: newA, src: q.src };
+  });
+  // 存入当前考试 session（原 db.questions 不变，重开考重新 shuffle）
+  currentExam = { dim: dim, idx: 0, answers: new Array(shuffledQs.length).fill(null), review: null, _qs: shuffledQs, _total: shuffledQs.length };
   document.getElementById('exam-overlay').classList.add('show');
   document.getElementById('em-title').textContent = dim + ' · ' + db.name + ' · 岗位考核';
   reviewMode = false;
@@ -353,21 +370,22 @@ function startFullExam() {
 
 function renderQuestion() {
   if (!currentExam) return;
-  var db = EXAM_DB[currentExam.dim];
   var idx = currentExam.idx;
+  var total = currentExam._total;
+  var qs = currentExam._qs;
 
   // 结果页
-  if (idx >= db.total) {
+  if (idx >= total) {
     renderResult();
     return;
   }
 
-  var q = db.questions[idx];
+  var q = qs[idx];
   var answered = currentExam.answers[idx] != null;
 
   // 进度
-  document.getElementById('em-progress-label').textContent = (idx + 1) + ' / ' + db.total;
-  document.getElementById('em-fill').style.width = ((idx) / db.total * 100) + '%';
+  document.getElementById('em-progress-label').textContent = (idx + 1) + ' / ' + total;
+  document.getElementById('em-fill').style.width = ((idx) / total * 100) + '%';
 
   // 题干
   var letters = ['A','B','C','D'];
@@ -393,7 +411,7 @@ function renderQuestion() {
   // 底部按钮
   var foot = document.getElementById('em-foot');
   if (answered && !currentExam.review) {
-    foot.innerHTML = idx === db.total - 1
+    foot.innerHTML = idx === total - 1
       ? '<button class="em-btn em-btn-primary" onclick="submitExam()">提交 →</button>'
       : '<button class="em-btn em-btn-primary" onclick="nextQuestion()">下一题 →</button>';
   } else if (!answered) {
@@ -412,8 +430,7 @@ function selectOption(i) {
   document.querySelector('.em-option[data-idx="' + i + '"]').classList.add('selected');
   // 启用下一题
   var foot = document.getElementById('em-foot');
-  var db = EXAM_DB[currentExam.dim];
-  foot.innerHTML = idx === db.total - 1
+  foot.innerHTML = idx === currentExam._total - 1
     ? '<button class="em-btn em-btn-primary" onclick="submitExam()">提交 →</button>'
     : '<button class="em-btn em-btn-primary" onclick="nextQuestion()">下一题 →</button>';
 }
@@ -427,27 +444,28 @@ function nextQuestion() {
 
 function submitExam() {
   if (!currentExam) return;
-  var db = EXAM_DB[currentExam.dim];
+  var total = currentExam._total;
+  var qs = currentExam._qs;
   // 算分
   var score = 0;
   var wrongs = [];
   var rights = [];
-  for (var i = 0; i < db.total; i++) {
-    if (currentExam.answers[i] === db.questions[i].a) { score++; rights.push(i); }
+  for (var i = 0; i < total; i++) {
+    if (currentExam.answers[i] === qs[i].a) { score++; rights.push(i); }
     else wrongs.push(i);
   }
-  var pct = Math.round(score / db.total * 100);
+  var pct = Math.round(score / total * 100);
   var grade = gradeOf(pct);
 
   // 存 localStorage
-  saveResults(currentExam.dim, score, db.total, currentExam.answers);
+  saveResults(currentExam.dim, score, total, currentExam.answers);
 
   // 结果渲染
   var reviewHtml = '';
   if (wrongs.length > 0) {
     reviewHtml = '<div class="em-review"><div style="font-weight:600;color:#1a3d24;margin-bottom:8px">❌ 错题回顾（' + wrongs.length + ' 题）</div>';
     wrongs.forEach(function(wi) {
-      var q = db.questions[wi];
+      var q = qs[wi];
       var letters = ['A','B','C','D'];
       reviewHtml += '<div class="em-review-item wrong"><div class="ri-icon">✗</div><div>' + (wi+1) + '. ' + q.q + '<br><span style="color:#c25636">你的答案: ' + letters[currentExam.answers[wi]] + '. ' + q.opts[currentExam.answers[wi]] + '</span> · <span style="color:#2d5a3d">正确: ' + letters[q.a] + '. ' + q.opts[q.a] + '</span></div></div>';
     });

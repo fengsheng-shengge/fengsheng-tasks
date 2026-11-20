@@ -511,11 +511,18 @@ var weakDimsGlobal = [];  // 保存最弱维度，供培养助理按钮使用
 var quizSet = [];         // 每次开测时选项顺序随机打乱后的题目集（防止"选第一个总对"）
 
 function buildQuizSet(){
-  quizSet = QUESTIONS.map(function(q){
+  // 1. 先打乱题目整体顺序（让每次重测题号不同）
+  var shuffledQ = QUESTIONS.slice();
+  for (var i = shuffledQ.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = shuffledQ[i]; shuffledQ[i] = shuffledQ[j]; shuffledQ[j] = t;
+  }
+  // 2. 每题内部的选项也打乱
+  quizSet = shuffledQ.map(function(q){
     var opts = q.options.slice();
-    for (var i = opts.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var t = opts[i]; opts[i] = opts[j]; opts[j] = t;
+    for (var k = opts.length - 1; k > 0; k--) {
+      var jj = Math.floor(Math.random() * (k + 1));
+      var tt = opts[k]; opts[k] = opts[jj]; opts[jj] = tt;
     }
     return { id:q.id, dim:q.dim, stage:q.stage, dimColor:q.dimColor, title:q.title, subtitle:q.subtitle, options:opts };
   });
