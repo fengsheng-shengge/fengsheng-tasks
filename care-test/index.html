@@ -996,8 +996,8 @@ function renderNextSteps(avg, lowest, secondLowest){
     cards.push({
       emoji: emoji + '🎭',
       title: dim + ' · 去练场景',
-      desc: '模拟真实客户跟你对话，练这个维度的实战',
-      href: '/scene/?dim=' + dimId,
+      desc: '模拟真实客户对话，练这个维度的实战',
+      href: '/academy/practice/',
       color: color
     });
 
@@ -1011,20 +1011,20 @@ function renderNextSteps(avg, lowest, secondLowest){
     });
   }
 
-  // 如果只有 2 个卡，补 📚 去学 + ✅ 做完整 35 题
+  // 如果只有 2 个卡，补 📚 去学 + ✅ 去看画像
   if(cards.length < 4){
     cards.push({
       emoji: '📚',
       title: '去学核心课',
-      desc: dims[0] + '入门 · 60-90 分钟 · 系统补强',
-      href: '/agent-academy/',
+      desc: dims[0] + '入门 · 系统补强',
+      href: '/academy/core-courses/',
       color: '#1a3d24'
     });
     cards.push({
-      emoji: '📝',
-      title: '做完整 35 题全量',
-      desc: '7 维完整画像 · 综合分 + 雷达图',
-      href: '/care-test/',
+      emoji: '📊',
+      title: '查看能力画像',
+      desc: '7 维雷达图 · 综合分 · 历史趋势',
+      href: '/academy/profile/',
       color: '#c9a962'
     });
   }

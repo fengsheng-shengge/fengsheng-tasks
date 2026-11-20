@@ -120,6 +120,47 @@ a{text-decoration:none;color:inherit}
   <div class="loop-note">六环全部开放 · 建议顺序：先测 → 再学练 → 后考评</div>
 </div>
 
+<!-- ========== 你的学习记录（动态读取 localStorage ========== -->
+<div id="my-record-bar" style="display:none;margin-top:14px;padding:14px 18px;background:linear-gradient(135deg,#fdf9ef,#fffbf3);border:1px solid #e8e4da;border-radius:12px;display:flex;align-items:center;gap:16px;"></div>
+
+<script>
+(function(){
+  try {
+    var bar = document.getElementById('my-record-bar');
+    if (!bar) return;
+    var care = JSON.parse(localStorage.getItem('fs_care_profile') || 'null');
+    var examResults = JSON.parse(localStorage.getItem('fs_exam_results') || '{}');
+    var history = JSON.parse(localStorage.getItem('fs_care_history') || '[]');
+    if (!care && Object.keys(examResults).length === 0 && history.length === 0) return; // 啥都没做就不显示
+
+    var html = '';
+    // 综合分
+    if (care && care.total) {
+      html += '<div style="font-size:13px;color:#666">上次测评 <b style="font-size:20px;color:#8a7040">' + care.total + '</b> 分';
+      if (care.timestamp) {
+        var d = new Date(care.timestamp);
+        html += ' <span style="color:#aaa;font-size:11px">' + d.getMonth()+1 + '/' + d.getDate() + '</span>';
+      }
+      html += '</div>';
+    }
+    // 历史次数
+    if (history.length > 0) {
+      html += '<div style="font-size:11px;color:#888">共 ' + history.length + ' 次测评 · 最近趋势 ' +
+        (history.length >= 2 ? (history[history.length-1].total >= history[history.length-2].total ? '📈' : '📉') : '—') +
+      '</div>';
+    }
+    // 考核维度
+    var examDims = Object.keys(examResults);
+    if (examDims.length > 0) {
+      html += '<div style="font-size:11px;color:#888">已考核 ' + examDims.length + '/7 维度</div>';
+    }
+    html += '<a href="/academy/profile/" style="margin-left:auto;padding:6px 14px;background:#8a7040;color:#fff;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600">📊 查看完整画像 →</a>';
+    bar.style.display = 'flex';
+    bar.innerHTML = html;
+  } catch(e) {}
+})();
+</script>
+
 <style>
 .ls-go{display:block;margin-top:6px;font-size:11px;color:#8a7040;font-weight:600}
 .loop-step:hover{background:#fdf9ef;cursor:pointer}
