@@ -426,7 +426,7 @@ var BADGES = [
   { id:'trend-up', emoji:'📈', name:'稳步进步', desc:'最近 3 次测评综合分连续提升', check:function(info){ var h=info.history; if(h.length<3) return false; var t=[h[h.length-3].total,h[h.length-2].total,h[h.length-1].total]; return t[2]>t[1] && t[1]>t[0]; }},
   { id:'top-dim', emoji:'💪', name:'某维度 ≥ 85', desc:'任一维度分数达到 85+', check:function(info){ var s=info.scores; return Object.keys(s).some(function(k){ return s[k]!=null && s[k]>=85; }); }},
   { id:'balanced', emoji:'⚖️', name:'均衡发展', desc:'7 维度分数标准差 ≤ 15', check:function(info){ var s=info.scores; var vals=Object.keys(s).map(function(k){return s[k];}).filter(function(x){return x!=null;}); if(vals.length<7) return false; var avg=vals.reduce(function(a,b){return a+b;},0)/vals.length; var sd=Math.sqrt(vals.reduce(function(a,b){return a+(b-avg)*(b-avg);},0)/vals.length); return sd <= 15; }},
-  { id:'practice-3', emoji:'🎭', name:'练过 3 个场景', desc:'完成 3 个场景练习对话', check:function(info){ try{ var p=JSON.parse(localStorage.getItem('fs_practice_done')||'[]'); return p.length>=3; }catch(e){return false;} }},
+  { id:'practice-3', emoji:'🎭', name:'练过 3 个场景', desc:'完成 3 个场景练习对话', check:function(info){ try{ var p=JSON.parse(localStorage.getItem('fs_practice_done')||'{}'); return Object.keys(p).length>=3; }catch(e){return false;} }},
   { id:'course-50', emoji:'📚', name:'课程完成 50%', desc:'至少一门核心课完成 ≥ 50% 章节', check:function(info){ try{ var p=JSON.parse(localStorage.getItem('fs_course_progress')||'{}'); var dims=Object.keys(p); if(dims.length===0) return false; return dims.some(function(d){ var ids=COURSE_COUNT[d]||5; return p[d].length>=Math.ceil(ids/2); }); }catch(e){return false;} }},
 ];
 var COURSE_COUNT = {};

@@ -261,12 +261,22 @@ function render() {
 
     // 结局
     if (state.turnIdx >= turns.length) {
+      // 存库：完成场景 → fs_practice_done[sceneId]
+      try {
+        var done = JSON.parse(localStorage.getItem('fs_practice_done') || '{}');
+        if (!done[scene.id]) {
+          done[scene.id] = { timestamp: new Date().toISOString() };
+          localStorage.setItem('fs_practice_done', JSON.stringify(done));
+        }
+      } catch(e) {}
+
       html += '<div class="feedback" style="margin-top:20px">' +
-        '<div class="fback-title">🏁 场景结局</div>' +
+        '<div class="fback-title">🏁 场景结局 <span style="font-size:10px;background:#e8f4ec;color:#2d5a3d;padding:2px 8px;border-radius:10px;margin-left:8px">✓ 已解锁徽章</span></div>' +
         '<div class="fback-body">' + scene.endMsg + '</div>' +
         '<div style="margin-top:14px;display:flex;gap:10px">' +
           '<button onclick="resetScene()" class="ch-body-btn primary" style="font-size:13px;padding:8px 20px;border-radius:8px;border:none;cursor:pointer">🔄 重玩这个</button>' +
           '<button onclick="backToList()" class="ch-body-btn secondary" style="font-size:13px;padding:8px 20px;border-radius:8px;border:1px solid #e8e4da;background:#fff;cursor:pointer;color:#1a3d24">🎭 选下一个场景</button>' +
+          '<a href="/academy/profile/" style="display:inline-block;background:#fdf9ef;color:#8a7040;font-size:13px;padding:8px 20px;border-radius:8px;border:1px solid #e8e4da;text-decoration:none">🏆 看成就徽章 →</a>' +
         '</div>' +
       '</div>';
     }
