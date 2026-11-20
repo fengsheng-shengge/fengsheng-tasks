@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>场景练习 · 学习成长 | 风声信息咨询</title>
-<meta name="description" content="21 个真实客户对话场景练习——嫌贵怎么回、砍价怎么接、异议怎么拆。练完给评分和话术复盘。">
+<title>场景练习 · 学习成长</title>
+<meta name="description" content="3 个真实带看场景对话模拟，练你的话术反应。">
 <link rel="icon" href="/favicon.png" type="image/png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -17,26 +17,61 @@ a{text-decoration:none;color:inherit}
 .fs-top-links{display:flex;gap:14px;font-size:13px;flex-wrap:wrap;flex:1;justify-content:center}
 .fs-top-links a{color:#555;white-space:nowrap}
 .fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
-.fs-top-actions{display:flex;gap:10px;align-items:center;font-size:13px;flex-shrink:0}
-@media(max-width:960px){.fs-top-links,.fs-top-actions{display:none}}
+@media(max-width:960px){.fs-top-links{display:none}}
+
+/* loop strip */
 .loop-strip{max-width:880px;margin:24px auto 0;background:#fff;border:1px solid #e8e4da;border-radius:14px;display:flex;overflow:hidden}
 .loop-strip a{flex:1;padding:12px 4px;text-align:center;font-size:12px;color:#666;border-right:1px dashed #e8e4da}
 .loop-strip a:last-child{border-right:none}
 .loop-strip a .ls-name{display:block;font-weight:700;font-size:14px;margin-bottom:2px}
 .loop-strip a.hl{background:linear-gradient(135deg,#fdf9ef,#fffbf3);color:#8a7040}
+
 .pg{max-width:880px;margin:24px auto;padding:0 24px}
 .pg-h{font-size:26px;font-weight:800;color:#1a3d24;margin-bottom:6px}
 .pg-sub{font-size:14px;color:#6b6b6b;margin-bottom:20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
-.card{background:#fff;border:1px solid #e8e4da;border-radius:12px;padding:18px;cursor:pointer}
-.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,61,36,.08)}
-.card .p-tag{font-size:10px;font-weight:700;color:#fff;background:#8a7040;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;letter-spacing:1px}
-.card .p-icon{font-size:26px;margin-bottom:6px}
-.card .p-name{font-size:15px;font-weight:700;color:#1a3d24;margin-bottom:6px}
-.card .p-scene{font-size:12.5px;color:#777;line-height:1.7;margin-bottom:10px;font-style:italic}
-.card .p-meta{display:flex;gap:8px;font-size:11px;color:#999;flex-wrap:wrap}
-.card .p-meta span{background:#faf5ea;padding:2px 8px;border-radius:4px}
-.card .p-cta{margin-top:12px;font-size:12px;font-weight:600;color:#1a3d24}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.p-card{background:#fff;border:1px solid #e8e4da;border-radius:12px;padding:18px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.p-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,61,36,.08)}
+.p-card.active{border-color:#1a3d24;background:linear-gradient(135deg,#fdf9ef,#fffbf3)}
+.p-card .p-emoji{font-size:32px;margin-bottom:8px}
+.p-card .p-scene{font-size:11px;font-weight:700;color:#8a7040;margin-bottom:4px}
+.p-card .p-name{font-size:15px;font-weight:700;color:#1a3d24;margin-bottom:6px}
+.p-card .p-desc{font-size:12.5px;color:#777;line-height:1.7}
+
+/* chat area */
+.chat-box{max-width:880px;margin:20px auto 0;background:#fff;border:1px solid #e8e4da;border-radius:14px;overflow:hidden}
+.chat-hdr{padding:14px 20px;background:#fdf9ef;border-bottom:1px solid #e8e4da;display:flex;align-items:center;gap:12px}
+.chat-hdr .ch-title{font-size:14px;font-weight:700;color:#1a3d24;flex:1}
+.chat-hdr .ch-turn{font-size:11px;color:#8a7040;background:#fff;padding:3px 10px;border-radius:10px;border:1px solid #e8e4da}
+.chat-body{max-height:400px;overflow-y:auto;padding:16px 20px}
+.msg{margin-bottom:14px;display:flex;gap:10px}
+.msg .avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.msg.client .avatar{background:#ffe8e8}
+.msg.me .avatar{background:#e8f4ec}
+.msg .bubble{flex:1;padding:10px 14px;border-radius:10px;font-size:13.5px;line-height:1.7}
+.msg.client .bubble{background:#faf5ea;color:#5a4a2a}
+.msg.me .bubble{background:#e8f4ec;color:#1a3d24}
+.msg .name{font-size:11px;color:#999;margin-bottom:3px}
+
+/* choices */
+.choices{padding:14px 20px;background:#faf5ea;border-top:1px solid #e8e4da}
+.choices .c-label{font-size:11px;font-weight:700;color:#8a7040;margin-bottom:10px}
+.choices button{display:block;width:100%;text-align:left;background:#fff;border:1px solid #e8e4da;padding:12px 14px;border-radius:10px;font-size:13.5px;color:#333;margin-bottom:8px;cursor:pointer;transition:all .12s;font-family:inherit}
+.choices button:hover{background:#1a3d24;color:#fff;border-color:#1a3d24;transform:translateX(4px)}
+.choices button:last-child{margin-bottom:0}
+.choices button.disabled{opacity:.5;cursor:not-allowed}
+
+/* feedback */
+.feedback{max-width:880px;margin:16px auto 0;background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:16px 20px}
+.fback-title{font-size:14px;font-weight:700;color:#1a3d24;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.fback-title .fbadge{font-size:11px;padding:2px 8px;border-radius:4px}
+.fgood{background:#e8f4ec;color:#2d5a3d}
+.fbad{background:#ffe8e8;color:#c25636}
+.fback-body{font-size:13px;color:#555;line-height:1.8}
+.fback-body strong{color:#1a3d24}
+
 .footer-note{max-width:880px;margin:40px auto 0;padding:22px 24px 34px;border-top:1px solid #e8e4da;font-size:12px;color:#999;text-align:center;line-height:1.9}
 </style>
 </head>
@@ -45,15 +80,18 @@ a{text-decoration:none;color:inherit}
 <nav class="fs-top-nav">
   <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声</span></a>
   <div class="fs-top-links">
-    <a href="/">首页</a><a href="/workspace/">工作台</a><a href="/knowledge/">知识底座</a>
-    <a href="/curation/">策展引擎</a><a href="/decoder/">话术解码</a>
-    <a href="/assessment/">能力测评</a><a class="active" href="/academy/">学习成长</a>
+    <a href="/">首页</a>
+    <a href="/workspace/">工作台</a>
+    <a href="/knowledge/">知识底座</a>
+    <a href="/curation/">策展引擎</a>
+    <a href="/decoder/">话术解码</a>
+    <a href="/assessment/">能力测评</a>
+    <a class="active" href="/academy/">学习成长</a>
   </div>
-  <div class="fs-top-actions"><span class="fs-top-avatar">👤</span></div>
 </nav>
 
 <div class="loop-strip">
-  <a href="/assessment/">📋<span class="ls-name">测</span>测评</a>
+  <a href="/assessment/">📋<span class="ls-name">测</span>能力测评</a>
   <a href="/academy/core-courses/">📖<span class="ls-name">学</span>核心课</a>
   <a class="hl" href="/academy/practice/">🎭<span class="ls-name">练</span>场景</a>
   <a href="/academy/exam/">📝<span class="ls-name">考</span>考核</a>
@@ -61,24 +99,208 @@ a{text-decoration:none;color:inherit}
   <a href="/academy/match/">🎯<span class="ls-name">配</span>岗位</a>
 </div>
 
-<div class="pg">
-  <h2 class="pg-h">🎭 场景练习</h2>
-  <p class="pg-sub">21 个真实对话场景 · AI 模拟客户 · 练完给评分 + 话术复盘 + 关联知识底座词条</p>
+<div id="root"></div>
 
-  <div class="grid">
-    <a class="card" href="/academy/practice/chat/?id=1"><span class="p-tag">DIM-4 谈判</span><div class="p-icon">💰</div><div class="p-name">客户说"太贵了"</div><div class="p-scene">客户看完房直摇头："这个价太高了，比同小区还贵 10 万。"</div><div class="p-meta"><span>中阶</span><span>3 轮对话</span></div><div class="p-cta">开始练习 →</div></a>
-    <a class="card" href="/academy/practice/chat/?id=2"><span class="p-tag">DIM-4 谈判</span><div class="p-icon">✂️</div><div class="p-name">客户砍价"80 万能成吗"</div><div class="p-scene">客户看完你推荐的 95 万房源，直接砍到 80 万。</div><div class="p-meta"><span>高阶</span><span>5 轮对话</span></div><div class="p-cta">开始练习 →</div></a>
-    <a class="card" href="/academy/practice/chat/?id=3"><span class="p-tag">DIM-2 洞察</span><div class="p-icon">❓</div><div class="p-name">客户问不出真实需求</div><div class="p-scene">客户说"随便看看"，实际上心里有明确的学区要求。</div><div class="p-meta"><span>高阶</span><span>4 轮对话</span></div><div class="p-cta">开始练习 →</div></a>
-    <a class="card" href="/academy/practice/chat/?id=4"><span class="p-tag">DIM-3 方案</span><div class="p-icon">🏫</div><div class="p-name">学区房 vs 非学区怎么选</div><div class="p-scene">客户纠结学区房溢价 30 万 vs 非学区房省下来的钱。</div><div class="p-meta"><span>中阶</span><span>4 轮对话</span></div><div class="p-cta">开始练习 →</div></a>
-    <a class="card" href="/academy/practice/chat/?id=5"><span class="p-tag">DIM-4 谈判</span><div class="p-icon">⚠️</div><div class="p-name">客户拿别家比价压你</div><div class="p-scene">"XX 中介给我报的那个同户型才 90 万，你怎么报 95 万？"</div><div class="p-meta"><span>高阶</span><span>5 轮对话</span></div><div class="p-cta">开始练习 →</div></a>
-    <a class="card" href="/academy/practice/chat/?id=6"><span class="p-tag">DIM-1 获客</span><div class="p-icon">📱</div><div class="p-name">首次微信触达怎么开场</div><div class="p-scene">客户刚加你微信，怎么开场不被当垃圾消息？</div><div class="p-meta"><span>初阶</span><span>3 轮对话</span></div><div class="p-cta">开始练习 →</div></a>
-    <a class="card" href="/academy/practice/chat/?id=7"><span class="p-tag">DIM-5 履约</span><div class="p-icon">📄</div><div class="p-name">网签环节客户问东问西</div><div class="p-scene">签网签合同，客户逐条问条款："这个是什么意思？""会不会坑我？"</div><div class="p-meta"><span>中阶</span><span>4 轮对话</span></div><div class="p-cta">开始练习 →</div></a>
-    <a class="card" href="/academy/practice/chat/?id=8"><span class="p-tag">DIM-4 谈判</span><div class="p-icon">🚪</div><div class="p-name">客户"我再想想，不急"</div><div class="p-scene">带看完房，客户说"我回去和家人商量一下"，然后就没消息了。</div><div class="p-meta"><span>中阶</span><span>4 轮对话</span></div><div class="p-cta">开始练习 →</div></a>
-    <a class="card" href="/academy/practice/chat/?id=9"><span class="p-tag">DIM-6 复购</span><div class="p-icon">🔁</div><div class="p-name">成交后怎么维护</div><div class="p-scene">客户刚签单，接下来 3 个月、6 个月、1 年怎么跟进不打扰？</div><div class="p-meta"><span>中阶</span><span>4 轮对话</span></div><div class="p-cta">开始练习 →</div></a>
-  </div>
-  <div style="margin-top:20px;padding:14px;background:#fff;border:1px dashed #e8e4da;border-radius:8px;text-align:center;color:#999;font-size:13px">剩余 12 个场景 · 内容生成中 · 陆续开放</div>
-</div>
+<div class="footer-note">风声 · 经纪人成长陪练 · 学习成长中心</div>
 
-<div class="footer-note">风声信息咨询 · 经纪人成长陪练<br>© 2026 fengsheng.tech</div>
+<script>
+// 3 个真实带看场景对话
+var SCENES = [
+  {
+    id: 'price-haggle',
+    icon: '💰',
+    scene: 'DIM-4 带看谈判',
+    name: '客户砍价砍到你没脾气',
+    desc: '客户看完一套 380 万的房子，开口就要 320 万。怎么接？',
+    intro: '你刚带张先生和太太看完一套 380 万的两居室，小区品质不错，房子装修保养也好。张先生一家很满意，但砍价幅度超预期。',
+    turns: [
+      {speaker:'client', text:'这房子确实还可以，但 380 万太贵了，320 万差不多。'},
+      {choices:[
+        {text:'"张先生，这 320 万确实低于市场价，我帮您跟业主沟通看看能不能象征性让一点。"', feedback:'bad', fbText:'❌ 直接答应沟通等于让了底线。客户会觉得还有空间。'},
+        {text:'"张先生，您说的这个 320 万，我想了解一下是怎么算出来的？"', feedback:'good', fbText:'✅ 好做法！先问预算来源，是看了同小区便宜的？还是客户预算只有 320？搞清动机再谈。'},
+        {text:'"320 万真不行，这套同户型上周成交 365 万，380 已经是业主诚意价了。"', feedback:'good', fbText:'✅ 用事实说话，锚定市场价，让客户知道你的报价是有理有据的。'},
+      ]},
+      {speaker:'me', text:'"张先生，您说的这个 320 万，我想了解一下是怎么算出来的？"'},
+      {speaker:'client', text:'我之前看了隔壁小区差不多的，才 330 万。'},
+      {choices:[
+        {text:'"隔壁小区是回迁房，学区不一样的。"', feedback:'bad', fbText:'❌ 直接说回迁房容易引起反感，客户会觉得你看不起他的观察。'},
+        {text:'"哦，您说的是阳光家园对吧？那小区我熟。确实面积差不多，但学区对口的是三小，咱们这个是实验小学，每年差价大概 30-40 万。我给您找两个成交价您对比一下？"', feedback:'good', fbText:'✅ 好！先认同，再指出差异（学区），用数据（每年差价）量化价值。'},
+        {text:'"不一样的，我们小区档次高多了。"', feedback:'bad', fbText:'❌ "档次高"太笼统，客户听不懂也不服。要说具体差异点。'},
+      ]},
+    ],
+    endMsg:'你用"认同→差异→数据"三档回法稳住了客户。最后客户接受 370 万报价，离 380 万只差 10 万。'
+  },
+  {
+    id: 'need-discovery',
+    icon: '🔍',
+    scene: 'DIM-2 需求洞察',
+    name: '客户说"随便看看"但其实有明确刚需',
+    desc: '客户走进门店说"随便看看"，但其实是替孩子找学区房，你能挖出来吗？',
+    intro: '刘阿姨走进门店，穿得体面但不张扬，说"随便看看"。这是典型的隐性需求场景——客户不会告诉你真实动机，你要挖。',
+    turns: [
+      {speaker:'client', text:'你们这附近有什么好房子？随便看看。'},
+      {choices:[
+        {text:'"阿姨您大概要几室？预算多少？"', feedback:'bad', fbText:'❌ 直接问预算客户不会说，防御心起来就不说了。'},
+        {text:'"阿姨您眼光好，这片区是我们最热门的。您是自己住还是帮孩子看呀？"', feedback:'good', fbText:'✅ 对！先夸客户降低防御，再用"自己住还是帮孩子"的二选一提问——帮孩子大概率=学区房。'},
+        {text:'"阿姨您请坐，喝水。"（先闲聊不聊房子）', feedback:'bad', fbText:'❌ 太绕了，客户时间宝贵。适度闲聊即可，还是要快速切入。'},
+      ]},
+      {speaker:'me', text:'"阿姨您眼光好，这片区是我们最热门的。您是自己住还是帮孩子看呀？"'},
+      {speaker:'client', text:'嗨，别提了，我孙子今年要上学，找学区房呢。'},
+      {choices:[
+        {text:'"那您孙子今年几年级？对口哪个学校？"', feedback:'good', fbText:'✅ 问年级判断入学紧急度。低年级可以等好房，六年级要抢时间。'},
+        {text:'"学区房贵哦，您预算多少？"', feedback:'bad', fbText:'❌ 现在问预算太早，先挖掘更多需求维度。'},
+        {text:'"好的好的，我给您推几套学区房。"', feedback:'bad', fbText:'❌ 推之前先搞清预算/面积/位置偏好，不然推了白推。'},
+      ]},
+    ],
+    endMsg:'你挖到了刘阿姨孙子要上实验小学、预算 500 万左右、想要两居室离学校步行 10 分钟内。需求清晰后匹配效率提升 3 倍。'
+  },
+  {
+    id: 'fear-closing',
+    icon: '🎯',
+    scene: 'DIM-4 带看谈判',
+    name: '客户犹豫不决，你怎么临门一脚',
+    desc: '客户看完 3 次、犹豫 2 周、你怎么让他下决心？',
+    intro: '李哥看房 3 次，预算够，房子也满意，但就是不下决心。已经拖了 2 周，再拖可能被别人抢走。',
+    turns: [
+      {speaker:'client', text:'我再想想，不急不急。'},
+      {choices:[
+        {text:'"好的李哥，我再等等您消息。"', feedback:'bad', fbText:'❌ 等于放弃！客户不会主动回来的，要给他压力。'},
+        {text:'"李哥跟您说实话，这套房昨天有另外一个客户来看了，他今天要给答复。您那边如果定的话，我帮您跟业主先沟通预留一下？"', feedback:'good', fbText:'✅ 真实稀缺性逼单！不是虚假话术，用真实事实（有人在看）制造紧迫感。'},
+        {text:'"李哥您还在犹豫什么？"', feedback:'good', fbText:'✅ 好问题！直接问犹豫点，挖出是真有顾虑还是习惯性拖延。'},
+      ]},
+      {speaker:'me', text:'"李哥跟您说实话，这套房昨天有另外一个客户来看了，他今天要给答复。您那边如果定的话，我帮您跟业主先沟通预留一下？"'},
+      {speaker:'client', text:'那...那我下午能定，但能不能先让他看别的？我真的挺喜欢这套的。'},
+      {choices:[
+        {text:'"好的李哥！我现在就跟业主说您定了，让他先别跟另一个客户谈。"', feedback:'good', fbText:'✅ 趁热打铁！立即行动，不让客户反悔。同时让客户感觉你在帮他争取。'},
+        {text:'"好，那您下午过来签合同。"', feedback:'bad', fbText:'❌ 太干了，没有情感连接。'},
+        {text:'"好的李哥，但业主那边不能等太久。"', feedback:'bad', fbText:'❌ 还在施压？客户已经要定了，现在要给安全感。'},
+      ]},
+    ],
+    endMsg:'李哥当天下午签了合同。逼单不是忽悠，是帮客户做决策——因为如果他错过这套，大概率后悔。'
+  },
+];
+
+var state = { sceneId: null, turnIdx: 0, stepIdx: 0, feedbackShown: false };
+
+function render() {
+  var root = document.getElementById('root');
+  var html = '';
+
+  if (!state.sceneId) {
+    // 场景选择
+    html += '<div class="pg"><h2 class="pg-h">🎭 场景练习</h2><p class="pg-sub">3 个真实带看场景 · 选择题练反应 · 即时反馈</p>' +
+      '<div class="grid">' +
+      SCENES.map(function(s) {
+        return '<div class="p-card" onclick="enterScene(\'' + s.id + '\')">' +
+          '<div class="p-emoji">' + s.icon + '</div>' +
+          '<div class="p-scene">' + s.scene + '</div>' +
+          '<div class="p-name">' + s.name + '</div>' +
+          '<div class="p-desc">' + s.desc + '</div>' +
+        '</div>';
+      }).join('') +
+      '</div></div>';
+  } else {
+    var scene = SCENES.find(function(s){ return s.id === state.sceneId; });
+    var turns = scene.turns;
+
+    // 场景 header
+    html += '<div class="pg"><h2 class="pg-h">' + scene.icon + ' ' + scene.name + '</h2>' +
+      '<p class="pg-sub">' + scene.scene + ' · ' + scene.intro + '</p></div>';
+
+    // 对话区
+    html += '<div class="chat-box"><div class="chat-hdr">' +
+      '<div class="ch-title">' + scene.icon + ' ' + scene.name + '</div>' +
+      '<div class="ch-turn">进度 ' + state.turnIdx + '/' + turns.length + '</div></div>' +
+      '<div class="chat-body" id="chat-body">';
+
+    // 渲染已发生的对话
+    for (var i = 0; i <= state.turnIdx && i < turns.length; i++) {
+      var t = turns[i];
+      if (t.speaker) {
+        html += '<div class="msg ' + (t.speaker === 'me' ? 'me' : 'client') + '">' +
+          '<div class="avatar">' + (t.speaker === 'me' ? '🤵' : '👤') + '</div>' +
+          '<div><div class="name">' + (t.speaker === 'me' ? '你（经纪人）' : '客户') + '</div>' +
+          '<div class="bubble">' + t.text + '</div></div></div>';
+      }
+    }
+    html += '</div>';
+
+    // 如果还有选择没到，或者当前是 choice 节点
+    if (state.turnIdx < turns.length && turns[state.turnIdx].choices) {
+      var choiceIdx = state.stepIdx;
+      var choice = turns[state.turnIdx].choices[choiceIdx];
+      html += '<div class="choices">' +
+        '<div class="c-label">👆 客户说完了，你准备怎么回？</div>' +
+        turns[state.turnIdx].choices.map(function(c, ci) {
+          var disabled = state.feedbackShown && ci !== choiceIdx ? ' disabled' : '';
+          return '<button onclick="chooseOption(' + ci + ')"' + disabled + '>' + String.fromCharCode(65+ci) + '. ' + c.text + '</button>';
+        }).join('') +
+      '</div>';
+
+      if (state.feedbackShown) {
+        var fbClass = choice.feedback === 'good' ? 'fgood' : 'fbad';
+        html += '</div></div>' + // close chat-box
+          '<div class="feedback">' +
+          '<div class="fback-title"><span class="fbadge ' + fbClass + '">' + (choice.feedback === 'good' ? '✅ 好做法' : '⚠️ 可以改进') + '</span>反馈</div>' +
+          '<div class="fback-body">' + choice.fbText + '</div>' +
+          '<div style="margin-top:14px;display:flex;gap:10px">' +
+            '<button class="ch-body-btn primary" style="font-size:13px;padding:8px 20px;border-radius:8px;border:none;cursor:pointer" onclick="nextTurn()">' +
+            (state.turnIdx + 1 >= turns.length ? '🏁 看结局' : '继续 →') + '</button>' +
+            '<button class="ch-body-btn secondary" style="font-size:13px;padding:8px 20px;border-radius:8px;border:1px solid #e8e4da;background:#fff;cursor:pointer;color:#1a3d24" onclick="resetScene()">🔄 重玩</button>' +
+          '</div>' +
+        '</div>';
+      } else {
+        html += '</div></div>';
+      }
+    } else {
+      // 客户/经纪人文本节点 → 自动进入下一个
+      html += '</div></div>';
+      // 自动推进到下一个 choice
+      setTimeout(function() { nextTurn(); }, 500);
+    }
+
+    // 结局
+    if (state.turnIdx >= turns.length) {
+      html += '<div class="feedback" style="margin-top:20px">' +
+        '<div class="fback-title">🏁 场景结局</div>' +
+        '<div class="fback-body">' + scene.endMsg + '</div>' +
+        '<div style="margin-top:14px;display:flex;gap:10px">' +
+          '<button onclick="resetScene()" class="ch-body-btn primary" style="font-size:13px;padding:8px 20px;border-radius:8px;border:none;cursor:pointer">🔄 重玩这个</button>' +
+          '<button onclick="backToList()" class="ch-body-btn secondary" style="font-size:13px;padding:8px 20px;border-radius:8px;border:1px solid #e8e4da;background:#fff;cursor:pointer;color:#1a3d24">🎭 选下一个场景</button>' +
+        '</div>' +
+      '</div>';
+    }
+  }
+
+  root.innerHTML = html;
+  // scroll to bottom
+  var cb = document.getElementById('chat-body');
+  if (cb) cb.scrollTop = cb.scrollHeight;
+}
+
+function enterScene(id) {
+  state.sceneId = id; state.turnIdx = 0; state.stepIdx = 0; state.feedbackShown = false;
+  render();
+}
+function chooseOption(i) {
+  state.stepIdx = i;
+  state.feedbackShown = true;
+  render();
+}
+function nextTurn() {
+  state.turnIdx++; state.stepIdx = 0; state.feedbackShown = false;
+  render();
+}
+function resetScene() {
+  state.turnIdx = 0; state.stepIdx = 0; state.feedbackShown = false;
+  render();
+}
+function backToList() {
+  state.sceneId = null;
+  render();
+}
+
+render();
+</script>
 </body>
 </html>

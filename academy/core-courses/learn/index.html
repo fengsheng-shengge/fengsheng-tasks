@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>核心课详情 · 学习成长</title>
+<meta name="description" content="7 门核心课，每门课有章节、案例、关联知识底座词条。测出短板补哪门。">
+<link rel="icon" href="/favicon.png" type="image/png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#f7f5f0;color:#2b2b2b;line-height:1.6}
+a{text-decoration:none;color:inherit}
+.fs-top-nav{position:sticky;top:0;z-index:100;background:#f7f5f0;border-bottom:1px solid #e8e4da;padding:10px 32px;display:flex;align-items:center;gap:20px}
+.fs-top-logo{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.fs-top-mark{width:30px;height:30px;background:#1a3d24;color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.fs-top-name{font-size:14px;font-weight:700;color:#1a3d24;white-space:nowrap}
+.fs-top-links{display:flex;gap:14px;font-size:13px;flex-wrap:wrap;flex:1;justify-content:center}
+.fs-top-links a{color:#555;white-space:nowrap}
+.fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
+@media(max-width:960px){.fs-top-links{display:none}}
+
+/* back bar */
+.back-bar{max-width:820px;margin:20px auto 0;padding:0 24px;font-size:13px;color:#888}
+.back-bar a{color:#1a3d24;font-weight:600}
+.back-bar a:hover{text-decoration:underline}
+
+/* course header */
+.course-hdr{max-width:820px;margin:20px auto 0;padding:0 24px}
+.course-hdr .ch-badge{display:inline-block;background:#1a3d24;color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:1px;margin-bottom:10px}
+.course-hdr h1{font-size:28px;font-weight:800;color:#1a3d24;margin-bottom:8px}
+.course-hdr .ch-sub{font-size:14px;color:#6b6b6b;margin-bottom:14px}
+.course-hdr .ch-meta{display:flex;gap:12px;font-size:12px;color:#999;flex-wrap:wrap}
+.course-hdr .ch-meta span{background:#fff;border:1px solid #e8e4da;padding:4px 10px;border-radius:6px}
+
+/* progress */
+.progress-box{max-width:820px;margin:16px auto 0;padding:0 24px}
+.progress-bar{height:6px;background:#e8e4da;border-radius:3px;overflow:hidden;margin-bottom:8px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#1a3d24,#2d5a3d);border-radius:3px;transition:width .3s}
+.progress-label{font-size:12px;color:#888}
+.progress-label span{font-weight:700;color:#1a3d24}
+
+/* chapters */
+.chapter-list{max-width:820px;margin:20px auto 0;padding:0 24px}
+.chapter{background:#fff;border:1px solid #e8e4da;border-radius:12px;margin-bottom:10px;overflow:hidden}
+.chapter-top{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;transition:background .12s}
+.chapter-top:hover{background:#fdfaf2}
+.ch-top-num{font-size:13px;font-weight:700;color:#8a7040;min-width:22px;text-align:center}
+.ch-top-title{flex:1;font-size:14.5px;font-weight:600;color:#1a3d24}
+.ch-top-tag{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700}
+.ch-top-tag.proc{background:#fff8e7;color:#b38600}
+.ch-top-tag.pol{background:#e7f0ff;color:#1a3d24}
+.ch-top-tag.case{background:#ffe8e8;color:#c25636}
+.ch-top-tag.std{background:#f0ece2;color:#6b5a3e}
+.ch-top-tag.abil{background:#e8f4ec;color:#2d5a3d}
+.ch-top-done{width:22px;height:22px;border-radius:50%;background:#e8e4da;display:flex;align-items:center;justify-content:center;font-size:12px;color:#aaa;flex-shrink:0}
+.chapter.done .ch-top-done{background:#2d5a3d;color:#fff}
+.chapter-open .chapter-top{background:#fdfaf2;border-bottom:1px solid #e8e4da}
+.chapter-body{display:none;padding:16px 20px;background:#fff}
+.chapter-open .chapter-body{display:block}
+.ch-body-summary{font-size:13.5px;color:#555;line-height:1.8;margin-bottom:12px}
+.ch-body-points{font-size:13px;color:#333;margin-bottom:14px}
+.ch-body-points strong{color:#1a3d24}
+.ch-body-points ul{padding-left:18px;margin-top:4px}
+.ch-body-points li{margin-bottom:3px}
+.ch-body-actions{display:flex;gap:10px;flex-wrap:wrap}
+.ch-body-btn{font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;border:none;cursor:pointer;transition:all .12s}
+.ch-body-btn.primary{background:#1a3d24;color:#fff}
+.ch-body-btn.primary:hover{background:#2d5a3d}
+.ch-body-btn.secondary{background:#f7f5f0;color:#1a3d24}
+.ch-body-btn.secondary:hover{background:#f0ece2}
+
+/* empty */
+.no-course{max-width:820px;margin:40px auto;padding:40px;background:#fff;border:1px dashed #e8e4da;border-radius:12px;text-align:center;color:#999}
+.no-course a{color:#1a3d24;font-weight:600}
+
+.footer-note{max-width:880px;margin:40px auto 0;padding:22px 24px 34px;border-top:1px solid #e8e4da;font-size:12px;color:#999;text-align:center;line-height:1.9}
+.footer-note a{color:#1a3d24;font-weight:600}
+</style>
+</head>
+<body>
+
+<nav class="fs-top-nav">
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声</span></a>
+  <div class="fs-top-links">
+    <a href="/">首页</a>
+    <a href="/workspace/">工作台</a>
+    <a href="/knowledge/">知识底座</a>
+    <a href="/curation/">策展引擎</a>
+    <a href="/decoder/">话术解码</a>
+    <a href="/assessment/">能力测评</a>
+    <a class="active" href="/academy/">学习成长</a>
+  </div>
+</nav>
+
+<div id="course-root"></div>
+
+<div class="footer-note">
+  <a href="/academy/core-courses/">← 返回核心课列表</a><br>
+  风声 · 经纪人成长陪练 · 学习成长中心
+</div>
+
+<script>
+// ===== 课程数据（基于知识底座真实条目）=====
+var COURSES = {
+  1: {
+    dim: 'DIM-1', name: '获客触达', totalMin: 22,
+    desc: '线上引流、线下获客、首次触达话术——客户怎么来、怎么留第一步。',
+    chapters: [
+      {title:'线上获客入口全景', type:'proc', entryId:'CAR-COMP-018', summary:'从朋友圈/抖音/小红书到安居客/贝壳——各平台的获客规则和转化路径', points:['平台算法偏好差异','内容型 vs 投放型渠道 ROI 对比','首次触达的 24 小时黄金窗口']},
+      {title:'私域流量池搭建', type:'proc', entryId:'CAR-COMP-029', summary:'如何把公域客户导入自己的微信，形成可反复触达的私域资产', points:['企业微信 vs 个人微信的合规边界','朋友圈内容节奏（80%价值+20%房源）','客户分层标签系统']},
+      {title:'首次电话触达话术框架', type:'abil', summary:'3 句话抓住注意力：身份+目的+钩子', points:['开场 15 秒定生死','钩子设计（不卖房卖信息）','避免的 5 个雷区']},
+      {title:'地推/驻守获客要点', type:'proc', entryId:'CAR-COMP-033', summary:'社区驻守、派单、摆摊——线下获客的成本控制和转化技巧', points:['社区点位选择','驻守话术模板','地推物料的极简主义']},
+      {title:'短视频获客入门', type:'proc', summary:'15 秒讲清楚一个知识点，让客户主动找你', points:['选题库：30 个高赞选题模板','镜头感：不用露脸的 3 种方案','话题标签组合']},
+    ]
+  },
+  2: {
+    dim: 'DIM-2', name: '需求洞察', totalMin: 25,
+    desc: '客户不说你也能猜到他要什么——显性需求 vs 隐性需求的挖掘框架。',
+    chapters: [
+      {title:'显性需求 vs 隐性需求', type:'abil', summary:'客户说的和客户想要的往往不是一回事。学会区分两种需求', points:['显性：区域/户型/预算（客户自己说）','隐性：学区/通勤/投资属性（客户不会说）','冰山模型：显性是水面，隐性是水下']},
+      {title:'5 个提问挖出真实预算', type:'script', summary:'客户永远不会直接告诉你预算。用提问技巧绕开防御', points:['"您之前看过哪些小区？" → 反推预算区间','"首付大概准备多少？" → 降低心理门槛','"月供能接受多少？" → 更接近真实承受力']},
+      {title:'家庭结构 × 居住需求映射', type:'proc', entryId:'CAR-COMP-036', summary:'3 口之家 vs 新婚 vs 养老——不同家庭的核心需求天差地别', points:['新婚：通勤+升值潜力','3 口之家：学区+老人照料','养老：低楼层+医疗配套+绿化']},
+      {title:'刚需/改善/投资 三类客户画像', type:'abil', summary:'三类客户的决策逻辑、看重点、谈判风格完全不同', points:['刚需：速度优先，怕涨价','改善：品质优先，不怕贵','投资：数据优先，要回报率']},
+      {title:'需求挖掘的 3 个信号', type:'proc', summary:'客户无意识的小动作透露真实想法', points:['反复问同一区域 → 有倾向','一直问价格 → 预算敏感','突然问税费 → 准备决策']},
+    ]
+  },
+  3: {
+    dim: 'DIM-3', name: '专业方案', totalMin: 30,
+    desc: '学区房 vs 非学区、一居 vs 两居——怎么给客户匹配最优方案。',
+    chapters: [
+      {title:'学区房选择五维模型', type:'pol', entryId:'CAR-COMP-008', summary:'学区覆盖范围 + 对口学校梯队 + 入学年限 + 落户要求 + 政策风险', points:['学区覆盖范围：官方 vs 实际','入学年限：提前 3 年 vs 当年','政策风险：多校划片的影响']},
+      {title:'税费计算器 + 避坑指南', type:'pol', summary:'契税/增值税/个税/中介费——每个税种的计算和常见陷阱', points:['满五唯一 vs 满二唯一的个税差','增值税：普通住宅 vs 非普通住宅','中介费：可以谈但别太低']},
+      {title:'房源信息发布规范', type:'std', entryId:'CAR-COMP-012', summary:'真实房源、真实图片、真实价格——合规发布不被处罚', points:['"均价起" vs 具体价格','图片必须是真实房源','标题不能有违禁词']},
+      {title:'服务承诺体系', type:'pol', entryId:'CAR-COMP-014', summary:'能承诺什么、不能承诺什么——边界清晰才能避免纠纷', points:['能承诺：流程透明、费用清单','不能承诺：包过包卖、升值保证','承诺要写进合同']},
+      {title:'方案呈现的四象限法', type:'proc', summary:'给客户 3 个选择：安全区/潜力区/惊喜区', points:['安全区：符合显性需求','潜力区：超出预算但有潜力','惊喜区：客户没想到但打动他']},
+    ]
+  },
+  4: {
+    dim: 'DIM-4', name: '带看谈判', totalMin: 28,
+    desc: '带看路线设计、卖点怎么说、客户嫌贵怎么回、砍价怎么接。',
+    chapters: [
+      {title:'带看路线的锚定效应', type:'script', summary:'先看差的再看好的，还是反过来？路线顺序影响客户判断', points:['先看次优 → 最后看最优（锚定高点）','先看最优 → 降低预期（容易接受次优）','避免：同价位同质房源连续看']},
+      {title:'卖点 FAB 法则', type:'abil', summary:'Feature（特征）→ Advantage（优势）→ Benefit（利益）', points:['不说"朝南"，说"朝南，冬天日照 4 小时，省电费"','不说"学区"，说"对口实验小学，步行 5 分钟"','Benefit 必须是客户个人利益']},
+      {title:'客户嫌贵的 6 种回法', type:'script', summary:'"太贵了"不是拒绝，是邀请你说服他', points:['对比法：同小区同户型上周成交 X 万','价值拆解：按年/月/天拆解价格','稀缺性：这个户型小区只剩 2 套']},
+      {title:'砍价谈判的让步策略', type:'proc', summary:'永远不要第一步就让到底。让步要有条件', points:['不让步 → 让小步 → 让大步（阶梯式）','每次让步要换东西（"我让 X，你接受 Y"）','最后一步要困难（请示老板）']},
+      {title:'带看后立即跟进的 24 小时法则', type:'proc', summary:'带看完 24 小时内客户记忆最清晰，跟进要趁早', points:['当天晚上发带看回顾','第二天问想法+新问题','不要等客户找你']},
+    ]
+  },
+  5: {
+    dim: 'DIM-5', name: '交易履约', totalMin: 35,
+    desc: '签单→网签→资金监管→过户→交房，每个环节的要点和坑。',
+    chapters: [
+      {title:'网签流程全解析', type:'case', entryId:'CAR-CMP-CASE-001', summary:'网签是什么、为什么必须走、网签价格怎么定', points:['网签 = 官方备案，保护双方','网签价可以低于成交价','不网签 = 过不了户']},
+      {title:'资金监管的正确姿势', type:'case', entryId:'CAR-CMP-CASE-002', summary:'首付款进监管账户，过户完成才放给卖家——保障双方权益', points:['必须走监管，别私下转账','监管银行可选','放款条件：过户完成+抵押登记完成']},
+      {title:'合同必备 12 条条款', type:'std', entryId:'CAR-COMP-015', summary:'经纪合同里哪些条款必须有，哪些是坑', points:['违约责任：逾期赔付比例','解约条件：双方解除合同的场景','费用清单：中介费/税费/评估费']},
+      {title:'过户材料清单 + 时效', type:'case', entryId:'CAR-CMP-CASE-003', summary:'身份证/户口本/婚姻证明/房产证——提前准备一次过', points:['已婚必须双方到场','集体户口要首页+个人页','过户时效：材料齐 7-10 天']},
+      {title:'交房时必查的 10 个点', type:'case', entryId:'CAR-CMP-CASE-004', summary:'不要只看钥匙，要逐项验房', points:['水电燃气结清','物业费用结清','家具家电与合同一致','无欠费无违章']},
+    ]
+  },
+  6: {
+    dim: 'DIM-6', name: '售后复购', totalMin: 20,
+    desc: '客户成交后怎么维护——复购、转介绍、口碑传播的方法论。',
+    chapters: [
+      {title:'成交后 30 天服务黄金期', type:'proc', summary:'成交不是结束，是长期关系的开始', points:['交房后 3 天内回访','入住后 1 个月送乔迁礼','第一个年度送小区周边便民清单']},
+      {title:'转介绍触发机制', type:'proc', summary:'客户什么时候最愿意帮你介绍朋友', points:['成交后 1 个月（最满意时）','帮客户解决一个额外问题时','节日问候+小礼物时']},
+      {title:'复购周期与触发点', type:'data', summary:'客户平均 7-10 年换房。怎么让他下次找你', points:['每 1-2 年发一次房产市场月报','客户生日/结婚纪念日问候','同小区新成交案例分享']},
+      {title:'业主俱乐部/社群运营', type:'proc', summary:'把单个客户变成社区关系网', points:['组织小区亲子活动','邻里二手交易群','业主装修资源对接']},
+    ]
+  },
+  7: {
+    dim: 'DIM-7', name: '数字化协同', totalMin: 18,
+    desc: '房源管理系统、客户关系管理、内部协作工具的高效用法。',
+    chapters: [
+      {title:'客户信息保密义务', type:'law', entryId:'CAR-COMP-004', summary:'客户隐私受法律保护，泄露要担责', points:['客户资料只在公司内网','不外泄给第三方','离职时删除所有客户联系方式']},
+      {title:'内部协作工具选择', type:'std', summary:'哪个工具干什么——别一个工具干所有事', points:['房源库：贝壳/安居客后台','客户管理：企业微信+标签','团队协作：飞书/企业微信文档']},
+      {title:'房源信息发布规范（法律版）', type:'law', entryId:'CAR-COMP-002', summary:'执业纪律里的信息发布红线', points:['不得发布虚假房源','不得隐瞒重大瑕疵','不得贬低同行']},
+      {title:'数字化 vs 人际平衡术', type:'abil', summary:'工具是辅助，人是核心', points:['标签系统代替记忆','但关键客户的生日/家庭情况要记在心上','自动化节省的时间花在人际上']},
+    ]
+  },
+};
+
+// ===== 渲染 =====
+function getQueryId() {
+  var m = location.search.match(/[?&]id=(\d+)/);
+  return m ? parseInt(m[1]) : null;
+}
+
+function getProgress(dim) {
+  try {
+    return JSON.parse(localStorage.getItem('fs_course_progress') || '{}')[dim] || [];
+  } catch(e) { return []; }
+}
+function saveProgress(dim, doneChapters) {
+  var all;
+  try { all = JSON.parse(localStorage.getItem('fs_course_progress') || '{}'); } catch(e) { all = {}; }
+  all[dim] = doneChapters;
+  localStorage.setItem('fs_course_progress', JSON.stringify(all));
+}
+
+function render() {
+  var root = document.getElementById('course-root');
+  var id = getQueryId();
+  if (!id || !COURSES[id]) {
+    root.innerHTML = '<div class="back-bar"><a href="/academy/core-courses/">← 返回核心课列表</a></div>' +
+      '<div class="no-course">课程不存在 · <a href="/academy/core-courses/">查看全部 7 门课 →</a></div>';
+    return;
+  }
+  var course = COURSES[id];
+  var done = getProgress(course.dim);
+  var pct = Math.round(done.length / course.chapters.length * 100);
+
+  // header
+  var html = '<div class="back-bar"><a href="/academy/core-courses/">← 返回核心课列表</a></div>' +
+    '<div class="course-hdr">' +
+      '<span class="ch-badge">' + course.dim + '</span>' +
+      '<h1>' + course.name + '</h1>' +
+      '<div class="ch-sub">' + course.desc + '</div>' +
+      '<div class="ch-meta">' +
+        '<span>📚 ' + course.chapters.length + ' 章节</span>' +
+        '<span>⏱ ' + course.totalMin + ' 分钟</span>' +
+        '<span>✅ 已完成 ' + done.length + '/' + course.chapters.length + '</span>' +
+      '</div>' +
+    '</div>';
+
+  // progress
+  html += '<div class="progress-box">' +
+    '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+    '<div class="progress-label">学习进度 · <span>' + pct + '%</span> · 测完这门可以去 <a href="/academy/exam/" style="color:#1a3d24;font-weight:600">考核 →</a></div>' +
+  '</div>';
+
+  // chapters
+  html += '<div class="chapter-list">';
+  course.chapters.forEach(function(ch, i) {
+    var chClass = done.indexOf(i) >= 0 ? 'chapter done' : 'chapter';
+    var tagText = ch.type.toUpperCase();
+    var entryLink = ch.entryId ? '/entry/' + ch.entryId : null;
+    html += '<div class="' + chClass + '" onclick="toggleChapter(this)">' +
+      '<div class="chapter-top">' +
+        '<span class="ch-top-num">' + String(i+1).padStart(2,'0') + '</span>' +
+        '<span class="ch-top-title">' + ch.title + '</span>' +
+        (ch.entryId ? '<span class="ch-top-tag ' + ch.type + '">LINK</span>' : '') +
+        '<span class="ch-top-done">✓</span>' +
+      '</div>' +
+      '<div class="chapter-body">' +
+        '<div class="ch-body-summary">' + ch.summary + '</div>' +
+        (ch.points.length ? '<div class="ch-body-points"><strong>🎯 学习要点：</strong><ul>' +
+          ch.points.map(function(p){ return '<li>' + p + '</li>'; }).join('') +
+        '</ul></div>' : '') +
+        '<div class="ch-body-actions">' +
+          '<button class="ch-body-btn primary" onclick="markDone(' + id + ',' + i + ')">' +
+            (done.indexOf(i) >= 0 ? '✓ 已完成' : '标记完成') +
+          '</button>' +
+          (entryLink ? '<a class="ch-body-btn secondary" href="' + entryLink + '" target="_blank">📖 查看知识底座 →</a>' : '') +
+          '<a class="ch-body-btn secondary" href="/academy/practice/">🎭 去练习 →</a>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  root.innerHTML = html;
+}
+
+function toggleChapter(el) {
+  el.classList.toggle('chapter-open');
+}
+function markDone(courseId, chIndex) {
+  event.stopPropagation();
+  var course = COURSES[courseId];
+  var done = getProgress(course.dim);
+  var pos = done.indexOf(chIndex);
+  if (pos >= 0) done.splice(pos, 1); else done.push(chIndex);
+  saveProgress(course.dim, done);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>人岗匹配 · 学习成长 | 风声信息咨询</title>
-<meta name="description" content="根据能力画像推荐最适合你的岗位方向——获客型 / 谈判型 / 服务型 / 综合型">
+<title>人岗匹配 · 学习成长</title>
+<meta name="description" content="根据你的能力画像，匹配最适合的岗位类型。">
 <link rel="icon" href="/favicon.png" type="image/png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -17,29 +17,58 @@ a{text-decoration:none;color:inherit}
 .fs-top-links{display:flex;gap:14px;font-size:13px;flex-wrap:wrap;flex:1;justify-content:center}
 .fs-top-links a{color:#555;white-space:nowrap}
 .fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
-.fs-top-actions{display:flex;gap:10px;align-items:center;font-size:13px;flex-shrink:0}
-@media(max-width:960px){.fs-top-links,.fs-top-actions{display:none}}
+@media(max-width:960px){.fs-top-links{display:none}}
+
 .loop-strip{max-width:880px;margin:24px auto 0;background:#fff;border:1px solid #e8e4da;border-radius:14px;display:flex;overflow:hidden}
 .loop-strip a{flex:1;padding:12px 4px;text-align:center;font-size:12px;color:#666;border-right:1px dashed #e8e4da}
 .loop-strip a:last-child{border-right:none}
 .loop-strip a .ls-name{display:block;font-weight:700;font-size:14px;margin-bottom:2px}
 .loop-strip a.hl{background:linear-gradient(135deg,#fdf9ef,#fffbf3);color:#8a7040}
+
 .pg{max-width:880px;margin:24px auto;padding:0 24px}
 .pg-h{font-size:26px;font-weight:800;color:#1a3d24;margin-bottom:6px}
 .pg-sub{font-size:14px;color:#6b6b6b;margin-bottom:20px}
-.match-card{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:24px;margin-bottom:16px;display:grid;grid-template-columns:120px 1fr auto;gap:20px;align-items:center}
-.match-card .mc-top{font-size:36px}
-.match-card .mc-name{font-size:16px;font-weight:700;color:#1a3d24;margin-bottom:6px}
-.match-card .mc-desc{font-size:12.5px;color:#777;line-height:1.8;margin-bottom:8px}
-.match-card .mc-fit{font-size:13px;font-weight:700;color:#8a7040;text-align:center}
-.match-card .mc-fit .pct{font-size:28px;font-weight:800}
-.match-card.recommend{border:2px solid #8a7040;background:linear-gradient(135deg,#fdf9ef,#fffbf3)}
-.match-card .mc-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-.match-card .mc-tags span{background:#f0ece2;padding:2px 8px;border-radius:4px;font-size:11px;color:#666}
-.match-card.recommend{background:linear-gradient(135deg,#fdf9ef,#fffbf3);border-color:#8a7040}
-.hint{background:#fff;border:1px dashed #e8e4da;border-radius:10px;padding:16px;font-size:13px;color:#666;text-align:center;margin-bottom:20px}
-.hint a{color:#1a3d24;font-weight:700;text-decoration:underline}
+
+/* banner */
+.banner{background:linear-gradient(135deg,#1a3d24,#2d5a3d);color:#fff;border-radius:14px;padding:24px;margin-bottom:20px}
+.banner h2{font-size:20px;font-weight:800;margin-bottom:6px}
+.banner p{font-size:13.5px;opacity:.9;margin-bottom:12px;line-height:1.7}
+.banner a{display:inline-block;background:#fff;color:#1a3d24;font-weight:700;font-size:13px;padding:8px 18px;border-radius:8px}
+
+/* match card */
+.match-card{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden}
+.match-card.top{border-color:#8a7040;background:linear-gradient(135deg,#fffbf3,#fff)}
+.match-card .rank{position:absolute;top:14px;right:14px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px}
+.match-card.top .rank{background:#8a7040;color:#fff}
+.match-card .role-name{font-size:17px;font-weight:800;color:#1a3d24;margin-bottom:4px}
+.match-card .role-desc{font-size:12.5px;color:#777;margin-bottom:14px;line-height:1.7}
+.match-card .score-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.match-card .score-row .sr-label{font-size:11px;color:#888}
+.match-card .score-row .sr-bar{flex:1;height:6px;background:#e8e4da;border-radius:3px;overflow:hidden}
+.match-card .score-row .sr-fill{height:100%;border-radius:3px;background:#1a3d24}
+.match-card .score-row .sr-num{font-size:12px;font-weight:700;color:#1a3d24;min-width:44px;text-align:right}
+
+.match-card .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.match-card .tags span{font-size:10.5px;padding:3px 9px;border-radius:10px;font-weight:600}
+.match-card .tags .tag-s{background:#e8f4ec;color:#2d5a3d}
+.match-card .tags .tag-w{background:#ffe8e8;color:#c25636}
+
+.match-card .path-row{font-size:12px;color:#555;line-height:1.8}
+.match-card .path-row a{color:#1a3d24;font-weight:600}
+
+/* dim radar */
+.dim-radar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:16px 0}
+.dim-radar .dr-item{text-align:center}
+.dim-radar .dr-num{font-size:14px;font-weight:800;color:#1a3d24}
+.dim-radar .dr-name{font-size:10px;color:#888}
+.dim-radar .dr-bar{height:4px;background:#e8e4da;border-radius:2px;margin-top:2px;overflow:hidden}
+.dim-radar .dr-fill{height:100%;border-radius:2px}
+.dim-radar .dr-fill.strong{background:#2d5a3d}
+.dim-radar .dr-fill.mid{background:#c25636}
+.dim-radar .dr-fill.weak{background:#c25636}
+
 .footer-note{max-width:880px;margin:40px auto 0;padding:22px 24px 34px;border-top:1px solid #e8e4da;font-size:12px;color:#999;text-align:center;line-height:1.9}
+.footer-note a{color:#1a3d24;font-weight:600}
 </style>
 </head>
 <body>
@@ -47,15 +76,18 @@ a{text-decoration:none;color:inherit}
 <nav class="fs-top-nav">
   <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声</span></a>
   <div class="fs-top-links">
-    <a href="/">首页</a><a href="/workspace/">工作台</a><a href="/knowledge/">知识底座</a>
-    <a href="/curation/">策展引擎</a><a href="/decoder/">话术解码</a>
-    <a href="/assessment/">能力测评</a><a class="active" href="/academy/">学习成长</a>
+    <a href="/">首页</a>
+    <a href="/workspace/">工作台</a>
+    <a href="/knowledge/">知识底座</a>
+    <a href="/curation/">策展引擎</a>
+    <a href="/decoder/">话术解码</a>
+    <a href="/assessment/">能力测评</a>
+    <a class="active" href="/academy/">学习成长</a>
   </div>
-  <div class="fs-top-actions"><span class="fs-top-avatar">👤</span></div>
 </nav>
 
 <div class="loop-strip">
-  <a href="/assessment/">📋<span class="ls-name">测</span>测评</a>
+  <a href="/assessment/">📋<span class="ls-name">测</span>能力测评</a>
   <a href="/academy/core-courses/">📖<span class="ls-name">学</span>核心课</a>
   <a href="/academy/practice/">🎭<span class="ls-name">练</span>场景</a>
   <a href="/academy/exam/">📝<span class="ls-name">考</span>考核</a>
@@ -63,55 +95,181 @@ a{text-decoration:none;color:inherit}
   <a class="hl" href="/academy/match/">🎯<span class="ls-name">配</span>岗位</a>
 </div>
 
-<div class="pg">
-  <h2 class="pg-h">🎯 人岗匹配</h2>
-  <p class="pg-sub">根据能力画像，推荐你最适合的岗位方向 · 数据来自测评+考核+练习三源</p>
+<div id="root" class="pg"></div>
 
-  <div class="hint">
-    ⚠️ 匹配需要先有能力画像数据 · <a href="/assessment/">去做能力测评 →</a> · <a href="/academy/exam/">去做岗位考核 →</a>
-  </div>
+<div class="footer-note"><a href="/academy/">← 返回学习成长首页</a><br>风声 · 经纪人成长陪练 · 学习成长中心</div>
 
-  <div class="match-card recommend">
-    <div class="mc-top">🤝</div>
-    <div>
-      <div class="mc-name">综合型经纪人 <span style="background:#8a7040;color:#fff;font-size:10px;padding:2px 6px;border-radius:3px;margin-left:6px">推荐</span></div>
-      <div class="mc-desc">获客 + 谈判 + 服务全链路能力均衡 · 适合独立作业或小组负责人岗位 · 以 DIM-3/DIM-5/DIM-7 为优势维度</div>
-      <div class="mc-tags"><span>需要综合能力</span><span>偏交易端</span><span>独立作业强</span></div>
-    </div>
-    <div class="mc-fit">匹配度<br><span class="pct">78%</span></div>
-  </div>
+<script>
+// 7 维度
+var DIMS = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
 
-  <div class="match-card">
-    <div class="mc-top">📢</div>
-    <div>
-      <div class="mc-name">获客型（客源开发）</div>
-      <div class="mc-desc">擅长触达和首次转化 · DIM-1 分数最高 · 适合门店客源开发组长或获客专家</div>
-      <div class="mc-tags"><span>需要获客能力</span><span>偏前端</span></div>
-    </div>
-    <div class="mc-fit">匹配度<br><span class="pct">62%</span></div>
-  </div>
+// 岗位类型定义（基于知识底座 JOB 域抽象）
+var ROLES = [
+  {
+    key: 'sales', name: '综合型经纪人', icon: '🏠',
+    desc: '全流程覆盖——从获客到售后都做。适合能力均衡、想全面发展的经纪人。',
+    dimWeights: [0.15, 0.10, 0.15, 0.20, 0.20, 0.10, 0.10],
+    strongDims: [4, 5, 3], // 带看谈判 / 交易履约 / 专业方案
+    weakDimsFix: [],
+    path: '/academy/core-courses/'
+  },
+  {
+    key: 'acquisition', name: '获客型经纪人', icon: '📣',
+    desc: '专注线上线下引流——朋友圈运营、短视频、社区驻守。适合外向、擅长社交的。',
+    dimWeights: [0.40, 0.20, 0.05, 0.15, 0.05, 0.10, 0.05],
+    strongDims: [0, 1],
+    weakDimsFix: [4, 5], // 补带看和履约短板
+    path: '/academy/core-courses/'
+  },
+  {
+    key: 'negotiator', name: '谈判型经纪人', icon: '💼',
+    desc: '高价成交能手——擅长价值挖掘和谈判。业主维护 + 客户谈判双强。',
+    dimWeights: [0.10, 0.15, 0.25, 0.35, 0.10, 0.05, 0.00],
+    strongDims: [3, 2],
+    weakDimsFix: [0, 6],
+    path: '/academy/core-courses/'
+  },
+  {
+    key: 'aftersales', name: '服务型经纪人', icon: '💝',
+    desc: '老客户关系王——成交后还能维持关系，复购转介绍率特别高。',
+    dimWeights: [0.05, 0.15, 0.10, 0.10, 0.20, 0.35, 0.05],
+    strongDims: [5, 4],
+    weakDimsFix: [0, 3],
+    path: '/academy/core-courses/'
+  },
+];
 
-  <div class="match-card">
-    <div class="mc-top">🎭</div>
-    <div>
-      <div class="mc-name">谈判型（带看议价）</div>
-      <div class="mc-desc">擅长带看话术和价格谈判 · DIM-4 分数最高 · 适合资深经纪人或谈判专家</div>
-      <div class="mc-tags"><span>需要谈判能力</span><span>偏中端</span></div>
-    </div>
-    <div class="mc-fit">匹配度<br><span class="pct">45%</span></div>
-  </div>
+function loadScores() {
+  var scores = {}, hasCare = false, hasExam = false;
+  var care = null, examResults = {};
+  try { care = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
+  try { examResults = JSON.parse(localStorage.getItem('fs_exam_results')) || {}; } catch(e) {}
+  hasCare = care && care.dim_scores;
+  hasExam = Object.keys(examResults).length > 0;
 
-  <div class="match-card">
-    <div class="mc-top">🛎️</div>
-    <div>
-      <div class="mc-name">服务型（售后复购）</div>
-      <div class="mc-desc">擅长客户维护和复购转化 · DIM-6 分数最高 · 适合店长或客户关系经理</div>
-      <div class="mc-tags"><span>需要维护能力</span><span>偏后端</span></div>
-    </div>
-    <div class="mc-fit">匹配度<br><span class="pct">50%</span></div>
-  </div>
-</div>
+  for (var i = 0; i < DIMS.length; i++) {
+    var n = DIMS[i];
+    var cs = hasCare && care.dim_scores[n] != null ? care.dim_scores[n] : null;
+    var dimKey = 'DIM-' + (i+1);
+    var es = examResults[dimKey] ? examResults[dimKey].pct : null;
+    if (cs != null && es != null) scores[n] = Math.max(cs, es);
+    else if (cs != null) scores[n] = cs;
+    else if (es != null) scores[n] = es;
+    else scores[n] = null;
+  }
+  return { scores: scores, hasData: hasCare || hasExam };
+}
 
-<div class="footer-note">风声信息咨询 · 经纪人成长陪练<br>© 2026 fengsheng.tech</div>
+function computeRoleScore(role, scores) {
+  var total = 0, wSum = 0;
+  for (var i = 0; i < DIMS.length; i++) {
+    var s = scores[DIMS[i]];
+    if (s != null) { total += s * role.dimWeights[i]; wSum += role.dimWeights[i]; }
+  }
+  return wSum > 0 ? Math.round(total / wSum) : null;
+}
+
+function render() {
+  var root = document.getElementById('root');
+  var info = loadScores();
+
+  if (!info.hasData) {
+    root.innerHTML = '<div class="banner">' +
+      '<h2>🎯 人岗匹配</h2>' +
+      '<p>先测一次能力测评，匹配才能准确。35 道题，15 分钟，测完自动推荐最适合你的岗位类型。</p>' +
+      '<a href="/care-test/">📋 开始测评 →</a></div>';
+    return;
+  }
+
+  // 计算各岗位匹配分
+  var roleScores = ROLES.map(function(r) {
+    return { role: r, matchPct: computeRoleScore(r, info.scores) };
+  }).filter(function(x){ return x.matchPct != null });
+  roleScores.sort(function(a,b){ return b.matchPct - a.matchPct; });
+
+  // 综合分 + 最强/弱项
+  var totalScore = 0, validDims = 0;
+  var dimList = [];
+  for (var i = 0; i < DIMS.length; i++) {
+    var s = info.scores[DIMS[i]];
+    if (s != null) { totalScore += s; validDims++; dimList.push({name: DIMS[i], score: s, idx: i}); }
+  }
+  if (validDims > 0) totalScore = Math.round(totalScore / validDims);
+  dimList.sort(function(a,b){ return b.score - a.score; });
+  var top3 = dimList.slice(0, 3);
+  var weak3 = dimList.slice(-3).reverse();
+
+  var html = '';
+  // header banner with summary
+  html += '<div class="banner">' +
+    '<h2>🎯 人岗匹配</h2>' +
+    '<p>基于你的能力画像 · 综合分 <b>' + totalScore + '</b>' +
+    ' · 最强 ' + top3.map(function(d){return d.name;}).join('/') +
+    ' · 弱项 ' + weak3.map(function(d){return d.name;}).join('/') + '</p>' +
+  '</div>';
+
+  // 匹配卡
+  html += '<h3 style="font-size:15px;font-weight:700;color:#1a3d24;margin-bottom:14px">💼 岗位类型匹配度</h3>';
+  roleScores.forEach(function(rs, idx) {
+    var role = rs.role;
+    var isTop = idx === 0;
+    html += '<div class="match-card' + (isTop ? ' top' : '') + '">' +
+      '<div class="rank">' + (idx === 0 ? '🏆 最匹配' : (idx === 1 ? '🥈 次匹配' : (idx === 2 ? '🥉 备选' : ''))) + '</div>' +
+      '<div class="role-name">' + role.icon + ' ' + role.name + '</div>' +
+      '<div class="role-desc">' + role.desc + '</div>' +
+      '<div class="score-row"><span class="sr-label">匹配度</span>' +
+        '<div class="sr-bar"><div class="sr-fill" style="width:' + rs.matchPct + '%"></div></div>' +
+        '<span class="sr-num">' + rs.matchPct + '%</span></div>';
+
+    // 维度雷达简化版
+    html += '<div class="dim-radar">';
+    for (var i = 0; i < DIMS.length; i++) {
+      var s = info.scores[DIMS[i]];
+      var pct = s != null ? s : 0;
+      // 对这个岗位的重要度：dimWeights 高 = 重要
+      var isStrong = role.strongDims.indexOf(i) >= 0;
+      var isWeak = role.weakDimsFix.indexOf(i) >= 0;
+      var cls = isStrong ? 'strong' : (isWeak ? 'weak' : 'mid');
+      html += '<div class="dr-item"><div class="dr-num" style="color:' + (isStrong ? '#2d5a3d' : (isWeak ? '#c25636' : '#1a3d24')) + '">' +
+        (s != null ? s : '-') + '</div><div class="dr-name">' + DIMS[i].slice(0,3) + '</div>' +
+        '<div class="dr-bar"><div class="dr-fill ' + cls + '" style="width:' + pct + '%"></div></div></div>';
+    }
+    html += '</div>';
+
+    // 强项标签 / 补短板建议
+    html += '<div class="tags">';
+    if (isTop) html += '<span class="tag-s">✅ 你的优势方向</span>';
+    role.strongDims.forEach(function(di) {
+      if (info.scores[DIMS[di]] != null)
+        html += '<span class="tag-s">💪 ' + DIMS[di] + ' ' + info.scores[DIMS[di]] + '</span>';
+    });
+    role.weakDimsFix.forEach(function(di) {
+      if (info.scores[DIMS[di]] != null)
+        html += '<span class="tag-w">📌 补 ' + DIMS[di] + ' ' + info.scores[DIMS[di]] + '</span>';
+    });
+    html += '</div>';
+
+    // 学习路径
+    html += '<div class="path-row">🎓 <strong>建议路径</strong>：' +
+      (isTop ? '在 ' : '转 ');
+    role.strongDims.forEach(function(di, k) {
+      if (info.scores[DIMS[di]] != null) {
+        html += '<a href="/academy/core-courses/learn/?id=' + (di+1) + '">' + DIMS[di] + '课</a>';
+        if (k < role.strongDims.length - 1) html += '、';
+      }
+    });
+    role.weakDimsFix.forEach(function(di) {
+      if (info.scores[DIMS[di]] != null && info.scores[DIMS[di]] < 65) {
+        html += ' → <a href="/academy/exam/">DIM-' + (di+1) + '考核</a>';
+      }
+    });
+    html += '</div></div>';
+  });
+
+  root.innerHTML = html;
+}
+
+render();
+</script>
 </body>
 </html>
