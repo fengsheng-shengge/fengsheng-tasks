@@ -21,3 +21,26 @@
 - 技术线 #245 P0 四件套+证据包导出页交付验收（8 commit 全线上）：过期过滤与字典时效口径对齐✓、立场签过渡=机构立场不造假✓；渲染门禁两条交付组件侧（CITY CONDITIONAL 不亮绿/RISK 830 derived+note 非 official）；技术线清单旧基准 8c8f50f8 更正为 d1387551；衔接时序=今晚 commit→authority.json 交付组件 | — | 小眼镜 | om_x100b60c81457f4b8b4b0c63b7cc5094
 
 - **GAP 第一批一次性 commit 完成（全链闭环）**：主库 bc614c84→c1f76527，expect_count 6122（CITY 21 CONDITIONAL 不落），note 830/auth_raw 8/source 6143+raw 5078；分片 manifest v1.1 重切；三端一致（GitHub a395d5e/坚果云/本地）；组件交付件 authority.json 5d927195（6122 条+conditional_ids+渲染门禁三条）；小酒窝儿 v3 回执授权生效（核验真实，转述数字串行已勘误）；新规则=回执禁手抄数字必须贴脚本输出（对齐规则第 6 条）| c1f76527 | 小眼镜 | om_x100b60c8cc767caccd09ee34776265d
+
+### 🔴 authority 第一批落库成功（信用资产核心里程碑 · 小扣子补登）
+
+| 核验项 | 值 | 证据 |
+|---|---|---|
+| 主库 md5 | **c1f76527**（bc614c84 → c1f76527）| `md5sum data/entries.json` |
+| expect_count | **6122/6143**（21 条 CITY CONDITIONAL 按规则留空）| 小酒窝儿回执 + L2 交叉表 |
+| authority 分布 | official=1702 · court=879 · industry=907 · data=28 · derived=2606 · 空=21 | entryType × authority 交叉表 |
+| 分片同步 | v3/split manifest v1.1 · 9 分片 6143 闭合 | 重切分片含 authority |
+| authority.json 组件 | md5 **5d927195**（6122 条 + conditional_ids 21 + 渲染门禁三条）| content-supply/data/authority.json |
+| 审核链 | 小酒窝儿 v3 重审通过（send_review_check.py v1.1 PASS + md5 d1387551 + 抽检 20 条映射链路）| 群内回执 |
+| commit | **a395d5e**（一次性 commit，含数据+分片+CHANGELOG+authority.json）| git log |
+| EvidenceLink 徽章 | 8 页全覆盖显示真实 authority 值，不再靠 deriveEntryAuth() 兜底推导 | 浏览器 search 页验证 PASS |
+
+**entryType × authority 交叉表**：
+- LAW=1226 / POL=476 → official（1702）
+- CASE=871 / RISK 案号型=8 → court（879）
+- STD=453 / TERM=454 → industry（907）
+- DATA=28 → data（28）
+- PROC=1301 / RISK 830 + ABIL/KNOWLEDGE 等 → derived（2606）
+- CITY=21 → 空（CONDITIONAL，补证前不落 authority）
+
+**信用资产更新**：《品质手册》A4.3 条目修订为「送审通道标准化+版本锚定（2026-11-20）」— 预检器 send_review_check.py v1.1 强制 md5 回读，三要素锁定（主库 md5 + 填充数 + 空值规则），审核人回读 md5 与预检报告一致才开审。| 字典 v1.3.3 | 小眼镜（治理）+ 小酒窝儿（门禁）| 小扣子（commit）| 群内回执
