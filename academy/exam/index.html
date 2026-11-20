@@ -118,11 +118,33 @@ a{text-decoration:none;color:inherit}
 
 <div class="pg">
   <h2 class="pg-h">📝 岗位考核</h2>
-  <p class="pg-sub">7 维度 · 每维度 10 题 · 分数自动回写到 <a href="/academy/profile/" style="color:#1a3d24;font-weight:600">能力画像</a></p>
+  <p class="pg-sub">7 维度 · 每维度 10 题 · 每次开考自动打乱顺序和选项 · 分数自动回写到 <a href="/academy/profile/" style="color:#1a3d24;font-weight:600">能力画像</a></p>
+
+  <!-- ========== 为什么要考 / 考完能干啥 / 有啥帮助 ========== -->
+  <div style="background:linear-gradient(135deg,#fdf9ef,#fffbf3);border:1px solid #e8e4da;border-radius:12px;padding:14px 16px;margin:12px 0">
+    <div style="font-size:12px;color:#8a7040;font-weight:700;margin-bottom:10px;letter-spacing:1px">💡 为什么要花 5 分钟考这 10 题</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px;font-size:13px;color:#555">
+        <span style="color:#2d5a3d;font-weight:700;flex-shrink:0">① 考完立刻看到</span>
+        <span>分数 + 等级（A/B/C/D）· 答错的每道题 → 正确答案 + 知识条目来源 · 支持一键导出错题 JSON / CSV</span>
+      </div>
+      <div style="display:flex;gap:8px;font-size:13px;color:#555">
+        <span style="color:#2d5a3d;font-weight:700;flex-shrink:0">② 直接帮到你的</span>
+        <span>和 care-test 测评双源合并取最高分写回能力画像 · 弱项自动标记 · 补短板课程精准推荐</span>
+      </div>
+      <div style="display:flex;gap:8px;font-size:13px;color:#555">
+        <span style="color:#2d5a3d;font-weight:700;flex-shrink:0">③ 和能力测评的区别</span>
+        <span>测评是"全量扫描"（35 题覆盖 7 维）· 考核是"单点突破"（每维度深挖 10 道专业题 · 更精准）</span>
+      </div>
+    </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px dashed #e8e4da;font-size:11px;color:#999">
+      🎲 每次开考题目和选项随机打乱 · 重测永远是新卷 · 不怕背答案
+    </div>
+  </div>
 
   <div class="banner">
     <div class="b-left">
-      <h3 id="banner-title">🎯 选择一个维度开始考核</h3>
+      <h3 id="banner-title">🎯 选一个维度开始考核</h3>
       <p>先做能力测评找短板 · 再考对应维度针对性突破 · 分数持续回写到能力画像</p>
     </div>
     <button class="b-btn" onclick="startFullExam()">📝 7 维度全考核</button>
