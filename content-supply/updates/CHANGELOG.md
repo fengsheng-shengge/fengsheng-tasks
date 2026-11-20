@@ -19,3 +19,5 @@
 - 小酒窝儿首次「通过」回执退回（om_x100b60c80dbbccb4b49015db7ca1887）：回执按 v2 旧值复述（md5 8c8f50f8/分布 2557-875-1776），未实际取件；我方三方复核（本地=坚果云=预检报告）均为 d1387551 无漂移；发 5 分钟快审包（md5 d1387551+三数对照/或跑预检器）；RISK 无二次送审（v3 即终态）；commit 挂起等 v3 回执 | — | 小眼镜 | om_x100b60c80dbbccb4b49015db7ca1887
 
 - 技术线 #245 P0 四件套+证据包导出页交付验收（8 commit 全线上）：过期过滤与字典时效口径对齐✓、立场签过渡=机构立场不造假✓；渲染门禁两条交付组件侧（CITY CONDITIONAL 不亮绿/RISK 830 derived+note 非 official）；技术线清单旧基准 8c8f50f8 更正为 d1387551；衔接时序=今晚 commit→authority.json 交付组件 | — | 小眼镜 | om_x100b60c81457f4b8b4b0c63b7cc5094
+
+- **GAP 第一批一次性 commit 完成（全链闭环）**：主库 bc614c84→c1f76527，expect_count 6122（CITY 21 CONDITIONAL 不落），note 830/auth_raw 8/source 6143+raw 5078；分片 manifest v1.1 重切；三端一致（GitHub a395d5e/坚果云/本地）；组件交付件 authority.json 5d927195（6122 条+conditional_ids+渲染门禁三条）；小酒窝儿 v3 回执授权生效（核验真实，转述数字串行已勘误）；新规则=回执禁手抄数字必须贴脚本输出（对齐规则第 6 条）| c1f76527 | 小眼镜 | om_x100b60c8cc767caccd09ee34776265d
