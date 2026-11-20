@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>岗位考核 · 学习成长 | 风声信息咨询</title>
-<meta name="description" content="70 道岗位考核题 · 学完练完再考 · 过线进阶 · 分数计入能力画像">
+<meta name="description" content="70 道岗位考核题 · 分 7 维度各 10 题 · 分数计入能力画像">
 <link rel="icon" href="/favicon.png" type="image/png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -27,21 +27,71 @@ a{text-decoration:none;color:inherit}
 .pg{max-width:880px;margin:24px auto;padding:0 24px}
 .pg-h{font-size:26px;font-weight:800;color:#1a3d24;margin-bottom:6px}
 .pg-sub{font-size:14px;color:#6b6b6b;margin-bottom:20px}
-.banner{background:linear-gradient(135deg,#1a3d24,#2c6b3f);color:#fff;padding:28px;border-radius:14px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
-.banner .b-left h3{font-size:18px;font-weight:700;margin-bottom:6px}
-.banner .b-left p{font-size:13px;color:rgba(255,255,255,.8);line-height:1.7}
-.banner .b-btn{background:#fff;color:#1a3d24;font-weight:700;padding:10px 24px;border-radius:8px;font-size:14px;white-space:nowrap;cursor:pointer;border:none}
+.banner{background:linear-gradient(135deg,#1a3d24,#2c6b3f);color:#fff;padding:24px 28px;border-radius:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.banner .b-left h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.banner .b-left p{font-size:12.5px;color:rgba(255,255,255,.78);line-height:1.6}
+.banner .b-btn{background:#fff;color:#1a3d24;font-weight:700;padding:9px 20px;border-radius:8px;font-size:13px;cursor:pointer;border:none;font-family:inherit}
 .banner .b-btn:hover{background:#fdf9ef}
+.banner .b-btn:active{transform:scale(.97)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
-.card{background:#fff;border:1px solid #e8e4da;border-radius:12px;padding:18px;cursor:pointer}
-.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,61,36,.08)}
+.card{background:#fff;border:1px solid #e8e4da;border-radius:12px;padding:18px;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,61,36,.1)}
 .card .e-dim{font-size:10px;font-weight:700;color:#fff;background:#1a3d24;padding:2px 8px;border-radius:4px;letter-spacing:1px;display:inline-block;margin-bottom:8px}
-.card .e-count{font-size:28px;font-weight:800;color:#8a7040;margin-bottom:2px}
-.card .e-name{font-size:15px;font-weight:700;color:#1a3d24;margin-bottom:6px}
-.card .e-desc{font-size:12.5px;color:#777;line-height:1.7;margin-bottom:10px}
-.card .e-bar{height:6px;background:#e8e4da;border-radius:3px;overflow:hidden}
-.card .e-bar-fill{height:100%;background:#8a7040;border-radius:3px}
+.card .e-count{font-size:26px;font-weight:800;color:#8a7040;margin-bottom:2px}
+.card .e-name{font-size:14px;font-weight:700;color:#1a3d24;margin-bottom:6px}
+.card .e-desc{font-size:12px;color:#777;line-height:1.6;margin-bottom:10px}
+.card .e-bar{height:5px;background:#e8e4da;border-radius:3px;overflow:hidden}
+.card .e-bar-fill{height:100%;background:linear-gradient(90deg,#2d5a3d,#4a8c5f);border-radius:3px;transition:width .3s}
 .card .e-bar-label{font-size:11px;color:#999;margin-top:4px}
+.card.has-result .e-bar-fill{background:linear-gradient(90deg,#8a7040,#b8995a)}
+.card.has-result .e-bar-label{color:#8a7040;font-weight:600}
+.card .e-score-badge{float:right;font-size:11px;background:#fdf9ef;color:#8a7040;padding:2px 8px;border-radius:10px;font-weight:700}
+
+/* 考核模态 */
+.exam-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.exam-modal-overlay.show{display:flex}
+.exam-modal{background:#fff;border-radius:16px;width:90%;max-width:640px;max-height:88vh;overflow:auto}
+.em-head{padding:18px 24px;border-bottom:1px solid #f0ece2;display:flex;align-items:center;gap:12px}
+.em-head .em-title{font-size:15px;font-weight:700;color:#1a3d24}
+.em-head .em-close{margin-left:auto;background:none;border:none;font-size:20px;color:#aaa;cursor:pointer}
+.em-progress{padding:10px 24px;background:#fdf9ef;font-size:12px;color:#8a7040;font-weight:600;display:flex;gap:14px;align-items:center}
+.em-progress .em-bar{flex:1;height:4px;background:#e8d9b0;border-radius:2px;overflow:hidden}
+.em-progress .em-fill{height:100%;background:linear-gradient(90deg,#8a7040,#b8995a);transition:width .3s}
+.em-body{padding:22px 24px}
+.em-q-num{font-size:11px;color:#999;margin-bottom:4px}
+.em-q{font-size:15px;font-weight:600;color:#1a3d24;margin-bottom:14px;line-height:1.6}
+.em-options{display:flex;flex-direction:column;gap:8px}
+.em-option{padding:12px 14px;border:2px solid #e8e4da;border-radius:10px;cursor:pointer;font-size:13px;color:#444;transition:all .12s}
+.em-option:hover{border-color:#1a3d24;background:#f7f5f0}
+.em-option.selected{border-color:#1a3d24;background:#f0f7f2;color:#1a3d24;font-weight:600}
+.em-option.correct{border-color:#2d5a3d;background:#e8f3eb;color:#2d5a3d}
+.em-option.wrong{border-color:#c25636;background:#fbeae4;color:#c25636}
+.em-option .em-letter{display:inline-block;width:20px;height:20px;border-radius:50%;background:#e8e4da;color:#666;text-align:center;line-height:20px;font-size:11px;font-weight:700;margin-right:10px}
+.em-option.selected .em-letter{background:#1a3d24;color:#fff}
+.em-option.correct .em-letter{background:#2d5a3d;color:#fff}
+.em-option.wrong .em-letter{background:#c25636;color:#fff}
+.em-option .em-explain{display:none;margin-top:8px;font-size:12px;color:#666;font-weight:normal}
+.em-option.show-explain .em-explain{display:block}
+.em-foot{padding:14px 24px;border-top:1px solid #f0ece2;display:flex;gap:10px;justify-content:flex-end}
+.em-btn{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
+.em-btn-primary{background:linear-gradient(135deg,#1a3d24,#2d5a3d);color:#fff}
+.em-btn-primary:disabled{background:#ccc;cursor:not-allowed}
+.em-btn-secondary{background:#f0ece2;color:#1a3d24}
+
+/* 结果页 */
+.em-result{text-align:center;padding:10px 0}
+.em-result .er-score{font-size:56px;font-weight:800;color:#1a3d24;line-height:1}
+.em-result .er-label{font-size:13px;color:#888;margin-top:4px}
+.em-result .er-grade{display:inline-block;margin-top:14px;padding:4px 16px;border-radius:12px;font-size:13px;font-weight:700}
+.em-result .er-desc{font-size:12.5px;color:#6b6b6b;margin-top:14px;line-height:1.7}
+.em-result .er-saved{margin-top:16px;font-size:11px;color:#2d5a3d;background:#e8f3eb;padding:6px 14px;border-radius:6px;display:inline-block}
+.em-review{margin-top:18px;text-align:left;font-size:12px;color:#777}
+.em-review-item{padding:8px 0;border-bottom:1px solid #f0ece2;display:flex;gap:8px;align-items:flex-start}
+.em-review-item:last-child{border-bottom:none}
+.em-review-item .ri-icon{flex-shrink:0;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;margin-top:2px}
+.em-review-item.right .ri-icon{background:#2d5a3d}
+.em-review-item.wrong .ri-icon{background:#c25636}
+
 .footer-note{max-width:880px;margin:40px auto 0;padding:22px 24px 34px;border-top:1px solid #e8e4da;font-size:12px;color:#999;text-align:center;line-height:1.9}
 </style>
 </head>
@@ -58,7 +108,7 @@ a{text-decoration:none;color:inherit}
 </nav>
 
 <div class="loop-strip">
-  <a href="/assessment/">📋<span class="ls-name">测</span>测评</a>
+  <a href="/care-test/">📋<span class="ls-name">测</span>测评</a>
   <a href="/academy/core-courses/">📖<span class="ls-name">学</span>核心课</a>
   <a href="/academy/practice/">🎭<span class="ls-name">练</span>场景</a>
   <a class="hl" href="/academy/exam/">📝<span class="ls-name">考</span>考核</a>
@@ -68,27 +118,370 @@ a{text-decoration:none;color:inherit}
 
 <div class="pg">
   <h2 class="pg-h">📝 岗位考核</h2>
-  <p class="pg-sub">70 道 · 分 7 个维度 · 每维度 10 题 · 学完练完再考 · 分数计入能力画像</p>
+  <p class="pg-sub">7 维度 · 每维度 10 题 · 分数自动回写到 <a href="/academy/profile/" style="color:#1a3d24;font-weight:600">能力画像</a></p>
 
   <div class="banner">
     <div class="b-left">
-      <h3>🎯 开始全维度考核</h3>
-      <p>7 个维度 · 70 道题 · 建议先做能力测评，找出短板先补</p>
+      <h3 id="banner-title">🎯 选择一个维度开始考核</h3>
+      <p>先做能力测评找短板 · 再考对应维度针对性突破 · 分数持续回写到能力画像</p>
     </div>
-    <button class="b-btn" onclick="alert('考核系统建设中 · 先去能力测评 →')">开始考核 →</button>
+    <button class="b-btn" onclick="startFullExam()">📝 7 维度全考核</button>
   </div>
 
-  <div class="grid">
-    <div class="card"><span class="e-dim">DIM-1 获客触达</span><div class="e-count">10</div><div class="e-name">获客触达专项</div><div class="e-desc">首次触达话术、渠道选择、客户筛选标准。</div><div class="e-bar"><div class="e-bar-fill" style="width:40%"></div></div><div class="e-bar-label">已答 4/10</div></div>
-    <div class="card"><span class="e-dim">DIM-2 需求洞察</span><div class="e-count">10</div><div class="e-name">需求洞察专项</div><div class="e-desc">显性 vs 隐性需求、挖掘框架、反套路提问。</div><div class="e-bar"><div class="e-bar-fill" style="width:0%"></div></div><div class="e-bar-label">未开始</div></div>
-    <div class="card"><span class="e-dim">DIM-3 专业方案</span><div class="e-count">10</div><div class="e-name">专业方案专项</div><div class="e-desc">学区房/非学区、一居/两居、预算匹配逻辑。</div><div class="e-bar"><div class="e-bar-fill" style="width:60%"></div></div><div class="e-bar-label">已答 6/10</div></div>
-    <div class="card"><span class="e-dim">DIM-4 带看谈判</span><div class="e-count">10</div><div class="e-name">带看谈判专项</div><div class="e-desc">带看路线、谈判技巧、异议处理、议价策略。</div><div class="e-bar"><div class="e-bar-fill" style="width:20%"></div></div><div class="e-bar-label">已答 2/10</div></div>
-    <div class="card"><span class="e-dim">DIM-5 交易履约</span><div class="e-count">10</div><div class="e-name">交易履约专项</div><div class="e-desc">签单/网签/资金监管/过户/交房全流程。</div><div class="e-bar"><div class="e-bar-fill" style="width:0%"></div></div><div class="e-bar-label">未开始</div></div>
-    <div class="card"><span class="e-dim">DIM-6 售后复购</span><div class="e-count">10</div><div class="e-name">售后复购专项</div><div class="e-desc">客户维护节奏、转介绍触发点、口碑传播。</div><div class="e-bar"><div class="e-bar-fill" style="width:0%"></div></div><div class="e-bar-label">未开始</div></div>
-    <div class="card"><span class="e-dim">DIM-7 数字化协同</span><div class="e-count">10</div><div class="e-name">数字化协同专项</div><div class="e-desc">系统高效用法、数据安全、内部协作。</div><div class="e-bar"><div class="e-bar-fill" style="width:0%"></div></div><div class="e-bar-label">未开始</div></div>
+  <div class="grid" id="card-grid"></div>
+</div>
+
+<!-- 考核模态 -->
+<div class="exam-modal-overlay" id="exam-overlay">
+  <div class="exam-modal">
+    <div class="em-head">
+      <span class="em-title" id="em-title">DIM 考核</span>
+      <button class="em-close" onclick="closeExam()">✕</button>
+    </div>
+    <div class="em-progress">
+      <span id="em-progress-label">1 / 10</span>
+      <div class="em-bar"><div class="em-fill" id="em-fill" style="width:10%"></div></div>
+    </div>
+    <div class="em-body" id="em-body"></div>
+    <div class="em-foot" id="em-foot"></div>
   </div>
 </div>
 
 <div class="footer-note">风声信息咨询 · 经纪人成长陪练<br>© 2026 fengsheng.tech</div>
+
+<script>
+// ============================================================
+//  岗位考核 · 完整引擎
+//  - 题库硬编码（基于知识底座真实条目改写）
+//  - 答题 → 算分 → localStorage['fs_exam_results'][dim]
+//  - profile 页合并 fs_care_profile + fs_exam_results
+// ============================================================
+
+// 7 维度 × 10 题（共 70 题）
+// 每题: {q:题干, a:正确答案索引, opts:[选项]}
+// 知识底座来源标注（entryType + id）
+var EXAM_DB = {
+  'DIM-1': {
+    name: '获客触达',
+    desc: '首次触达话术、渠道选择、客户筛选标准',
+    total: 10,
+    questions: [
+      { q:'以下哪种获客渠道属于"高精准·低量·高转化"类型？', opts:['朋友圈广告广泛投放','老客户定向转介绍','社区随机派单','电销名单广撒网'], a:1, src:'PROC-获客渠道分层' },
+      { q:'首次接客户电话，最该先确认的信息是？', opts:['预算区间','购房动机（自住/投资/刚需）','具体看房时间','是否已有心仪小区'], a:1, src:'ABIL-首触达五问' },
+      { q:'个人房源维护的核心节奏是？', opts:['只在客户来问时更新','每周固定节奏刷新 3-5 条优质内容','等有大单再集中做','靠系统自动维护'], a:1, src:'PROC-个人IP维护' },
+      { q:'客户说"我只是随便看看"，最合适的回应是？', opts:['好的那您慢慢看','给您推荐 3 套最符合您预算的房','那我加您微信，有好房通知您','您今天想看哪种户型？'], a:1, src:'SCRIPT-破冰话术' },
+      { q:'以下哪项是获客转化漏斗的"最底端"？', opts:['进线咨询','带看邀约','签单成交','微信添加'], a:3, src:'PROC-获客漏斗' },
+      { q:'老客户转介绍的触发时机通常在？', opts:['签单后立即','签单后 2-3 周（入住适应期）','交房半年后','随时可以开口'], a:1, src:'PROC-转介绍触发' },
+      { q:'公域流量（抖音/小红书）获客的核心是？', opts:['发广告链接','短内容输出 + 人设建立','只发房源信息','追求视频数量'], a:1, src:'INFO-公域获客方法论' },
+      { q:'客户来源标记"抖音进线" vs "老客转介绍"，本质区别是？', opts:['渠道来源不同','决策信任度差异巨大','客户预算不同','跟进方式完全不同'], a:1, src:'ABIL-来源分层跟进' },
+      { q:'获客触达的"黄金窗口"指的是？', opts:['客户首次上线的 2 小时内','每天固定时段','周末','客户主动搜索时段'], a:0, src:'PROC-响应时效' },
+      { q:'以下哪个不是经纪人个人获客 IP 的构成要素？', opts:['人设标签（如"学区专家"）','稳定更新节奏','高频发房源链接','真实案例分享'], a:2, src:'ABIL-个人IP打造' },
+    ],
+  },
+  'DIM-2': {
+    name: '需求洞察',
+    desc: '显性 vs 隐性需求、挖掘框架、反套路提问',
+    total: 10,
+    questions: [
+      { q:'客户说"我要学区房"，这句话里显性需求是？', opts:['学区','预算','户型','通勤'], a:0, src:'PROC-需求分层' },
+      { q:'隐性需求的典型表现是？', opts:['客户直接说出','客户反复提及同一关键词','客户态度明确','客户给具体指标'], a:1, src:'ABIL-需求洞察能力' },
+      { q:'"您买房最担心的是什么？"这类问题属于？', opts:['开放式问题','封闭式问题','引导性问题','反套路问题'], a:0, src:'PROC-需求挖掘五问' },
+      { q:'以下哪个是"反套路提问"？', opts:['您要几居室？','之前看过哪些小区？为什么不考虑了？','预算多少？','什么时候要？'], a:1, src:'SCRIPT-反套路话术' },
+      { q:'客户反复问税费 → 隐性需求可能是？', opts:['预算紧张','担心产权风险','想做低首付','以上都有可能'], a:3, src:'PROC-关键词反推需求' },
+      { q:'需求洞察的核心目标是？', opts:['尽快逼单','用最少的问题拿到最准的画像','展示专业知识','建立个人信任'], a:1, src:'ABIL-需求洞察方法论' },
+      { q:'客户说"帮我看看两居室，预算 400 万"——这句话里可能缺失的关键信息是？', opts:['预算上限','区域偏好','购房动机','以上都可能'], a:3, src:'PROC-补漏提问' },
+      { q:'"带爸妈看房，他们喜欢安静" → 隐性需求是？', opts:['低楼层','低噪音小区','电梯房','大面积'], a:1, src:'PROC-语境解读' },
+      { q:'需求画像表中，"硬性条件"和"弹性偏好"的区别是？', opts:['重要 vs 不重要','必须满足 vs 可以妥协','优先 vs 次要','现在要 vs 以后要'], a:1, src:'PROC-需求分层方法论' },
+      { q:'客户拒绝回答某个问题，最合理的处理是？', opts:['逼问到底','跳过继续，换角度再触','直接放弃这个需求点','记录下来不再提'], a:1, src:'SCRIPT-边界感话术' },
+    ],
+  },
+  'DIM-3': {
+    name: '专业方案',
+    desc: '学区房/非学区、一居/两居、预算匹配逻辑',
+    total: 10,
+    questions: [
+      { q:'首套住房贷款的首付比例通常是？', opts:['20%','30%','40%','50%'], a:1, src:'POL-房贷政策' },
+      { q:'学区房选择的最优先级判断逻辑是？', opts:['价格 → 学区等级 → 房龄','学区等级 → 价格 → 通勤','通勤 → 价格 → 学区','面积 → 学区 → 楼层'], a:1, src:'PROC-学区房选购框架' },
+      { q:'满五唯一的主要税务优惠是？', opts:['免征增值税','免征个人所得税','契税优惠','三项都有'], a:1, src:'POL-二手房税务' },
+      { q:'商业贷款和公积金贷款的本质区别是？', opts:['利率不同','资金来源和定价机制不同','额度不同','还款方式不同'], a:1, src:'POL-贷款体系' },
+      { q:'等额本息 vs 等额本金，总利息哪个更高？', opts:['等额本息','等额本金','一样','视利率而定'], a:0, src:'POL-还款方式' },
+      { q:'非学区房的核心价值支撑通常是？', opts:['学区','通勤便利 + 小区品质','面积','升值预期'], a:1, src:'PROC-非学区价值框架' },
+      { q:'客户预算 300 万想买学区房，最合理的建议是？', opts:['直接放弃学区','考虑远郊学区 + 小户型','降低预算','等降价'], a:1, src:'PROC-预算匹配逻辑' },
+      { q:'"一居改两居"方案的核心风险点是？', opts:['造价','是否改变承重墙（合规风险）','工期','邻居反对'], a:1, src:'STD-装修合规' },
+      { q:'组合贷（商贷 + 公积金）的最大优势是？', opts:['利率最低','额度上限提高 + 综合利息比纯商贷低','审批最快','首付最低'], a:1, src:'POL-组合贷政策' },
+      { q:'税费估算中，"网签价"和"成交价"的关系是？', opts:['必须一致','可以做低（有合规空间）','网签价必须高于成交价','没关系'], a:1, src:'STD-网签规则' },
+    ],
+  },
+  'DIM-4': {
+    name: '带看谈判',
+    desc: '带看路线、谈判技巧、异议处理、议价策略',
+    total: 10,
+    questions: [
+      { q:'首次带看的最佳路线设计逻辑是？', opts:['按价格从低到高','先看一般 → 再看好 → 最后看最合适（锚定效应）','直接看最好的','随机安排'], a:1, src:'PROC-带看路线设计' },
+      { q:'客户说"这套房太贵了"，最佳回应是？', opts:['不贵啊，这个价很合理','对比周边 3 套同品质房源的成交均价','那我帮您找更便宜的','跟业主砍砍看'], a:1, src:'SCRIPT-价格异议处理' },
+      { q:'谈判桌上，谁先开口报价更有利？', opts:['我方先报','等客户先出预期','同时报','不重要'], a:1, src:'ABIL-谈判策略' },
+      { q:'客户犹豫"再想想"，最佳推进是？', opts:['好的您慢慢想','给您 3 天专属锁定（业主等回复），同时附上这套房的 3 个涨价/被抢信号','直接逼单','介绍另一套房'], a:1, src:'SCRIPT-犹豫推进话术' },
+      { q:'议价策略中，"挤牙膏"法指的是？', opts:['每次让一点点价','一次让到底','先报高价再让','不让价只送服务'], a:0, src:'ABIL-议价方法论' },
+      { q:'带看中最忌讳的是？', opts:['介绍房屋优点','主动提房屋缺点','代替客户做决定','让客户自己看'], a:2, src:'PROC-带看纪律' },
+      { q:'"这套房有什么缺点？"客户问这个的潜台词是？', opts:['真的想知道缺点','在找压价理由','不想买了','测试经纪人是否诚实'], a:3, src:'SCRIPT-诚实度话术' },
+      { q:'谈判中"白脸-黑脸"策略的作用是？', opts:['制造紧张','让客户感觉"我在帮你争取"','让业主降价','快速成交'], a:1, src:'ABIL-谈判双簧' },
+      { q:'带看后的"黄金跟进时间"是？', opts:['当天 2 小时内','第二天','客户联系时','一周后'], a:0, src:'PROC-带看后跟进' },
+      { q:'异议处理的标准步骤是？', opts:['听 → 共情 → 解 → 推','直接解释','反问客户','换话题'], a:0, src:'SCRIPT-异议处理四步' },
+    ],
+  },
+  'DIM-5': {
+    name: '交易履约',
+    desc: '签单/网签/资金监管/过户/交房全流程',
+    total: 10,
+    questions: [
+      { q:'二手房交易中，资金监管的核心作用是？', opts:['降低税费','保障交易安全（买家钱→监管账户→卖家，过户完成才解冻）','提高效率','减少中介费'], a:1, src:'POL-资金监管制度' },
+      { q:'网签的核心目的是？', opts:['备案登记','防止一房多卖 + 锁定交易价格作为计税依据','加快过户','通知银行'], a:1, src:'POL-网签制度' },
+      { q:'房屋过户的法定办理机构是？', opts:['中介公司','不动产登记中心','居委会','税务局'], a:1, src:'POL-过户流程' },
+      { q:'交房时必须查验的 4 项不包括？', opts:['水电气结清','物业费结清','户籍是否迁出','家具是否带走'], a:3, src:'PROC-交房清单' },
+      { q:'"一房二卖"纠纷中，通常保护哪个买家？', opts:['先签合同的','先网签/过户的','先付款的','先看房的'], a:1, src:'CASE-一房二卖' },
+      { q:'签单时，定金和订金的法律区别是？', opts:['一样','定金有罚则（违约双倍返还），订金可退','订金有罚则','都可退'], a:1, src:'LAW-定金罚则' },
+      { q:'业主有抵押未结清，交易流程应该是？', opts:['直接签合同','先解押（买家首付/卖家自筹/过桥资金）→ 再网签过户','跳过抵押','先过户再解押'], a:1, src:'PROC-抵押房交易流程' },
+      { q:'"承诺包过户没办成"，中介是否要赔违约金？', opts:['不赔，只是口头承诺','赔，承诺构成合同义务未履行','看心情','只退中介费'], a:1, src:'CASE-承诺赔偿' },
+      { q:'交易全流程中，最容易出问题的环节是？', opts:['看房','签单','网签/资金监管衔接','交房'], a:2, src:'PROC-交易风险点' },
+      { q:'中介佣金的法定收取标准是？', opts:['固定 1%','无强制标准，市场调节（通常 1-3%）','固定 2%','按成交价 5%'], a:1, src:'POL-佣金规范' },
+    ],
+  },
+  'DIM-6': {
+    name: '售后复购',
+    desc: '客户维护节奏、转介绍触发点、口碑传播',
+    total: 10,
+    questions: [
+      { q:'交房后的首次回访最佳时机是？', opts:['交房当天','交房后 2-3 周（入住适应期）','交房后 3 个月','过年时'], a:1, src:'PROC-售后回访节奏' },
+      { q:'转介绍的黄金触发点是？', opts:['签单时','交房满意时（+ 2-6 个月入住体验）','每年春节','客户生日'], a:1, src:'PROC-转介绍触发时机' },
+      { q:'客户买了房后说"有朋友要买"，最应该做的是？', opts:['立即要联系方式','先维护好当前客户关系 → 等自然引荐','给佣金返利','让客户帮你发朋友圈'], a:1, src:'ABIL-转介绍方法论' },
+      { q:'售后维护的"3-7-14-30"节奏指的是？', opts:['3 天/7 天/14 天/30 天回访节奏','3-7-14-30 个客户分层','每月 3/7/14/30 号发朋友圈','维护成本分级'], a:0, src:'PROC-维护节奏系统' },
+      { q:'老客户转介绍来的新客户，成交率通常是陌生进线的几倍？', opts:['差不多','2-3 倍','5-10 倍','10 倍以上'], a:2, src:'DATA-转介绍成交数据' },
+      { q:'口碑传播的核心机制是？', opts:['客户满意','客户愿意主动分享（体验超过预期）','发红包激励','请吃饭'], a:1, src:'PROC-口碑传播原理' },
+      { q:'老客户"无需求"但每年还保持联系，这种关系的价值是？', opts:['没用','转介绍种子 / 未来换房 / 口碑传播','浪费时间','占资源'], a:1, src:'ABIL-长期关系投资' },
+      { q:'以下哪种做法会损害售后关系？', opts:['节日问候','客户朋友圈点赞评论','签完单就消失','偶尔分享市场信息'], a:2, src:'PROC-维护禁忌' },
+      { q:'"客户终身价值"视角下，老客户比新客户重要吗？', opts:['新客户更重要','老客户维护成本低、转介绍率高、信任度强','一样重要','看情况'], a:1, src:'ABIL-LTV 思维' },
+      { q:'售后沟通的底线原则是？', opts:['有事才联系','不推销、先关心 → 提供价值 → 自然转介绍','只发广告','每月必须联系一次'], a:1, src:'SCRIPT-边界感维护' },
+    ],
+  },
+  'DIM-7': {
+    name: '数字化协同',
+    desc: '系统高效用法、数据安全、内部协作',
+    total: 10,
+    questions: [
+      { q:'经纪人用 AI 工具生成话术时，最重要的底线是？', opts:['直接用，省时间','AI 生成 → 真人复核 → 再发客户','让客户自己判断','不用 AI'], a:1, src:'ABIL-AI 工具使用准则' },
+      { q:'客户隐私数据（手机号/身份证）最安全的存储方式是？', opts:['微信收藏','公司 CRM 系统（加密）','写在笔记本','手机备忘录'], a:1, src:'STD-数据安全规范' },
+      { q:'内部协作群里发客户信息，最该注意的是？', opts:['方便快捷','脱敏（隐去手机号中间 4 位等）','只发文字','只发图片'], a:1, src:'STD-内部协作规范' },
+      { q:'经纪人个人微信号 vs 公司系统客户号，区别是？', opts:['一样','公司号数据归属公司、离职可交接；个人号属于个人','公司号不好用','个人号客户多'], a:1, src:'STD-账号管理' },
+      { q:'带看时用手机录客户视频/语音，最该先做的是？', opts:['录了再说','征得客户明确同意','只录自己','不录'], a:1, src:'LAW-肖像权/隐私权' },
+      { q:'"数字化工具"的核心价值是？', opts:['代替经纪人','提升效率 + 沉淀可复用的方法和数据','增加工作量','让老板监控'], a:1, src:'PROC-数字化价值' },
+      { q:'以下哪种行为违反数据安全规范？', opts:['用公司 CRM','客户数据脱敏后发给同事','把客户信息导出到个人 Excel','内部群讨论成交案例'], a:2, src:'STD-数据安全红线' },
+      { q:'AI 生成的房源文案，最可能出的问题是？', opts:['写得太好','编造虚假信息（如不存在的配套）','字数太少','没有配图'], a:1, src:'ABIL-AI 使用风险' },
+      { q:'经纪人之间协作带看，信息共享的最佳方式是？', opts:['个人微信私聊','公司系统内共享客户卡片 + 带看记录','口头传达','发朋友圈'], a:1, src:'PROC-协作流程' },
+      { q:'数字化时代，经纪人"不可被替代"的核心竞争力是？', opts:['会用所有 AI 工具','AI 生成 + 真人判断 + 长期关系维护','发朋友圈勤','话术背得熟'], a:1, src:'ABIL-数字化生存' },
+    ],
+  },
+};
+
+var DIM_ORDER = ['DIM-1','DIM-2','DIM-3','DIM-4','DIM-5','DIM-6','DIM-7'];
+
+// 考试状态
+var currentExam = null;  // { dim, idx, answers: [selected], answers: [selected], startTime }
+var reviewMode = false;
+
+// ========== 渲染 ==========
+
+function loadResults() {
+  try { return JSON.parse(localStorage.getItem('fs_exam_results') || '{}'); } catch(e) { return {}; }
+}
+function saveResults(dim, score, total, answers) {
+  var all = loadResults();
+  all[dim] = { score: score, total: total, pct: Math.round(score/total*100), timestamp: new Date().toISOString(), answers: answers };
+  localStorage.setItem('fs_exam_results', JSON.stringify(all));
+}
+
+function renderGrid() {
+  var results = loadResults();
+  var grid = document.getElementById('card-grid');
+  grid.innerHTML = '';
+  DIM_ORDER.forEach(function(dim) {
+    var db = EXAM_DB[dim];
+    var r = results[dim];
+    var done = r ? r.answers.filter(function(a){ return a != null; }).length : 0;
+    var scorePct = r ? r.pct : 0;
+    var card = document.createElement('div');
+    card.className = 'card' + (r ? ' has-result' : '');
+    card.onclick = function() { startExam(dim); };
+    card.innerHTML =
+      '<span class="e-dim">' + dim + ' ' + db.name + '</span>' +
+      '<div class="e-count">' + db.total + '</div>' +
+      '<div class="e-name">' + db.name + '专项' + (r ? '<span class="e-score-badge">上次 ' + r.pct + '分</span>' : '') + '</div>' +
+      '<div class="e-desc">' + db.desc + '</div>' +
+      '<div class="e-bar"><div class="e-bar-fill" style="width:' + (done/db.total*100) + '%"></div></div>' +
+      '<div class="e-bar-label">' + (r ? '已考 ' + done + '/' + db.total + ' · 上次得分 ' + r.pct : '未开始 · ' + db.total + ' 题') + '</div>';
+    grid.appendChild(card);
+  });
+}
+
+function gradeOf(pct) {
+  if (pct >= 80) return { label:'A 掌握扎实', color:'#2d5a3d', bg:'#e8f3eb' };
+  if (pct >= 65) return { label:'B 整体合格', color:'#3498db', bg:'#e8f1fb' };
+  if (pct >= 50) return { label:'C 需补强', color:'#f39c12', bg:'#fef6e7' };
+  return { label:'D 建议先学再考', color:'#e74c3c', bg:'#fbeae4' };
+}
+
+// ========== 启动考核 ==========
+
+function startExam(dim) {
+  var db = EXAM_DB[dim];
+  currentExam = { dim: dim, idx: 0, answers: new Array(db.total).fill(null), review: null };
+  document.getElementById('exam-overlay').classList.add('show');
+  document.getElementById('em-title').textContent = dim + ' · ' + db.name + ' · 岗位考核';
+  reviewMode = false;
+  renderQuestion();
+}
+
+function closeExam() {
+  document.getElementById('exam-overlay').classList.remove('show');
+  renderGrid();
+}
+
+function startFullExam() {
+  alert('全维度考核建设中 · 先点下方任一维度开始吧！');
+}
+
+// ========== 题目渲染 ==========
+
+function renderQuestion() {
+  if (!currentExam) return;
+  var db = EXAM_DB[currentExam.dim];
+  var idx = currentExam.idx;
+
+  // 结果页
+  if (idx >= db.total) {
+    renderResult();
+    return;
+  }
+
+  var q = db.questions[idx];
+  var answered = currentExam.answers[idx] != null;
+
+  // 进度
+  document.getElementById('em-progress-label').textContent = (idx + 1) + ' / ' + db.total;
+  document.getElementById('em-fill').style.width = ((idx) / db.total * 100) + '%';
+
+  // 题干
+  var letters = ['A','B','C','D'];
+  var optsHtml = q.opts.map(function(opt, i) {
+    var cls = 'em-option';
+    if (answered && currentExam.review) {
+      if (i === q.a) cls += ' correct show-explain';
+      else if (i === currentExam.answers[idx] && i !== q.a) cls += ' wrong show-explain';
+    } else if (answered && i === currentExam.answers[idx]) {
+      cls += ' selected';
+    }
+    return '<div class="' + cls + '" data-idx="' + i + '" onclick="' + (answered && currentExam.review ? '' : 'selectOption(' + i + ')') + '">' +
+      '<span class="em-letter">' + letters[i] + '</span>' + opt +
+      (answered && currentExam.review ? '<div class="em-explain">' + (i === q.a ? '✅ 正确 · ' : '❌ · ') + (q.src || '') + '</div>' : '') +
+    '</div>';
+  }).join('');
+
+  document.getElementById('em-body').innerHTML =
+    '<div class="em-q-num">第 ' + (idx+1) + ' 题 · 来源: ' + q.src + '</div>' +
+    '<div class="em-q">' + q.q + '</div>' +
+    '<div class="em-options">' + optsHtml + '</div>';
+
+  // 底部按钮
+  var foot = document.getElementById('em-foot');
+  if (answered && !currentExam.review) {
+    foot.innerHTML = idx === db.total - 1
+      ? '<button class="em-btn em-btn-primary" onclick="submitExam()">提交 →</button>'
+      : '<button class="em-btn em-btn-primary" onclick="nextQuestion()">下一题 →</button>';
+  } else if (!answered) {
+    foot.innerHTML = '<button class="em-btn em-btn-primary" disabled onclick="nextQuestion()">选择一个选项</button>';
+  } else {
+    foot.innerHTML = '';  // review 模式无按钮
+  }
+}
+
+function selectOption(i) {
+  if (!currentExam) return;
+  var idx = currentExam.idx;
+  currentExam.answers[idx] = i;
+  // 即时视觉反馈
+  document.querySelectorAll('.em-option').forEach(function(el) { el.classList.remove('selected'); });
+  document.querySelector('.em-option[data-idx="' + i + '"]').classList.add('selected');
+  // 启用下一题
+  var foot = document.getElementById('em-foot');
+  var db = EXAM_DB[currentExam.dim];
+  foot.innerHTML = idx === db.total - 1
+    ? '<button class="em-btn em-btn-primary" onclick="submitExam()">提交 →</button>'
+    : '<button class="em-btn em-btn-primary" onclick="nextQuestion()">下一题 →</button>';
+}
+
+function nextQuestion() {
+  currentExam.idx++;
+  renderQuestion();
+}
+
+// ========== 结果页 ==========
+
+function submitExam() {
+  if (!currentExam) return;
+  var db = EXAM_DB[currentExam.dim];
+  // 算分
+  var score = 0;
+  var wrongs = [];
+  var rights = [];
+  for (var i = 0; i < db.total; i++) {
+    if (currentExam.answers[i] === db.questions[i].a) { score++; rights.push(i); }
+    else wrongs.push(i);
+  }
+  var pct = Math.round(score / db.total * 100);
+  var grade = gradeOf(pct);
+
+  // 存 localStorage
+  saveResults(currentExam.dim, score, db.total, currentExam.answers);
+
+  // 结果渲染
+  var reviewHtml = '';
+  if (wrongs.length > 0) {
+    reviewHtml = '<div class="em-review"><div style="font-weight:600;color:#1a3d24;margin-bottom:8px">❌ 错题回顾（' + wrongs.length + ' 题）</div>';
+    wrongs.forEach(function(wi) {
+      var q = db.questions[wi];
+      var letters = ['A','B','C','D'];
+      reviewHtml += '<div class="em-review-item wrong"><div class="ri-icon">✗</div><div>' + (wi+1) + '. ' + q.q + '<br><span style="color:#c25636">你的答案: ' + letters[currentExam.answers[wi]] + '. ' + q.opts[currentExam.answers[wi]] + '</span> · <span style="color:#2d5a3d">正确: ' + letters[q.a] + '. ' + q.opts[q.a] + '</span></div></div>';
+    });
+    reviewHtml += '</div>';
+  }
+
+  document.getElementById('em-progress-label').textContent = '完成！';
+  document.getElementById('em-fill').style.width = '100%';
+  document.getElementById('em-body').innerHTML =
+    '<div class="em-result">' +
+      '<div class="er-score">' + pct + '</div>' +
+      '<div class="er-label">得分 ' + score + ' / ' + db.total + '</div>' +
+      '<span class="er-grade" style="color:' + grade.color + ';background:' + grade.bg + '">' + grade.label + '</span>' +
+      '<div class="er-desc">' +
+        (pct >= 80 ? '💪 ' + db.name + '维度掌握扎实 · 继续保持！' :
+         pct >= 65 ? '👍 ' + db.name + '整体合格 · 错题回顾后去 <a href="/academy/practice/" style="color:#1a3d24;font-weight:600">场景练习</a> 补短板' :
+         pct >= 50 ? '📚 ' + db.name + '需要补强 · 建议先做 <a href="/care-test/" style="color:#1a3d24;font-weight:600">能力测评</a> 定位弱项 · 再去 <a href="/academy/core-courses/" style="color:#1a3d24;font-weight:600">核心课</a> 补门' :
+         '🔴 ' + db.name + '基础薄弱 · 建议先做 <a href="/care-test/" style="color:#1a3d24;font-weight:600">能力测评</a> 全面定位 · 再去 <a href="/academy/core-courses/" style="color:#1a3d24;font-weight:600">核心课</a> 系统学习') +
+      '</div>' +
+      '<div class="er-saved">✅ 分数已保存 · 同步到 <a href="/academy/profile/" style="color:#2d5a3d;font-weight:700">能力画像</a></div>' +
+    '</div>' + reviewHtml;
+
+  document.getElementById('em-foot').innerHTML =
+    '<button class="em-btn em-btn-secondary" onclick="retakeExam()">🔄 重考</button>' +
+    '<button class="em-btn em-btn-primary" onclick="closeExam()">完成 →</button>';
+}
+
+function retakeExam() {
+  if (!currentExam) return;
+  startExam(currentExam.dim);
+}
+
+// ========== 初始渲染 ==========
+renderGrid();
+</script>
 </body>
 </html>
