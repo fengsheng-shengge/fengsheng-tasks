@@ -78,14 +78,6 @@ a{color:inherit;text-decoration:none}
 .stat-num .unit{font-size:14px;color:var(--ink-soft);font-weight:500}
 .stat-label{font-size:13px;color:var(--ink-soft);margin-top:4px}
 
-/* ===== 内部预览水印 banner（G1，12.31 边界）===== */
-.internal-beta-banner{position:sticky;top:0;z-index:1001;background:linear-gradient(90deg,#c9a962 0%,#e67e22 100%);color:#fff;font-size:12px;font-weight:600;padding:8px 32px;display:flex;align-items:center;gap:12px}
-.internal-beta-banner .ib-icon{font-size:14px}
-.internal-beta-banner .ib-text{flex:1;letter-spacing:.5px}
-.internal-beta-banner .ib-close{cursor:pointer;opacity:.7;font-size:14px}
-.internal-beta-banner .ib-close:hover{opacity:1}
-@media(max-width:720px){.internal-beta-banner{padding:6px 16px;font-size:11px}}
-
 .search-wrapper{position:relative;max-width:720px}
 .search-box{display:flex;align-items:center;gap:12px;padding:16px 20px;background:white;border:1.5px solid var(--line);border-radius:14px;box-shadow:var(--shadow-sm);transition:all .2s}
 .search-box:focus-within{border-color:var(--p);box-shadow:var(--shadow-md)}
@@ -391,13 +383,6 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
     <span class="fs-top-avatar">👤</span>
   </div>
 </nav>
-
-<!-- 🔒 内部预览水印（G1，12.31 边界）-->
-<div class="internal-beta-banner">
-  <span class="ib-icon">🔒</span>
-  <span class="ib-text">内部预览 · 仅内部账号可见 · 2026-12-31 上线 · 不宣称对外循证</span>
-  <span class="ib-close" onclick="this.parentElement.style.display='none'" title="临时隐藏">✕</span>
-</div>
 
 <!-- Hero -->
 <section class="hero">
