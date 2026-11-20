@@ -708,12 +708,43 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
       return;
     }
 
+    // 🆕 蓝图 P4 深化：过期词条全链路过滤（#245 四件套 · 有效期自动阻断）
+    // 只在 EvidenceAdapter 加载后过滤，否则降级显示（内部预览 fallback）
+    let expiredCount = 0;
+    let displayResults = state.results;
+    if (window.EvidenceAdapter) {
+      const adapter = window.EvidenceAdapter;
+      displayResults = state.results.filter(function(r) {
+        try {
+          const adapted = adapter.adaptEntry(r);
+          const exp = adapter.assessExpiry(adapted);
+          if (exp.status === 'soft_expired' || exp.status === 'hard_blocked') {
+            expiredCount++;
+            return false;  // 过期 → 不渲染
+          }
+        } catch(e) { /* 适配失败 → 保留原条目 */ }
+        return true;
+      });
+      // 全部过期 → 走空态（不要渲染零结果的页面）
+      if (displayResults.length === 0 && expiredCount > 0) {
+        $resultsList.innerHTML = '';
+        $resultsHeader.style.display = 'none';
+        $pagination.style.display = 'none';
+        showEmptyState('noResults');
+        return;
+      }
+    }
+    state._displayResults = displayResults;  // 供 renderEvidenceForSearch 用
+
     $resultsHeader.style.display = 'flex';
-    $resultsCount.innerHTML = '共 <span class="num">' + state.total + '</span> 条结果';
+    // 显示真实可渲染条目数（过期已过滤）
+    const shownCount = displayResults.length;
+    $resultsCount.innerHTML = '共 <span class="num">' + shownCount + '</span> 条结果' +
+      (expiredCount > 0 ? ' <span style="color:#999;font-size:12px">(已过滤 ' + expiredCount + ' 条过期)</span>' : '');
     $resultsSort.innerHTML = '按匹配度排序';
 
     let html = '';
-    for (const r of state.results) {
+    for (const r of displayResults) {
       const nameHl = highlightText(r.name, state.query);
       const descHl = highlightText(r.oneLineAnswer || '', state.query);
       const sevClass = r.severity ? 'severity-' + r.severity : '';
@@ -753,9 +784,10 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     if (!window.EvidenceLink || !window.EvidenceAdapter) return;  // defer 还没加载 → 跳过
     const adapter = window.EvidenceAdapter;
     const ev = window.EvidenceLink;
+    const displayResults = state._displayResults || state.results;  // 优先用过滤后的
     const cards = document.querySelectorAll('.result-card .result-evidence');
     cards.forEach(function(container, i) {
-      const raw = state.results[i];
+      const raw = displayResults[i];
       if (!raw) return;
       try {
         const adapted = adapter.adaptEntry(raw);

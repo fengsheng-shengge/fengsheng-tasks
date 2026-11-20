@@ -367,10 +367,17 @@ async function fetchRealEntries(userText, match){
   var data = await resp.json();
   var results = (data.results || []).slice(0, 5);  // 最多 5 条
 
-  // EvidenceAdapter 适配每条
+  // EvidenceAdapter 适配每条 + 过期过滤（蓝图 P4 · 自动阻断外发）
   var adapter = window.EvidenceAdapter;
-  return results.map(function(r){
+  var adapted = results.map(function(r){
     try { return adapter.adaptEntry(r); } catch(e) { return r; }
+  });
+  // 过滤掉 soft_expired + hard_blocked（内部预览降级则不过滤）
+  return adapted.filter(function(e){
+    try {
+      var exp = adapter.assessExpiry(e);
+      return exp.status !== 'soft_expired' && exp.status !== 'hard_blocked';
+    } catch(e2) { return true; }
   });
 }
 

@@ -478,11 +478,17 @@ async function fetchRealEvidenceForDecoder(keyword){
     results.forEach(function(r){
       try {
         const adapted = adapter.adaptEntry(r);
+        // 🆕 蓝图 P4：跳过过期条目（自动阻断外发）
+        const exp = adapter.assessExpiry(adapted);
+        if (exp.status === 'soft_expired' || exp.status === 'hard_blocked') return;
         html += '<div style="margin-bottom:10px">' + ev.render(adapted, { compact: true, max: 2, showCaveat: false }) + '</div>';
       } catch(e) {
         html += '<div style="font-size:11px;color:#888">条目加载失败：' + (r.name || r.id || '?') + '</div>';
       }
     });
+    if (!html) {
+      html = '<div style="font-size:11px;color:#888">匹配条目已过期 · 暂不外发</div>';
+    }
     $body.innerHTML = html;
   } catch(err) {
     console.warn('[decoder] 实时证据拉取失败:', err);
