@@ -4478,6 +4478,8 @@ export default {
     const PROTECTED_PAGES = new Set([
       '/dashboard', '/dashboard/', '/agent-assessment', '/agent-assessment/',
       '/management', '/management/',
+      '/okr', '/okr/', '/standard', '/standard/',
+      '/quality-test', '/quality-test/',
     ]);
     if (PROTECTED_PAGES.has(decodedPath)) {
       const cookieHeader = request.headers.get('Cookie') || '';
