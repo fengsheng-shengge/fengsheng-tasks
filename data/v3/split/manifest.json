@@ -1,95 +1,65 @@
 {
-  "version": "v1",
-  "generated_at": "2026-11-18",
-  "source": "entries.json",
-  "source_md5": "bc614c84ac1fb9678babfc468c1d42bc",
-  "total_entries": 6143,
-  "split_strategy": "by_entryType",
-  "shards": {
-    "PROC": {
-      "file": "shards/PROC.json",
-      "count": 1301,
-      "size_bytes": 2907804,
-      "size_kb": 2839.7,
-      "md5": "ed1a1d38564501350dc100b9e54ab8dc"
-    },
-    "LAW": {
-      "file": "shards/LAW.json",
-      "count": 1226,
-      "size_bytes": 2662969,
-      "size_kb": 2600.6,
-      "md5": "52b24d6190bfd50d7c31380156274849"
-    },
-    "RISK": {
-      "file": "shards/RISK.json",
-      "count": 953,
-      "size_bytes": 2264518,
-      "size_kb": 2211.4,
-      "md5": "1d60c758c320315b06e70d0225498199"
-    },
-    "CASE": {
-      "file": "shards/CASE.json",
-      "count": 871,
-      "size_bytes": 2082116,
-      "size_kb": 2033.3,
-      "md5": "24a493499c98a3a9dac185d12b0c082e"
-    },
-    "POL": {
-      "file": "shards/POL.json",
-      "count": 476,
-      "size_bytes": 1006542,
-      "size_kb": 983.0,
-      "md5": "d879f4d97b069b721b775fa73a35e5c7"
-    },
-    "TERM": {
-      "file": "shards/TERM.json",
-      "count": 454,
-      "size_bytes": 927431,
-      "size_kb": 905.7,
-      "md5": "f2775e831cae06500a2d817a47fb4443"
-    },
-    "STD": {
-      "file": "shards/STD.json",
-      "count": 453,
-      "size_bytes": 878677,
-      "size_kb": 858.1,
-      "md5": "fcbe0ec52af2e744ff31d4c6ef5a24e0"
-    },
-    "ABIL": {
-      "file": "shards/ABIL.json",
-      "count": 124,
-      "size_bytes": 92862,
-      "size_kb": 90.7,
-      "md5": "cce7ab071acb859767b8f9aa1cf80582"
-    },
-    "OTHER": {
-      "file": "shards/OTHER.json",
-      "count": 285,
-      "size_bytes": 469321,
-      "size_kb": 458.3,
-      "md5": "7df31b0df6fad27621d264f389aea9aa"
-    }
+ "version": "v1.1",
+ "generated_at": "2026-11-20",
+ "source": "entries.json",
+ "source_md5": "c1f765270543577a9ca996701eef7b27",
+ "total_entries": 6143,
+ "split_strategy": "by_entryType",
+ "note": "GAP第一批authority+source落库版（bc614c84→c1f76527）; authority expect_count 6122（CITY 21 条 CONDITIONAL 不落，authority 空）; authority_note=法源待复核 830 条; source_raw 5078 条溯源保留; RISK 丁方案定版见 content-supply/DICTIONARY.md v1.3.3",
+ "shards": {
+  "CASE": {
+   "file": "shards/CASE.json",
+   "count": 871,
+   "size_bytes": 2368291,
+   "md5": "4b7666c8b23b6326e8f877774bd0eab1"
   },
-  "index": {
-    "file": "index.json",
-    "size_bytes": 1017157,
-    "size_kb": 993.3
+  "LAW": {
+   "file": "shards/LAW.json",
+   "count": 1226,
+   "size_bytes": 3045733,
+   "md5": "74214a18fd0e2503dcf00df38489c093"
   },
-  "role_preference_map": {
-    "BROKER": [
-      "LAW",
-      "RISK",
-      "CASE"
-    ],
-    "LEASE": [
-      "LAW",
-      "RISK",
-      "POL"
-    ],
-    "NEW_HOME": [
-      "LAW",
-      "RISK",
-      "DATA"
-    ]
+  "RISK": {
+   "file": "shards/RISK.json",
+   "count": 953,
+   "size_bytes": 2592473,
+   "md5": "87b6646645c75456725d925790e25bee"
+  },
+  "POL": {
+   "file": "shards/POL.json",
+   "count": 476,
+   "size_bytes": 1148478,
+   "md5": "04f025b4fa59331618ca5958cb9349ad"
+  },
+  "STD": {
+   "file": "shards/STD.json",
+   "count": 453,
+   "size_bytes": 1014377,
+   "md5": "5d05e974f03320da234a2c6d29b78281"
+  },
+  "PROC": {
+   "file": "shards/PROC.json",
+   "count": 1301,
+   "size_bytes": 3301937,
+   "md5": "de8bce10c4114be44c87286114de982b"
+  },
+  "TERM": {
+   "file": "shards/TERM.json",
+   "count": 454,
+   "size_bytes": 1067493,
+   "md5": "7df9b797cdaf09301849df23702d2092"
+  },
+  "OTHER": {
+   "file": "shards/OTHER.json",
+   "count": 285,
+   "size_bytes": 534523,
+   "md5": "39a4633cc14926e83535a8b5c5be88b8"
+  },
+  "ABIL": {
+   "file": "shards/ABIL.json",
+   "count": 124,
+   "size_bytes": 117088,
+   "md5": "f627b612ecfea47984a95d34dac9b7c3"
   }
+ }
 }
