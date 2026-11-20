@@ -718,6 +718,18 @@ body.has-bottom-bar{padding-bottom:70px}
       }
 
     } catch (err) {
+      // 降级：本地 fallback（静态站/pages.dev 没有 Worker）
+      if (window.LocalFallback) {
+        try {
+          var localEntry = await LocalFallback.getEntry(entryId);
+          if (!localEntry) { showError('未找到词条 "' + escapeHtml(entryId) + '"'); return; }
+          renderEntryDetail(localEntry);
+          renderRelatedEntries(localEntry.relatedEntriesResolved || []);
+          var localRelated = await LocalFallback.getRelated(entryId, 15);
+          renderQiRelated(localRelated.filter(function(r){ return r; }));
+          return;
+        } catch(e2) { console.warn('[entry] LocalFallback 也失败了', e2); }
+      }
       console.error('Failed to load entry:', err);
       showError('网络错误，请稍后重试');
     }
@@ -870,6 +882,7 @@ body.has-bottom-bar{padding-bottom:70px}
 <!-- EvidenceLink 证据链组件（蓝图 C1）：桥接旧字段 → Schema v1.0，渲染证据链 HTML -->
 <script src="/lib/evidence/data-adapter.js" defer></script>
 <script src="/lib/evidence/evidence-link.js" defer></script>
+<script src="/lib/evidence/local-fallback.js" defer></script>
 
 <footer style="text-align:center;padding:24px 16px 32px;font-size:12px;color:#8a9a90;line-height:1.8;">
   <div>风声信息咨询 · 经纪人成长陪练 · 让好经纪人被看见</div>
