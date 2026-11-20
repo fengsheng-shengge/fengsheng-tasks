@@ -13,3 +13,5 @@
 - **RISK 丁方案定版**：P 档 758 全量判定后果型 58%（甲失效，乙再否决）；RISK 830 条 derived+authority_note='法源待复核'，4 条双凭证露出 court（8 条全验真）；候选 v3 d1387551（official 1723/court 879/industry 907/derived 2606/data 28）送小酒窝儿按 v3 审 | v1.3.3 | 小眼镜 | om_x100b60cf5b7dd4a0c051423b1e9ae4f
 
 - 送审预检机制落地（采纳小酒窝儿《品质改进建议单》，D2 扩展）：send_review_check.py 入库 scripts/，规则=预检不过不发工单+审核人回读 md5 与预检报告一致才开审；首审失败根因=审核通道缺失（GitHub 不可达），送审包落坚果云 /风声协作/送审区/GAP第一批_20261120/（五文件回读闭合）| — | 小眼镜 | 本轮群发
+
+- **仓库首推补登**：content-supply/ 此前仅本地存在（push 缺失，小酒窝儿首审失败真根因），11:45 补推远端 commit 40695d5，DICTIONARY/候选v3/预检器/CHANGELOG API 逐项验证在位；对账小马丫两个悬置（8c8f50f8=拍板前v2/丁已拍已执行）om_x100b60c87cb77cb0cd088176a70f8b2；source_url 分层抽检采纳（GAP-2 验收标准）| — | 小眼镜 | om_x100b60c87cb77cb0cd088176a70f8b2
