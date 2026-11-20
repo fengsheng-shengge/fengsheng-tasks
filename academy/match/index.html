@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人岗匹配 · 学习成长 | 风声信息咨询</title>
+<meta name="description" content="根据能力画像推荐最适合你的岗位方向——获客型 / 谈判型 / 服务型 / 综合型">
+<link rel="icon" href="/favicon.png" type="image/png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#f7f5f0;color:#2b2b2b;line-height:1.6}
+a{text-decoration:none;color:inherit}
+.fs-top-nav{position:sticky;top:0;z-index:100;background:#f7f5f0;border-bottom:1px solid #e8e4da;padding:10px 32px;display:flex;align-items:center;gap:20px}
+.fs-top-logo{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.fs-top-mark{width:30px;height:30px;background:#1a3d24;color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.fs-top-name{font-size:14px;font-weight:700;color:#1a3d24;white-space:nowrap}
+.fs-top-links{display:flex;gap:14px;font-size:13px;flex-wrap:wrap;flex:1;justify-content:center}
+.fs-top-links a{color:#555;white-space:nowrap}
+.fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
+.fs-top-actions{display:flex;gap:10px;align-items:center;font-size:13px;flex-shrink:0}
+@media(max-width:960px){.fs-top-links,.fs-top-actions{display:none}}
+.loop-strip{max-width:880px;margin:24px auto 0;background:#fff;border:1px solid #e8e4da;border-radius:14px;display:flex;overflow:hidden}
+.loop-strip a{flex:1;padding:12px 4px;text-align:center;font-size:12px;color:#666;border-right:1px dashed #e8e4da}
+.loop-strip a:last-child{border-right:none}
+.loop-strip a .ls-name{display:block;font-weight:700;font-size:14px;margin-bottom:2px}
+.loop-strip a.hl{background:linear-gradient(135deg,#fdf9ef,#fffbf3);color:#8a7040}
+.pg{max-width:880px;margin:24px auto;padding:0 24px}
+.pg-h{font-size:26px;font-weight:800;color:#1a3d24;margin-bottom:6px}
+.pg-sub{font-size:14px;color:#6b6b6b;margin-bottom:20px}
+.match-card{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:24px;margin-bottom:16px;display:grid;grid-template-columns:120px 1fr auto;gap:20px;align-items:center}
+.match-card .mc-top{font-size:36px}
+.match-card .mc-name{font-size:16px;font-weight:700;color:#1a3d24;margin-bottom:6px}
+.match-card .mc-desc{font-size:12.5px;color:#777;line-height:1.8;margin-bottom:8px}
+.match-card .mc-fit{font-size:13px;font-weight:700;color:#8a7040;text-align:center}
+.match-card .mc-fit .pct{font-size:28px;font-weight:800}
+.match-card.recommend{border:2px solid #8a7040;background:linear-gradient(135deg,#fdf9ef,#fffbf3)}
+.match-card .mc-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.match-card .mc-tags span{background:#f0ece2;padding:2px 8px;border-radius:4px;font-size:11px;color:#666}
+.match-card.recommend{background:linear-gradient(135deg,#fdf9ef,#fffbf3);border-color:#8a7040}
+.hint{background:#fff;border:1px dashed #e8e4da;border-radius:10px;padding:16px;font-size:13px;color:#666;text-align:center;margin-bottom:20px}
+.hint a{color:#1a3d24;font-weight:700;text-decoration:underline}
+.footer-note{max-width:880px;margin:40px auto 0;padding:22px 24px 34px;border-top:1px solid #e8e4da;font-size:12px;color:#999;text-align:center;line-height:1.9}
+</style>
+</head>
+<body>
+
+<nav class="fs-top-nav">
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声信息咨询</span></a>
+  <div class="fs-top-links">
+    <a href="/">首页</a><a href="/workspace/">工作台</a><a href="/knowledge/">知识底座</a>
+    <a href="/curation/">策展引擎</a><a href="/decoder/">话术解码</a>
+    <a href="/assessment/">能力测评</a><a class="active" href="/academy/">学习成长</a>
+  </div>
+  <div class="fs-top-actions"><span class="fs-top-avatar">👤</span></div>
+</nav>
+
+<div class="loop-strip">
+  <a href="/assessment/">📋<span class="ls-name">测</span>测评</a>
+  <a href="/academy/core-courses/">📖<span class="ls-name">学</span>核心课</a>
+  <a href="/academy/practice/">🎭<span class="ls-name">练</span>场景</a>
+  <a href="/academy/exam/">📝<span class="ls-name">考</span>考核</a>
+  <a href="/academy/profile/">📊<span class="ls-name">评</span>画像</a>
+  <a class="hl" href="/academy/match/">🎯<span class="ls-name">配</span>岗位</a>
+</div>
+
+<div class="pg">
+  <h2 class="pg-h">🎯 人岗匹配</h2>
+  <p class="pg-sub">根据能力画像，推荐你最适合的岗位方向 · 数据来自测评+考核+练习三源</p>
+
+  <div class="hint">
+    ⚠️ 匹配需要先有能力画像数据 · <a href="/assessment/">去做能力测评 →</a> · <a href="/academy/exam/">去做岗位考核 →</a>
+  </div>
+
+  <div class="match-card recommend">
+    <div class="mc-top">🤝</div>
+    <div>
+      <div class="mc-name">综合型经纪人 <span style="background:#8a7040;color:#fff;font-size:10px;padding:2px 6px;border-radius:3px;margin-left:6px">推荐</span></div>
+      <div class="mc-desc">获客 + 谈判 + 服务全链路能力均衡 · 适合独立作业或小组负责人岗位 · 以 DIM-3/DIM-5/DIM-7 为优势维度</div>
+      <div class="mc-tags"><span>需要综合能力</span><span>偏交易端</span><span>独立作业强</span></div>
+    </div>
+    <div class="mc-fit">匹配度<br><span class="pct">78%</span></div>
+  </div>
+
+  <div class="match-card">
+    <div class="mc-top">📢</div>
+    <div>
+      <div class="mc-name">获客型（客源开发）</div>
+      <div class="mc-desc">擅长触达和首次转化 · DIM-1 分数最高 · 适合门店客源开发组长或获客专家</div>
+      <div class="mc-tags"><span>需要获客能力</span><span>偏前端</span></div>
+    </div>
+    <div class="mc-fit">匹配度<br><span class="pct">62%</span></div>
+  </div>
+
+  <div class="match-card">
+    <div class="mc-top">🎭</div>
+    <div>
+      <div class="mc-name">谈判型（带看议价）</div>
+      <div class="mc-desc">擅长带看话术和价格谈判 · DIM-4 分数最高 · 适合资深经纪人或谈判专家</div>
+      <div class="mc-tags"><span>需要谈判能力</span><span>偏中端</span></div>
+    </div>
+    <div class="mc-fit">匹配度<br><span class="pct">45%</span></div>
+  </div>
+
+  <div class="match-card">
+    <div class="mc-top">🛎️</div>
+    <div>
+      <div class="mc-name">服务型（售后复购）</div>
+      <div class="mc-desc">擅长客户维护和复购转化 · DIM-6 分数最高 · 适合店长或客户关系经理</div>
+      <div class="mc-tags"><span>需要维护能力</span><span>偏后端</span></div>
+    </div>
+    <div class="mc-fit">匹配度<br><span class="pct">50%</span></div>
+  </div>
+</div>
+
+<div class="footer-note">风声信息咨询 · 经纪人成长陪练<br>© 2026 fengsheng.tech</div>
+</body>
+</html>
