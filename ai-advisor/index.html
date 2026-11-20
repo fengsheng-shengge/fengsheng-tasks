@@ -338,18 +338,26 @@ function processAI(text){
 
   // 主回答先出（立即响应，不阻塞）
   var html = match.answer;
+  // 蓝图 P4：四件套锚点（依据·有效期·立场签）— 先出占位，异步替换
+  html += renderBadgeRowPlaceholder();
   html += '<div style="margin-top:10px" id="ai-kb-real">📚 知识底座查证中...</div>';
   html += renderCapRef(match);
   var msgId = addMsg(html, true);
 
   // 异步拉真实知识底座条目替换 step 4 + 渲染 EvidenceLink
   fetchRealEntries(text, match).then(function(realEntries){
+    // 🆕 蓝图 P4：替换四件套锚点条占位符
+    var badgeRow = document.getElementById('ai-badge-row');
+    if (badgeRow) badgeRow.outerHTML = renderBadgeRow(realEntries, match);
     // 替换 step 4 为真实数据
     updateTraceStep4(realEntries, match);
     // 替换 kb-card 区域为 EvidenceLink 渲染
     renderRealKB(realEntries, match, msgId);
   }).catch(function(err){
     console.warn('[ai-advisor] 知识底座查询失败，保留模拟 kbs:', err);
+    // 🆕 降级：锚点条显示"查证失败"
+    var badgeRow = document.getElementById('ai-badge-row');
+    if (badgeRow) badgeRow.outerHTML = '<div class="ai-badge-row" style="margin-top:8px;font-size:11px;color:#999">📎 依据 · 查证失败 · 📅 有效期 · ⚠️ 立场 · 风声顾问客观中立</div>';
     // 失败时回退硬编码 kbs
     renderFallbackKB(match, msgId);
     updateTraceStep4(match.kbs, match, true);  // 标记降级
@@ -410,6 +418,59 @@ function updateTraceStep4(entries, match, degraded){
   });
   var types = Object.keys(typeCount).map(function(t){ return t + '×' + typeCount[t]; }).join(' ');
   el.innerHTML = (entries.length) + ' 条真实条目 · <b>' + types + '</b> · 🟢' + greenCount + ' ⚪' + grayCount + ' · ✅' + todayCount + '可核验 ⚠️' + staleCount + '超期' + (degraded ? ' <span style="color:#b91c1c">（降级）</span>' : '');
+}
+
+// 蓝图 P4：四件套锚点条占位符（先出，异步替换）
+function renderBadgeRowPlaceholder(){
+  return '<div id="ai-badge-row" class="ai-badge-row" style="margin-top:8px;font-size:11px;color:#aaa;display:flex;gap:12px">' +
+    '<span class="ai-badge" style="cursor:default">📎 依据 · 查证中</span>' +
+    '<span class="ai-badge" style="cursor:default">📅 有效期 · 待核验</span>' +
+    '<span class="ai-badge" style="cursor:default">🏷️ 立场 · 待确认</span>' +
+  '</div>';
+}
+
+// 蓝图 P4：四件套锚点条真实渲染（fetch 返回后替换）
+function renderBadgeRow(entries, match){
+  var html = '<div class="ai-badge-row" style="margin-top:8px;font-size:11px;color:#666;display:flex;gap:12px;flex-wrap:wrap">';
+
+  // 1️⃣ 依据锚点 — 有真实条目 → 显示数量 + 点击展开；无 → 显示跳转
+  if (entries && entries.length > 0) {
+    var totalEvidence = entries.reduce(function(sum, e){ return sum + ((e.evidence && e.evidence.length) || 0); }, 0);
+    html += '<span class="ai-badge" style="cursor:pointer;color:#2d7a3e" onclick="document.getElementById(\'ai-kb-real\').scrollIntoView({behavior:\'smooth\'})">' +
+      '📎 依据 · ' + entries.length + ' 条知识 · ' + totalEvidence + ' 处引证 ↓' +
+    '</span>';
+  } else {
+    html += '<span class="ai-badge" style="color:#999">📎 依据 · 无匹配条目</span>';
+  }
+
+  // 2️⃣ 有效期锚点 — 取最旧 lastVerified + 过期状态
+  if (entries && entries.length > 0 && window.EvidenceAdapter) {
+    var adapter = window.EvidenceAdapter;
+    var d = new Date();
+    var staleCount = 0, freshCount = 0;
+    entries.forEach(function(e){
+      try {
+        var exp = adapter.assessExpiry(e);
+        if (exp.status === 'soft_expired' || exp.status === 'hard_blocked') staleCount++;
+        else freshCount++;
+      } catch(e2) { freshCount++; }
+    });
+    if (freshCount > 0 && staleCount === 0) {
+      html += '<span class="ai-badge" style="color:#2d7a3e">📅 有效期 · ✅ 全部可核验</span>';
+    } else if (staleCount > 0 && freshCount === 0) {
+      html += '<span class="ai-badge" style="color:#b91c1c">📅 有效期 · ⚠️ 全部已过期</span>';
+    } else {
+      html += '<span class="ai-badge" style="color:#8a6f2b">📅 有效期 · ⚠️ ' + staleCount + '/' + entries.length + ' 已过期</span>';
+    }
+  } else {
+    html += '<span class="ai-badge" style="color:#999">📅 有效期 · 待核验</span>';
+  }
+
+  // 3️⃣ 立场签 — 数据层零 stance 字段 → 作战图"缺失不造假"原则，暂显示"风声顾问"机构立场
+  html += '<span class="ai-badge" style="color:#555">🏷️ 立场 · 风声顾问客观中立</span>';
+
+  html += '</div>';
+  return html;
 }
 
 // 蓝图 P4：EvidenceLink 渲染真实知识条目（替换硬编码 kb-card）
