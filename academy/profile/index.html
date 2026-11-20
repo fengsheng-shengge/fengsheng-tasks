@@ -80,6 +80,17 @@ a{text-decoration:none;color:inherit}
 .ts-row{text-align:center;font-size:11px;color:#aaa;margin-top:-12px;margin-bottom:20px}
 
 .footer-note{max-width:880px;margin:40px auto 0;padding:22px 24px 34px;border-top:1px solid #e8e4da;font-size:12px;color:#999;text-align:center;line-height:1.9}
+
+/* 趋势图 */
+.trend-box{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:20px 24px;margin-bottom:20px}
+.trend-box .t-title{font-size:14px;font-weight:700;color:#1a3d24;margin-bottom:4px}
+.trend-box .t-sub{font-size:11.5px;color:#999;margin-bottom:14px}
+.trend-empty{text-align:center;padding:28px;font-size:12px;color:#aaa}
+.trend-empty .te-emoji{font-size:28px;margin-bottom:6px}
+.dim-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.dim-filter .df-chip{font-size:11px;padding:3px 9px;border-radius:10px;background:#f0ece2;color:#6b5a3e;cursor:pointer;font-weight:600;transition:all .12s}
+.dim-filter .df-chip:hover{background:#e8e4da}
+.dim-filter .df-chip.on{background:#1a3d24;color:#fff}
 </style>
 </head>
 <body>
@@ -208,23 +219,38 @@ function buildRadarSVG(scores) {
 // === 主渲染 ===
 function render() {
   var root = document.getElementById('profile-root');
-  var profile = null;
-  try { profile = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
 
-  // 拿维度分数
-  var scores;
-  var hasData = profile && profile.dim_scores && typeof profile.dim_scores === 'object';
-  if (hasData) {
-    scores = {};
-    for (var i = 0; i < DIM_ORDER.length; i++) {
-      var n = DIM_ORDER[i];
-      scores[n] = profile.dim_scores[n] != null ? Math.min(100, Math.max(0, Math.round(profile.dim_scores[n]))) : FALLBACK_SCORES[n];
+  // === 双源合并 ===
+  var care = null;
+  try { care = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
+  var examResults = {};
+  try { examResults = JSON.parse(localStorage.getItem('fs_exam_results')) || {}; } catch(e) {}
+  var history = [];
+  try { history = JSON.parse(localStorage.getItem('fs_care_history')) || []; } catch(e) {}
+
+  var careHasData = care && care.dim_scores && typeof care.dim_scores === 'object';
+
+  var scores = {};
+  var sources = {};
+  for (var i = 0; i < DIM_ORDER.length; i++) {
+    var n = DIM_ORDER[i];
+    var careScore = careHasData && care.dim_scores[n] != null ? care.dim_scores[n] : null;
+    var dimKey = 'DIM-' + (i + 1);
+    var examScore = examResults[dimKey] ? examResults[dimKey].pct : null;
+
+    if (careScore != null && examScore != null) {
+      scores[n] = Math.max(careScore, examScore);
+      sources[n] = careScore >= examScore ? '测评' : dimKey + '考核';
+    } else if (careScore != null) {
+      scores[n] = careScore; sources[n] = '测评';
+    } else if (examScore != null) {
+      scores[n] = examScore; sources[n] = dimKey + '考核';
+    } else {
+      scores[n] = FALLBACK_SCORES[n]; sources[n] = null;
     }
-  } else {
-    scores = JSON.parse(JSON.stringify(FALLBACK_SCORES));  // 骨架演示数据
   }
 
-  // 算总分
+  var hasAnyData = careHasData || Object.keys(examResults).length > 0;
   var total = Math.round(Object.keys(scores).reduce(function(a,k){ return a + scores[k]; }, 0) / 7);
   var grade = gradeOf(total);
   var weakest = DIM_ORDER.slice().sort(function(a,b){ return scores[a] - scores[b]; })[0];
@@ -232,17 +258,21 @@ function render() {
 
   var html = '';
 
-  if (hasData) {
-    // 有真实数据 → 完整画像
+  if (hasAnyData) {
+    var badgesHtml = '<div class="ph-badges">';
+    badgesHtml += '<span class="ph-badge">💪 最强：' + strongest + ' ' + scores[strongest] + '（' + sources[strongest] + '）</span>';
+    badgesHtml += '<span class="ph-badge">📌 弱项：' + weakest + ' ' + scores[weakest] + '（' + sources[weakest] + '）</span>';
+    if (Object.keys(examResults).length > 0)
+      badgesHtml += '<span class="ph-badge">📝 考核 ' + Object.keys(examResults).length + '/7 已考</span>';
+    badgesHtml += '</div>';
+
     html += '<div class="profile-header">' +
       '<div class="ph-avatar">👤</div>' +
       '<div class="ph-main">' +
         '<div class="ph-name">我</div>' +
-        '<div class="ph-sub">能力画像 · ' + (profile.timestamp ? formatDate(profile.timestamp) : '最近') + ' 测评</div>' +
-        '<div class="ph-badges">' +
-          '<span class="ph-badge">💪 最强：' + strongest + ' ' + scores[strongest] + '</span>' +
-          '<span class="ph-badge">📌 弱项：' + weakest + ' ' + scores[weakest] + '</span>' +
-        '</div>' +
+        '<div class="ph-sub">能力画像 · 综合分来自 <b>测评</b>' +
+          (Object.keys(examResults).length > 0 ? ' + <b>' + Object.keys(examResults).length + ' 维度考核</b>' : '') + ' 双源合并</div>' +
+        badgesHtml +
       '</div>' +
       '<div class="ph-score">' +
         '<div class="ph-score-num">' + total + '</div>' +
@@ -251,24 +281,24 @@ function render() {
       '</div>' +
       '<div class="ph-actions">' +
         '<a class="ph-btn" href="/care-test/">🔄 重新测评</a>' +
+        '<a class="ph-btn" href="/academy/exam/">📝 去考核</a>' +
       '</div>' +
     '</div>';
   } else {
-    // 无数据 → 引导 banner
     html += '<div class="banner-newuser">' +
       '<div class="b-icon">🎯</div>' +
       '<div class="b-body">' +
         '<div class="b-title">还没有你的能力画像</div>' +
-        '<div class="b-desc">先花 15 分钟测一次，7 维度 35 道题，测出你在获客/洞察/方案/带看/履约/售后/数字化的真实水平。测完自动生成画像，后续所有练习和考核的分数会持续回写。</div>' +
+        '<div class="b-desc">先花 15 分钟测一次，7 维度 35 道题。测完自动生成画像，后续考核分数也会自动回写合并。</div>' +
       '</div>' +
       '<a class="b-btn" href="/care-test/">开始测评 →</a>' +
     '</div>';
   }
 
-  // 雷达图（两种场景都画）
+  // 雷达图
   html += '<div class="radar-box">' +
     '<div class="r-title">我的能力雷达图</div>' +
-    '<div class="r-sub">' + (hasData ? '7 维度 · 综合分 ' + total + ' · ' + grade.label : '演示数据 · 测一次看你的真实画像') + '</div>' +
+    '<div class="r-sub">' + (hasAnyData ? '双源合并 · 综合分 ' + total + ' · ' + grade.label : '演示数据 · 测一次看你的真实画像') + '</div>' +
     buildRadarSVG(scores) +
     '<div class="radar-legend">' +
       '<span style="background:#1a3d24;color:#fff">⬤ 我的</span>' +
@@ -276,14 +306,17 @@ function render() {
     '</div>' +
   '</div>';
 
+  // 趋势图（history >= 2）
+  if (history.length >= 2) html += buildTrendBox(history, scores);
+
   // 时间戳
-  if (hasData && profile.timestamp) {
-    html += '<div class="ts-row">上次测评：' + formatDate(profile.timestamp) + ' · 共 ' + (profile.question_count || 35) + ' 题</div>';
+  if (careHasData && care.timestamp) {
+    html += '<div class="ts-row">上次测评：' + formatDate(care.timestamp) + ' · 共 ' + (care.question_count || 35) + ' 题' +
+      (Object.keys(examResults).length > 0 ? ' · 考核 ' + Object.keys(examResults).length + ' 维度' : '') + '</div>';
   }
 
-  // 维度表（动态生成）
+  // 维度表
   html += '<div class="dim-table">';
-  // 按分数从低到高排，弱项在最前
   var sorted = DIM_ORDER.slice().sort(function(a,b){ return scores[a] - scores[b]; });
   for (var j = 0; j < sorted.length; j++) {
     var dname = sorted[j];
@@ -291,9 +324,10 @@ function render() {
     var dc = scoreClass(dscore);
     var action = DIM_ACTION[dname][dc === 'weak' ? 'weak' : 'strong'];
     var actionLabel = dc === 'weak' ? DIM_ACTION[dname].weakLabel : DIM_ACTION[dname].strongLabel;
+    var srcLabel = sources[dname] ? (' <span style="font-size:10px;color:#999;font-weight:normal">(' + sources[dname] + ')</span>') : '';
     html += '<div class="dim-row">' +
       '<span class="d-code">' + DIM_CODES[dname] + '</span>' +
-      '<span class="d-name">' + DIM_ICONS[dname] + ' ' + dname + '</span>' +
+      '<span class="d-name">' + DIM_ICONS[dname] + ' ' + dname + srcLabel + '</span>' +
       '<div class="d-bar"><div class="d-fill ' + dc + '" style="width:' + dscore + '%"></div></div>' +
       '<span class="d-score ' + dc + '">' + dscore + '</span>' +
       '<a class="d-action" href="' + action + '">' + actionLabel + ' →</a>' +
@@ -302,6 +336,84 @@ function render() {
   html += '</div>';
 
   root.innerHTML = html;
+}
+
+// === 趋势图 SVG ===
+function buildTrendBox(history, currentScores) {
+  var W = 760, H = 180, padL = 40, padR = 20, padT = 20, padB = 32;
+  var innerW = W - padL - padR, innerH = H - padT - padB;
+  var recent = history.slice(-5);
+  var sorted = Object.keys(currentScores).sort(function(a,b){ return currentScores[b] - currentScores[a]; });
+  var defaultDims = [sorted[0], sorted[sorted.length - 1]];
+  var colors = ['#2d5a3d', '#c25636', '#8a7040', '#0891b2', '#7c3aed'];
+  var svg = buildTrendSVG(recent, defaultDims, W, H, padL, padR, padT, padB, innerW, innerH, colors);
+
+  var filterChips = '';
+  DIM_ORDER.forEach(function(dname) {
+    var on = defaultDims.indexOf(dname) >= 0;
+    filterChips += '<span class="df-chip' + (on ? ' on' : '') + '" data-dim="' + dname + '" data-on="' + (on ? '1' : '0') + '" onclick="toggleTrendDim(this)">' + DIM_ICONS[dname] + ' ' + dname + '</span>';
+  });
+
+  return '<div class="trend-box">' +
+    '<div class="t-title">📈 进步轨迹 · 维度趋势图</div>' +
+    '<div class="t-sub">最近 ' + recent.length + ' 次测评 · 每点为当次分数 · 默认显示最强 & 最弱维度</div>' +
+    '<div class="dim-filter">' + filterChips + '</div>' +
+    '<div id="trend-svg-wrap">' + svg + '</div>' +
+  '</div>';
+}
+
+function buildTrendSVG(history, dims, W, H, padL, padR, padT, padB, innerW, innerH, colors) {
+  var n = history.length;
+  if (n < 1) return '';
+  var xPositions = [];
+  for (var i = 0; i < n; i++) xPositions.push(padL + (n === 1 ? innerW/2 : innerW*i/(n-1)));
+  var yOf = function(s) { return padT + innerH * (1 - s / 100); };
+
+  var lines = '', dots = '', labels = '';
+  [0,25,50,75,100].forEach(function(v) {
+    var y = yOf(v);
+    lines += '<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="#f0ece2" stroke-width="1"/>';
+    labels += '<text x="'+(padL-6)+'" y="'+y+'" text-anchor="end" font-size="9" fill="#aaa" dominant-baseline="middle">'+v+'</text>';
+  });
+  history.forEach(function(h, i) {
+    var x = xPositions[i];
+    labels += '<text x="'+x+'" y="'+(H-10)+'" text-anchor="middle" font-size="9" fill="#aaa">'+formatDate(h.timestamp).slice(5)+'</text>';
+  });
+  dims.forEach(function(dname, di) {
+    var color = colors[di % colors.length];
+    var pts = [];
+    for (var j = 0; j < n; j++) {
+      var s = history[j].dim_scores[dname] != null ? history[j].dim_scores[dname] : 50;
+      pts.push(xPositions[j] + ',' + yOf(s));
+    }
+    lines += '<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round"/>';
+    for (var k = 0; k < n; k++) {
+      var s2 = history[k].dim_scores[dname] != null ? history[k].dim_scores[dname] : 50;
+      dots += '<circle cx="'+xPositions[k]+'" cy="'+yOf(s2)+'" r="3.5" fill="'+color+'" stroke="#fff" stroke-width="1.5"/>';
+    }
+    labels += '<circle cx="'+(padL+6+di*130)+'" cy="10" r="4" fill="'+color+'"/>';
+    labels += '<text x="'+(padL+14+di*130)+'" y="13" font-size="10" fill="#333" font-weight="600">'+dname+'</text>';
+  });
+  return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">'+lines+dots+labels+'</svg>';
+}
+
+function toggleTrendDim(el) {
+  var dim = el.getAttribute('data-dim');
+  var on = el.getAttribute('data-on') === '1';
+  el.setAttribute('data-on', on ? '0' : '1');
+  el.classList.toggle('on');
+  var history = [];
+  try { history = JSON.parse(localStorage.getItem('fs_care_history')) || []; } catch(e) {}
+  if (history.length < 2) return;
+  var selected = [];
+  document.querySelectorAll('.dim-filter .df-chip.on').forEach(function(c){ selected.push(c.getAttribute('data-dim')); });
+  if (selected.length === 0) selected.push('获客触达');
+  var W = 760, H = 180, padL = 40, padR = 20, padT = 20, padB = 32;
+  var innerW = W - padL - padR, innerH = H - padT - padB;
+  var colors = ['#2d5a3d', '#c25636', '#8a7040', '#0891b2', '#7c3aed'];
+  var recent = history.slice(-5);
+  var svg = buildTrendSVG(recent, selected, W, H, padL, padR, padT, padB, innerW, innerH, colors);
+  document.getElementById('trend-svg-wrap').innerHTML = svg;
 }
 
 render();

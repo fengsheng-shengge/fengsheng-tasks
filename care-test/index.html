@@ -798,6 +798,12 @@ function showReport() {
       mode: QUESTIONS.length <= 7 ? 'focused' : 'full'
     };
     localStorage.setItem('fs_care_profile', JSON.stringify(profile));
+    // v3.2：累积历史记录（供 profile 页画维度趋势图）
+    try {
+      var hist = JSON.parse(localStorage.getItem('fs_care_history') || '[]');
+      hist.push({ total: total, dim_scores: dimScores, timestamp: profile.timestamp });
+      localStorage.setItem('fs_care_history', JSON.stringify(hist.slice(-10)));  // 只保留最近 10 次
+    } catch(e2) {}
   } catch(e) {}
 
   // 渲染下一步引导
