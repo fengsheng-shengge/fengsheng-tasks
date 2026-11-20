@@ -69,6 +69,35 @@ a{text-decoration:none;color:inherit}
 
 .footer-note{max-width:880px;margin:40px auto 0;padding:22px 24px 34px;border-top:1px solid #e8e4da;font-size:12px;color:#999;text-align:center;line-height:1.9}
 .footer-note a{color:#1a3d24;font-weight:600}
+
+/* === role detail overlay === */
+.rd-overlay{position:fixed;inset:0;background:rgba(26,61,36,.35);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
+.rd-overlay.show{display:flex}
+.rd-modal{background:#fff;border-radius:18px;width:100%;max-width:720px;max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 24px 60px rgba(26,61,36,.25)}
+.rd-close{position:absolute;top:14px;right:18px;width:32px;height:32px;border-radius:50%;background:#f7f5f0;border:none;cursor:pointer;font-size:16px;color:#666;z-index:2}
+.rd-close:hover{background:#e8e4da}
+.rd-hdr{padding:24px 26px 14px;border-bottom:1px solid #e8e4da;background:linear-gradient(135deg,#1a3d24,#2d5a3d);color:#fff}
+.rd-hdr h3{font-size:20px;font-weight:800;margin-bottom:4px}
+.rd-hdr p{font-size:13px;opacity:.9}
+.rd-hdr .rd-match{display:inline-block;font-size:11px;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:10px;margin-top:8px;font-weight:700}
+.rd-body{padding:20px 26px}
+.rd-section{margin-bottom:20px}
+.rd-section h4{font-size:13px;font-weight:700;color:#1a3d24;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.rd-gaps{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:4px}
+.rd-gaps .dg{background:#f7f5f0;border-radius:8px;padding:10px 6px;text-align:center;border-top:3px solid #2d5a3d}
+.rd-gaps .dg.weak{border-top-color:#c25636;background:#ffe8e8}
+.rd-gaps .dg.mid{border-top-color:#c25636;background:#fff8e7}
+.rd-gaps .dg .dg-score{font-size:15px;font-weight:800;color:#1a3d24}
+.rd-gaps .dg.weak .dg-score{color:#c25636}
+.rd-gaps .dg.mid .dg-score{color:#8a7040}
+.rd-gaps .dg .dg-name{font-size:10px;color:#888;margin-top:2px}
+.rd-gaps .dg .dg-label{font-size:9px;margin-top:3px}
+.rd-gaps .dg.weak .dg-label{color:#c25636}
+.rd-gaps .dg.mid .dg-label{color:#8a7040}
+.rd-plan{background:#fdf9ef;border:1px solid #e8e4da;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#5a4a2a;line-height:1.9}
+.rd-plan a{color:#1a3d24;font-weight:700}
+.rd-plan ol{padding-left:20px;margin-top:4px}
+.rd-plan li{margin-bottom:4px}
 </style>
 </head>
 <body>
@@ -97,9 +126,17 @@ a{text-decoration:none;color:inherit}
 
 <div id="root" class="pg"></div>
 
+<div id="role-overlay" class="rd-overlay" onclick="if(event.target===this)closeRoleDetail()">
+  <div class="rd-modal">
+    <button class="rd-close" onclick="closeRoleDetail()">✕</button>
+    <div id="role-detail-body"></div>
+  </div>
+</div>
+
 <div class="footer-note"><a href="/academy/">← 返回学习成长首页</a><br>风声 · 经纪人成长陪练 · 学习成长中心</div>
 
 <script>
+
 // 7 维度
 var DIMS = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
 
@@ -169,6 +206,55 @@ function computeRoleScore(role, scores) {
   return wSum > 0 ? Math.round(total / wSum) : null;
 }
 
+var CURRENT_MATCH_INFO = null;
+
+function showRoleDetail(roleKey) {
+  var role = ROLES.find(function(r){ return r.key === roleKey; });
+  if (!role) return;
+  var info = CURRENT_MATCH_INFO || loadScores();
+  var matchPct = computeRoleScore(role, info.scores) || 0;
+
+  var body = '';
+  body += '<div class="rd-hdr"><h3>' + role.icon + ' ' + role.name + '</h3><p>' + role.desc + '</p>' +
+    '<span class="rd-match">匹配度 ' + matchPct + '%</span></div>';
+  body += '<div class="rd-body">';
+  body += '<div class="rd-section"><h4>📊 你的能力差距 vs 岗位要求</h4>';
+  body += '<div class="rd-gaps">';
+  for (var i = 0; i < DIMS.length; i++) {
+    var s = info.scores[DIMS[i]];
+    var isStrong = role.strongDims.indexOf(i) >= 0;
+    var isWeak = role.weakDimsFix.indexOf(i) >= 0;
+    var cls = isWeak && s != null && s < 65 ? 'weak' : (isStrong ? '' : 'mid');
+    var label = isStrong ? '岗位核心' : (isWeak && s != null && s < 65 ? '⚠️ 补短板' : (s != null && s >= 65 ? '✅ 够格' : '—'));
+    body += '<div class="dg ' + cls + '"><div class="dg-score">' + (s != null ? s : '-') + '</div>' +
+      '<div class="dg-name">' + DIMS[i].slice(0,3) + '</div><div class="dg-label">' + label + '</div></div>';
+  }
+  body += '</div></div>';
+
+  body += '<div class="rd-section"><h4>🎓 补短板学习路径</h4><div class="rd-plan"><ol>';
+  var steps = [];
+  role.weakDimsFix.forEach(function(di) {
+    var s = info.scores[DIMS[di]];
+    if (s != null && s < 65) {
+      steps.push('<li><a href="/academy/core-courses/learn/?id=' + (di+1) + '">' + DIMS[di] + '核心课</a>（当前 ' + s + ' 分）→ 考 <a href="/academy/exam/?dim=DIM-' + (di+1) + '">DIM-' + (di+1) + '</a> ≥ 70</li>');
+    }
+  });
+  if (steps.length === 0) steps.push('<li>当前各维度 ≥ 65 分，建议弱项提升到 75+</li>');
+  steps.push('<li>去 <a href="/academy/practice/">场景练习</a> 练对话 → 把知识变反应</li>');
+  steps.push('<li>去 <a href="/academy/exam/">岗位考核</a> → 分数回写 <a href="/academy/profile/">画像</a></li>');
+  body += steps.join('') + '</ol></div></div>';
+
+  body += '<div class="rd-section"><h4>🎯 立即开始</h4>' +
+    '<a href="/academy/core-courses/" style="display:inline-block;background:#1a3d24;color:#fff;font-size:13px;font-weight:700;padding:10px 20px;border-radius:8px;margin-right:8px;text-decoration:none">📖 开始学</a>' +
+    '<a href="/academy/profile/" style="display:inline-block;background:#fdf9ef;color:#8a7040;font-size:13px;font-weight:600;padding:10px 20px;border-radius:8px;border:1px solid #e8e4da;text-decoration:none">📊 看画像</a>' +
+  '</div>';
+  body += '</div>';
+
+  document.getElementById('role-detail-body').innerHTML = body;
+  document.getElementById('role-overlay').classList.add('show');
+}
+function closeRoleDetail() { document.getElementById('role-overlay').classList.remove('show'); }
+
 function render() {
   var root = document.getElementById('root');
   var info = loadScores();
@@ -213,7 +299,7 @@ function render() {
   roleScores.forEach(function(rs, idx) {
     var role = rs.role;
     var isTop = idx === 0;
-    html += '<div class="match-card' + (isTop ? ' top' : '') + '">' +
+    html += '<div class="match-card' + (isTop ? ' top' : '') + '" style="cursor:pointer" onclick="showRoleDetail(\'' + role.key + '\')">' +
       '<div class="rank">' + (idx === 0 ? '🏆 最匹配' : (idx === 1 ? '🥈 次匹配' : (idx === 2 ? '🥉 备选' : ''))) + '</div>' +
       '<div class="role-name">' + role.icon + ' ' + role.name + '</div>' +
       '<div class="role-desc">' + role.desc + '</div>' +

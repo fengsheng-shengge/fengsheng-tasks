@@ -471,6 +471,7 @@ function submitExam() {
     '</div>' + reviewHtml;
 
   document.getElementById('em-foot').innerHTML =
+    '<a class="em-btn em-btn-secondary" href="/academy/core-courses/learn/?id=' + currentExam.dim.split('-')[1] + '" style="text-decoration:none;display:inline-block">📖 回去学这门课</a>' +
     '<button class="em-btn em-btn-secondary" onclick="retakeExam()">🔄 重考</button>' +
     '<button class="em-btn em-btn-primary" onclick="closeExam()">完成 →</button>';
 }
@@ -482,6 +483,14 @@ function retakeExam() {
 
 // ========== 初始渲染 ==========
 renderGrid();
+
+// 支持 ?dim=DIM-x 直接进入对应维度考核（核心课跳转过来的）
+(function() {
+  var m = location.search.match(/[?&]dim=(DIM-\d+)/);
+  if (m && EXAM_DB[m[1]]) {
+    setTimeout(function() { startExam(m[1]); }, 300);
+  }
+})();
 </script>
 </body>
 </html>

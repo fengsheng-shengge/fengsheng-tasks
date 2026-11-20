@@ -225,7 +225,12 @@ function render() {
   // progress
   html += '<div class="progress-box">' +
     '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
-    '<div class="progress-label">学习进度 · <span>' + pct + '%</span> · 测完这门可以去 <a href="/academy/exam/" style="color:#1a3d24;font-weight:600">考核 →</a></div>' +
+    '<div class="progress-label">学习进度 · <span>' + pct + '%</span></div>' +
+    '<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">' +
+      '<a href="/academy/exam/?dim=' + course.dim + '" style="display:inline-block;background:#1a3d24;color:#fff;font-size:13px;font-weight:700;padding:8px 18px;border-radius:8px;transition:background .15s" onmouseover="this.style.background=\'#2d5a3d\'" onmouseout="this.style.background=\'#1a3d24\'">📝 学完这门 · 考 ' + course.dim + '（10 题）→</a>' +
+      '<a href="/academy/practice/" style="display:inline-block;background:#fdf9ef;color:#8a7040;font-size:13px;font-weight:600;padding:8px 18px;border-radius:8px;border:1px solid #e8e4da">🎭 去练场景对话</a>' +
+      '<a href="/academy/profile/" style="display:inline-block;background:#fff;color:#666;font-size:13px;font-weight:600;padding:8px 18px;border-radius:8px;border:1px solid #e8e4da">📊 看能力画像</a>' +
+    '</div>' +
   '</div>';
 
   // chapters

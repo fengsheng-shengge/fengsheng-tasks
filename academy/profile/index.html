@@ -417,6 +417,82 @@ function toggleTrendDim(el) {
 }
 
 render();
+
+// ===== 成就徽章系统 =====
+var BADGES = [
+  { id:'first-test', emoji:'🎯', name:'第一次测评', desc:'完成第一次能力测评', check:function(info){ return info.hasData; }},
+  { id:'exam-all-b', emoji:'📝', name:'全维度考核通过', desc:'7 维度考核全部 ≥ 65 分', check:function(info){ var r=info.examResults; if(Object.keys(r).length<7) return false; return Object.keys(r).every(function(k){ return r[k].pct >= 65; }); }},
+  { id:'exam-all-a', emoji:'🏅', name:'全维度考核 A 档', desc:'7 维度考核全部 ≥ 80 分', check:function(info){ var r=info.examResults; if(Object.keys(r).length<7) return false; return Object.keys(r).every(function(k){ return r[k].pct >= 80; }); }},
+  { id:'trend-up', emoji:'📈', name:'稳步进步', desc:'最近 3 次测评综合分连续提升', check:function(info){ var h=info.history; if(h.length<3) return false; var t=[h[h.length-3].total,h[h.length-2].total,h[h.length-1].total]; return t[2]>t[1] && t[1]>t[0]; }},
+  { id:'top-dim', emoji:'💪', name:'某维度 ≥ 85', desc:'任一维度分数达到 85+', check:function(info){ var s=info.scores; return Object.keys(s).some(function(k){ return s[k]!=null && s[k]>=85; }); }},
+  { id:'balanced', emoji:'⚖️', name:'均衡发展', desc:'7 维度分数标准差 ≤ 15', check:function(info){ var s=info.scores; var vals=Object.keys(s).map(function(k){return s[k];}).filter(function(x){return x!=null;}); if(vals.length<7) return false; var avg=vals.reduce(function(a,b){return a+b;},0)/vals.length; var sd=Math.sqrt(vals.reduce(function(a,b){return a+(b-avg)*(b-avg);},0)/vals.length); return sd <= 15; }},
+  { id:'practice-3', emoji:'🎭', name:'练过 3 个场景', desc:'完成 3 个场景练习对话', check:function(info){ try{ var p=JSON.parse(localStorage.getItem('fs_practice_done')||'[]'); return p.length>=3; }catch(e){return false;} }},
+  { id:'course-50', emoji:'📚', name:'课程完成 50%', desc:'至少一门核心课完成 ≥ 50% 章节', check:function(info){ try{ var p=JSON.parse(localStorage.getItem('fs_course_progress')||'{}'); var dims=Object.keys(p); if(dims.length===0) return false; return dims.some(function(d){ var ids=COURSE_COUNT[d]||5; return p[d].length>=Math.ceil(ids/2); }); }catch(e){return false;} }},
+];
+var COURSE_COUNT = {};
+try {
+  var _c = ['DIM-1','DIM-2','DIM-3','DIM-4','DIM-5','DIM-6','DIM-7'];
+  for (var i = 0; i < _c.length; i++) COURSE_COUNT[_c[i]] = i < 5 ? 5 : (i === 5 || i === 6 ? 4 : 5);
+} catch(e) {}
+
+function computeBadges(info) {
+  var unlocked = [];
+  BADGES.forEach(function(b) {
+    if (b.check(info)) unlocked.push(b);
+  });
+  // 持久化（只存 id + 解锁时间）
+  var stored = [];
+  try { stored = JSON.parse(localStorage.getItem('fs_badges') || '[]'); } catch(e) {}
+  var storedIds = stored.map(function(s){ return s.id; });
+  BADGES.forEach(function(b) {
+    if (unlocked.indexOf(b) >= 0 && storedIds.indexOf(b.id) < 0) {
+      stored.push({ id: b.id, timestamp: new Date().toISOString() });
+    }
+  });
+  localStorage.setItem('fs_badges', JSON.stringify(stored));
+  return { unlocked: unlocked, all: BADGES, newly: stored.length - storedIds.length };
+}
+
+function renderBadges() {
+  var care = null, examResults = {}, history = [];
+  try { care = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
+  try { examResults = JSON.parse(localStorage.getItem('fs_exam_results')) || {}; } catch(e) {}
+  try { history = JSON.parse(localStorage.getItem('fs_care_history')) || []; } catch(e) {}
+  var scores = {};
+  var DIM_ORDER = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
+  var hasData = care && care.dim_scores;
+  DIM_ORDER.forEach(function(n, i) {
+    var cs = hasData && care.dim_scores[n] != null ? care.dim_scores[n] : null;
+    var es = examResults['DIM-' + (i+1)] ? examResults['DIM-' + (i+1)].pct : null;
+    scores[n] = cs != null && es != null ? Math.max(cs, es) : (cs != null ? cs : es);
+  });
+  var info = { scores: scores, hasData: hasData || Object.keys(examResults).length > 0, examResults: examResults, history: history };
+  var res = computeBadges(info);
+  if (res.unlocked.length === 0) return '';
+
+  var html = '<div class="badges-box" style="max-width:820px;margin:28px auto 0;padding:0 24px">' +
+    '<h3 style="font-size:14px;font-weight:700;color:#1a3d24;margin-bottom:12px">🏆 我的成就 · ' + res.unlocked.length + '/' + res.all.length + ' 解锁' +
+    (res.newly > 0 ? ' <span style="background:#8a7040;color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:8px">NEW ' + res.newly + ' 枚</span>' : '') + '</h3>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px">';
+  res.all.forEach(function(b) {
+    var got = res.unlocked.indexOf(b) >= 0;
+    html += '<div style="background:#fff;border:1px solid ' + (got ? '#8a7040' : '#e8e4da') + ';border-radius:10px;padding:12px 8px;text-align:center;' +
+      (got ? 'background:linear-gradient(135deg,#fffbf3,#fff)' : 'opacity:.55') + '">' +
+      '<div style="font-size:28px;margin-bottom:4px">' + (got ? b.emoji : '🔒') + '</div>' +
+      '<div style="font-size:12px;font-weight:700;color:' + (got ? '#1a3d24' : '#aaa') + '">' + b.name + '</div>' +
+      '<div style="font-size:10px;color:' + (got ? '#888' : '#ccc') + ';margin-top:2px;line-height:1.4">' + b.desc + '</div>' +
+    '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+// 注入成就徽章区到 profile
+var badgesHtml = renderBadges();
+if (badgesHtml) {
+  var footerNote = document.querySelector('.footer-note');
+  if (footerNote) footerNote.insertAdjacentHTML('beforebegin', badgesHtml);
+}
 </script>
 </body>
 </html>
