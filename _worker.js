@@ -3123,7 +3123,7 @@ async function handleSearchV2(request, env, ctx) {
     SEARCH_RATE_LIMIT.set(ip, { windowStart: now, count: 1 });
   }
 
-  const cacheKey = new Request(`https://cache.local/v6/api/search/v2?q=${encodeURIComponent(q.slice(0, 30))}&et=${entryType || ''}&sev=${severity || ''}&ly=${layer || ''}&dom=${domain || ''}&p=${page}&ps=${pageSize}`);
+  const cacheKey = new Request(`https://cache.local/v7/api/search/v2?q=${encodeURIComponent(q.slice(0, 30))}&et=${entryType || ''}&sev=${severity || ''}&ly=${layer || ''}&dom=${domain || ''}&p=${page}&ps=${pageSize}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -3169,6 +3169,11 @@ async function handleSearchV2(request, env, ctx) {
         id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
         entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
         consumerQ: e.consumerQ || '', subScene: e.subScene || '',
+        // 🆕 证据链原始字段（EvidenceAdapter.migrateOldEntry 需要）
+        legalRef: e.legalRef || '', caseRef: e.caseRef || '', dataRef: e.dataRef || '',
+        source: e.source || '', source_url: e.source_url || '', lastVerified: e.lastVerified || '',
+        authority: e.authority || null, caveat: e.caveat || null,
+        ola: e.ola || '', tags: e.tags || {},
         score, highlights,
       });
     }

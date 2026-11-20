@@ -108,7 +108,22 @@ main{flex:1;max-width:1240px;width:100%;margin:0 auto;padding:32px 32px 60px}
 .result-card + .result-card{border-top:none}
 .result-card:hover{background:rgba(247,244,239,0.5);border-color:rgba(26,61,36,0.2)}
 .result-card:hover + .result-card{border-top-color:rgba(26,61,36,0.2)}
-.result-goto{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);font-size:12px;color:var(--ink-soft);transition:all .15s}
+/* ============ EvidenceLink 组件样式（蓝图 C1 深化） ============ */
+.result-evidence{margin-top:10px}
+.result-evidence .evidence-link{margin-top:0}
+.result-evidence .evidence-link .el-card{background:#fafaf7;border:1px solid #e5e7eb;border-radius:6px;padding:8px 10px;margin-bottom:4px;font-size:11px}
+.result-evidence .evidence-link .el-head{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-bottom:2px}
+.result-evidence .evidence-link .el-type{font-size:10px;font-weight:600;color:#52525b;background:#f4f4f5;padding:1px 5px;border-radius:3px}
+.result-evidence .evidence-link .el-title{font-size:11px;color:#1f2937;line-height:1.3;margin-bottom:2px;word-break:break-all}
+.result-evidence .evidence-link .el-meta{font-size:10px;color:#9ca3af;margin-bottom:2px}
+.result-evidence .evidence-link .el-link{font-size:10px;color:#c9a962;text-decoration:none;font-weight:500}
+.result-evidence .evidence-link .el-badge{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:500;margin-left:auto}
+.result-evidence .evidence-link .el-disclaimer{font-size:10px;color:#94a3b8;margin-top:4px;font-style:italic;line-height:1.3}
+.result-evidence .evidence-link .el-entry-head{margin-bottom:4px}
+.result-evidence .evidence-link .el-entry-auth{font-size:11px;font-weight:600}
+/* EvidenceLink end */
+
+.result-goto{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:10px;border-top:1px dashed var(--line);font-size:12px;color:var(--ink-soft);transition:all .15s}
 .result-goto a{color:var(--p);font-weight:600}
 .result-goto:hover{color:var(--p)}
 .result-goto .rg-count{color:var(--ink-3);font-size:11px}
@@ -276,6 +291,10 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
     </div>
   </div>
 </footer>
+
+<!-- EvidenceAdapter + EvidenceLink（蓝图 C1 深化：搜索结果实时证据内联） -->
+<script src="/lib/evidence/data-adapter.js" defer></script>
+<script src="/lib/evidence/evidence-link.js" defer></script>
 
 <script>
 (function() {
@@ -718,11 +737,38 @@ footer{background:var(--cream-deep);padding:32px 32px 20px;color:var(--ink-soft)
         }
       }
       html += '</div>' +
+        '<div class="result-evidence" data-evidence-idx="' + (state.results.length - 1) + '"></div>' +
         '<div class="result-goto"><a href="/knowledge/?q=' + encodeURIComponent(r.name || state.query) + '">🔎 去知识底座查证依据 →</a></div>' +
         '</div>';
     }
     $resultsList.innerHTML = html;
     $emptyState.style.display = 'none';
+
+    // 🆕 蓝图 C1 深化：EvidenceLink 实时证据内联（Worker 已返回完整 evidence 原始字段）
+    renderEvidenceForSearch();
+  }
+
+  // 蓝图 C1 深化：搜索结果卡片 EvidenceLink 异步渲染
+  function renderEvidenceForSearch() {
+    if (!window.EvidenceLink || !window.EvidenceAdapter) return;  // defer 还没加载 → 跳过
+    const adapter = window.EvidenceAdapter;
+    const ev = window.EvidenceLink;
+    const cards = document.querySelectorAll('.result-card .result-evidence');
+    cards.forEach(function(container, i) {
+      const raw = state.results[i];
+      if (!raw) return;
+      try {
+        const adapted = adapter.adaptEntry(raw);
+        const html = ev.render(adapted, { compact: true, max: 2, showCaveat: false });
+        if (html) {
+          container.innerHTML = html;
+        } else {
+          container.style.display = 'none';  // 无证据链则隐藏
+        }
+      } catch(e) {
+        container.style.display = 'none';
+      }
+    });
   }
 
   function renderPagination() {
