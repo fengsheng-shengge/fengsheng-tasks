@@ -2947,7 +2947,7 @@ async function handleSceneDetail(request, env, ctx) {
     return jsonResponse({ error: 'clientType and stage are required', hint: '?clientType=buyer&stage=pre' }, 400);
   }
 
-  const cacheKey = new Request(`https://cache.local/v7/api/scene/detail?ct=${clientType}&st=${stage}&sd=${sceneDomain}`);
+  const cacheKey = new Request(`https://cache.local/v8/api/scene/detail?ct=${clientType}&st=${stage}&sd=${sceneDomain}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -2992,6 +2992,18 @@ async function handleSceneDetail(request, env, ctx) {
       entries: items.slice(0, 50).map(e => ({
         id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
         entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
+        consumerQ: e.consumerQ || '',
+        // 🆕 蓝图 C1 深化：EvidenceLink 需要的证据链原始字段（与 search v2 对齐）
+        legalRef: e.legalRef || null,
+        caseRef: e.caseRef || null,
+        dataRef: e.dataRef || null,
+        source: e.source || null,
+        source_url: e.source_url || null,
+        lastVerified: e.lastVerified || null,
+        authority: e.authority || null,
+        caveat: e.caveat || null,
+        ola: e.ola || e.oneLineAnswer || null,
+        tags: e.tags || {},
       })),
     };
   }).filter(g => g.count > 0);

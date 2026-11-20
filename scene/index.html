@@ -653,7 +653,7 @@ function renderCurrentLayer() {
     return;
   }
 
-  container.innerHTML = filtered.map(e => {
+  container.innerHTML = filtered.map((e, idx) => {
     const icon = TYPE_ICONS[e.entryType] || '📋';
     const priority = e.priority || '';
     const severity = e.severity || '';
@@ -671,11 +671,48 @@ function renderCurrentLayer() {
           ${e.entryType ? `<span class="ec-badge type">${TYPE_LABELS[e.entryType] || e.entryType}</span>` : ''}
         </div>
         ${consumerQ ? `<div class="ec-consumer">💬 ${escapeHtml(consumerQ)}</div>` : ''}
+        ${/* 🆕 蓝图 C1 深化：EvidenceLink 证据链容器 */''}
+        <div class="ec-evidence" data-evidence-idx="${idx}" style="margin-top:10px"></div>
         ${/* 🆕 跨页查证：点击卡片内的链接阻止冒泡 */''}
         <a class="ec-goto" href="/knowledge/?q=${encodeURIComponent(e.name)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔎 去知识底座查证 →</a>
       </div>
     `;
   }).join('');
+
+  // 🆕 蓝图 C1 深化：异步渲染 EvidenceLink 证据卡（defer 脚本可能还没加载）
+  if (window.EvidenceLink && window.EvidenceAdapter) {
+    renderEvidenceForScene(filtered);
+  } else {
+    // 兜底：等 defer 脚本加载完再渲染（参考 search 页修复模式）
+    setTimeout(function() {
+      if (window.EvidenceLink && window.EvidenceAdapter) {
+        renderEvidenceForScene(filtered);
+      }
+    }, 200);
+  }
+}
+
+// 🆕 蓝图 C1 深化：scene 页 EvidenceLink 渲染
+function renderEvidenceForScene(entries) {
+  if (!window.EvidenceLink || !window.EvidenceAdapter) return;
+  const adapter = window.EvidenceAdapter;
+  const ev = window.EvidenceLink;
+  const cards = document.querySelectorAll('.entry-card .ec-evidence');
+  cards.forEach(function(container, i) {
+    const raw = entries[i];
+    if (!raw) return;
+    try {
+      const adapted = adapter.adaptEntry(raw);
+      const html = ev.render(adapted, { compact: true, max: 2, showCaveat: false, showEntryBadge: false });
+      if (html) {
+        container.innerHTML = html;
+      } else {
+        container.style.display = 'none';
+      }
+    } catch(err) {
+      container.style.display = 'none';
+    }
+  });
 }
 
 // Entry detail modal
@@ -858,5 +895,9 @@ function escapeHtml(str) {
   <div><a href="https://beian.miit.gov.cn" target="_blank" rel="noopener" style="color:#8a9a90;text-decoration:none;">京ICP备2026044043号-2</a></div>
   <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802051263" rel="noreferrer" target="_blank" style="color:#8a9a90;text-decoration:none;"><img src="/assets/beian/beian-icon.png" alt="" style="width:14px;height:14px;vertical-align:-2px;margin-right:3px;">京公网安备11010802051263号</a>
 </footer>
+
+<!-- 🆕 蓝图 C1 深化：EvidenceLink 证据链组件 -->
+<script src="/lib/evidence/data-adapter.js" defer></script>
+<script src="/lib/evidence/evidence-link.js" defer></script>
 </body>
 </html>
