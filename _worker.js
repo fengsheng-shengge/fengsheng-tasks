@@ -3058,7 +3058,7 @@ async function handleSceneEntries(request, env, ctx) {
   const page = Math.max(parseInt(url.searchParams.get('page') || '1', 10) || 1, 1);
   const pageSize = Math.min(Math.max(parseInt(url.searchParams.get('pageSize') || '20', 10) || 20, 1), 100);
 
-  const cacheKey = new Request(`https://cache.local/v5/api/scene/entries?ct=${clientType}&st=${stage}&ly=${layer || ''}&p=${page}&ps=${pageSize}`);
+  const cacheKey = new Request(`https://cache.local/v6/api/scene/entries?ct=${clientType}&st=${stage}&ly=${layer || ''}&p=${page}&ps=${pageSize}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -3087,10 +3087,16 @@ async function handleSceneEntries(request, env, ctx) {
   const totalPages = Math.ceil(total / pageSize);
   const offset = (page - 1) * pageSize;
   const paged = filtered.slice(offset, offset + pageSize).map(e => ({
-    id: e.id, name: e.name, oneLineAnswer: e.oneLineAnswer || '',
+    id: e.id, name: e.name, alias: e.alias || [], oneLineAnswer: e.oneLineAnswer || '',
     entryType: e.entryType || '', severity: e.severity || '', priority: e.priority || '',
     consumerQ: e.consumerQ || '', subScene: e.subScene || '',
-    layer: (e.tags || {}).layer || '',
+    layer: (e.tags || {}).layer || '', tags: e.tags || {},
+    cp: e.cp || [], dataSource: e.dataSource || '',
+    // Evidence chain fields (与 search v2 / scene detail 对齐)
+    legalRef: e.legalRef || '', caseRef: e.caseRef || '', dataRef: e.dataRef || '',
+    source: e.source || '', source_url: e.source_url || '',
+    lastVerified: e.lastVerified || '', authority: e.authority || '',
+    caveat: e.caveat || '', ola: e.ola || '',
   }));
 
   const resp = jsonResponse({
