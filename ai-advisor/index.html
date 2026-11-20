@@ -239,6 +239,10 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
   <div><a href="https://beian.miit.gov.cn" target="_blank" rel="noopener" style="color:#8a9a90;text-decoration:none;">京ICP备2026044043号-2</a></div>
   <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802051263" rel="noreferrer" target="_blank" style="color:#8a9a90;text-decoration:none;"><img src="/assets/beian/beian-icon.png" alt="" style="width:14px;height:14px;vertical-align:-2px;margin-right:3px;">京公网安备11010802051263号</a>
 </footer>
+
+<!-- EvidenceAdapter + EvidenceLink（蓝图 C1，追溯面板 step 4 真实证据链渲染） -->
+<script src="/lib/evidence/data-adapter.js" defer></script>
+<script src="/lib/evidence/evidence-link.js" defer></script>
 </body>
 
 <script>
@@ -320,44 +324,134 @@ function matchQuery(text){
 
 function processAI(text){
   var match = matchQuery(text);
-  updateTrace(match);
+  updateTrace(match);  // step 1-3 先出，step 4 kbs 还是模拟数
 
-  // 红线拦截
+  // 红线拦截（前置，不需要拉知识底座）
   if(match.red){
     var html = match.answer;
     addMsg(html, true);
     document.getElementById('red-wrap').innerHTML = '<div class="red-hint">这条回答触发了红线 RED-01（不做推荐结论）和 RED-06（不可追溯内容不输出），已自动切换为客观对比模式。</div>';
+    // 红线条目也拉一下底座确认无追溯 → step 4 显示 "红线拦截 · 零知识调用"
+    updateTraceStep4([], null);
     return;
   }
 
-  // 主回答 + KB 词条 + 追溯
+  // 主回答先出（立即响应，不阻塞）
   var html = match.answer;
-  if(match.kbs && match.kbs.length){
-    html += '<div style="margin-top:10px">📚 知识库词条：</div>';
-    match.kbs.forEach(function(kb){
-      html += '<div class="kb-card">';
-      html += '<div class="kb-t">' + kb.t + '</div>';
-      html += '<div>' + kb.body + '</div>';
-      html += '<div class="kb-src">' + kb.src + '</div>';
-      if(kb.short) html += '<div class="kb-short">这条是短板，必须主动说</div>';
-      // 🆕 跨页查证链接：跳到 knowledge 页面自动搜索
-      var searchKey = (kb.t || '').split(' · ')[0] || match.answer.slice(0,10);
-      html += '<a class="kb-link" href="/knowledge/?q=' + encodeURIComponent(searchKey) + '" target="_blank" rel="noopener">🔎 在知识底座查证 →</a>';
-      html += '</div>';
-    });
+  html += '<div style="margin-top:10px" id="ai-kb-real">📚 知识底座查证中...</div>';
+  html += renderCapRef(match);
+  var msgId = addMsg(html, true);
+
+  // 异步拉真实知识底座条目替换 step 4 + 渲染 EvidenceLink
+  fetchRealEntries(text, match).then(function(realEntries){
+    // 替换 step 4 为真实数据
+    updateTraceStep4(realEntries, match);
+    // 替换 kb-card 区域为 EvidenceLink 渲染
+    renderRealKB(realEntries, match, msgId);
+  }).catch(function(err){
+    console.warn('[ai-advisor] 知识底座查询失败，保留模拟 kbs:', err);
+    // 失败时回退硬编码 kbs
+    renderFallbackKB(match, msgId);
+    updateTraceStep4(match.kbs, match, true);  // 标记降级
+  });
+}
+
+// 蓝图 P4：异步 fetch 知识底座真实条目
+async function fetchRealEntries(userText, match){
+  // 用用户文本 + QMAP 关键词做查询
+  var query = userText.trim();
+  var keyMatch = Object.keys(QMAP).find(function(k){ return query.toLowerCase().indexOf(k.toLowerCase()) >= 0; });
+  var searchQuery = query || keyMatch || match.answer.slice(0,10);
+
+  var resp = await fetch('/api/search/v2?q=' + encodeURIComponent(searchQuery));
+  var data = await resp.json();
+  var results = (data.results || []).slice(0, 5);  // 最多 5 条
+
+  // EvidenceAdapter 适配每条
+  var adapter = window.EvidenceAdapter;
+  return results.map(function(r){
+    try { return adapter.adaptEntry(r); } catch(e) { return r; }
+  });
+}
+
+// 蓝图 P4：追溯面板 step 4 显示真实统计
+function updateTraceStep4(entries, match, degraded){
+  var el = document.querySelector('#trace-body .trace-row:nth-child(4) .v');
+  if(!el) return;
+  if(!entries || entries.length === 0){
+    el.innerHTML = degraded ? '<span style="color:#b91c1c">⚠️ 知识底座暂时连不上，本条回答走规则匹配</span>' : '红线拦截 · 零知识调用';
+    return;
   }
-  html += '<div class="cap-ref">';
+  // 统计来源类型 + 核验时效
+  var typeCount = {};
+  var greenCount = 0, grayCount = 0;
+  var staleCount = 0, todayCount = 0;
+  var d = new Date();
+  entries.forEach(function(e){
+    var et = e.entry_type || e.entryType || 'PROC';
+    typeCount[et] = (typeCount[et] || 0) + 1;
+    var auth = e._entry_auth_level || null;
+    if(auth === 'A') greenCount++; else grayCount++;
+    var lv = e.lastVerified || e.last_verified || '';
+    if(lv === '') todayCount++;
+    else {
+      try {
+        var days = (d - new Date(lv)) / 86400000;
+        if(days > 180) staleCount++; else todayCount++;
+      } catch(e) { todayCount++; }
+    }
+  });
+  var types = Object.keys(typeCount).map(function(t){ return t + '×' + typeCount[t]; }).join(' ');
+  el.innerHTML = (entries.length) + ' 条真实条目 · <b>' + types + '</b> · 🟢' + greenCount + ' ⚪' + grayCount + ' · ✅' + todayCount + '可核验 ⚠️' + staleCount + '超期' + (degraded ? ' <span style="color:#b91c1c">（降级）</span>' : '');
+}
+
+// 蓝图 P4：EvidenceLink 渲染真实知识条目（替换硬编码 kb-card）
+function renderRealKB(entries, match, msgId){
+  var kbHtml = '<div style="margin-top:10px">📚 知识底座真实条目（EvidenceLink 证据链）：</div>';
+  var ev = window.EvidenceLink;
+  entries.forEach(function(e, i){
+    if(ev){
+      kbHtml += '<div class="kb-card">' + ev.render(e, { compact: true, max: 3, showCaveat: false }) + '</div>';
+    } else {
+      // EvidenceLink 还没加载 → 降级显示条目名 + 来源
+      kbHtml += '<div class="kb-card">';
+      kbHtml += '<div class="kb-t">' + (e.name || e.id || '条目 #' + (i+1)) + '</div>';
+      kbHtml += '<div class="kb-src">来源：' + (e.source || e.source_url || '知识库') + '</div>';
+      kbHtml += '</div>';
+    }
+  });
+  if(entries.length === 0){
+    kbHtml += '<div class="kb-card"><div class="kb-t">未在知识底座找到匹配条目</div><div class="kb-src">建议用更具体的关键词再试</div></div>';
+  }
+  // 消息尾部查证跳转
+  kbHtml += '<a class="kb-link" href="/knowledge/?q=' + encodeURIComponent(match.answer.slice(0,10)) + '" target="_blank" rel="noopener">🔎 跳转知识底座完整查证 →</a>';
+
+  var target = document.getElementById('ai-kb-real');
+  if(target){ target.outerHTML = kbHtml; }
+  else { addMsg(kbHtml, true); }  // 兜底
+}
+
+function renderFallbackKB(match, msgId){
+  var kbHtml = '<div style="margin-top:10px"><span style="color:#b91c1c">⚠️ 知识底座暂时连不上，保留规则匹配的模拟词条：</span></div>';
+  (match.kbs || []).forEach(function(kb){
+    kbHtml += '<div class="kb-card">';
+    kbHtml += '<div class="kb-t">' + kb.t + '</div>';
+    kbHtml += '<div>' + kb.body + '</div>';
+    kbHtml += '<div class="kb-src">' + kb.src + '</div>';
+    kbHtml += '</div>';
+  });
+  var target = document.getElementById('ai-kb-real');
+  if(target){ target.outerHTML = kbHtml; }
+}
+
+function renderCapRef(match){
+  var html = '<div class="cap-ref">';
   html += '<span class="sop">🔗 SOP 动作：' + match.sop + '</span> · ';
-  // 🆕 CAP-SKILL 可跳到测评
   var capHref = '/care-test/';
-  if(match.skill.indexOf('CAP-SKILL-1')===0) capHref = '/care-test/';
-  else if(match.skill.indexOf('CAP-SKILL-2')===0) capHref = '/care-test/';
-  else if(match.skill.indexOf('CAP-SKILL-3')===0) capHref = '/care-test/';
   html += '<span class="cap"><a href="' + capHref + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">CAP-SKILL：' + match.skill + ' → 测一下</a></span> · ';
   html += '<span class="kb">维度：' + match.dim + '</span>';
   html += '</div>';
-
-  addMsg(html, true);
+  return html;
 }
 
 function updateTrace(match){
