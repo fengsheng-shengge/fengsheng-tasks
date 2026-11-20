@@ -781,10 +781,16 @@ function showReport() {
   document.getElementById("breeder-btn").style.display = "block";
 
   // === v3.0：localStorage 持久化 + 下一步引导 ===
+  // v3.1：补 dim_scores 字段，让 /academy/profile/ 能直接读维度分渲染雷达图
   try {
+    var dimScores = {};
+    for (var di2 = 0; di2 < DIMS.length; di2++) {
+      dimScores[DIMS[di2]] = avg[DIMS[di2]] != null ? avg[DIMS[di2]] : 50;
+    }
     var profile = {
       total: total,
       avg: avg,
+      dim_scores: dimScores,     // 7 维度分数字典（新增，供 profile 页联动）
       weakest_dim: lowest,
       second_weakest: secondLowest,
       timestamp: new Date().toISOString(),
