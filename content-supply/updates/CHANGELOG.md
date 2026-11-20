@@ -22,7 +22,6 @@
 
 - **GAP 第一批一次性 commit 完成（全链闭环）**：主库 bc614c84→c1f76527，expect_count 6122（CITY 21 CONDITIONAL 不落），note 830/auth_raw 8/source 6143+raw 5078；分片 manifest v1.1 重切；三端一致（GitHub a395d5e/坚果云/本地）；组件交付件 authority.json 5d927195（6122 条+conditional_ids+渲染门禁三条）；小酒窝儿 v3 回执授权生效（核验真实，转述数字串行已勘误）；新规则=回执禁手抄数字必须贴脚本输出（对齐规则第 6 条）| c1f76527 | 小眼镜 | om_x100b60c8cc767caccd09ee34776265d
 
-<<<<<<< HEAD
 ### 🔴 authority 第一批落库成功（信用资产核心里程碑 · 小扣子补登）
 
 | 核验项 | 值 | 证据 |
@@ -45,6 +44,6 @@
 - CITY=21 → 空（CONDITIONAL，补证前不落 authority）
 
 **信用资产更新**：《品质手册》A4.3 条目修订为「送审通道标准化+版本锚定（2026-11-20）」— 预检器 send_review_check.py v1.1 强制 md5 回读，三要素锁定（主库 md5 + 填充数 + 空值规则），审核人回读 md5 与预检报告一致才开审。| 字典 v1.3.3 | 小眼镜（治理）+ 小酒窝儿（门禁）| 小扣子（commit）| 群内回执
-=======
 - 字典 v1.3.4：stance 字段登记归口（小豆子 12.31 清单 #1）——v1 全库机构级默认值正式化立场签（随下次治理批落库），真人级前置=生产归属映射表（主库无 owner 字段，不虚承诺）；source_url 优先级建议：12.31 前 LAW 1226+CASE 871 优先覆盖（消费者点开凭证价值最高），flk 管道周五首批 50 部起不变 | v1.3.4 | 小眼镜 | 本轮群发
->>>>>>> 42eea16 (字典v1.3.4: stance字段登记(v1机构级默认值/真人级前置=生产归属映射)+source_url优先级建议)
+
+- 技术线 #245 里程碑对接验收：EvidenceLink 徽章 PASS（LAW official/DATA data/KNOWLEDGE derived 三值域标准样本）+Worker 9 endpoint 审计+scene/entries 补 evidence 字段（9→19），12.31 开发侧硬指标全达成；stance 字段 v1.3.4 归口（v1 机构级默认值随治理批落库/真人级前置=生产归属映射表，主库无 owner 字段不虚承诺）；source_url 优先级建议 LAW 1226+CASE 871 先行 | v1.3.4 | 小眼镜 | om_x100b60c882e584b0c48c7fa73f75b35 + om_x100b60c883d7c0a8b4fb0629721ae5c
