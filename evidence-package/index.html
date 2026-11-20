@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>证据包 · 风声信息咨询</title>
+<script src="/lib/evidence/data-adapter.js" defer></script>
+<script src="/lib/evidence/evidence-link.js" defer></script>
+<style>
+  :root {
+    --brand-dark: #1a3d24;
+    --brand-gold: #c9a962;
+    --bg: #f5f6f4;
+    --card: #fff;
+    --text: #2d2d2d;
+    --text-sub: #6b7280;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 24px 20px; }
+
+  header {
+    background: linear-gradient(135deg, var(--brand-dark), #2a5a3a);
+    color: #fff;
+    padding: 32px 24px;
+    border-radius: 0 0 24px 24px;
+    margin: -24px -20px 24px;
+  }
+  header h1 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  header p { font-size: 13px; opacity: .85; }
+  header .meta { font-size: 11px; opacity: .7; margin-top: 10px; }
+
+  .summary-bar {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .summary-bar .stat {
+    font-size: 11px;
+    color: var(--text-sub);
+  }
+  .summary-bar .stat b { color: var(--brand-dark); font-size: 14px; margin-right: 4px; }
+  .summary-bar .actions { margin-left: auto; display: flex; gap: 8px; }
+  .summary-bar button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--brand-dark); color: #fff; }
+  .btn-secondary { background: #f3f4f6; color: var(--text); }
+
+  .pkg-item {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  }
+  .pkg-item .item-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--brand-dark);
+    margin-bottom: 4px;
+  }
+  .pkg-item .item-meta {
+    font-size: 11px;
+    color: var(--text-sub);
+    margin-bottom: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .loader {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-sub);
+    font-size: 13px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-sub);
+  }
+  .empty-state h2 { font-size: 16px; color: var(--text); margin-bottom: 8px; }
+  .empty-state p { font-size: 13px; margin-bottom: 16px; }
+  .empty-state a { color: var(--brand-dark); text-decoration: none; font-size: 13px; }
+
+  .evidence-link .el-disclaimer {
+    font-size: 11px;
+    color: var(--text-sub);
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+  .evidence-link .el-sign {
+    font-size: 11px;
+    color: var(--text-sub);
+  }
+  .evidence-link .el-card {
+    background: #f9fafb;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  .evidence-link .el-head {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+  .evidence-link .el-title {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .evidence-link .el-meta {
+    font-size: 11px;
+    color: var(--text-sub);
+    display: flex;
+    gap: 6px;
+  }
+  .evidence-link .el-link {
+    font-size: 11px;
+    margin-top: 6px;
+    display: inline-block;
+  }
+  .evidence-link .el-link a { color: #4a6fa5; text-decoration: none; }
+  .evidence-link .el-link.pending { color: #d97706; }
+  .evidence-link .el-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .evidence-link .el-badge.expired { background: #fef2f2; color: #b91c1c; }
+  .evidence-link .el-badge.b-level { background: #fffbeb; color: #a16207; }
+  .evidence-link .el-entry-auth {
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .evidence-link .el-entry-head {
+    margin-bottom: 8px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 11px;
+    color: var(--text-sub);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📦 证据包</h1>
+    <p>可溯源 · 可转发 · 全链路可核验</p>
+    <div class="meta">风声信息咨询 · 证据链导出 · 生成于 <span id="pkgDate"></span></div>
+  </header>
+
+  <div id="summaryBar" class="summary-bar" style="display:none"></div>
+  <div id="pkgContent"></div>
+
+  <footer>
+    <div>风声信息咨询 · 证据链导出页</div>
+    <div><a href="/knowledge/" style="color:#1a3d24;text-decoration:none">← 回到知识底座</a></div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // 解析 URL 参数
+  const urlParams = new URLSearchParams(window.location.search);
+  const ids = (urlParams.get('ids') || '').split(',').filter(Boolean);
+  const q = urlParams.get('q') || '';
+
+  document.getElementById('pkgDate').textContent = new Date().toISOString().split('T')[0];
+
+  const $content = document.getElementById('pkgContent');
+  const $summary = document.getElementById('summaryBar');
+
+  // 没参数 → 空态
+  if (ids.length === 0 && !q) {
+    $content.innerHTML = `
+      <div class="empty-state">
+        <h2>没有指定要导出的知识条目</h2>
+        <p>用 <code>?ids=1,5,33</code> 指定条目 ID<br>或用 <code>?q=学区房</code> 按关键词自动匹配</p>
+        <a href="/knowledge/">→ 去知识底座选条目</a>
+      </div>`;
+    return;
+  }
+
+  // 加载状态
+  $content.innerHTML = '<div class="loader">🔍 正在从知识底座拉取证据链...</div>';
+
+  // 搜索并渲染
+  fetchAndRender();
+
+  async function fetchAndRender() {
+    try {
+      let entries = [];
+
+      if (q) {
+        // 关键词模式 → 取前 10 条
+        const resp = await fetch('/api/search/v2?q=' + encodeURIComponent(q) + '&pageSize=10');
+        const data = await resp.json();
+        entries = data.results || [];
+      } else {
+        // ID 模式 → 逐 ID 搜（Worker 不支持多 ID 查询，变通处理）
+        for (const id of ids) {
+          const resp = await fetch('/api/search/v2?q=id:' + id + '&pageSize=1');
+          const data = await resp.json();
+          if (data.results && data.results.length > 0) {
+            entries.push(data.results[0]);
+          }
+        }
+      }
+
+      if (entries.length === 0) {
+        $content.innerHTML = `
+          <div class="empty-state">
+            <h2>没找到匹配的知识条目</h2>
+            <p>试试换个关键词或检查 ID 是否正确</p>
+            <a href="/knowledge/">→ 去知识底座</a>
+          </div>`;
+        return;
+      }
+
+      // EvidenceAdapter 适配
+      const adapter = window.EvidenceAdapter;
+      const adaptedList = entries.map(e => {
+        try { return adapter.adaptEntry(e); } catch(err) { return e; }
+      });
+
+      // 统计摘要
+      const totalEvidence = adaptedList.reduce((sum, e) => sum + ((e.evidence && e.evidence.length) || 0), 0);
+      const typeCount = {};
+      adaptedList.forEach(e => {
+        const et = e.entry_type || e.entryType || 'PROC';
+        typeCount[et] = (typeCount[et] || 0) + 1;
+      });
+      const staleCount = adaptedList.filter(e => {
+        try {
+          const exp = adapter.assessExpiry(e);
+          return exp.status === 'soft_expired' || exp.status === 'hard_blocked';
+        } catch(err) { return false; }
+      }).length;
+
+      // 渲染摘要栏
+      $summary.style.display = 'flex';
+      $summary.innerHTML = `
+        <div class="stat"><b>${adaptedList.length}</b> 条知识</div>
+        <div class="stat"><b>${totalEvidence}</b> 处证据引用</div>
+        <div class="stat"><b>${Object.keys(typeCount).length}</b> 种类型</div>
+        <div class="stat ${staleCount > 0 ? '' : ''}">${staleCount > 0 ? '⚠️ ' : '✅ '}时效 ${staleCount > 0 ? (adaptedList.length - staleCount) + '/' + adaptedList.length + ' 可核验' : '全部可核验'}</div>
+        <div class="actions">
+          <button class="btn-secondary" onclick="window.print()">🖨️ 打印</button>
+          <button class="btn-primary" onclick="saveAsHTML()">💾 保存为 HTML</button>
+        </div>`;
+
+      // 渲染每条
+      let html = '';
+      adaptedList.forEach((adapted, i) => {
+        const raw = entries[i];
+        const title = raw.name || adapted.entry_id || ('条目 #' + (i+1));
+        const typeLabel = { LAW: '📜 法条类', POL: '🏛️ 政策类', PROC: '💡 流程类', RISK: '⚠️ 风险类', CASE: '⚖️ 案例类', DATA: '📊 数据类', STD: '📋 标准类', TERM: '📖 术语类' }[adapted.entry_type] || adapted.entry_type;
+        const oneLine = raw.oneLineAnswer || adapted.ol || '';
+
+        html += `<div class="pkg-item">
+          <div class="item-title">${escapeHtml(title)}</div>
+          <div class="item-meta">
+            <span>${typeLabel || raw.entryType}</span>
+            ${oneLine ? '<span>· ' + escapeHtml(oneLine.slice(0,60)) + '</span>' : ''}
+          </div>
+          ${window.EvidenceLink ? window.EvidenceLink.render(adapted, { compact: false, max: 0, showCaveat: true }) : '<div style="font-size:12px;color:#999">EvidenceLink 组件加载中...</div>'}
+        </div>`;
+      });
+
+      $content.innerHTML = html;
+
+    } catch(err) {
+      console.error('证据包加载失败:', err);
+      $content.innerHTML = `<div class="empty-state"><h2>加载失败</h2><p>网络错误，请稍后再试</p><a href="/knowledge/">→ 去知识底座</a></div>`;
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // 保存为独立 HTML（去掉导航/脚本，纯证据包）
+  window.saveAsHTML = function() {
+    const style = document.querySelector('style').outerHTML;
+    const pkgDate = document.getElementById('pkgDate').textContent;
+    const content = document.getElementById('pkgContent').innerHTML;
+    const summary = document.getElementById('summaryBar').innerHTML;
+    const header = document.querySelector('header').outerHTML;
+
+    const fullHTML = `<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>证据包 · 风声信息咨询</title>${style}</head>
+<body><div class="wrap">
+${header}
+<div class="summary-bar">${summary.replace(/<button[^>]*>[^<]*<\/button>/g, '')}</div>
+${content}
+<footer><div>风声信息咨询 · 证据链导出 · ${pkgDate}</div></footer>
+</div></body></html>`;
+
+    const blob = new Blob([fullHTML], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'evidence-package-' + pkgDate + '.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+})();
+</script>
+</body>
+</html>
