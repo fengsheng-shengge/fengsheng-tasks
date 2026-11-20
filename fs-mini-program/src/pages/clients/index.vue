@@ -28,7 +28,7 @@
     </view>
 
     <!-- 客户详情 -->
-    <view class="overlay" :class="{ active: showDetail }">
+    <view v-if="showDetail" class="overlay active">
       <view class="ov-nav">
         <button class="back" @tap="showDetail = false">‹</button>
         <view><view style="font-size:17px;font-weight:700">{{ detail.name }}</view><view class="sub">{{ detail.stage }} · {{ detail.status }}<text v-if="detailSrc && detailSrc.seed" class="sample-flag"> · 示例客户·仅供参考</text></view></view>
@@ -37,14 +37,14 @@
         <button class="btn-prep" @tap="openPrep(detailSrc)">🎯 准备这次见面（见面参谋）</button>
         <view class="sec dualaxis">
           <view class="h"><text class="em">🧭</text>双纵轴定位（我在服务 TA 的哪一段）</view>
-          <view class="axis-row"><text class="axis-name">购5</text><view class="axis-chips">
-            <text v-for="s in buyAxis" :key="s" class="achip" :class="{ on: detail.isBuy && detail.curSeg === s }">{{ s }}</text>
+          <view class="axis-row" v-if="detail.isBuy"><text class="axis-name">购5</text><view class="axis-chips">
+            <text v-for="s in buyAxis" :key="s" class="achip" :class="{ on: detail.curSeg === s }">{{ s }}</text>
           </view></view>
-          <view class="axis-row"><text class="axis-name">租4</text><view class="axis-chips">
-            <text v-for="s in rentAxis" :key="s" class="achip" :class="{ on: !detail.isBuy && detail.curSeg === s }">{{ s }}</text>
-            <text class="achip" :class="{ on: !detail.isBuy && detail.curSeg === '业主侧' }">业主侧</text>
+          <view class="axis-row" v-else><text class="axis-name">租4</text><view class="axis-chips">
+            <text v-for="s in rentAxis" :key="s" class="achip" :class="{ on: detail.curSeg === s }">{{ s }}</text>
+            <text class="achip" :class="{ on: detail.curSeg === '业主侧' }">业主侧</text>
           </view></view>
-          <view class="rel-tag">关系类型：{{ detail.relationLabel }}</view>
+          <view class="rel-tag">关系类型：{{ detail.relationLabel }}<text v-if="!detail.stage" class="rel-hint"> · 尚未填写阶段</text></view>
         </view>
         <view class="sec"><view class="h"><text class="em">🎨</text>客户描摹（红蓝绿）</view><view>{{ detail.persona }}——{{ detail.personaTip }}</view></view>
         <view class="sec"><view class="h"><text class="em">🏷️</text>分层运营（A/B/C）</view><view>{{ detail.levelText }}</view></view>
@@ -76,27 +76,79 @@
             <view class="mp-at">{{ fmtDate(m.at) }}</view>
           </view>
         </view>
-        <view class="sec cognition" v-if="detailSrc.cognition">
-          <view class="h"><text class="em">🧠</text>认知卡（越服务越懂客户）</view>
-          <block v-if="(detailSrc.cognition.known || []).length || (detailSrc.cognition.signals || []).length">
-            <view class="cog-sub">已知偏好</view>
-            <view class="cog-chips"><text v-for="(k, i) in detailSrc.cognition.known" :key="i" class="cog-chip">{{ k }}</text></view>
-            <view class="cog-sub">决策信号 / 关怀点</view>
-            <view class="cog-chips"><text v-for="(s, i) in detailSrc.cognition.signals" :key="i" class="cog-chip signal">{{ s }}</text></view>
-            <view class="cog-count">已沉淀 {{ (detailSrc.cognition.log || []).length }} 次见面参谋</view>
-          </block>
-          <view v-else class="cog-empty">暂无认知沉淀。准备一次见面后，客户的偏好与信号会自动长在这里。</view>
+        <!-- ★ V3.7 深层洞察沉淀（经纪人人认知积累） -->
+        <view class="sec deep-insight-sec" v-if="hasDeepInsight">
+          <view class="h"><text class="em">🔍</text>深层洞察 <text class="di-badge">MOT① 积累</text></view>
+          <view class="di-note">经纪人人认知积累，不对客户透出</view>
+          <!-- 触发动因 -->
+          <view class="di-row" v-if="deepTriggerEvents.length">
+            <view class="di-label">触发动因</view>
+            <view class="di-tags">
+              <text v-for="l in deepTriggerEvents" :key="l" class="di-tag trigger">{{ l }}</text>
+            </view>
+            <view class="di-remark" v-if="deepTriggerRemark">客户原话：{{ deepTriggerRemark }}</view>
+          </view>
+          <!-- 内心矛盾 -->
+          <view class="di-row" v-if="deepConflict">
+            <view class="di-label">内心矛盾</view>
+            <view class="di-conflict">{{ deepConflict }}</view>
+          </view>
+          <!-- 底线 vs 让步 -->
+          <view class="di-two-col" v-if="deepBottomLines.length || deepFlexible.length">
+            <view v-if="deepBottomLines.length">
+              <view class="di-label" style="color:#c0392b">不可妥协底线</view>
+              <view class="di-tags">
+                <text v-for="l in deepBottomLines" :key="l" class="di-tag bottom">{{ l }}</text>
+              </view>
+            </view>
+            <view v-if="deepFlexible.length">
+              <view class="di-label" style="color:#27ae60">可妥协让步</view>
+              <view class="di-tags">
+                <text v-for="l in deepFlexible" :key="l" class="di-tag flex">{{ l }}</text>
+              </view>
+            </view>
+          </view>
+          <!-- ★ V3.7 新增：顾虑清单 -->
+          <view class="di-row" v-if="deepRisks.length">
+            <view class="di-label">客户顾虑</view>
+            <view class="di-tags">
+              <text v-for="l in deepRisks" :key="l" class="di-tag risk">{{ l }}</text>
+            </view>
+          </view>
+          <!-- ★ V3.7 新增：决策人立场 -->
+          <view class="di-row" v-if="deepDecisionMakers.length">
+            <view class="di-label">决策人立场</view>
+            <view class="di-dm" v-for="(dm, i) in deepDecisionMakers" :key="i">
+              <text class="dm-name">{{ dm.name || '决策人' }}</text>
+              <text class="dm-stance" v-if="dm.stanceType">{{ stanceTypeLabel(dm.stanceType) }}</text>
+              <text class="dm-concern" v-if="dm.concern"> · {{ dm.concern }}</text>
+            </view>
+          </view>
+          <!-- ★ V3.7 新增：理想生活画面 -->
+          <view class="di-row" v-if="deepLifeVision">
+            <view class="di-label">理想生活画面</view>
+            <view class="di-life-vision">{{ deepLifeVision }}</view>
+          </view>
+          <!-- CTA -->
+          <view class="di-cta">在「见面参谋」持续更新 →</view>
+        </view>
+        <view class="sec deep-insight-sec" v-else>
+          <view class="h"><text class="em">🔍</text>深层洞察 <text class="di-badge">MOT①</text></view>
+          <view class="di-empty">尚未积累深层洞察。完成「见面参谋」后，客户的触发动因、内心矛盾、底线等会自动沉淀到这里。</view>
         </view>
       </scroll-view>
       <view class="ov-foot">
-        <button class="btn-green" @tap="openForm(detailSrc)">✎ 编辑客户</button>
+        <button class="btn-line" @tap="openSupplement(detailSrc)">✎ 补充信息</button>
+        <button class="btn-green" @tap="openForm(detailSrc)">✎ 编辑档案</button>
+      </view>
+      <view class="ov-foot">
         <button class="btn-red" @tap="askDel(detailSrc)">🗑 删除客户</button>
-        <button class="btn-line" @tap="openCurate(detailSrc)">为本次接触生成策展包 →</button>
+        <button class="btn-curate" @tap="openCurate(detailSrc)">🗺️ 生成策展包 →</button>
       </view>
     </view>
 
     <!-- 新建/编辑客户表单 -->
-    <view class="overlay" :class="{ active: showForm }">
+    <view v-if="showForm" class="overlay active">
       <view class="ov-nav">
         <button class="back" @tap="closeForm">‹</button>
         <view><view style="font-size:17px;font-weight:700">{{ editingId ? '编辑客户' : '新建客户' }}</view><view class="sub">信息越全，策展越准</view></view>
@@ -104,12 +156,12 @@
       <scroll-view class="ovcontent" scroll-y="true">
         <view class="field"><text class="label">姓氏（头像）</text><input class="inp" v-model="form.surname" placeholder="如 林" /></view>
         <view class="field"><text class="label">称呼 / 全名</text><input class="inp" v-model="form.name" placeholder="如 林先生 & 未婚妻" /></view>
-        <view class="field"><text class="label">角色</text>
-          <view class="opt"><view v-for="o in relOpts" :key="o" :class="{ on: form.rel === o }" @tap="form.rel = o">{{ o }}</view></view>
+        <view class="field"><text class="label">角色 <text class="field-tip">选「买房客户」或「租客」，阶段会自动过滤</text></text>
+          <view class="opt"><view v-for="o in relOpts" :key="o" :class="{ on: form.rel === o }" @tap="form.rel = o; onRelChange(o)">{{ o }}</view></view>
         </view>
-        <view class="field"><text class="label">双纵轴阶段</text>
-          <input class="inp" v-model="form.stage" placeholder="如 购房线 / ①首套" />
-          <view class="opt wrap"><view v-for="o in stageOpts" :key="o" :class="{ on: form.stage === o }" @tap="form.stage = o">{{ o }}</view></view>
+        <view class="field"><text class="label">双纵轴阶段 <text class="field-tip">根据角色自动过滤</text></text>
+          <input class="inp" v-model="form.stage" placeholder="点击下方选项选择" />
+          <view class="opt wrap"><view v-for="o in filteredStageOpts" :key="o" :class="{ on: form.stage === o }" @tap="form.stage = o">{{ o }}</view></view>
         </view>
         <view class="field"><text class="label">性格频道</text>
           <view class="opt"><view class="p-r" :class="{ on: form.pkey === 'red' }" @tap="form.pkey='red'">🔴 结果</view><view class="p-b" :class="{ on: form.pkey === 'blue' }" @tap="form.pkey='blue'">🔵 关系</view><view class="p-g" :class="{ on: form.pkey === 'green' }" @tap="form.pkey='green'">🟢 理智</view></view>
@@ -120,12 +172,32 @@
         <view class="field"><text class="label">状态</text>
           <view class="opt"><view v-for="o in statusOpts" :key="o" :class="{ on: form.status === o }" @tap="form.status = o">{{ o }}</view></view>
         </view>
-        <view class="field"><text class="label">小区 / 地址</text><input class="inp" v-model="form.addr" placeholder="选填" /></view>
-        <view class="field"><text class="label">备注（核心诉求 / 敏感点）</text><textarea class="inp" v-model="form.note" placeholder="如 90后婚房，预算300万，看重学区与通勤" /></view>
+        <view class="field"><text class="label">小区 / 地址</text><input class="inp" v-model="form.addr" placeholder="选填，可后续补充" /></view>
+        <view class="field"><text class="label">备注（核心诉求 / 敏感点 / 购房原因）</text><textarea class="inp" v-model="form.note" placeholder="不必一次写全，后续可在客户详情页「补充信息」持续更新。如：90后婚房，预算300万，看重学区"></textarea></view>
       </scroll-view>
       <view class="ov-foot">
         <button class="btn-line foot-cancel" @tap="closeForm">取消</button>
         <button class="btn-green foot-save" @tap="saveForm">✓ {{ editingId ? '保存修改' : '创建客户' }}</button>
+      </view>
+    </view>
+
+    <!-- 补充信息浮层（从详情页快速追加，不覆盖已有内容） -->
+    <view v-if="showSupplement" class="overlay active">
+      <view class="ov-nav">
+        <button class="back" @tap="showSupplement = false">‹</button>
+        <view><view style="font-size:17px;font-weight:700">补充客户信息</view><view class="sub">随时补充，不限一次</view></view>
+      </view>
+      <scroll-view class="ovcontent" scroll-y="true">
+        <view class="supp-tip">以下字段可部分填写，保存后自动追加到客户档案</view>
+        <view class="field"><text class="label">称呼 / 全名</text><input class="inp" v-model="suppForm.name" placeholder="如 林先生 & 未婚妻" /></view>
+        <view class="field"><text class="label">角色</text><view class="opt"><view v-for="o in relOpts" :key="o" :class="{ on: suppForm.rel === o }" @tap="suppForm.rel = o">{{ o }}</view></view></view>
+        <view class="field"><text class="label">双纵轴阶段</text><view class="opt wrap"><view v-for="o in filteredStageOptsSupp" :key="o" :class="{ on: suppForm.stage === o }" @tap="suppForm.stage = o">{{ o }}</view></view></view>
+        <view class="field"><text class="label">小区 / 地址</text><input class="inp" v-model="suppForm.addr" placeholder="选填" /></view>
+        <view class="field"><text class="label">备注（补充本次了解到的新信息）</text><textarea class="inp" v-model="suppForm.note" placeholder="如：客户提到父母会来住，想了解电梯房；预算可浮动到330万"></textarea></view>
+      </scroll-view>
+      <view class="ov-foot">
+        <button class="btn-line foot-cancel" @tap="showSupplement = false">取消</button>
+        <button class="btn-green foot-save" @tap="saveSupplement">✓ 保存补充</button>
       </view>
     </view>
 
@@ -146,6 +218,7 @@
 <script>
 import { personaMap, levelMap } from '../../utils/v4data.js'
 import { useUserStore } from '../../store/user'
+import { trackPageview } from '../../utils/tracker'
 export default {
   data() {
     return {
@@ -154,6 +227,10 @@ export default {
       editingId: null,
       detail: {},
       detailSrc: null,
+      // 补充信息浮层
+      showSupplement: false,
+      suppClientId: null,
+      suppForm: { name: '', rel: '买房客户', stage: '', addr: '', note: '' },
       confirmShow: false,
       confirmTitle: '',
       confirmContent: '',
@@ -162,6 +239,8 @@ export default {
       form: this.blankForm(),
       relOpts: ['买房客户', '租客', '业主', '房东'],
       stageOpts: ['购房线 / ①首套','购房线 / ②改善','购房线 / ③教育','购房线 / ④升级','购房线 / ⑤适老','租住线 / ①起步','租住线 / ②改善','租住线 / ③家庭','租住线 / ④品质','业主侧'],
+      buyStages: ['购房线 / ①首套','购房线 / ②改善','购房线 / ③教育','购房线 / ④升级','购房线 / ⑤适老'],
+      rentStages: ['租住线 / ①起步','租住线 / ②改善','租住线 / ③家庭','租住线 / ④品质','业主侧'],
       levelOpts: ['A', 'B', 'C'],
       statusOpts: ['跟进中', '已成交', '已流失'],
       buyAxis: ['①首套', '②改善', '③教育', '④升级', '⑤适老'],
@@ -171,7 +250,63 @@ export default {
   computed: {
     userStore() { return useUserStore() },
     list() { return this.userStore.clients },
-    hasSamples() { return this.userStore.clients.some(c => c.seed) }
+    hasSamples() { return this.userStore.clients.some(c => c.seed) },
+    // ★ V3.7 深层洞察（从 lifecycle.insightData 读取）
+    hasDeepInsight() {
+      if (!this.detailSrc) return false
+      const d = this.detailSrc.lifecycle && this.detailSrc.lifecycle.insightData
+      return !!(d && (
+        (d.triggerEvents && d.triggerEvents.length) ||
+        (d.customerConflict && d.customerConflict.trim()) ||
+        (d.hardBottomLines && d.hardBottomLines.length) ||
+        (d.flexibleItems && d.flexibleItems.length) ||
+        (d.riskItems && d.riskItems.length) ||
+        (d.decisionMakerStances && d.decisionMakerStances.length) ||
+        (d.lifeVision && d.lifeVision.trim())
+      ))
+    },
+    deepTriggerEvents() {
+      const map = { family_birth:'家庭添丁', family_marriage:'新婚', family_elder:'老人同住',
+        family_school:'子女入学', external_expiry:'原租约到期', external_transfer:'工作调动',
+        external_commute:'通勤无法忍受', external_defect:'现有房屋缺陷',
+        time_school:'入学落户节点', time_limit:'置换窗口期', time_other:'其他时间压力' }
+      const d = this._insightData()
+      return (d && d.triggerEvents || []).map(k => map[k] || k)
+    },
+    deepTriggerRemark() {
+      const d = this._insightData()
+      return d && d.triggerRemark || ''
+    },
+    deepConflict() {
+      const d = this._insightData()
+      return d && d.customerConflict || ''
+    },
+    deepBottomLines() {
+      const map = { school:'学区资质', metro:'地铁距离', budget:'总价上限', floor:'楼层要求',
+        orientation:'朝向', elevator:'必须有电梯', noise:'噪音控制', title:'产权清晰' }
+      const d = this._insightData()
+      return (d && d.hardBottomLines || []).map(k => map[k] || k)
+    },
+    deepFlexible() {
+      const map = { area:'面积', decoration:'装修标准', ratio:'梯户比', age:'楼龄',
+        quality:'小区品质', orientation:'朝向', parking:'车位' }
+      const d = this._insightData()
+      return (d && d.flexibleItems || []).map(k => map[k] || k)
+    },
+    deepRisks() {
+      const map = { fear_expensive:'怕买贵', fear_mortgage:'怕月供压力', fear_devalue:'怕后期贬值',
+        fear_family:'怕家人意见不统一', fear_policy:'怕学区政策变动', fear_delivery:'怕交房时间不确定',
+        fear_liquidity:'怕流通性差', fear_quality:'怕质量/维权风险' }
+      const d = this._insightData()
+      return (d && d.riskItems || []).map(k => map[k] || k)
+    },
+    deepDecisionMakers() {
+      return (this._insightData() && this._insightData().decisionMakerStances) || []
+    },
+    deepLifeVision() {
+      const d = this._insightData()
+      return d && d.lifeVision || ''
+    },
   },
   onLoad(query) {
     uni.$on('openClientDetail', (id) => {
@@ -194,9 +329,12 @@ export default {
     // 不必等 App 的 200ms 延迟（App 延迟 init 仅作兜底）。initFromStorage 内部已按
     // 「fs_clients key 是否存在」区分首次启动(seed 示例)与用户清空(不回弹)，空态真实可达。
     if (!this.userStore._initialized) this.userStore.initFromStorage()
+    trackPageview('clients')
     const fid = this.userStore.focusClientId
     if (fid) {
       this.userStore.focusClientId = null
+      // 首页「一键开工-新建客户」→ 直接打开新建表单
+      if (fid === '__new__') { this.openForm(); return }
       const c = this.userStore.getClient(fid)
       if (c) this.openDetail(c)
     }
@@ -281,10 +419,56 @@ export default {
       this.confirmShow = false
     },
     confirmCancel() { this.confirmShow = false },
-    openCurate(c) {
+    filteredStageOpts() {
+      if (!this.form.rel || this.form.rel === '买房客户' || this.form.rel === '业主') return this.buyStages
+      if (this.form.rel === '租客' || this.form.rel === '房东') return this.rentStages
+      return this.buyStages
+    },
+    filteredStageOptsSupp() {
+      const rel = this.suppForm ? this.suppForm.rel : this.form.rel
+      if (!rel || rel === '买房客户' || rel === '业主') return this.buyStages
+      if (rel === '租客' || rel === '房东') return this.rentStages
+      return this.buyStages
+    },
+    // 切换角色时，清空已选的不在列表内的阶段
+    onRelChange(rel) {
+      const list = (rel === '买房客户' || rel === '业主') ? this.buyStages : this.rentStages
+      if (this.form.stage && !list.includes(this.form.stage)) this.form.stage = ''
+    },
+    // 补充信息入口
+    openSupplement(c) {
+      this.suppClientId = c.id
+      this.suppForm = { name: c.name || '', rel: c.rel || '买房客户', stage: c.stage || '', addr: c.addr || '', note: '' }
       this.showDetail = false
-      uni.$emit('openCurateForm', c.id)
-      uni.switchTab({ url: '/pages/curate/index' })
+      this.showSupplement = true
+    },
+    saveSupplement() {
+      if (!this.suppClientId) return
+      const existing = this.userStore.getClient(this.suppClientId)
+      if (!existing) return
+      const updates = {}
+      if (this.suppForm.name.trim()) updates.name = this.suppForm.name
+      updates.rel = this.suppForm.rel
+      if (this.suppForm.stage) updates.stage = this.suppForm.stage
+      if (this.suppForm.addr) updates.addr = this.suppForm.addr
+      // 备注追加而非覆盖
+      const newNote = this.suppForm.note.trim()
+      if (newNote) updates.note = existing.note ? (existing.note + '\n【' + this._fmtNow() + '补充】' + newNote) : newNote
+      this.userStore.updateClient(this.suppClientId, updates)
+      uni.showToast({ title: '已补充信息', icon: 'none' })
+      this.showSupplement = false
+    },
+    _fmtNow() {
+      const d = new Date(); const p = n => String(n).padStart(2,'0')
+      return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate())
+    },
+    openCurate(c) {
+      // 先写入 storage，再切 tab，避免「点了没反应」的困惑
+      this.userStore._set('fs_curate_client_id', c.id)
+      this.showDetail = false
+      setTimeout(() => {
+        uni.switchTab({ url: '/pages/curate/index' })
+      }, 80)
     },
     // V3.0：进入见面参谋（分包非 tab 页），携带 clientId 以便沉淀认知卡
     openPrep(c) {
@@ -296,13 +480,21 @@ export default {
       const d = new Date(ts)
       const p = n => String(n).padStart(2, '0')
       return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes())
+    },
+    _insightData() {
+      return (this.detailSrc && this.detailSrc.lifecycle && this.detailSrc.lifecycle.insightData) || null
+    },
+    stanceTypeLabel(key) {
+      const map = { commute:'看重通勤', school:'看重学区', budget:'看重预算',
+        floor:'看重楼层/朝向', quality:'看重品质/面积', safety:'看重安全/产权', other:'其他诉求' }
+      return map[key] || key
     }
   }
 }
 </script>
 
 <style scoped>
-.page { padding: 14px 14px 30px; }
+.page { height: 100vh; padding: 14px 14px calc(14px + env(safe-area-inset-bottom)); background: #f7f4ef; box-sizing: border-box; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 .section-title { font-size: 18px; font-weight: 800; color: #3d5a3e; }
 .section-more { font-size: 12px; color: #C8956D; flex: 1; }
@@ -345,12 +537,11 @@ export default {
 .st-ing { background: #fff4ec; color: #c46a3a; }
 .st-done { background: #eef6ef; color: #3a8f5b; }
 .st-lost { background: #f0f0f0; color: #999; }
-.overlay { position: fixed; inset: 0; background: #fff; transform: translateX(100%); transition: transform .25s ease; z-index: 1000; display: flex; flex-direction: column; }
-.overlay.active { transform: translateX(0); }
+.overlay { position: fixed; inset: 0; background: #fff; z-index: 1000; display: flex; flex-direction: column; }
 .ov-nav { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid #efe9dd; }
 .back { margin: 0; width: 34px; height: 34px; border-radius: 50%; background: #f0ece2; color: #3d5a3e; font-size: 20px; line-height: 1; padding: 0; }
 .sub { font-size: 12px; color: #999; }
-.ovcontent { flex: 1; padding: 16px; }
+.ovcontent { height: 0; flex: 1; padding: 16px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .sec { background: #f7f4ef; border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 13.5px; line-height: 1.6; }
 .sec .h { font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
 .em { margin-right: 4px; }
@@ -361,6 +552,7 @@ export default {
 .achip { font-size: 11px; padding: 3px 8px; border-radius: 8px; background: #f0ece2; color: #aaa; border: 1px solid #e7e0d4; }
 .achip.on { background: #3d5a3e; color: #fff; border-color: #3d5a3e; font-weight: 700; }
 .rel-tag { font-size: 12px; color: #C8956D; margin-top: 6px; font-weight: 700; }
+.rel-hint { color: #aaa; font-weight: 400; }
 .tl { display: flex; gap: 8px; padding: 8px 0; border-bottom: 1px dashed #e7e0d4; }
 .tl:last-child { border-bottom: none; }
 .tl-type { font-size: 11px; padding: 2px 7px; border-radius: 6px; height: fit-content; flex-shrink: 0; }
@@ -382,7 +574,7 @@ export default {
 .btn-green { background: #3d5a3e; color: #fff; border-radius: 10px; padding: 12px; font-size: 15px; margin-top: 6px; }
 /* V3.0 修复：原生 tabBar 永远盖在 webview 之上，必须把底部操作按钮移出滚动区、
    固定到 overlay 底部并预留 tabBar 高度(110rpx)+安全区，确保真机可点 */
-.ov-foot { background: #fff; border-top: 1px solid #efe9dd; padding: 10px 16px; padding-bottom: calc(10px + 110rpx + env(safe-area-inset-bottom)); display: flex; gap: 10px; z-index: 1001; }
+.ov-foot { background: #fff; border-top: 1px solid #efe9dd; padding: 10px 16px; padding-bottom: calc(10px + 60px + env(safe-area-inset-bottom)); display: flex; gap: 10px; z-index: 1001; }
 .ov-foot .btn-green, .ov-foot .btn-red, .ov-foot .btn-line { flex: 1; margin-top: 0; }
 .ov-foot .foot-cancel { flex: 0 0 auto; }
 .btn-red { background: #fff; color: #c0392b; border: 1px solid #f0c4bd; border-radius: 10px; padding: 12px; font-size: 14px; margin-top: 8px; }
@@ -394,14 +586,39 @@ export default {
 .cog-chip.signal { background: #fff4ec; color: #c46a3a; }
 .cog-count { font-size: 11px; color: #8a837a; margin-top: 10px; }
 .cog-empty { font-size: 12.5px; color: #8a837a; line-height: 1.6; }
+/* V3.7 深层洞察沉淀区 */
+.deep-insight-sec { background: #fff; border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 13.5px; line-height: 1.6; }
+.deep-insight-sec .h { font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
+.di-badge { font-size: 10px; background: #fff8e8; color: #c8956d; padding: 1px 6px; border-radius: 6px; margin-left: 6px; font-weight: 700; }
+.di-note { font-size: 11px; color: #aaa; margin-bottom: 10px; background: #f7f4ef; border-radius: 6px; padding: 3px 8px; display: inline-block; }
+.di-empty { font-size: 12.5px; color: #8a837a; line-height: 1.6; }
+.di-row { margin-bottom: 10px; }
+.di-label { font-size: 12px; font-weight: 700; color: #3d5a3e; margin-bottom: 5px; }
+.di-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.di-tag { padding: 3px 9px; border-radius: 10px; font-size: 12px; }
+.di-tag.trigger { background: #fff8e8; color: #c46a3a; border: 1px solid #f0d8c4; }
+.di-tag.bottom { background: #fff0f0; color: #c0392b; border: 1px solid #f0c8c8; }
+.di-tag.flex { background: #eef6ef; color: #27ae60; border: 1px solid #c4dbc5; }
+.di-tag.risk { background: #f3f0ea; color: #8a7250; border: 1px solid #e0d4bc; }
+.di-remark { font-size: 11px; color: #8a837a; margin-top: 3px; font-style: italic; }
+.di-conflict { background: #fff8f8; border-left: 3px solid #c0392b; padding: 5px 8px; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+.di-two-col { display: flex; gap: 10px; }
+.di-two-col > view { flex: 1; }
+.di-dm { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+.dm-name { font-size: 12px; font-weight: 700; color: #2b2b2b; }
+.dm-stance { font-size: 11px; background: #f0ece2; color: #555; padding: 2px 7px; border-radius: 6px; }
+.dm-concern { font-size: 11px; color: #8a837a; }
+.di-life-vision { background: #f7f4ef; border-radius: 8px; padding: 8px 10px; font-size: 13px; color: #3d5a3e; line-height: 1.6; }
+.di-cta { font-size: 12px; color: #c46a3a; font-weight: 700; margin-top: 10px; text-align: right; }
 .field { margin-bottom: 14px; }
 .label { display: block; font-size: 13px; font-weight: 700; color: #3d5a3e; margin-bottom: 6px; }
-.inp { width: 100%; background: #f7f4ef; border: 1px solid #e7e0d4; border-radius: 8px; padding: 10px; font-size: 14px; box-sizing: border-box; }
+.inp { width: 100%; min-height: 44px; background: #f7f4ef; border: 1px solid #e7e0d4; border-radius: 8px; padding: 10px; font-size: 14px; box-sizing: border-box; }
 .opt { display: flex; flex-wrap: wrap; gap: 8px; }
 .opt.wrap { margin-top: 8px; }
 .opt > view { padding: 7px 12px; background: #f0ece2; border-radius: 8px; font-size: 13px; color: #555; border: 1px solid transparent; }
 .opt > view.on { background: #3d5a3e; color: #fff; }
-.p-r.on { background: #c0392b; }
-.p-b.on { background: #2f6fb0; }
-.p-g.on { background: #3a8f5b; }
+.btn-curate { background: #c46a3a; color: #fff; border-radius: 10px; padding: 12px; font-size: 14px; margin-top: 8px; }
+.supp-tip { background: #fff8e8; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #c8956d; margin-bottom: 14px; line-height: 1.5; }
+.field-tip { font-size: 11px; font-weight: 400; color: #C8956D; }
+
 </style>
