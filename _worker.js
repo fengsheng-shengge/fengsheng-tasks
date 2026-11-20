@@ -2475,7 +2475,7 @@ async function handleEntries(request, env, ctx) {
   }
 
   // Cache key includes all filter params
-  const cacheKeyStr = `https://cache.local/v8/api/entries?domain=${domainParam || ''}&limit=${limit}&offset=${offset}&subScene=${subSceneParam || ''}&ct=${clientTypeParam || ''}&st=${stageParam || ''}&ly=${layerParam || ''}&gb=${groupByParam || ''}`;
+  const cacheKeyStr = `https://cache.local/v9/api/entries?domain=${domainParam || ''}&limit=${limit}&offset=${offset}&subScene=${subSceneParam || ''}&ct=${clientTypeParam || ''}&st=${stageParam || ''}&ly=${layerParam || ''}&gb=${groupByParam || ''}`;
   const cacheKey = new Request(cacheKeyStr);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
@@ -2693,7 +2693,7 @@ async function handleSearch(request, env, ctx) {
   }
 
   // Cache key includes filters
-  const cacheKeyStr = 'https://cache.local/v5/api/search?q=' + encodeURIComponent(q.slice(0, 20)) +
+  const cacheKeyStr = 'https://cache.local/v9/api/search?q=' + encodeURIComponent(q.slice(0, 20)) +
     '&d=' + (domainParam || '') + '&ct=' + (clientTypeParam || '') + '&st=' + (stageParam || '') + '&ly=' + (layerParam || '');
   const cacheKey = new Request(cacheKeyStr);
   const cache = caches.default;
@@ -2822,7 +2822,7 @@ async function handleEntryDetail(request, env, ctx) {
     return jsonResponse({ error: 'Missing ?id=ENTRY_ID parameter' }, 400);
   }
 
-  const cacheKey = new Request('https://cache.local/v8/api/entry?id=' + encodeURIComponent(id));
+  const cacheKey = new Request('https://cache.local/v9/api/entry?id=' + encodeURIComponent(id));
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -2883,7 +2883,7 @@ async function handleSearchSuggest(request, env, ctx) {
     return jsonResponse({ query: '', suggestions: [] });
   }
 
-  const cacheKey = new Request('https://cache.local/v5/api/search/suggest?q=' + encodeURIComponent(q.slice(0, 20)));
+  const cacheKey = new Request('https://cache.local/v9/api/search/suggest?q=' + encodeURIComponent(q.slice(0, 20)));
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -2947,7 +2947,7 @@ async function handleSceneDetail(request, env, ctx) {
     return jsonResponse({ error: 'clientType and stage are required', hint: '?clientType=buyer&stage=pre' }, 400);
   }
 
-  const cacheKey = new Request(`https://cache.local/v8/api/scene/detail?ct=${clientType}&st=${stage}&sd=${sceneDomain}`);
+  const cacheKey = new Request(`https://cache.local/v9/api/scene/detail?ct=${clientType}&st=${stage}&sd=${sceneDomain}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -3058,7 +3058,7 @@ async function handleSceneEntries(request, env, ctx) {
   const page = Math.max(parseInt(url.searchParams.get('page') || '1', 10) || 1, 1);
   const pageSize = Math.min(Math.max(parseInt(url.searchParams.get('pageSize') || '20', 10) || 20, 1), 100);
 
-  const cacheKey = new Request(`https://cache.local/v6/api/scene/entries?ct=${clientType}&st=${stage}&ly=${layer || ''}&p=${page}&ps=${pageSize}`);
+  const cacheKey = new Request(`https://cache.local/v9/api/scene/entries?ct=${clientType}&st=${stage}&ly=${layer || ''}&p=${page}&ps=${pageSize}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -3141,7 +3141,7 @@ async function handleSearchV2(request, env, ctx) {
     SEARCH_RATE_LIMIT.set(ip, { windowStart: now, count: 1 });
   }
 
-  const cacheKey = new Request(`https://cache.local/v7/api/search/v2?q=${encodeURIComponent(q.slice(0, 30))}&et=${entryType || ''}&sev=${severity || ''}&ly=${layer || ''}&dom=${domain || ''}&p=${page}&ps=${pageSize}`);
+  const cacheKey = new Request(`https://cache.local/v9/api/search/v2?q=${encodeURIComponent(q.slice(0, 30))}&et=${entryType || ''}&sev=${severity || ''}&ly=${layer || ''}&dom=${domain || ''}&p=${page}&ps=${pageSize}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -3257,7 +3257,7 @@ async function handleEntryRelated(request, env, ctx) {
   const limitParam = parseInt(url.searchParams.get('limit') || '10', 10);
   const limit = Math.min(Math.max(limitParam, 1), 30);
 
-  const cacheKey = new Request(`https://cache.local/v8/api/entry/related?id=${encodeURIComponent(id)}&limit=${limit}`);
+  const cacheKey = new Request(`https://cache.local/v9/api/entry/related?id=${encodeURIComponent(id)}&limit=${limit}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -3431,7 +3431,7 @@ async function handleDictionary(request, env, ctx) {
   const sort = ['priority', 'severity', 'name'].includes(url.searchParams.get('sort')) ? url.searchParams.get('sort') : 'priority';
   const order = url.searchParams.get('order') === 'desc' ? 'desc' : 'asc';
 
-  const cacheKey = new Request(`https://cache.local/v8/api/dictionary?ct=${clientType || ''}&st=${stage || ''}&ly=${layer || ''}&dom=${domain || ''}&et=${entryType || ''}&sev=${severity || ''}&pri=${priority || ''}&sg=${subSceneGroup || ''}&kw=${keyword || ''}&p=${page}&ps=${pageSize}&sort=${sort}&order=${order}`);
+  const cacheKey = new Request(`https://cache.local/v9/api/dictionary?ct=${clientType || ''}&st=${stage || ''}&ly=${layer || ''}&dom=${domain || ''}&et=${entryType || ''}&sev=${severity || ''}&pri=${priority || ''}&sg=${subSceneGroup || ''}&kw=${keyword || ''}&p=${page}&ps=${pageSize}&sort=${sort}&order=${order}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -3562,7 +3562,7 @@ async function handleDailyV2(request, env, ctx) {
   const today = new Date().toISOString().slice(0, 10);
   const seed = today + clientType + (stage || '');
 
-  const cacheKey = new Request(`https://cache.local/v5/api/daily/v2?ct=${clientType}&st=${stage || ''}&count=${count}&date=${today}`);
+  const cacheKey = new Request(`https://cache.local/v9/api/daily/v2?ct=${clientType}&st=${stage || ''}&count=${count}&date=${today}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -3859,7 +3859,7 @@ async function handleMiniSceneEntries(request, env, ctx) {
     return jsonResponse({ error: 'clientType and stage are required', hint: '?clientType=buyer&stage=pre' }, 400);
   }
 
-  const cacheKey = new Request(`https://cache.local/v5/api/mini/scene/entries?ct=${clientType}&st=${stage}&ly=${layer || ''}`);
+  const cacheKey = new Request(`https://cache.local/v9/api/mini/scene/entries?ct=${clientType}&st=${stage}&ly=${layer || ''}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
@@ -3928,7 +3928,7 @@ async function handleMiniEntryDetail(request, env, ctx) {
     return jsonResponse({ error: 'Missing entry id', hint: '/api/mini/entry/ENTRY_ID or ?id=ENTRY_ID' }, 400);
   }
 
-  const cacheKey = new Request(`https://cache.local/v5/api/mini/entry/${encodeURIComponent(id)}`);
+  const cacheKey = new Request(`https://cache.local/v9/api/mini/entry/${encodeURIComponent(id)}`);
   const cache = caches.default;
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
