@@ -2081,7 +2081,7 @@ async function handleStatsHealth(request, env) {
     degraded_mode: _degradedMode,
     error_count: _errorCount,
     updated: now,
-    version: 'v20260802-1210',
+    version: 'v20261120-prod',
   };
   if (!env.DB) {
     return jsonResponse({ ...base, status: 'degraded', db: 'not_configured' });
@@ -4476,8 +4476,14 @@ export default {
 
     // ===== 内部页访问门禁：无有效 Cookie 则跳转口令页 =====
     const PROTECTED_PAGES = new Set([
-      '/dashboard', '/dashboard/', '/agent-assessment', '/agent-assessment/',
+      '/dashboard', '/dashboard/',
+      '/agent-assessment', '/agent-assessment/',
       '/management', '/management/',
+      '/okr', '/okr/',
+      '/standard', '/standard/',
+      '/quality-test', '/quality-test/',
+      '/s1-report', '/s1-report/',
+      '/survey', '/survey/',
     ]);
     if (PROTECTED_PAGES.has(decodedPath)) {
       const cookieHeader = request.headers.get('Cookie') || '';
