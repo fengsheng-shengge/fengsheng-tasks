@@ -4561,6 +4561,8 @@ export default {
       '/management', '/management/',
       '/okr', '/okr/', '/standard', '/standard/',
       '/quality-test', '/quality-test/',
+      '/s1-report', '/s1-report/',
+      '/survey', '/survey/',
     ]);
     if (PROTECTED_PAGES.has(decodedPath)) {
       const cookieHeader = request.headers.get('Cookie') || '';

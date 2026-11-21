@@ -18,8 +18,38 @@ __pycache__/
 *.bak_*
 *.pre-*
 
+# 日志 + 快照（绝不提交运行时产物）
+*.log
+DEPLOY_TIMESTAMP
+*.secret
+*.snapshot
+
 # 临时 / 缓存
 __pycache__/
 *.pyc
 .tmp/
 cache/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 构建产物
+dist/
+build/
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 额外 env（.env / .env.local / .env.production 已在上方）
+.env.*.local
