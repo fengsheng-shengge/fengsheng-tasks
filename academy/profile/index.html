@@ -135,6 +135,12 @@ var DIM_ORDER = ['获客触达','需求洞察','专业方案','带看谈判','�
 var DIM_ICONS = {'获客触达':'📣','需求洞察':'🔍','专业方案':'📐','带看谈判':'🤝','交易履约':'📝','售后复购':'💗','数字化协同':'🤖'};
 var DIM_CODES = {'获客触达':'DIM-1','需求洞察':'DIM-2','专业方案':'DIM-3','带看谈判':'DIM-4','交易履约':'DIM-5','售后复购':'DIM-6','数字化协同':'DIM-7'};
 
+// 软技能 5 维（纵向 · 贯穿所有业务场景）—— 双轨模型第二条腿
+var SOFT_DIM_ORDER = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
+var SOFT_DIM_ICONS = {'共情能力':'💞','判断能力':'⚖️','责任担当':'🛡️','职业素养':'📜','服务意识':'🌱'};
+var SOFT_DIM_CODES = {'共情能力':'SOFT-1','判断能力':'SOFT-2','责任担当':'SOFT-3','职业素养':'SOFT-4','服务意识':'SOFT-5'};
+var FALLBACK_SOFT_SCORES = {'共情能力':50,'判断能力':50,'责任担当':50,'职业素养':50,'服务意识':50};
+
 // 默认骨架分数（无数据时降级）
 var FALLBACK_SCORES = {'获客触达':65,'需求洞察':55,'专业方案':75,'带看谈判':40,'交易履约':85,'售后复购':50,'数字化协同':60};
 
@@ -171,9 +177,19 @@ function formatDate(iso) {
 }
 
 // === 雷达图 SVG 生成 ===
-// 7 维 · 中心 (170,170) · 半径 140
-function buildRadarSVG(scores) {
-  var cx = 170, cy = 170, R = 140, n = 7;
+// n 维 · 中心 (170,170) · 半径 140 · colors 可定制
+function buildRadarSVG(scores, strokeColor, fillColor) {
+  return buildRadarSVGBase(scores, DIM_ORDER, DIM_ICONS, strokeColor || '#1a3d24', fillColor || 'rgba(26,61,36,.22)');
+}
+
+// 软技能 5 维雷达图
+function buildRadarSVGSoft(scores, strokeColor, fillColor) {
+  return buildRadarSVGBase(scores, SOFT_DIM_ORDER, SOFT_DIM_ICONS, strokeColor || '#8a7040', fillColor || 'rgba(138,112,64,.22)');
+}
+
+// 通用雷达图生成器（任意 n 维）
+function buildRadarSVGBase(scores, dimOrder, dimIcons, strokeColor, fillColor) {
+  var cx = 170, cy = 170, R = 140, n = dimOrder.length;
 
   // 轴线 + 分层圆环
   var rings = '';
@@ -191,7 +207,7 @@ function buildRadarSVG(scores) {
     var ay = cy + R * Math.sin(angle);
     axes += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ax + '" y2="' + ay + '" stroke="#ccc" stroke-width="1"/>';
 
-    var name = DIM_ORDER[i];
+    var name = dimOrder[i];
     var s = scores[name] || 50;
     var pr = Math.max(12, R * (s / 100));  // 最低 12px 半径（避免贴中心）
     var px = cx + pr * Math.cos(angle);
@@ -202,12 +218,12 @@ function buildRadarSVG(scores) {
     var lx = cx + (R + 22) * Math.cos(angle);
     var ly = cy + (R + 22) * Math.sin(angle);
     var anchor = Math.abs(Math.cos(angle)) < 0.1 ? 'middle' : (Math.cos(angle) > 0 ? 'start' : 'end');
-    labelElems += '<text x="' + lx + '" y="' + ly + '" text-anchor="' + anchor + '" font-size="11" fill="#1a3d24" font-weight="700" dominant-baseline="middle">' + DIM_ICONS[name] + ' ' + name + '</text>';
+    labelElems += '<text x="' + lx + '" y="' + ly + '" text-anchor="' + anchor + '" font-size="11" fill="#1a3d24" font-weight="700" dominant-baseline="middle">' + (dimIcons[name] || '') + ' ' + name + '</text>';
   }
 
   return '<svg class="radar-svg" viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">' +
     rings + axes +
-    '<polygon points="' + points.join(' ') + '" fill="rgba(26,61,36,.22)" stroke="#1a3d24" stroke-width="2"/>' +
+    '<polygon points="' + points.join(' ') + '" fill="' + fillColor + '" stroke="' + strokeColor + '" stroke-width="2"/>' +
     points.map(function(p) {
       var xy = p.split(',');
       return '<circle cx="' + xy[0] + '" cy="' + xy[1] + '" r="4.5" fill="#8a7040" stroke="#fff" stroke-width="1.5"/>';
@@ -230,6 +246,7 @@ function render() {
 
   var careHasData = care && care.dim_scores && typeof care.dim_scores === 'object';
 
+  // 硬技能 7 维（横向 · 客户服务时间线）
   var scores = {};
   var sources = {};
   for (var i = 0; i < DIM_ORDER.length; i++) {
@@ -247,6 +264,22 @@ function render() {
       scores[n] = examScore; sources[n] = dimKey + '考核';
     } else {
       scores[n] = FALLBACK_SCORES[n]; sources[n] = null;
+    }
+  }
+
+  // 软技能 5 维（纵向 · 贯穿所有场景）—— 双轨模型第二条腿
+  // 数据源：care.soft_dim_scores（等 care-test 有软技能题就自动有值）
+  var softScores = {};
+  var softSources = {};
+  var softHasData = care && care.soft_dim_scores && typeof care.soft_dim_scores === 'object';
+  for (var si = 0; si < SOFT_DIM_ORDER.length; si++) {
+    var sn = SOFT_DIM_ORDER[si];
+    if (softHasData && care.soft_dim_scores[sn] != null) {
+      softScores[sn] = care.soft_dim_scores[sn];
+      softSources[sn] = '测评';
+    } else {
+      softScores[sn] = FALLBACK_SOFT_SCORES[sn];
+      softSources[sn] = null;
     }
   }
 
@@ -295,14 +328,20 @@ function render() {
     '</div>';
   }
 
-  // 雷达图
-  html += '<div class="radar-box">' +
-    '<div class="r-title">我的能力雷达图</div>' +
-    '<div class="r-sub">' + (hasAnyData ? '双源合并 · 综合分 ' + total + ' · ' + grade.label : '演示数据 · 测一次看你的真实画像') + '</div>' +
-    buildRadarSVG(scores) +
-    '<div class="radar-legend">' +
-      '<span style="background:#1a3d24;color:#fff">⬤ 我的</span>' +
-      '<span style="background:#e8e4da;color:#888">⬤ 基准线 50</span>' +
+  // === 双轨雷达图（硬技能 7 维 + 软技能 5 维）===
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">' +
+    // 硬技能雷达图
+    '<div class="radar-box" style="margin-bottom:0">' +
+      '<div class="r-title">📐 专业硬技能（横向 · 7 维）</div>' +
+      '<div class="r-sub">' + (hasAnyData ? '双源合并 · 综合分 ' + total : '演示数据 · 客户服务时间线') + '</div>' +
+      buildRadarSVG(scores, '#1a3d24', 'rgba(26,61,36,.22)') +
+    '</div>' +
+    // 软技能雷达图
+    '<div class="radar-box" style="margin-bottom:0">' +
+      '<div class="r-title">💞 软技能（纵向 · 5 维）</div>' +
+      '<div class="r-sub">' + (softHasData ? '双轨模型 · 贯穿所有场景' : '即将上线 · 贯穿所有业务场景') + '</div>' +
+      buildRadarSVGSoft(softScores, '#8a7040', 'rgba(138,112,64,.22)') +
+      (!softHasData ? '<div style="font-size:11px;color:#999;margin-top:6px">📌 数据接入中，完成软技能测评后自动更新</div>' : '') +
     '</div>' +
   '</div>';
 
@@ -315,8 +354,11 @@ function render() {
       (Object.keys(examResults).length > 0 ? ' · 考核 ' + Object.keys(examResults).length + ' 维度' : '') + '</div>';
   }
 
-  // 维度表
-  html += '<div class="dim-table">';
+  // === 维度表：硬技能 + 软技能 双区块 ===
+
+  // 硬技能 7 维
+  html += '<div class="dim-table">' +
+    '<div style="font-size:13px;font-weight:700;color:#1a3d24;margin-bottom:8px">📐 专业硬技能 · 7 维排序（弱项优先）</div>';
   var sorted = DIM_ORDER.slice().sort(function(a,b){ return scores[a] - scores[b]; });
   for (var j = 0; j < sorted.length; j++) {
     var dname = sorted[j];
@@ -331,6 +373,27 @@ function render() {
       '<div class="d-bar"><div class="d-fill ' + dc + '" style="width:' + dscore + '%"></div></div>' +
       '<span class="d-score ' + dc + '">' + dscore + '</span>' +
       '<a class="d-action" href="' + action + '">' + actionLabel + ' →</a>' +
+    '</div>';
+  }
+  html += '</div>';
+
+  // 软技能 5 维
+  html += '<div class="dim-table">' +
+    '<div style="font-size:13px;font-weight:700;color:#8a7040;margin-bottom:8px">💞 软技能 · 5 维（贯穿所有业务场景）</div>';
+  var softSorted = SOFT_DIM_ORDER.slice().sort(function(a,b){ return softScores[a] - softScores[b]; });
+  for (var sj = 0; sj < softSorted.length; sj++) {
+    var sname = softSorted[sj];
+    var sscore = softScores[sname];
+    var sdc = scoreClass(sscore);
+    var ssrcLabel = softSources[sname] ? (' <span style="font-size:10px;color:#999;font-weight:normal">(' + softSources[sname] + ')</span>') : '';
+    var sActionHint = softHasData ? '去补门 →' : '即将上线';
+    var sActionHref = softHasData ? '/academy/core-courses/' : 'javascript:void(0)';
+    html += '<div class="dim-row">' +
+      '<span class="d-code" style="background:#8a7040">' + SOFT_DIM_CODES[sname] + '</span>' +
+      '<span class="d-name">' + SOFT_DIM_ICONS[sname] + ' ' + sname + ssrcLabel + '</span>' +
+      '<div class="d-bar"><div class="d-fill ' + sdc + '" style="width:' + sscore + '%"></div></div>' +
+      '<span class="d-score ' + sdc + '">' + sscore + '</span>' +
+      '<a class="d-action" href="' + sActionHref + '"' + (!softHasData ? ' style="color:#bbb;cursor:default"' : '') + '>' + sActionHint + '</a>' +
     '</div>';
   }
   html += '</div>';
