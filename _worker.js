@@ -4556,6 +4556,8 @@ export default {
         // P1: 门店智能接待新页面
         '/ai-advisor', '/ai-advisor/', '/trust-package', '/trust-package/',
         '/sales-champion', '/sales-champion/',
+        // 证据包导出（蓝图 P4 · #245）
+        '/evidence-package', '/evidence-package/',
       ]);
       const normalized = path.endsWith('/') ? path.slice(0, -1) : path;
       if (!KNOWN_ROUTES.has(path) && !KNOWN_ROUTES.has(normalized) && !KNOWN_ROUTES.has(normalized + '/')) {
