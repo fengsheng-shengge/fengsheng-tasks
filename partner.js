@@ -25,11 +25,20 @@ function submitPartner(){
   const data={t:'partner_intent',type:partnerType,name,org,role:$('pfRole').value.trim(),contact,chips,note:$('pfNote').value.trim(),ts:Date.now()};
   try{ if(navigator.sendBeacon) navigator.sendBeacon('/api/event', JSON.stringify(data)); }catch(e){}
   setTimeout(()=>{
-      $('partnerSheetBody').innerHTML = '<div class="partner-form-success"><div class="ico">✅</div><div class="t">已收到,谢谢!</div><div class="s">小豆子会在 <b>24 小时内</b>通过您填写的联系方式主动联系您。<br>合作方向:'+(chips.length?chips.join('、'):'(未选)')+'<br><br><button class="partner-form-submit" id="pfDone" style="margin-top:14px">好</button></div></div>';
+      const body=$('partnerSheetBody');
+      body.innerHTML = '<div class="partner-form-success"><div class="ico">✅</div><div class="t">已收到,谢谢!</div><div class="s"></div><br><br><button class="partner-form-submit" id="pfDone" style="margin-top:14px">好</button></div></div>';
+      const s = body.querySelector('.partner-form-success .s');
+      if(s){
+        s.textContent = '小豆子会在 24 小时内通过您填写的联系方式主动联系您。';
+        const br = document.createElement('br'); s.appendChild(br);
+        const dirText = document.createTextNode('合作方向:'); s.appendChild(dirText);
+        const dirVal = document.createElement('b');
+        dirVal.textContent = chips.length ? chips.join('、') : '(未选)';
+        s.appendChild(dirVal);
+      }
       const done=$('pfDone'); if(done) done.addEventListener('click',closePartner);
     }, 500);
 }
-// 直接绑定(partner.js 在 body 末尾,DOM 已就绪;不依赖 DOMContentLoaded 避免 async 时序问题)
 (function bindPartner(){
   const ov=$('partnerOverlay');
   if(ov) ov.addEventListener('click',e=>{ if(e.target.id==='partnerOverlay') closePartner(); });
