@@ -1433,6 +1433,12 @@ function statsCacheKey(url) {
   return url.origin + url.pathname + '?' + url.search;
 }
 
+// 所有 stats 缓存快路径都需要 CORS 头（因为没走 jsonResponse）
+const STATS_CORS_HEADERS = {
+  'Access-Control-Allow-Origin': 'https://fengsheng.tech',
+  'Vary': 'Origin',
+};
+
 async function handleStatsCached(request, env, ctx, handler) {
   const url = new URL(request.url);
   const key = statsCacheKey(url);
@@ -1466,6 +1472,7 @@ async function handleStatsCached(request, env, ctx, handler) {
     });
     return applySecurityHeaders(new Response(body, { status: 200, headers: {
       'Content-Type': 'application/json;charset=UTF-8',
+      ...STATS_CORS_HEADERS,
       'X-Stats-Cache': stale ? 'STALE' : 'BUDGET-SKIP',
       'X-D1-Budget-Used': String(budget.used),
     } }));
@@ -1474,7 +1481,7 @@ async function handleStatsCached(request, env, ctx, handler) {
   // ② isolate 内 memo
   const memo = _statsMemo.get(key);
   if (memo && Date.now() - memo.at < STATS_CACHE_TTL * 1000) {
-    const r = new Response(memo.body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', 'X-Stats-Cache': 'MEMO', 'X-D1-Budget-Used': String(budget.used) } });
+    const r = new Response(memo.body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', ...STATS_CORS_HEADERS, 'X-Stats-Cache': 'MEMO', 'X-D1-Budget-Used': String(budget.used) } });
     return applySecurityHeaders(r);
   }
 
@@ -1487,7 +1494,7 @@ async function handleStatsCached(request, env, ctx, handler) {
       if (hit) {
         const body = await hit.text();
         _statsMemo.set(key, { at: Date.now(), body });
-        return applySecurityHeaders(new Response(body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', 'X-Stats-Cache': 'HIT', 'X-D1-Budget-Used': String(budget.used) } }));
+        return applySecurityHeaders(new Response(body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', ...STATS_CORS_HEADERS, 'X-Stats-Cache': 'HIT', 'X-D1-Budget-Used': String(budget.used) } }));
       }
     } catch (e) { /* 缓存不可用则直连 D1 */ }
   }
