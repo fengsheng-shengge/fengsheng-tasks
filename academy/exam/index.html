@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>岗位考核 · 学习成长 | 风声信息咨询</title>
-<meta name="description" content="70 道岗位考核题 · 分 7 维度各 10 题 · 分数计入能力画像">
+<meta name="description" content="120 道岗位考核题 · 专业硬技能 7 维 + 软技能 5 维各 10 题 · 分数计入能力画像双轨雷达">
 <link rel="icon" href="/favicon.png" type="image/png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -34,6 +34,7 @@ a{text-decoration:none;color:inherit}
 .banner .b-btn:hover{background:#fdf9ef}
 .banner .b-btn:active{transform:scale(.97)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.grid-section-label{grid-column:1/-1;font-size:12px;font-weight:700;color:#8a7040;background:#fdf9ef;border-left:3px solid #c9a962;padding:7px 12px;border-radius:6px;letter-spacing:1px;margin-top:6px}
 .card{background:#fff;border:1px solid #e8e4da;border-radius:12px;padding:18px;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
 .card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,61,36,.1)}
 .card .e-dim{font-size:10px;font-weight:700;color:#fff;background:#1a3d24;padding:2px 8px;border-radius:4px;letter-spacing:1px;display:inline-block;margin-bottom:8px}
@@ -118,7 +119,7 @@ a{text-decoration:none;color:inherit}
 
 <div class="pg">
   <h2 class="pg-h">📝 岗位考核</h2>
-  <p class="pg-sub">7 维度 · 每维度 10 题 · 每次开考自动打乱顺序和选项 · 分数自动回写到 <a href="/academy/profile/" style="color:#1a3d24;font-weight:600">能力画像</a></p>
+  <p class="pg-sub">12 维度 · 硬技能 7 维 + 软技能 5 维 · 每维 10 题 · 每次开考自动打乱顺序和选项 · 分数自动回写到 <a href="/academy/profile/" style="color:#1a3d24;font-weight:600">能力画像</a></p>
 
   <!-- ========== 为什么要考 / 考完能干啥 / 有啥帮助 ========== -->
   <div style="background:linear-gradient(135deg,#fdf9ef,#fffbf3);border:1px solid #e8e4da;border-radius:12px;padding:14px 16px;margin:12px 0">
@@ -147,7 +148,7 @@ a{text-decoration:none;color:inherit}
       <h3 id="banner-title">🎯 选一个维度开始考核</h3>
       <p>先做能力测评找短板 · 再考对应维度针对性突破 · 分数持续回写到能力画像</p>
     </div>
-    <button class="b-btn" onclick="startFullExam()">📝 7 维度全考核</button>
+    <button class="b-btn" onclick="startFullExam()">📝 12 维度全考核</button>
   </div>
 
   <div class="grid" id="card-grid"></div>
@@ -179,7 +180,8 @@ a{text-decoration:none;color:inherit}
 //  - profile 页合并 fs_care_profile + fs_exam_results
 // ============================================================
 
-// 7 维度 × 10 题（共 70 题）
+// 双轨模型 12 维度 × 10 题（共 120 题）
+// 硬技能 7 维（横向 · 客户服务时间线）+ 软技能 5 维（纵向 · 贯穿所有场景）
 // 每题: {q:题干, a:正确答案索引, opts:[选项]}
 // 知识底座来源标注（entryType + id）
 var EXAM_DB = {
@@ -302,9 +304,95 @@ var EXAM_DB = {
       { q:'数字化时代，经纪人"不可被替代"的核心竞争力是？', opts:['会用所有 AI 工具','AI 生成 + 真人判断 + 长期关系维护','发朋友圈勤','话术背得熟'], a:1, src:'ABIL-数字化生存' },
     ],
   },
+  'SOFT-1': {
+    name: '共情能力',
+    desc: '情绪识别、倾听回应、站在客户立场理解真实处境',
+    total: 10,
+    questions: [
+      { q:'客户看完房后沉默不语，最合适的做法是？', opts:['立刻追问"您觉得怎么样"','给客户空间，轻声问"您在想价格还是户型的事？"','自顾自继续介绍','催客户表态'], a:1, src:'SCRIPT-沉默应对' },
+      { q:'客户说"首付凑不齐，可能买不成了"，情绪偏沮丧。先回应什么？', opts:['那看看便宜点的','先接住情绪："攒首付这几年确实不容易" → 再聊首付方案','讲贷款政策细节','安慰"没事，房价会跌"'], a:1, src:'ABIL-先情后理' },
+      { q:'客户带着父母看房，全程父母意见主导。你应该重点照顾谁的需求？', opts:['只跟出钱的子女聊','同时关注老人的顾虑（楼层/采光/就医），让全家都被听见','只说服父母','让客户自己协调'], a:1, src:'PROC-家庭决策共情' },
+      { q:'业主急着卖房（急需用钱），沟通时最不该做的是？', opts:['了解急售原因','利用急售心理大幅压价撮合','如实告知市场周期','给出多个出售方案'], a:1, src:'STD-急售场景伦理' },
+      { q:'客户第一次买房，反复问基础问题显得"外行"。正确态度是？', opts:['不耐烦，觉得浪费时间','把基础问题当正常，用通俗语言耐心讲','让客户先自己上网查','暗示客户别问太多'], a:1, src:'ABIL-新手客户包容' },
+      { q:'客户抱怨"上一个中介骚扰我每天打电话"，你该怎么做？', opts:['保证自己不骚扰然后照常联系','确认对方舒适的联系频率，按客户偏好的节奏跟进','完全不联系','发更多微信刷存在感'], a:1, src:'SCRIPT-边界感共情' },
+      { q:'客户说"我老公不同意，我也没办法"。这句话背后的真实处境是？', opts:['客户不想买了','家庭决策未同步，需要帮客户准备说服材料而非施压','客户没预算','在跟你砍价'], a:1, src:'ABIL-决策链洞察' },
+      { q:'看房时客户的孩子突然哭闹，客户很尴尬。最得体的反应是？', opts:['皱眉看时间','表示理解："带娃看房确实辛苦，我们慢慢看"','建议下次别带孩子','假装没听见'], a:0, src:'SCRIPT-尴尬化解' },
+      { q:'客户刚卖掉自住房（有不舍情绪）又买新房，沟通过程要？', opts:['只谈新房优点','承认旧居的意义（"住了十年肯定有感情"）再谈新起点','催促尽快签约','回避旧房话题'], a:1, src:'ABIL-换房情绪过渡' },
+      { q:'共情和"顺着客户说"的区别是？', opts:['没有区别','共情是理解并回应感受，但仍给出专业建议；顺从是讨好客户放弃立场','共情就是同意客户','顺从更专业'], a:1, src:'ABIL-共情边界' },
+    ],
+  },
+  'SOFT-2': {
+    name: '判断能力',
+    desc: '风险识别、优先级排序、复杂场景下的专业决策',
+    total: 10,
+    questions: [
+      { q:'客户看中一套明显低于市场价 20% 的房子，第一判断应该是？', opts:['赶紧劝客户下单','先查清低价原因（产权/抵押/瑕疵/急售），再评估是否推荐','直接放弃','让客户自己判断'], a:1, src:'RISK-异常低价排查' },
+      { q:'同时接待 3 组客户：A 今天想签约、B 明天带看、C 只是咨询。时间如何分配？', opts:['平均分配','按成交紧迫度与准备度排序：先 A 签约，再 B 带看准备，C 约后续时段','先伺候 C','谁态度好先服务谁'], a:1, src:'ABIL-优先级管理' },
+      { q:'业主报价明显高于市场价 15%，判断业主心态的合理动作是？', opts:['直接拒绝接单','用近期成交数据带业主看真实行情，判断是试探还是固执','答应按报价卖','私下告诉买家业主乱开价'], a:1, src:'PROC-业主定价沟通' },
+      { q:'客户征信有轻微逾期，贷款审批可能受影响。专业判断是？', opts:['隐瞒不提，先签再说','提前告知风险 → 建议先拉详版征信 → 咨询银行再进入签约','劝客户放弃','让客户自己处理'], a:1, src:'RISK-征信风险前置' },
+      { q:'两套房：A 便宜 5 万但采光差；B 贵 5 万但格局好。客户纠结时的专业做法是？', opts:['替客户拍板买 B','把两套房的长期居住体验差异讲透（转售/居住成本），帮客户按自己的权重决策','推荐便宜的','推荐贵的拿更多佣金'], a:1, src:'ABIL-方案对比判断' },
+      { q:'交易中途政策突变（如首付比例上调），买方首付差 10 万。首先做什么？', opts:['隐瞒继续走流程','第一时间告知双方 → 梳理补救路径（调整贷款方案/协商价格）→ 书面确认变更','劝买家毁约','让买卖家自己谈'], a:1, src:'CASE-政策突变应对' },
+      { q:'客户提供的联系方式打不通，但急着想约明天带看。判断与动作是？', opts:['不管，等客户再来','多渠道留痕（短信+微信）确认真实意向，避免无效带看','直接上门找','拉黑'], a:1, src:'PROC-意向真实性判断' },
+      { q:'判断"捡漏房源"可信度的核心依据是？', opts:['业主口头说急卖','产权清晰 + 价格有依据（如急售原因可验证）+ 无隐性瑕疵','中介同行都说好','图片看起来新'], a:1, src:'RISK-捡漏核验清单' },
+      { q:'客户签约当天临时说"再考虑一周"，你判断最可能的原因是？', opts:['客户故意刁难','有未解决的具体顾虑（价格/家人/对比盘），追问比施压有效','客户没钱','被同行截胡了'], a:1, src:'SCRIPT-临门犹豫归因' },
+      { q:'以下哪种情况必须立即停止推进交易？', opts:['客户犹豫','产权核验发现查封/抵押未披露','客户嫌价格高','业主临时涨价'], a:1, src:'LAW-交易终止红线' },
+    ],
+  },
+  'SOFT-3': {
+    name: '责任担当',
+    desc: '承诺边界、信息披露、出了问题不推诿敢兜底',
+    total: 10,
+    questions: [
+      { q:'客户问"这套房保证没有纠纷吧"，最负责任的回答是？', opts:['保证没问题，放心买','"产权核验结果我给您看：无查封无抵押；我不能口头保证，但每一步都有书面核验"','说大概率没事','反问客户为什么这么问'], a:1, src:'STD-承诺边界' },
+      { q:'发现房源有上次中介没披露的漏水史，正确做法是？', opts:['不说，成交要紧','如实告知买家 + 留存书面记录，哪怕可能影响成交','只口头提一句不留痕','等问题暴露再说'], a:1, src:'LAW-信息披露义务' },
+      { q:'因你记错带看时间让客户白跑一趟，应该？', opts:['怪客户没确认','第一时间道歉 + 当场重新安排 + 后续主动补偿服务','装作没发生','让同事背锅'], a:1, src:'STD-失误处理' },
+      { q:'交易过户环节因材料问题延后一周，买家催促。责任担当的表现是？', opts:['怪房管局慢','主动说明卡点在哪、补材料的新时间表，每天同步进度','不回复等结果','把责任推给买家材料'], a:1, src:'PROC-履约跟进责任' },
+      { q:'客户签约后反悔想退定金，你该？', opts:['骂客户不守信','讲清定金罚则的同时，帮客户梳理是否有合法解除情形（如合同重大误解/不可抗力）','威胁客户','直接没收'], a:1, src:'LAW-定金罚则与例外' },
+      { q:'"中介只是传话的，出了事跟我无关"这种说法？', opts:['正确','错误——居间方对自身过错（未核验/误导承诺）承担相应责任','看合同','只对小问题负责'], a:1, src:'LAW-中介责任边界' },
+      { q:'业主临时跳单（绕开你直接和买家成交），你的正当动作是？', opts:['去业主家闹','依据带看确认书与服务协议合法主张佣金，同时不干扰买卖双方','自认倒霉','报复买家'], a:1, src:'CASE-跳单维权' },
+      { q:'承诺"帮你拿到最低折扣"这类话该不该说？', opts:['该说，客户爱听','不该——超出职责范围的承诺会变成合同义务，做不到就构成违约','看客户强弱','让店长承诺'], a:1, src:'STD-话术承诺红线' },
+      { q:'客户投诉服务差到公司层面，你的态度是？', opts:['觉得客户找茬','先复盘自己环节的问题，如实说明 + 给出改进方案，不狡辩','推给公司流程','冷处理'], a:1, src:'STD-客诉处理' },
+      { q:'对交易资金安全的责任底线是？', opts:['帮客户私下转账省手续','坚决引导走资金监管，绝不经手客户购房款','偶尔代收定金没关系','让买卖双方私下处理'], a:1, src:'POL-资金监管红线' },
+    ],
+  },
+  'SOFT-4': {
+    name: '职业素养',
+    desc: '合规底线、职业形象、守时守信、持续学习',
+    total: 10,
+    questions: [
+      { q:'同行客户主动透露"另一家中介给回扣"，你的回应是？', opts:['跟进给同样回扣','明确拒绝，靠专业与服务竞争，必要时向公司报备','收下但不主动给','假装没听见'], a:1, src:'STD-商业贿赂红线' },
+      { q:'发布房源信息，以下哪种做法违规？', opts:['标注真实面积与年份','把 70 年产权写成 70 平赠送面积博眼球','如实拍摄房屋现状','说明已核验的产权状况'], a:1, src:'LAW-虚假广告' },
+      { q:'客户约上午 10 点带看，你的职业做法是？', opts:['提前 15 分钟到并确认路线/钥匙/房源状态','准时到就行','迟到 10 分钟没关系','让客户等你'], a:0, src:'PROC-带看准备清单' },
+      { q:'同事抢单（你维护的客户被同事截走），职业化处理是？', opts:['群里吵架','按公司分佣规则上报店长裁决，不私下激化矛盾','私下报复','抢回来'], a:1, src:'STD-内部协作规则' },
+      { q:'学习成长的最佳节奏是？', opts:['入职学一次就够了','每周固定学习 + 政策更新即时跟进 + 复盘每单得失','等公司培训','凭经验就够了'], a:1, src:'ABIL-持续学习' },
+      { q:'着装与仪容的职业标准是？', opts:['越个性化越好','整洁得体、适配带看场景（商务休闲为主）','随意舒适就行','必须正装西服'], a:1, src:'STD-职业形象' },
+      { q:'客户提出"帮忙做低网签价省税"，你的回应是？', opts:['照做，客户要求','明确拒绝并说明阴阳合同的法律风险，给出合法节税路径','默认同意','让客户自己找人做'], a:1, src:'LAW-阴阳合同红线' },
+      { q:'朋友圈职业形象经营，哪类内容应该少发？', opts:['成交案例与市场解读','夸大其词的"XX 房必涨"鼓吹','政策解读','服务过程记录'], a:1, src:'ABIL-个人IP内容' },
+      { q:'与客户发生意见冲突（客户坚持错误认知），职业素养的做法是？', opts:['顺着客户错下去','摆事实给依据，保留客户决定权，重要分歧书面留痕','跟客户争到赢','从此不理客户'], a:1, src:'SCRIPT-专业分歧处理' },
+      { q:'离职时对客户资源的正确处理是？', opts:['全部带走继续联系','按公司规定完整交接给接手同事，不私自拉走客户','删除所有记录','卖给同行'], a:1, src:'STD-离职交接规范' },
+    ],
+  },
+  'SOFT-5': {
+    name: '服务意识',
+    desc: '客户视角思考、主动补位、交付感与长期关系',
+    total: 10,
+    questions: [
+      { q:'"服务意识"和"销售意识"的本质区别是？', opts:['没有区别','服务意识从客户问题出发建立信任，销售意识从成交出发推进动作；前者反而带来更高成交','销售意识更高级','服务意识不考虑业绩'], a:1, src:'ABIL-服务 vs 销售' },
+      { q:'带看结束客户说"回去和家里人商量"，主动服务的动作是？', opts:['等客户联系','当天整理带看房源的对比要点 + 常见家人顾虑的应答材料发给客户','催客户尽快定','不再跟进'], a:1, src:'PROC-带看后服务包' },
+      { q:'客户买的房交房后发现小瑕疵（不影响居住），服务意识的表现是？', opts:['合同已结束与我无关','主动帮客户对接物业/开发商跟进维修，维护长期信任','让客户自己投诉','回避客户'], a:1, src:'CASE-交付后服务' },
+      { q:'客户深夜发微信咨询政策问题，合理的响应是？', opts:['第二天再回','尽快简短回应安抚（"看到了，明早给您完整方案"），不让客户悬着','不回','只发语音'], a:1, src:'SCRIPT-响应时效边界' },
+      { q:'以下哪个属于"主动补位"服务？', opts:['客户问什么答什么','客户没意识到的问题（如学位占用/户口迁出条款）主动提醒','只做分内事','多一事不如少一事'], a:1, src:'ABIL-主动补位' },
+      { q:'服务交付物的价值是？', opts:['显得专业','让客户"看得见"服务过程与专业度，把模糊感觉变成具体信任','应付公司要求','增加工作量'], a:1, src:'PROC-服务交付物' },
+      { q:'客户全程没提预算上限，服务过程中的正确做法是？', opts:['按自己的预算假设推方案','通过需求梳理自然了解预算区间，避免推荐错位浪费时间','直接问底价','只推贵的'], a:1, src:'PROC-预算沟通' },
+      { q:'老客户成交后一年内零联系，从服务意识看？', opts:['正常，没问题','失职——关键节点（入住/产证/过保）都该有关怀触点','等客户来找我','发广告就行'], a:1, src:'PROC-维护触点设计' },
+      { q:'客户明确说"不需要跟单服务"，你该？', opts:['强推服务包','尊重选择，但保留关键节点（签约/过户/交房）的必要告知','从此消失','频繁骚扰证明价值'], a:1, src:'SCRIPT-服务边界尊重' },
+      { q:'衡量服务好不好的最终标准是？', opts:['自己觉得尽力了','客户的真实感受：是否省心、是否信任、是否愿意推荐给朋友','成交金额','公司考核分'], a:1, src:'ABIL-服务标准' },
+    ],
+  },
 };
 
 var DIM_ORDER = ['DIM-1','DIM-2','DIM-3','DIM-4','DIM-5','DIM-6','DIM-7'];
+var SOFT_DIM_ORDER = ['SOFT-1','SOFT-2','SOFT-3','SOFT-4','SOFT-5'];
 
 // 考试状态
 var currentExam = null;  // { dim, idx, answers: [selected], answers: [selected], startTime }
@@ -325,7 +413,19 @@ function renderGrid() {
   var results = loadResults();
   var grid = document.getElementById('card-grid');
   grid.innerHTML = '';
-  DIM_ORDER.forEach(function(dim) {
+  var hardLabel = document.createElement('div');
+  hardLabel.className = 'grid-section-label';
+  hardLabel.textContent = '📐 专业硬技能 · 客户服务时间线（7 维 · 70 题）';
+  grid.appendChild(hardLabel);
+  DIM_ORDER.forEach(function(dim) { grid.appendChild(buildExamCard(dim, results)); });
+  var softLabel = document.createElement('div');
+  softLabel.className = 'grid-section-label';
+  softLabel.textContent = '💞 软技能 · 贯穿所有业务场景（5 维 · 50 题）';
+  grid.appendChild(softLabel);
+  SOFT_DIM_ORDER.forEach(function(dim) { grid.appendChild(buildExamCard(dim, results)); });
+}
+
+function buildExamCard(dim, results) {
     var db = EXAM_DB[dim];
     var r = results[dim];
     var done = r ? r.answers.filter(function(a){ return a != null; }).length : 0;
@@ -340,8 +440,7 @@ function renderGrid() {
       '<div class="e-desc">' + db.desc + '</div>' +
       '<div class="e-bar"><div class="e-bar-fill" style="width:' + (done/db.total*100) + '%"></div></div>' +
       '<div class="e-bar-label">' + (r ? '已考 ' + done + '/' + db.total + ' · 上次得分 ' + r.pct : '未开始 · ' + db.total + ' 题') + '</div>';
-    grid.appendChild(card);
-  });
+    return card;
 }
 
 function gradeOf(pct) {

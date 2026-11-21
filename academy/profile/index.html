@@ -274,14 +274,23 @@ function render() {
   var softHasData = care && care.soft_dim_scores && typeof care.soft_dim_scores === 'object';
   for (var si = 0; si < SOFT_DIM_ORDER.length; si++) {
     var sn = SOFT_DIM_ORDER[si];
-    if (softHasData && care.soft_dim_scores[sn] != null) {
-      softScores[sn] = care.soft_dim_scores[sn];
-      softSources[sn] = '测评';
+    var softKey = 'SOFT-' + (si + 1); // 考核页 SOFT-1..5 与画像 SOFT_DIM_ORDER 一一对应
+    var careSoft = (softHasData && care.soft_dim_scores[sn] != null) ? care.soft_dim_scores[sn] : null;
+    var examSoft = (examResults[softKey] && typeof examResults[softKey].pct === 'number') ? examResults[softKey].pct : null;
+    if (careSoft != null && examSoft != null) {
+      softScores[sn] = Math.max(careSoft, examSoft); // 与硬技能同口径：双源取高分
+      softSources[sn] = careSoft >= examSoft ? '测评' : softKey + '考核';
+    } else if (careSoft != null) {
+      softScores[sn] = careSoft; softSources[sn] = '测评';
+    } else if (examSoft != null) {
+      softScores[sn] = examSoft; softSources[sn] = softKey + '考核';
     } else {
       softScores[sn] = FALLBACK_SOFT_SCORES[sn];
       softSources[sn] = null;
     }
   }
+  // 任一来源（测评/考核）有软技能真实分即点亮软轨
+  var softHasAnyReal = Object.keys(softSources).some(function(k){ return softSources[k] != null; });
 
   var hasAnyData = careHasData || Object.keys(examResults).length > 0;
   var total = Math.round(Object.keys(scores).reduce(function(a,k){ return a + scores[k]; }, 0) / 7);
@@ -339,9 +348,9 @@ function render() {
     // 软技能雷达图
     '<div class="radar-box" style="margin-bottom:0">' +
       '<div class="r-title">💞 软技能（纵向 · 5 维）</div>' +
-      '<div class="r-sub">' + (softHasData ? '双轨模型 · 贯穿所有场景' : '即将上线 · 贯穿所有业务场景') + '</div>' +
+      '<div class="r-sub">' + (softHasAnyReal ? '双轨模型 · 贯穿所有场景' : '即将上线 · 贯穿所有业务场景') + '</div>' +
       buildRadarSVGSoft(softScores, '#8a7040', 'rgba(138,112,64,.22)') +
-      (!softHasData ? '<div style="font-size:11px;color:#999;margin-top:6px">📌 数据接入中，完成软技能测评后自动更新</div>' : '') +
+      (!softHasAnyReal ? '<div style="font-size:11px;color:#999;margin-top:6px">📌 数据接入中，完成软技能测评或 SOFT-1~5 考核后自动更新</div>' : '') +
     '</div>' +
   '</div>';
 
@@ -386,14 +395,14 @@ function render() {
     var sscore = softScores[sname];
     var sdc = scoreClass(sscore);
     var ssrcLabel = softSources[sname] ? (' <span style="font-size:10px;color:#999;font-weight:normal">(' + softSources[sname] + ')</span>') : '';
-    var sActionHint = softHasData ? '去补门 →' : '即将上线';
-    var sActionHref = softHasData ? '/academy/core-courses/' : 'javascript:void(0)';
+    var sActionHint = softHasAnyReal ? '去补门 →' : '即将上线';
+    var sActionHref = softHasAnyReal ? '/academy/core-courses/' : 'javascript:void(0)';
     html += '<div class="dim-row">' +
       '<span class="d-code" style="background:#8a7040">' + SOFT_DIM_CODES[sname] + '</span>' +
       '<span class="d-name">' + SOFT_DIM_ICONS[sname] + ' ' + sname + ssrcLabel + '</span>' +
       '<div class="d-bar"><div class="d-fill ' + sdc + '" style="width:' + sscore + '%"></div></div>' +
       '<span class="d-score ' + sdc + '">' + sscore + '</span>' +
-      '<a class="d-action" href="' + sActionHref + '"' + (!softHasData ? ' style="color:#bbb;cursor:default"' : '') + '>' + sActionHint + '</a>' +
+      '<a class="d-action" href="' + sActionHref + '"' + (!softHasAnyReal ? ' style="color:#bbb;cursor:default"' : '') + '>' + sActionHint + '</a>' +
     '</div>';
   }
   html += '</div>';
