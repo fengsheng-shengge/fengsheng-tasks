@@ -1,55 +1,60 @@
-__pycache__/
-*.pyc
-
-# Cloudflare / Wrangler
-.wrangler/
-.dev.vars
-
-# 密钥（绝不提交）
+# ========== 密钥（绝不提交）==========
+.env
+.env.*
+*.secret
 .github/secrets/
 *.pem
 *.key
-.env
+
+# ========== Cloudflare / Wrangler ==========
+.wrangler/
+.dev.vars
 .env.local
 .env.production
 
-# 备份文件
-*.bak
-*.bak_*
-*.pre-*
-
-# 日志 + 快照（绝不提交运行时产物）
+# ========== Node / 前端 ==========
+node_modules/
+dist/
+build/
 *.log
-DEPLOY_TIMESTAMP
-*.secret
-*.snapshot
+npm-debug.log*
+yarn-debug.log*
 
-# 临时 / 缓存
+# ========== Python ==========
 __pycache__/
 *.pyc
+
+# ========== 备份 ==========
+*.bak
+*.bak_*
+*.backup
+*_backup_*
+*.pre-*
+*_pre_*
+
+# ========== macOS / IDE ==========
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ========== 部署产物 ==========
+public/
+deploy_sync/
+deploy-result.json
+DEPLOY_TRIGGER.md
+CLOUDFLARE_CREDENTIALS_UPDATE.md
+
+# ========== 运行时状态 ==========
+.agent/
+.github/.last-checked-comment-id
+.github/scripts/last_check.txt
+test-result.txt
 .tmp/
 cache/
 
-# Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+# ========== 知识底座备份 ==========
+knowledge_backup_*/
 
-# 构建产物
-dist/
-build/
-
-# 系统
-.DS_Store
-Thumbs.db
-
-# Editor
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# 额外 env（.env / .env.local / .env.production 已在上方）
-.env.*.local
+# ========== 飞书本地 ==========
+_归档标记.txt
