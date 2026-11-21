@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 # ============================================================
-# 风声 · 全站巡检 + 基线快照工具 v2.0
+# 风声 · 全站巡检 + 基线快照工具 v2.1
 # 小扣子（CTO）· 2026.11.21
+#
+# v2.0 功能（首次落地）：
+#   三类基线快照 + 滚动对比 + 全站巡检 + GitHub Actions 定时运行
+# v2.1 增强：
+#   - diff 分 CRIT / INFO 两级（安全头丢失/401 变 200 = CRIT；条数微涨/P50 略升 = INFO）
+#   - exit_code 只让 CRIT 触发非零（WARN 页面/INFO 漂移不再触发 exit 1 → GitHub Actions 不再总是黄灯）
+#   - --auto-baseline：首次无快照自动建基线，不提示"异常"
+#   - 汇总输出 diff 分类统计（X CRIT / Y INFO）
 #
 # 三类基线快照（小鱼儿定版）：
 #   A. 安全头 + 401 行为 —— 防配置被改（Layer 8 是否还在、CORS 是否收敛）
@@ -284,48 +292,62 @@ def save_current_baseline(snapshot):
         json.dump(snapshot, f, ensure_ascii=False, indent=2)
 
 def diff_baselines(prev, curr):
-    """对比两次快照，返回差异列表"""
+    """对比两次快照，返回 (diffs, crit_diffs) —— CRIT 级变化单独拎出来
+    CRIT 级：安全头丢了/值异常、401 变 200（Layer 8 被卸）、schema 字段突变、性能退 ≥100%
+    INFO 级：条数±5、P50 涨 50%-100%（纯漂移，不触发 exit 非零）
+    """
     diffs = []
+    crit_diffs = []
     if not prev:
-        return diffs  # 首次无对比
+        return diffs, crit_diffs  # 首次无对比
 
-    # A. 安全头变化
+    def _add(d, is_crit):
+        if is_crit:
+            crit_diffs.append(d)
+        diffs.append(d)
+
+    # A1. 安全头变化
     for path, curr_sec in curr.get('security_headers', {}).items():
         prev_sec = prev.get('security_headers', {}).get(path, {})
         for hname, curr_val in curr_sec.get('headers', {}).items():
             prev_val = prev_sec.get('headers', {}).get(hname, '')
             if curr_val != prev_val:
-                diffs.append(f'[A] {path} 头 {hname}: {prev_val!r} → {curr_val!r}')
+                is_crit = (curr_val == 'MISSING' or prev_val == 'MISSING')
+                _add(f'[A1] {path} 头 {hname}: {prev_val!r} → {curr_val!r}', is_crit)
 
-    # A2. Layer 8 行为变化
+    # A2. Layer 8 行为变化（401 ↔ 非 401 一定是 CRIT）
     for path, curr_l8 in curr.get('layer8_401_behavior', {}).items():
         prev_l8 = prev.get('layer8_401_behavior', {}).get(path, {})
         if curr_l8.get('code') != prev_l8.get('code'):
-            diffs.append(f'[A2] {path} 无Token行为: code {prev_l8.get("code")} → {curr_l8.get("code")}')
+            _add(f'[A2] {path} 无Token行为: {prev_l8.get("code")} → {curr_l8.get("code")}', True)
 
     # B. entries schema 变化
     if not curr.get('_skipped'):
-        prev_fields = prev.get('entries_sample', {}).get('schema_fields', [])
-        curr_fields = curr.get('entries_sample', {}).get('schema_fields', [])
+        prev_fields = set(prev.get('entries_sample', {}).get('schema_fields', []))
+        curr_fields = set(curr.get('entries_sample', {}).get('schema_fields', []))
         if prev_fields and curr_fields and prev_fields != curr_fields:
-            added = set(curr_fields) - set(prev_fields)
-            removed = set(prev_fields) - set(curr_fields)
-            diffs.append(f'[B1] schema 字段漂移: +{sorted(added)} -{sorted(removed)}')
+            added = sorted(curr_fields - prev_fields)
+            removed = sorted(prev_fields - curr_fields)
+            # 字段消失是 CRIT（可能是 API 改了结构），新增是 INFO
+            is_crit = len(removed) > 0
+            _add(f'[B1] schema 字段漂移: +{added} -{removed}', is_crit)
 
         prev_total = prev.get('entries_sample', {}).get('total', 0)
         curr_total = curr.get('entries_sample', {}).get('total', 0)
-        if prev_total and abs(curr_total - prev_total) > 5:  # ±5 条容忍
-            diffs.append(f'[B2] 单域总条数: {prev_total} → {curr_total}（Δ={curr_total-prev_total:+d}）')
+        if prev_total and abs(curr_total - prev_total) > 5:
+            is_crit = abs(curr_total - prev_total) > max(prev_total * 0.1, 10)  # >10% 或 >10 条
+            _add(f'[B2] 单域总条数: {prev_total} → {curr_total}（Δ={curr_total-prev_total:+d}）', is_crit)
 
-    # C. 性能退化（P50 涨幅 > 50%）
+    # C. 性能退化
     for path, curr_perf in curr.get('three_endpoints', {}).items():
         prev_perf = prev.get('three_endpoints', {}).get(path, {})
         prev_p50 = prev_perf.get('p50_s', 0)
         curr_p50 = curr_perf.get('p50_s', 0)
         if prev_p50 and curr_p50 > prev_p50 * 1.5:
-            diffs.append(f'[C] {path} P50: {prev_p50:.4f}s → {curr_p50:.4f}s（↑{curr_p50/prev_p50-1:.0%}）')
+            is_crit = curr_p50 > prev_p50 * 2.0  # 翻倍才是 CRIT
+            _add(f'[C] {path} P50: {prev_p50:.4f}s → {curr_p50:.4f}s（↑{curr_p50/prev_p50-1:.0%}）', is_crit)
 
-    return diffs
+    return diffs, crit_diffs
 
 # ============ 输出 ============
 
@@ -455,6 +477,7 @@ def main():
     parser = argparse.ArgumentParser(description='风声全站巡检 + 基线快照')
     parser.add_argument('--json', action='store_true', help='输出 JSON 报告到 scripts/report.json')
     parser.add_argument('--baseline', action='store_true', help='只采基线快照，不做对比（首次建基线用）')
+    parser.add_argument('--auto-baseline', action='store_true', help='首次无基线时自动建，不触发 exit 非零')
     parser.add_argument('--report-only', action='store_true', help='只读上次快照，重建报告')
     args = parser.parse_args()
 
@@ -482,16 +505,19 @@ def main():
 
     # 2. 滚动对比
     prev = load_previous_baseline()
-    diffs = diff_baselines(prev, {'security_headers': a.get('security_headers', {}),
+    diffs, crit_diffs = diff_baselines(prev, {'security_headers': a.get('security_headers', {}),
                                    'layer8_401_behavior': a.get('layer8_401_behavior', {}),
                                    'entries_sample': b.get('entries_sample', {}),
                                    'three_endpoints': c.get('three_endpoints', {})})
 
-    # 3. 保存当前快照
+    # 3. 首次自动建基线（--auto-baseline：没快照就自动存，不触发 exit 非零）
+    args.auto_baseline = args.auto_baseline or (prev is None and not args.baseline)
+
+    # 4. 保存当前快照
     snapshot = {'A_security': a, 'B_entries': b, 'C_performance': c}
     save_current_baseline(snapshot)
 
-    # 4. 输出基线报告
+    # 5. 输出基线报告
     print_baseline_report(a, b, c, diffs, prev_exists=(prev is not None))
 
     # 5. v1.0 兼容巡检（页面 + SSL）
@@ -509,19 +535,26 @@ def main():
     print('=' * 70)
 
     all_anomalies = (a.get('_anomalies', []) + b.get('_anomalies', []) +
-                     c.get('_anomalies', []) + diffs)
+                     c.get('_anomalies', []))
 
     crt_count = sum(1 for p in pages if p['status'] == 'CRIT')
     warn_count = sum(1 for p in pages if p['status'] == 'WARN')
     anom_count = len(all_anomalies)
+    crit_anom_count = sum(1 for an in all_anomalies if an.startswith('[A1]') or '期望 401' in an)
 
     print(f'  🟢 页面正常: {len(pages) - crt_count - warn_count}')
     print(f'  🟡 页面警告: {warn_count}')
     print(f'  🔴 页面严重: {crt_count}')
-    print(f'  🔶 基线异常: {anom_count}（含滚动对比差异）')
+    print(f'  🔶 基线异常: {anom_count}（含 {len(crit_diffs)} 条 CRIT / {len(diffs) - len(crit_diffs)} 条 INFO 漂移）')
 
+    # exit_code 逻辑（只让 CRIT 级问题触发 exit 非零）：
+    # exit 2 = CRIT（页面 CRIT 或 baseline 有 CRIT anomalies 或 crit_diffs）
+    # exit 1 = WARN（只有页面 WARN 或只有 INFO 漂移）
+    # exit 0 = 全部正常
+    has_page_crit = crt_count > 0
+    has_baseline_crit = crit_anom_count > 0 or len(crit_diffs) > 0
     exit_code = 0
-    if crt_count > 0 or any('CRIT' in an for an in all_anomalies):
+    if has_page_crit or has_baseline_crit:
         exit_code = 2
         print('\n🔴 存在严重问题！')
     elif warn_count > 0 or anom_count > 0:
@@ -529,6 +562,9 @@ def main():
         print('\n🟡 存在警告/基线差异，建议排查')
     else:
         print('\n🟢 全部正常')
+
+    if args.auto_baseline:
+        print('ℹ️  首次自动建基线已完成（--auto-baseline）')
 
     # 7. JSON 报告（供 GitHub Actions 自动开单）
     if args.json:
