@@ -39,7 +39,6 @@ function submitPartner(){
       const done=$('pfDone'); if(done) done.addEventListener('click',closePartner);
     }, 500);
 }
-// 直接绑定(partner.js 在 body 末尾,DOM 已就绪;不依赖 DOMContentLoaded 避免 async 时序问题)
 (function bindPartner(){
   const ov=$('partnerOverlay');
   if(ov) ov.addEventListener('click',e=>{ if(e.target.id==='partnerOverlay') closePartner(); });

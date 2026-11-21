@@ -698,6 +698,75 @@ function capResponseSize(resp) {
 }
 
 // ============================================================
+//  Layer 8: API Bearer Token Auth — 防脚本/爬虫直连读数据
+//  放行条件（OR）：
+//    1. 同源浏览器请求 — Origin=https://fengsheng.tech 或 Sec-Fetch-Site=same-origin
+//       （curl/脚本不带 Origin header，浏览器跨站会被 CORS 拦）
+//    2. Bearer Token 匹配 env.API_BEARER_TOKEN
+//       （env 未配置时永不匹配，等价于只放行同源）
+//  覆盖：S3（知识读接口）+ S4（统计/支付/管理）
+//  不覆盖：S1（健康）+ S2（写操作）+ S5（交互型）
+//  2026-11-20 · 生哥 P0 安全修复（周检实测 API 裸奔）
+// ============================================================
+
+// 需要鉴权的 API 路径前缀（按具体→前缀排序，避免 startsWith 歧义）
+const AUTH_REQUIRED_API_PREFIXES = [
+  '/api/entries',          // 知识条目（含 domain/offset/limit 分页）
+  '/api/entry',            // 条目详情 + related + mini（前缀也匹配 /api/entries）
+  '/api/search',           // 搜索 v1 + v2 + suggest
+  '/api/knowledge-stats',  // 域统计
+  '/api/scene',            // 场景详情 + 场景条目（匹配 scene/detail scene/entries）
+  '/api/dictionary',       // 字典 + 导出
+  '/api/stats',            // 统计汇总（含 summary/daily/pages/events 子路由）
+  '/api/mp-stats',         // 小程序统计
+  '/api/chats',            // Chat 计数
+  '/api/internal-gate',    // 内部口令闸门
+  '/api/admin/agents',     // 管理接口
+];
+
+// 公开 API 路径（Set.has 精确匹配，永远不需要鉴权）
+const PUBLIC_API_PREFIXES = new Set([
+  // S1 健康检查
+  '/api/health', '/api/heartbeat', '/api/stats/health', '/api/ai-advisor/health',
+  // S2 写操作（已有 IP ban + 限流 + WAF + 白名单）
+  '/api/events', '/api/feedback', '/api/feedback-external',
+  '/api/partner-intent', '/api/lead', '/api/feishu/event',
+  '/api/chat', '/mentor-api/chat', '/api/ai-advisor',
+  // S5 交互型 + 登录 + 二维码
+  '/api/auth/wx-login', '/api/wx-login', '/api/wxacode',
+  '/api/decode', '/api/assess', '/api/callback',
+  '/api/daily', '/api/quality-check', '/api/rating', '/api/experience',
+  '/api/verify', '/api/ip-design',
+  // 支付回调（第三方服务端调用，无法带 Token）
+  '/mentor-api/payment',
+]);
+
+function requiresApiAuth(path) {
+  if (PUBLIC_API_PREFIXES.has(path)) return false;
+  return AUTH_REQUIRED_API_PREFIXES.some(p => path.startsWith(p));
+}
+
+function isSameOriginBrowser(request) {
+  const origin = request.headers.get('Origin') || '';
+  const secFetchSite = request.headers.get('Sec-Fetch-Site') || '';
+  return origin === 'https://fengsheng.tech' || secFetchSite === 'same-origin';
+}
+
+function checkApiAuth(request, env) {
+  // 放行条件 1：同源浏览器 fetch（自有前端页面，无感）
+  if (isSameOriginBrowser(request)) return true;
+  // 放行条件 2：Bearer Token 匹配 Cloudflare Secret
+  const auth = request.headers.get('Authorization') || '';
+  if (auth.startsWith('Bearer ')) {
+    const token = auth.slice(7).trim();
+    if (token && env.API_BEARER_TOKEN && token === env.API_BEARER_TOKEN) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// ============================================================
 //  JWT helpers
 // ============================================================
 
@@ -1364,6 +1433,12 @@ function statsCacheKey(url) {
   return url.origin + url.pathname + '?' + url.search;
 }
 
+// 所有 stats 缓存快路径都需要 CORS 头（因为没走 jsonResponse）
+const STATS_CORS_HEADERS = {
+  'Access-Control-Allow-Origin': 'https://fengsheng.tech',
+  'Vary': 'Origin',
+};
+
 async function handleStatsCached(request, env, ctx, handler) {
   const url = new URL(request.url);
   const key = statsCacheKey(url);
@@ -1395,18 +1470,19 @@ async function handleStatsCached(request, env, ctx, handler) {
       budget_reset_at: 'next UTC midnight',
       note: '今日 D1 行读取预算已用尽，本接口暂停查询以保住写入链路（数据明天自动恢复）',
     });
-    return new Response(body, { status: 200, headers: {
+    return applySecurityHeaders(new Response(body, { status: 200, headers: {
       'Content-Type': 'application/json;charset=UTF-8',
+      ...STATS_CORS_HEADERS,
       'X-Stats-Cache': stale ? 'STALE' : 'BUDGET-SKIP',
       'X-D1-Budget-Used': String(budget.used),
-    } });
+    } }));
   }
 
   // ② isolate 内 memo
   const memo = _statsMemo.get(key);
   if (memo && Date.now() - memo.at < STATS_CACHE_TTL * 1000) {
-    const r = new Response(memo.body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', 'X-Stats-Cache': 'MEMO', 'X-D1-Budget-Used': String(budget.used) } });
-    return r;
+    const r = new Response(memo.body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', ...STATS_CORS_HEADERS, 'X-Stats-Cache': 'MEMO', 'X-D1-Budget-Used': String(budget.used) } });
+    return applySecurityHeaders(r);
   }
 
   // ③ Cloudflare 共享缓存
@@ -1418,7 +1494,7 @@ async function handleStatsCached(request, env, ctx, handler) {
       if (hit) {
         const body = await hit.text();
         _statsMemo.set(key, { at: Date.now(), body });
-        return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', 'X-Stats-Cache': 'HIT', 'X-D1-Budget-Used': String(budget.used) } });
+        return applySecurityHeaders(new Response(body, { status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', ...STATS_CORS_HEADERS, 'X-Stats-Cache': 'HIT', 'X-D1-Budget-Used': String(budget.used) } }));
       }
     } catch (e) { /* 缓存不可用则直连 D1 */ }
   }
@@ -4114,6 +4190,18 @@ export default {
           'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         },
       });
+    }
+
+    // Layer 8: API Bearer Token Auth（S3/S4 数据接口防脚本直读）
+    // OPTIONS preflight 已在上方 return，不会走到这里
+    if (path.startsWith('/api/') || path.startsWith('/mentor-api/')) {
+      if (requiresApiAuth(path) && !checkApiAuth(request, env)) {
+        return jsonResponse(
+          { error: 'unauthorized', hint: '请携带有效的 API Token 或从站内页面访问' },
+          401,
+          { 'WWW-Authenticate': 'Bearer realm="fengsheng-api"' }
+        );
+      }
     }
 
     // Orphaned pages redirect

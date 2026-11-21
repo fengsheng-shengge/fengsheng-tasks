@@ -176,7 +176,7 @@ textarea#clientText::placeholder{color:var(--ink-3)}
 <body>
 
 <nav class="fs-top-nav">
-  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声信息咨询</span></a>
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声</span></a>
   <div class="fs-top-links">
     <a href="/">首页</a>
     <a href="/workspace/">工作台</a>
@@ -491,6 +491,28 @@ async function fetchRealEvidenceForDecoder(keyword){
     }
     $body.innerHTML = html;
   } catch(err) {
+    // 降级：本地 fallback（静态站/pages.dev 没有 Worker）
+    if (window.LocalFallback) {
+      try {
+        var fbData = await LocalFallback.searchV2(keyword, { pageSize: 2 });
+        var fbResults = (fbData.results || []).slice(0, 2);
+        if (fbResults.length > 0) {
+          const adapter = window.EvidenceAdapter;
+          const ev = window.EvidenceLink;
+          let fbHtml = '';
+          fbResults.forEach(function(r){
+            try {
+              const adapted = adapter.adaptEntry(r);
+              const exp = adapter.assessExpiry(adapted);
+              if (exp.status !== 'soft_expired' && exp.status !== 'hard_blocked') {
+                fbHtml += '<div style="margin-bottom:10px">' + ev.render(adapted, { compact: true, max: 2, showCaveat: false }) + '</div>';
+              }
+            } catch(e) {}
+          });
+          if (fbHtml) { $body.innerHTML = fbHtml + '<div style="font-size:10px;color:#bbb;margin-top:6px">📌 本地 fallback 结果</div>'; return; }
+        }
+      } catch(e2) {}
+    }
     console.warn('[decoder] 实时证据拉取失败:', err);
     $body.innerHTML = '<div style="font-size:11px;color:#888">实时证据暂时连不上 · 跳转上方链接查全库</div>';
   }
@@ -603,5 +625,7 @@ try{ if(navigator.sendBeacon) navigator.sendBeacon('/api/event', JSON.stringify(
 <!-- EvidenceAdapter + EvidenceLink（蓝图 C1 深化：查证区实时证据内联） -->
 <script src="/lib/evidence/data-adapter.js" defer></script>
 <script src="/lib/evidence/evidence-link.js" defer></script>
+<!-- 本地 fallback：Worker API 不可用时降级到 entries.json -->
+<script src="/lib/evidence/local-fallback.js" defer></script>
 </body>
 </html>

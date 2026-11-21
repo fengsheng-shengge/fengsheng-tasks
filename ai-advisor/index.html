@@ -142,7 +142,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <body>
 
 <nav class="fs-top-nav">
-  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声信息咨询</span></a>
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声</span></a>
   <div class="fs-top-links">
     <a href="/">首页</a>
     <a href="/workspace/">工作台</a>
@@ -364,23 +364,48 @@ function processAI(text){
   });
 }
 
-// 蓝图 P4：异步 fetch 知识底座真实条目
+// 蓝图 P4：异步 fetch 知识底座真实条目（先试 Worker API，fallback 本地 entries.json）
 async function fetchRealEntries(userText, match){
-  // 用用户文本 + QMAP 关键词做查询
   var query = userText.trim();
   var keyMatch = Object.keys(QMAP).find(function(k){ return query.toLowerCase().indexOf(k.toLowerCase()) >= 0; });
   var searchQuery = query || keyMatch || match.answer.slice(0,10);
 
-  var resp = await fetch('/api/search/v2?q=' + encodeURIComponent(searchQuery));
-  var data = await resp.json();
-  var results = (data.results || []).slice(0, 5);  // 最多 5 条
+  var results = [];
+  var triedFallback = false;
 
-  // EvidenceAdapter 适配每条 + 过期过滤（蓝图 P4 · 自动阻断外发）
+  // 主路径：Worker /api/search/v2（线上 fengsheng.tech 正常，本地 pages.dev/localhost 可能 404）
+  try {
+    var resp = await fetch('/api/search/v2?q=' + encodeURIComponent(searchQuery));
+    if (resp.ok) {
+      var data = await resp.json();
+      results = (data.results || []).slice(0, 5);
+    } else {
+      throw new Error('API ' + resp.status);
+    }
+  } catch(e) {
+    // 降级：本地搜索 data/entries.json（静态站 / pages.dev / localhost）
+    triedFallback = true;
+    try {
+      var localResp = await fetch('/data/entries.json?t=' + Date.now());
+      if (localResp.ok) {
+        var all = await localResp.json();
+        // 在本地做关键字匹配：name / summary / domain 包含搜索词
+        var q = searchQuery.toLowerCase();
+        results = all.filter(function(e) {
+          var hay = [e.name, e.summary, e.domain, e.entryType, e.tags].filter(Boolean).join(' ').toLowerCase();
+          return q.split(/[\s，,。、]+/).some(function(kw){ return hay.indexOf(kw) >= 0 && kw.length > 0; });
+        }).slice(0, 5);
+      }
+    } catch(e2) {
+      console.warn('[ai-advisor] 本地 entries.json 也拉不到', e2);
+    }
+  }
+
+  // EvidenceAdapter 适配 + 过期过滤
   var adapter = window.EvidenceAdapter;
   var adapted = results.map(function(r){
     try { return adapter.adaptEntry(r); } catch(e) { return r; }
   });
-  // 过滤掉 soft_expired + hard_blocked（内部预览降级则不过滤）
   return adapted.filter(function(e){
     try {
       var exp = adapter.assessExpiry(e);
@@ -591,7 +616,7 @@ const STAGE_SCRIPTS = {
   market: {
     icon: '🔍',
     title: '了解市场',
-    desc: '模拟客户现在「挑花眼」，想对比又怕被忽悠。你是经纪人，给真实数据。',
+    desc: '模拟客户现在「挑花眼」，想对比又怕被误导。你是经纪人，给真实数据。',
     practiceQs: [
       '我想等房价跌了再买，你觉得呢？',
       '帮我对比一下大西洋新城和对面的季景沁园',

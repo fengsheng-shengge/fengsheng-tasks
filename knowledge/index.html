@@ -367,7 +367,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
 <body>
 
 <nav class="fs-top-nav">
-  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声信息咨询</span></a>
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声</span></a>
   <div class="fs-top-links">
     <a href="/">首页</a>
     <a href="/workspace/">工作台</a>
@@ -989,9 +989,17 @@ function getDomainDesc(domain){ return ''; }
 async function loadEntriesData(){
   try{
     // Load manifest only (fast, no need for full entries)
-    const resp=await fetch('/api/knowledge-stats');
-    if(!resp.ok) return;
-    const data=await resp.json();
+    var data;
+    try {
+      const resp=await fetch('/api/knowledge-stats');
+      if(!resp.ok) throw new Error('HTTP ' + resp.status);
+      data = await resp.json();
+    } catch(e) {
+      // 降级：本地 fallback（静态站/pages.dev 没有 Worker）
+      if (window.LocalFallback) data = await LocalFallback.getStats();
+      else throw e;
+    }
+    if (!data) return;
 
 
     // 板块计数：把 domains 按 ALL_BLOCKS 归类
@@ -1598,5 +1606,8 @@ loadCityArch();     // 北京样板城市知识架构
   <div><a href="https://beian.miit.gov.cn" target="_blank" rel="noopener" style="color:#8a9a90;text-decoration:none;">京ICP备2026044043号-2</a></div>
   <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802051263" rel="noreferrer" target="_blank" style="color:#8a9a90;text-decoration:none;"><img src="/assets/beian/beian-icon.png" alt="" style="width:14px;height:14px;vertical-align:-2px;margin-right:3px;">京公网安备11010802051263号</a>
 </footer>
+
+<!-- 本地 fallback：Worker API 不可用时降级到 entries.json -->
+<script src="/lib/evidence/local-fallback.js" defer></script>
 </body>
 </html>

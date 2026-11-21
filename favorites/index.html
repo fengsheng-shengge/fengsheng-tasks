@@ -105,7 +105,7 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
 <body>
 
 <nav class="fs-top-nav">
-  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声信息咨询</span></a>
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声</span></a>
   <div class="fs-top-links">
     <a href="/">首页</a>
     <a href="/workspace/">工作台</a>
@@ -205,8 +205,12 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
       var batch = ids.slice(i, i + batchSize);
       var promises = batch.map(function(id) {
         return fetch('/api/entry?id=' + encodeURIComponent(id))
-          .then(function(r) { return r.ok ? r.json() : null; })
-          .catch(function() { return null; });
+          .then(function(r) { if (r.ok) return r.json(); throw new Error('fail'); })
+          .catch(function() {
+            // 降级：本地 fallback
+            if (window.LocalFallback) return LocalFallback.getEntry(id);
+            return null;
+          });
       });
       var batchResults = await Promise.all(promises);
       results = results.concat(batchResults.filter(Boolean));
@@ -333,5 +337,8 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
   <div><a href="https://beian.miit.gov.cn" target="_blank" rel="noopener" style="color:#8a9a90;text-decoration:none;">京ICP备2026044043号-2</a></div>
   <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802051263" rel="noreferrer" target="_blank" style="color:#8a9a90;text-decoration:none;"><img src="/assets/beian/beian-icon.png" alt="" style="width:14px;height:14px;vertical-align:-2px;margin-right:3px;">京公网安备11010802051263号</a>
 </footer>
+
+<!-- 本地 fallback：Worker API 不可用时降级到 entries.json -->
+<script src="/lib/evidence/local-fallback.js" defer></script>
 </body>
 </html>

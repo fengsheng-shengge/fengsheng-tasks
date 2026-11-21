@@ -98,7 +98,7 @@ a{text-decoration:none;color:inherit}
 <body>
 
 <nav class="fs-top-nav">
-  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声信息咨询</span></a>
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声</span></a>
   <div class="fs-top-links">
     <a href="/">首页</a><a href="/workspace/">工作台</a><a href="/knowledge/">知识底座</a>
     <a href="/curation/">策展引擎</a><a href="/decoder/">话术解码</a>
@@ -118,11 +118,33 @@ a{text-decoration:none;color:inherit}
 
 <div class="pg">
   <h2 class="pg-h">📝 岗位考核</h2>
-  <p class="pg-sub">7 维度 · 每维度 10 题 · 分数自动回写到 <a href="/academy/profile/" style="color:#1a3d24;font-weight:600">能力画像</a></p>
+  <p class="pg-sub">7 维度 · 每维度 10 题 · 每次开考自动打乱顺序和选项 · 分数自动回写到 <a href="/academy/profile/" style="color:#1a3d24;font-weight:600">能力画像</a></p>
+
+  <!-- ========== 为什么要考 / 考完能干啥 / 有啥帮助 ========== -->
+  <div style="background:linear-gradient(135deg,#fdf9ef,#fffbf3);border:1px solid #e8e4da;border-radius:12px;padding:14px 16px;margin:12px 0">
+    <div style="font-size:12px;color:#8a7040;font-weight:700;margin-bottom:10px;letter-spacing:1px">💡 为什么要花 5 分钟考这 10 题</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px;font-size:13px;color:#555">
+        <span style="color:#2d5a3d;font-weight:700;flex-shrink:0">① 考完立刻看到</span>
+        <span>分数 + 等级（A/B/C/D）· 答错的每道题 → 正确答案 + 知识条目来源 · 支持一键导出错题 JSON / CSV</span>
+      </div>
+      <div style="display:flex;gap:8px;font-size:13px;color:#555">
+        <span style="color:#2d5a3d;font-weight:700;flex-shrink:0">② 直接帮到你的</span>
+        <span>和 care-test 测评双源合并取最高分写回能力画像 · 弱项自动标记 · 补短板课程精准推荐</span>
+      </div>
+      <div style="display:flex;gap:8px;font-size:13px;color:#555">
+        <span style="color:#2d5a3d;font-weight:700;flex-shrink:0">③ 和能力测评的区别</span>
+        <span>测评是"全量扫描"（35 题覆盖 7 维）· 考核是"单点突破"（每维度深挖 10 道专业题 · 更精准）</span>
+      </div>
+    </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px dashed #e8e4da;font-size:11px;color:#999">
+      🎲 每次开考题目和选项随机打乱 · 重测永远是新卷 · 不怕背答案
+    </div>
+  </div>
 
   <div class="banner">
     <div class="b-left">
-      <h3 id="banner-title">🎯 选择一个维度开始考核</h3>
+      <h3 id="banner-title">🎯 选一个维度开始考核</h3>
       <p>先做能力测评找短板 · 再考对应维度针对性突破 · 分数持续回写到能力画像</p>
     </div>
     <button class="b-btn" onclick="startFullExam()">📝 7 维度全考核</button>
@@ -188,7 +210,7 @@ var EXAM_DB = {
       { q:'"您买房最担心的是什么？"这类问题属于？', opts:['开放式问题','封闭式问题','引导性问题','反套路问题'], a:0, src:'PROC-需求挖掘五问' },
       { q:'以下哪个是"反套路提问"？', opts:['您要几居室？','之前看过哪些小区？为什么不考虑了？','预算多少？','什么时候要？'], a:1, src:'SCRIPT-反套路话术' },
       { q:'客户反复问税费 → 隐性需求可能是？', opts:['预算紧张','担心产权风险','想做低首付','以上都有可能'], a:3, src:'PROC-关键词反推需求' },
-      { q:'需求洞察的核心目标是？', opts:['尽快逼单','用最少的问题拿到最准的画像','展示专业知识','建立个人信任'], a:1, src:'ABIL-需求洞察方法论' },
+      { q:'需求洞察的核心目标是？', opts:['尽快促单','用最少的问题拿到最准的画像','展示专业知识','建立个人信任'], a:1, src:'ABIL-需求洞察方法论' },
       { q:'客户说"帮我看看两居室，预算 400 万"——这句话里可能缺失的关键信息是？', opts:['预算上限','区域偏好','购房动机','以上都可能'], a:3, src:'PROC-补漏提问' },
       { q:'"带爸妈看房，他们喜欢安静" → 隐性需求是？', opts:['低楼层','低噪音小区','电梯房','大面积'], a:1, src:'PROC-语境解读' },
       { q:'需求画像表中，"硬性条件"和"弹性偏好"的区别是？', opts:['重要 vs 不重要','必须满足 vs 可以妥协','优先 vs 次要','现在要 vs 以后要'], a:1, src:'PROC-需求分层方法论' },
@@ -220,7 +242,7 @@ var EXAM_DB = {
       { q:'首次带看的最佳路线设计逻辑是？', opts:['按价格从低到高','先看一般 → 再看好 → 最后看最合适（锚定效应）','直接看最好的','随机安排'], a:1, src:'PROC-带看路线设计' },
       { q:'客户说"这套房太贵了"，最佳回应是？', opts:['不贵啊，这个价很合理','对比周边 3 套同品质房源的成交均价','那我帮您找更便宜的','跟业主砍砍看'], a:1, src:'SCRIPT-价格异议处理' },
       { q:'谈判桌上，谁先开口报价更有利？', opts:['我方先报','等客户先出预期','同时报','不重要'], a:1, src:'ABIL-谈判策略' },
-      { q:'客户犹豫"再想想"，最佳推进是？', opts:['好的您慢慢想','给您 3 天专属锁定（业主等回复），同时附上这套房的 3 个涨价/被抢信号','直接逼单','介绍另一套房'], a:1, src:'SCRIPT-犹豫推进话术' },
+      { q:'客户犹豫"再想想"，最佳推进是？', opts:['好的您慢慢想','给您 3 天专属锁定（业主等回复），同时附上这套房的 3 个涨价/被抢信号','直接促单','介绍另一套房'], a:1, src:'SCRIPT-犹豫推进话术' },
       { q:'议价策略中，"挤牙膏"法指的是？', opts:['每次让一点点价','一次让到底','先报高价再让','不让价只送服务'], a:0, src:'ABIL-议价方法论' },
       { q:'带看中最忌讳的是？', opts:['介绍房屋优点','主动提房屋缺点','代替客户做决定','让客户自己看'], a:2, src:'PROC-带看纪律' },
       { q:'"这套房有什么缺点？"客户问这个的潜台词是？', opts:['真的想知道缺点','在找压价理由','不想买了','测试经纪人是否诚实'], a:3, src:'SCRIPT-诚实度话术' },
@@ -333,7 +355,24 @@ function gradeOf(pct) {
 
 function startExam(dim) {
   var db = EXAM_DB[dim];
-  currentExam = { dim: dim, idx: 0, answers: new Array(db.total).fill(null), review: null };
+  // 每次开考：题目整体顺序 shuffle + 每题选项顺序 shuffle
+  var shuffledQs = db.questions.slice();
+  for (var i = shuffledQs.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = shuffledQs[i]; shuffledQs[i] = shuffledQs[j]; shuffledQs[j] = t;
+  }
+  shuffledQs = shuffledQs.map(function(q){
+    var opts = q.opts.slice();
+    var correctText = opts[q.a];  // 记住正确答案的"文本"
+    for (var k = opts.length - 1; k > 0; k--) {
+      var jj = Math.floor(Math.random() * (k + 1));
+      var tt = opts[k]; opts[k] = opts[jj]; opts[jj] = tt;
+    }
+    var newA = opts.indexOf(correctText);  // 正确答案新索引
+    return { q: q.q, opts: opts, a: newA, src: q.src };
+  });
+  // 存入当前考试 session（原 db.questions 不变，重开考重新 shuffle）
+  currentExam = { dim: dim, idx: 0, answers: new Array(shuffledQs.length).fill(null), review: null, _qs: shuffledQs, _total: shuffledQs.length };
   document.getElementById('exam-overlay').classList.add('show');
   document.getElementById('em-title').textContent = dim + ' · ' + db.name + ' · 岗位考核';
   reviewMode = false;
@@ -353,21 +392,22 @@ function startFullExam() {
 
 function renderQuestion() {
   if (!currentExam) return;
-  var db = EXAM_DB[currentExam.dim];
   var idx = currentExam.idx;
+  var total = currentExam._total;
+  var qs = currentExam._qs;
 
   // 结果页
-  if (idx >= db.total) {
+  if (idx >= total) {
     renderResult();
     return;
   }
 
-  var q = db.questions[idx];
+  var q = qs[idx];
   var answered = currentExam.answers[idx] != null;
 
   // 进度
-  document.getElementById('em-progress-label').textContent = (idx + 1) + ' / ' + db.total;
-  document.getElementById('em-fill').style.width = ((idx) / db.total * 100) + '%';
+  document.getElementById('em-progress-label').textContent = (idx + 1) + ' / ' + total;
+  document.getElementById('em-fill').style.width = ((idx) / total * 100) + '%';
 
   // 题干
   var letters = ['A','B','C','D'];
@@ -393,7 +433,7 @@ function renderQuestion() {
   // 底部按钮
   var foot = document.getElementById('em-foot');
   if (answered && !currentExam.review) {
-    foot.innerHTML = idx === db.total - 1
+    foot.innerHTML = idx === total - 1
       ? '<button class="em-btn em-btn-primary" onclick="submitExam()">提交 →</button>'
       : '<button class="em-btn em-btn-primary" onclick="nextQuestion()">下一题 →</button>';
   } else if (!answered) {
@@ -412,8 +452,7 @@ function selectOption(i) {
   document.querySelector('.em-option[data-idx="' + i + '"]').classList.add('selected');
   // 启用下一题
   var foot = document.getElementById('em-foot');
-  var db = EXAM_DB[currentExam.dim];
-  foot.innerHTML = idx === db.total - 1
+  foot.innerHTML = idx === currentExam._total - 1
     ? '<button class="em-btn em-btn-primary" onclick="submitExam()">提交 →</button>'
     : '<button class="em-btn em-btn-primary" onclick="nextQuestion()">下一题 →</button>';
 }
@@ -427,27 +466,28 @@ function nextQuestion() {
 
 function submitExam() {
   if (!currentExam) return;
-  var db = EXAM_DB[currentExam.dim];
+  var total = currentExam._total;
+  var qs = currentExam._qs;
   // 算分
   var score = 0;
   var wrongs = [];
   var rights = [];
-  for (var i = 0; i < db.total; i++) {
-    if (currentExam.answers[i] === db.questions[i].a) { score++; rights.push(i); }
+  for (var i = 0; i < total; i++) {
+    if (currentExam.answers[i] === qs[i].a) { score++; rights.push(i); }
     else wrongs.push(i);
   }
-  var pct = Math.round(score / db.total * 100);
+  var pct = Math.round(score / total * 100);
   var grade = gradeOf(pct);
 
   // 存 localStorage
-  saveResults(currentExam.dim, score, db.total, currentExam.answers);
+  saveResults(currentExam.dim, score, total, currentExam.answers);
 
   // 结果渲染
   var reviewHtml = '';
   if (wrongs.length > 0) {
     reviewHtml = '<div class="em-review"><div style="font-weight:600;color:#1a3d24;margin-bottom:8px">❌ 错题回顾（' + wrongs.length + ' 题）</div>';
     wrongs.forEach(function(wi) {
-      var q = db.questions[wi];
+      var q = qs[wi];
       var letters = ['A','B','C','D'];
       reviewHtml += '<div class="em-review-item wrong"><div class="ri-icon">✗</div><div>' + (wi+1) + '. ' + q.q + '<br><span style="color:#c25636">你的答案: ' + letters[currentExam.answers[wi]] + '. ' + q.opts[currentExam.answers[wi]] + '</span> · <span style="color:#2d5a3d">正确: ' + letters[q.a] + '. ' + q.opts[q.a] + '</span></div></div>';
     });
@@ -471,6 +511,9 @@ function submitExam() {
     '</div>' + reviewHtml;
 
   document.getElementById('em-foot').innerHTML =
+    '<button onclick="exportWrong(\'json\')" class="em-btn em-btn-secondary" style="border:1px solid #e8e4da;background:#fff;color:#1a3d24">📥 导出错题 JSON</button>' +
+    '<button onclick="exportWrong(\'csv\')" class="em-btn em-btn-secondary" style="border:1px solid #e8e4da;background:#fff;color:#1a3d24">📥 导出错题 CSV</button>' +
+    '<a class="em-btn em-btn-secondary" href="/academy/core-courses/learn/?id=' + currentExam.dim.split('-')[1] + '" style="text-decoration:none;display:inline-block">📖 回去学这门课</a>' +
     '<button class="em-btn em-btn-secondary" onclick="retakeExam()">🔄 重考</button>' +
     '<button class="em-btn em-btn-primary" onclick="closeExam()">完成 →</button>';
 }
@@ -480,8 +523,64 @@ function retakeExam() {
   startExam(currentExam.dim);
 }
 
+// ========== 错题导出 ==========
+function exportWrong(format) {
+  if (!currentExam) return;
+  var db = EXAM_DB[currentExam.dim];
+  var letters = ['A','B','C','D'];
+  var wrongs = [];
+  for (var i = 0; i < db.total; i++) {
+    if (currentExam.answers[i] !== db.questions[i].a) {
+      var q = db.questions[i];
+      wrongs.push({
+        dim: currentExam.dim,
+        dimName: db.name,
+        idx: i + 1,
+        question: q.q,
+        yourAnswer: letters[currentExam.answers[i]] + '. ' + q.opts[currentExam.answers[i]],
+        correctAnswer: letters[q.a] + '. ' + q.opts[q.a],
+        explanation: q.exp || '',
+        timestamp: new Date().toISOString()
+      });
+    }
+  }
+  if (wrongs.length === 0) { alert('全对了！没有错题可导出 ✅'); return; }
+
+  var content, mime, ext;
+  if (format === 'json') {
+    content = JSON.stringify({ exportedAt: new Date().toISOString(), dim: currentExam.dim, wrongs: wrongs }, null, 2);
+    mime = 'application/json'; ext = 'json';
+  } else {
+    var rows = [['维度','题号','题目','你的答案','正确答案','解析']];
+    wrongs.forEach(function(w) {
+      rows.push([w.dim + ' ' + w.dimName, w.idx, w.question, w.yourAnswer, w.correctAnswer, w.explanation]);
+    });
+    var csv = rows.map(function(r) {
+      return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(',');
+    }).join('\n');
+    content = '\uFEFF' + csv; // BOM 让 Excel 认 UTF-8
+    mime = 'text/csv'; ext = 'csv';
+  }
+
+  var blob = new Blob([content], { type: mime });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'exam-' + currentExam.dim + '-wrong-' + new Date().toISOString().slice(0,10) + '.' + ext;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // ========== 初始渲染 ==========
 renderGrid();
+
+// 支持 ?dim=DIM-x 直接进入对应维度考核（核心课跳转过来的）
+(function() {
+  var m = location.search.match(/[?&]dim=(DIM-\d+)/);
+  if (m && EXAM_DB[m[1]]) {
+    setTimeout(function() { startExam(m[1]); }, 300);
+  }
+})();
 </script>
 </body>
 </html>

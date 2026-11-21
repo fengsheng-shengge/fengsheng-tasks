@@ -1,57 +1,28 @@
 # ============================================================
 #  robots.txt — 风声 fengsheng.tech
-#  Last updated: 2026-07-20
+#  Last updated: 2026-11-20
+#  原则：不暴露任何内部目录名 · 靠 _headers 的 X-Robots-Tag 精细控制
 # ============================================================
-#  合法搜索引擎（Google/Bing）可抓取公开页面
-#  AI 爬虫 / 商业爬虫 / 恶意爬虫 — 全部禁止
+#  合法搜索引擎：允许爬公开页面（/_headers 已对敏感路径加 noindex）
 # ============================================================
 
 User-agent: Googlebot
 Allow: /
-Disallow: /dashboard/
-Disallow: /agent-assessment/
-Disallow: /management/
-Disallow: /okr/
-Disallow: /api/
-Disallow: /data/
-Disallow: /docs/
-Disallow: /风声管理/
-Disallow: /工单/
-Disallow: /知识底座生产/
-Disallow: /小马丫交接区/
-Disallow: /ralph_memory/
-Disallow: /org-rules/
-Disallow: /outputs/
-Disallow: /prototype/
-Disallow: /migrations/
-Disallow: /ops/
-Disallow: /fs-mini-program/
-Disallow: /*.md
 
 User-agent: Bingbot
 Allow: /
-Disallow: /dashboard/
-Disallow: /agent-assessment/
-Disallow: /management/
-Disallow: /okr/
-Disallow: /api/
-Disallow: /data/
-Disallow: /docs/
-Disallow: /风声管理/
-Disallow: /工单/
-Disallow: /知识底座生产/
-Disallow: /小马丫交接区/
-Disallow: /ralph_memory/
-Disallow: /org-rules/
-Disallow: /outputs/
-Disallow: /prototype/
-Disallow: /migrations/
-Disallow: /ops/
-Disallow: /fs-mini-program/
-Disallow: /*.md
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Sogou
+Allow: /
+
+User-agent: 360Spider
+Allow: /
 
 # ============================================================
-#  AI 爬虫 — 全部禁止
+#  AI 爬虫 — 全部禁止（AI 训练不白嫖我们的内容）
 # ============================================================
 User-agent: GPTBot
 Disallow: /
@@ -77,16 +48,7 @@ Disallow: /
 User-agent: OAI-SearchBot
 Disallow: /
 
-User-agent: Diffbot
-Disallow: /
-
 User-agent: Amazonbot
-Disallow: /
-
-User-agent: Applebot
-Disallow: /
-
-User-agent: Applebot-Extended
 Disallow: /
 
 User-agent: Bytespider
@@ -122,53 +84,17 @@ Disallow: /
 User-agent: DataForSeoBot
 Disallow: /
 
-User-agent: SeekportBot
-Disallow: /
-
 User-agent: Screaming Frog
 Disallow: /
 
 User-agent: Sitebulb
 Disallow: /
 
-User-agent: DeepCrawl
-Disallow: /
-
-User-agent: OnCrawl
-Disallow: /
-
 User-agent: ZoominfoBot
 Disallow: /
 
-User-agent: Clickagy
-Disallow: /
-
-User-agent: ImagesiftBot
-Disallow: /
-
 # ============================================================
-#  国内爬虫 — 禁止
-# ============================================================
-User-agent: Baiduspider
-Disallow: /
-
-User-agent: Sogou
-Disallow: /
-
-User-agent: 360Spider
-Disallow: /
-
-User-agent: HaosouSpider
-Disallow: /
-
-User-agent: YoudaoBot
-Disallow: /
-
-User-agent: YisouSpider
-Disallow: /
-
-# ============================================================
-#  社交媒体爬虫 — 禁止
+#  社交媒体爬虫 — 禁止抓取元数据
 # ============================================================
 User-agent: facebookexternalhit
 Disallow: /
@@ -176,36 +102,16 @@ Disallow: /
 User-agent: Twitterbot
 Disallow: /
 
+User-agent: Applebot
+Disallow: /
+
 # ============================================================
-#  默认策略 — 所有爬虫禁止抓取后台/API
+#  默认：允许所有爬虫爬公开路径
+#  内部/敏感路径靠 _headers 的 X-Robots-Tag: noindex 精细拦截
+#  ⚠️ 绝对不在 robots.txt 里列内部目录名（防止探测脚本反向枚举）
 # ============================================================
 User-agent: *
-Disallow: /dashboard/
-Disallow: /agent-assessment/
-Disallow: /management/
-Disallow: /okr/
-Disallow: /api/
-Disallow: /mentor-api/
-Disallow: /admin/
-Disallow: /hidden-link
-Disallow: /secret-path
-Disallow: /backend
-Disallow: /cms
-Disallow: /wp-admin
-Disallow: /data/
-Disallow: /docs/
-Disallow: /风声管理/
-Disallow: /工单/
-Disallow: /知识底座生产/
-Disallow: /小马丫交接区/
-Disallow: /ralph_memory/
-Disallow: /org-rules/
-Disallow: /outputs/
-Disallow: /prototype/
-Disallow: /migrations/
-Disallow: /ops/
-Disallow: /fs-mini-program/
-Disallow: /*.md
+Allow: /
 
 Sitemap: https://fengsheng.tech/sitemap.xml
 
