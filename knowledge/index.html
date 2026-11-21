@@ -882,9 +882,9 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
         </div>
       </div>
       <div class="modal-cta">
-        <button class="modal-cta-btn" onclick="closeEntry()">📚 看完整词条</button>
-        <button class="modal-cta-btn secondary" onclick="closeEntry()">🤖 唤起助手副驾</button>
-        <button class="modal-cta-btn secondary" onclick="closeEntry()">📤 分享给客户</button>
+        <button class="modal-cta-btn" onclick="viewFullEntry()">📚 看完整词条</button>
+        <button class="modal-cta-btn secondary" onclick="openCopilot()">🤖 唤起助手副驾</button>
+        <button class="modal-cta-btn secondary" id="shareEntryBtn" onclick="shareEntry(this)">📤 分享给客户</button>
       </div>
     </div>
   </div>
@@ -1026,6 +1026,9 @@ async function loadEntriesData(){
 
     totalEntries = data.total_entries;
     totalDomains = data.total_domains;
+    // 使用指南弹层的词条数同步校正（静态基线 6,143 → 线上真实值）
+    const guideCount = document.getElementById('guideEntryCount');
+    if (guideCount && totalEntries) guideCount.textContent = totalEntries.toLocaleString();
 
     updateDomainStats();
     renderDomains();
@@ -1375,6 +1378,7 @@ function showRoleModal(role){
 }
 
 function showEntryDetail(data){
+  currentEntryData = data; // 供弹窗 CTA（看完整词条/分享给客户）取词条上下文
   document.getElementById('modalIcon').textContent = data.icon;
   document.getElementById('modalTitle').textContent = data.title;
   document.getElementById('modalId').textContent = 'ID: ' + data.id;
@@ -1494,6 +1498,36 @@ function showSearchResults(query, results){
 
 function closeEntry(){document.getElementById('entryModal').classList.remove('active')}
 
+let currentEntryData = null; // 当前弹窗词条（showEntryDetail 写入）
+
+// 弹窗 CTA：跳转词条完整页（/entry/?id= 参数约定）
+function viewFullEntry(){
+  if(currentEntryData && currentEntryData.id){
+    location.href = '/entry/?id=' + encodeURIComponent(currentEntryData.id);
+  }
+}
+// 弹窗 CTA：唤起 AI 助手副驾
+function openCopilot(){
+  location.href = '/ai-advisor/';
+}
+// 弹窗 CTA：分享给客户（系统分享面板 → 剪贴板兜底 → prompt 兜底）
+function shareEntry(btn){
+  if(!currentEntryData || !currentEntryData.id) return;
+  const shareUrl = location.origin + '/entry/?id=' + encodeURIComponent(currentEntryData.id);
+  const shareTitle = currentEntryData.title || '风声知识词条';
+  const done = ()=>{
+    if(btn){ const t = btn.textContent; btn.textContent = '✅ 链接已复制';
+      setTimeout(()=>{ btn.textContent = t; }, 1600); }
+  };
+  if(navigator.share){
+    navigator.share({ title: shareTitle, url: shareUrl }).catch(()=>{});
+  } else if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(shareUrl).then(done).catch(()=>{ window.prompt('复制链接分享给客户：', shareUrl); });
+  } else {
+    window.prompt('复制链接分享给客户：', shareUrl);
+  }
+}
+
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-entry]');
   if(el){e.stopPropagation();openEntry(el.getAttribute('data-entry'));}
@@ -1588,7 +1622,7 @@ loadCityArch();     // 北京样板城市知识架构
   </div>
   <div class="fs-guide-body">
     <h4>这是什么</h4>
-    <p>风声知识底座，收录 — 条居住服务专业词条，覆盖 34 个业务域、78+ 个服务场景，按「道·法·术·器」分层组织，是全站内容的地基。</p>
+    <p>风声知识底座，收录 <span id="guideEntryCount">6,143</span> 条居住服务专业词条，覆盖 34 个业务域、78+ 个服务场景，按「道·法·术·器」分层组织，是全站内容的地基。</p>
     <h4>能帮你解决什么</h4>
     <p>遇到拿不准的概念、术语或场景表达时，快速查到标准说法，把“凭感觉说”变成“有据可依”。</p>
     <h4>怎么用（4 步）</h4>
