@@ -711,6 +711,8 @@ function capResponseSize(resp) {
 
 // 需要鉴权的 API 路径前缀（按具体→前缀排序，避免 startsWith 歧义）
 const AUTH_REQUIRED_API_PREFIXES = [
+  '/api/events',           // KR4.3 只写 token：写接口防脚本直连（2026-11-21 从 PUBLIC 迁入）
+  '/api/event',            // KR4.3 同上（单数形式）
   '/api/entries',          // 知识条目（含 domain/offset/limit 分页）
   '/api/entry',            // 条目详情 + related + mini（前缀也匹配 /api/entries）
   '/api/search',           // 搜索 v1 + v2 + suggest
@@ -729,7 +731,7 @@ const PUBLIC_API_PREFIXES = new Set([
   // S1 健康检查
   '/api/health', '/api/heartbeat', '/api/stats/health', '/api/ai-advisor/health',
   // S2 写操作（已有 IP ban + 限流 + WAF + 白名单）
-  '/api/events', '/api/feedback', '/api/feedback-external',
+  '/api/feedback', '/api/feedback-external',
   '/api/partner-intent', '/api/lead', '/api/feishu/event',
   '/api/chat', '/mentor-api/chat', '/api/ai-advisor',
   // S5 交互型 + 登录 + 二维码
