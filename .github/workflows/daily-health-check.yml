@@ -28,6 +28,7 @@ jobs:
           echo "=== 巡检结束 ==="
         env:
           CHECK_URL: https://fengsheng.tech
+          API_BEARER_TOKEN: ${{ secrets.API_BEARER_TOKEN }}
 
       - name: 读取巡检报告
         if: always()
