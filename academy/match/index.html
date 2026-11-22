@@ -351,12 +351,11 @@ var ROLES = [
 // ======== 数据源加载 ========
 function loadScores() {
   var hardScores = {}, softScores = {};
-  var care = null, examResults = {}, softResults = {};
+  var care = null, examResults = {};
   try { care = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
   try { examResults = JSON.parse(localStorage.getItem('fs_exam_results')) || {}; } catch(e) {}
-  try { softResults = JSON.parse(localStorage.getItem('fs_soft_exam_results')) || {}; } catch(e) {}
 
-  // 硬 7 维：care + exam 取 max
+  // 硬 7 维：care.dim_scores + examResults['DIM-N'].pct 取 max
   for (var i = 0; i < 7; i++) {
     var name = HARD_DIMS[i];
     var cs = care && care.dim_scores ? care.dim_scores[name] : null;
@@ -368,13 +367,15 @@ function loadScores() {
     else hardScores[name] = null;
   }
 
-  // 软 5 维：care.soft_scores + softExam 取 max
-  var softCare = care && care.soft_scores ? care.soft_scores : null;
+  // 软 5 维：care.soft_dim_scores + examResults['SOFT-N'].pct 取 max
+  // ⚠️ 注意：care-test 写入的是 soft_dim_scores（不是 soft_scores）
+  // ⚠️ exam 页把软技能考核也存入 fs_exam_results（SOFT-1~5 为 key），没有单独的软技能 exam storage
+  var softCare = care && care.soft_dim_scores ? care.soft_dim_scores : null;
   for (var j = 0; j < 5; j++) {
     var sname = SOFT_DIMS[j];
     var scs = softCare ? softCare[sname] : null;
     var skey = 'SOFT-' + (j+1);
-    var ses = softResults[skey] ? softResults[skey].pct : null;
+    var ses = examResults[skey] ? examResults[skey].pct : null;
     if (scs != null && ses != null) softScores[sname] = Math.max(scs, ses);
     else if (scs != null) softScores[sname] = scs;
     else if (ses != null) softScores[sname] = ses;

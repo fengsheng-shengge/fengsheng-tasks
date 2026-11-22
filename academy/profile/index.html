@@ -443,11 +443,16 @@ function loadAllData() {
   try { care = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
   try { examResults = JSON.parse(localStorage.getItem('fs_exam_results')) || {}; } catch(e) {}
   try { history = JSON.parse(localStorage.getItem('fs_care_history')) || []; } catch(e) {}
-  try { practiceDone = JSON.parse(localStorage.getItem('fs_practice_done')) || []; } catch(e) {}
+  try { practiceDoneRaw = JSON.parse(localStorage.getItem('fs_practice_done')) || {}; } catch(e) {}
+  try { practiceDoneArr = JSON.parse(localStorage.getItem('fs_practice_done_arr')) || []; } catch(e) {}
+  // fs_practice_done 存的是对象 {sceneId: timestamp}，取 keys 数量
+  var practiceDoneCount = Array.isArray(practiceDoneArr) && practiceDoneArr.length > 0
+    ? practiceDoneArr.length
+    : (practiceDoneRaw && typeof practiceDoneRaw === 'object' ? Object.keys(practiceDoneRaw).length : 0);
   try { courseProgress = JSON.parse(localStorage.getItem('fs_course_progress')) || {}; } catch(e) {}
   try { reviewTags = JSON.parse(localStorage.getItem('fs_review_tags')) || {}; } catch(e) {}
   try { aiUsage = JSON.parse(localStorage.getItem('fs_ai_tool_usage')) || {}; } catch(e) {}
-  return { care:care, exam:examResults, history:history, practice:practiceDone, courses:courseProgress, reviews:reviewTags, ai_usage:aiUsage };
+  return { care:care, exam:examResults, history:history, practiceCount:practiceDoneCount, courses:courseProgress, reviews:reviewTags, ai_usage:aiUsage };
 }
 
 // ========== 硬技能 7 维分数（care-test + exam 取 max）==========
@@ -509,7 +514,7 @@ function computeFiveSources(d, hard, soft) {
   var careHardVals = Object.values(hard).filter(function(v){ return v != null; });
   var careHardAvg = careHardVals.length > 0 ? careHardVals.reduce(function(a,b){return a+b},0)/careHardVals.length : null;
   var practiceTotal = 18; // practice/index.html 硬编码 HARD_SCENES + SOFT_SCENES 共 18 个（硬 8 + 软 10）
-  var practiceDone = (d.practice || []).length;
+  var practiceDone = d.practiceCount || 0;
   var practicePct = Math.round(Math.min(100, practiceDone / practiceTotal * 100));
 
   // --- AI 工具使用率 ---
