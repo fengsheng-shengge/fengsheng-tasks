@@ -288,7 +288,7 @@
         <button class="role-btn" data-role="landlord" onclick="selectRole(this,'landlord')">业主</button>
         <button class="role-btn" data-role="investor" onclick="selectRole(this,'investor')">投资客</button>
       </div>
-      <div id="role-hint" style="font-size:11px;color:#888;margin-top:6px">综合画像：60 题，覆盖所有角色的通用题</div>
+      <div id="role-hint" style="font-size:11px;color:#888;margin-top:6px">综合画像：35 题（硬 7 维 × 3 + 软 5 维 × 2），覆盖所有角色通用题</div>
     </div>
 
     <button class="start-btn" onclick="startQuiz()">开始测评</button>
@@ -333,7 +333,7 @@
         </div>
       </div>
       <div style="margin-top:10px;padding-top:10px;border-top:1px dashed #e8e4da;font-size:11px;color:#999">
-        ⏱ 约 20 分钟 · 60 题（硬技能 35 + 软技能 25）· 中途可退出，下次自动续答
+        ⏱ 约 15 分钟 · 35 题（硬 7 维 × 3 + 软 5 维 × 2）· 中途可退出，下次自动续答
       </div>
     </div>
   </div>
@@ -662,7 +662,7 @@ function selectRole(btn, role) {
     renter:'租客画像：侧重租金/押一付三/续租/退租相关题',
     landlord:'业主画像：侧重出租/租金/维修/房东义务相关题',
     investor:'投资客画像：侧重回报率/杠杆/以租养贷相关题',
-    all:'综合画像：60 题，覆盖所有角色的通用题',
+    all:'综合画像：35 题（硬 7 维 × 3 + 软 5 维 × 2），覆盖所有角色通用题',
   };
   document.getElementById('role-hint').textContent = hints[role] || '';
 }
@@ -686,7 +686,7 @@ function startQuiz() {
   answers = {};
   // v2：按角色过滤题目
   var filtered = filterQuestionsByRole(QUESTIONS, CURRENT_ROLE);
-  // v4：按维度均衡抽 35 题（硬7维每维3题 + 软5维每维2题 + 4题补全 = 35）
+  // v4：按维度均衡抽 35 题（硬7维每维3题=21 + 软5维每维2题=14 → 正好35）
   // 旧逻辑 filtered.slice() 全量加载 → 180题没人答完就走了
   var hardDimNames = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
   var softDimNames = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
@@ -1554,7 +1554,7 @@ window.addEventListener('beforeunload', function() {
   </div>
   <div class="fs-guide-body">
     <h4>这是什么</h4>
-    <p><b>服务者能力画像测评</b>，7 个专业硬技能维度 35 道题 + 5 维软技能 25 题，共 60 题约 20 分钟，测出你在客户全生命周期各环节的真实能力水平（硬技能 × 软技能 双轨雷达）。</p>
+    <p><b>服务者能力画像测评</b>，硬 7 维 × 3 + 软 5 维 × 2，共 35 题约 15 分钟，测出你在客户全生命周期各环节的真实能力水平（硬技能 × 软技能 双轨雷达）。</p>
 
     <h4>能帮你解决什么</h4>
     <p>凭感觉干，不知道自己弱在哪——测完立刻给出：

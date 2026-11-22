@@ -508,7 +508,7 @@ function computeFiveSources(d, hard, soft) {
   // AI 工具使用嵌入：风声 AI 工具（decoder/workspace/toolkit/curation/knowledge/ai-advisor 等）使用覆盖率
   var careHardVals = Object.values(hard).filter(function(v){ return v != null; });
   var careHardAvg = careHardVals.length > 0 ? careHardVals.reduce(function(a,b){return a+b},0)/careHardVals.length : null;
-  var practiceTotal = 18; // 8 硬场景 + 10 软场景
+  var practiceTotal = 18; // practice/index.html 硬编码 HARD_SCENES + SOFT_SCENES 共 18 个（硬 8 + 软 10）
   var practiceDone = (d.practice || []).length;
   var practicePct = Math.round(Math.min(100, practiceDone / practiceTotal * 100));
 
