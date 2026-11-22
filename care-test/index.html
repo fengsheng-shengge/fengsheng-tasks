@@ -172,6 +172,21 @@
 @media(max-width:960px){.fs-top-links{display:none}.fs-top-city{display:none}}
 </style>
 
+<!-- ============ 六环闭环导航 ============ -->
+<div class="loop-strip" style="max-width:720px;margin:16px auto 0;background:#fff;border:1px solid #e8e4da;border-radius:14px;display:flex;overflow:hidden">
+  <a class="hl" href="/care-test/"><span class="ls-name">📋 测</span><span style="font-size:10px;color:#8a7040">能力画像</span></a>
+  <a href="/academy/core-courses/"><span class="ls-name">📖 学</span><span style="font-size:10px;color:#666">核心课程</span></a>
+  <a href="/academy/practice/"><span class="ls-name">🎭 练</span><span style="font-size:10px;color:#666">场景练习</span></a>
+  <a href="/academy/exam/"><span class="ls-name">📝 考</span><span style="font-size:10px;color:#666">岗位考核</span></a>
+  <a href="/academy/profile/"><span class="ls-name">📊 评</span><span style="font-size:10px;color:#666">综合评价</span></a>
+  <a href="/academy/match/"><span class="ls-name">🎯 配</span><span style="font-size:10px;color:#666">人岗匹配</span></a>
+</div>
+<style>
+.loop-strip a{flex:1;padding:10px 4px;text-align:center;font-size:12px;color:#666;border-right:1px dashed #e8e4da;text-decoration:none}
+.loop-strip a:last-child{border-right:none}
+.loop-strip a .ls-name{display:block;font-weight:700;font-size:13px;margin-bottom:1px}
+.loop-strip a.hl{background:linear-gradient(135deg,#fdf9ef,#fffbf3);color:#8a7040}
+</style>
 
 <div class="container">
 
@@ -416,6 +431,8 @@
 // ============================================================
 
 var DIMS = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
+var SOFT_DIMS = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
+var SOFT_DIM_CODE_TO_NAME = {'SOFT-1':'共情能力','SOFT-2':'判断能力','SOFT-3':'责任担当','SOFT-4':'职业素养','SOFT-5':'服务意识'};
 
 var DIM_COLORS = {
   '获客触达': '#2563eb',
@@ -756,19 +773,29 @@ function prevQuestion() {
 // ============================================================
 function calcScores() {
   var dims = {};
+  var softDims = {};
   var stages = {};
   for (var di = 0; di < DIMS.length; di++) { dims[DIMS[di]] = []; }
+  for (var si = 0; si < SOFT_DIMS.length; si++) { softDims[SOFT_DIMS[si]] = []; }
   var qs = quizSet.length ? quizSet : QUESTIONS;   // 用打乱后的选项集算分（score 跟随选项移动）
   for (var i = 0; i < qs.length; i++) {
     var q = qs[i];
     if (answers[q.id] !== undefined) {
       var sc = q.options[answers[q.id]].score;
-      dims[q.dim].push(sc);
+      // 判断硬技能还是软技能
+      var dimCode = q._dim_code || '';
+      if (dimCode.startsWith('SOFT-')) {
+        var softName = SOFT_DIM_CODE_TO_NAME[dimCode];
+        if (softName) softDims[softName].push(sc);
+      } else {
+        dims[q.dim].push(sc);
+      }
       if (q.stage) { (stages[q.stage] = stages[q.stage] || []).push(sc); }
     }
   }
 
-  var avg = {};
+  var avg = {};        // 硬技能 7 维
+  var softAvg = {};    // 软技能 5 维
   var stageAvg = {};
   var totalScore = 0;
   var count = 0;
@@ -784,13 +811,33 @@ function calcScores() {
     }
   }
 
-  for (var s in stages) {
-    var ssum = 0;
-    for (var k = 0; k < stages[s].length; k++) ssum += stages[s][k];
-    stageAvg[s] = Math.round((ssum / stages[s].length / 5) * 100);
+  // 软技能计分
+  var softTotal = 0, softCount = 0;
+  for (var sd in softDims) {
+    if (softDims[sd].length > 0) {
+      var ssum = 0;
+      for (var sj = 0; sj < softDims[sd].length; sj++) ssum += softDims[sd][sj];
+      softAvg[sd] = Math.round((ssum / softDims[sd].length / 5) * 100);
+      softTotal += softAvg[sd];
+      softCount++;
+    } else {
+      softAvg[sd] = 50;
+    }
   }
 
-  return { avg: avg, stageAvg: stageAvg, total: count > 0 ? Math.round(totalScore / count) : 0 };
+  for (var s in stages) {
+    var stSum = 0;
+    for (var k = 0; k < stages[s].length; k++) stSum += stages[s][k];
+    stageAvg[s] = Math.round((stSum / stages[s].length / 5) * 100);
+  }
+
+  return {
+    avg: avg,
+    softAvg: softAvg,
+    stageAvg: stageAvg,
+    total: count > 0 ? Math.round(totalScore / count) : 0,
+    softTotal: softCount > 0 ? Math.round(softTotal / softCount) : 0
+  };
 }
 
 // ============================================================
@@ -915,20 +962,29 @@ function showReport() {
 
   // === v3.0：localStorage 持久化 + 下一步引导 ===
   // v3.1：补 dim_scores 字段，让 /academy/profile/ 能直接读维度分渲染雷达图
+  // v3.3：补 soft_dim_scores 字段（软5维），profile 页 computeSoftScores 需要
   try {
     var dimScores = {};
     for (var di2 = 0; di2 < DIMS.length; di2++) {
       dimScores[DIMS[di2]] = avg[DIMS[di2]] != null ? avg[DIMS[di2]] : 50;
     }
+    var softDimScores = {};
+    for (var si2 = 0; si2 < SOFT_DIMS.length; si2++) {
+      softDimScores[SOFT_DIMS[si2]] = (typeof softAvg !== 'undefined' && softAvg[SOFT_DIMS[si2]] != null) ? softAvg[SOFT_DIMS[si2]] : 50;
+    }
     var profile = {
       total: total,
       avg: avg,
-      dim_scores: dimScores,     // 7 维度分数字典（新增，供 profile 页联动）
+      softAvg: typeof softAvg !== 'undefined' ? softAvg : {},
+      dim_scores: dimScores,
+      soft_dim_scores: softDimScores,
+      soft_total: typeof softTotal !== 'undefined' ? softTotal : null,
       weakest_dim: lowest,
       second_weakest: secondLowest,
       timestamp: new Date().toISOString(),
       question_count: QUESTIONS.length,
-      mode: QUESTIONS.length <= 7 ? 'focused' : 'full'
+      mode: QUESTIONS.length <= 7 ? 'focused' : 'full',
+      role: CURRENT_ROLE || 'all'
     };
     localStorage.setItem('fs_care_profile', JSON.stringify(profile));
     // v3.2：累积历史记录（供 profile 页画维度趋势图 + 完整答题留痕）
@@ -1323,21 +1379,35 @@ function renderNextSteps(avg, lowest, secondLowest){
     });
   }
 
-  // 如果只有 2 个卡，补 📚 去学 + ✅ 去看画像
-  if(cards.length < 4){
+  // 如果只有 2 个卡，补全闭环引导：📚 去学 + 📝 去考 + 📊 去看画像 + 🎯 去匹配
+  if(cards.length < 6){
     cards.push({
       emoji: '📚',
       title: '去学核心课',
-      desc: dims[0] + '入门 · 系统补强',
+      desc: dims[0] + ' 系统补强 · 章节带知识底座链接',
       href: '/academy/core-courses/',
       color: '#1a3d24'
     });
     cards.push({
+      emoji: '📝',
+      title: '去岗位考核',
+      desc: '12 维度 240 题 · ' + (CURRENT_ROLE === 'buyer' ? '买家' : CURRENT_ROLE === 'seller' ? '卖家' : CURRENT_ROLE === 'renter' ? '租客' : CURRENT_ROLE === 'landlord' ? '业主' : CURRENT_ROLE === 'investor' ? '投资客' : '综合') + '专属题库',
+      href: '/academy/exam/?role=' + (CURRENT_ROLE || 'all'),
+      color: '#d97706'
+    });
+    cards.push({
       emoji: '📊',
       title: '查看能力画像',
-      desc: '7 维雷达图 · 综合分 · 历史趋势',
+      desc: '双轨雷达图 · 世赛 WSOS 加权综合分 · 级别路径',
       href: '/academy/profile/',
       color: '#c9a962'
+    });
+    cards.push({
+      emoji: '🎯',
+      title: '去人岗匹配',
+      desc: '经纪人岗位匹配 · 机构用人入口 · AI 工具覆盖率',
+      href: '/academy/match/',
+      color: '#7c3aed'
     });
   }
 
