@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>岗位考核 · 学习成长 | 风声信息咨询</title>
-<meta name="description" content="120 道岗位考核题 · 专业硬技能 7 维 + 软技能 5 维各 10 题 · 分数计入能力画像双轨雷达">
+<meta name="description" content="经纪人岗位考核 · 12 维度 × 10 题 · 每次开考从 240 题题库随机调取 · 按买家/卖家/租客/业主/投资客角色差异化出题 · 过 80 分拿维度认证 · 分数回写到能力画像">
 <link rel="icon" href="/favicon.png" type="image/png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -159,7 +159,7 @@ a{text-decoration:none;color:inherit}
 
 <div class="pg">
   <h2 class="pg-h">📝 岗位考核</h2>
-  <p class="pg-sub">12 维度 · 硬技能 7 维 + 软技能 5 维 · 每维 10 题 · 每次开考自动打乱顺序和选项 · 分数自动回写到 <a href="/academy/profile/" style="color:#1a3d24;font-weight:600">能力画像</a></p>
+  <p class="pg-sub">12 维度 · 硬技能 7 维 + 软技能 5 维 · <b>每次开考从 ~20 题备选池随机抽 10 题</b>（共 240 题题库）· 按买家/卖家/租客/业主/投资客差异化出题 · 选项自动打乱 · 分数回写到 <a href="/academy/profile/" style="color:#1a3d24;font-weight:600">能力画像</a></p>
 
   <!-- ========== 为什么要考 / 考完能干啥 / 有啥帮助 ========== -->
   <div style="background:linear-gradient(135deg,#fdf9ef,#fffbf3);border:1px solid #e8e4da;border-radius:12px;padding:14px 16px;margin:12px 0">
@@ -457,7 +457,7 @@ var SOFT_DIM_ORDER = ['SOFT-1','SOFT-2','SOFT-3','SOFT-4','SOFT-5'];
 // 缓存策略：localStorage['fs_qbank_cache'] + 版本号校验
 var QBANK_URL = '/data/v3/quiz.json';
 var QBANK_CACHE_KEY = 'fs_qbank_cache';
-var QBANK_VERSION = 'v5'; // 升级时递增，自动刷新缓存
+var QBANK_VERSION = 'v6'; // 升级：v6 加 roles 字段，强制刷新缓存
 
 async function loadQbank() {
   var cached = localStorage.getItem(QBANK_CACHE_KEY);
@@ -541,7 +541,7 @@ async function getMergedExamDB(capPerDim) {
     var sub = document.querySelector('.pg-sub');
     if (sub) {
       sub.textContent = (sub.textContent.split('（')[0]) +
-        '（硬技能 7 维 + 软技能 5 维 · 每维 20 题扩充到 120+，总 ' + totalQs + ' 题 · 每次开考自动打乱顺序和选项 · 分数自动回写到能力画像）';
+        '（共 ' + totalQs + ' 题 · 每次开考从每维 ~20 题备选池随机抽 10 题 · 按角色差异化出题 · 选项自动打乱 · 分数回写到能力画像）';
     }
     renderGrid();
     console.log('✅ EXAM_DB 合并完成，总题数 ' + totalQs);
@@ -721,20 +721,27 @@ function startExam(dim) {
       // 没标 roles 的题默认全角色适用（兼容旧硬编码）
       return roles.length === 0 || roles.indexOf(currentRole) !== -1;
     });
-    // 如果过滤后题目太少（<3），回退用全部题（避免考不成）
-    if (allQs.length < 3) {
+    // 如果过滤后题目太少（<5），回退用全部题（避免考不成）
+    if (allQs.length < 5) {
       console.warn('⚠️ 角色过滤后题目太少（' + allQs.length + '），回退全量');
       allQs = db.questions.slice();
     }
   }
 
-  // 每次开考：题目整体顺序 shuffle + 每题选项顺序 shuffle
-  var shuffledQs = allQs;
-  for (var i = shuffledQs.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = shuffledQs[i]; shuffledQs[i] = shuffledQs[j]; shuffledQs[j] = t;
+  // v3：固定抽 10 题（如果总题数 > 10），保证"每维 10 题"的宣称准确
+  // 备选：合并引擎已补到 ~20 题/维，这里固定抽 10 题 = 有 10+ 题的备选池
+  var TARGET_Q = 10;
+  if (allQs.length > TARGET_Q) {
+    // 先 shuffle 再 slice 取前 10 → 每次开考随机抽不同 10 题
+    for (var i = allQs.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = allQs[i]; allQs[i] = allQs[j]; allQs[j] = t;
+    }
+    allQs = allQs.slice(0, TARGET_Q);
   }
-  shuffledQs = shuffledQs.map(function(q){
+
+  // 每题选项顺序 shuffle（防死记答案位置）
+  var shuffledQs = allQs.map(function(q){
     var opts = q.opts.slice();
     var correctText = opts[q.a];  // 记住正确答案的"文本"
     for (var k = opts.length - 1; k > 0; k--) {
