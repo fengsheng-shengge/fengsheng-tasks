@@ -675,7 +675,7 @@ renderGrid();
 
 // 支持 ?dim=DIM-x 直接进入对应维度考核（核心课跳转过来的）
 (function() {
-  var m = location.search.match(/[?&]dim=(DIM-\d+)/);
+  var m = location.search.match(/[?&]dim=((?:DIM|SOFT)-\d+)/);
   if (m && EXAM_DB[m[1]]) {
     setTimeout(function() { startExam(m[1]); }, 300);
   }
