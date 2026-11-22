@@ -391,8 +391,109 @@ var EXAM_DB = {
   },
 };
 
+// ===== 双轨维度排序定义（必须在 bootstrap 之前定义）=====
 var DIM_ORDER = ['DIM-1','DIM-2','DIM-3','DIM-4','DIM-5','DIM-6','DIM-7'];
 var SOFT_DIM_ORDER = ['SOFT-1','SOFT-2','SOFT-3','SOFT-4','SOFT-5'];
+
+// ===== 统一题库抽取引擎 =====
+// 从 /data/v3/quiz.json（180 题）按维度拉题，和硬编码题库合并
+//   硬编码：精选题，每题都有知识底座 src 标注
+//   qbank：扩充题，总量 180 题（12 维 × 15）
+// 缓存策略：localStorage['fs_qbank_cache'] + 版本号校验
+var QBANK_URL = '/data/v3/quiz.json';
+var QBANK_CACHE_KEY = 'fs_qbank_cache';
+var QBANK_VERSION = 'v5'; // 升级时递增，自动刷新缓存
+
+async function loadQbank() {
+  var cached = localStorage.getItem(QBANK_CACHE_KEY);
+  if (cached) {
+    try {
+      var obj = JSON.parse(cached);
+      if (obj.version === QBANK_VERSION && obj.questions) {
+        console.log('📦 qbank 命中缓存: ' + obj.questions.length + ' 题');
+        return obj.questions;
+      }
+    } catch(e) { /* 忽略坏缓存 */ }
+  }
+  try {
+    var res = await fetch(QBANK_URL + '?v=' + QBANK_VERSION);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var data = await res.json();
+    var payload = { version: QBANK_VERSION, fetchedAt: Date.now(), questions: data.questions };
+    localStorage.setItem(QBANK_CACHE_KEY, JSON.stringify(payload));
+    console.log('📥 qbank 拉取成功: ' + data.questions.length + ' 题');
+    return data.questions;
+  } catch(e) {
+    console.warn('⚠️ qbank 拉取失败，仅用硬编码题库: ' + e.message);
+    return null;
+  }
+}
+
+// 把 quiz.json 格式转换成 EXAM_DB 格式
+function convertQbankFormat(q) {
+  return {
+    q: q.question,
+    opts: q.options,
+    a: q.correct,
+    src: q.standard_ref || ('qbank/' + q.dim_code),
+  };
+}
+
+// 合并题库：硬编码（10 题）+ qbank 扩充（按维度拉满到 cap 题）
+// 返回按维度聚合的完整题库
+async function getMergedExamDB(capPerDim) {
+  capPerDim = capPerDim || 20; // 默认每维 20 题（10 硬编码 + 10 qbank）
+  var qbank = await loadQbank();
+  var merged = {};
+  var allDims = DIM_ORDER.concat(SOFT_DIM_ORDER);
+
+  allDims.forEach(function(dimCode) {
+    var hardcoded = (EXAM_DB[dimCode] && EXAM_DB[dimCode].questions) || [];
+    var hardcodedIds = hardcoded.map(function(q){ return q.q; }); // 用题干去重
+
+    var supplement = [];
+    if (qbank) {
+      // 从 qbank 按 dim_code 筛选，去重
+      var qbankDim = qbank.filter(function(q){ return q.dim_code === dimCode; });
+      qbankDim.forEach(function(q){
+        if (hardcodedIds.indexOf(q.question) === -1 &&
+            supplement.length < (capPerDim - hardcoded.length)) {
+          supplement.push(convertQbankFormat(q));
+        }
+      });
+    }
+
+    merged[dimCode] = {
+      name: EXAM_DB[dimCode] ? EXAM_DB[dimCode].name : dimCode,
+      desc: EXAM_DB[dimCode] ? EXAM_DB[dimCode].desc : '',
+      total: hardcoded.length + supplement.length,
+      questions: hardcoded.concat(supplement),
+    };
+  });
+
+  return merged;
+}
+
+// 覆盖 EXAM_DB 渲染——页面 load 时异步拉取 qbank 并刷新卡片
+(function bootstrapQbank() {
+  if (typeof window === 'undefined') return;
+  getMergedExamDB(20).then(function(merged) {
+    // 用合并后的题库替换 EXAM_DB 引用
+    Object.keys(merged).forEach(function(k){ EXAM_DB[k] = merged[k]; });
+    // 更新卡片总数显示 + 重新渲染
+    var totalQs = Object.values(EXAM_DB).reduce(function(s,d){ return s + d.total; }, 0);
+    var sub = document.querySelector('.pg-sub');
+    if (sub) {
+      sub.textContent = (sub.textContent.split('（')[0]) +
+        '（硬技能 7 维 + 软技能 5 维 · 每维 20 题扩充到 120+，总 ' + totalQs + ' 题 · 每次开考自动打乱顺序和选项 · 分数自动回写到能力画像）';
+    }
+    renderGrid();
+    console.log('✅ EXAM_DB 合并完成，总题数 ' + totalQs);
+  });
+})();
+
+// ===== 双轨维度排序定义（已在 EXAM_DB 后定义，此处保留注释）=====
+// DIM_ORDER / SOFT_DIM_ORDER 已在上方 L394 定义
 
 // 考试状态
 var currentExam = null;  // { dim, idx, answers: [selected], answers: [selected], startTime }
