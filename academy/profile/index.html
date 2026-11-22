@@ -76,6 +76,7 @@ a{text-decoration:none;color:inherit}
 .src-item .si-name{font-size:10.5px;color:#666;font-weight:600;margin-top:2px}
 .src-item .si-desc{font-size:9px;color:#999;margin-top:3px;line-height:1.5}
 .src-item .si-source{font-size:9px;color:#888;margin-top:3px}
+.src-item .si-weight{font-size:10px;color:#8a7040;font-weight:700;margin-top:4px;padding:2px 6px;background:#fdf9ef;border-radius:6px;display:inline-block}
 
 /* ===== 级别晋升路径 ===== */
 .level-path{background:linear-gradient(135deg,#fdf9ef,#fff);border:1px solid #e8d9b0;border-radius:14px;padding:20px 24px;margin-bottom:20px}
@@ -284,12 +285,27 @@ var SOFT_DIMS = ['共情能力','判断能力','责任担当','职业素养','�
 var SOFT_CODES = {'共情能力':'SOFT-1','判断能力':'SOFT-2','责任担当':'SOFT-3','职业素养':'SOFT-4','服务意识':'SOFT-5'};
 var SOFT_ICONS = {'共情能力':'💞','判断能力':'⚖️','责任担当':'🛡️','职业素养':'📜','服务意识':'🌱'};
 
-// ========== 人社级别映射 ==========
+// ========== 人社级别映射（世赛 WSOS 分层权重 + 人社三考试模式）==========
+// 世赛 WSOS 三层权重：Specialist 25% + Technical 40% + Generic 25% + Case 10%
+// 人社三考试：理论（Layer1）+ 操作（Layer2）+ 综合评审（Layer4）
+// 持续学习：门槛条件，不参与加权
 var LEVELS = [
-  { key:'entry',   name:'入门经纪人',  hrss:'协理',         emoji:'🟢', criteria:'硬 7 维每维 ≥ 65 · 软 5 维每维 ≥ 65' },
-  { key:'assist',  name:'合格经纪人',  hrss:'经纪人',       emoji:'🟡', criteria:'硬 7 维每维 ≥ 80 · 软 5 维每维 ≥ 80 · exam 每维 ≥ 80' },
-  { key:'senior',  name:'高级经纪人',  hrss:'高级经纪人',   emoji:'🟠', criteria:'合格 + 复核 ≥ 3 次 + 场景 ≥ 20 次 + 案例 ≥ 1' },
-  { key:'mentor',  name:'金牌导师',    hrss:'行业专家',     emoji:'🔴', criteria:'高级 + 带新人 ≥ 3 人 + 复核 ≥ 5 次' },
+  { key:'entry',   name:'入门经纪人',  hrss:'协理',         emoji:'🟢',
+    // 综合分 ≥ 55 + 红线不否决 + 学时 ≥ 30h
+    criteria:'综合分 ≥ 55 · 红线不否决 · 学时 ≥ 30h',
+    formula:'Layer1×0.25 + Layer2×0.40 + Layer3×0.25 + Layer4×0.10' },
+  { key:'assist',  name:'合格经纪人',  hrss:'经纪人',       emoji:'🟡',
+    // 综合分 ≥ 70 + Specialist ≥ 70 + Technical ≥ 65 + Generic ≥ 65 + 伦理 ≥ 65 + 学时 ≥ 60h
+    criteria:'综合 ≥70 · 理论≥70 · 操作≥65 · 通用≥65 · 伦理≥65 · 学时≥60h',
+    formula:'Layer1×0.25 + Layer2×0.40 + Layer3×0.25 + Layer4×0.10' },
+  { key:'senior',  name:'高级经纪人',  hrss:'高级经纪人',   emoji:'🟠',
+    // 合格 + Case Analysis ≥ 60 + 复核 ≥ 3 次 + 场景 ≥ 20 + 学时 ≥ 90h
+    criteria:'合格 + 案例≥60 · 复核≥3 · 场景≥20 · 学时≥90h（人社综合评审）',
+    formula:'Layer1×0.25 + Layer2×0.40 + Layer3×0.25 + Layer4×0.10' },
+  { key:'mentor',  name:'金牌导师',    hrss:'行业专家',     emoji:'🔴',
+    // 高级 + Case Analysis ≥ 80 + 复核 ≥ 5 次 + 带新人 ≥ 3
+    criteria:'高级 + 案例≥80 · 复核≥5 · 带新人≥3',
+    formula:'Layer1×0.25 + Layer2×0.40 + Layer3×0.25 + Layer4×0.10' },
 ];
 
 // ========== 数据源加载 ==========
@@ -334,80 +350,169 @@ function computeSoftScores(d) {
   return scores;
 }
 
-// ========== 五源合成 ==========
+// ========== 五源合成（世赛 WSOS 分层 + weighting + 人社考试模式）==========
+// WSOS 三层权重（行业建议）：
+//   Specialist Knowledge（专业知识·理论） 25%  ← exam 答题分
+//   Technical Skill（操作技能·业务）     40%  ← care-test + practice
+//   Generic Skill（通用技能·态度）       25%  ← 软5维
+//   Case Analysis（案例·综合评审）       10%  ← 硬方案+履约（预留开放题/LLM批改）
+// 持续学习 → 门槛条件，不参与加权平均
 function computeFiveSources(d, hard, soft) {
-  // 1. 知识掌握度：硬技能平均（care-test + exam）
-  var hVals = Object.values(hard).filter(function(v){ return v != null; });
-  var src1 = hVals.length > 0 ? Math.round(hVals.reduce(function(a,b){return a+b},0)/hVals.length) : null;
-  var src1Hint = 'exam 每维 ≥ 80';
+  // === Layer 1: Specialist Knowledge（专业知识 · 理论考试 · 权重 25%）===
+  // 数据源：exam 硬7维答题平均分（客观 measurement）
+  var examHardScores = [];
+  for (var i = 1; i <= 7; i++) {
+    var e = d.exam['DIM-' + i];
+    if (e && e.pct != null) examHardScores.push(e.pct);
+  }
+  var src1 = examHardScores.length > 0
+    ? Math.round(examHardScores.reduce(function(a,b){return a+b},0) / examHardScores.length)
+    : null;
+  var src1Max = 7; // 考试覆盖维度数
+  var src1Hint = 'exam 每维 ≥ 70（权重 25%）';
+  var src1Src = '理论考试（客观可测）· 对应人社《经纪专业基础》';
 
-  // 2. 场景应对力：practice 完成率（5 个软场景 + 8 个硬场景 = 13）
-  var totalScenes = 13;
-  var doneScenes = (d.practice || []).length;
-  var src2 = Math.round(Math.min(100, doneScenes / totalScenes * 100));
-  var src2Hint = '场景完成 ≥ 5 个';
+  // === Layer 2: Technical Skill（操作技能 · 操作考试 · 权重 40%）===
+  // 数据源：care-test 硬7维平均分 + practice 场景完成率（各占 50%）
+  // 评分方式：measurement（客观可测：场景覆盖度）
+  var careHardVals = Object.values(hard).filter(function(v){ return v != null; });
+  var careHardAvg = careHardVals.length > 0 ? careHardVals.reduce(function(a,b){return a+b},0)/careHardVals.length : null;
+  var practiceTotal = 18; // 8 硬场景 + 10 软场景
+  var practiceDone = (d.practice || []).length;
+  var practicePct = Math.round(Math.min(100, practiceDone / practiceTotal * 100));
+  // 加权：care-test 50% + practice 50%
+  var src2 = null;
+  if (careHardAvg != null) src2 = Math.round(careHardAvg * 0.5 + practicePct * 0.5);
+  else if (practiceDone > 0) src2 = practicePct;
+  var src2Max = practiceTotal;
+  var src2Hint = 'care-test ≥ 65 + 场景完成 ≥ 9（权重 40% · 占比最高）';
+  var src2Src = '操作技能（客观可测）· 对应人社《经纪业务操作》';
 
-  // 3. 案例分析力：当前 exam 没有案例题，用硬技能中"专业方案"+"交易履约"两个维度平均（最接近案例分析能力）
+  // === Layer 3: Generic Skill（通用技能 · 态度/价值观 · 权重 25%）===
+  // 数据源：软5维平均分（care-test + exam 取 max）
+  // 评分方式：judgement（主观但可验证）
+  // 红线：SOFT-4 职业素养一票否决（< 50 则整体综合分封顶 50）
+  var softVals = Object.values(soft).filter(function(v){ return v != null; });
+  var src3 = softVals.length > 0
+    ? Math.round(softVals.reduce(function(a,b){return a+b},0)/softVals.length)
+    : null;
+  var ethicsScore = soft['职业素养'];
+  var ethicsVeto = ethicsScore != null && ethicsScore < 50; // 红线否决
+  var src3Hint = 'SOFT-4 ≥ 50（红线一票否决）· 软5维平均 ≥ 65（权重 25%）';
+  var src3Src = '通用技能（态度/价值观）· judgement 评分 · 对应人社职业能力第(一)条';
+
+  // === Layer 4: Case Analysis（案例分析 · 综合评审 · 权重 10%）===
+  // 数据源：当前用硬技能中"专业方案"+"交易履约"平均分（最接近案例决策能力）
+  // 预留：exam 开放题（用户写决策理由）+ LLM 批改 + 真实业绩数据
   var caseDim1 = hard['专业方案'], caseDim2 = hard['交易履约'];
-  if (caseDim1 != null && caseDim2 != null) src3 = Math.round((caseDim1 + caseDim2) / 2);
-  else if (caseDim1 != null) src3 = caseDim1;
-  else if (caseDim2 != null) src3 = caseDim2;
-  else src3 = null;
-  var src3Hint = '案例题 ≥ 70（功能预留）';
+  var src4;
+  if (caseDim1 != null && caseDim2 != null) src4 = Math.round((caseDim1 + caseDim2) / 2);
+  else if (caseDim1 != null) src4 = caseDim1;
+  else if (caseDim2 != null) src4 = caseDim2;
+  else src4 = null;
+  var src4Hint = '综合评审（高级经纪人要求）· 权重 10% · 预留开放题/LLM批改';
+  var src4Src = '综合评审（人社高级经纪人考试模式）· 业绩案例 + 决策能力';
 
-  // 4. 服务伦理：软技能"职业素养"（SOFT-4）
-  var src4 = soft['职业素养'] != null ? soft['职业素养'] : null;
-  var src4Hint = '红线问题一票否决';
-
-  // 5. 持续学习：course_progress 完成率（12 门课）
+  // === Layer 5: Continuous Learning（持续学习 · 门槛条件 · 不参与加权）===
+  // 数据源：课程完成率 + 继续教育学时（3 年 ≥ 90 学时）
   var totalCourses = 12;
   var doneCourses = Object.keys(d.courses || {}).filter(function(k){ return d.courses[k] && d.courses[k].completed; }).length;
-  var src5 = Math.round(Math.min(100, doneCourses / totalCourses * 100));
-  var src5Hint = '12 门课 ≥ 80% 完成';
+  var src5Pct = Math.round(Math.min(100, doneCourses / totalCourses * 100));
+  var ceHours = doneCourses * 2 + (Object.keys(d.exam || {}).length) * 3 + practiceDone; // demo：课程×2+考核×3+场景×1
+  var src5Hint = '3 年 ≥ 90 学时（人社登记要求）· 当前 ' + ceHours + 'h / 90h';
+  var src5Src = '继续教育学时 · 人社 3 年登记门槛 · 不参与加权';
 
-  function avgNonNull(a,b,c,d,e){
-    var vals = [a,b,c,d,e].filter(function(v){ return v != null; });
-    return vals.length > 0 ? Math.round(vals.reduce(function(x,y){return x+y},0)/vals.length) : null;
-  }
+  // === 加权综合分 ===
+  // 公式：Layer1×0.25 + Layer2×0.40 + Layer3×0.25 + Layer4×0.10
+  var weightedSum = 0, weightedTotal = 0;
+  if (src1 != null) { weightedSum += src1 * 0.25; weightedTotal += 0.25; }
+  if (src2 != null) { weightedSum += src2 * 0.40; weightedTotal += 0.40; }
+  if (src3 != null) { weightedSum += src3 * 0.25; weightedTotal += 0.25; }
+  if (src4 != null) { weightedSum += src4 * 0.10; weightedTotal += 0.10; }
+  var overall = weightedTotal > 0 ? Math.round(weightedSum / weightedTotal) : null;
+
+  // 红线否决：职业素养 < 50 → 综合分封顶 50
+  if (ethicsVeto && overall != null && overall > 50) overall = 50;
+
   return {
-    knowledge: src1,   // 知识掌握度
-    scenario: src2,    // 场景应对力
-    case: src3,        // 案例分析力
-    ethics: src4,      // 服务伦理
-    learning: src5,     // 持续学习
-    hint1: src1Hint, hint2: src2Hint, hint3: src3Hint, hint4: src4Hint, hint5: src5Hint,
-    overall: avgNonNull(src1, src2, src3, src4, src5)
+    // 世赛三层 + 案例 + 持续学习
+    specialist: src1,    // 专业知识（Layer1）
+    technical: src2,     // 操作技能（Layer2）
+    generic: src3,       // 通用技能（Layer3）
+    ethics: ethicsScore, // 服务伦理（SOFT-4，红线）
+    case_analysis: src4, // 案例分析（Layer4）
+    learning_pct: src5Pct, // 持续学习（Layer5，门槛）
+    ce_hours: ceHours,
+    // 人社映射
+    layer1_hint: src1Hint, layer1_src: src1Src,
+    layer2_hint: src2Hint, layer2_src: src2Src,
+    layer3_hint: src3Hint, layer3_src: src3Src,
+    layer4_hint: src4Hint, layer4_src: src4Src,
+    layer5_hint: src5Hint, layer5_src: src5Src,
+    // 权重 + 红线
+    weights: { specialist:25, technical:40, generic:25, case_analysis:10 },
+    ethics_veto: ethicsVeto,
+    // 综合分（加权 + 红线封顶）
+    overall: overall,
+    // 旧字段兼容（避免 render 函数报错）
+    knowledge: src1, scenario: src2, case: src4, learning: src5Pct,
+    hint1: src1Hint, hint2: src2Hint, hint3: src4Hint, hint4: src3Hint, hint5: src5Hint,
   };
 }
 
-// ========== 级别判定 ==========
-function computeLevel(hard, soft, d) {
-  var hVals = Object.values(hard).filter(function(v){ return v != null; });
-  var sVals = Object.values(soft).filter(function(v){ return v != null; });
-  var hMin = hVals.length > 0 ? Math.min.apply(null, hVals) : null;
-  var sMin = sVals.length > 0 ? Math.min.apply(null, sVals) : null;
-
-  var examPassCount = Object.keys(d.exam).filter(function(k){ return d.exam[k] && d.exam[k].pct >= 80; }).length;
+// ========== 级别判定（世赛 WSOS 门槛 + 人社级别对齐）==========
+function computeLevel(hard, soft, d, fs) {
+  // 先决条件
+  var softVals = Object.values(soft).filter(function(v){ return v != null; });
+  var ethicsScore = soft['职业素养'];
+  var ethicsVeto = ethicsScore != null && ethicsScore < 50;
   var reviewCount = (d.history || []).length + (d.reviews ? Object.values(d.reviews).reduce(function(a,b){ return a + (b.count||0); }, 0) : 0);
   var practiceCount = (d.practice || []).length;
+  var ceHours = fs.ce_hours || 0;
 
   var level = null;
-  // entry: 硬 min ≥ 65, 软 min ≥ 65
-  if (hMin != null && sMin != null && hMin >= 65 && sMin >= 65) {
+
+  // --- 入门经纪人（人社协理）---
+  // 综合分 ≥ 55 + 职业素养不否决 + 学时 ≥ 30h
+  if (fs.overall != null && fs.overall >= 55 && !ethicsVeto && ceHours >= 30) {
     level = 'entry';
-    // assist: 硬 min ≥ 80, 软 min ≥ 80, exam 每维 ≥ 80（至少 12 个）
-    if (hMin >= 80 && sMin >= 80 && examPassCount >= 12) {
+
+    // --- 合格经纪人（人社经纪人）---
+    // 综合分 ≥ 70 + Specialist ≥ 70 + Technical ≥ 65 + Generic ≥ 65 + 职业素养 ≥ 65 + 学时 ≥ 60h
+    if (fs.overall >= 70 && fs.specialist != null && fs.specialist >= 70 &&
+        fs.technical != null && fs.technical >= 65 &&
+        fs.generic != null && fs.generic >= 65 &&
+        ethicsScore != null && ethicsScore >= 65 && ceHours >= 60) {
       level = 'assist';
-      // senior: assist + 复核 ≥ 3 + 场景 ≥ 20 + 案例 ≥ 1
-      if (reviewCount >= 3 && practiceCount >= 20) {
+
+      // --- 高级经纪人（人社高级经纪人）---
+      // 合格 + Case Analysis ≥ 60 + 复核 ≥ 3 次 + 场景 ≥ 20 + 学时 ≥ 90h
+      if (fs.case_analysis != null && fs.case_analysis >= 60 &&
+          reviewCount >= 3 && practiceCount >= 20 && ceHours >= 90) {
         level = 'senior';
-        // mentor: senior + 复核 ≥ 5 + 带新人 ≥ 3（暂无数据）
-        if (reviewCount >= 5) level = 'mentor';
+
+        // --- 金牌导师（行业专家）---
+        // 高级 + Case Analysis ≥ 80 + 复核 ≥ 5 次 + 带新人 ≥ 3（暂无数据，用复核 ≥ 5 替代）
+        if (fs.case_analysis >= 80 && reviewCount >= 5) {
+          level = 'mentor';
+        }
       }
     }
   }
 
-  return { level: level, hMin: hMin, sMin: sMin, examPassCount: examPassCount, reviewCount: reviewCount, practiceCount: practiceCount };
+  return {
+    level: level,
+    ethicsVeto: ethicsVeto,
+    ethicsScore: ethicsScore,
+    overall: fs.overall,
+    specialist: fs.specialist,
+    technical: fs.technical,
+    generic: fs.generic,
+    case_analysis: fs.case_analysis,
+    ceHours: ceHours,
+    reviewCount: reviewCount,
+    practiceCount: practiceCount,
+  };
 }
 
 // ========== 主渲染 ==========
@@ -416,7 +521,7 @@ function render() {
   var hard = computeHardScores(d);
   var soft = computeSoftScores(d);
   var fs = computeFiveSources(d, hard, soft);
-  var lv = computeLevel(hard, soft, d);
+  var lv = computeLevel(hard, soft, d, fs);
 
   // ====== 头部 ======
   renderHeader(fs, lv, d);
@@ -445,34 +550,72 @@ function render() {
   renderCE(d);
 }
 
+function renderFiveSources(fs) {
+  var root = document.getElementById('five-src-here');
+  var items = [
+    { n: fs.specialist, icon:'📚', name:'专业知识', sub:'理论考试', src:fs.layer1_src, hint:fs.layer1_hint, weight:fs.weights.specialist, layer:'Layer 1' },
+    { n: fs.technical,  icon:'🛠️', name:'操作技能', sub:'业务操作', src:fs.layer2_src, hint:fs.layer2_hint, weight:fs.weights.technical, layer:'Layer 2' },
+    { n: fs.generic,    icon:'💞', name:'通用技能', sub:'态度/价值观', src:fs.layer3_src, hint:fs.layer3_hint, weight:fs.weights.generic, layer:'Layer 3' },
+    { n: fs.case_analysis, icon:'🧩', name:'案例分析', sub:'综合评审', src:fs.layer4_src, hint:fs.layer4_hint, weight:fs.weights.case_analysis, layer:'Layer 4' },
+    { n: fs.learning_pct, icon:'📖', name:'持续学习', sub:'继续教育学时', src:fs.layer5_src, hint:fs.layer5_hint, weight:'门槛', layer:'Layer 5' },
+  ];
+  var html = items.map(function(it, i){
+    var cls = 'src-item s' + (i+1);
+    var num = it.n != null ? it.n : '—';
+    var weightHtml = typeof it.weight === 'number'
+      ? '<div class="si-weight">权重 ' + it.weight + '%</div>'
+      : '<div class="si-weight" style="color:#c9a962">门槛条件</div>';
+    return '<div class="' + cls + '">' +
+      '<div style="font-size:9px;color:#aaa;letter-spacing:1px;font-weight:700">' + it.layer + '</div>' +
+      '<div class="si-icon">' + it.icon + '</div>' +
+      '<div class="si-num">' + num + (it.n != null && it.weight !== '门槛' ? '' : '') + '</div>' +
+      '<div class="si-name">' + it.name + '</div>' +
+      '<div class="si-desc">' + it.sub + '</div>' +
+      weightHtml +
+      '<div class="si-source">📌 ' + it.src + '</div>' +
+      '<div style="font-size:8.5px;color:#aaa;margin-top:4px;line-height:1.4">' + it.hint + '</div>' +
+    '</div>';
+  }).join('');
+  root.innerHTML = html;
+}
+
 function renderHeader(fs, lv, d) {
   var root = document.getElementById('profile-header-here');
   var levelDef = LEVELS.find(function(l){ return l.key === lv.level; }) || LEVELS[0];
   var nextLevel = LEVELS[LEVELS.indexOf(levelDef) + 1];
 
-  // 复核周期（3 年登记）
-  var regDate = null;
-  try { regDate = localStorage.getItem('fs_registration_date'); } catch(e) {}
-  if (!regDate) { regDate = new Date().toISOString(); localStorage.setItem('fs_registration_date', regDate); }
+  // 红线否决警告
+  var ethicsAlert = '';
+  if (fs.ethics_veto) {
+    ethicsAlert = '<div style="background:#c25636;color:#fff;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;margin-bottom:10px">' +
+      '🚨 <b>红线否决</b>：职业素养（SOFT-4）分数 ' + fs.ethics + ' < 50，综合分封顶 50。' +
+      '这一票否决项直接影响级别认定——先去补职业素养课程和考核。</div>';
+  }
+
+  // 复核周期
+  var regDate = localStorage.getItem('fs_registration_date') || new Date().toISOString();
   var regEnd = new Date(regDate); regEnd.setFullYear(regEnd.getFullYear() + 3);
   var daysLeft = Math.ceil((regEnd - new Date()) / (1000*60*60*24));
-
   var reviewClass = daysLeft < 30 ? 'danger' : (daysLeft < 180 ? 'warn' : '');
   var reviewText = daysLeft < 0 ? '登记已过期，请立即续期' :
     (daysLeft < 30 ? '复核截止仅剩 ' + daysLeft + ' 天' :
       '下一次 3 年登记复核还有 ' + daysLeft + ' 天');
 
+  var formulaNote = '<div style="font-size:10.5px;opacity:.75;margin-top:4px">📐 世赛 WSOS 加权：Layer1×25% + Layer2×40% + Layer3×25% + Layer4×10%</div>';
+
   var html = '<div class="profile-header">' +
     '<div class="ph-avatar">经</div>' +
     '<div class="ph-main">' +
+      ethicsAlert +
       '<div class="ph-name">' + levelDef.emoji + ' ' + levelDef.name + '</div>' +
-      '<div class="ph-title">对齐人社部 · ' + levelDef.hrss + ' 级别</div>' +
+      '<div class="ph-title">对齐人社部 · ' + levelDef.hrss + ' 级别 · 世赛 WSOS 加权评价</div>' +
       '<div class="ph-badges">' +
-        '<span class="ph-badge">硬 ' + (lv.hMin != null ? lv.hMin + ' 分' : '—') + '</span>' +
-        '<span class="ph-badge">软 ' + (lv.sMin != null ? lv.sMin + ' 分' : '—') + '</span>' +
-        '<span class="ph-badge">考核合格 ' + lv.examPassCount + '/12</span>' +
-        '<span class="ph-badge">复核 ' + lv.reviewCount + ' 次</span>' +
+        '<span class="ph-badge">📚 理论 ' + (fs.specialist != null ? fs.specialist : '—') + '</span>' +
+        '<span class="ph-badge">🛠️ 操作 ' + (fs.technical != null ? fs.technical : '—') + '</span>' +
+        '<span class="ph-badge">💞 通用 ' + (fs.generic != null ? fs.generic : '—') + '</span>' +
+        '<span class="ph-badge" style="' + (fs.ethics_veto ? 'background:#c25636' : '') + '">📜 伦理 ' + (fs.ethics != null ? fs.ethics : '—') + (fs.ethics_veto ? ' ⚠️' : '') + '</span>' +
       '</div>' +
+      formulaNote +
       (nextLevel ? '<div class="ph-actions">' +
         '<a class="ph-btn primary" href="#level-path-here">🎓 晋升 ' + nextLevel.name + '</a>' +
         '<a class="ph-btn" href="/academy/exam/">📝 去考核</a>' +
@@ -481,8 +624,9 @@ function renderHeader(fs, lv, d) {
     '<div class="ph-right">' +
       '<div class="ph-level-badge">' + (lv.level || 'unregistered').toUpperCase() + '</div>' +
       '<div class="ph-score-num">' + (fs.overall != null ? fs.overall : '—') + '</div>' +
-      '<div class="ph-score-label">五源综合分</div>' +
+      '<div class="ph-score-label">加权综合分</div>' +
       '<div class="ph-review ' + reviewClass + '">' + reviewText + '</div>' +
+      '<div style="font-size:10px;opacity:.7;margin-top:4px">学时 ' + fs.ce_hours + 'h / 90h</div>' +
     '</div>' +
   '</div>';
   root.innerHTML = html;
@@ -517,15 +661,30 @@ function renderLevelPath(lv, fs) {
   for (var i = 0; i < LEVELS.length; i++) {
     var l = LEVELS[i];
     var isCurrent = lv.level === l.key;
-    var achieved = false, gap = null;
-    if (i === 0) achieved = lv.level != null;
-    else if (lv.level && LEVELS.findIndex(function(x){ return x.key === lv.level; }) >= i) achieved = true;
+    var achieved = lv.level && LEVELS.findIndex(function(x){ return x.key === lv.level; }) >= i;
 
     var stepHtml = '<div class="level-step' + (isCurrent ? ' current' : '') + '">' +
       '<div class="ls-emoji">' + l.emoji + '</div>' +
       '<div class="ls-name">' + l.name + '</div>' +
       '<div class="ls-hrss">人社：' + l.hrss + '</div>' +
-      '<div class="ls-criteria">' + l.criteria + '</div>';
+      '<div class="ls-criteria">';
+    // 逐行展示条件 + 当前状态
+    stepHtml += '<div>📐 ' + l.formula + '</div>';
+    stepHtml += '<div style="margin-top:4px">' + l.criteria + '</div>';
+    // 当前分数参考
+    if (lv.overall != null) {
+      stepHtml += '<div style="margin-top:8px;font-size:10px;color:#555;border-top:1px dashed #e8e4da;padding-top:6px">' +
+        '<b>当前：</b>综合 ' + lv.overall +
+        ' · 📚' + (lv.specialist!=null?lv.specialist:'—') +
+        ' · 🛠️' + (lv.technical!=null?lv.technical:'—') +
+        ' · 💞' + (lv.generic!=null?lv.generic:'—') +
+        (lv.case_analysis!=null?' · 🧩'+lv.case_analysis:'') +
+        ' · 📜' + (lv.ethicsScore!=null?lv.ethicsScore:'—') +
+        (lv.ethicsVeto?' <span style="color:#c25636">⚠️否决</span>':'') +
+        ' · 学时 ' + lv.ceHours + 'h / 90h' +
+      '</div>';
+    }
+    stepHtml += '</div>';
     if (achieved) stepHtml += '<div class="ls-achieved">✅ 已达成</div>';
     else if (isCurrent) stepHtml += '<div class="ls-gap">🎯 当前阶段</div>';
     else stepHtml += '<div class="ls-gap">🔒 未达</div>';
