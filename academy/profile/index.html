@@ -286,8 +286,8 @@ var SOFT_ICONS = {'共情能力':'💞','判断能力':'⚖️','责任担当':'
 
 // ========== 人社级别映射 ==========
 var LEVELS = [
-  { key:'entry',   name:'入门经纪人',  hrss:'协理',         emoji:'🟢', criteria:'硬 7 维每维 ≥ 65 · 软 5 维每维 ≥ 60' },
-  { key:'assist',  name:'合格经纪人',  hrss:'经纪人',       emoji:'🟡', criteria:'硬 7 维每维 ≥ 80 · 软 5 维每维 ≥ 70 · exam 每维 ≥ 80' },
+  { key:'entry',   name:'入门经纪人',  hrss:'协理',         emoji:'🟢', criteria:'硬 7 维每维 ≥ 65 · 软 5 维每维 ≥ 65' },
+  { key:'assist',  name:'合格经纪人',  hrss:'经纪人',       emoji:'🟡', criteria:'硬 7 维每维 ≥ 80 · 软 5 维每维 ≥ 80 · exam 每维 ≥ 80' },
   { key:'senior',  name:'高级经纪人',  hrss:'高级经纪人',   emoji:'🟠', criteria:'合格 + 复核 ≥ 3 次 + 场景 ≥ 20 次 + 案例 ≥ 1' },
   { key:'mentor',  name:'金牌导师',    hrss:'行业专家',     emoji:'🔴', criteria:'高级 + 带新人 ≥ 3 人 + 复核 ≥ 5 次' },
 ];
@@ -392,11 +392,11 @@ function computeLevel(hard, soft, d) {
   var practiceCount = (d.practice || []).length;
 
   var level = null;
-  // entry: 硬 min ≥ 65, 软 min ≥ 60
-  if (hMin != null && sMin != null && hMin >= 65 && sMin >= 60) {
+  // entry: 硬 min ≥ 65, 软 min ≥ 65
+  if (hMin != null && sMin != null && hMin >= 65 && sMin >= 65) {
     level = 'entry';
-    // assist: 硬 min ≥ 80, 软 min ≥ 70, exam 每维 ≥ 80（至少 12 个）
-    if (hMin >= 80 && sMin >= 70 && examPassCount >= 12) {
+    // assist: 硬 min ≥ 80, 软 min ≥ 80, exam 每维 ≥ 80（至少 12 个）
+    if (hMin >= 80 && sMin >= 80 && examPassCount >= 12) {
       level = 'assist';
       // senior: assist + 复核 ≥ 3 + 场景 ≥ 20 + 案例 ≥ 1
       if (reviewCount >= 3 && practiceCount >= 20) {
