@@ -235,6 +235,9 @@ a{text-decoration:none;color:inherit}
 //  - profile 页合并 fs_care_profile + fs_exam_results
 // ============================================================
 
+// 每维固定抽题数（和首页/测评页文案统一）
+var EXAM_Q_PER_DIM = 10;
+
 // 双轨模型 12 维度 × 10 题（共 120 题）
 // 硬技能 7 维（横向 · 客户服务时间线）+ 软技能 5 维（纵向 · 贯穿所有场景）
 // 每题: {q:题干, a:正确答案索引, opts:[选项]}
@@ -756,12 +759,12 @@ function buildExamCard(dim, results, profileScores) {
     var profileHint = profileScore != null ? '<div style="font-size:10.5px;color:' + (isWeak ? '#c25636' : '#666') + ';margin-top:2px">📊 画像分 ' + profileScore + (isWeak ? ' · 建议优先补强' : '') + '</div>' : '';
     card.innerHTML =
       '<span class="e-dim">' + dim + ' ' + db.name + badge + '</span>' +
-      '<div class="e-count">' + db.total + '</div>' +
+      '<div class="e-count">' + EXAM_Q_PER_DIM + '</div>' +
       '<div class="e-name">' + db.name + '专项' + (r ? '<span class="e-score-badge">上次 ' + r.pct + '分</span>' : '') + '</div>' +
-      '<div class="e-desc">' + db.desc + '</div>' +
+      '<div class="e-desc">每次开考从 ~' + db.total + ' 题备选池随机抽 ' + EXAM_Q_PER_DIM + ' 题</div>' +
       profileHint +
-      '<div class="e-bar"><div class="e-bar-fill" style="width:' + (done/db.total*100) + '%"></div></div>' +
-      '<div class="e-bar-label">' + (r ? '已考 ' + done + '/' + db.total + ' · 上次得分 ' + r.pct : '未开始 · ' + db.total + ' 题') + '</div>';
+      '<div class="e-bar"><div class="e-bar-fill" style="width:' + (done/EXAM_Q_PER_DIM*100) + '%"></div></div>' +
+      '<div class="e-bar-label">' + (r ? '已考 ' + done + '/' + EXAM_Q_PER_DIM + ' · 上次得分 ' + r.pct : '未开始 · 每次 ' + EXAM_Q_PER_DIM + ' 题（备选池 ' + db.total + ' 题）') + '</div>';
     return card;
 }
 
@@ -792,16 +795,15 @@ function startExam(dim) {
     }
   }
 
-  // v3：固定抽 10 题（如果总题数 > 10），保证"每维 10 题"的宣称准确
+  // v3：固定抽 EXAM_Q_PER_DIM 题（如果总题数 > EXAM_Q_PER_DIM），保证"每维 10 题"的宣称准确
   // 备选：合并引擎已补到 ~20 题/维，这里固定抽 10 题 = 有 10+ 题的备选池
-  var TARGET_Q = 10;
-  if (allQs.length > TARGET_Q) {
-    // 先 shuffle 再 slice 取前 10 → 每次开考随机抽不同 10 题
+  if (allQs.length > EXAM_Q_PER_DIM) {
+    // 先 shuffle 再 slice 取前 N → 每次开考随机抽不同 N 题
     for (var i = allQs.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
       var t = allQs[i]; allQs[i] = allQs[j]; allQs[j] = t;
     }
-    allQs = allQs.slice(0, TARGET_Q);
+    allQs = allQs.slice(0, EXAM_Q_PER_DIM);
   }
 
   // 每题选项顺序 shuffle（防死记答案位置）
@@ -945,7 +947,7 @@ function submitExam() {
   document.getElementById('em-body').innerHTML =
     '<div class="em-result">' +
       '<div class="er-score">' + pct + '</div>' +
-      '<div class="er-label">得分 ' + score + ' / ' + db.total + '</div>' +
+      '<div class="er-label">得分 ' + score + ' / ' + currentExam._total + '</div>' +
       '<span class="er-grade" style="color:' + grade.color + ';background:' + grade.bg + '">' + grade.label + '</span>' +
       '<div class="er-desc">' +
         (pct >= 80 ? '💪 ' + db.name + '维度掌握扎实 · 继续保持！' :
@@ -975,9 +977,10 @@ function exportWrong(format) {
   var db = EXAM_DB[currentExam.dim];
   var letters = ['A','B','C','D'];
   var wrongs = [];
-  for (var i = 0; i < db.total; i++) {
-    if (currentExam.answers[i] !== db.questions[i].a) {
-      var q = db.questions[i];
+  // 用 currentExam._total（实际抽的题数）和 currentExam._qs（实际考的题，保持 startExam 打乱后的顺序）
+  for (var i = 0; i < currentExam._total; i++) {
+    var q = currentExam._qs[i];
+    if (currentExam.answers[i] !== q.a) {
       wrongs.push({
         dim: currentExam.dim,
         dimName: db.name,
@@ -985,7 +988,7 @@ function exportWrong(format) {
         question: q.q,
         yourAnswer: letters[currentExam.answers[i]] + '. ' + q.opts[currentExam.answers[i]],
         correctAnswer: letters[q.a] + '. ' + q.opts[q.a],
-        explanation: q.exp || '',
+        explanation: q.exp || q.src || '',
         timestamp: new Date().toISOString()
       });
     }
