@@ -241,6 +241,18 @@ function getQueryId() {
   var m = location.search.match(/[?&]id=(\d+)/);
   return m ? parseInt(m[1]) : null;
 }
+// v2：支持 ?dim=DIM-4 自动定位课程（画像页推荐链接用）
+function getQueryDim() {
+  var m = location.search.match(/[?&]dim=([\w-]+)/);
+  return m ? m[1] : null;
+}
+// 反查：dim → COURSES key
+function findCourseIdByDim(dim) {
+  for (var k in COURSES) {
+    if (COURSES[k].dim === dim) return parseInt(k);
+  }
+  return null;
+}
 
 function getProgress(dim) {
   try {
@@ -257,6 +269,11 @@ function saveProgress(dim, doneChapters) {
 function render() {
   var root = document.getElementById('course-root');
   var id = getQueryId();
+  // v2：支持 ?dim=DIM-4 自动定位
+  if (!id) {
+    var dim = getQueryDim();
+    if (dim) id = findCourseIdByDim(dim);
+  }
   if (!id || !COURSES[id]) {
     root.innerHTML = '<div class="back-bar"><a href="/academy/core-courses/">← 返回核心课列表</a></div>' +
       '<div class="no-course">课程不存在 · <a href="/academy/core-courses/">查看全部 7 门课 →</a></div>';

@@ -425,6 +425,29 @@ function backToList() {
   render();
 }
 
+// v2：支持 ?scene=price-haggle 或 ?dim=DIM-4 自动进入场景（画像页推荐链接用）
+(function bootstrap() {
+  var params = new URLSearchParams(location.search);
+  var sceneId = params.get('scene');
+  var dim = params.get('dim');
+  // 先按 scene id 精确匹配
+  if (sceneId) {
+    var all = HARD_SCENES.concat(SOFT_SCENES);
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].id === sceneId) { state.sceneId = sceneId; break; }
+    }
+  }
+  // 再按 dim 模糊匹配（场景的 scene 字段包含 DIM-x）
+  if (!state.sceneId && dim) {
+    var all2 = HARD_SCENES.concat(SOFT_SCENES);
+    for (var j = 0; j < all2.length; j++) {
+      if (all2[j].scene && all2[j].scene.indexOf(dim) >= 0) {
+        state.sceneId = all2[j].id; break;
+      }
+    }
+  }
+})();
+
 render();
 </script>
 </body>

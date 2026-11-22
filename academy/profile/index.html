@@ -144,15 +144,36 @@ var FALLBACK_SOFT_SCORES = {'共情能力':50,'判断能力':50,'责任担当':5
 // 默认骨架分数（无数据时降级）
 var FALLBACK_SCORES = {'获客触达':65,'需求洞察':55,'专业方案':75,'带看谈判':40,'交易履约':85,'售后复购':50,'数字化协同':60};
 
-// 维度弱项 → 学习路径建议
+// 维度名 → DIM-x / SOFT-x 代码（用于 URL 参数）
+var DIM_CODE_MAP = {
+  '获客触达':'DIM-1','需求洞察':'DIM-2','专业方案':'DIM-3','带看谈判':'DIM-4',
+  '交易履约':'DIM-5','售后复购':'DIM-6','数字化协同':'DIM-7',
+  '共情能力':'SOFT-1','判断能力':'SOFT-2','责任担当':'SOFT-3',
+  '职业素养':'SOFT-4','服务意识':'SOFT-5'
+};
+// 反查：DIM-x → 场景 id（practice 页用）
+var PRACTICE_SCENE_MAP = {
+  'DIM-1':'customer-acquisition','DIM-2':'need-discovery','DIM-3':'solution-design',
+  'DIM-4':'price-haggle','DIM-5':'contract-signing','DIM-6':'after-sale',
+  'SOFT-1':'empathy-scene','SOFT-2':'judgment-scene','SOFT-3':'responsibility-scene',
+  'SOFT-4':'integrity-scene','SOFT-5':'service-scene'
+};
+
+// 维度弱项 → 学习路径建议（v2：全部带 URL 参数，精准直达对应维度）
 var DIM_ACTION = {
-  '获客触达':    { weak:'/academy/core-courses/', strong:'/academy/practice/',  weakLabel:'去补门', strongLabel:'去练习' },
-  '需求洞察':    { weak:'/academy/core-courses/', strong:'/academy/practice/',  weakLabel:'去补门', strongLabel:'去练习' },
-  '专业方案':    { weak:'/academy/core-courses/', strong:'/academy/exam/',      weakLabel:'去补门', strongLabel:'复习' },
-  '带看谈判':    { weak:'/academy/practice/',      strong:'/academy/exam/',      weakLabel:'去练习', strongLabel:'复习' },
-  '交易履约':    { weak:'/academy/exam/',          strong:'/academy/core-courses/', weakLabel:'去考核', strongLabel:'复习' },
-  '售后复购':    { weak:'/academy/core-courses/', strong:'/academy/practice/',  weakLabel:'去补门', strongLabel:'去练习' },
-  '数字化协同':  { weak:'/academy/core-courses/', strong:'/academy/practice/',  weakLabel:'去补门', strongLabel:'去练习' },
+  '获客触达':    { weak:'/academy/core-courses/learn/?dim=DIM-1', strong:'/academy/practice/?dim=DIM-1',  weakLabel:'去补门', strongLabel:'去练习' },
+  '需求洞察':    { weak:'/academy/core-courses/learn/?dim=DIM-2', strong:'/academy/practice/?dim=DIM-2',  weakLabel:'去补门', strongLabel:'去练习' },
+  '专业方案':    { weak:'/academy/core-courses/learn/?dim=DIM-3', strong:'/academy/exam/?dim=DIM-3',      weakLabel:'去补门', strongLabel:'复习' },
+  '带看谈判':    { weak:'/academy/practice/?dim=DIM-4',          strong:'/academy/exam/?dim=DIM-4',      weakLabel:'去练习', strongLabel:'复习' },
+  '交易履约':    { weak:'/academy/exam/?dim=DIM-5',               strong:'/academy/core-courses/learn/?dim=DIM-5', weakLabel:'去考核', strongLabel:'复习' },
+  '售后复购':    { weak:'/academy/core-courses/learn/?dim=DIM-6', strong:'/academy/practice/?dim=DIM-6',  weakLabel:'去补门', strongLabel:'去练习' },
+  '数字化协同':  { weak:'/academy/core-courses/learn/?dim=DIM-7', strong:'/academy/practice/?dim=DIM-7',  weakLabel:'去补门', strongLabel:'去练习' },
+  // 软技能
+  '共情能力':    { weak:'/academy/core-courses/learn/?dim=SOFT-1', strong:'/academy/practice/?dim=SOFT-1', weakLabel:'去补门', strongLabel:'去练习' },
+  '判断能力':    { weak:'/academy/core-courses/learn/?dim=SOFT-2', strong:'/academy/practice/?dim=SOFT-2', weakLabel:'去补门', strongLabel:'去练习' },
+  '责任担当':    { weak:'/academy/core-courses/learn/?dim=SOFT-3', strong:'/academy/exam/?dim=SOFT-3',     weakLabel:'去补门', strongLabel:'复习' },
+  '职业素养':    { weak:'/academy/core-courses/learn/?dim=SOFT-4', strong:'/academy/exam/?dim=SOFT-4',     weakLabel:'去补门', strongLabel:'复习' },
+  '服务意识':    { weak:'/academy/core-courses/learn/?dim=SOFT-5', strong:'/academy/practice/?dim=SOFT-5', weakLabel:'去补门', strongLabel:'去练习' },
 };
 
 function gradeOf(total) {
@@ -415,7 +436,7 @@ function render() {
 
 // === 学练考评配闭环模块 ===
 // 输入：硬技能 scores/sources + 软技能 softScores + 综合分 + 弱强项
-// 输出：一个完整的"下一步做什么"卡片组，弱项→学→练→考→配 每步都有具体链接
+// 输出：一个完整的"下一步做什么"卡片组，弱项→学→练→考→配 每步都有具体链接（带 URL 参数精准直达）
 function buildLearningPathBox(scores, sources, total, weakest, strongest, softScores, softSources, softHasAnyReal) {
   // 找出最弱的 3 个维度（硬技能）
   var sorted = Object.keys(scores).sort(function(a,b){ return scores[a] - scores[b]; });
@@ -426,28 +447,22 @@ function buildLearningPathBox(scores, sources, total, weakest, strongest, softSc
   var softSorted = Object.keys(softScores).sort(function(a,b){ return softScores[a] - softScores[b]; });
   var softWeakList = softSorted.slice(0, 2);
 
-  // 闭环五环节定义（每环节一个图标+名字+URL+说明）
-  var LEARN = '/academy/core-courses/';
-  var PRACTICE = '/academy/practice/';
-  var EXAM = '/academy/exam/';
-  var ASSESS = '/care-test/';
-  var MATCH = '/academy/match/';
-
   // 根据最弱维度生成具体推荐
   var learnDim = weakList[0];       // 最弱的硬技能 → 补门
   var practiceDim = weakList.length > 1 ? weakList[1] : weakList[0];  // 次弱 → 练场景
   var examDim = strongList[0];      // 最强的 → 去考拿认证
 
-  // 软技能推荐
-  var softLearnDim = softWeakList[0];
-  var softPracticeDim = softWeakList.length > 1 ? softWeakList[1] : softWeakList[0];
+  // 维度名 → URL 参数
+  var learnCode = DIM_CODE_MAP[learnDim] || 'DIM-1';
+  var practiceCode = DIM_CODE_MAP[practiceDim] || 'DIM-1';
+  var examCode = DIM_CODE_MAP[examDim] || 'DIM-1';
 
   var boxes = [
-    { icon:'📋', name:'测', href:ASSESS, label:'再测一次', desc:'每次顺序随机 · 完整答题留痕 · 看进步', color:'#2d5a3d', bg:'#f0f6f1' },
-    { icon:'📖', name:'学', href:LEARN, label:'补' + learnDim, desc:'最弱项 ' + learnDim + ' 仅 ' + scores[learnDim] + ' 分 · 核心课 7 门', color:'#8a7040', bg:'#fdf9ef' },
-    { icon:'🎭', name:'练', href:PRACTICE, label:'练' + practiceDim, desc: softHasAnyReal ? ('软技能 ' + softLearnDim + ' 也弱 · 双轨练习') : ('场景对话 · 真客户怎么说你怎么答'), color:'#0891b2', bg:'#f0f9fb' },
-    { icon:'📝', name:'考', href:EXAM, label:'拿' + examDim, desc:'最强项 ' + examDim + ' ' + scores[examDim] + ' 分 · 考核过 80 拿认证', color:'#7c3aed', bg:'#f5f2ff' },
-    { icon:'🎯', name:'配', href:MATCH, label:'看岗位', desc:'画像自动匹配 · 知道自己适合什么', color:'#c25636', bg:'#fef3ef' },
+    { icon:'📋', name:'测', href:'/care-test/', label:'再测一次', desc:'每次顺序随机 · 完整答题留痕 · 看进步', color:'#2d5a3d', bg:'#f0f6f1' },
+    { icon:'📖', name:'学', href:'/academy/core-courses/learn/?dim=' + learnCode, label:'补' + learnDim, desc:'最弱项 ' + learnDim + ' 仅 ' + scores[learnDim] + ' 分 · 精准直达该课程', color:'#8a7040', bg:'#fdf9ef' },
+    { icon:'🎭', name:'练', href:'/academy/practice/?dim=' + practiceCode, label:'练' + practiceDim, desc: softHasAnyReal ? ('软技能 ' + softWeakList[0] + ' 也弱 · 双轨练习') : ('场景对话 · 真客户怎么说你怎么答'), color:'#0891b2', bg:'#f0f9fb' },
+    { icon:'📝', name:'考', href:'/academy/exam/?dim=' + examCode, label:'拿' + examDim, desc:'最强项 ' + examDim + ' ' + scores[examDim] + ' 分 · 过 80 拿认证', color:'#7c3aed', bg:'#f5f2ff' },
+    { icon:'🎯', name:'配', href:'/academy/match/', label:'看岗位', desc:'画像自动匹配 · 知道自己适合什么', color:'#c25636', bg:'#fef3ef' },
   ];
 
   var html = '<div style="margin-top:24px">';
