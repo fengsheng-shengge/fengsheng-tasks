@@ -47,3 +47,11 @@
 - 字典 v1.3.4：stance 字段登记归口（小豆子 12.31 清单 #1）——v1 全库机构级默认值正式化立场签（随下次治理批落库），真人级前置=生产归属映射表（主库无 owner 字段，不虚承诺）；source_url 优先级建议：12.31 前 LAW 1226+CASE 871 优先覆盖（消费者点开凭证价值最高），flk 管道周五首批 50 部起不变 | v1.3.4 | 小眼镜 | 本轮群发
 
 - 技术线 #245 里程碑对接验收：EvidenceLink 徽章 PASS（LAW official/DATA data/KNOWLEDGE derived 三值域标准样本）+Worker 9 endpoint 审计+scene/entries 补 evidence 字段（9→19），12.31 开发侧硬指标全达成；stance 字段 v1.3.4 归口（v1 机构级默认值随治理批落库/真人级前置=生产归属映射表，主库无 owner 字段不虚承诺）；source_url 优先级建议 LAW 1226+CASE 871 先行 | v1.3.4 | 小眼镜 | om_x100b60c882e584b0c48c7fa73f75b35 + om_x100b60c883d7c0a8b4fb0629721ae5c
+
+## 2026-11-22 · superseded 首批 preview + 字典 v1.3.5（生哥指令：查收小马丫采集结果→同步字典仓库→推小扣子）
+
+- **查收**：小马丫群文件直发《财税2016-23号废止影响清单_20261121.csv》（om_x100b7f1*19:13），主库全量扫描财税〔2016〕23号废止影响，命中 **21 条**（多法源 6 / 单法源 15）
+- **落位**：`updates/preview/superseded_batch1_2016_23_20261122.json`（md5 **e371ff86**，21 条结构化：id/domain/name/legalRef/has_source_url/reference_type/hit_mode/disposal；D1 必填完整性 PASS / id 唯一 PASS）。按守门协议 preview 状态，**待小酒窝儿审核后转正 data/**
+- **处置口径两类**：①多法源条目剔除失效文件，按剩余法源取首个命中挂链；②单法源且已废止，改引财政部 税务总局 住房城乡建设部公告 2024 年第 16 号后挂链
+- **字典 v1.3.5**：登记 `law_version`/`superseded` 字段口径；基准库行更新 bc614c84→**00c2e150**（含 GAP1 authority 落库+328aab0 话术修正；11-21 sync 回退事故修复，旧 md5 退役）
+- **推达**：小扣子（留痕参考+调取协议锁定 md5 e371ff86）；小酒窝儿（发起 preview 审核）| v1.3.5 | 小眼镜（归口）+ 小马丫（采集）| 本轮群发
