@@ -757,8 +757,7 @@ function renderFiveSources(fs) {
 
 function renderHeader(fs, lv, d) {
   var root = document.getElementById('profile-header-here');
-  var levelDef = LEVELS.find(function(l){ return l.key === lv.level; }) || LEVELS[0];
-  var nextLevel = LEVELS[LEVELS.indexOf(levelDef) + 1];
+  var levelDef = LEVELS.find(function(l){ return l.key === lv.level; });
 
   // 红线否决警告
   var ethicsAlert = '';
@@ -768,8 +767,9 @@ function renderHeader(fs, lv, d) {
       '这一票否决项直接影响级别认定——先去补职业素养课程和考核。</div>';
   }
 
-  // 复核周期
-  var regDate = localStorage.getItem('fs_registration_date') || new Date().toISOString();
+  // 复核周期（首次访问自动生成登记日期）
+  var regDate = localStorage.getItem('fs_registration_date');
+  if (!regDate) { regDate = new Date().toISOString(); localStorage.setItem('fs_registration_date', regDate); }
   var regEnd = new Date(regDate); regEnd.setFullYear(regEnd.getFullYear() + 3);
   var daysLeft = Math.ceil((regEnd - new Date()) / (1000*60*60*24));
   var reviewClass = daysLeft < 30 ? 'danger' : (daysLeft < 180 ? 'warn' : '');
@@ -779,12 +779,22 @@ function renderHeader(fs, lv, d) {
 
   var formulaNote = '<div style="font-size:10.5px;opacity:.75;margin-top:4px">📐 世赛 WSOS 加权：Layer1×25% + Layer2×40% + Layer3×25% + Layer4×10%</div>';
 
+  // 无数据时显示"未登记"状态，不伪造入门经纪人
+  var nameBadge, titleText;
+  if (levelDef) {
+    nameBadge = levelDef.emoji + ' ' + levelDef.name;
+    titleText = '对齐人社部 · ' + levelDef.hrss + ' 级别 · 世赛 WSOS 加权评价';
+  } else {
+    nameBadge = '🪪 未登记';
+    titleText = '完成测评 + 考核 + 场景练习后自动定级 · 先从 care-test 开始';
+  }
+
   var html = '<div class="profile-header">' +
     '<div class="ph-avatar">经</div>' +
     '<div class="ph-main">' +
       ethicsAlert +
-      '<div class="ph-name">' + levelDef.emoji + ' ' + levelDef.name + '</div>' +
-      '<div class="ph-title">对齐人社部 · ' + levelDef.hrss + ' 级别 · 世赛 WSOS 加权评价</div>' +
+      '<div class="ph-name">' + nameBadge + '</div>' +
+      '<div class="ph-title">' + titleText + '</div>' +
       '<div class="ph-badges">' +
         '<span class="ph-badge">📚 理论 ' + (fs.specialist != null ? fs.specialist : '—') + '</span>' +
         '<span class="ph-badge">🛠️ 操作 ' + (fs.technical != null ? fs.technical : '—') + '</span>' +
@@ -792,13 +802,13 @@ function renderHeader(fs, lv, d) {
         '<span class="ph-badge" style="' + (fs.ethics_veto ? 'background:#c25636' : '') + '">📜 伦理 ' + (fs.ethics != null ? fs.ethics : '—') + (fs.ethics_veto ? ' ⚠️' : '') + '</span>' +
       '</div>' +
       formulaNote +
-      (nextLevel ? '<div class="ph-actions">' +
-        '<a class="ph-btn primary" href="#level-path-here">🎓 晋升 ' + nextLevel.name + '</a>' +
+      '<div class="ph-actions">' +
+        (levelDef ? '<a class="ph-btn primary" href="#level-path-here">🎓 查看晋升路径</a>' : '<a class="ph-btn primary" href="/care-test/">📋 立即测评定级</a>') +
         '<a class="ph-btn" href="/academy/exam/">📝 去考核</a>' +
-      '</div>' : '<div class="ph-actions"><a class="ph-btn" href="/care-test/">🔄 重新测评</a></div>') +
+      '</div>' +
     '</div>' +
     '<div class="ph-right">' +
-      '<div class="ph-level-badge">' + (lv.level || 'unregistered').toUpperCase() + '</div>' +
+      '<div class="ph-level-badge">' + (lv.level || 'UNREGISTERED') + '</div>' +
       '<div class="ph-score-num">' + (fs.overall != null ? fs.overall : '—') + '</div>' +
       '<div class="ph-score-label">加权综合分</div>' +
       '<div class="ph-review ' + reviewClass + '">' + reviewText + '</div>' +
