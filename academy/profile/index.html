@@ -55,7 +55,7 @@ a{text-decoration:none;color:inherit}
 .radar-box{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:24px;margin-bottom:20px;text-align:center}
 .radar-box .r-title{font-size:15px;font-weight:700;color:#1a3d24;margin-bottom:4px}
 .radar-box .r-sub{font-size:12px;color:#999;margin-bottom:14px}
-.radar-svg{width:340px;height:340px;margin:0 auto}
+.radar-svg{width:380px;height:380px;max-width:100%;margin:0 auto;display:block}
 .radar-legend{display:flex;justify-content:center;gap:10px;margin-top:10px;font-size:11px;color:#999}
 .radar-legend span{padding:2px 8px;border-radius:4px}
 
@@ -92,6 +92,40 @@ a{text-decoration:none;color:inherit}
 .dim-filter .df-chip:hover{background:#e8e4da}
 .dim-filter .df-chip.on{background:#1a3d24;color:#fff}
 </style>
+
+  <link rel="canonical" href="https://fengsheng.tech/academy/profile/">
+  <meta property="og:title" content="能力画像 · 双轨雷达图 | 风声聚匠星云">
+  <meta property="og:description" content="七维硬技能雷达图 + 五维软技能雷达图 · 测评考核分数自动回写 · 学练考评配五环节精准直达 · 看得到自己的进步轨迹">
+  <meta property="og:image" content="https://fengsheng.tech/og-image.png">
+  <meta property="og:url" content="https://fengsheng.tech/academy/profile/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="风声聚匠星云">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="能力画像 · 双轨雷达图 | 风声聚匠星云">
+  <meta name="twitter:description" content="七维硬技能雷达图 + 五维软技能雷达图 · 测评考核分数自动回写 · 学练考评配五环节精准直达 · 看得到自己的进步轨迹">
+  <meta name="twitter:image" content="https://fengsheng.tech/og-image.png">
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "name":"能力画像 · 双轨雷达图 | 风声聚匠星云",
+    "description":"七维硬技能雷达图 + 五维软技能雷达图 · 测评考核分数自动回写 · 学练考评配五环节精准直达 · 看得到自己的进步轨迹",
+    "url":"https://fengsheng.tech/academy/profile/",
+    "inLanguage":"zh-CN",
+    "isPartOf":{
+      "@type":"WebSite",
+      "name":"风声聚匠星云",
+      "url":"https://fengsheng.tech",
+      "description":"经纪人能力建设平台 · 学练考评配闭环"
+    },
+  "itemListElement":[
+    {"@type":"ListItem","position":1,"name":"首页","url":"https://fengsheng.tech/"},
+    {"@type":"ListItem","position":2,"name":"学习成长","url":"https://fengsheng.tech/academy/"},
+    {"@type":"ListItem","position":3,"name":"能力画像","url":"https://fengsheng.tech/academy/profile/"}
+  ]
+  }
+  </script>
 </head>
 <body>
 
@@ -210,7 +244,8 @@ function buildRadarSVGSoft(scores, strokeColor, fillColor) {
 
 // 通用雷达图生成器（任意 n 维）
 function buildRadarSVGBase(scores, dimOrder, dimIcons, strokeColor, fillColor) {
-  var cx = 170, cy = 170, R = 140, n = dimOrder.length;
+  // viewBox 给标签留足空间：380x380 画布，中心 190，雷达半径 115，标签在 R+32 处
+  var cx = 190, cy = 190, R = 115, n = dimOrder.length;
 
   // 轴线 + 分层圆环
   var rings = '';
@@ -235,14 +270,17 @@ function buildRadarSVGBase(scores, dimOrder, dimIcons, strokeColor, fillColor) {
     var py = cy + pr * Math.sin(angle);
     points.push(px + ',' + py);
 
-    // 维度标签（在最外圈外侧 24px 处）
-    var lx = cx + (R + 22) * Math.cos(angle);
-    var ly = cy + (R + 22) * Math.sin(angle);
-    var anchor = Math.abs(Math.cos(angle)) < 0.1 ? 'middle' : (Math.cos(angle) > 0 ? 'start' : 'end');
-    labelElems += '<text x="' + lx + '" y="' + ly + '" text-anchor="' + anchor + '" font-size="11" fill="#1a3d24" font-weight="700" dominant-baseline="middle">' + (dimIcons[name] || '') + ' ' + name + '</text>';
+    // 维度标签（在最外圈外侧 32px 处，留足 emoji+4 汉字的空间）
+    var labelR = R + 32;
+    var lx = cx + labelR * Math.cos(angle);
+    var ly = cy + labelR * Math.sin(angle);
+    // 顶部/底部用 middle，左右用 start/end
+    var cosA = Math.cos(angle);
+    var anchor = Math.abs(cosA) < 0.15 ? 'middle' : (cosA > 0 ? 'start' : 'end');
+    labelElems += '<text x="' + lx + '" y="' + ly + '" text-anchor="' + anchor + '" font-size="11.5" fill="#1a3d24" font-weight="700" dominant-baseline="middle">' + (dimIcons[name] || '') + ' ' + name + '</text>';
   }
 
-  return '<svg class="radar-svg" viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">' +
+  return '<svg class="radar-svg" viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">' +
     rings + axes +
     '<polygon points="' + points.join(' ') + '" fill="' + fillColor + '" stroke="' + strokeColor + '" stroke-width="2"/>' +
     points.map(function(p) {

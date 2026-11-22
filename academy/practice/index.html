@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>场景练习 · 学习成长</title>
-<meta name="description" content="8 个真实场景对话模拟 —— 硬技能 3 场景 + 软技能 5 场景，练你的话术反应和价值判断。">
+<meta name="description" content="18 个真实场景对话模拟 · 硬技能 8 场景覆盖 DIM-1~7 · 软技能 10 场景反复练共情/判断/担当/素养/服务 · 即时反馈价值观">
 <link rel="icon" href="/favicon.png" type="image/png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -76,6 +76,40 @@ a{text-decoration:none;color:inherit}
 
 .footer-note{max-width:880px;margin:40px auto 0;padding:22px 24px 34px;border-top:1px solid #e8e4da;font-size:12px;color:#999;text-align:center;line-height:1.9}
 </style>
+
+  <link rel="canonical" href="https://fengsheng.tech/academy/practice/">
+  <meta property="og:title" content="场景练习 · 经纪人话术对话模拟 | 风声聚匠星云">
+  <meta property="og:description" content="18 个真实场景对话模拟 · 硬技能 8 场景覆盖 DIM-1~7 · 软技能 10 场景反复练共情/判断/担当/素养/服务 · 即时反馈价值观">
+  <meta property="og:image" content="https://fengsheng.tech/og-image.png">
+  <meta property="og:url" content="https://fengsheng.tech/academy/practice/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="风声聚匠星云">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="场景练习 · 经纪人话术对话模拟 | 风声聚匠星云">
+  <meta name="twitter:description" content="18 个真实场景对话模拟 · 硬技能 8 场景覆盖 DIM-1~7 · 软技能 10 场景反复练共情/判断/担当/素养/服务 · 即时反馈价值观">
+  <meta name="twitter:image" content="https://fengsheng.tech/og-image.png">
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "name":"场景练习 · 经纪人话术对话模拟 | 风声聚匠星云",
+    "description":"18 个真实场景对话模拟 · 硬技能 8 场景覆盖 DIM-1~7 · 软技能 10 场景反复练共情/判断/担当/素养/服务 · 即时反馈价值观",
+    "url":"https://fengsheng.tech/academy/practice/",
+    "inLanguage":"zh-CN",
+    "isPartOf":{
+      "@type":"WebSite",
+      "name":"风声聚匠星云",
+      "url":"https://fengsheng.tech",
+      "description":"经纪人能力建设平台 · 学练考评配闭环"
+    },
+  "itemListElement":[
+    {"@type":"ListItem","position":1,"name":"首页","url":"https://fengsheng.tech/"},
+    {"@type":"ListItem","position":2,"name":"学习成长","url":"https://fengsheng.tech/academy/"},
+    {"@type":"ListItem","position":3,"name":"场景练习","url":"https://fengsheng.tech/academy/practice/"}
+  ]
+  }
+  </script>
 </head>
 <body>
 
@@ -106,207 +140,331 @@ a{text-decoration:none;color:inherit}
 <div class="footer-note">© 2026 fengsheng.tech</div>
 
 <script>
-// 3 个真实带看场景对话
+// ============================================================
+//  场景练习 · 完整 script
+//  P0 修复: state 初始化 + bootstrap URL 参数
+//  P1 扩充: HARD_SCENES 3→8（DIM-1~7 全覆盖）
+//  P2 扩充: SOFT_SCENES 5→10（共情/判断/担当/素养/服务各 2 个）
+//  P3 进度: 练习进度条 + 已练标记
+// ============================================================
+
+var state = { sceneId: null, turnIdx: 0, stepIdx: 0, feedbackShown: false };
+
+// ===== 硬技能 8 场景（客户服务时间线 DIM-1~7）=====
 var HARD_SCENES = [
   {
-    id: 'price-haggle',
-    icon: '💰',
-    scene: 'DIM-4 带看谈判',
-    name: '客户砍价砍到你没脾气',
-    desc: '客户看完一套 380 万的房子，开口就要 320 万。怎么接？',
-    intro: '你刚带张先生和太太看完一套 380 万的两居室，小区品质不错，房子装修保养也好。张先生一家很满意，但砍价幅度超预期。',
+    id: 'price-haggle', icon: '💰', scene: 'DIM-4 带看谈判',
+    name: '客户砍价砍到你没脾气', desc: '客户看完 380 万的房开口要 320 万，怎么接？',
+    intro: '刚带张先生一家看完 380 万两居，房子装修保养好。客户满意但砍价超预期。',
     turns: [
       {speaker:'client', text:'这房子确实还可以，但 380 万太贵了，320 万差不多。'},
       {choices:[
-        {text:'"张先生，这 320 万确实低于市场价，我帮您跟业主沟通看看能不能象征性让一点。"', feedback:'bad', fbText:'❌ 直接答应沟通等于让了底线。客户会觉得还有空间。'},
-        {text:'"张先生，您说的这个 320 万，我想了解一下是怎么算出来的？"', feedback:'good', fbText:'✅ 好做法！先问预算来源，是看了同小区便宜的？还是客户预算只有 320？搞清动机再谈。'},
-        {text:'"320 万真不行，这套同户型上周成交 365 万，380 已经是业主诚意价了。"', feedback:'good', fbText:'✅ 用事实说话，锚定市场价，让客户知道你的报价是有理有据的。'},
+        {text:'"张先生，您说的这个 320 万，我想了解一下是怎么算出来的？"', feedback:'good', fbText:'✅ 好做法！先问预算来源，搞清动机再谈。'},
+        {text:'"直接答应沟通看看能不能让一点"', feedback:'bad', fbText:'❌ 直接答应等于让了底线，客户会觉得还有空间。'},
+        {text:'"320 万真不行，同户型上周成交 365 万"', feedback:'good', fbText:'✅ 用事实锚定市场价。'},
       ]},
-      {speaker:'me', text:'"张先生，您说的这个 320 万，我想了解一下是怎么算出来的？"'},
       {speaker:'client', text:'我之前看了隔壁小区差不多的，才 330 万。'},
       {choices:[
-        {text:'"隔壁小区是回迁房，学区不一样的。"', feedback:'bad', fbText:'❌ 直接说回迁房容易引起反感，客户会觉得你看不起他的观察。'},
-        {text:'"哦，您说的是阳光家园对吧？那小区我熟。确实面积差不多，但学区对口的是三小，咱们这个是实验小学，每年差价大概 30-40 万。我给您找两个成交价您对比一下？"', feedback:'good', fbText:'✅ 好！先认同，再指出差异（学区），用数据（每年差价）量化价值。'},
-        {text:'"不一样的，我们小区档次高多了。"', feedback:'bad', fbText:'❌ "档次高"太笼统，客户听不懂也不服。要说具体差异点。'},
+        {text:'"哦，阳光家园对吧？学区对口三小，咱们是实验小学，每年差 30-40 万"', feedback:'good', fbText:'✅ 先认同，再指出差异，用数据量化价值。'},
+        {text:'"隔壁是回迁房，学区不一样"', feedback:'bad', fbText:'❌ 直接说回迁房容易引起反感。'},
       ]},
     ],
-    endMsg:'你用"认同→差异→数据"三档回法稳住了客户。最后客户接受 370 万报价，离 380 万只差 10 万。'
+    endMsg:'你用认同差异数据三档回法稳住客户，最后接受 370 万。'
   },
   {
-    id: 'need-discovery',
-    icon: '🔍',
-    scene: 'DIM-2 需求洞察',
-    name: '客户说"随便看看"但其实有明确刚需',
-    desc: '客户走进门店说"随便看看"，但其实是替孩子找学区房，你能挖出来吗？',
-    intro: '刘阿姨走进门店，穿得体面但不张扬，说"随便看看"。这是典型的隐性需求场景——客户不会告诉你真实动机，你要挖。',
+    id: 'need-discovery', icon: '🔍', scene: 'DIM-2 需求洞察',
+    name: '客户说随便看看但其实有刚需', desc: '客户走进门店说随便看看，其实替孩子找学区房',
+    intro: '刘阿姨穿得体面走进门店说随便看看。典型隐性需求场景，你要挖。',
     turns: [
       {speaker:'client', text:'你们这附近有什么好房子？随便看看。'},
       {choices:[
-        {text:'"阿姨您大概要几室？预算多少？"', feedback:'bad', fbText:'❌ 直接问预算客户不会说，防御心起来就不说了。'},
-        {text:'"阿姨您眼光好，这片区是我们最热门的。您是自己住还是帮孩子看呀？"', feedback:'good', fbText:'✅ 对！先夸客户降低防御，再用"自己住还是帮孩子"的二选一提问——帮孩子大概率=学区房。'},
-        {text:'"阿姨您请坐，喝水。"（先闲聊不聊房子）', feedback:'bad', fbText:'❌ 太绕了，客户时间宝贵。适度闲聊即可，还是要快速切入。'},
+        {text:'"阿姨您眼光好，这片区最热门。您是自己住还是帮孩子看呀？"', feedback:'good', fbText:'✅ 二选一提问，帮孩子大概率=学区房。'},
+        {text:'"阿姨您大概要几室？预算多少？"', feedback:'bad', fbText:'❌ 直接问预算防御心起来。'},
       ]},
-      {speaker:'me', text:'"阿姨您眼光好，这片区是我们最热门的。您是自己住还是帮孩子看呀？"'},
       {speaker:'client', text:'嗨，别提了，我孙子今年要上学，找学区房呢。'},
       {choices:[
-        {text:'"那您孙子今年几年级？对口哪个学校？"', feedback:'good', fbText:'✅ 问年级判断入学紧急度。低年级可以等好房，六年级要抢时间。'},
-        {text:'"学区房贵哦，您预算多少？"', feedback:'bad', fbText:'❌ 现在问预算太早，先挖掘更多需求维度。'},
-        {text:'"好的好的，我给您推几套学区房。"', feedback:'bad', fbText:'❌ 推之前先搞清预算/面积/位置偏好，不然推了白推。'},
+        {text:'"那您孙子今年几年级？对口哪个学校？"', feedback:'good', fbText:'✅ 问年级判断紧急度。'},
+        {text:'"好的好的，我给您推几套"', feedback:'bad', fbText:'❌ 推之前先搞清预算面积位置偏好。'},
       ]},
     ],
-    endMsg:'你挖到了刘阿姨孙子要上实验小学、预算 500 万左右、想要两居室离学校步行 10 分钟内。需求清晰后匹配效率提升 3 倍。'
+    endMsg:'挖到预算 500 万两居步行 10 分钟内，匹配效率提升 3 倍。'
   },
   {
-    id: 'fear-closing',
-    icon: '🎯',
-    scene: 'DIM-4 带看谈判',
-    name: '客户犹豫不决，你怎么临门一脚',
-    desc: '客户看完 3 次、犹豫 2 周、你怎么让他下决心？',
-    intro: '李哥看房 3 次，预算够，房子也满意，但就是不下决心。已经拖了 2 周，再拖可能被别人抢走。',
+    id: 'fear-closing', icon: '🎯', scene: 'DIM-4 带看谈判',
+    name: '客户犹豫不决怎么临门一脚', desc: '客户看完 3 次犹豫 2 周，你怎么让他下决心？',
+    intro: '李哥看房 3 次，预算够房子也满意，但就是不下决心。',
     turns: [
       {speaker:'client', text:'我再想想，不急不急。'},
       {choices:[
-        {text:'"好的李哥，我再等等您消息。"', feedback:'bad', fbText:'❌ 等于放弃！客户不会主动回来的，要给他压力。'},
-        {text:'"李哥跟您说实话，这套房昨天有另外一个客户来看了，他今天要给答复。您那边如果定的话，我帮您跟业主先沟通预留一下？"', feedback:'good', fbText:'✅ 真实稀缺性引导！不是虚假话术，用真实事实（有人在看）制造紧迫感。'},
-        {text:'"李哥您还在犹豫什么？"', feedback:'good', fbText:'✅ 好问题！直接问犹豫点，挖出是真有顾虑还是习惯性拖延。'},
+        {text:'"李哥跟您说实话，这套房昨天有另外一个客户来看了，他今天要给答复。您那边定的话我帮您先沟通预留？"', feedback:'good', fbText:'✅ 真实稀缺性引导，制造紧迫感。'},
+        {text:'"好的李哥，我再等等您消息"', feedback:'bad', fbText:'❌ 等于放弃！客户不会主动回来。'},
       ]},
-      {speaker:'me', text:'"李哥跟您说实话，这套房昨天有另外一个客户来看了，他今天要给答复。您那边如果定的话，我帮您跟业主先沟通预留一下？"'},
-      {speaker:'client', text:'那...那我下午能定，但能不能先让他看别的？我真的挺喜欢这套的。'},
+      {speaker:'client', text:'那...那我下午能定，但能不能先让他看别的？'},
       {choices:[
-        {text:'"好的李哥！我现在就跟业主说您定了，让他先别跟另一个客户谈。"', feedback:'good', fbText:'✅ 趁热打铁！立即行动，不让客户反悔。同时让客户感觉你在帮他争取。'},
-        {text:'"好，那您下午过来签合同。"', feedback:'bad', fbText:'❌ 太干了，没有情感连接。'},
-        {text:'"好的李哥，但业主那边不能等太久。"', feedback:'bad', fbText:'❌ 还在施压？客户已经要定了，现在要给安全感。'},
+        {text:'"好的李哥！我现在就跟业主说您定了"', feedback:'good', fbText:'✅ 趁热打铁立即行动。'},
+        {text:'"好，那您下午过来签合同"', feedback:'bad', fbText:'❌ 太干了没有情感连接。'},
       ]},
     ],
-    endMsg:'李哥当天下午签了合同。不是硬推，是帮客户做决策——因为如果他错过这套，大概率后悔。'
+    endMsg:'李哥当天下午签了合同。'
+  },
+  {
+    id: 'client-acquisition', icon: '📣', scene: 'DIM-1 获客触达',
+    name: '朋友圈 300 条没人理', desc: '每天发 3 条，300 条零咨询——怎么让客户主动找你？',
+    intro: '做了半年经纪，朋友圈 300 条房源信息零咨询。老经纪说要发有用的，什么是有用的？',
+    turns: [
+      {speaker:'client', text:'（朋友圈点赞）我家孩子明年上学，能发我看看税费清单吗？'},
+      {choices:[
+        {text:'"好的，您家哪个片区的？我帮您具体算"', feedback:'good', fbText:'✅ 知识获客筛选出精准客户，立刻深入挖掘。'},
+        {text:'（发网上搜的通用税费表）"给您参考哈"', feedback:'bad', fbText:'❌ 太敷衍，客户要的是自己的情况。'},
+      ]},
+    ],
+    endMsg:'第一个月就有 20 多个主动咨询，成交 3 单。'
+  },
+  {
+    id: 'solution-design', icon: '📐', scene: 'DIM-3 专业方案',
+    name: '4 室学区房预算只有 400 万', desc: '需求和预算完全不匹配，你怎么给他能接受的方案？',
+    intro: '孙先生一家五口要 4 室学区房，预算 400 万。片区最低 520 万，差 120 万。',
+    turns: [
+      {speaker:'client', text:'帮我找个 4 室的实验小学学区房，预算 400 万。'},
+      {choices:[
+        {text:'"给您 3 个方案：① 隔壁三小 4 室（380 万）；② 实小 3 室改 4 室（400 万）；③ 实老小破 4 室（420 万我帮您谈）。"', feedback:'good', fbText:'✅ 不否定客户，给 3 个具体可选方案。'},
+        {text:'"这个预算真找不到，您看看别的片区？"', feedback:'bad', fbText:'❌ 直接否定等于推给别人。'},
+      ]},
+    ],
+    endMsg:'孙先生选了方案二，395 万成交。他说你是第一个没说不行的。'
+  },
+  {
+    id: 'contract-signing', icon: '📝', scene: 'DIM-5 交易履约',
+    name: '签约当天客户反悔', desc: '合同摆桌上了，客户说我再想想不签了——怎么拉回来？',
+    intro: '张哥约好签 420 万的房，业主也来了。张哥说跟家人商量了想再看看。',
+    turns: [
+      {speaker:'client', text:'不好意思，跟家人商量了还是想再看看。今天先不签了。'},
+      {choices:[
+        {text:'（先对业主）"您先喝口水"（拉客户到一边）"张哥是不是家里有顾虑？您跟我说说。"', feedback:'good', fbText:'✅ 先稳业主不让场面僵住，再私下聊给足面子。'},
+        {text:'"张哥！你说好来看好的啊？业主都来了你让我怎么说？"', feedback:'bad', fbText:'❌ 指责客户会更反感。'},
+      ]},
+    ],
+    endMsg:'张哥说出老婆担心通勤，你帮她查地铁 25 分钟到公司，当天签了。'
+  },
+  {
+    id: 'after-sale-service', icon: '💗', scene: 'DIM-6 售后复购',
+    name: '老客户要装修你管不管', desc: '成交一年没联系，客户说想装修有认识的工人吗',
+    intro: '去年帮陈先生买了 350 万刚需两居。他突然发消息要装修工人。',
+    turns: [
+      {speaker:'client', text:'兄弟，我想把客厅重新装一下，有靠谱工人吗？'},
+      {choices:[
+        {text:'"有！张师傅性价比高做过 8 套我客户的，李工设计好，王队全包。说是我介绍的给优惠。"', feedback:'good', fbText:'✅ 立刻提供资源有对比有背书有承诺。'},
+        {text:'"装修我不懂哦不好意思"', feedback:'bad', fbText:'❌ 直接拒绝断了这条关系。'},
+      ]},
+    ],
+    endMsg:'陈先生把你介绍给了公司 3 个同事买房。'
+  },
+  {
+    id: 'digital-tools', icon: '🤖', scene: 'DIM-7 数字化协同',
+    name: '门店要求用新系统你嫌麻烦', desc: '习惯了 Excel 不想迁，结果被客户问时答不上来',
+    intro: '门店上了新系统说方便共享生成海报。你做了 5 年习惯 Excel。今天老客户问那套南北通透的 3 室在哪个小区。',
+    turns: [
+      {speaker:'client', text:'上次你说的那个南北通透 3 室，在哪个小区来着？'},
+      {choices:[
+        {text:'"稍等我系统里查——阳光花园 3 室 89 平 365 万，我把截图发您。对了系统能一键生成这套房的海报要吗？"', feedback:'good', fbText:'✅ 迁系统效率提升 3 倍还能增值。'},
+        {text:'（翻 Excel 5 分钟）"好像被我覆盖掉了？不好意思"', feedback:'bad', fbText:'❌ 低级错误丢信任。'},
+      ]},
+    ],
+    endMsg:'你帮门店做了培训——怎么用系统 10 分钟发一套房的海报。'
   },
 ];
 
-// ===== 软技能 5 场景（价值观判断 + 共情表达）=====
+// ===== 软技能 10 场景（共情/判断/担当/素养/服务各 2 个）=====
 var SOFT_SCENES = [
   {
-    id: 'empathy-anxiety',
-    icon: '💞',
-    scene: 'SOFT-1 共情能力',
-    name: '客户焦虑到说话发抖，你怎么接',
-    desc: '客户因为首付差 20 万急得哭了，你说什么能让他冷静下来？',
-    intro: '王姐是单亲妈妈，看上一套 420 万的学区房，首付差 20 万凑不齐。带看时她越说越急，声音都在发抖："我儿子明年就要上学了，我凑不齐首付怎么办？"',
+    id: 'empathy-anxiety', icon: '💞', scene: 'SOFT-1 共情能力',
+    name: '客户焦虑到说话发抖', desc: '首付差 20 万急哭了，你说什么能让他冷静下来？',
+    intro: '王姐单亲妈妈看上 420 万学区房，首付差 20 万。带看时越说越急。',
     turns: [
       {speaker:'client', text:'我儿子明年就要上学了，我凑不齐首付怎么办？我急死了...'},
       {choices:[
-        {text:'"王姐您别着急，我帮您想想办法——首付可以凑一凑，或者先看看有没有低首付的方案。"', feedback:'bad', fbText:'⚠️ "别着急"没用。焦虑的时候人最讨厌别人说"别着急"，你要先接纳情绪。'},
-        {text:'"王姐，能感觉到您现在压力特别大，孩子上学的事又不能等。我们一起慢慢捋，总有办法的。"', feedback:'good', fbText:'✅ 好！先确认情绪（压力特别大 + 孩子上学急），再一起想办法——共情优先，问题其次。'},
-        {text:'"王姐您先坐，喝口水。"', feedback:'bad', fbText:'⚠️ 太回避了。水解决不了焦虑，你要直面情绪。'},
+        {text:'"能感觉到您现在压力特别大，孩子上学的事又不能等。我们一起慢慢捋总有办法。"', feedback:'good', fbText:'✅ 先确认情绪，再一起想办法——共情优先。'},
+        {text:'"别着急，我帮您想想办法"', feedback:'bad', fbText:'❌ 别着急没用，焦虑的人最讨厌这句话。'},
       ]},
-      {speaker:'me', text:'"王姐，能感觉到您现在压力特别大，孩子上学的事又不能等。我们一起慢慢捋，总有办法的。"'},
-      {speaker:'client', text:'嗯...好，那我们先算算看，有没有别的办法？'},
+      {speaker:'client', text:'嗯...好，那我们先算算'},
       {choices:[
-        {text:'"好！我帮您算两套方案：一套是找亲戚凑 20 万，一套是看看有没有同片区稍便宜的学区房。您更倾向哪个？"', feedback:'good', fbText:'✅ 共情完立刻给具体方案，两种选择让客户自己选——她会觉得是自己在做决定，不是被你推着走。'},
-        {text:'"好的，我帮您找几套便宜点的学区房。"', feedback:'bad', fbText:'❌ 没问客户倾向就直接推方案。万一她想凑首付呢？先问再推。'},
-        {text:'"没事的，总会有办法的。"', feedback:'bad', fbText:'❌ 空泛安慰。焦虑的人要的是具体，不是"总会有办法"。'},
+        {text:'"好！我帮您算两套方案，您更倾向哪个？"', feedback:'good', fbText:'✅ 两种选择让客户自己选。'},
       ]},
     ],
-    endMsg:'你帮王姐找到了一个同片区 390 万的老破小学区房，首付差只有 5 万，她凑了凑就够了。她说："本来我都想放弃了，你当时那句话让我觉得还有希望。"'
+    endMsg:'帮王姐找到 390 万老破小学区房，首付差只有 5 万凑够了。'
   },
   {
-    id: 'judge-reconsider',
-    icon: '🤔',
-    scene: 'SOFT-2 判断能力',
-    name: '客户说"我再想想"——真犹豫还是假拒绝',
-    desc: '客户看完房说"我再想想"，你怎么判断、怎么应对？',
-    intro: '陈先生是程序员，理性，看完房后没说满意也没说不满意，就是说"我再想想"。你已经跟了他 3 周了。',
+    id: 'judge-reconsider', icon: '🤔', scene: 'SOFT-2 判断能力',
+    name: '客户说我再想想真犹豫还是假拒绝', desc: '看完房说我再想想，你怎么判断怎么应对？',
+    intro: '陈先生程序员理性，看完房没说满意也没说不满意。你跟了他 3 周。',
     turns: [
-      {speaker:'client', text:'好的，今天先这样吧，我再想想。'},
+      {speaker:'client', text:'好的今天先这样吧，我再想想。'},
       {choices:[
-        {text:'"好的陈哥，我再等您消息。"', feedback:'bad', fbText:'❌ 被动等消息等于放弃！"我再想想"90% 是没说出口的"我不满意"，你要挖出真实想法。'},
-        {text:'"陈哥，方便问一下您还在考虑哪些方面吗？是价格、学区、还是其他？我想帮您捋清楚。"', feedback:'good', fbText:'✅ 好！用开放+选项的提问，让客户说出具体顾虑。理性的程序员会愿意跟你分析的。'},
-        {text:'"陈哥您是不是觉得这套哪里不太好？"', feedback:'good', fbText:'✅ 直接点破，给客户台阶说真话。比"再想想"更能逼出真实想法。'},
-      ]},
-      {speaker:'me', text:'"陈哥，方便问一下您还在考虑哪些方面吗？是价格、学区、还是其他？我想帮您捋清楚。"'},
-      {speaker:'client', text:'说实话，我觉得装修一般，而且小区人车分流做得不好。不过我老婆挺喜欢的...'},
-      {choices:[
-        {text:'"装修和人车分流这两点确实是这套的短板。这样吧，我给您找两套同价位但这两点更好的，您明天看一下？"', feedback:'good', fbText:'✅ 对！认同短板 → 立刻提供更好的替代方案。客户老婆喜欢这套是情感锚点，你不能否定，但可以给新选择。'},
-        {text:'"装修可以改的嘛，人车分流也不是那么重要吧？"', feedback:'bad', fbText:'❌ 否定客户的真实顾虑！他已经说了两个具体不满意，你不能轻描淡写。要先认同再解决。'},
-        {text:'"那您老婆喜欢这套就定了呗？"', feedback:'bad', fbText:'❌ 逼客户快速决策！他已经说了两个顾虑，你要帮他解决，不是逼他。'},
+        {text:'"陈哥方便问一下您还在考虑哪些方面吗？价格学区还是其他？"', feedback:'good', fbText:'✅ 开放提问让客户说出具体顾虑。'},
+        {text:'"好的陈哥，我再等您消息"', feedback:'bad', fbText:'❌ 被动等等于放弃，我再想想 90% 是不满意。'},
       ]},
     ],
-    endMsg:'你给陈哥找了一套同价位、装修更好、人车分流的。他看完说："谢谢你没硬推第一套，这套我们俩都满意。"'
+    endMsg:'给陈哥找了同价位装修更好人车分流的，两人都满意。'
   },
   {
-    id: 'responsibility-tax',
-    icon: '⚠️',
-    scene: 'SOFT-3 责任担当',
-    name: '客户算错首付差 15 万，你提醒吗',
-    desc: '客户要签合同了，你发现他把中介费算成了 1 万（实际是 3.8 万），首付总共差 15 万——说还是不说？',
-    intro: '赵先生要签一套 380 万的房子，他算好首付 114 万、贷款 266 万。你瞄了一眼他的计算——中介费他只算了 1 万，实际是 380×1%×1=3.8 万（1% 费率）。加上税费，他总共差约 15 万。他显然没意识到。',
+    id: 'responsibility-tax', icon: '⚠️', scene: 'SOFT-3 责任担当',
+    name: '客户算错首付差 15 万你提醒吗', desc: '要签合同了，你发现他把中介费算成 1 万实际 3.8 万',
+    intro: '赵先生要签 380 万的房，算好首付 114 万。你瞄了一眼——中介费只算了 1 万，实际 3.8 万。',
     turns: [
-      {speaker:'me', text:'赵哥，合同签之前我帮您再核一遍费用清单哈。'},
-      {speaker:'client', text:'好的好的，我都算过了，首付加中介费加税费，总共准备了 118 万。'},
+      {speaker:'client', text:'好的好的，我都算过了，总共准备了 118 万。'},
       {choices:[
-        {text:'（心里想：反正他签了就行，差的钱他自己扛）"好的赵哥，那我们签合同吧。"', feedback:'bad', fbText:'❌ 绝对不能这么干！客户签了合同才发现差 15 万，他会恨你一辈子。你的佣金是短期的，口碑是长期的。'},
-        {text:'"赵哥等一下，我帮您核一下——您中介费算成 1 万了对吧？我们实际费率是 1%，这套 380 万是 3.8 万。加上契税、增值税和个人所得税，您总共要准备 130 万左右，差了 12 万。要不要我帮您重新捋一遍？"', feedback:'good', fbText:'✅ 负责任的做法！诚实指出差异，给出完整清单，帮客户重新规划。可能这次签不成，但客户一定会记住你。'},
-        {text:'"赵哥，我觉得您预算可能不够，这套房您再考虑考虑？"', feedback:'bad', fbText:'❌ 太绕了！直接说清楚哪里算错了，差多少，客户自己会做决策。你帮他理清，不是替他做决定。'},
+        {text:'"赵哥等一下我帮您核——您中介费算成 1 万了，实际 3.8 万。加上税费总共要 130 万左右，差了 12 万。"', feedback:'good', fbText:'✅ 负责任！诚实指出差异，帮客户重新规划。'},
+        {text:'（心里想反正是他签）"好的那我们签吧"', feedback:'bad', fbText:'❌ 绝对不能！签了才发现差 15 万他会恨你一辈子。'},
       ]},
     ],
-    endMsg:'赵哥说："谢谢你告诉我！我差的太多了，不然签了合同我要违约。我跟家人再商量一下预算。" 两周后他回来找你，预算调到 450 万，你帮他找到了更合适的。'
+    endMsg:'赵哥预算调到 450 万，两周后回来找你找到了更合适的。'
   },
   {
-    id: 'ethics-yingyang',
-    icon: '🚫',
-    scene: 'SOFT-4 职业素养',
-    name: '业主要你做阴阳合同避税，干不干',
-    desc: '业主主动提出做两份合同——一份低价报税、一份真实成交价——你怎么说？',
-    intro: '李姐卖房 420 万，她说："小伙子，我们签两份合同吧，一份写 350 万报税，一份写真实的 420 万。大家都省钱，你佣金也不少。"',
+    id: 'ethics-yingyang', icon: '🚫', scene: 'SOFT-4 职业素养',
+    name: '业主要你做阴阳合同避税干不干', desc: '业主主动提做两份合同，一份低价报税一份真实成交价',
+    intro: '李姐卖房 420 万，说我们签两份吧一份 350 万报税一份真实 420 万。',
     turns: [
-      {speaker:'client', text:'小伙子，我们签两份合同吧，一份写 350 万报税，一份写真实的 420 万。这样我省 2 万多税，你佣金也不少。'},
+      {speaker:'client', text:'小伙子签两份吧，一份 350 报税一份 420 成交。大家省税。'},
       {choices:[
-        {text:'"好的李姐，我帮您操作。这行都这么干的。"', feedback:'bad', fbText:'❌ 绝对不能！阴阳合同是违法的，轻则罚款，重则吊销执照。你这一单赚的佣金，不够你被查一次的。而且万一业主或者客户事后反悔举报你，你百口莫辩。'},
-        {text:'"李姐，我理解您想省税，但阴阳合同是违法的，我不能帮您做。查出来不仅您要补税罚款，我也要丢执照。要不我们聊聊有没有合法的方式节税？比如看看能不能走满五唯一？"', feedback:'good', fbText:'✅ 负责任！先明确拒绝，再给出合法替代方案（满五唯一/装修款抵扣/赠品协议）。客户如果真懂，会理解的。'},
-        {text:'"李姐这个我做不了，您找别家吧。"', feedback:'bad', fbText:'❌ 直接推出去？万一别家做了，你不仅丢了这单，还丢了这个客户的长期信任。正确做法是：拒绝 + 给合法替代方案。'},
+        {text:'"李姐我理解，但阴阳合同违法我不能做。要不看看能不能走满五唯一合法节税？"', feedback:'good', fbText:'✅ 明确拒绝+给合法替代方案。'},
+        {text:'"好的李姐我帮您操作这行都这么干的"', feedback:'bad', fbText:'❌ 违法！轻则罚款重则吊销执照。'},
       ]},
     ],
-    endMsg:'李姐说："哦，原来违法啊？那你帮我看看有没有合法的办法。" 你帮她查了，这套房确实满五唯一，可以免征个人所得税。她说："谢谢你说实话，我还以为你不想帮我呢。"'
+    endMsg:'这套房确实满五唯一免征个税。李姐说谢谢你说实话。'
   },
   {
-    id: 'service-post-sale',
-    icon: '🏠',
-    scene: 'SOFT-5 服务意识',
-    name: '客户急售你压价？——不，你帮他提速',
-    desc: '业主急售，你可以压价赚更多佣金，也可以帮他快速卖个好价——选哪个？',
-    intro: '刘叔急用钱，要在 2 个月内卖掉一套房。市场价 400 万，他说"380 万也行，只要能快速出手"。你可以跟他说"360 万吧，我帮你找买家"（压价 20 万，你佣金多 2000），也可以帮他做快速成交方案。',
+    id: 'service-post-sale', icon: '🏠', scene: 'SOFT-5 服务意识',
+    name: '业主急售你压价还是帮他提速', desc: '急售可压价多赚，也可帮他快速卖好价',
+    intro: '刘叔急用钱 2 个月内卖掉。市场价 400 万，他说 380 万也行。',
     turns: [
-      {speaker:'client', text:'小伙子，我着急用钱，这套房 380 万也行，只要能两个月内出手。'},
+      {speaker:'client', text:'我着急用钱，380 万也行，两个月内出手。'},
       {choices:[
-        {text:'"好的刘叔，360 万吧，我帮你找买家，越快越好。"', feedback:'bad', fbText:'❌ 压价 20 万？你佣金多 2000 块，但刘叔多亏 20 万。他急用钱但不是傻子，事后一定恨你。而且如果他跟别人说你压他价，你的口碑就毁了。'},
-        {text:'"刘叔，我理解您急用钱。我帮您做一个快速成交方案：定价 385 万（比您说的高 5 万），我帮您同步给 50 个客户、刷 3 天首页、每周组织 10 组带看。目标 6 周内找到买家，您觉得行吗？"', feedback:'good', fbText:'✅ 好做法！不压价反而提价（385 万），但给具体的快速成交动作。佣金按 385 万算，你也赚更多。双赢：刘叔多卖 5 万，你佣金多 500。'},
-        {text:'"刘叔您再想想，380 万太低了，市场价 400 万呢。"', feedback:'bad', fbText:'❌ 空泛反对。刘叔知道市场价，但他急用钱，他要的是"怎么快速卖"不是"能不能卖高价"。给他方案，不是说教。'},
+        {text:'"刘叔我帮您做快速成交方案：定价 385 万，同步 50 客户，刷 3 天首页，每周 10 组带看。"', feedback:'good', fbText:'✅ 不压价反而提价，给具体动作。双赢：刘叔多卖 5 万。'},
+        {text:'"好的刘叔360万吧我帮你找买家"', feedback:'bad', fbText:'❌ 压价 20 万你多赚 2000 但刘叔多亏 20 万，口碑毁了。'},
       ]},
     ],
-    endMsg:'6 周后刘叔的房子以 388 万成交，比他预期的 380 万多了 8 万。他说："当初我以为你会压价，没想到你帮我卖得更好。谢谢你！" 后来他给你介绍了 3 个同事买房。'
+    endMsg:'6 周后 388 万成交。刘叔介绍了 3 个同事买房。'
+  },
+  // === 软技能第 2 个变体（每个维度再练一次）===
+  {
+    id: 'empathy-angry', icon: '💢', scene: 'SOFT-1 共情能力',
+    name: '客户生气拍桌子', desc: '客户带着老婆冲过来说你骗他，南北通透主卧西晒',
+    intro: '带李先生看了一套标注南北通透的房，客厅确实通透。但老婆是南方人对采光敏感，主卧西晒 40 度。',
+    turns: [
+      {speaker:'client', text:'你们这不是骗人吗？明明标着南北通透主卧朝西的！'},
+      {choices:[
+        {text:'"李哥嫂子是我考虑不周。我只说了客厅南北通透，忘了强调主卧朝西。抱歉让白跑一趟。"', feedback:'good', fbText:'✅ 先认错，不要辩解。客户生气时要先接住情绪。'},
+        {text:'"南北通透指的是客厅我当时跟您说过"', feedback:'bad', fbText:'❌ 辩解=火上浇油。'},
+      ]},
+    ],
+    endMsg:'你给所有客户带看前都先发采光详情表。老客户介绍新客户说听说你会提前发朝向表。'
+  },
+  {
+    id: 'judge-two-houses', icon: '💰', scene: 'SOFT-2 判断能力',
+    name: '两套房拿不定帮他选', desc: 'A 户型好小区旧，B 小区新户型差，同价位同学区',
+    intro: '刘女士孩子明年上学预算 400 万。A 89 平 3 室户型完美但小区 2005 年；B 85 平 2 室户型差但小区 2018 年。',
+    turns: [
+      {speaker:'client', text:'我选不出来了...A 舒服但小区旧，B 新但憋屈。你帮我选？'},
+      {choices:[
+        {text:'"帮您分析：学区一样打平；一家三口住 A 的 3 室更舒服；老学区房户型好也保值。建议 A，但最终您定。"', feedback:'good', fbText:'✅ 帮显性化隐性需求，让客户自己决策不会后悔。'},
+        {text:'"我觉得 A 好"', feedback:'bad', fbText:'❌ 直接给答案，后悔会怪你。'},
+      ]},
+    ],
+    endMsg:'刘女士说还好没听我妈的选小区新的。'
+  },
+  {
+    id: 'responsibility-key', icon: '🫠', scene: 'SOFT-3 责任担当',
+    name: '把客户钥匙搞丢了', desc: '独家委托的钥匙弄丢了，客户在外地出差',
+    intro: '周女士独家委托钥匙在你兜里丢了。唯一备份，她在外地 3 天后回来。',
+    turns: [
+      {speaker:'client', text:'什么？钥匙丢了？你怎么搞的？'},
+      {choices:[
+        {text:'"周姐对不起！我现在联系开锁公司晚上 8 点换锁芯费用我全出，换完拍视频给您。"', feedback:'good', fbText:'✅ 立刻坦白+承担损失+给安全感。一定会记住你的担当。'},
+        {text:'"先找找看明天找不到再说"', feedback:'bad', fbText:'❌ 拖延只会让问题更大。'},
+      ]},
+    ],
+    endMsg:'周女士后来把两套投资房也交给你独家卖。'
+  },
+  {
+    id: 'ethics-redpacket', icon: '🎁', scene: 'SOFT-4 职业素养',
+    name: '客户塞红包让你独家带看', desc: '看完房偷偷塞你 2000 块让你盯着这套别人来就说有人定了',
+    intro: '王先生看完 400 万的房满意。临走偷偷塞你信封让你重点盯。',
+    turns: [
+      {speaker:'client', text:'小兄弟一点意思，帮我盯着这套，别人来你就说有人定了。'},
+      {choices:[
+        {text:'"王哥您太客气了红包我不能收。但这套我会重点帮您盯，报价变动其他客户看我都告诉您。但不能说别人已经定了。"', feedback:'good', fbText:'✅ 不收红包但不拒绝核心诉求，明确底线。'},
+        {text:'（收下）"好的您放心"', feedback:'bad', fbText:'❌ 受贿+损害其他客户利益。会反过来要挟你。'},
+      ]},
+    ],
+    endMsg:'王先生介绍朋友找你：找你放心不会坑人。'
+  },
+  {
+    id: 'service-followup', icon: '📬', scene: 'SOFT-5 服务意识',
+    name: '客户买完房半年了还管不管', desc: '成交半年没联系，要不要主动问问',
+    intro: '帮何先生买了 350 万刚需两居，程序员话不多。朋友圈发加班说搬新家没整理。',
+    turns: [
+      {speaker:'client', text:'（朋友圈）搬新家半年还没整理，加班加到死...'},
+      {choices:[
+        {text:'"何哥过年好！需要整理师的话我认识的打 8 折。上次推荐的绿萝长得怎么样了？"', feedback:'good', fbText:'✅ 节日问候+朋友圈细节+增值服务。朋友式关心。'},
+        {text:'"算了别打扰人家"', feedback:'bad', fbText:'❌ 客户不会主动找你。长期关系维护很重要。'},
+      ]},
+    ],
+    endMsg:'何先生发朋友圈买房半年经纪还寄砂糖橘。4 个同事要你微信。'
   },
 ];
 
 function render() {
   var root = document.getElementById('root');
   var html = '';
+  var doneMap = {};
+  try { doneMap = JSON.parse(localStorage.getItem('fs_practice_done') || '{}'); } catch(e) {}
 
   if (!state.sceneId) {
-    // 场景选择
-    html += '<div class="pg"><h2 class="pg-h">🎭 场景练习</h2><p class="pg-sub">8 个真实场景 · 硬技能 3 + 软技能 5 · 选择题练反应 · 即时反馈价值观</p>' +
-      '<div class="grid">' +
-      '<div class="p-grid-label">📐 专业硬技能 · 客户服务时间线（3 场景）</div>' +
+    var hardDone = HARD_SCENES.filter(function(s){ return doneMap[s.id]; }).length;
+    var softDone = SOFT_SCENES.filter(function(s){ return doneMap[s.id]; }).length;
+    var totalDone = hardDone + softDone;
+    var totalAll = HARD_SCENES.length + SOFT_SCENES.length;
+    var pct = totalDone > 0 ? Math.round(totalDone / totalAll * 100) : 0;
+
+    html += '<div class="pg"><h2 class="pg-h">🎭 场景练习</h2>' +
+      '<p class="pg-sub">练你的话术反应和价值判断 · 即时反馈 · 反复练习不丢人' +
+      (totalDone > 0 ? ' · 已完成 ' + totalDone + '/' + totalAll + '（' + pct + '%）' : '') + '</p>';
+
+    if (totalDone > 0) {
+      html += '<div style="background:#fff;border:1px solid #e8e4da;border-radius:10px;padding:12px 16px;margin-bottom:16px">' +
+        '<div style="display:flex;justify-content:space-between;margin-bottom:6px">' +
+          '<span style="font-size:12px;color:#666;font-weight:600">📈 练习进度</span>' +
+          '<span style="font-size:12px;color:#1a3d24;font-weight:700">' + totalDone + '/' + totalAll + '</span>' +
+        '</div>' +
+        '<div style="background:#f0ece2;border-radius:6px;height:8px;overflow:hidden">' +
+          '<div style="background:linear-gradient(90deg,#2d5a3d,#4a8c5f);height:100%;border-radius:6px;width:' + pct + '%"></div>' +
+        '</div>' +
+        '<div style="font-size:11px;color:#888;margin-top:6px">硬技能 ' + hardDone + '/' + HARD_SCENES.length + ' · 软技能 ' + softDone + '/' + SOFT_SCENES.length + '</div>' +
+      '</div>';
+    }
+
+    html += '<div class="grid">' +
+      '<div class="p-grid-label">📐 专业硬技能 · 客户服务时间线（' + HARD_SCENES.length + ' 场景，覆盖 DIM-1~7）</div>' +
       HARD_SCENES.map(function(s) {
-        return '<div class="p-card" onclick="enterScene(\'' + s.id + '\')">' +
+        var done = doneMap[s.id];
+        return '<div class="p-card' + (done ? ' active' : '') + '" onclick="enterScene(\'' + s.id + '\')">' +
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
           '<div class="p-emoji">' + s.icon + '</div>' +
+          (done ? '<span style="font-size:10px;background:#2d5a3d;color:#fff;padding:2px 8px;border-radius:10px;font-weight:700">✓ 已练</span>' : '<span style="font-size:10px;color:#bbb">NEW</span>') +
+          '</div>' +
           '<div class="p-scene">' + s.scene + '</div>' +
           '<div class="p-name">' + s.name + '</div>' +
           '<div class="p-desc">' + s.desc + '</div>' +
         '</div>';
       }).join('') +
-      '<div class="p-grid-label">💞 软技能 · 价值观与判断（5 场景）</div>' +
+      '<div class="p-grid-label">💞 软技能 · 价值观与判断（' + SOFT_SCENES.length + ' 场景，共情/判断/担当/素养/服务各 2 个可反复练）</div>' +
       SOFT_SCENES.map(function(s) {
-        return '<div class="p-card soft" onclick="enterScene(\'' + s.id + '\')">' +
+        var done = doneMap[s.id];
+        return '<div class="p-card soft' + (done ? ' active' : '') + '" onclick="enterScene(\'' + s.id + '\')">' +
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
           '<div class="p-emoji">' + s.icon + '</div>' +
+          (done ? '<span style="font-size:10px;background:#8a7040;color:#fff;padding:2px 8px;border-radius:10px;font-weight:700">✓ 已练</span>' : '<span style="font-size:10px;color:#bbb">NEW</span>') +
+          '</div>' +
           '<div class="p-scene">' + s.scene + '</div>' +
           '<div class="p-name">' + s.name + '</div>' +
           '<div class="p-desc">' + s.desc + '</div>' +
@@ -316,19 +474,17 @@ function render() {
   } else {
     var ALL_SCENES = HARD_SCENES.concat(SOFT_SCENES);
     var scene = ALL_SCENES.find(function(s){ return s.id === state.sceneId; });
+    if (!scene) { state.sceneId = null; render(); return; }
     var turns = scene.turns;
 
-    // 场景 header
     html += '<div class="pg"><h2 class="pg-h">' + scene.icon + ' ' + scene.name + '</h2>' +
       '<p class="pg-sub">' + scene.scene + ' · ' + scene.intro + '</p></div>';
 
-    // 对话区
     html += '<div class="chat-box"><div class="chat-hdr">' +
       '<div class="ch-title">' + scene.icon + ' ' + scene.name + '</div>' +
       '<div class="ch-turn">进度 ' + state.turnIdx + '/' + turns.length + '</div></div>' +
       '<div class="chat-body" id="chat-body">';
 
-    // 渲染已发生的对话
     for (var i = 0; i <= state.turnIdx && i < turns.length; i++) {
       var t = turns[i];
       if (t.speaker) {
@@ -340,7 +496,6 @@ function render() {
     }
     html += '</div>';
 
-    // 如果还有选择没到，或者当前是 choice 节点
     if (state.turnIdx < turns.length && turns[state.turnIdx].choices) {
       var choiceIdx = state.stepIdx;
       var choice = turns[state.turnIdx].choices[choiceIdx];
@@ -354,29 +509,25 @@ function render() {
 
       if (state.feedbackShown) {
         var fbClass = choice.feedback === 'good' ? 'fgood' : 'fbad';
-        html += '</div></div>' + // close chat-box
+        html += '</div></div>' +
           '<div class="feedback">' +
           '<div class="fback-title"><span class="fbadge ' + fbClass + '">' + (choice.feedback === 'good' ? '✅ 好做法' : '⚠️ 可以改进') + '</span>反馈</div>' +
           '<div class="fback-body">' + choice.fbText + '</div>' +
           '<div style="margin-top:14px;display:flex;gap:10px">' +
-            '<button class="ch-body-btn primary" style="font-size:13px;padding:8px 20px;border-radius:8px;border:none;cursor:pointer" onclick="nextTurn()">' +
+            '<button style="font-size:13px;padding:8px 20px;border-radius:8px;border:none;cursor:pointer;background:#1a3d24;color:#fff" onclick="nextTurn()">' +
             (state.turnIdx + 1 >= turns.length ? '🏁 看结局' : '继续 →') + '</button>' +
-            '<button class="ch-body-btn secondary" style="font-size:13px;padding:8px 20px;border-radius:8px;border:1px solid #e8e4da;background:#fff;cursor:pointer;color:#1a3d24" onclick="resetScene()">🔄 重玩</button>' +
+            '<button style="font-size:13px;padding:8px 20px;border-radius:8px;border:1px solid #e8e4da;background:#fff;cursor:pointer;color:#1a3d24" onclick="resetScene()">🔄 重玩</button>' +
           '</div>' +
         '</div>';
       } else {
         html += '</div></div>';
       }
     } else {
-      // 客户/经纪人文本节点 → 自动进入下一个
       html += '</div></div>';
-      // 自动推进到下一个 choice
       setTimeout(function() { nextTurn(); }, 500);
     }
 
-    // 结局
     if (state.turnIdx >= turns.length) {
-      // 存库：完成场景 → fs_practice_done[sceneId]
       try {
         var done = JSON.parse(localStorage.getItem('fs_practice_done') || '{}');
         if (!done[scene.id]) {
@@ -389,16 +540,15 @@ function render() {
         '<div class="fback-title">🏁 场景结局 <span style="font-size:10px;background:#e8f4ec;color:#2d5a3d;padding:2px 8px;border-radius:10px;margin-left:8px">✓ 已解锁徽章</span></div>' +
         '<div class="fback-body">' + scene.endMsg + '</div>' +
         '<div style="margin-top:14px;display:flex;gap:10px">' +
-          '<button onclick="resetScene()" class="ch-body-btn primary" style="font-size:13px;padding:8px 20px;border-radius:8px;border:none;cursor:pointer">🔄 重玩这个</button>' +
-          '<button onclick="backToList()" class="ch-body-btn secondary" style="font-size:13px;padding:8px 20px;border-radius:8px;border:1px solid #e8e4da;background:#fff;cursor:pointer;color:#1a3d24">🎭 选下一个场景</button>' +
-          '<a href="/academy/profile/" style="display:inline-block;background:#fdf9ef;color:#8a7040;font-size:13px;padding:8px 20px;border-radius:8px;border:1px solid #e8e4da;text-decoration:none">🏆 看成就徽章 →</a>' +
+          '<button onclick="resetScene()" style="font-size:13px;padding:8px 20px;border-radius:8px;border:none;cursor:pointer;background:#1a3d24;color:#fff">🔄 重玩这个</button>' +
+          '<button onclick="backToList()" style="font-size:13px;padding:8px 20px;border-radius:8px;border:1px solid #e8e4da;background:#fff;cursor:pointer;color:#1a3d24">🎭 选下一个</button>' +
+          '<a href="/academy/profile/" style="display:inline-block;background:#fdf9ef;color:#8a7040;font-size:13px;padding:8px 20px;border-radius:8px;border:1px solid #e8e4da;text-decoration:none">🏆 看画像 →</a>' +
         '</div>' +
       '</div>';
     }
   }
 
   root.innerHTML = html;
-  // scroll to bottom
   var cb = document.getElementById('chat-body');
   if (cb) cb.scrollTop = cb.scrollHeight;
 }
@@ -408,36 +558,27 @@ function enterScene(id) {
   render();
 }
 function chooseOption(i) {
-  state.stepIdx = i;
-  state.feedbackShown = true;
-  render();
+  state.stepIdx = i; state.feedbackShown = true; render();
 }
 function nextTurn() {
-  state.turnIdx++; state.stepIdx = 0; state.feedbackShown = false;
-  render();
+  state.turnIdx++; state.stepIdx = 0; state.feedbackShown = false; render();
 }
 function resetScene() {
-  state.turnIdx = 0; state.stepIdx = 0; state.feedbackShown = false;
-  render();
+  state.turnIdx = 0; state.stepIdx = 0; state.feedbackShown = false; render();
 }
-function backToList() {
-  state.sceneId = null;
-  render();
-}
+function backToList() { state.sceneId = null; render(); }
 
-// v2：支持 ?scene=price-haggle 或 ?dim=DIM-4 自动进入场景（画像页推荐链接用）
+// URL 参数支持
 (function bootstrap() {
   var params = new URLSearchParams(location.search);
   var sceneId = params.get('scene');
   var dim = params.get('dim');
-  // 先按 scene id 精确匹配
   if (sceneId) {
     var all = HARD_SCENES.concat(SOFT_SCENES);
     for (var i = 0; i < all.length; i++) {
       if (all[i].id === sceneId) { state.sceneId = sceneId; break; }
     }
   }
-  // 再按 dim 模糊匹配（场景的 scene 字段包含 DIM-x）
   if (!state.sceneId && dim) {
     var all2 = HARD_SCENES.concat(SOFT_SCENES);
     for (var j = 0; j < all2.length; j++) {
