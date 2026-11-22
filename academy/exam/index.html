@@ -652,22 +652,78 @@ function showHistoryPanel() {
   panel.classList.add('show');
 }
 
+// ===== 画像分数读取（用于弱项推荐排序）=====
+function getProfileScores() {
+  // 返回 { 'DIM-1': 65, 'SOFT-1': 70, ... } 各维度分数（care-test + exam 取 max）
+  var scores = {};
+  var care = null, examR = {};
+  try { care = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
+  try { examR = JSON.parse(localStorage.getItem('fs_exam_results')) || {}; } catch(e) {}
+  var HARD_NAMES = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
+  var SOFT_NAMES = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
+  for (var i = 0; i < 7; i++) {
+    var code = 'DIM-' + (i+1), name = HARD_NAMES[i];
+    var cs = care && care.dim_scores ? care.dim_scores[name] : null;
+    var es = examR[code] ? examR[code].pct : null;
+    if (cs != null && es != null) scores[code] = Math.max(cs, es);
+    else if (cs != null) scores[code] = cs;
+    else if (es != null) scores[code] = es;
+  }
+  for (var j = 0; j < 5; j++) {
+    var scode = 'SOFT-' + (j+1), sname = SOFT_NAMES[j];
+    var scs = care && care.soft_dim_scores ? care.soft_dim_scores[sname] : null;
+    var ses = examR[scode] ? examR[scode].pct : null;
+    if (scs != null && ses != null) scores[scode] = Math.max(scs, ses);
+    else if (scs != null) scores[scode] = scs;
+    else if (ses != null) scores[scode] = ses;
+  }
+  return scores;
+}
+
 function renderGrid() {
   var results = loadResults();
   var grid = document.getElementById('card-grid');
   grid.innerHTML = '';
   var roleDims = ROLE_DIM_MAP[currentRole];
+  var profileScores = getProfileScores();
+  var hasProfile = Object.keys(profileScores).length > 0;
 
-  // 硬技能（只显示该角色高频维度）
+  // 硬技能（只显示该角色高频维度）— 按画像分数从低到高排序（弱项在前）
   var shownHard = DIM_ORDER.filter(function(d){ return roleDims.indexOf(d) !== -1; });
   var shownSoft = SOFT_DIM_ORDER.filter(function(d){ return roleDims.indexOf(d) !== -1; });
+
+  if (hasProfile) {
+    shownHard.sort(function(a,b){
+      var sa = profileScores[a] != null ? profileScores[a] : 999;
+      var sb = profileScores[b] != null ? profileScores[b] : 999;
+      return sa - sb;
+    });
+    shownSoft.sort(function(a,b){
+      var sa = profileScores[a] != null ? profileScores[a] : 999;
+      var sb = profileScores[b] != null ? profileScores[b] : 999;
+      return sa - sb;
+    });
+  }
+
+  // 弱项数 = 分数 < 70 的维度
+  var weakHard = shownHard.filter(function(d){ return profileScores[d] != null && profileScores[d] < 70; });
+  var weakSoft = shownSoft.filter(function(d){ return profileScores[d] != null && profileScores[d] < 70; });
+  var totalWeak = weakHard.length + weakSoft.length;
+
+  if (hasProfile && totalWeak > 0) {
+    var alert = document.createElement('div');
+    alert.style.cssText = 'background:linear-gradient(135deg,#fdf0ec,#fff);border:1px solid #e8c4b8;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;color:#8a3d2a;display:flex;gap:10px;align-items:center';
+    alert.innerHTML = '⚠️ <b>画像提示</b>：你有 <b>' + totalWeak + '</b> 个维度画像分低于 70，优先考弱项提分最快 → ' +
+      weakHard.slice(0,2).concat(weakSoft.slice(0,1)).map(function(d){ return '<a href="#" onclick="startExam(\'' + d + '\');return false" style="color:#c25636;font-weight:700">' + d + '</a>'; }).join(' · ');
+    grid.appendChild(alert);
+  }
 
   if (shownHard.length > 0) {
     var hardLabel = document.createElement('div');
     hardLabel.className = 'grid-section-label';
     hardLabel.textContent = '📐 专业硬技能 · 客户服务时间线（' + shownHard.length + ' 维）' + (currentRole !== 'all' ? ' · 买家高频' : '');
     grid.appendChild(hardLabel);
-    shownHard.forEach(function(dim) { grid.appendChild(buildExamCard(dim, results)); });
+    shownHard.forEach(function(dim) { grid.appendChild(buildExamCard(dim, results, profileScores)); });
   }
 
   if (shownSoft.length > 0) {
@@ -675,7 +731,7 @@ function renderGrid() {
     softLabel.className = 'grid-section-label';
     softLabel.textContent = '💞 软技能 · 贯穿所有业务场景（' + shownSoft.length + ' 维）' + (currentRole !== 'all' ? ' · 买家高频' : '');
     grid.appendChild(softLabel);
-    shownSoft.forEach(function(dim) { grid.appendChild(buildExamCard(dim, results)); });
+    shownSoft.forEach(function(dim) { grid.appendChild(buildExamCard(dim, results, profileScores)); });
   }
 
   if (shownHard.length === 0 && shownSoft.length === 0) {
@@ -683,19 +739,27 @@ function renderGrid() {
   }
 }
 
-function buildExamCard(dim, results) {
+function buildExamCard(dim, results, profileScores) {
     var db = EXAM_DB[dim];
     var r = results[dim];
     var done = r ? r.answers.filter(function(a){ return a != null; }).length : 0;
     var scorePct = r ? r.pct : 0;
+    var profileScore = profileScores && profileScores[dim] != null ? profileScores[dim] : null;
+    var isWeak = profileScore != null && profileScore < 70;
+    var isStrong = profileScore != null && profileScore >= 85;
     var card = document.createElement('div');
-    card.className = 'card' + (r ? ' has-result' : '');
+    card.className = 'card' + (r ? ' has-result' : '') + (isWeak ? ' is-weak' : '');
     card.onclick = function() { startExam(dim); };
+    var badge = '';
+    if (isWeak) badge = '<span style="background:#c25636;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px">⚠️ 弱项</span>';
+    else if (isStrong) badge = '<span style="background:#2d5a3d;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px">⭐ 强项</span>';
+    var profileHint = profileScore != null ? '<div style="font-size:10.5px;color:' + (isWeak ? '#c25636' : '#666') + ';margin-top:2px">📊 画像分 ' + profileScore + (isWeak ? ' · 建议优先补强' : '') + '</div>' : '';
     card.innerHTML =
-      '<span class="e-dim">' + dim + ' ' + db.name + '</span>' +
+      '<span class="e-dim">' + dim + ' ' + db.name + badge + '</span>' +
       '<div class="e-count">' + db.total + '</div>' +
       '<div class="e-name">' + db.name + '专项' + (r ? '<span class="e-score-badge">上次 ' + r.pct + '分</span>' : '') + '</div>' +
       '<div class="e-desc">' + db.desc + '</div>' +
+      profileHint +
       '<div class="e-bar"><div class="e-bar-fill" style="width:' + (done/db.total*100) + '%"></div></div>' +
       '<div class="e-bar-label">' + (r ? '已考 ' + done + '/' + db.total + ' · 上次得分 ' + r.pct : '未开始 · ' + db.total + ' 题') + '</div>';
     return card;

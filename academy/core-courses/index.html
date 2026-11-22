@@ -435,5 +435,77 @@ a{text-decoration:none;color:inherit}
 <div class="footer-note"><br>
   © 2026 fengsheng.tech · 学习成长中心
 </div>
+
+<script>
+// ===== 画像推荐：弱项课程排序 + 标记 =====
+(function(){
+  var scores = {};
+  var care = null, examR = {};
+  try { care = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
+  try { examR = JSON.parse(localStorage.getItem('fs_exam_results')) || {}; } catch(e) {}
+  var HARD_NAMES = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
+  var SOFT_NAMES = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
+  for (var i = 0; i < 7; i++) {
+    var code = 'DIM-' + (i+1), name = HARD_NAMES[i];
+    var cs = care && care.dim_scores ? care.dim_scores[name] : null;
+    var es = examR[code] ? examR[code].pct : null;
+    if (cs != null && es != null) scores[code] = Math.max(cs, es);
+    else if (cs != null) scores[code] = cs;
+    else if (es != null) scores[code] = es;
+  }
+  for (var j = 0; j < 5; j++) {
+    var scode = 'SOFT-' + (j+1), sname = SOFT_NAMES[j];
+    var scs = care && care.soft_dim_scores ? care.soft_dim_scores[sname] : null;
+    var ses = examR[scode] ? examR[scode].pct : null;
+    if (scs != null && ses != null) scores[scode] = Math.max(scs, ses);
+    else if (scs != null) scores[scode] = scs;
+    else if (ses != null) scores[scode] = ses;
+  }
+  if (Object.keys(scores).length === 0) return; // 没画像数据不打扰
+
+  // 给卡片加弱项标记 + 重排序
+  var cards = document.querySelectorAll('a.card');
+  var hardSection = null, softSection = null;
+  cards.forEach(function(card){
+    var dimSpan = card.querySelector('.c-dim');
+    if (!dimSpan) return;
+    var code = dimSpan.textContent.trim().split(' ')[0]; // DIM-4 / SOFT-1
+    var pScore = scores[code];
+    if (pScore != null && pScore < 70) {
+      card.style.borderLeft = '3px solid #c25636';
+      var badge = document.createElement('span');
+      badge.style.cssText = 'position:absolute;top:8px;right:8px;background:#c25636;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700';
+      badge.textContent = '⚠️ 弱项 ' + pScore;
+      card.style.position = 'relative';
+      card.appendChild(badge);
+    }
+    if (pScore != null && pScore >= 85) {
+      card.style.borderLeft = '3px solid #2d5a3d';
+      var badge2 = document.createElement('span');
+      badge2.style.cssText = 'position:absolute;top:8px;right:8px;background:#2d5a3d;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700';
+      badge2.textContent = '⭐ ' + pScore;
+      card.style.position = 'relative';
+      card.appendChild(badge2);
+    }
+    // 把弱项卡片移到分组前面
+    if (pScore != null && pScore < 70) {
+      var parent = card.parentElement;
+      parent.insertBefore(card, parent.querySelector('.card-grid-label') ? card : parent.children[0]);
+    }
+  });
+
+  // 插入推荐提示条
+  var weakCodes = Object.keys(scores).filter(function(k){ return scores[k] < 70; }).sort(function(a,b){ return scores[a] - scores[b]; });
+  if (weakCodes.length > 0) {
+    var firstCard = document.querySelector('a.card');
+    if (firstCard) {
+      var tip = document.createElement('div');
+      tip.style.cssText = 'background:linear-gradient(135deg,#fdf0ec,#fff);border:1px solid #e8c4b8;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;color:#8a3d2a';
+      tip.innerHTML = '⚠️ <b>画像提示</b>：推荐你先学 <b>' + weakCodes.slice(0,3).join(' · ') + '</b>（画像分 < 70，优先补强提分最快）';
+      firstCard.parentElement.insertBefore(tip, firstCard);
+    }
+  }
+})();
+</script>
 </body>
 </html>
