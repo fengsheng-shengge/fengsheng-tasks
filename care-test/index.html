@@ -194,7 +194,7 @@
 <div class="page active" id="page-intro">
   <div class="intro-header">
     <h1>服务者能力<br>画像测评</h1>
-    <p style="opacity:.9">7 个维度 · 35 道题 · 约 15 分钟<br>专为一线经纪人设计 · 完全免费</p>
+    <p style="opacity:.9">硬 7 维 + 软 5 维 · 每次随机抽 35 题 · 约 15 分钟<br>每次抽题不同 · 多测几次更准确 · 完全免费</p>
   </div>
 
   <!-- ========== 为什么要测 / 测完能干啥 / 有啥帮助 ========== -->
@@ -685,8 +685,40 @@ function startQuiz() {
   answers = {};
   // v2：按角色过滤题目
   var filtered = filterQuestionsByRole(QUESTIONS, CURRENT_ROLE);
-  // 硬技能 35 + 软技能 25 = 60 题（或过滤后的全部）
-  quizSet = filtered.slice();
+  // v4：按维度均衡抽 35 题（硬7维每维3题 + 软5维每维2题 + 4题补全 = 35）
+  // 旧逻辑 filtered.slice() 全量加载 → 180题没人答完就走了
+  var hardDimNames = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
+  var softDimNames = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
+  var picked = [];
+  var hardPool = {}, softPool = {};
+  filtered.forEach(function(q){
+    if (hardDimNames.indexOf(q.dim) >= 0) {
+      hardPool[q.dim] = hardPool[q.dim] || []; hardPool[q.dim].push(q);
+    } else if (softDimNames.indexOf(q.dim) >= 0) {
+      softPool[q.dim] = softPool[q.dim] || []; softPool[q.dim].push(q);
+    } else {
+      picked.push(q); // 不确定维度的先放进去
+    }
+  });
+  // 硬7维每维抽3题
+  hardDimNames.forEach(function(d){
+    var pool = hardPool[d] || [];
+    pool.sort(function(){ return Math.random() - 0.5; });
+    picked = picked.concat(pool.slice(0, 3));
+  });
+  // 软5维每维抽2题
+  softDimNames.forEach(function(d){
+    var pool = softPool[d] || [];
+    pool.sort(function(){ return Math.random() - 0.5; });
+    picked = picked.concat(pool.slice(0, 2));
+  });
+  // 补充到 35 题（如果不够）
+  if (picked.length < 35) {
+    var remaining = filtered.filter(function(q){ return picked.indexOf(q) === -1; });
+    remaining.sort(function(){ return Math.random() - 0.5; });
+    picked = picked.concat(remaining.slice(0, 35 - picked.length));
+  }
+  quizSet = picked.slice(0, 35);
   // 每次开测打乱选项顺序
   buildQuizSet();
   careTrack('quiz_start', { questions: quizSet.length, role: CURRENT_ROLE });

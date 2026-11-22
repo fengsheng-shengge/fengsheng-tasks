@@ -913,6 +913,7 @@ function submitExam() {
   if (!currentExam) return;
   var total = currentExam._total;
   var qs = currentExam._qs;
+  var db = EXAM_DB[currentExam.dim] || { name: currentExam.dim, total: total };
   // 算分
   var score = 0;
   var wrongs = [];
