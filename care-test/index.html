@@ -614,9 +614,10 @@ var answers = {};
 var weakDimsGlobal = [];  // 保存最弱维度，供培养助理按钮使用
 var quizSet = [];         // 每次开测时选项顺序随机打乱后的题目集（防止"选第一个总对"）
 
-function buildQuizSet(){
-  // 1. 先打乱题目整体顺序（让每次重测题号不同）
-  var shuffledQ = QUESTIONS.slice();
+function buildQuizSet(inputSet){
+  // 1. 从传入的题目集开始打乱（如果没传则用 quizSet，再没则用 QUESTIONS）
+  var source = inputSet || quizSet || QUESTIONS;
+  var shuffledQ = source.slice();
   for (var i = shuffledQ.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
     var t = shuffledQ[i]; shuffledQ[i] = shuffledQ[j]; shuffledQ[j] = t;
