@@ -262,11 +262,11 @@ a{text-decoration:none;color:inherit}
           </tr>
           <tr style="background:#fffaf0">
             <td style="padding:6px 8px;border:1px solid #e8e4da;font-weight:700;color:#1a3d24">Layer 2</td>
-            <td style="padding:6px 8px;border:1px solid #e8e4da">🛠️ 操作技能</td>
+            <td style="padding:6px 8px;border:1px solid #e8e4da">🛠️ 操作技能 + 🤖 AI 工具使用</td>
             <td style="padding:6px 8px;border:1px solid #e8e4da;text-align:center;font-weight:700;color:#8a7040">40% ↑</td>
             <td style="padding:6px 8px;border:1px solid #e8e4da">measurement（客观可测）</td>
-            <td style="padding:6px 8px;border:1px solid #e8e4da">care-test × 50% + practice × 50%</td>
-            <td style="padding:6px 8px;border:1px solid #e8e4da">《经纪业务操作》</td>
+            <td style="padding:6px 8px;border:1px solid #e8e4da">care-test × 40% + practice × 30% + AI使用率 × 30%</td>
+            <td style="padding:6px 8px;border:1px solid #e8e4da">《经纪业务操作》· DIM-7 数字化协同</td>
           </tr>
           <tr>
             <td style="padding:6px 8px;border:1px solid #e8e4da;font-weight:700;color:#1a3d24">Layer 3</td>
@@ -329,6 +329,15 @@ a{text-decoration:none;color:inherit}
     <h3>🧬 评价五源合成（对客户负责的综合评价）</h3>
     <div class="sb-sub">不止答题——从 5 个维度评估经纪人能否真的帮到客户</div>
     <div class="five-src" id="five-src-here"></div>
+  </div>
+
+  <!-- 🤖 AI 工具使用（Layer 2 Technical Skill 的 30%）-->
+  <div class="ai-usage-box" style="background:linear-gradient(135deg,#f0f5f2,#fff);border:1px solid #d0ddd5;border-radius:14px;padding:20px 24px;margin-bottom:20px">
+    <h3 style="font-size:15px;font-weight:700;color:#1a3d24;margin-bottom:4px">🤖 AI 工具使用 · 数字员工能力（Layer 2 · 30%）</h3>
+    <div style="font-size:11.5px;color:#888;margin-bottom:12px">
+      风声 9 个 AI 工具（decoder / workspace / toolkit / curation / knowledge / ai-advisor / agent-academy / agent-assessment / assessment）的使用频率 + 业务维度覆盖度 · 已嵌入 Technical Skill 计算
+    </div>
+    <div id="ai-usage-here"></div>
   </div>
 
   <!-- 级别晋升路径（人社对齐）-->
@@ -430,14 +439,15 @@ var LEVELS = [
 
 // ========== 数据源加载 ==========
 function loadAllData() {
-  var care = null, examResults = {}, history = [], practiceDone = [], courseProgress = {}, reviewTags = {};
+  var care = null, examResults = {}, history = [], practiceDone = [], courseProgress = {}, reviewTags = {}, aiUsage = {};
   try { care = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
   try { examResults = JSON.parse(localStorage.getItem('fs_exam_results')) || {}; } catch(e) {}
   try { history = JSON.parse(localStorage.getItem('fs_care_history')) || []; } catch(e) {}
   try { practiceDone = JSON.parse(localStorage.getItem('fs_practice_done')) || []; } catch(e) {}
   try { courseProgress = JSON.parse(localStorage.getItem('fs_course_progress')) || {}; } catch(e) {}
   try { reviewTags = JSON.parse(localStorage.getItem('fs_review_tags')) || {}; } catch(e) {}
-  return { care:care, exam:examResults, history:history, practice:practiceDone, courses:courseProgress, reviews:reviewTags };
+  try { aiUsage = JSON.parse(localStorage.getItem('fs_ai_tool_usage')) || {}; } catch(e) {}
+  return { care:care, exam:examResults, history:history, practice:practiceDone, courses:courseProgress, reviews:reviewTags, ai_usage:aiUsage };
 }
 
 // ========== 硬技能 7 维分数（care-test + exam 取 max）==========
@@ -493,20 +503,61 @@ function computeFiveSources(d, hard, soft) {
   var src1Src = '理论考试（客观可测）· 对应人社《经纪专业基础》';
 
   // === Layer 2: Technical Skill（操作技能 · 操作考试 · 权重 40%）===
-  // 数据源：care-test 硬7维平均分 + practice 场景完成率（各占 50%）
-  // 评分方式：measurement（客观可测：场景覆盖度）
+  // 数据源：care-test 硬7维 × 40% + practice 完成率 × 30% + AI 工具使用率 × 30%
+  // 评分方式：measurement（客观可测：场景覆盖度 + 工具使用频率）
+  // AI 工具使用嵌入：风声 AI 工具（decoder/workspace/toolkit/curation/knowledge/ai-advisor 等）使用覆盖率
   var careHardVals = Object.values(hard).filter(function(v){ return v != null; });
   var careHardAvg = careHardVals.length > 0 ? careHardVals.reduce(function(a,b){return a+b},0)/careHardVals.length : null;
   var practiceTotal = 18; // 8 硬场景 + 10 软场景
   var practiceDone = (d.practice || []).length;
   var practicePct = Math.round(Math.min(100, practiceDone / practiceTotal * 100));
-  // 加权：care-test 50% + practice 50%
+
+  // --- AI 工具使用率 ---
+  // 风声 9 个 AI 工具：decoder/workspace/toolkit/curation/knowledge/ai-advisor/agent-academy/agent-assessment/assessment
+  // 每个工具记录：usage 对象 { decoder:{uses:12, dims:['DIM-2','SOFT-1']}, workspace:{uses:8, dims:[...]}, ... }
+  var AI_TOOLS = ['decoder','workspace','toolkit','curation','knowledge','ai-advisor','agent-academy','agent-assessment','assessment'];
+  var aiUsage = d.ai_usage || {};
+  var aiToolsUsed = AI_TOOLS.filter(function(t){ return aiUsage[t] && aiUsage[t].uses > 0; }).length;
+  var aiCoverage = Math.round(aiToolsUsed / AI_TOOLS.length * 100); // 工具覆盖率 0-100
+  // 业务维度覆盖度：AI 工具在多少个业务维度被使用
+  var aiDimSet = {};
+  AI_TOOLS.forEach(function(t){
+    if (aiUsage[t] && aiUsage[t].dims) aiUsage[t].dims.forEach(function(dm){ aiDimSet[dm] = true; });
+  });
+  var aiDimsCovered = Object.keys(aiDimSet).length; // 覆盖维度数
+  var aiOverall = Math.round(aiCoverage * 0.6 + aiDimsCovered / 7 * 100 * 0.4); // 60%工具覆盖 + 40%维度覆盖
+  var aiUsesTotal = 0;
+  AI_TOOLS.forEach(function(t){ if (aiUsage[t]) aiUsesTotal += aiUsage[t].uses || 0; });
+
+  // Technical Skill 加权：care-test 40% + practice 30% + AI 30%
   var src2 = null;
-  if (careHardAvg != null) src2 = Math.round(careHardAvg * 0.5 + practicePct * 0.5);
-  else if (practiceDone > 0) src2 = practicePct;
+  if (careHardAvg != null) src2 = Math.round(careHardAvg * 0.4 + practicePct * 0.3 + aiOverall * 0.3);
+  else if (practiceDone > 0 || aiUsesTotal > 0) {
+    var parts = [], weights = [];
+    if (practiceDone > 0) { parts.push(practicePct); weights.push(0.5); }
+    if (aiUsesTotal > 0) { parts.push(aiOverall); weights.push(0.5); }
+    if (parts.length > 0) {
+      var wsum = weights.reduce(function(a,b){return a+b},0);
+      src2 = Math.round(parts.reduce(function(a,v,i){ return a + v * weights[i]; }, 0) / wsum);
+    }
+  }
   var src2Max = practiceTotal;
-  var src2Hint = 'care-test ≥ 65 + 场景完成 ≥ 9（权重 40% · 占比最高）';
-  var src2Src = '操作技能（客观可测）· 对应人社《经纪业务操作》';
+  var src2Hint = 'care-test ≥ 65 + 场景 ≥ 9 + AI 工具覆盖 ≥ 5 个（权重 40% · 占比最高）';
+  var src2Src = '操作技能 + AI 工具使用（客观可测）· 对应人社《经纪业务操作》';
+
+  // AI 工具使用详情（供渲染用）
+  var aiInfo = {
+    toolsUsed: aiToolsUsed,
+    toolsTotal: AI_TOOLS.length,
+    coverage: aiCoverage,
+    dimsCovered: aiDimsCovered,
+    usesTotal: aiUsesTotal,
+    overall: aiOverall,
+    tools: AI_TOOLS.map(function(t){
+      var u = aiUsage[t] || { uses:0, dims:[] };
+      return { key:t, uses: u.uses || 0, dims: u.dims || [] };
+    })
+  };
 
   // === Layer 3: Generic Skill（通用技能 · 态度/价值观 · 权重 25%）===
   // 数据源：软5维平均分（care-test + exam 取 max）
@@ -572,6 +623,8 @@ function computeFiveSources(d, hard, soft) {
     // 权重 + 红线
     weights: { specialist:25, technical:40, generic:25, case_analysis:10 },
     ethics_veto: ethicsVeto,
+    // AI 工具使用详情
+    ai_info: aiInfo,
     // 综合分（加权 + 红线封顶）
     overall: overall,
     // 旧字段兼容（避免 render 函数报错）
@@ -648,6 +701,9 @@ function render() {
 
   // ====== 五源合成 ======
   renderFiveSources(fs);
+
+  // ====== AI 工具使用 ======
+  renderAIUsage(fs);
 
   // ====== 级别路径 ======
   renderLevelPath(lv, fs);
@@ -813,6 +869,81 @@ function renderLevelPath(lv, fs) {
     if (i < LEVELS.length - 1) html += '<div class="level-arrow">→</div>';
   }
   root.innerHTML = html;
+}
+
+// ====== AI 工具使用渲染 ======
+function renderAIUsage(fs) {
+  var root = document.getElementById('ai-usage-here');
+  var ai = fs.ai_info;
+  if (!ai) { root.innerHTML = '<div style="color:#aaa;font-size:12px">AI 工具使用数据暂未采集 · 请先使用风声 AI 工具</div>'; return; }
+
+  // 顶部概览条
+  var overviewHtml = '<div style="display:flex;gap:20px;margin-bottom:14px;flex-wrap:wrap">' +
+    '<div style="background:#fff;padding:10px 14px;border-radius:10px;border:1px solid #d0ddd5;flex:1;min-width:120px;text-align:center">' +
+      '<div style="font-size:22px;font-weight:800;color:#1a3d24">' + ai.toolsUsed + '/' + ai.toolsTotal + '</div>' +
+      '<div style="font-size:10.5px;color:#888">AI 工具已用</div>' +
+    '</div>' +
+    '<div style="background:#fff;padding:10px 14px;border-radius:10px;border:1px solid #d0ddd5;flex:1;min-width:120px;text-align:center">' +
+      '<div style="font-size:22px;font-weight:800;color:#1a3d24">' + ai.coverage + '%</div>' +
+      '<div style="font-size:10.5px;color:#888">工具覆盖率</div>' +
+    '</div>' +
+    '<div style="background:#fff;padding:10px 14px;border-radius:10px;border:1px solid #d0ddd5;flex:1;min-width:120px;text-align:center">' +
+      '<div style="font-size:22px;font-weight:800;color:#1a3d24">' + ai.dimsCovered + '/7</div>' +
+      '<div style="font-size:10.5px;color:#888">业务维度覆盖</div>' +
+    '</div>' +
+    '<div style="background:#fff;padding:10px 14px;border-radius:10px;border:1px solid #d0ddd5;flex:1;min-width:120px;text-align:center">' +
+      '<div style="font-size:22px;font-weight:800;color:#1a3d24">' + ai.usesTotal + '</div>' +
+      '<div style="font-size:10.5px;color:#888">累计使用次数</div>' +
+    '</div>' +
+    '<div style="background:#1a3d24;color:#fdf9ef;padding:10px 14px;border-radius:10px;flex:1;min-width:120px;text-align:center">' +
+      '<div style="font-size:22px;font-weight:800">' + (fs.technical != null ? fs.technical : '—') + '</div>' +
+      '<div style="font-size:10.5px;opacity:.7">Technical Skill 分</div>' +
+    '</div>' +
+  '</div>';
+
+  // 9 个工具详情网格
+  var TOOL_NAMES = {
+    decoder:'客户解码器', workspace:'经纪人工作台', toolkit:'工具箱',
+    curation:'策展引擎', knowledge:'知识底座', 'ai-advisor':'AI 顾问',
+    'agent-academy':'AI 学院', 'agent-assessment':'AI 评估', assessment:'能力测评'
+  };
+  var TOOL_ICONS = {
+    decoder:'🌬️', workspace:'💼', toolkit:'🧰', curation:'🎯', knowledge:'📚',
+    'ai-advisor':'🤖', 'agent-academy':'🎓', 'agent-assessment':'📝', assessment:'📋'
+  };
+  var TOOL_URLS = {
+    decoder:'/decoder/', workspace:'/workspace/', toolkit:'/toolkit/',
+    curation:'/curation/', knowledge:'/knowledge/', 'ai-advisor':'/ai-advisor/',
+    'agent-academy':'/agent-academy/', 'agent-assessment':'/agent-assessment/', assessment:'/assessment/'
+  };
+
+  var toolsHtml = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">';
+  ai.tools.forEach(function(t){
+    var name = TOOL_NAMES[t.key] || t.key;
+    var icon = TOOL_ICONS[t.key] || '🔧';
+    var url = TOOL_URLS[t.key] || '#';
+    var used = t.uses > 0;
+    var dimsStr = t.dims.slice(0,3).join(' ') + (t.dims.length > 3 ? '...' : '');
+    toolsHtml += '<a href="' + url + '" style="text-decoration:none">' +
+      '<div style="background:' + (used ? '#fff' : '#f7f5f0') + ';padding:10px 12px;border-radius:8px;border:1px solid ' + (used ? '#d0ddd5' : '#eee') + ';font-size:11px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
+          '<span style="font-size:14px">' + icon + '</span>' +
+          '<span style="font-size:9px;color:' + (used ? '#1a3d24' : '#bbb') + ';font-weight:700">' + (used ? t.uses + '次' : '未用') + '</span>' +
+        '</div>' +
+        '<div style="font-weight:600;color:' + (used ? '#1a3d24' : '#bbb') + ';margin-bottom:2px">' + name + '</div>' +
+        '<div style="font-size:9px;color:#888">' + (dimsStr || '—') + '</div>' +
+      '</div>' +
+    '</a>';
+  });
+  toolsHtml += '</div>';
+
+  // 提示语
+  var tipHtml = '<div style="margin-top:12px;padding:10px 14px;background:#fdf9ef;border-radius:8px;font-size:11px;color:#8a7040;line-height:1.6">' +
+    '💡 <b>怎么提升 AI 工具使用率？</b> 每次使用风声 AI 工具时，系统自动记录使用次数 + 覆盖的业务维度。AI 工具已嵌入 Layer 2 Technical Skill（30% 权重）——' +
+    '用 decoder 解码客户原话 → 覆盖 DIM-2/SOFT-1；用 toolkit 生成谈判策略 → 覆盖 DIM-4；用 curation 制作朋友圈内容 → 覆盖 DIM-1。' +
+  '</div>';
+
+  root.innerHTML = overviewHtml + toolsHtml + tipHtml;
 }
 
 // === 雷达图 SVG（保留原有逻辑）===
