@@ -407,7 +407,77 @@ function render() {
   }
   html += '</div>';
 
+  // === 学练考评配闭环（弱项自动生成路径）===
+  html += buildLearningPathBox(scores, sources, total, weakest, strongest, softScores, softSources, softHasAnyReal);
+
   root.innerHTML = html;
+}
+
+// === 学练考评配闭环模块 ===
+// 输入：硬技能 scores/sources + 软技能 softScores + 综合分 + 弱强项
+// 输出：一个完整的"下一步做什么"卡片组，弱项→学→练→考→配 每步都有具体链接
+function buildLearningPathBox(scores, sources, total, weakest, strongest, softScores, softSources, softHasAnyReal) {
+  // 找出最弱的 3 个维度（硬技能）
+  var sorted = Object.keys(scores).sort(function(a,b){ return scores[a] - scores[b]; });
+  var weakList = sorted.slice(0, 3);
+  var strongList = sorted.slice(-2).reverse();
+
+  // 软技能最弱 2 个
+  var softSorted = Object.keys(softScores).sort(function(a,b){ return softScores[a] - softScores[b]; });
+  var softWeakList = softSorted.slice(0, 2);
+
+  // 闭环五环节定义（每环节一个图标+名字+URL+说明）
+  var LEARN = '/academy/core-courses/';
+  var PRACTICE = '/academy/practice/';
+  var EXAM = '/academy/exam/';
+  var ASSESS = '/care-test/';
+  var MATCH = '/academy/match/';
+
+  // 根据最弱维度生成具体推荐
+  var learnDim = weakList[0];       // 最弱的硬技能 → 补门
+  var practiceDim = weakList.length > 1 ? weakList[1] : weakList[0];  // 次弱 → 练场景
+  var examDim = strongList[0];      // 最强的 → 去考拿认证
+
+  // 软技能推荐
+  var softLearnDim = softWeakList[0];
+  var softPracticeDim = softWeakList.length > 1 ? softWeakList[1] : softWeakList[0];
+
+  var boxes = [
+    { icon:'📋', name:'测', href:ASSESS, label:'再测一次', desc:'每次顺序随机 · 完整答题留痕 · 看进步', color:'#2d5a3d', bg:'#f0f6f1' },
+    { icon:'📖', name:'学', href:LEARN, label:'补' + learnDim, desc:'最弱项 ' + learnDim + ' 仅 ' + scores[learnDim] + ' 分 · 核心课 7 门', color:'#8a7040', bg:'#fdf9ef' },
+    { icon:'🎭', name:'练', href:PRACTICE, label:'练' + practiceDim, desc: softHasAnyReal ? ('软技能 ' + softLearnDim + ' 也弱 · 双轨练习') : ('场景对话 · 真客户怎么说你怎么答'), color:'#0891b2', bg:'#f0f9fb' },
+    { icon:'📝', name:'考', href:EXAM, label:'拿' + examDim, desc:'最强项 ' + examDim + ' ' + scores[examDim] + ' 分 · 考核过 80 拿认证', color:'#7c3aed', bg:'#f5f2ff' },
+    { icon:'🎯', name:'配', href:MATCH, label:'看岗位', desc:'画像自动匹配 · 知道自己适合什么', color:'#c25636', bg:'#fef3ef' },
+  ];
+
+  var html = '<div style="margin-top:24px">';
+  html += '<div style="font-size:13px;font-weight:700;color:#1a3d24;margin-bottom:12px;letter-spacing:1px">🔄 学练考评配 · 闭环路径（弱项自动生成）</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">';
+  boxes.forEach(function(b){
+    html += '<a href="' + b.href + '" style="text-decoration:none;color:inherit;background:' + b.bg + ';border:1px solid ' + b.color + '22;border-radius:10px;padding:14px 12px;display:block;transition:all .18s" onmouseover="this.style.borderColor=\'' + b.color + '\';this.style.boxShadow=\'0 4px 14px rgba(0,0,0,.08)\';this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.borderColor=\'' + b.color + '22\';this.style.boxShadow=\'none\';this.style.transform=\'translateY(0)\'">';
+    html += '<div style="font-size:26px;margin-bottom:6px">' + b.icon + '</div>';
+    html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">';
+    html += '<span style="font-size:15px;font-weight:800;color:' + b.color + '">' + b.name + '</span>';
+    html += '<span style="font-size:11px;color:' + b.color + ';background:' + b.color + '15;padding:2px 8px;border-radius:10px;font-weight:600">' + b.label + '</span>';
+    html += '</div>';
+    html += '<div style="font-size:11px;color:#666;line-height:1.5">' + b.desc + '</div>';
+    html += '</a>';
+  });
+  html += '</div>';
+
+  // 弱项优先级提示
+  html += '<div style="margin-top:12px;background:#fafaf8;border-radius:8px;padding:10px 14px;font-size:12px;color:#555;line-height:1.8">';
+  html += '<b style="color:#8a7040">📌 当前优先级：</b>';
+  html += weakList.map(function(w, i){
+    return '<span style="color:' + (scores[w] < 45 ? '#c25636' : scores[w] < 60 ? '#8a7040' : '#2d5a3d') + '">' + (i+1) + '. ' + w + ' ' + scores[w] + ' 分</span>';
+  }).join(' · ');
+  if (softHasAnyReal) {
+    html += ' · <span style="color:#8a7040">软技能最弱：' + softWeakList[0] + ' ' + softScores[softWeakList[0]] + ' 分</span>';
+  }
+  html += '</div>';
+
+  html += '</div>';
+  return html;
 }
 
 // === 趋势图 SVG ===
