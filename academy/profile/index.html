@@ -4,12 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>能力画像 · 学习成长 | 风声信息咨询</title>
-<meta name="description" content="七维能力雷达图 · care-test 测评结果自动同步 · 每次考核+练习后分数回写 · 看得到进步">
+<meta name="description" content="经纪人多维度综合评价：知识掌握度+场景应对力+案例分析力+服务伦理+持续学习，五源合成 → 人社级别映射（协理/经纪人/高级经纪人）→ 3年登记复核周期 → 时间维度复核轨迹。">
 <link rel="icon" href="/favicon.png" type="image/png">
+<link rel="canonical" href="https://fengsheng.tech/academy/profile/">
+<meta property="og:title" content="能力画像 · 多源综合评价 | 风声聚匠星云">
+<meta property="og:description" content="不止答题：知识掌握+场景应对+案例分析+服务伦理+持续学习，五源合成。人社级别映射（协理/经纪人/高级），3年复核轨迹。">
+<meta property="og:image" content="https://fengsheng.tech/og-image.png">
+<meta property="og:url" content="https://fengsheng.tech/academy/profile/">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#f7f5f0;color:#2b2b2b;line-height:1.6}
 a{text-decoration:none;color:inherit}
+
+/* nav */
 .fs-top-nav{position:sticky;top:0;z-index:100;background:#f7f5f0;border-bottom:1px solid #e8e4da;padding:10px 32px;display:flex;align-items:center;gap:20px}
 .fs-top-logo{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .fs-top-mark{width:30px;height:30px;background:#1a3d24;color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
@@ -17,130 +24,170 @@ a{text-decoration:none;color:inherit}
 .fs-top-links{display:flex;gap:14px;font-size:13px;flex-wrap:wrap;flex:1;justify-content:center}
 .fs-top-links a{color:#555;white-space:nowrap}
 .fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
-.fs-top-actions{display:flex;gap:10px;align-items:center;font-size:13px;flex-shrink:0}
-@media(max-width:960px){.fs-top-links,.fs-top-actions{display:none}}
-.loop-strip{max-width:880px;margin:24px auto 0;background:#fff;border:1px solid #e8e4da;border-radius:14px;display:flex;overflow:hidden}
+@media(max-width:960px){.fs-top-links{display:none}}
+
+.loop-strip{max-width:920px;margin:24px auto 0;background:#fff;border:1px solid #e8e4da;border-radius:14px;display:flex;overflow:hidden}
 .loop-strip a{flex:1;padding:12px 4px;text-align:center;font-size:12px;color:#666;border-right:1px dashed #e8e4da}
 .loop-strip a:last-child{border-right:none}
 .loop-strip a .ls-name{display:block;font-weight:700;font-size:14px;margin-bottom:2px}
 .loop-strip a.hl{background:linear-gradient(135deg,#fdf9ef,#fffbf3);color:#8a7040}
-.pg{max-width:880px;margin:24px auto;padding:0 24px}
+
+.pg{max-width:920px;margin:24px auto;padding:0 24px}
 .pg-h{font-size:26px;font-weight:800;color:#1a3d24;margin-bottom:6px}
-.pg-sub{font-size:14px;color:#6b6b6b;margin-bottom:20px}
+.pg-sub{font-size:14px;color:#6b6b6b;margin-bottom:20px;line-height:1.7}
 
-/* 新用户引导 */
-.banner-newuser{background:linear-gradient(135deg,#fdf9ef,#fff);border:1px solid #e8d9b0;border-radius:14px;padding:20px 24px;margin-bottom:20px;display:flex;gap:16px;align-items:center}
-.banner-newuser .b-icon{font-size:36px;flex-shrink:0}
-.banner-newuser .b-body{flex:1}
-.banner-newuser .b-title{font-size:15px;font-weight:700;color:#8a7040;margin-bottom:4px}
-.banner-newuser .b-desc{font-size:12.5px;color:#6b5a3e;margin-bottom:0}
-.banner-newuser .b-btn{background:linear-gradient(135deg,#1a3d24,#2d5a3d);color:#fff;padding:10px 18px;border-radius:22px;font-size:13px;font-weight:600;flex-shrink:0;display:inline-block}
+/* ===== 头部：级别徽章 + 复核状态 ===== */
+.profile-header{background:linear-gradient(135deg,#1a3d24,#2d5a3d);color:#fff;border-radius:16px;padding:24px 28px;margin-bottom:20px;display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;position:relative;overflow:hidden}
+.profile-header::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:rgba(255,255,255,.06);border-radius:50%}
+.ph-avatar{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;flex-shrink:0;border:2px solid rgba(255,255,255,.3)}
+.ph-main{position:relative;z-index:1}
+.ph-name{font-size:18px;font-weight:800;margin-bottom:4px}
+.ph-title{font-size:12px;opacity:.8;margin-bottom:8px}
+.ph-badges{display:flex;gap:6px;flex-wrap:wrap}
+.ph-badge{font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.15);font-weight:600}
+.ph-badge.gold{background:#e8d6a8;color:#1a3d24}
+.ph-badge.silver{background:#b8c4bc;color:#1a3d24}
+.ph-badge.bronze{background:#c9a962;color:#1a3d24}
+.ph-right{text-align:center;position:relative;z-index:1}
+.ph-level-badge{font-size:11px;font-weight:700;letter-spacing:2px;padding:3px 10px;border-radius:12px;margin-bottom:6px;background:rgba(255,255,255,.15)}
+.ph-score-num{font-size:40px;font-weight:800;line-height:1}
+.ph-score-label{font-size:11px;opacity:.8;margin-top:2px}
+.ph-review{font-size:10.5px;opacity:.8;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.2)}
+.ph-review.warn{color:#f39c12;opacity:1}
+.ph-review.danger{color:#e74c3c;opacity:1}
+.ph-actions{margin-top:12px;display:flex;gap:6px}
+.ph-btn{background:rgba(255,255,255,.15);color:#fff;padding:6px 12px;border-radius:14px;font-size:11px;font-weight:600;display:inline-block;border:1px solid rgba(255,255,255,.3)}
+.ph-btn.primary{background:#fff;color:#1a3d24;border-color:#fff}
 
-/* 有数据时的顶部卡 */
-.profile-header{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:18px 24px;margin-bottom:20px;display:flex;align-items:center;gap:24px}
-.ph-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#1a3d24,#2d5a3d);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;flex-shrink:0}
-.ph-main{flex:1}
-.ph-name{font-size:18px;font-weight:800;color:#1a3d24}
-.ph-sub{font-size:12.5px;color:#888;margin-top:2px}
-.ph-badges{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
-.ph-badge{font-size:11px;padding:2px 8px;border-radius:10px;background:#f0ece2;color:#6b5a3e;font-weight:600}
-.ph-score{text-align:center;flex-shrink:0}
-.ph-score-num{font-size:36px;font-weight:800;color:#1a3d24;line-height:1}
-.ph-score-label{font-size:11px;color:#999;margin-top:2px}
-.ph-score-grade{font-size:11px;font-weight:700;margin-top:2px}
-.ph-actions{display:flex;gap:6px;flex-shrink:0}
-.ph-btn{background:#f0ece2;color:#1a3d24;padding:8px 14px;border-radius:18px;font-size:12px;font-weight:600;display:inline-block}
+/* ===== 评价五源合成 ===== */
+.synthesis-box{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:20px 24px;margin-bottom:20px}
+.synthesis-box h3{font-size:15px;font-weight:700;color:#1a3d24;margin-bottom:4px}
+.synthesis-box .sb-sub{font-size:11.5px;color:#999;margin-bottom:14px}
+.five-src{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:720px){.five-src{grid-template-columns:repeat(2,1fr)}}
+.src-item{background:#f7f5f0;border-radius:10px;padding:12px 10px;text-align:center;border-top:3px solid #1a3d24;position:relative;transition:transform .15s}
+.src-item:hover{transform:translateY(-2px)}
+.src-item.s2{border-top-color:#c46a3a}
+.src-item.s3{border-top-color:#6b5fa8}
+.src-item.s4{border-top-color:#c9a962}
+.src-item.s5{border-top-color:#2d5a3d}
+.src-item .si-num{font-size:22px;font-weight:800;color:#1a3d24;line-height:1}
+.src-item .si-icon{font-size:16px;margin-bottom:2px}
+.src-item .si-name{font-size:10.5px;color:#666;font-weight:600;margin-top:2px}
+.src-item .si-desc{font-size:9px;color:#999;margin-top:3px;line-height:1.5}
+.src-item .si-source{font-size:9px;color:#888;margin-top:3px}
 
-/* 雷达图 */
-.radar-box{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:24px;margin-bottom:20px;text-align:center}
-.radar-box .r-title{font-size:15px;font-weight:700;color:#1a3d24;margin-bottom:4px}
-.radar-box .r-sub{font-size:12px;color:#999;margin-bottom:14px}
-.radar-svg{width:380px;height:380px;max-width:100%;margin:0 auto;display:block}
-.radar-legend{display:flex;justify-content:center;gap:10px;margin-top:10px;font-size:11px;color:#999}
-.radar-legend span{padding:2px 8px;border-radius:4px}
+/* ===== 级别晋升路径 ===== */
+.level-path{background:linear-gradient(135deg,#fdf9ef,#fff);border:1px solid #e8d9b0;border-radius:14px;padding:20px 24px;margin-bottom:20px}
+.level-path h3{font-size:15px;font-weight:700;color:#8a7040;margin-bottom:14px}
+.level-steps{display:flex;align-items:stretch;gap:0}
+.level-step{flex:1;text-align:center;padding:14px 8px;background:#fff;border:1px solid #e8e4da;border-radius:10px;margin-right:-1px;position:relative}
+.level-step:first-child{border-left:3px solid #2d5a3d}
+.level-step.current{border-left:3px solid #c9a962;background:#fffbf3}
+.level-step .ls-emoji{font-size:22px;margin-bottom:4px}
+.level-step .ls-name{font-size:12px;font-weight:700;color:#1a3d24;margin-bottom:2px}
+.level-step .ls-hrss{font-size:9px;color:#888;margin-bottom:6px}
+.level-step .ls-criteria{font-size:9.5px;color:#666;line-height:1.7}
+.level-step .ls-gap{font-size:9.5px;color:#c25636;margin-top:6px;font-weight:600}
+.level-step .ls-achieved{font-size:9.5px;color:#2d5a3d;margin-top:6px;font-weight:600}
+.level-arrow{align-self:center;color:#c9a962;font-size:16px;font-weight:700;padding:0 4px}
 
-/* 维度表 */
+/* ===== 雷达图（保留）===== */
+.radar-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+@media(max-width:720px){.radar-wrap{grid-template-columns:1fr}}
+.radar-box{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:20px;margin-bottom:0;text-align:center}
+.radar-box .r-title{font-size:14px;font-weight:700;color:#1a3d24;margin-bottom:4px}
+.radar-box .r-sub{font-size:11px;color:#999;margin-bottom:10px}
+.radar-svg{width:320px;height:320px;max-width:100%;margin:0 auto;display:block}
+
+/* ===== 维度表 ===== */
 .dim-table{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:16px 20px;margin-bottom:20px}
-.dim-row{display:grid;grid-template-columns:64px 90px 1fr 50px 90px;gap:10px;padding:10px 0;border-bottom:1px solid #f0ece2;align-items:center;font-size:13px}
+.dim-table h4{font-size:13px;font-weight:700;color:#1a3d24;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.dim-row{display:grid;grid-template-columns:80px 1fr 50px 80px;gap:10px;padding:8px 0;border-bottom:1px solid #f0ece2;align-items:center;font-size:12.5px}
 .dim-row:last-child{border-bottom:none}
-.dim-row .d-code{font-size:10px;font-weight:700;color:#fff;background:#1a3d24;padding:2px 5px;border-radius:4px;text-align:center}
-.dim-row .d-name{font-weight:600;color:#1a3d24;font-size:12.5px}
-.dim-row .d-bar{background:#f0ece2;border-radius:4px;height:10px;overflow:hidden;position:relative}
+.dim-row .d-name{font-weight:600;color:#1a3d24}
+.dim-row .d-bar{background:#f0ece2;border-radius:4px;height:8px;overflow:hidden}
 .dim-row .d-fill{height:100%;border-radius:4px;transition:width .6s ease}
 .dim-row .d-fill.strong{background:linear-gradient(90deg,#2d5a3d,#4a8c5f)}
 .dim-row .d-fill.medium{background:linear-gradient(90deg,#8a7040,#b8995a)}
 .dim-row .d-fill.weak{background:linear-gradient(90deg,#c25636,#d67a5c)}
-.dim-row .d-score{font-weight:700;text-align:right;font-size:13px}
+.dim-row .d-score{font-weight:700;text-align:right;font-size:12px}
 .dim-row .d-score.strong{color:#2d5a3d}
 .dim-row .d-score.medium{color:#8a7040}
 .dim-row .d-score.weak{color:#c25636}
 .dim-row .d-action{font-size:11px;color:#1a3d24;text-align:right;font-weight:600}
 
-/* 时间戳 */
-.ts-row{text-align:center;font-size:11px;color:#aaa;margin-top:-12px;margin-bottom:20px}
+/* ===== 复核轨迹 ===== */
+.review-timeline{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:20px 24px;margin-bottom:20px}
+.review-timeline h3{font-size:15px;font-weight:700;color:#1a3d24;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.review-timeline h3 .rt-count{font-size:11px;color:#888;font-weight:500}
+.tl-item{display:grid;grid-template-columns:70px 1fr auto;gap:12px;padding:10px 0;border-bottom:1px solid #f0ece2;align-items:center;font-size:12px}
+.tl-item:last-child{border-bottom:none}
+.tl-item .tl-date{color:#888;font-size:11px}
+.tl-item .tl-event{color:#1a3d24;font-weight:600}
+.tl-item .tl-event .tl-src{font-size:10px;color:#888;font-weight:400}
+.tl-item .tl-score{font-weight:700;color:#2d5a3d;text-align:right}
+.tl-item .tl-score.warn{color:#c25636}
+.tl-item .tl-score.good{color:#2d5a3d}
 
-.footer-note{max-width:880px;margin:40px auto 0;padding:22px 24px 34px;border-top:1px solid #e8e4da;font-size:12px;color:#999;text-align:center;line-height:1.9}
+/* ===== 多人复核能力标签 ===== */
+.review-tags{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:20px 24px;margin-bottom:20px}
+.review-tags h3{font-size:15px;font-weight:700;color:#1a3d24;margin-bottom:4px}
+.review-tags .rt-sub{font-size:11.5px;color:#999;margin-bottom:12px}
+.rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.rt-card{background:#f7f5f0;border-radius:10px;padding:12px 14px;border-left:3px solid #8a7040;cursor:pointer;transition:transform .15s}
+.rt-card:hover{transform:translateY(-2px);background:#fffbf3}
+.rt-card.earned{border-left-color:#2d5a3d;background:#e8f4ec}
+.rt-card .rtc-icon{font-size:18px;margin-bottom:4px}
+.rt-card .rtc-name{font-size:12px;font-weight:700;color:#1a3d24;margin-bottom:2px}
+.rt-card .rtc-desc{font-size:10px;color:#888;line-height:1.6}
+.rt-card .rtc-count{font-size:10px;color:#2d5a3d;margin-top:4px;font-weight:600}
+.rt-card.earned .rtc-count{color:#2d5a3d}
+.rt-card.locked .rtc-count{color:#c25636}
 
-/* 趋势图 */
-.trend-box{background:#fff;border:1px solid #e8e4da;border-radius:14px;padding:20px 24px;margin-bottom:20px}
-.trend-box .t-title{font-size:14px;font-weight:700;color:#1a3d24;margin-bottom:4px}
-.trend-box .t-sub{font-size:11.5px;color:#999;margin-bottom:14px}
-.trend-empty{text-align:center;padding:28px;font-size:12px;color:#aaa}
-.trend-empty .te-emoji{font-size:28px;margin-bottom:6px}
-.dim-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.dim-filter .df-chip{font-size:11px;padding:3px 9px;border-radius:10px;background:#f0ece2;color:#6b5a3e;cursor:pointer;font-weight:600;transition:all .12s}
-.dim-filter .df-chip:hover{background:#e8e4da}
-.dim-filter .df-chip.on{background:#1a3d24;color:#fff}
+/* ===== 继续教育学时 ===== */
+.ce-box{background:linear-gradient(135deg,#2d3e50,#3a506b);color:#fff;border-radius:14px;padding:18px 22px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}
+.ce-box h4{font-size:14px;font-weight:700;margin-bottom:2px}
+.ce-box p{font-size:11px;opacity:.8;margin-bottom:6px}
+.ce-bar-bg{background:rgba(255,255,255,.15);border-radius:4px;height:6px;overflow:hidden;margin-top:4px}
+.ce-bar-fill{height:100%;background:#e8d6a8;border-radius:4px;transition:width .6s}
+.ce-num{text-align:center}
+.ce-num .big{font-size:28px;font-weight:800}
+.ce-num .lbl{font-size:10px;opacity:.8}
+
+/* ===== 空态 ===== */
+.empty-state{background:#fff;border:1px dashed #e8e4da;border-radius:12px;padding:28px;text-align:center;color:#888;font-size:12.5px;line-height:1.8}
+.empty-state button{background:#1a3d24;color:#fff;border:none;font-size:11px;font-weight:700;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;margin-top:8px}
+
+.footer-note{max-width:920px;margin:40px auto 0;padding:22px 24px 34px;border-top:1px solid #e8e4da;font-size:12px;color:#999;text-align:center;line-height:1.9}
+.footer-note a{color:#1a3d24;font-weight:600}
+
+@media(max-width:720px){
+  .five-src{grid-template-columns:repeat(2,1fr)}
+  .level-steps{flex-direction:column}
+  .level-arrow{transform:rotate(90deg)}
+  .profile-header{grid-template-columns:auto 1fr}
+  .ph-right{grid-column:1 / -1;text-align:center;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.2)}
+}
 </style>
-
-  <link rel="canonical" href="https://fengsheng.tech/academy/profile/">
-  <meta property="og:title" content="能力画像 · 双轨雷达图 | 风声聚匠星云">
-  <meta property="og:description" content="七维硬技能雷达图 + 五维软技能雷达图 · 测评考核分数自动回写 · 学练考评配五环节精准直达 · 看得到自己的进步轨迹">
-  <meta property="og:image" content="https://fengsheng.tech/og-image.png">
-  <meta property="og:url" content="https://fengsheng.tech/academy/profile/">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="风声聚匠星云">
-  <meta property="og:locale" content="zh_CN">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="能力画像 · 双轨雷达图 | 风声聚匠星云">
-  <meta name="twitter:description" content="七维硬技能雷达图 + 五维软技能雷达图 · 测评考核分数自动回写 · 学练考评配五环节精准直达 · 看得到自己的进步轨迹">
-  <meta name="twitter:image" content="https://fengsheng.tech/og-image.png">
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"WebPage",
-    "name":"能力画像 · 双轨雷达图 | 风声聚匠星云",
-    "description":"七维硬技能雷达图 + 五维软技能雷达图 · 测评考核分数自动回写 · 学练考评配五环节精准直达 · 看得到自己的进步轨迹",
-    "url":"https://fengsheng.tech/academy/profile/",
-    "inLanguage":"zh-CN",
-    "isPartOf":{
-      "@type":"WebSite",
-      "name":"风声聚匠星云",
-      "url":"https://fengsheng.tech",
-      "description":"经纪人能力建设平台 · 学练考评配闭环"
-    },
-  "itemListElement":[
-    {"@type":"ListItem","position":1,"name":"首页","url":"https://fengsheng.tech/"},
-    {"@type":"ListItem","position":2,"name":"学习成长","url":"https://fengsheng.tech/academy/"},
-    {"@type":"ListItem","position":3,"name":"能力画像","url":"https://fengsheng.tech/academy/profile/"}
-  ]
-  }
-  </script>
 </head>
 <body>
 
 <nav class="fs-top-nav">
   <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声</span></a>
   <div class="fs-top-links">
-    <a href="/">首页</a><a href="/workspace/">工作台</a><a href="/knowledge/">知识底座</a>
-    <a href="/curation/">策展引擎</a><a href="/decoder/">话术解码</a>
-    <a href="/assessment/">能力测评</a><a class="active" href="/academy/">学习成长</a>
+    <a href="/">首页</a>
+    <a href="/workspace/">工作台</a>
+    <a href="/knowledge/">知识底座</a>
+    <a href="/curation/">策展引擎</a>
+    <a href="/decoder/">话术解码</a>
+    <a href="/assessment/">能力测评</a>
+    <a class="active" href="/academy/">学习成长</a>
   </div>
-  <div class="fs-top-actions"><span class="fs-top-avatar">👤</span></div>
 </nav>
 
 <div class="loop-strip">
-  <a href="/care-test/">📋<span class="ls-name">测</span>测评</a>
+  <a href="/assessment/">📋<span class="ls-name">测</span>测评</a>
   <a href="/academy/core-courses/">📖<span class="ls-name">学</span>核心课</a>
   <a href="/academy/practice/">🎭<span class="ls-name">练</span>场景</a>
   <a href="/academy/exam/">📝<span class="ls-name">考</span>考核</a>
@@ -149,545 +196,520 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <div class="pg">
-  <h2 class="pg-h">📊 能力画像</h2>
-  <p class="pg-sub">七维雷达图 · 测评+考核+练习分数回写 · 看得到自己的进步轨迹</p>
+  <h1 class="pg-h">📊 能力画像 · 综合评价</h1>
+  <p class="pg-sub">不止答题——五源合成评价体系：<b>知识掌握度 + 场景应对力 + 案例分析力 + 服务伦理 + 持续学习</b>。
+  <br>按人社部房地产经纪专业人员级别映射（协理 / 经纪人 / 高级经纪人），3 年登记复核周期，时间维度复核轨迹。</p>
 
-  <!-- 动态注入区域 -->
-  <div id="profile-root"></div>
+  <!-- 头部：级别徽章 + 综合分 + 复核状态 -->
+  <div id="profile-header-here"></div>
+
+  <!-- 评价五源合成 -->
+  <div class="synthesis-box">
+    <h3>🧬 评价五源合成（对客户负责的综合评价）</h3>
+    <div class="sb-sub">不止答题——从 5 个维度评估经纪人能否真的帮到客户</div>
+    <div class="five-src" id="five-src-here"></div>
+  </div>
+
+  <!-- 级别晋升路径（人社对齐）-->
+  <div class="level-path">
+    <h3>🪜 级别晋升路径 · 对齐人社部房地产经纪专业人员</h3>
+    <div class="level-steps" id="level-path-here"></div>
+  </div>
+
+  <!-- 双轨雷达 -->
+  <div class="radar-wrap">
+    <div class="radar-box">
+      <div class="r-title">🛠️ 硬技能 · 7 维</div>
+      <div class="r-sub">客户服务全流程</div>
+      <svg id="radar-hard" class="radar-svg" viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="radar-box">
+      <div class="r-title">💡 软技能 · 5 维</div>
+      <div class="r-sub">贯穿所有场景的底色</div>
+      <svg id="radar-soft" class="radar-svg" viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+  </div>
+
+  <!-- 维度详情表 -->
+  <div class="dim-table">
+    <h4>🛠️ 硬技能 7 维详情</h4>
+    <div id="dim-hard-table"></div>
+  </div>
+  <div class="dim-table">
+    <h4>💡 软技能 5 维详情</h4>
+    <div id="dim-soft-table"></div>
+  </div>
+
+  <!-- 复核轨迹（时间维度）-->
+  <div class="review-timeline">
+    <h3>📅 复核轨迹 · 时间维度
+      <span class="rt-count" id="rt-count"></span>
+    </h3>
+    <div id="review-timeline-here"></div>
+  </div>
+
+  <!-- 多人复核能力标签 -->
+  <div class="review-tags">
+    <h3>👥 多人复核能力标签 · 可被多人认证</h3>
+    <div class="rt-sub">在对应维度被 ≥ 3 位同事/上级复核认可，即可获得标签。标签越多 = 信任链越长。</div>
+    <div class="rt-grid" id="review-tags-here"></div>
+  </div>
+
+  <!-- 继续教育学时 -->
+  <div class="ce-box">
+    <div>
+      <h4>📚 继续教育学时 · 对接人社 3 年登记要求</h4>
+      <p>登记有效期 3 年，续期需满足继续教育学时要求。当前周期还有 <b id="ce-days-left">—</b> 天到期。</p>
+      <div class="ce-bar-bg"><div class="ce-bar-fill" id="ce-bar" style="width:0%"></div></div>
+    </div>
+    <div class="ce-num">
+      <div class="big" id="ce-hours">0</div>
+      <div class="lbl">已学时</div>
+    </div>
+  </div>
 </div>
 
-<div class="footer-note"><br>© 2026 fengsheng.tech</div>
+<div class="footer-note">
+  评价体系参考 <a href="https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/rcrs/202405/t20240531_519363.html" target="_blank">人社部「房地产经纪专业人员职业资格制度暂行规定」</a>
+  · 3 级别（协理/经纪人/高级）· 3 年登记周期 · 继续教育要求
+</div>
 
 <script>
-// ============================================================
-//  能力画像 · 动态渲染
-//  数据源：localStorage['fs_care_profile']（care-test 测评结果）
-//  降级：无数据时显示骨架引导
-// ============================================================
+// ========== 维度定义 ==========
+var HARD_DIMS = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
+var HARD_CODES = {'获客触达':'DIM-1','需求洞察':'DIM-2','专业方案':'DIM-3','带看谈判':'DIM-4','交易履约':'DIM-5','售后复购':'DIM-6','数字化协同':'DIM-7'};
+var HARD_ICONS = {'获客触达':'📣','需求洞察':'🔍','专业方案':'📐','带看谈判':'🤝','交易履约':'📝','售后复购':'💗','数字化协同':'🤖'};
 
-var DIM_ORDER = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
-var DIM_ICONS = {'获客触达':'📣','需求洞察':'🔍','专业方案':'📐','带看谈判':'🤝','交易履约':'📝','售后复购':'💗','数字化协同':'🤖'};
-var DIM_CODES = {'获客触达':'DIM-1','需求洞察':'DIM-2','专业方案':'DIM-3','带看谈判':'DIM-4','交易履约':'DIM-5','售后复购':'DIM-6','数字化协同':'DIM-7'};
+var SOFT_DIMS = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
+var SOFT_CODES = {'共情能力':'SOFT-1','判断能力':'SOFT-2','责任担当':'SOFT-3','职业素养':'SOFT-4','服务意识':'SOFT-5'};
+var SOFT_ICONS = {'共情能力':'💞','判断能力':'⚖️','责任担当':'🛡️','职业素养':'📜','服务意识':'🌱'};
 
-// 软技能 5 维（纵向 · 贯穿所有业务场景）—— 双轨模型第二条腿
-var SOFT_DIM_ORDER = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
-var SOFT_DIM_ICONS = {'共情能力':'💞','判断能力':'⚖️','责任担当':'🛡️','职业素养':'📜','服务意识':'🌱'};
-var SOFT_DIM_CODES = {'共情能力':'SOFT-1','判断能力':'SOFT-2','责任担当':'SOFT-3','职业素养':'SOFT-4','服务意识':'SOFT-5'};
-var FALLBACK_SOFT_SCORES = {'共情能力':50,'判断能力':50,'责任担当':50,'职业素养':50,'服务意识':50};
+// ========== 人社级别映射 ==========
+var LEVELS = [
+  { key:'entry',   name:'入门经纪人',  hrss:'协理',         emoji:'🟢', criteria:'硬 7 维每维 ≥ 65 · 软 5 维每维 ≥ 60' },
+  { key:'assist',  name:'合格经纪人',  hrss:'经纪人',       emoji:'🟡', criteria:'硬 7 维每维 ≥ 80 · 软 5 维每维 ≥ 70 · exam 每维 ≥ 80' },
+  { key:'senior',  name:'高级经纪人',  hrss:'高级经纪人',   emoji:'🟠', criteria:'合格 + 复核 ≥ 3 次 + 场景 ≥ 20 次 + 案例 ≥ 1' },
+  { key:'mentor',  name:'金牌导师',    hrss:'行业专家',     emoji:'🔴', criteria:'高级 + 带新人 ≥ 3 人 + 复核 ≥ 5 次' },
+];
 
-// 默认骨架分数（无数据时降级）
-var FALLBACK_SCORES = {'获客触达':65,'需求洞察':55,'专业方案':75,'带看谈判':40,'交易履约':85,'售后复购':50,'数字化协同':60};
-
-// 维度名 → DIM-x / SOFT-x 代码（用于 URL 参数）
-var DIM_CODE_MAP = {
-  '获客触达':'DIM-1','需求洞察':'DIM-2','专业方案':'DIM-3','带看谈判':'DIM-4',
-  '交易履约':'DIM-5','售后复购':'DIM-6','数字化协同':'DIM-7',
-  '共情能力':'SOFT-1','判断能力':'SOFT-2','责任担当':'SOFT-3',
-  '职业素养':'SOFT-4','服务意识':'SOFT-5'
-};
-// 反查：DIM-x → 场景 id（practice 页用）
-var PRACTICE_SCENE_MAP = {
-  'DIM-1':'customer-acquisition','DIM-2':'need-discovery','DIM-3':'solution-design',
-  'DIM-4':'price-haggle','DIM-5':'contract-signing','DIM-6':'after-sale',
-  'SOFT-1':'empathy-scene','SOFT-2':'judgment-scene','SOFT-3':'responsibility-scene',
-  'SOFT-4':'integrity-scene','SOFT-5':'service-scene'
-};
-
-// 维度弱项 → 学习路径建议（v2：全部带 URL 参数，精准直达对应维度）
-var DIM_ACTION = {
-  '获客触达':    { weak:'/academy/core-courses/learn/?dim=DIM-1', strong:'/academy/practice/?dim=DIM-1',  weakLabel:'去补门', strongLabel:'去练习' },
-  '需求洞察':    { weak:'/academy/core-courses/learn/?dim=DIM-2', strong:'/academy/practice/?dim=DIM-2',  weakLabel:'去补门', strongLabel:'去练习' },
-  '专业方案':    { weak:'/academy/core-courses/learn/?dim=DIM-3', strong:'/academy/exam/?dim=DIM-3',      weakLabel:'去补门', strongLabel:'复习' },
-  '带看谈判':    { weak:'/academy/practice/?dim=DIM-4',          strong:'/academy/exam/?dim=DIM-4',      weakLabel:'去练习', strongLabel:'复习' },
-  '交易履约':    { weak:'/academy/exam/?dim=DIM-5',               strong:'/academy/core-courses/learn/?dim=DIM-5', weakLabel:'去考核', strongLabel:'复习' },
-  '售后复购':    { weak:'/academy/core-courses/learn/?dim=DIM-6', strong:'/academy/practice/?dim=DIM-6',  weakLabel:'去补门', strongLabel:'去练习' },
-  '数字化协同':  { weak:'/academy/core-courses/learn/?dim=DIM-7', strong:'/academy/practice/?dim=DIM-7',  weakLabel:'去补门', strongLabel:'去练习' },
-  // 软技能
-  '共情能力':    { weak:'/academy/core-courses/learn/?dim=SOFT-1', strong:'/academy/practice/?dim=SOFT-1', weakLabel:'去补门', strongLabel:'去练习' },
-  '判断能力':    { weak:'/academy/core-courses/learn/?dim=SOFT-2', strong:'/academy/practice/?dim=SOFT-2', weakLabel:'去补门', strongLabel:'去练习' },
-  '责任担当':    { weak:'/academy/core-courses/learn/?dim=SOFT-3', strong:'/academy/exam/?dim=SOFT-3',     weakLabel:'去补门', strongLabel:'复习' },
-  '职业素养':    { weak:'/academy/core-courses/learn/?dim=SOFT-4', strong:'/academy/exam/?dim=SOFT-4',     weakLabel:'去补门', strongLabel:'复习' },
-  '服务意识':    { weak:'/academy/core-courses/learn/?dim=SOFT-5', strong:'/academy/practice/?dim=SOFT-5', weakLabel:'去补门', strongLabel:'去练习' },
-};
-
-function gradeOf(total) {
-  if (total >= 80) return { label:'A 全面扎实，可做标杆', color:'#2d5a3d' };
-  if (total >= 65) return { label:'B 整体扎实，部分可补强', color:'#3498db' };
-  if (total >= 45) return { label:'C 能力缺口明显', color:'#f39c12' };
-  return { label:'D 建议立即重点突破', color:'#e74c3c' };
-}
-
-function scoreClass(s) {
-  if (s >= 65) return 'strong';
-  if (s >= 45) return 'medium';
-  return 'weak';
-}
-
-function formatDate(iso) {
-  if (!iso) return '';
-  try {
-    var d = new Date(iso);
-    return d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
-  } catch(e) { return iso; }
-}
-
-// === 雷达图 SVG 生成 ===
-// n 维 · 中心 (170,170) · 半径 140 · colors 可定制
-function buildRadarSVG(scores, strokeColor, fillColor) {
-  return buildRadarSVGBase(scores, DIM_ORDER, DIM_ICONS, strokeColor || '#1a3d24', fillColor || 'rgba(26,61,36,.22)');
-}
-
-// 软技能 5 维雷达图
-function buildRadarSVGSoft(scores, strokeColor, fillColor) {
-  return buildRadarSVGBase(scores, SOFT_DIM_ORDER, SOFT_DIM_ICONS, strokeColor || '#8a7040', fillColor || 'rgba(138,112,64,.22)');
-}
-
-// 通用雷达图生成器（任意 n 维）
-function buildRadarSVGBase(scores, dimOrder, dimIcons, strokeColor, fillColor) {
-  // viewBox 给标签留足空间：380x380 画布，中心 190，雷达半径 115，标签在 R+32 处
-  var cx = 190, cy = 190, R = 115, n = dimOrder.length;
-
-  // 轴线 + 分层圆环
-  var rings = '';
-  [0.25, 0.5, 0.75, 1.0].forEach(function(r) {
-    rings += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (R * r) + '" fill="none" stroke="#e8e4da" stroke-width="1' + (r === 1 ? '' : ' stroke-dasharray="2,2"') + '"/>';
-  });
-
-  var axes = '';
-  var labelElems = '';
-  var points = [];
-
-  for (var i = 0; i < n; i++) {
-    var angle = (-90 + i * (360 / n)) * Math.PI / 180;
-    var ax = cx + R * Math.cos(angle);
-    var ay = cy + R * Math.sin(angle);
-    axes += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ax + '" y2="' + ay + '" stroke="#ccc" stroke-width="1"/>';
-
-    var name = dimOrder[i];
-    var s = scores[name] || 50;
-    var pr = Math.max(12, R * (s / 100));  // 最低 12px 半径（避免贴中心）
-    var px = cx + pr * Math.cos(angle);
-    var py = cy + pr * Math.sin(angle);
-    points.push(px + ',' + py);
-
-    // 维度标签（在最外圈外侧 32px 处，留足 emoji+4 汉字的空间）
-    var labelR = R + 32;
-    var lx = cx + labelR * Math.cos(angle);
-    var ly = cy + labelR * Math.sin(angle);
-    // 顶部/底部用 middle，左右用 start/end
-    var cosA = Math.cos(angle);
-    var anchor = Math.abs(cosA) < 0.15 ? 'middle' : (cosA > 0 ? 'start' : 'end');
-    labelElems += '<text x="' + lx + '" y="' + ly + '" text-anchor="' + anchor + '" font-size="11.5" fill="#1a3d24" font-weight="700" dominant-baseline="middle">' + (dimIcons[name] || '') + ' ' + name + '</text>';
-  }
-
-  return '<svg class="radar-svg" viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">' +
-    rings + axes +
-    '<polygon points="' + points.join(' ') + '" fill="' + fillColor + '" stroke="' + strokeColor + '" stroke-width="2"/>' +
-    points.map(function(p) {
-      var xy = p.split(',');
-      return '<circle cx="' + xy[0] + '" cy="' + xy[1] + '" r="4.5" fill="#8a7040" stroke="#fff" stroke-width="1.5"/>';
-    }).join('') +
-    labelElems +
-  '</svg>';
-}
-
-// === 主渲染 ===
-function render() {
-  var root = document.getElementById('profile-root');
-
-  // === 双源合并 ===
-  var care = null;
+// ========== 数据源加载 ==========
+function loadAllData() {
+  var care = null, examResults = {}, history = [], practiceDone = [], courseProgress = {}, reviewTags = {};
   try { care = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
-  var examResults = {};
   try { examResults = JSON.parse(localStorage.getItem('fs_exam_results')) || {}; } catch(e) {}
-  var history = [];
   try { history = JSON.parse(localStorage.getItem('fs_care_history')) || []; } catch(e) {}
+  try { practiceDone = JSON.parse(localStorage.getItem('fs_practice_done')) || []; } catch(e) {}
+  try { courseProgress = JSON.parse(localStorage.getItem('fs_course_progress')) || {}; } catch(e) {}
+  try { reviewTags = JSON.parse(localStorage.getItem('fs_review_tags')) || {}; } catch(e) {}
+  return { care:care, exam:examResults, history:history, practice:practiceDone, courses:courseProgress, reviews:reviewTags };
+}
 
-  var careHasData = care && care.dim_scores && typeof care.dim_scores === 'object';
-
-  // 硬技能 7 维（横向 · 客户服务时间线）
+// ========== 硬技能 7 维分数（care-test + exam 取 max）==========
+function computeHardScores(d) {
   var scores = {};
-  var sources = {};
-  for (var i = 0; i < DIM_ORDER.length; i++) {
-    var n = DIM_ORDER[i];
-    var careScore = careHasData && care.dim_scores[n] != null ? care.dim_scores[n] : null;
-    var dimKey = 'DIM-' + (i + 1);
-    var examScore = examResults[dimKey] ? examResults[dimKey].pct : null;
+  for (var i = 0; i < 7; i++) {
+    var n = HARD_DIMS[i], dimKey = 'DIM-' + (i+1);
+    var cs = d.care && d.care.dim_scores ? d.care.dim_scores[n] : null;
+    var es = d.exam[dimKey] ? d.exam[dimKey].pct : null;
+    if (cs != null && es != null) scores[n] = Math.max(cs, es);
+    else if (cs != null) scores[n] = cs;
+    else if (es != null) scores[n] = es;
+    else scores[n] = null;
+  }
+  return scores;
+}
 
-    if (careScore != null && examScore != null) {
-      scores[n] = Math.max(careScore, examScore);
-      sources[n] = careScore >= examScore ? '测评' : dimKey + '考核';
-    } else if (careScore != null) {
-      scores[n] = careScore; sources[n] = '测评';
-    } else if (examScore != null) {
-      scores[n] = examScore; sources[n] = dimKey + '考核';
-    } else {
-      scores[n] = FALLBACK_SCORES[n]; sources[n] = null;
+// ========== 软技能 5 维分数 ==========
+function computeSoftScores(d) {
+  var scores = {};
+  for (var i = 0; i < 5; i++) {
+    var n = SOFT_DIMS[i], softKey = 'SOFT-' + (i+1);
+    var cs = d.care && d.care.soft_dim_scores ? d.care.soft_dim_scores[n] : null;
+    var es = d.exam[softKey] ? d.exam[softKey].pct : null;
+    if (cs != null && es != null) scores[n] = Math.max(cs, es);
+    else if (cs != null) scores[n] = cs;
+    else if (es != null) scores[n] = es;
+    else scores[n] = null;
+  }
+  return scores;
+}
+
+// ========== 五源合成 ==========
+function computeFiveSources(d, hard, soft) {
+  // 1. 知识掌握度：硬技能平均（care-test + exam）
+  var hVals = Object.values(hard).filter(function(v){ return v != null; });
+  var src1 = hVals.length > 0 ? Math.round(hVals.reduce(function(a,b){return a+b},0)/hVals.length) : null;
+  var src1Hint = 'exam 每维 ≥ 80';
+
+  // 2. 场景应对力：practice 完成率（5 个软场景 + 8 个硬场景 = 13）
+  var totalScenes = 13;
+  var doneScenes = (d.practice || []).length;
+  var src2 = Math.round(Math.min(100, doneScenes / totalScenes * 100));
+  var src2Hint = '场景完成 ≥ 5 个';
+
+  // 3. 案例分析力：当前 exam 没有案例题，用硬技能中"专业方案"+"交易履约"两个维度平均（最接近案例分析能力）
+  var caseDim1 = hard['专业方案'], caseDim2 = hard['交易履约'];
+  if (caseDim1 != null && caseDim2 != null) src3 = Math.round((caseDim1 + caseDim2) / 2);
+  else if (caseDim1 != null) src3 = caseDim1;
+  else if (caseDim2 != null) src3 = caseDim2;
+  else src3 = null;
+  var src3Hint = '案例题 ≥ 70（功能预留）';
+
+  // 4. 服务伦理：软技能"职业素养"（SOFT-4）
+  var src4 = soft['职业素养'] != null ? soft['职业素养'] : null;
+  var src4Hint = '红线问题一票否决';
+
+  // 5. 持续学习：course_progress 完成率（12 门课）
+  var totalCourses = 12;
+  var doneCourses = Object.keys(d.courses || {}).filter(function(k){ return d.courses[k] && d.courses[k].completed; }).length;
+  var src5 = Math.round(Math.min(100, doneCourses / totalCourses * 100));
+  var src5Hint = '12 门课 ≥ 80% 完成';
+
+  function avgNonNull(a,b,c,d,e){
+    var vals = [a,b,c,d,e].filter(function(v){ return v != null; });
+    return vals.length > 0 ? Math.round(vals.reduce(function(x,y){return x+y},0)/vals.length) : null;
+  }
+  return {
+    knowledge: src1,   // 知识掌握度
+    scenario: src2,    // 场景应对力
+    case: src3,        // 案例分析力
+    ethics: src4,      // 服务伦理
+    learning: src5,     // 持续学习
+    hint1: src1Hint, hint2: src2Hint, hint3: src3Hint, hint4: src4Hint, hint5: src5Hint,
+    overall: avgNonNull(src1, src2, src3, src4, src5)
+  };
+}
+
+// ========== 级别判定 ==========
+function computeLevel(hard, soft, d) {
+  var hVals = Object.values(hard).filter(function(v){ return v != null; });
+  var sVals = Object.values(soft).filter(function(v){ return v != null; });
+  var hMin = hVals.length > 0 ? Math.min.apply(null, hVals) : null;
+  var sMin = sVals.length > 0 ? Math.min.apply(null, sVals) : null;
+
+  var examPassCount = Object.keys(d.exam).filter(function(k){ return d.exam[k] && d.exam[k].pct >= 80; }).length;
+  var reviewCount = (d.history || []).length + (d.reviews ? Object.values(d.reviews).reduce(function(a,b){ return a + (b.count||0); }, 0) : 0);
+  var practiceCount = (d.practice || []).length;
+
+  var level = null;
+  // entry: 硬 min ≥ 65, 软 min ≥ 60
+  if (hMin != null && sMin != null && hMin >= 65 && sMin >= 60) {
+    level = 'entry';
+    // assist: 硬 min ≥ 80, 软 min ≥ 70, exam 每维 ≥ 80（至少 12 个）
+    if (hMin >= 80 && sMin >= 70 && examPassCount >= 12) {
+      level = 'assist';
+      // senior: assist + 复核 ≥ 3 + 场景 ≥ 20 + 案例 ≥ 1
+      if (reviewCount >= 3 && practiceCount >= 20) {
+        level = 'senior';
+        // mentor: senior + 复核 ≥ 5 + 带新人 ≥ 3（暂无数据）
+        if (reviewCount >= 5) level = 'mentor';
+      }
     }
   }
 
-  // 软技能 5 维（纵向 · 贯穿所有场景）—— 双轨模型第二条腿
-  // 数据源：care.soft_dim_scores（等 care-test 有软技能题就自动有值）
-  var softScores = {};
-  var softSources = {};
-  var softHasData = care && care.soft_dim_scores && typeof care.soft_dim_scores === 'object';
-  for (var si = 0; si < SOFT_DIM_ORDER.length; si++) {
-    var sn = SOFT_DIM_ORDER[si];
-    var softKey = 'SOFT-' + (si + 1); // 考核页 SOFT-1..5 与画像 SOFT_DIM_ORDER 一一对应
-    var careSoft = (softHasData && care.soft_dim_scores[sn] != null) ? care.soft_dim_scores[sn] : null;
-    var examSoft = (examResults[softKey] && typeof examResults[softKey].pct === 'number') ? examResults[softKey].pct : null;
-    if (careSoft != null && examSoft != null) {
-      softScores[sn] = Math.max(careSoft, examSoft); // 与硬技能同口径：双源取高分
-      softSources[sn] = careSoft >= examSoft ? '测评' : softKey + '考核';
-    } else if (careSoft != null) {
-      softScores[sn] = careSoft; softSources[sn] = '测评';
-    } else if (examSoft != null) {
-      softScores[sn] = examSoft; softSources[sn] = softKey + '考核';
-    } else {
-      softScores[sn] = FALLBACK_SOFT_SCORES[sn];
-      softSources[sn] = null;
-    }
-  }
-  // 任一来源（测评/考核）有软技能真实分即点亮软轨
-  var softHasAnyReal = Object.keys(softSources).some(function(k){ return softSources[k] != null; });
+  return { level: level, hMin: hMin, sMin: sMin, examPassCount: examPassCount, reviewCount: reviewCount, practiceCount: practiceCount };
+}
 
-  var hasAnyData = careHasData || Object.keys(examResults).length > 0;
-  var total = Math.round(Object.keys(scores).reduce(function(a,k){ return a + scores[k]; }, 0) / 7);
-  var grade = gradeOf(total);
-  var weakest = DIM_ORDER.slice().sort(function(a,b){ return scores[a] - scores[b]; })[0];
-  var strongest = DIM_ORDER.slice().sort(function(a,b){ return scores[b] - scores[a]; })[0];
+// ========== 主渲染 ==========
+function render() {
+  var d = loadAllData();
+  var hard = computeHardScores(d);
+  var soft = computeSoftScores(d);
+  var fs = computeFiveSources(d, hard, soft);
+  var lv = computeLevel(hard, soft, d);
 
-  var html = '';
+  // ====== 头部 ======
+  renderHeader(fs, lv, d);
 
-  if (hasAnyData) {
-    var badgesHtml = '<div class="ph-badges">';
-    badgesHtml += '<span class="ph-badge">💪 最强：' + strongest + ' ' + scores[strongest] + '（' + sources[strongest] + '）</span>';
-    badgesHtml += '<span class="ph-badge">📌 弱项：' + weakest + ' ' + scores[weakest] + '（' + sources[weakest] + '）</span>';
-    if (Object.keys(examResults).length > 0)
-      badgesHtml += '<span class="ph-badge">📝 考核 ' + Object.keys(examResults).length + '/7 已考</span>';
-    badgesHtml += '</div>';
+  // ====== 五源合成 ======
+  renderFiveSources(fs);
 
-    html += '<div class="profile-header">' +
-      '<div class="ph-avatar">👤</div>' +
-      '<div class="ph-main">' +
-        '<div class="ph-name">我</div>' +
-        '<div class="ph-sub">能力画像 · 综合分来自 <b>测评</b>' +
-          (Object.keys(examResults).length > 0 ? ' + <b>' + Object.keys(examResults).length + ' 维度考核</b>' : '') + ' 双源合并</div>' +
-        badgesHtml +
+  // ====== 级别路径 ======
+  renderLevelPath(lv, fs);
+
+  // ====== 雷达 ======
+  renderRadar('radar-hard', hard, HARD_DIMS, HARD_ICONS, '#1a3d24', 'rgba(26,61,36,.22)');
+  renderRadar('radar-soft', soft, SOFT_DIMS, SOFT_ICONS, '#8a7040', 'rgba(138,112,64,.22)');
+
+  // ====== 维度表 ======
+  renderDimTable('dim-hard-table', hard, HARD_DIMS, HARD_CODES);
+  renderDimTable('dim-soft-table', soft, SOFT_DIMS, SOFT_CODES);
+
+  // ====== 复核轨迹 ======
+  renderReviewTimeline(d);
+
+  // ====== 多人复核标签 ======
+  renderReviewTags(d);
+
+  // ====== 继续教育学时 ======
+  renderCE(d);
+}
+
+function renderHeader(fs, lv, d) {
+  var root = document.getElementById('profile-header-here');
+  var levelDef = LEVELS.find(function(l){ return l.key === lv.level; }) || LEVELS[0];
+  var nextLevel = LEVELS[LEVELS.indexOf(levelDef) + 1];
+
+  // 复核周期（3 年登记）
+  var regDate = null;
+  try { regDate = localStorage.getItem('fs_registration_date'); } catch(e) {}
+  if (!regDate) { regDate = new Date().toISOString(); localStorage.setItem('fs_registration_date', regDate); }
+  var regEnd = new Date(regDate); regEnd.setFullYear(regEnd.getFullYear() + 3);
+  var daysLeft = Math.ceil((regEnd - new Date()) / (1000*60*60*24));
+
+  var reviewClass = daysLeft < 30 ? 'danger' : (daysLeft < 180 ? 'warn' : '');
+  var reviewText = daysLeft < 0 ? '登记已过期，请立即续期' :
+    (daysLeft < 30 ? '复核截止仅剩 ' + daysLeft + ' 天' :
+      '下一次 3 年登记复核还有 ' + daysLeft + ' 天');
+
+  var html = '<div class="profile-header">' +
+    '<div class="ph-avatar">经</div>' +
+    '<div class="ph-main">' +
+      '<div class="ph-name">' + levelDef.emoji + ' ' + levelDef.name + '</div>' +
+      '<div class="ph-title">对齐人社部 · ' + levelDef.hrss + ' 级别</div>' +
+      '<div class="ph-badges">' +
+        '<span class="ph-badge">硬 ' + (lv.hMin != null ? lv.hMin + ' 分' : '—') + '</span>' +
+        '<span class="ph-badge">软 ' + (lv.sMin != null ? lv.sMin + ' 分' : '—') + '</span>' +
+        '<span class="ph-badge">考核合格 ' + lv.examPassCount + '/12</span>' +
+        '<span class="ph-badge">复核 ' + lv.reviewCount + ' 次</span>' +
       '</div>' +
-      '<div class="ph-score">' +
-        '<div class="ph-score-num">' + total + '</div>' +
-        '<div class="ph-score-label">综合分</div>' +
-        '<div class="ph-score-grade" style="color:' + grade.color + '">' + grade.label.split(' ')[0] + '</div>' +
-      '</div>' +
-      '<div class="ph-actions">' +
-        '<a class="ph-btn" href="/care-test/">🔄 重新测评</a>' +
+      (nextLevel ? '<div class="ph-actions">' +
+        '<a class="ph-btn primary" href="#level-path-here">🎓 晋升 ' + nextLevel.name + '</a>' +
         '<a class="ph-btn" href="/academy/exam/">📝 去考核</a>' +
-      '</div>' +
-    '</div>';
-  } else {
-    html += '<div class="banner-newuser">' +
-      '<div class="b-icon">🎯</div>' +
-      '<div class="b-body">' +
-        '<div class="b-title">还没有你的能力画像</div>' +
-        '<div class="b-desc">先花 15 分钟测一次，7 维度 35 道题。测完自动生成画像，后续考核分数也会自动回写合并。</div>' +
-      '</div>' +
-      '<a class="b-btn" href="/care-test/">开始测评 →</a>' +
-    '</div>';
-  }
-
-  // === 双轨雷达图（硬技能 7 维 + 软技能 5 维）===
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">' +
-    // 硬技能雷达图
-    '<div class="radar-box" style="margin-bottom:0">' +
-      '<div class="r-title">📐 专业硬技能（横向 · 7 维）</div>' +
-      '<div class="r-sub">' + (hasAnyData ? '双源合并 · 综合分 ' + total : '演示数据 · 客户服务时间线') + '</div>' +
-      buildRadarSVG(scores, '#1a3d24', 'rgba(26,61,36,.22)') +
+      '</div>' : '<div class="ph-actions"><a class="ph-btn" href="/care-test/">🔄 重新测评</a></div>') +
     '</div>' +
-    // 软技能雷达图
-    '<div class="radar-box" style="margin-bottom:0">' +
-      '<div class="r-title">💞 软技能（纵向 · 5 维）</div>' +
-      '<div class="r-sub">' + (softHasAnyReal ? '双轨模型 · 贯穿所有场景' : '即将上线 · 贯穿所有业务场景') + '</div>' +
-      buildRadarSVGSoft(softScores, '#8a7040', 'rgba(138,112,64,.22)') +
-      (!softHasAnyReal ? '<div style="font-size:11px;color:#999;margin-top:6px">📌 数据接入中，完成软技能测评或 SOFT-1~5 考核后自动更新</div>' : '') +
+    '<div class="ph-right">' +
+      '<div class="ph-level-badge">' + (lv.level || 'unregistered').toUpperCase() + '</div>' +
+      '<div class="ph-score-num">' + (fs.overall != null ? fs.overall : '—') + '</div>' +
+      '<div class="ph-score-label">五源综合分</div>' +
+      '<div class="ph-review ' + reviewClass + '">' + reviewText + '</div>' +
     '</div>' +
   '</div>';
-
-  // 趋势图（history >= 2）
-  if (history.length >= 2) html += buildTrendBox(history, scores);
-
-  // 时间戳
-  if (careHasData && care.timestamp) {
-    html += '<div class="ts-row">上次测评：' + formatDate(care.timestamp) + ' · 共 ' + (care.question_count || 35) + ' 题' +
-      (Object.keys(examResults).length > 0 ? ' · 考核 ' + Object.keys(examResults).length + ' 维度' : '') + '</div>';
-  }
-
-  // === 维度表：硬技能 + 软技能 双区块 ===
-
-  // 硬技能 7 维
-  html += '<div class="dim-table">' +
-    '<div style="font-size:13px;font-weight:700;color:#1a3d24;margin-bottom:8px">📐 专业硬技能 · 7 维排序（弱项优先）</div>';
-  var sorted = DIM_ORDER.slice().sort(function(a,b){ return scores[a] - scores[b]; });
-  for (var j = 0; j < sorted.length; j++) {
-    var dname = sorted[j];
-    var dscore = scores[dname];
-    var dc = scoreClass(dscore);
-    var action = DIM_ACTION[dname][dc === 'weak' ? 'weak' : 'strong'];
-    var actionLabel = dc === 'weak' ? DIM_ACTION[dname].weakLabel : DIM_ACTION[dname].strongLabel;
-    var srcLabel = sources[dname] ? (' <span style="font-size:10px;color:#999;font-weight:normal">(' + sources[dname] + ')</span>') : '';
-    html += '<div class="dim-row">' +
-      '<span class="d-code">' + DIM_CODES[dname] + '</span>' +
-      '<span class="d-name">' + DIM_ICONS[dname] + ' ' + dname + srcLabel + '</span>' +
-      '<div class="d-bar"><div class="d-fill ' + dc + '" style="width:' + dscore + '%"></div></div>' +
-      '<span class="d-score ' + dc + '">' + dscore + '</span>' +
-      '<a class="d-action" href="' + action + '">' + actionLabel + ' →</a>' +
-    '</div>';
-  }
-  html += '</div>';
-
-  // 软技能 5 维
-  html += '<div class="dim-table">' +
-    '<div style="font-size:13px;font-weight:700;color:#8a7040;margin-bottom:8px">💞 软技能 · 5 维（贯穿所有业务场景）</div>';
-  var softSorted = SOFT_DIM_ORDER.slice().sort(function(a,b){ return softScores[a] - softScores[b]; });
-  for (var sj = 0; sj < softSorted.length; sj++) {
-    var sname = softSorted[sj];
-    var sscore = softScores[sname];
-    var sdc = scoreClass(sscore);
-    var ssrcLabel = softSources[sname] ? (' <span style="font-size:10px;color:#999;font-weight:normal">(' + softSources[sname] + ')</span>') : '';
-    var sActionHint = softHasAnyReal ? '去补门 →' : '即将上线';
-    var sActionHref = softHasAnyReal ? '/academy/core-courses/' : 'javascript:void(0)';
-    html += '<div class="dim-row">' +
-      '<span class="d-code" style="background:#8a7040">' + SOFT_DIM_CODES[sname] + '</span>' +
-      '<span class="d-name">' + SOFT_DIM_ICONS[sname] + ' ' + sname + ssrcLabel + '</span>' +
-      '<div class="d-bar"><div class="d-fill ' + sdc + '" style="width:' + sscore + '%"></div></div>' +
-      '<span class="d-score ' + sdc + '">' + sscore + '</span>' +
-      '<a class="d-action" href="' + sActionHref + '"' + (!softHasAnyReal ? ' style="color:#bbb;cursor:default"' : '') + '>' + sActionHint + '</a>' +
-    '</div>';
-  }
-  html += '</div>';
-
-  // === 学练考评配闭环（弱项自动生成路径）===
-  html += buildLearningPathBox(scores, sources, total, weakest, strongest, softScores, softSources, softHasAnyReal);
-
   root.innerHTML = html;
 }
 
-// === 学练考评配闭环模块 ===
-// 输入：硬技能 scores/sources + 软技能 softScores + 综合分 + 弱强项
-// 输出：一个完整的"下一步做什么"卡片组，弱项→学→练→考→配 每步都有具体链接（带 URL 参数精准直达）
-function buildLearningPathBox(scores, sources, total, weakest, strongest, softScores, softSources, softHasAnyReal) {
-  // 找出最弱的 3 个维度（硬技能）
-  var sorted = Object.keys(scores).sort(function(a,b){ return scores[a] - scores[b]; });
-  var weakList = sorted.slice(0, 3);
-  var strongList = sorted.slice(-2).reverse();
-
-  // 软技能最弱 2 个
-  var softSorted = Object.keys(softScores).sort(function(a,b){ return softScores[a] - softScores[b]; });
-  var softWeakList = softSorted.slice(0, 2);
-
-  // 根据最弱维度生成具体推荐
-  var learnDim = weakList[0];       // 最弱的硬技能 → 补门
-  var practiceDim = weakList.length > 1 ? weakList[1] : weakList[0];  // 次弱 → 练场景
-  var examDim = strongList[0];      // 最强的 → 去考拿认证
-
-  // 维度名 → URL 参数
-  var learnCode = DIM_CODE_MAP[learnDim] || 'DIM-1';
-  var practiceCode = DIM_CODE_MAP[practiceDim] || 'DIM-1';
-  var examCode = DIM_CODE_MAP[examDim] || 'DIM-1';
-
-  var boxes = [
-    { icon:'📋', name:'测', href:'/care-test/', label:'再测一次', desc:'每次顺序随机 · 完整答题留痕 · 看进步', color:'#2d5a3d', bg:'#f0f6f1' },
-    { icon:'📖', name:'学', href:'/academy/core-courses/learn/?dim=' + learnCode, label:'补' + learnDim, desc:'最弱项 ' + learnDim + ' 仅 ' + scores[learnDim] + ' 分 · 精准直达该课程', color:'#8a7040', bg:'#fdf9ef' },
-    { icon:'🎭', name:'练', href:'/academy/practice/?dim=' + practiceCode, label:'练' + practiceDim, desc: softHasAnyReal ? ('软技能 ' + softWeakList[0] + ' 也弱 · 双轨练习') : ('场景对话 · 真客户怎么说你怎么答'), color:'#0891b2', bg:'#f0f9fb' },
-    { icon:'📝', name:'考', href:'/academy/exam/?dim=' + examCode, label:'拿' + examDim, desc:'最强项 ' + examDim + ' ' + scores[examDim] + ' 分 · 过 80 拿认证', color:'#7c3aed', bg:'#f5f2ff' },
-    { icon:'🎯', name:'配', href:'/academy/match/', label:'看岗位', desc:'画像自动匹配 · 知道自己适合什么', color:'#c25636', bg:'#fef3ef' },
+function renderFiveSources(fs) {
+  var root = document.getElementById('five-src-here');
+  var items = [
+    { n: fs.knowledge, icon:'📝', name:'知识掌握度', desc:'答题正确率', src:'care-test + exam', hint:fs.hint1 },
+    { n: fs.scenario,  icon:'🎭', name:'场景应对力', desc:'对话完成率', src:'practice 页', hint:fs.hint2 },
+    { n: fs.case,      icon:'🧩', name:'案例分析力', desc:'决策合理性', src:'硬方案+履约', hint:fs.hint3 },
+    { n: fs.ethics,    icon:'🤝', name:'服务伦理', desc:'红线零容忍', src:'SOFT-4', hint:fs.hint4 },
+    { n: fs.learning,  icon:'📚', name:'持续学习', desc:'课程完成率', src:'core-courses', hint:fs.hint5 },
   ];
+  var html = items.map(function(it, i){
+    var cls = 'src-item s' + (i+1);
+    var num = it.n != null ? it.n : '—';
+    return '<div class="' + cls + '">' +
+      '<div class="si-icon">' + it.icon + '</div>' +
+      '<div class="si-num">' + num + (it.n != null ? '%' : '') + '</div>' +
+      '<div class="si-name">' + it.name + '</div>' +
+      '<div class="si-desc">' + it.desc + '</div>' +
+      '<div class="si-source">📌 ' + it.src + '</div>' +
+    '</div>';
+  }).join('');
+  root.innerHTML = html;
+}
 
-  var html = '<div style="margin-top:24px">';
-  html += '<div style="font-size:13px;font-weight:700;color:#1a3d24;margin-bottom:12px;letter-spacing:1px">🔄 学练考评配 · 闭环路径（弱项自动生成）</div>';
-  html += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">';
-  boxes.forEach(function(b){
-    html += '<a href="' + b.href + '" style="text-decoration:none;color:inherit;background:' + b.bg + ';border:1px solid ' + b.color + '22;border-radius:10px;padding:14px 12px;display:block;transition:all .18s" onmouseover="this.style.borderColor=\'' + b.color + '\';this.style.boxShadow=\'0 4px 14px rgba(0,0,0,.08)\';this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.borderColor=\'' + b.color + '22\';this.style.boxShadow=\'none\';this.style.transform=\'translateY(0)\'">';
-    html += '<div style="font-size:26px;margin-bottom:6px">' + b.icon + '</div>';
-    html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">';
-    html += '<span style="font-size:15px;font-weight:800;color:' + b.color + '">' + b.name + '</span>';
-    html += '<span style="font-size:11px;color:' + b.color + ';background:' + b.color + '15;padding:2px 8px;border-radius:10px;font-weight:600">' + b.label + '</span>';
-    html += '</div>';
-    html += '<div style="font-size:11px;color:#666;line-height:1.5">' + b.desc + '</div>';
-    html += '</a>';
-  });
-  html += '</div>';
+function renderLevelPath(lv, fs) {
+  var root = document.getElementById('level-path-here');
+  var html = '';
+  for (var i = 0; i < LEVELS.length; i++) {
+    var l = LEVELS[i];
+    var isCurrent = lv.level === l.key;
+    var achieved = false, gap = null;
+    if (i === 0) achieved = lv.level != null;
+    else if (lv.level && LEVELS.findIndex(function(x){ return x.key === lv.level; }) >= i) achieved = true;
 
-  // 弱项优先级提示
-  html += '<div style="margin-top:12px;background:#fafaf8;border-radius:8px;padding:10px 14px;font-size:12px;color:#555;line-height:1.8">';
-  html += '<b style="color:#8a7040">📌 当前优先级：</b>';
-  html += weakList.map(function(w, i){
-    return '<span style="color:' + (scores[w] < 45 ? '#c25636' : scores[w] < 60 ? '#8a7040' : '#2d5a3d') + '">' + (i+1) + '. ' + w + ' ' + scores[w] + ' 分</span>';
-  }).join(' · ');
-  if (softHasAnyReal) {
-    html += ' · <span style="color:#8a7040">软技能最弱：' + softWeakList[0] + ' ' + softScores[softWeakList[0]] + ' 分</span>';
+    var stepHtml = '<div class="level-step' + (isCurrent ? ' current' : '') + '">' +
+      '<div class="ls-emoji">' + l.emoji + '</div>' +
+      '<div class="ls-name">' + l.name + '</div>' +
+      '<div class="ls-hrss">人社：' + l.hrss + '</div>' +
+      '<div class="ls-criteria">' + l.criteria + '</div>';
+    if (achieved) stepHtml += '<div class="ls-achieved">✅ 已达成</div>';
+    else if (isCurrent) stepHtml += '<div class="ls-gap">🎯 当前阶段</div>';
+    else stepHtml += '<div class="ls-gap">🔒 未达</div>';
+    stepHtml += '</div>';
+    html += stepHtml;
+    if (i < LEVELS.length - 1) html += '<div class="level-arrow">→</div>';
   }
-  html += '</div>';
-
-  html += '</div>';
-  return html;
+  root.innerHTML = html;
 }
 
-// === 趋势图 SVG ===
-function buildTrendBox(history, currentScores) {
-  var W = 760, H = 180, padL = 40, padR = 20, padT = 20, padB = 32;
-  var innerW = W - padL - padR, innerH = H - padT - padB;
-  var recent = history.slice(-5);
-  var sorted = Object.keys(currentScores).sort(function(a,b){ return currentScores[b] - currentScores[a]; });
-  var defaultDims = [sorted[0], sorted[sorted.length - 1]];
-  var colors = ['#2d5a3d', '#c25636', '#8a7040', '#0891b2', '#7c3aed'];
-  var svg = buildTrendSVG(recent, defaultDims, W, H, padL, padR, padT, padB, innerW, innerH, colors);
-
-  var filterChips = '';
-  DIM_ORDER.forEach(function(dname) {
-    var on = defaultDims.indexOf(dname) >= 0;
-    filterChips += '<span class="df-chip' + (on ? ' on' : '') + '" data-dim="' + dname + '" data-on="' + (on ? '1' : '0') + '" onclick="toggleTrendDim(this)">' + DIM_ICONS[dname] + ' ' + dname + '</span>';
+// === 雷达图 SVG（保留原有逻辑）===
+function renderRadar(svgId, scores, dimOrder, dimIcons, strokeColor, fillColor) {
+  var svg = document.getElementById(svgId);
+  if (!svg) return;
+  var cx = 190, cy = 190, R = 105, n = dimOrder.length;
+  var rings = '';
+  [0.25, 0.5, 0.75, 1.0].forEach(function(r){
+    rings += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (R*r) + '" fill="none" stroke="#e8e4da" stroke-width="1"/>';
   });
-
-  return '<div class="trend-box">' +
-    '<div class="t-title">📈 进步轨迹 · 维度趋势图</div>' +
-    '<div class="t-sub">最近 ' + recent.length + ' 次测评 · 每点为当次分数 · 默认显示最强 & 最弱维度</div>' +
-    '<div class="dim-filter">' + filterChips + '</div>' +
-    '<div id="trend-svg-wrap">' + svg + '</div>' +
-  '</div>';
+  var axes = '', labels = '', points = [];
+  for (var i = 0; i < n; i++) {
+    var angle = (-90 + i * (360/n)) * Math.PI / 180;
+    var ax = cx + R * Math.cos(angle), ay = cy + R * Math.sin(angle);
+    axes += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ax + '" y2="' + ay + '" stroke="#e8e4da" stroke-width="1"/>';
+    var s = scores[dimOrder[i]] || 50;
+    var pr = Math.max(12, R * (s/100));
+    points.push((cx + pr * Math.cos(angle)) + ',' + (cy + pr * Math.sin(angle)));
+    var labelR = R + 28;
+    var lx = cx + labelR * Math.cos(angle), ly = cy + labelR * Math.sin(angle);
+    var cosA = Math.cos(angle);
+    var anchor = Math.abs(cosA) < 0.15 ? 'middle' : (cosA > 0 ? 'start' : 'end');
+    labels += '<text x="' + lx + '" y="' + ly + '" text-anchor="' + anchor + '" font-size="10.5" fill="#1a3d24" font-weight="700" dominant-baseline="middle">' +
+      (dimIcons[dimOrder[i]]||'') + ' ' + dimOrder[i] + '</text>';
+  }
+  svg.innerHTML = rings + axes +
+    '<polygon points="' + points.join(' ') + '" fill="' + fillColor + '" stroke="' + strokeColor + '" stroke-width="2"/>' +
+    points.map(function(p){ var xy=p.split(','); return '<circle cx="'+xy[0]+'" cy="'+xy[1]+'" r="4" fill="#8a7040" stroke="#fff" stroke-width="1.5"/>'; }).join('') +
+    labels;
 }
 
-function buildTrendSVG(history, dims, W, H, padL, padR, padT, padB, innerW, innerH, colors) {
-  var n = history.length;
-  if (n < 1) return '';
-  var xPositions = [];
-  for (var i = 0; i < n; i++) xPositions.push(padL + (n === 1 ? innerW/2 : innerW*i/(n-1)));
-  var yOf = function(s) { return padT + innerH * (1 - s / 100); };
+function renderDimTable(rootId, scores, dims, codes) {
+  var root = document.getElementById(rootId);
+  var html = dims.map(function(n){
+    var s = scores[n];
+    if (s == null) return '';
+    var cls = s >= 65 ? 'strong' : (s >= 45 ? 'medium' : 'weak');
+    var code = codes[n];
+    return '<div class="dim-row">' +
+      '<div class="d-name">' + n + '</div>' +
+      '<div class="d-bar"><div class="d-fill ' + cls + '" style="width:' + s + '%"></div></div>' +
+      '<div class="d-score ' + cls + '">' + s + '</div>' +
+      '<div class="d-action"><a href="/academy/core-courses/learn/?dim=' + code + '">补→</a></div>' +
+    '</div>';
+  }).join('');
+  root.innerHTML = html || '<div class="empty-state">暂无数据 · 先去测评一次</div>';
+}
 
-  var lines = '', dots = '', labels = '';
-  [0,25,50,75,100].forEach(function(v) {
-    var y = yOf(v);
-    lines += '<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="#f0ece2" stroke-width="1"/>';
-    labels += '<text x="'+(padL-6)+'" y="'+y+'" text-anchor="end" font-size="9" fill="#aaa" dominant-baseline="middle">'+v+'</text>';
+function renderReviewTimeline(d) {
+  var root = document.getElementById('review-timeline-here');
+  var countEl = document.getElementById('rt-count');
+  var items = [];
+
+  // care-test history
+  (d.history || []).forEach(function(h){
+    items.push({ time: h.timestamp || h.date || Date.now(), event: '📋 能力测评', score: h.total || h.overall || '—', src: 'care-test', good: true });
   });
-  history.forEach(function(h, i) {
-    var x = xPositions[i];
-    labels += '<text x="'+x+'" y="'+(H-10)+'" text-anchor="middle" font-size="9" fill="#aaa">'+formatDate(h.timestamp).slice(5)+'</text>';
-  });
-  dims.forEach(function(dname, di) {
-    var color = colors[di % colors.length];
-    var pts = [];
-    for (var j = 0; j < n; j++) {
-      var s = history[j].dim_scores[dname] != null ? history[j].dim_scores[dname] : 50;
-      pts.push(xPositions[j] + ',' + yOf(s));
+
+  // exam results
+  Object.keys(d.exam || {}).forEach(function(k){
+    var e = d.exam[k];
+    if (e && e.timestamp) {
+      items.push({ time: e.timestamp, event: '📝 ' + k + ' 考核', score: e.pct + '%', src: 'exam', good: e.pct >= 80 });
     }
-    lines += '<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round"/>';
-    for (var k = 0; k < n; k++) {
-      var s2 = history[k].dim_scores[dname] != null ? history[k].dim_scores[dname] : 50;
-      dots += '<circle cx="'+xPositions[k]+'" cy="'+yOf(s2)+'" r="3.5" fill="'+color+'" stroke="#fff" stroke-width="1.5"/>';
-    }
-    labels += '<circle cx="'+(padL+6+di*130)+'" cy="10" r="4" fill="'+color+'"/>';
-    labels += '<text x="'+(padL+14+di*130)+'" y="13" font-size="10" fill="#333" font-weight="600">'+dname+'</text>';
   });
-  return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">'+lines+dots+labels+'</svg>';
+
+  // practice
+  (d.practice || []).forEach(function(p){
+    if (p.timestamp) items.push({ time: p.timestamp, event: '🎭 ' + (p.sceneName || '场景练习'), score: '完成', src: 'practice', good: true });
+  });
+
+  // review tags (多人复核)
+  Object.keys(d.reviews || {}).forEach(function(tagKey){
+    Object.keys(d.reviews[tagKey]).forEach(function(person){
+      var rv = d.reviews[tagKey][person];
+      if (rv.time) items.push({ time: rv.time, event: '👥 ' + person + ' 复核「' + tagKey + '」', score: rv.score + '%', src: 'peer', good: rv.score >= 80 });
+    });
+  });
+
+  items.sort(function(a,b){ return b.time - a.time; });
+  countEl.textContent = items.length > 0 ? '共 ' + items.length + ' 条记录' : '暂无记录';
+
+  if (items.length === 0) {
+    root.innerHTML = '<div class="empty-state">还没有任何评价记录<br>先去做一次测评或考核</div>';
+    return;
+  }
+
+  root.innerHTML = items.slice(0, 20).map(function(it){
+    var date = new Date(it.time);
+    var dateStr = date.getFullYear() + '.' + String(date.getMonth()+1).padStart(2,'0') + '.' + String(date.getDate()).padStart(2,'0');
+    return '<div class="tl-item">' +
+      '<div class="tl-date">' + dateStr + '</div>' +
+      '<div class="tl-event">' + it.event + '<span class="tl-src"> · ' + it.src + '</span></div>' +
+      '<div class="tl-score ' + (it.good ? 'good' : 'warn') + '">' + it.score + '</div>' +
+    '</div>';
+  }).join('');
 }
 
-function toggleTrendDim(el) {
-  var dim = el.getAttribute('data-dim');
-  var on = el.getAttribute('data-on') === '1';
-  el.setAttribute('data-on', on ? '0' : '1');
-  el.classList.toggle('on');
-  var history = [];
-  try { history = JSON.parse(localStorage.getItem('fs_care_history')) || []; } catch(e) {}
-  if (history.length < 2) return;
-  var selected = [];
-  document.querySelectorAll('.dim-filter .df-chip.on').forEach(function(c){ selected.push(c.getAttribute('data-dim')); });
-  if (selected.length === 0) selected.push('获客触达');
-  var W = 760, H = 180, padL = 40, padR = 20, padT = 20, padB = 32;
-  var innerW = W - padL - padR, innerH = H - padT - padB;
-  var colors = ['#2d5a3d', '#c25636', '#8a7040', '#0891b2', '#7c3aed'];
-  var recent = history.slice(-5);
-  var svg = buildTrendSVG(recent, selected, W, H, padL, padR, padT, padB, innerW, innerH, colors);
-  document.getElementById('trend-svg-wrap').innerHTML = svg;
+// 多人复核能力标签
+var REVIEW_TAGS = [
+  { key:'negotiation-review', name:'谈判复核员', icon:'🤝', desc:'对带看谈判有独立判断能力', minScores:{'DIM-4':75}, minPeers:3 },
+  { key:'ethics-review',     name:'伦理监察员', icon:'📜', desc:'能识别红线问题并制止',     minScores:{'SOFT-4':80}, minPeers:3 },
+  { key:'empathy-coach',     name:'共情教练',   icon:'💞', desc:'能帮同事提升客户共情',     minScores:{'SOFT-1':75}, minPeers:3 },
+  { key:'solution-review',   name:'方案评审员', icon:'📐', desc:'能审阅专业方案的合理性',   minScores:{'DIM-3':75}, minPeers:3 },
+  { key:'lead-review',       name:'获客导师',   icon:'📣', desc:'能指导新人获客触达',       minScores:{'DIM-1':70}, minPeers:3 },
+  { key:'senior-reviewer',   name:'高级复核员', icon:'⭐', desc:'硬 7 维每维 ≥ 70',         minScores:{'DIM-1':70,'DIM-2':70,'DIM-3':70,'DIM-4':70,'DIM-5':70,'DIM-6':70,'DIM-7':70}, minPeers:5 },
+];
+
+function renderReviewTags(d) {
+  var root = document.getElementById('review-tags-here');
+  var hard = computeHardScores(d), soft = computeSoftScores(d);
+  var h = Object.assign({}, hard, soft); // 合并硬+软方便查
+  // 代码 key → 中文名 映射（minScores 用 DIM-4/SOFT-1，h 用中文名）
+  var CODE_TO_NAME = {};
+  Object.keys(HARD_CODES).forEach(function(n){ CODE_TO_NAME[HARD_CODES[n]] = n; });
+  Object.keys(SOFT_CODES).forEach(function(n){ CODE_TO_NAME[SOFT_CODES[n]] = n; });
+
+  var html = REVIEW_TAGS.map(function(tag){
+    // 检查硬技能条件
+    var dimPass = true;
+    Object.keys(tag.minScores).forEach(function(code){
+      var name = CODE_TO_NAME[code] || code;
+      if (h[name] == null || h[name] < tag.minScores[code]) dimPass = false;
+    });
+    // 检查 peer 复核数
+    var peerCount = (d.reviews && d.reviews[tag.key] || []).length;
+    var peersPass = peerCount >= tag.minPeers;
+    var earned = dimPass && peersPass;
+
+    var cardCls = earned ? 'rt-card earned' : (dimPass ? 'rt-card' : 'rt-card locked');
+    var countText = earned ? '✅ 已获得' :
+      (dimPass ? '👥 还需 ' + (tag.minPeers - peerCount) + ' 位同事复核' :
+        '📉 硬技能未达标');
+
+    return '<div class="' + cardCls + '" onclick="earnTagDemo(\'' + tag.key + '\')">' +
+      '<div class="rtc-icon">' + tag.icon + '</div>' +
+      '<div class="rtc-name">' + tag.name + '</div>' +
+      '<div class="rtc-desc">' + tag.desc + '</div>' +
+      '<div class="rtc-count">' + countText + '</div>' +
+    '</div>';
+  }).join('');
+  root.innerHTML = html;
+}
+
+function earnTagDemo(tagKey) {
+  // demo 级：点击模拟获得一个 peer 复核
+  var reviews = {};
+  try { reviews = JSON.parse(localStorage.getItem('fs_review_tags')) || {}; } catch(e) {}
+  if (!reviews[tagKey]) reviews[tagKey] = [];
+  reviews[tagKey].push({ name:'demo', score:85, time:Date.now() });
+  localStorage.setItem('fs_review_tags', JSON.stringify(reviews));
+  render();
+  alert('已模拟获得一位同事复核（demo 级）。点够 ' + (REVIEW_TAGS.find(function(t){return t.key===tagKey}).minPeers) + ' 次即可解锁标签。');
+}
+
+function renderCE(d) {
+  // demo 级：继续教育 = course_progress × 2 学时/门 + exam × 3 学时/维 + practice × 1 学时/场景
+  var courseHours = Object.keys(d.courses || {}).filter(function(k){ return d.courses[k] && d.courses[k].completed; }).length * 2;
+  var examHours = Object.keys(d.exam || {}).length * 3;
+  var practiceHours = (d.practice || []).length;
+  var totalHours = courseHours + examHours + practiceHours;
+  var required = 90; // 3 年至少 90 学时（demo 值）
+  var pct = Math.min(100, Math.round(totalHours / required * 100));
+
+  // 复核周期天数
+  var regDate = localStorage.getItem('fs_registration_date') || new Date().toISOString();
+  var regEnd = new Date(regDate); regEnd.setFullYear(regEnd.getFullYear() + 3);
+  var daysLeft = Math.ceil((regEnd - new Date()) / (1000*60*60*24));
+
+  document.getElementById('ce-hours').textContent = totalHours + 'h';
+  document.getElementById('ce-bar').style.width = pct + '%';
+  document.getElementById('ce-days-left').textContent = daysLeft;
 }
 
 render();
-
-// ===== 成就徽章系统 =====
-var BADGES = [
-  { id:'first-test', emoji:'🎯', name:'第一次测评', desc:'完成第一次能力测评', check:function(info){ return info.hasData; }},
-  { id:'exam-all-b', emoji:'📝', name:'全维度考核通过', desc:'7 维度考核全部 ≥ 65 分', check:function(info){ var r=info.examResults; if(Object.keys(r).length<7) return false; return Object.keys(r).every(function(k){ return r[k].pct >= 65; }); }},
-  { id:'exam-all-a', emoji:'🏅', name:'全维度考核 A 档', desc:'7 维度考核全部 ≥ 80 分', check:function(info){ var r=info.examResults; if(Object.keys(r).length<7) return false; return Object.keys(r).every(function(k){ return r[k].pct >= 80; }); }},
-  { id:'trend-up', emoji:'📈', name:'稳步进步', desc:'最近 3 次测评综合分连续提升', check:function(info){ var h=info.history; if(h.length<3) return false; var t=[h[h.length-3].total,h[h.length-2].total,h[h.length-1].total]; return t[2]>t[1] && t[1]>t[0]; }},
-  { id:'top-dim', emoji:'💪', name:'某维度 ≥ 85', desc:'任一维度分数达到 85+', check:function(info){ var s=info.scores; return Object.keys(s).some(function(k){ return s[k]!=null && s[k]>=85; }); }},
-  { id:'balanced', emoji:'⚖️', name:'均衡发展', desc:'7 维度分数标准差 ≤ 15', check:function(info){ var s=info.scores; var vals=Object.keys(s).map(function(k){return s[k];}).filter(function(x){return x!=null;}); if(vals.length<7) return false; var avg=vals.reduce(function(a,b){return a+b;},0)/vals.length; var sd=Math.sqrt(vals.reduce(function(a,b){return a+(b-avg)*(b-avg);},0)/vals.length); return sd <= 15; }},
-  { id:'practice-3', emoji:'🎭', name:'练过 3 个场景', desc:'完成 3 个场景练习对话', check:function(info){ try{ var p=JSON.parse(localStorage.getItem('fs_practice_done')||'{}'); return Object.keys(p).length>=3; }catch(e){return false;} }},
-  { id:'course-50', emoji:'📚', name:'课程完成 50%', desc:'至少一门核心课完成 ≥ 50% 章节', check:function(info){ try{ var p=JSON.parse(localStorage.getItem('fs_course_progress')||'{}'); var dims=Object.keys(p); if(dims.length===0) return false; return dims.some(function(d){ var ids=COURSE_COUNT[d]||5; return p[d].length>=Math.ceil(ids/2); }); }catch(e){return false;} }},
-];
-var COURSE_COUNT = {};
-try {
-  var _c = ['DIM-1','DIM-2','DIM-3','DIM-4','DIM-5','DIM-6','DIM-7'];
-  for (var i = 0; i < _c.length; i++) COURSE_COUNT[_c[i]] = i < 5 ? 5 : (i === 5 || i === 6 ? 4 : 5);
-} catch(e) {}
-
-function computeBadges(info) {
-  var unlocked = [];
-  BADGES.forEach(function(b) {
-    if (b.check(info)) unlocked.push(b);
-  });
-  // 持久化（只存 id + 解锁时间）
-  var stored = [];
-  try { stored = JSON.parse(localStorage.getItem('fs_badges') || '[]'); } catch(e) {}
-  var storedIds = stored.map(function(s){ return s.id; });
-  BADGES.forEach(function(b) {
-    if (unlocked.indexOf(b) >= 0 && storedIds.indexOf(b.id) < 0) {
-      stored.push({ id: b.id, timestamp: new Date().toISOString() });
-    }
-  });
-  localStorage.setItem('fs_badges', JSON.stringify(stored));
-  return { unlocked: unlocked, all: BADGES, newly: stored.length - storedIds.length };
-}
-
-function renderBadges() {
-  var care = null, examResults = {}, history = [];
-  try { care = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
-  try { examResults = JSON.parse(localStorage.getItem('fs_exam_results')) || {}; } catch(e) {}
-  try { history = JSON.parse(localStorage.getItem('fs_care_history')) || []; } catch(e) {}
-  var scores = {};
-  var DIM_ORDER = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
-  var hasData = care && care.dim_scores;
-  DIM_ORDER.forEach(function(n, i) {
-    var cs = hasData && care.dim_scores[n] != null ? care.dim_scores[n] : null;
-    var es = examResults['DIM-' + (i+1)] ? examResults['DIM-' + (i+1)].pct : null;
-    scores[n] = cs != null && es != null ? Math.max(cs, es) : (cs != null ? cs : es);
-  });
-  var info = { scores: scores, hasData: hasData || Object.keys(examResults).length > 0, examResults: examResults, history: history };
-  var res = computeBadges(info);
-  if (res.unlocked.length === 0) return '';
-
-  var html = '<div class="badges-box" style="max-width:820px;margin:28px auto 0;padding:0 24px">' +
-    '<h3 style="font-size:14px;font-weight:700;color:#1a3d24;margin-bottom:12px">🏆 我的成就 · ' + res.unlocked.length + '/' + res.all.length + ' 解锁' +
-    (res.newly > 0 ? ' <span style="background:#8a7040;color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:8px">NEW ' + res.newly + ' 枚</span>' : '') + '</h3>' +
-    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px">';
-  res.all.forEach(function(b) {
-    var got = res.unlocked.indexOf(b) >= 0;
-    html += '<div style="background:#fff;border:1px solid ' + (got ? '#8a7040' : '#e8e4da') + ';border-radius:10px;padding:12px 8px;text-align:center;' +
-      (got ? 'background:linear-gradient(135deg,#fffbf3,#fff)' : 'opacity:.55') + '">' +
-      '<div style="font-size:28px;margin-bottom:4px">' + (got ? b.emoji : '🔒') + '</div>' +
-      '<div style="font-size:12px;font-weight:700;color:' + (got ? '#1a3d24' : '#aaa') + '">' + b.name + '</div>' +
-      '<div style="font-size:10px;color:' + (got ? '#888' : '#ccc') + ';margin-top:2px;line-height:1.4">' + b.desc + '</div>' +
-    '</div>';
-  });
-  html += '</div></div>';
-  return html;
-}
-
-// 注入成就徽章区到 profile
-var badgesHtml = renderBadges();
-if (badgesHtml) {
-  var footerNote = document.querySelector('.footer-note');
-  if (footerNote) footerNote.insertAdjacentHTML('beforebegin', badgesHtml);
-}
 </script>
 </body>
 </html>
