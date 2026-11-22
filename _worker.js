@@ -4655,6 +4655,15 @@ export default {
         '/dictionary/', '/favorites/', '/history/', '/entry/', '/scene/', '/search/',
         '/assessment/', '/s1-report/', '/showing-report/', '/agent-assessment/',
         '/academy', '/academy/',
+        // 学习成长子路径（P0-4 · 2026-11-22 上线）
+        '/academy/core-courses', '/academy/core-courses/',
+        '/academy/core-courses/learn', '/academy/core-courses/learn/',
+        '/academy/practice', '/academy/practice/',
+        '/academy/practice/chat', '/academy/practice/chat/',
+        '/academy/exam', '/academy/exam/',
+        '/academy/profile', '/academy/profile/',
+        '/academy/match', '/academy/match/',
+        '/academy/ext-courses', '/academy/ext-courses/',
         '/design-prototype', '/design-prototype/',
         // 预备经纪人招生（沃土计划）
         '/wotu', '/wotu/',
