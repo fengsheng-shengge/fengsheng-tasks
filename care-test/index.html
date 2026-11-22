@@ -734,9 +734,9 @@ function renderQuestion() {
   var q = quizSet[currentQ] || QUESTIONS[currentQ];
   document.getElementById('q-title').textContent = q.title;
   document.getElementById('q-subtitle').textContent = q.subtitle;
-  document.getElementById('q-counter').textContent = '第 ' + (currentQ + 1) + ' 题 / 共 ' + QUESTIONS.length + ' 题';
+  document.getElementById('q-counter').textContent = '第 ' + (currentQ + 1) + ' 题 / 共 ' + quizSet.length + ' 题';
 
-  var pct = ((currentQ) / QUESTIONS.length) * 100;
+  var pct = ((currentQ) / quizSet.length) * 100;
   document.getElementById('progress-fill').style.width = pct + '%';
 
   var optsHtml = '';
@@ -752,7 +752,7 @@ function renderQuestion() {
   var nextBtn = document.getElementById('next-btn');
   if (answers[q.id] !== undefined) {
     nextBtn.disabled = false;
-    nextBtn.textContent = currentQ === QUESTIONS.length - 1 ? '查看报告' : '下一题';
+    nextBtn.textContent = currentQ === quizSet.length - 1 ? '查看报告' : '下一题';
   } else {
     nextBtn.disabled = true;
     nextBtn.textContent = '下一题';
@@ -776,14 +776,14 @@ function selectOption(idx) {
   // 更新下一题按钮
   var nextBtn = document.getElementById('next-btn');
   nextBtn.disabled = false;
-  nextBtn.textContent = currentQ === QUESTIONS.length - 1 ? '查看报告' : '下一题';
+  nextBtn.textContent = currentQ === quizSet.length - 1 ? '查看报告' : '下一题';
 }
 
 // ============================================================
 //  下一题
 // ============================================================
 function nextQuestion() {
-  if (currentQ < QUESTIONS.length - 1) {
+  if (currentQ < quizSet.length - 1) {
     currentQ++;
     renderQuestion();
   } else {
@@ -1015,7 +1015,7 @@ function showReport() {
       weakest_dim: lowest,
       second_weakest: secondLowest,
       timestamp: new Date().toISOString(),
-      question_count: QUESTIONS.length,
+      question_count: quizSet.length,
       mode: QUESTIONS.length <= 7 ? 'focused' : 'full',
       role: CURRENT_ROLE || 'all'
     };
@@ -1457,8 +1457,8 @@ function renderNextSteps(avg, lowest, secondLowest){
 
 function restart() {
   // 如果中途退出（还没看报告），记录放弃事件
-  if (currentQ > 0 && currentQ < QUESTIONS.length) {
-    careTrack('quiz_abandon', { answered: currentQ, total: QUESTIONS.length });
+  if (currentQ > 0 && currentQ < quizSet.length) {
+    careTrack('quiz_abandon', { answered: currentQ, total: quizSet.length });
   }
   currentQ = 0;
   answers = {};
@@ -1513,8 +1513,8 @@ function goToBreeder() {
 
 // 页面离开时：如果答题中途离开，记录放弃
 window.addEventListener('beforeunload', function() {
-  if (currentQ > 0 && currentQ < QUESTIONS.length) {
-    careTrack('quiz_abandon', { answered: currentQ, total: QUESTIONS.length, method: 'close_page' });
+  if (currentQ > 0 && currentQ < quizSet.length) {
+    careTrack('quiz_abandon', { answered: currentQ, total: quizSet.length, method: 'close_page' });
   }
 });
 
