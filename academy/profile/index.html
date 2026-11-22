@@ -818,29 +818,6 @@ function renderHeader(fs, lv, d) {
   root.innerHTML = html;
 }
 
-function renderFiveSources(fs) {
-  var root = document.getElementById('five-src-here');
-  var items = [
-    { n: fs.knowledge, icon:'📝', name:'知识掌握度', desc:'答题正确率', src:'care-test + exam', hint:fs.hint1 },
-    { n: fs.scenario,  icon:'🎭', name:'场景应对力', desc:'对话完成率', src:'practice 页', hint:fs.hint2 },
-    { n: fs.case,      icon:'🧩', name:'案例分析力', desc:'决策合理性', src:'硬方案+履约', hint:fs.hint3 },
-    { n: fs.ethics,    icon:'🤝', name:'服务伦理', desc:'红线零容忍', src:'SOFT-4', hint:fs.hint4 },
-    { n: fs.learning,  icon:'📚', name:'持续学习', desc:'课程完成率', src:'core-courses', hint:fs.hint5 },
-  ];
-  var html = items.map(function(it, i){
-    var cls = 'src-item s' + (i+1);
-    var num = it.n != null ? it.n : '—';
-    return '<div class="' + cls + '">' +
-      '<div class="si-icon">' + it.icon + '</div>' +
-      '<div class="si-num">' + num + (it.n != null ? '%' : '') + '</div>' +
-      '<div class="si-name">' + it.name + '</div>' +
-      '<div class="si-desc">' + it.desc + '</div>' +
-      '<div class="si-source">📌 ' + it.src + '</div>' +
-    '</div>';
-  }).join('');
-  root.innerHTML = html;
-}
-
 function renderLevelPath(lv, fs) {
   var root = document.getElementById('level-path-here');
   var html = '';
