@@ -1,1 +1,271 @@
-__READ_FROM_FILE__
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>场景导航 · 风声</title>
+<meta name="description" content="风声场景导航 · 买方/租户/卖家/业主/房东 全生命周期场景 · 道法术器四层词条">
+<style>
+:root{
+  --p:#1a3d24;--p-soft:#2d5a3d;--ink:#1a2b26;--ink-soft:#6b7a74;
+  --bg:#faf8f3;--card:#ffffff;--line:rgba(26,61,36,.1);
+  --dao:#1a3d24;--fa:#c46a3a;--shu:#6b5fa8;--qi:#c8956d;
+  --p0:#8a6d2f;--p1:#c9a962;--p2:#2d5a3d;--p3:#6b7a74;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit}
+nav{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--line);padding:12px 24px;display:flex;align-items:center;gap:24px}
+.nav-logo{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--p);font-size:14px;flex-shrink:0}
+.nav-logo-mark{width:28px;height:28px;background:var(--p);color:#fff;border-radius:7px;display:grid;place-items:center;font-size:13px;font-weight:700}
+.nav-links{display:flex;gap:18px;font-size:13px;flex:1;justify-content:center;flex-wrap:wrap}
+.nav-links a{color:var(--ink-soft);transition:color .15s}
+.nav-links a:hover,.nav-links a.active{color:var(--p);font-weight:600}
+@media(max-width:820px){.nav-links{display:none}}
+.hero{max-width:1120px;margin:0 auto;padding:48px 24px 32px}
+.hero-tag{display:inline-block;font-size:12px;font-weight:600;color:var(--p);background:rgba(26,61,36,.08);padding:5px 12px;border-radius:20px;margin-bottom:16px;letter-spacing:.5px}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-1px;margin-bottom:10px;line-height:1.15}
+.hero h1 span{background:linear-gradient(135deg,var(--p),var(--p-soft));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:15px;color:var(--ink-soft);margin-bottom:28px;max-width:520px}
+.client-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.client-btn{display:flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);font-size:14px;font-weight:600;color:var(--ink-soft);transition:all .18s}
+.client-btn:hover{border-color:var(--p);color:var(--p)}
+.client-btn.active{background:var(--p);color:#fff;border-color:var(--p);box-shadow:0 2px 8px rgba(26,61,36,.2)}
+.client-btn .emoji{font-size:16px}
+.stage-wrap{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:8px}
+.stage-label{font-size:12px;font-weight:600;color:var(--ink-soft);letter-spacing:.5px;margin-bottom:12px}
+.stage-row{display:flex;gap:6px;flex-wrap:wrap}
+.stage-btn{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:500;color:var(--ink-soft);background:var(--bg);border:1px solid var(--line);transition:all .15s;display:flex;align-items:center;gap:5px}
+.stage-btn:hover{color:var(--p);border-color:var(--p)}
+.stage-btn.active{background:var(--p);color:#fff;border-color:var(--p);font-weight:600}
+.stage-btn .icon{font-size:14px}
+.hot-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.hot-label{font-size:12px;color:var(--ink-soft);align-self:center;margin-right:4px}
+.hot-chip{padding:5px 12px;border-radius:20px;font-size:12px;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);cursor:pointer;transition:all .15s}
+.hot-chip:hover{background:rgba(26,61,36,.08);color:var(--p);border-color:var(--p)}
+.layer-wrap{max-width:1120px;margin:0 auto;padding:16px 24px 48px}
+.layer-tabs{display:flex;gap:0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:16px;overflow:hidden}
+.layer-tab{flex:1;padding:12px 10px;border-radius:8px;font-size:14px;font-weight:600;text-align:center;color:var(--ink-soft);transition:all .2s;cursor:pointer;white-space:nowrap}
+.layer-tab:hover{color:var(--ink)}
+.layer-tab.active{color:#fff}
+.layer-tab.dao.active{background:var(--dao)}
+.layer-tab.fa.active{background:var(--fa)}
+.layer-tab.shu.active{background:var(--shu)}
+.layer-tab.qi.active{background:var(--qi)}
+.layer-tab .count{font-size:11px;font-weight:400;opacity:.7;display:block;margin-top:2px}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.filter-sep{width:1px;height:14px;background:var(--line);margin:0 4px}
+.filter-chip{padding:5px 12px;border-radius:20px;font-size:12px;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);cursor:pointer;transition:all .15s}
+.filter-chip:hover{color:var(--p);border-color:var(--p)}
+.filter-chip.active{background:var(--p);color:#fff;border-color:var(--p);font-weight:600}
+.entry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.entry-card{padding:16px 18px;border-radius:10px;background:var(--card);border:1px solid var(--line);cursor:pointer;transition:all .18s}
+.entry-card:hover{border-color:var(--p);box-shadow:0 4px 16px rgba(26,61,36,.08);transform:translateY(-1px)}
+.ec-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.ec-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.ec-title{font-size:14.5px;font-weight:700;line-height:1.4;flex:1}
+.ec-answer{font-size:13px;color:var(--ink-soft);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ec-badges{display:flex;gap:5px;flex-wrap:wrap}
+.ec-badge{padding:2px 8px;border-radius:4px;font-size:10.5px;font-weight:600;letter-spacing:.3px}
+.ec-badge.p0{background:rgba(138,109,47,.12);color:var(--p0)}
+.ec-badge.p1{background:rgba(201,169,98,.18);color:var(--p1)}
+.ec-badge.p2{background:rgba(45,90,61,.1);color:var(--p2)}
+.ec-badge.p3{background:rgba(107,122,116,.1);color:var(--p3)}
+.ec-badge.hard{background:rgba(196,106,58,.1);color:var(--fa)}
+.ec-badge.medium{background:rgba(201,169,98,.16);color:var(--p1)}
+.ec-badge.soft{background:rgba(45,90,61,.1);color:var(--p2)}
+.ec-badge.type{background:rgba(26,61,36,.07);color:var(--p)}
+.ec-goto{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:11.5px;color:var(--p);opacity:.65;transition:opacity .15s}
+.ec-goto:hover{opacity:1;font-weight:600}
+.empty-state{text-align:center;padding:48px 20px;color:var(--ink-soft)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-title{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.empty-desc{font-size:13px}
+.loading{display:flex;align-items:center;justify-content:center;padding:48px;gap:10px;color:var(--ink-soft);font-size:13px}
+.spinner{width:20px;height:20px;border:2.5px solid var(--line);border-top-color:var(--p);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal-overlay{position:fixed;inset:0;background:rgba(26,43,38,.55);backdrop-filter:blur(3px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:#fff;border-radius:16px;max-width:640px;width:100%;max-height:82vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.25)}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;position:sticky;top:0;background:#fff;z-index:1;border-radius:16px 16px 0 0}
+.modal-icon{font-size:24px}
+.modal-title{font-size:17px;font-weight:800}
+.modal-id{font-size:10.5px;color:var(--ink-soft);font-family:monospace;margin-top:2px}
+.modal-close{margin-left:auto;width:30px;height:30px;border-radius:50%;background:var(--bg);font-size:16px;color:var(--ink-soft);transition:background .15s}
+.modal-close:hover{background:var(--line)}
+.modal-body{padding:20px 24px;font-size:14px;line-height:1.7}
+.m-section{margin-bottom:18px}
+.m-section:last-child{margin-bottom:0}
+.m-section-title{font-size:12.5px;font-weight:700;color:var(--p);margin-bottom:6px;letter-spacing:.3px}
+.m-def{padding:12px 14px;background:var(--bg);border-left:3px solid var(--p);border-radius:6px}
+.m-field{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
+.m-field:last-child{border-bottom:none}
+.m-field-label{font-size:12px;font-weight:600;color:var(--ink-soft);min-width:56px;flex-shrink:0}
+.m-badges{display:flex;gap:6px;flex-wrap:wrap}
+.m-badge{padding:3px 9px;border-radius:4px;font-size:11px;font-weight:600}
+.m-badge.p0{background:rgba(138,109,47,.12);color:var(--p0)}
+.m-badge.p1{background:rgba(201,169,98,.18);color:var(--p1)}
+.m-badge.p2{background:rgba(45,90,61,.1);color:var(--p2)}
+.m-badge.p3{background:rgba(107,122,116,.1);color:var(--p3)}
+.m-badge.hard{background:rgba(196,106,58,.1);color:var(--fa)}
+.m-badge.medium{background:rgba(201,169,98,.16);color:var(--p1)}
+.m-badge.soft{background:rgba(45,90,61,.1);color:var(--p2)}
+.m-badge.type{background:rgba(26,61,36,.07);color:var(--p)}
+.m-badge.layer{background:rgba(107,95,168,.08);color:var(--shu)}
+.site-foot{text-align:center;padding:28px 16px;font-size:12px;color:#8a9a90;line-height:1.9;background:var(--bg)}
+@media(max-width:820px){
+  .hero{padding:32px 16px 24px}
+  .hero h1{font-size:28px}
+  .hero-sub{font-size:14px}
+  .client-btn{padding:8px 12px;font-size:13px}
+  .client-btn .emoji{font-size:15px}
+  .stage-wrap{padding:16px;margin:0 16px 8px}
+  .layer-wrap{padding:12px 16px 40px}
+  .layer-tabs{padding:3px;border-radius:10px}
+  .layer-tab{font-size:12.5px;padding:10px 4px}
+  .entry-grid{grid-template-columns:1fr;gap:8px}
+  .modal{max-width:100%;border-radius:12px}
+}
+@media(max-width:480px){
+  .hero h1{font-size:24px}
+  .stage-btn{padding:7px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/"><span class="nav-logo-mark">风</span>风声</a>
+  <div class="nav-links">
+    <a href="/">首页</a>
+    <a href="/workspace/">工作台</a>
+    <a href="/knowledge/">知识底座</a>
+    <a href="/curation/">策展引擎</a>
+    <a href="/decoder/">话术解码</a>
+    <a href="/care-test/">能力测评</a>
+    <a class="active" href="/scene/">场景导航</a>
+    <a href="/ai-advisor/">话术陪练</a>
+    <a href="/academy/">学习成长</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-tag">🎬 场景导航</div>
+  <h1>按<span>场景</span>找知识，<br>按<span>道法术器</span>分层用</h1>
+  <p class="hero-sub">5 类客户全生命周期 70+ 场景 · 选当前客户类型和阶段，直接看该说什么</p>
+
+  <div class="client-row" id="clientRow">
+    <button class="client-btn active" data-ct="buyer"><span class="emoji">🏠</span>买方</button>
+    <button class="client-btn" data-ct="tenant"><span class="emoji">🏡</span>租户</button>
+    <button class="client-btn" data-ct="seller"><span class="emoji">💰</span>卖家</button>
+    <button class="client-btn" data-ct="owner"><span class="emoji">🔑</span>业主</button>
+    <button class="client-btn" data-ct="landlord"><span class="emoji">🏘️</span>房东</button>
+  </div>
+
+  <div class="stage-wrap">
+    <div class="stage-label">当前所处阶段</div>
+    <div class="stage-row" id="stageRow"></div>
+  </div>
+
+  <div class="hot-row" id="hotRow">
+    <span class="hot-label">热门：</span>
+    <span class="hot-chip" data-ct="buyer" data-lc="first_contact">买方·首次接触</span>
+    <span class="hot-chip" data-ct="buyer" data-lc="viewing">买方·带看房源</span>
+    <span class="hot-chip" data-ct="buyer" data-lc="contract">买方·合同签署</span>
+    <span class="hot-chip" data-ct="tenant" data-lc="viewing">租户·带看房源</span>
+    <span class="hot-chip" data-ct="seller" data-lc="entrust">卖家·出售委托</span>
+  </div>
+</section>
+
+<section class="layer-wrap">
+  <div class="layer-tabs" id="layerTabs">
+    <button class="layer-tab dao active" data-layer="dao">道·理念<span class="count" id="daoCount">0</span></button>
+    <button class="layer-tab fa" data-layer="fa">法·法规<span class="count" id="faCount">0</span></button>
+    <button class="layer-tab shu" data-layer="shu">术·话术<span class="count" id="shuCount">0</span></button>
+    <button class="layer-tab qi" data-layer="qi">器·工具<span class="count" id="qiCount">0</span></button>
+  </div>
+
+  <div class="filter-row">
+    <div class="filter-chip active" data-type="">全部</div>
+    <div class="filter-chip" data-type="CASE">案例</div>
+    <div class="filter-chip" data-type="LAW">法律</div>
+    <div class="filter-chip" data-type="PROC">流程</div>
+    <div class="filter-chip" data-type="RISK">风险</div>
+    <div class="filter-chip" data-type="STD">标准</div>
+    <div class="filter-chip" data-type="POL">政策</div>
+    <div class="filter-chip" data-type="TERM">术语</div>
+    <div class="filter-sep"></div>
+    <div class="filter-chip active" data-sev="">全部</div>
+    <div class="filter-chip" data-sev="hard">红线</div>
+    <div class="filter-chip" data-sev="medium">提醒</div>
+    <div class="filter-chip" data-sev="soft">建议</div>
+  </div>
+
+  <div id="loading" class="loading" style="display:none"><div class="spinner"></div>加载中...</div>
+  <div id="entriesContainer">
+    <div class="entry-grid" id="entryGrid"></div>
+  </div>
+  <div id="emptyState" class="empty-state" style="display:none">
+    <div class="empty-icon">📭</div>
+    <div class="empty-title">该场景下暂无词条</div>
+    <div class="empty-desc">试试切换客户类型或阶段</div>
+  </div>
+</section>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div><div class="modal-icon" id="modalIcon">📋</div></div>
+      <div style="flex:1">
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-id" id="modalId"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="关闭">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="site-foot">风声信息咨询 · 经纪人成长陪练</div>
+
+<script>
+const LIFECYCLE_STAGES={buyer:[{key:'first_contact',name:'首次接触',icon:'👋',stage:'pre'},{key:'need_discovery',name:'需求深挖',icon:'🔍',stage:'pre'},{key:'viewing',name:'带看房源',icon:'🏠',stage:'pre'},{key:'mandate',name:'委托签约',icon:'📝',stage:'pre'},{key:'negotiation',name:'议价谈判',icon:'🤝',stage:'mid'},{key:'contract',name:'合同签署',icon:'✍️',stage:'mid'},{key:'loan_process',name:'贷款办理',icon:'🏦',stage:'mid'},{key:'handover',name:'交房过户',icon:'🔑',stage:'post'},{key:'renovation',name:'整装服务',icon:'🎨',stage:'post'},{key:'after_sale',name:'售后关怀',icon:'💝',stage:'post'},{key:'asset_manage',name:'资产管理',icon:'📊',stage:'post'}],tenant:[{key:'first_contact',name:'首次接触',icon:'👋',stage:'pre'},{key:'need_match',name:'需求匹配',icon:'🎯',stage:'pre'},{key:'viewing',name:'带看房源',icon:'🏠',stage:'pre'},{key:'mandate',name:'委托签约',icon:'📝',stage:'pre'},{key:'lease_signing',name:'合同签署',icon:'✍️',stage:'mid'},{key:'move_in',name:'入住交接',icon:'🚚',stage:'post'},{key:'in_lease_service',name:'租期内服务',icon:'🔧',stage:'post'},{key:'renewal',name:'续约谈判',icon:'🔄',stage:'post'},{key:'move_out',name:'退租续租',icon:'📦',stage:'post'},{key:'sublet',name:'转租换租',icon:'🔁',stage:'post'}],landlord:[{key:'entrust',name:'委托出租',icon:'🔑',stage:'pre'},{key:'evaluate',name:'房屋评估',icon:'📏',stage:'pre'},{key:'renovate',name:'整装翻新',icon:'🎨',stage:'mid'},{key:'manage',name:'租赁托管',icon:'🛡️',stage:'post'}],seller:[{key:'consult',name:'出售咨询',icon:'💬',stage:'pre'},{key:'evaluate',name:'房源评估',icon:'📏',stage:'pre'},{key:'entrust',name:'出售委托',icon:'📝',stage:'pre'},{key:'staging',name:'房源包装',icon:'✨',stage:'pre'},{key:'showing',name:'看房接待',icon:'🚪',stage:'mid'},{key:'negotiation',name:'议价谈判',icon:'🤝',stage:'mid'},{key:'contract',name:'合同签署',icon:'✍️',stage:'mid'},{key:'handover',name:'过户交房',icon:'🔑',stage:'post'},{key:'optimize',name:'资产优化',icon:'📊',stage:'post'}],owner:[{key:'after_sale',name:'售后关怀',icon:'💝',stage:'post'},{key:'evaluate',name:'房屋评估',icon:'📏',stage:'mid'},{key:'renovate',name:'整装翻新',icon:'🎨',stage:'mid'},{key:'manage',name:'租赁托管',icon:'🛡️',stage:'post'},{key:'optimize',name:'资产优化',icon:'📊',stage:'post'}]};
+const LIFECYCLE_SCENE_DOMAIN={first_contact:['签约前','客户解码','购房'],need_discovery:['签约前','客户解码','购房'],viewing:['带看服务','购房','签约前'],mandate:['签约前','房产交易'],negotiation:['谈判斡旋','签约中'],contract:['签约中','合同效力'],loan_process:['签约中'],handover:['交房售后','签约后'],renovation:['保洁服务','搬家服务','交房售后'],after_sale:['签约后','交房售后'],asset_manage:['资产持有与运营','业主侧'],need_match:['租住','房屋租赁'],lease_signing:['签约中','房屋租赁'],move_in:['交房售后','签约后','租住'],in_lease_service:['居住中','物业管理','社区服务与运营'],renewal:['退租出售','租住'],move_out:['退租出售','租住','签约后'],sublet:['退租出售','租住','房屋租赁'],entrust:['房东出租','业主出售','房产交易','签约前'],evaluate:['房东出租','资产持有与运营','业主出售'],renovate:['保洁服务','房东出租'],manage:['资产持有与运营','房东出租'],staging:['业主出售','保洁服务'],showing:['带看服务','业主出售'],optimize:['资产持有与运营','业主侧'],consult:['业主出售']};
+let currentCT='buyer',currentLC='first_contact',currentLayer='dao',currentType=null,currentSev=null;
+let allEntries=[],sceneData=null;
+const LAYER_ICONS={dao:'🧠',fa:'⚖️',shu:'🗣️',qi:'📱'};
+const TYPE_ICONS={LAW:'⚖️',PROC:'📋',RISK:'⚠️',CASE:'📂',STD:'📐',POL:'📜',TERM:'📝',SKILL:'🎯'};
+const PRIORITY_LABELS={P0:'最高优',P1:'高优',P2:'中优',P3:'一般'};
+const SEVERITY_LABELS={hard:'红线',medium:'提醒',soft:'建议'};
+const $=s=>document.querySelector(s);
+const $$=s=>document.querySelectorAll(s);
+document.addEventListener('DOMContentLoaded',()=>{
+  const p=new URLSearchParams(location.search);
+  if(p.get('clientType')&&['buyer','seller','owner','landlord','tenant'].includes(p.get('clientType'))){
+    currentCT=p.get('clientType');
+    $$('#clientRow .client-btn').forEach(b=>b.classList.toggle('active',b.dataset.ct===currentCT));
+  }
+  renderStages(currentCT);
+  if(p.get('lifecycle')){currentLC=p.get('lifecycle');$$('#stageRow .stage-btn').forEach(b=>b.classList.toggle('active',b.dataset.lc===currentLC))}
+  bindEvents();loadSceneData();
+});
+function bindEvents(){
+  $('#clientRow').addEventListener('click',e=>{const b=e.target.closest('.client-btn');if(!b)return;$$('#clientRow .client-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');currentCT=b.dataset.ct;currentLC=(LIFECYCLE_STAGES[currentCT]||LIFECYCLE_STAGES.buyer)[0].key;renderStages(currentCT);loadSceneData()});
+  $('#stageRow').addEventListener('click',e=>{const b=e.target.closest('.stage-btn');if(!b)return;$$('#stageRow .stage-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');currentLC=b.dataset.lc;loadSceneData()});
+  $('#hotRow').addEventListener('click',e=>{const c=e.target.closest('.hot-chip');if(!c)return;currentCT=c.dataset.ct;currentLC=c.dataset.lc;$$('#clientRow .client-btn').forEach(b=>b.classList.toggle('active',b.dataset.ct===currentCT));renderStages(currentCT);loadSceneData()});
+  $('#layerTabs').addEventListener('click',e=>{const t=e.target.closest('.layer-tab');if(!t)return;currentLayer=t.dataset.layer;$$('#layerTabs .layer-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');renderGrid()});
+  document.querySelectorAll('[data-type]').forEach(c=>c.addEventListener('click',()=>{currentType=c.dataset.type||null;document.querySelectorAll('[data-type]').forEach(x=>x.classList.toggle('active',x.dataset.type===currentType));renderGrid()}));
+  document.querySelectorAll('[data-sev]').forEach(c=>c.addEventListener('click',()=>{currentSev=c.dataset.sev||null;document.querySelectorAll('[data-sev]').forEach(x=>x.classList.toggle('active',x.dataset.sev===currentSev));renderGrid()}));
+  $('#modalOverlay').addEventListener('click',e=>{if(e.target===$('#modalOverlay'))closeModal()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+}
+function renderStages(ct){const s=LIFECYCLE_STAGES[ct]||LIFECYCLE_STAGES.buyer;$('#stageRow').innerHTML=s.map(x=>`<button class="stage-btn ${x.key===currentLC?'active':''}" data-lc="${x.key}"><span class="icon">${x.icon}</span>${x.name}</button>`).join('');if(!s.some(x=>x.key===currentLC)){currentLC=s[0].key;$('#stageRow').querySelector('.stage-btn').classList.add('active')}}
+function getStage(){const s=LIFECYCLE_STAGES[currentCT]||LIFECYCLE_STAGES.buyer;const x=s.find(y=>y.key===currentLC);return x?x.stage:'pre'}
+async function loadSceneData(){$('#loading').style.display='flex';$('#emptyState').style.display='none';try{const sd=LIFECYCLE_SCENE_DOMAIN[currentLC]||[];const r=await fetch(`/api/scene/detail?clientType=${currentCT}&stage=${getStage()}&sceneDomain=${encodeURIComponent(sd[0]||'')}`);const data=await r.json();sceneData=data;allEntries=[];(data.groups||[]).forEach(g=>(g.entries||[]).forEach(e=>allEntries.push({...e,_layer:g.layer})));const bl=data.byLayer||{};['dao','fa','shu','qi'].forEach(l=>{const el=document.getElementById(l+'Count');if(el)el.textContent=(bl[l]||0)+' 条'});renderGrid()}catch(err){console.error(err);$('#emptyState').style.display='block'}$('#loading').style.display='none')}
+function renderGrid(){const f=allEntries.filter(e=>e._layer===currentLayer).filter(e=>!currentType||e.entryType===currentType).filter(e=>!currentSev||e.severity===currentSev);$('#emptyState').style.display='none';const g=$('#entryGrid');if(f.length===0){g.innerHTML='';$('#emptyState').style.display='block';return}g.innerHTML=f.map(e=>{const ic=TYPE_ICONS[e.entryType]||'📋';const pr=e.priority?`<span class="ec-badge ${e.priority.toLowerCase()}">${PRIORITY_LABELS[e.priority]||e.priority}</span>`:'';const sv=e.severity?`<span class="ec-badge ${e.severity.toLowerCase()}">${SEVERITY_LABELS[e.severity]||e.severity}</span>`:'';const tp=e.entryType?`<span class="ec-badge type">${TYPE_LABELS[e.entryType]||e.entryType}</span>`:'';return `<div class="entry-card" onclick="openDetail('${e.id}')"><div class="ec-head"><span class="ec-icon">${ic}</span><span class="ec-title">${esc(e.name)}</span></div>${e.oneLineAnswer?`<div class="ec-answer">${esc(e.oneLineAnswer)}</div>`:''}<div class="ec-badges">${pr}${sv}${tp}</div><a class="ec-goto" href="/knowledge/?q=${encodeURIComponent(e.name)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔎 知识底座查证 →</a></div>`}).join('')}
+async function openDetail(id){$('#modalOverlay').classList.add('active');$('#modalTitle').textContent='加载中...';$('#modalBody').innerHTML='<div class="loading"><div class="spinner"></div></div>';try{const r=await fetch(`/api/entry?id=${encodeURIComponent(id)}`);const data=await r.json();const e=data.entry||data;if(!e||!e.name){$('#modalBody').innerHTML='<div class="empty-state"><div class="empty-title">词条不存在</div></div>';return}$('#modalIcon').textContent=TYPE_ICONS[e.entryType]||'📋';$('#modalTitle').textContent=e.name;$('#modalId').textContent=e.id||'';let h='';if(e.oneLineAnswer)h+=`<div class="m-section"><div class="m-def">${esc(e.oneLineAnswer)}</div></div>`;h+=`<div class="m-section"><div class="m-badges">`;if(e.priority)h+=`<span class="m-badge ${e.priority.toLowerCase()}">${PRIORITY_LABELS[e.priority]}</span>`;if(e.severity)h+=`<span class="m-badge ${e.severity.toLowerCase()}">${SEVERITY_LABELS[e.severity]}</span>`;if(e.entryType)h+=`<span class="m-badge type">${TYPE_LABELS[e.entryType]}</span>`;h+=`</div></div>`;if(e.def)h+=`<div class="m-section"><div class="m-section-title">📖 详细定义</div><div class="m-def">${esc(e.def)}</div></div>`;if(e.consumerQ||e.ownerQ){h+=`<div class="m-section"><div class="m-section-title">💬 对话示例</div>`;if(e.consumerQ)h+=`<div class="m-field"><span class="m-field-label">客户问</span><span>${esc(e.consumerQ)}</span></div>`;if(e.ownerQ)h+=`<div class="m-field"><span class="m-field-label">业主问</span><span>${esc(e.ownerQ)}</span></div>`;h+=`</div>`}if(e.legalRef)h+=`<div class="m-section"><div class="m-section-title">⚖️ 法条依据</div><div>${esc(e.legalRef)}</div></div>`;if(e.caveat)h+=`<div class="m-section"><div class="m-section-title">⚠️ 适用边界</div><div>${esc(e.caveat)}</div></div>`;if(e.corePoint&&e.corePoint.length)h+=`<div class="m-section"><div class="m-section-title">🔑 核心要点</div><div>${e.corePoint.map(esc).join('；')}</div></div>`;if(e.relatedEntries&&e.relatedEntries.length){h+=`<div class="m-section"><div class="m-section-title">🔗 关联词条</div>`;e.relatedEntries.slice(0,5).forEach(x=>h+=`<div class="m-field" style="cursor:pointer" onclick="event.stopPropagation();openDetail('${x.id}')"><span class="m-field-label" style="color:var(--p)">▶</span><span>${esc(x.name)}</span></div>`);h+=`</div>`}$('#modalBody').innerHTML=h}catch(err){console.error(err);$('#modalBody').innerHTML='<div class="empty-state"><div class="empty-title">加载失败</div></div>'}}function closeModal(){$('#modalOverlay').classList.remove('active')}function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+</script>
+</body>
+</html>
