@@ -3,6 +3,7 @@
 // V3.1：支持动态 API 数据（generateCurationAsync），静态数据作为降级兜底
 import ENTRIES from './data/entries_slim.js'
 import { getActiveBase } from '../api/endpoint.js'
+import { MINI_PROGRAM_HEADERS } from '../api/auth-config.js'
 
 // ===== 双纵轴节点（购5 / 租4）与检索关键词 =====
 export const AXIS_GROUPS = [
@@ -98,6 +99,7 @@ async function fetchCurationEntries() {
         url: `${API_BASE}/api/entries?domain=${encodeURIComponent(domain)}&limit=1500`,
         method: 'GET',
         timeout: 12000,
+        header: { 'Content-Type': 'application/json', ...MINI_PROGRAM_HEADERS },
         success: (res) => resolve(res.data || {}),
         fail: (err) => reject(err)
       })

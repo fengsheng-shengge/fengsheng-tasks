@@ -765,6 +765,21 @@ function checkApiAuth(request, env) {
       return true;
     }
   }
+  // 放行条件 3：小程序专用通道（X-From header + 小程序专属 token）
+  //   小程序走 WeChat service worker（servicewechat.com/<appid>），
+  //   不带 fengsheng.tech Origin → 同源判定失败；也不发 Sec-Fetch-Site。
+  //   用自定义 header 识别身份 + 独立 token（env.API_MINI_PROGRAM_TOKEN）校验，
+  //   便于独立吊销（mini token 泄露不影响 web）。token 未配置时回退到 API_BEARER_TOKEN。
+  const xFrom = request.headers.get('X-From') || '';
+  if (xFrom === 'fengsheng-mini-program') {
+    if (auth.startsWith('Bearer ')) {
+      const token = auth.slice(7).trim();
+      const requiredMiniToken = env.API_MINI_PROGRAM_TOKEN || env.API_BEARER_TOKEN;
+      if (token && requiredMiniToken && token === requiredMiniToken) {
+        return true;
+      }
+    }
+  }
   return false;
 }
 

@@ -1,4 +1,5 @@
 import { API_CANDIDATES, getActiveBase, getActiveIndex, markActive, candidateCount } from './endpoint.js'
+import { MINI_PROGRAM_HEADERS } from './auth-config.js'
 
 // 主域常量（静态）。实际请求地址请用 getBaseUrl()，它会随 failover 结果变化。
 const BASE_URL = API_CANDIDATES[0]
@@ -136,6 +137,7 @@ function request(options = {}) {
         timeout,
         header: {
           'Content-Type': 'application/json',
+          ...MINI_PROGRAM_HEADERS,
           ...header
         },
         success: (res) => {
