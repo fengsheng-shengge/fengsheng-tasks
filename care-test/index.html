@@ -433,6 +433,7 @@
 var DIMS = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
 var SOFT_DIMS = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
 var SOFT_DIM_CODE_TO_NAME = {'SOFT-1':'共情能力','SOFT-2':'判断能力','SOFT-3':'责任担当','SOFT-4':'职业素养','SOFT-5':'服务意识'};
+var HARD_DIM_CODE_TO_NAME = {'DIM-1':'获客触达','DIM-2':'需求洞察','DIM-3':'专业方案','DIM-4':'带看谈判','DIM-5':'交易履约','DIM-6':'售后复购','DIM-7':'数字化协同'};
 
 var DIM_COLORS = {
   '获客触达': '#2563eb',
@@ -470,7 +471,9 @@ function convertQuiz(rawQuestions){
   return rawQuestions.map(function(q){
     return {
       id: q.id,
-      dim: q.dim_name || DIM_ID_TO_NAME[q.dim_id] || '带看谈判',
+      dim: q.dim_name || DIM_ID_TO_NAME[q.dim_id] || SOFT_DIM_CODE_TO_NAME[q.dim_code] || HARD_DIM_CODE_TO_NAME[q.dim_code] || '其他',
+      _dim_code: q.dim_code,
+      _is_soft: !!q.dim_code && q.dim_code.startsWith('SOFT'),
       stage: null,  // quiz.json 没 stage 字段
       dimColor: DIM_COLORS[q.dim_name] || DIM_COLORS['带看谈判'],
       title: 'Question ' + q.id,
@@ -629,7 +632,11 @@ function buildQuizSet(inputSet){
       var jj = Math.floor(Math.random() * (k + 1));
       var tt = opts[k]; opts[k] = opts[jj]; opts[jj] = tt;
     }
-    return { id:q.id, dim:q.dim, stage:q.stage, dimColor:q.dimColor, title:q.title, subtitle:q.subtitle, options:opts };
+    return {
+      id:q.id, dim:q.dim, stage:q.stage, dimColor:q.dimColor, title:q.title, subtitle:q.subtitle, options:opts,
+      _dim_code: q._dim_code, _is_soft: q._is_soft, _dim_id: q._dim_id, _explanation: q._explanation,
+      _standard: q._standard, _type: q._type, _roles: q._roles
+    };
   });
 }
 
