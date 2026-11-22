@@ -259,6 +259,9 @@
     </div>
 
     <button class="start-btn" onclick="startQuiz()">开始测评</button>
+    <div style="margin-top:10px;text-align:center">
+      <button onclick="showCareTestHistory()" style="background:none;border:1px solid #d4e2d6;color:#2d5a3d;padding:7px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s" onmouseover="this.style.background='#e8f0e9'" onmouseout="this.style.background='none'">📜 历史测评记录（可复查）</button>
+    </div>
 
     <!-- 前置说明：测什么 / 怎么测 / 测完能干嘛 -->
     <div style="background:linear-gradient(135deg,#fdf9ef,#fffbf3);border:1px solid #e8e4da;border-radius:12px;padding:14px 16px;margin-top:14px;text-align:left;font-size:13px;color:#555">
@@ -869,11 +872,34 @@ function showReport() {
       mode: QUESTIONS.length <= 7 ? 'focused' : 'full'
     };
     localStorage.setItem('fs_care_profile', JSON.stringify(profile));
-    // v3.2：累积历史记录（供 profile 页画维度趋势图）
+    // v3.2：累积历史记录（供 profile 页画维度趋势图 + 完整答题留痕）
     try {
       var hist = JSON.parse(localStorage.getItem('fs_care_history') || '[]');
-      hist.push({ total: total, dim_scores: dimScores, timestamp: profile.timestamp });
-      localStorage.setItem('fs_care_history', JSON.stringify(hist.slice(-10)));  // 只保留最近 10 次
+      // 存完整答题：每道题的 id + 用户选项索引 + 维度 + 题目快照（防止题库更新后对不上）
+      var qs = quizSet.length ? quizSet : QUESTIONS;
+      var fullAnswers = [];
+      for (var hi = 0; hi < qs.length; hi++) {
+        var q = qs[hi];
+        var userIdx = answers[q.id];
+        var userScore = userIdx !== undefined && userIdx !== null && userIdx >= 0 ? q.options[userIdx].score : 0;
+        fullAnswers.push({
+          id: q.id,
+          question: q.title || q.question || q.subtitle || '',
+          dim: q.dim || '',
+          user_idx: userIdx !== undefined ? userIdx : -1,
+          user_option: userIdx !== undefined ? (q.options[userIdx] && (q.options[userIdx].text || q.options[userIdx].label || q.options[userIdx])) : '',
+          user_score: userScore,
+          total_score: q.totalScore || q.maxScore || 5,
+        });
+      }
+      hist.push({
+        total: total,
+        dim_scores: dimScores,
+        timestamp: profile.timestamp,
+        question_count: qs.length,
+        answers: fullAnswers,
+      });
+      localStorage.setItem('fs_care_history', JSON.stringify(hist.slice(-20)));  // 保留最近 20 次（完整答题体积大）
     } catch(e2) {}
   } catch(e) {}
 
@@ -1044,6 +1070,162 @@ function drawRadar(avg) {
 // ============================================================
 var DIM_TO_ID = {'获客触达':1,'需求洞察':2,'专业方案':3,'带看谈判':4,'交易履约':5,'售后复购':6,'数字化协同':7};
 var DIM_EMOJI = {'获客触达':'📣','需求洞察':'👁️','专业方案':'📐','带看谈判':'💬','交易履约':'📝','售后复购':'🤝','数字化协同':'🤖'};
+
+// ===== 历史测评面板 =====
+var CARETEST_DIM_NAMES = {
+  'DIM-1':'获客触达','DIM-2':'需求洞察','DIM-3':'专业方案','DIM-4':'带看谈判',
+  'DIM-5':'交易履约','DIM-6':'售后复购','DIM-7':'数字化协同',
+  'SOFT-1':'共情能力','SOFT-2':'判断能力','SOFT-3':'责任担当',
+  'SOFT-4':'职业素养','SOFT-5':'服务意识'
+};
+
+function showCareTestHistory() {
+  var hist;
+  try { hist = JSON.parse(localStorage.getItem('fs_care_history') || '[]'); } catch(e) { hist = []; }
+
+  // 构建面板（若不存在则创建）
+  var panel = document.getElementById('caretest-history-panel');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = 'caretest-history-panel';
+    panel.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center';
+    panel.innerHTML = '<div id="caretest-history-box" style="background:#fff;border-radius:14px;padding:20px;width:min(720px,94vw);max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)"></div>';
+    document.body.appendChild(panel);
+    panel.addEventListener('click', function(e){ if (e.target === panel) panel.style.display = 'none'; });
+  }
+
+  var box = document.getElementById('caretest-history-box');
+
+  if (hist.length === 0) {
+    box.innerHTML = '<div style="text-align:center;padding:40px;color:#888">' +
+      '<div style="font-size:40px;margin-bottom:10px">📭</div>' +
+      '<div style="font-size:15px">还没有测评记录</div>' +
+      '<div style="font-size:12px;margin-top:6px;color:#aaa">做完第一次测评后，这里会自动留存</div>' +
+    '</div>';
+    panel.style.display = 'flex';
+    return;
+  }
+
+  // 生成列表（按日期分组）
+  var grouped = {};
+  hist.forEach(function(h){
+    var date = new Date(h.timestamp).toLocaleDateString('zh-CN');
+    grouped[date] = grouped[date] || [];
+    grouped[date].push(h);
+  });
+
+  var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">' +
+    '<h3 style="margin:0;color:#1a3d24;font-size:17px">📜 历史测评记录</h3>' +
+    '<button onclick="document.getElementById(\'caretest-history-panel\').style.display=\'none\'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999;line-height:1">✕</button>' +
+  '</div>';
+
+  Object.keys(grouped).forEach(function(date){
+    html += '<div style="font-size:11px;color:#8a7040;margin:12px 0 4px;font-weight:700;letter-spacing:1px">' + date + '</div>';
+    grouped[date].forEach(function(h, idx){
+      var time = new Date(h.timestamp).toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
+      // 找最弱维度（帮助用户看到进步空间）
+      var weakest = '';
+      var weakestScore = 100;
+      var dimKeys = Object.keys(h.dim_scores || {});
+      dimKeys.forEach(function(d){
+        if (h.dim_scores[d] < weakestScore) { weakestScore = h.dim_scores[d]; weakest = d; }
+      });
+      var dimName = CARETEST_DIM_NAMES[weakest] || weakest;
+
+      html += '<div style="background:#fafaf8;border-radius:8px;padding:12px 14px;margin-bottom:6px;cursor:pointer;transition:background .15s" ' +
+        'onmouseover="this.style.background=\'#f3f6f3\'" onmouseout="this.style.background=\'#fafaf8\'" ' +
+        'onclick="showCareTestDetail(' + (hist.indexOf(h)) + ')">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+          '<div style="display:flex;align-items:center;gap:12px">' +
+            '<span style="font-size:28px;font-weight:800;color:' + (h.total >= 80 ? '#2d5a3d' : h.total >= 60 ? '#8a7040' : '#c25636') + '">' + h.total + '</span>' +
+            '<span style="font-size:11px;color:#888">分</span>' +
+            '<span style="font-size:12px;color:#aaa">· ' + time + '</span>' +
+          '</div>' +
+          '<div style="font-size:11px;color:#8a7040;background:#fdf9ef;padding:3px 8px;border-radius:4px">' +
+            (h.answers ? h.answers.length + ' 题完整答题' : '分数摘要') +
+          '</div>' +
+        '</div>' +
+        '<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px 10px">' +
+          dimKeys.slice(0, 8).map(function(d){
+            var s = h.dim_scores[d];
+            return '<span style="font-size:11px;color:' + (s >= 70 ? '#2d5a3d' : '#8a7040') + '">' + (CARETEST_DIM_NAMES[d] || d) + ' ' + s + '</span>';
+          }).join('') +
+          (dimKeys.length > 8 ? '<span style="font-size:11px;color:#aaa">…</span>' : '') +
+        '</div>' +
+      '</div>';
+    });
+  });
+
+  html += '<div style="margin-top:14px;padding-top:10px;border-top:1px dashed #e8e4da;font-size:11px;color:#aaa;text-align:center">最多保留最近 20 次 · 仅存储本机浏览器 · 点击可查看完整答题详情</div>';
+
+  box.innerHTML = html;
+  panel.style.display = 'flex';
+
+  // 存 hist 引用供详情面板用
+  box._hist = hist;
+}
+
+function showCareTestDetail(idx) {
+  try { var hist = JSON.parse(localStorage.getItem('fs_care_history') || '[]'); } catch(e) { return; }
+  var h = hist[idx];
+  if (!h) return;
+
+  var panel = document.getElementById('caretest-history-panel');
+  var box = document.getElementById('caretest-history-box');
+  var dateStr = new Date(h.timestamp).toLocaleString('zh-CN');
+
+  var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">' +
+    '<h3 style="margin:0;color:#1a3d24;font-size:16px">📋 测评详情 · ' + dateStr + '</h3>' +
+    '<button onclick="showCareTestHistory()" style="border:1px solid #d4e2d6;background:#fff;color:#2d5a3d;padding:5px 12px;border-radius:16px;cursor:pointer;font-size:12px;border:none">← 返回列表</button>' +
+  '</div>';
+
+  // 总分卡
+  html += '<div style="background:linear-gradient(135deg,#fdf9ef,#fffbf3);border:1px solid #e8e4da;border-radius:10px;padding:14px;margin-bottom:14px">' +
+    '<div style="display:flex;align-items:center;gap:14px">' +
+      '<div style="font-size:44px;font-weight:800;color:' + (h.total >= 80 ? '#2d5a3d' : h.total >= 60 ? '#8a7040' : '#c25636') + ';line-height:1">' + h.total + '</div>' +
+      '<div>' +
+        '<div style="font-size:12px;color:#888">总能力分</div>' +
+        '<div style="font-size:11px;color:#aaa">' + (h.question_count || h.answers && h.answers.length || '?') + ' 题 · ' + (h.total >= 80 ? '优秀' : h.total >= 60 ? '合格' : '需加强') + '</div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+
+  // 各维度得分
+  html += '<div style="font-size:12px;color:#8a7040;font-weight:700;margin-bottom:8px;letter-spacing:1px">📊 各维度得分</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;margin-bottom:16px">';
+  var dimKeys = Object.keys(h.dim_scores || {});
+  dimKeys.forEach(function(d){
+    var s = h.dim_scores[d];
+    var barW = s + '%';
+    var barColor = s >= 80 ? '#2d5a3d' : s >= 60 ? '#8a7040' : '#c25636';
+    html += '<div style="background:#fafaf8;border-radius:6px;padding:8px 10px">' +
+      '<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">' +
+        '<span style="color:#555">' + (CARETEST_DIM_NAMES[d] || d) + '</span>' +
+        '<span style="font-weight:700;color:' + barColor + '">' + s + '</span>' +
+      '</div>' +
+      '<div style="background:#eee;border-radius:3px;height:4px;overflow:hidden"><div style="width:' + barW + ';background:' + barColor + ';height:100%"></div></div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  // 完整答题列表
+  if (h.answers && h.answers.length > 0) {
+    html += '<div style="font-size:12px;color:#8a7040;font-weight:700;margin-bottom:8px;letter-spacing:1px">📝 完整答题记录</div>';
+    h.answers.forEach(function(a, i){
+      var optIdx = a.user_idx;
+      var dimName = CARETEST_DIM_NAMES[a.dim] || a.dim;
+      html += '<div style="border-left:3px solid #d4e2d6;padding:6px 10px;margin-bottom:6px;background:#fafaf8;border-radius:0 6px 6px 0">' +
+        '<div style="font-size:11px;color:#8a7040;margin-bottom:2px">Q' + (i+1) + ' · ' + dimName + ' · 得 ' + a.user_score + '/' + a.total_score + '</div>' +
+        '<div style="font-size:12px;color:#333;margin-bottom:3px">题目：' + (a.question || '(已缺失)') + '</div>' +
+        '<div style="font-size:12px;color:#2d5a3d">你选了：' + (a.user_idx < 0 ? '<span style="color:#c25636">— 未作答 —</span>' : a.user_option || '(选项 ' + (a.user_idx+1) + ')') + '</div>' +
+      '</div>';
+    });
+  } else {
+    html += '<div style="text-align:center;padding:20px;color:#aaa;font-size:12px">本次测评只有分数摘要，无完整答题记录</div>';
+  }
+
+  box.innerHTML = html;
+}
 
 function renderNextSteps(avg, lowest, secondLowest){
   var grid = document.getElementById('next-step-grid');
