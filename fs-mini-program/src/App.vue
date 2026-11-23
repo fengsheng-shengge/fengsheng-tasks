@@ -15,6 +15,14 @@ function safeInit() {
 export default {
   onLaunch() {
     console.log('风声助手 onLaunch')
+    // uni-app H5 runtime bug：某些页面 onShow 中触发
+    // "Cannot set properties of null (setting 'scrollTop')"，在 App 层屏蔽。
+    if (typeof window !== 'undefined') {
+      window.onerror = function(msg, src, line, col, err) {
+        const m = (msg || '') + (err && err.message ? err.message : '')
+        if (m.includes('Cannot set properties of null') && m.includes('scrollTop')) return true
+      }
+    }
     // 关键修复(8.1)：onLaunch 阶段 webview 尚未就绪，
     // 同步调 uni.getStorageSync 在基础库 2.32.3(macOS 开发工具)
     // 会触发 jsbridge `getGlobalStorage: too eayly` 报错风暴。
