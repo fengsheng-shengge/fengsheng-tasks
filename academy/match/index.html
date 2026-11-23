@@ -392,11 +392,11 @@ function renderAgentProof(info) {
   if (!info.hasData) {
     root.innerHTML = '<div class="agent-proof">' +
       '<h2>🧑‍💼 还没有能力数据' +
-      '<span>先测一次就能看到你的双轨能力证明</span></h2>' +
-      '<p style="font-size:12px;opacity:.8;margin-bottom:14px">35 道硬技能测评（~15分钟）+ 25 道软技能测评（~10分钟）+ 12 门考核 → 自动生成能力证明</p>' +
-      '<div style="display:flex;gap:8px">' +
-        '<a href="/care-test/" style="background:#fff;color:#1a3d24;font-weight:700;font-size:13px;padding:8px 18px;border-radius:8px;display:inline-block">📋 开始测评 →</a>' +
-        '<a href="/academy/exam/" style="background:rgba(255,255,255,.15);color:#fff;font-weight:600;font-size:13px;padding:8px 18px;border-radius:8px;display:inline-block;border:1px solid rgba(255,255,255,.3)">📝 去考核</a>' +
+      '<span>配是六环节的最后一步，先走前面五步再来</span></h2>' +
+      '<p style="font-size:12px;opacity:.8;margin-bottom:14px">📋 测七维能力 → 📖 学核心课 → 🎭 练场景 → 📝 考考核 → 📊 看画像 → 最后来这里配岗位</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        '<a href="/academy/" style="background:#fff;color:#1a3d24;font-weight:700;font-size:13px;padding:8px 18px;border-radius:8px;display:inline-block">🗺️ 回学习中心看完整路径</a>' +
+        '<a href="/care-test/" style="background:rgba(255,255,255,.15);color:#fff;font-weight:600;font-size:13px;padding:8px 18px;border-radius:8px;display:inline-block;border:1px solid rgba(255,255,255,.3)">📋 从测评开始</a>' +
       '</div></div>';
     return;
   }
@@ -465,7 +465,7 @@ function computeRoleScore(role, info) {
 function renderMatchCards(info) {
   var root = document.getElementById('match-cards');
   if (!info.hasData) {
-    root.innerHTML = '<div class="empty-state">没有能力数据，先测一次再来匹配<br><a href="/care-test/" style="color:#1a3d24;font-weight:700">📋 去测评 →</a></div>';
+    root.innerHTML = '<div class="empty-state">还没有能力数据<br>先走完 <b>测→学→练→考→评</b> 五步再来配<br><a href="/academy/" style="color:#1a3d24;font-weight:700">🗺️ 回到学习中心</a></div>';
     return;
   }
 
@@ -538,7 +538,7 @@ function updateJDWeight(i, v) { customJDWeights[i] = parseInt(v); renderJDWeight
 
 function computeCustomJD() {
   var info = loadScores();
-  if (!info.hasData) { alert('先去测评一次吧～'); return; }
+  if (!info.hasData) { alert('先走完 测→学→练→考→评 五步再来配哦～'); return; }
   var hTotal = 0, hwSum = 0;
   for (var i = 0; i < 7; i++) {
     var s = info.hard[HARD_DIMS[i]];

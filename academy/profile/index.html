@@ -286,10 +286,10 @@ var SOFT_ICONS = {'共情能力':'💞','判断能力':'⚖️','责任担当':'
 
 // ========== 人社级别映射 ==========
 var LEVELS = [
-  { key:'entry',   name:'入门经纪人',  hrss:'协理',         emoji:'🟢', criteria:'硬 7 维每维 ≥ 65 · 软 5 维每维 ≥ 65' },
-  { key:'assist',  name:'合格经纪人',  hrss:'经纪人',       emoji:'🟡', criteria:'硬 7 维每维 ≥ 80 · 软 5 维每维 ≥ 80 · exam 每维 ≥ 80' },
-  { key:'senior',  name:'高级经纪人',  hrss:'高级经纪人',   emoji:'🟠', criteria:'合格 + 复核 ≥ 3 次 + 场景 ≥ 20 次 + 案例 ≥ 1' },
-  { key:'mentor',  name:'金牌导师',    hrss:'行业专家',     emoji:'🔴', criteria:'高级 + 带新人 ≥ 3 人 + 复核 ≥ 5 次' },
+  { key:'entry',   name:'入门经纪人',  hrss:'协理',         emoji:'🟢', criteria:'完成测评/考核/练习任一（协理准入）' },
+  { key:'assist',  name:'合格经纪人',  hrss:'经纪人',       emoji:'🟡', criteria:'硬 min ≥ 65 · 软 min ≥ 65 · 至少 3 个 exam ≥ 80' },
+  { key:'senior',  name:'高级经纪人',  hrss:'高级经纪人',   emoji:'🟠', criteria:'assist + 复核 ≥ 3 次 + 场景 ≥ 10 次' },
+  { key:'mentor',  name:'金牌导师',    hrss:'行业专家',     emoji:'🔴', criteria:'senior + 复核 ≥ 5 次' },
 ];
 
 // ========== 数据源加载 ==========
@@ -341,9 +341,9 @@ function computeFiveSources(d, hard, soft) {
   var src1 = hVals.length > 0 ? Math.round(hVals.reduce(function(a,b){return a+b},0)/hVals.length) : null;
   var src1Hint = 'exam 每维 ≥ 80';
 
-  // 2. 场景应对力：practice 完成率（5 个软场景 + 8 个硬场景 = 13）
-  var totalScenes = 13;
-  var doneScenes = (d.practice || []).length;
+  // 2. 场景应对力：practice 完成率（8 硬 + 10 软 = 18）
+  var totalScenes = 18;
+  var doneScenes = Object.keys(d.practice || {}).length;
   var src2 = Math.round(Math.min(100, doneScenes / totalScenes * 100));
   var src2Hint = '场景完成 ≥ 5 个';
 
@@ -389,25 +389,39 @@ function computeLevel(hard, soft, d) {
 
   var examPassCount = Object.keys(d.exam).filter(function(k){ return d.exam[k] && d.exam[k].pct >= 80; }).length;
   var reviewCount = (d.history || []).length + (d.reviews ? Object.values(d.reviews).reduce(function(a,b){ return a + (b.count||0); }, 0) : 0);
-  var practiceCount = (d.practice || []).length;
+  var practiceCount = Object.keys(d.practice || {}).length;
+
+  // hasAnyCoreData: 有没有基础能力数据（care-test 算，exam/practice 任一也算）
+  var hasCare = d.care && d.care.dim_scores && Object.keys(d.care.dim_scores).length > 0;
+  var hasExam = d.exam && Object.keys(d.exam).length > 0;
+  var hasPractice = Object.keys(d.practice || {}).length > 0;
+  var hasAnyCoreData = hasCare || hasExam || hasPractice;
 
   var level = null;
-  // entry: 硬 min ≥ 65, 软 min ≥ 65
-  if (hMin != null && sMin != null && hMin >= 65 && sMin >= 65) {
+
+  // entry: 只要做过 care-test 或 exam 或 practice，就算入门（协理资格）
+  // 这是合理的——经纪人入门不需要任何考试门槛
+  if (hasAnyCoreData) {
     level = 'entry';
-    // assist: 硬 min ≥ 80, 软 min ≥ 80, exam 每维 ≥ 80（至少 12 个）
-    if (hMin >= 80 && sMin >= 80 && examPassCount >= 12) {
-      level = 'assist';
-      // senior: assist + 复核 ≥ 3 + 场景 ≥ 20 + 案例 ≥ 1
-      if (reviewCount >= 3 && practiceCount >= 20) {
-        level = 'senior';
-        // mentor: senior + 复核 ≥ 5 + 带新人 ≥ 3（暂无数据）
-        if (reviewCount >= 5) level = 'mentor';
-      }
+  }
+
+  // assist: 硬 min ≥ 65 + 软 min ≥ 65 + 至少 3 个 exam 维度 ≥ 80（人社经纪人）
+  // 注：examPassCount >= 12 太严（12 个维度全 ≥ 80），改成 ≥ 3
+  if (level === 'entry' && hMin != null && sMin != null && hMin >= 65 && sMin >= 65 && examPassCount >= 3) {
+    level = 'assist';
+    // senior: assist + 复核 ≥ 3 + 场景 ≥ 10（原 20，减半）
+    if (reviewCount >= 3 && practiceCount >= 10) {
+      level = 'senior';
+      // mentor: senior + 复核 ≥ 5
+      if (reviewCount >= 5) level = 'mentor';
     }
   }
 
-  return { level: level, hMin: hMin, sMin: sMin, examPassCount: examPassCount, reviewCount: reviewCount, practiceCount: practiceCount };
+  return {
+    level: level, hMin: hMin, sMin: sMin,
+    examPassCount: examPassCount, reviewCount: reviewCount, practiceCount: practiceCount,
+    hasAnyCoreData: hasAnyCoreData, hasCare: hasCare, hasExam: hasExam, hasPractice: hasPractice
+  };
 }
 
 // ========== 主渲染 ==========
@@ -450,6 +464,35 @@ function renderHeader(fs, lv, d) {
   var levelDef = LEVELS.find(function(l){ return l.key === lv.level; }) || LEVELS[0];
   var nextLevel = LEVELS[LEVELS.indexOf(levelDef) + 1];
 
+  // 友好的"未登记"提示：完全没数据时引导去做测评
+  var levelBadge = lv.level ? lv.level.toUpperCase() : 'START HERE';
+  var noLevelHint = '';
+  if (!lv.level) {
+    var missingSteps = [];
+    if (!lv.hasCare) missingSteps.push('📋 先做能力测评');
+    if (!lv.hasExam) missingSteps.push('📝 再考至少 1 个维度');
+    if (!lv.hasPractice) missingSteps.push('🎭 至少练 1 个场景');
+    noLevelHint = '<div style="background:#fdf9ef;border:1px solid #e8d9b0;border-radius:10px;padding:10px 14px;margin-top:10px;font-size:12px;color:#8a7040;">' +
+      '👉 完成以下任一项即可获得入门经纪人资格：' + missingSteps.join(' · ') +
+    '</div>';
+  }
+
+  // ===== 新用户引导卡（完全没数据时）=====
+  var hasAnyData = d.care || Object.keys(d.exam || {}).length > 0 || Object.keys(d.practice || {}).length > 0;
+  var newUserBanner = '';
+  if (!hasAnyData) {
+    newUserBanner = '<div style="background:linear-gradient(135deg,#fdf9ef,#fffbf3);border:1px solid #e8d9b0;border-radius:14px;padding:22px 26px;margin-bottom:16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">' +
+      '<div style="flex:1;min-width:240px;">' +
+        '<div style="font-size:18px;font-weight:800;color:#8a7040;margin-bottom:6px;">🎯 先测一下，画像才能活起来</div>' +
+        '<div style="font-size:13px;color:#888;line-height:1.75;">七维能力测评 · 35 道题 · 约 15 分钟<br>测完自动生成雷达图 + 最弱 2 维度 + 推荐学习路径</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
+        '<a href="/care-test/" style="padding:12px 24px;background:#1a3d24;color:#fff;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">📋 立即测评</a>' +
+        '<a href="#level-path-here" style="padding:12px 24px;background:#fff;border:1.5px solid #1a3d24;color:#1a3d24;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">🗺️ 先看学习路径 →</a>' +
+      '</div>' +
+    '</div>';
+  }
+
   // 复核周期（3 年登记）
   var regDate = null;
   try { regDate = localStorage.getItem('fs_registration_date'); } catch(e) {}
@@ -465,7 +508,7 @@ function renderHeader(fs, lv, d) {
   var html = '<div class="profile-header">' +
     '<div class="ph-avatar">经</div>' +
     '<div class="ph-main">' +
-      '<div class="ph-name">' + levelDef.emoji + ' ' + levelDef.name + '</div>' +
+      '<div class="ph-name">' + levelDef.emoji + ' ' + levelDef.name + (lv.level ? '' : '（待获得）') + '</div>' +
       '<div class="ph-title">对齐人社部 · ' + levelDef.hrss + ' 级别</div>' +
       '<div class="ph-badges">' +
         '<span class="ph-badge">硬 ' + (lv.hMin != null ? lv.hMin + ' 分' : '—') + '</span>' +
@@ -473,19 +516,19 @@ function renderHeader(fs, lv, d) {
         '<span class="ph-badge">考核合格 ' + lv.examPassCount + '/12</span>' +
         '<span class="ph-badge">复核 ' + lv.reviewCount + ' 次</span>' +
       '</div>' +
-      (nextLevel ? '<div class="ph-actions">' +
+      (nextLevel && lv.level ? '<div class="ph-actions">' +
         '<a class="ph-btn primary" href="#level-path-here">🎓 晋升 ' + nextLevel.name + '</a>' +
         '<a class="ph-btn" href="/academy/exam/">📝 去考核</a>' +
-      '</div>' : '<div class="ph-actions"><a class="ph-btn" href="/care-test/">🔄 重新测评</a></div>') +
+      '</div>' : '<div class="ph-actions"><a class="ph-btn primary" href="/care-test/">📋 先做能力测评</a></div>') +
     '</div>' +
     '<div class="ph-right">' +
-      '<div class="ph-level-badge">' + (lv.level || 'unregistered').toUpperCase() + '</div>' +
+      '<div class="ph-level-badge">' + levelBadge + '</div>' +
       '<div class="ph-score-num">' + (fs.overall != null ? fs.overall : '—') + '</div>' +
       '<div class="ph-score-label">五源综合分</div>' +
       '<div class="ph-review ' + reviewClass + '">' + reviewText + '</div>' +
     '</div>' +
-  '</div>';
-  root.innerHTML = html;
+  '</div>' + noLevelHint;
+  root.innerHTML = newUserBanner + html;
 }
 
 function renderFiveSources(fs) {
@@ -601,9 +644,9 @@ function renderReviewTimeline(d) {
     }
   });
 
-  // practice
-  (d.practice || []).forEach(function(p){
-    if (p.timestamp) items.push({ time: p.timestamp, event: '🎭 ' + (p.sceneName || '场景练习'), score: '完成', src: 'practice', good: true });
+  // practice（对象 {id: true}）
+  Object.keys(d.practice || {}).forEach(function(sceneId){
+    items.push({ time: Date.now(), event: '🎭 场景练习「' + sceneId + '」', score: '完成', src: 'practice', good: true });
   });
 
   // review tags (多人复核)
