@@ -4665,6 +4665,8 @@ export default {
         '/academy/match', '/academy/match/',
         '/academy/ext-courses', '/academy/ext-courses/',
         '/design-prototype', '/design-prototype/',
+        // 家装服务工作台（DECOR 领域 · 2026-11-23 重建为 SPA 范式）
+        '/home-design', '/home-design/',
         // 预备经纪人招生（沃土计划）
         '/wotu', '/wotu/',
         // P1: 门店智能接待新页面

@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>风声聚匠星云 · 家装工作台</title>
+<style>
+  /* ═══════════════════════════════════════════════════════
+     主题变量 · 与 workspace/index.html 完全一致（同一套设计语言）
+     ═══════════════════════════════════════════════════════ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #1a3d24;
+    --primary-light: #2d5a3d;
+    --primary-dark: #12291a;
+    --primary-bg: #e8f0e9;
+    --gold: #c9a962;
+    --gold-bg: #faf5ea;
+    --ink: #1a1a1a;
+    --body: #555;
+    --muted: #999;
+    --line: #e8e4da;
+    --bg: #f7f5f0;
+    --card: #ffffff;
+    --warning: #e67e22;
+    --success: #27ae60;
+  }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+  /* ═══════════════════ 顶栏 · 与 workspace 一致 ═══════════════════ */
+  .top-nav {
+    background: var(--bg);
+    padding: 12px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo-area { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--primary); color: #fff;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .logo-text { font-size: 15px; font-weight: 700; color: var(--primary); }
+  .nav-links { display: flex; gap: 20px; font-size: 13px; }
+  .nav-links a { color: var(--body); text-decoration: none; }
+  .nav-links a.active { color: var(--primary); font-weight: 600; }
+  .nav-actions { display: flex; gap: 12px; align-items: center; font-size: 13px; }
+  .avatar {
+    width: 32px; height: 32px;
+    background: var(--gold-bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  /* ═══════════════════ 领域Tab · 与 workspace 一致 ═══════════════════ */
+  .domain-tabs {
+    background: var(--primary);
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 44px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .domain-tabs::-webkit-scrollbar { display: none; }
+  .domain-tab {
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    padding: 12px 0;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    flex: 0 0 auto;
+  }
+  .domain-tab.active {
+    color: #fff;
+    border-bottom-color: var(--gold);
+    font-weight: 600;
+  }
+  .domain-tag {
+    font-size: 10px;
+    background: rgba(255,255,255,0.15);
+    padding: 2px 6px;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.5);
+    margin-left: 4px;
+  }
+
+  /* ═══════════════════ 岗位选择器 · 与 workspace 一致 ═══════════════════ */
+  .position-bar {
+    background: white;
+    border-bottom: 1px solid var(--line);
+    padding: 14px 48px;
+    display: none;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .position-bar.visible { display: flex; animation: fadeIn 0.3s ease; }
+  .position-bar-label { font-size: 12px; color: var(--muted); margin-right: 4px; font-weight: 500; }
+  .position-pill {
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    background: #f5f3ec;
+    color: var(--body);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .position-pill:hover { background: var(--primary-bg); color: var(--primary); }
+  .position-pill.active {
+    background: var(--gold-bg);
+    color: var(--primary);
+    border-color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* ═══════════════════ 岗位身份 Banner · 与 workspace 一致 ═══════════════════ */
+  .role-banner {
+    background: linear-gradient(135deg, #1a3d24 0%, #2d5a3f 50%, #3a6b4d 100%);
+    color: #fff;
+    padding: 20px 48px;
+    display: none;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 3px solid var(--gold);
+  }
+  .role-banner.visible { display: flex; animation: fadeIn 0.3s ease; }
+  .role-banner .rb-icon {
+    font-size: 40px;
+    width: 64px; height: 64px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    backdrop-filter: blur(4px);
+  }
+  .role-banner .rb-info { flex: 1; min-width: 0; }
+  .role-banner .rb-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .role-banner .rb-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .role-banner .rb-name .rb-domain-tag {
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--gold);
+    color: #1a3d24;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .role-banner .rb-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+    max-width: 520px;
+  }
+  .role-banner .rb-switch { display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0; }
+  .role-banner .rb-switch-title {
+    font-size: 10px; letter-spacing: 0.08em; color: rgba(255,255,255,0.4);
+    margin-bottom: 6px; width: 100%;
+  }
+  .role-banner .rb-switch-pill {
+    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.75);
+    border: 1px solid rgba(255,255,255,0.18);
+    cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  }
+  .role-banner .rb-switch-pill:hover { background: rgba(255,255,255,0.25); color: #fff; }
+  .role-banner .rb-switch-pill.active {
+    background: var(--gold); color: #1a3d24; border-color: var(--gold); font-weight: 700;
+  }
+
+  /* ═══════════════════ Timeline · 与 workspace 一致 ═══════════════════ */
+  .journey-timeline {
+    background: #f8f6f0;
+    border-bottom: 1px solid var(--line);
+    padding: 0 48px;
+    display: none;
+  }
+  .journey-timeline.visible { display: block; animation: fadeIn 0.3s ease; }
+  .jt-label {
+    font-size: 11px; color: var(--muted); font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding-top: 12px; padding-bottom: 6px;
+  }
+  .jt-stages {
+    display: flex; align-items: stretch; gap: 0;
+    padding-bottom: 12px; overflow-x: auto;
+  }
+  .jt-stage { display: flex; align-items: center; gap: 0; flex-shrink: 0; }
+  .jt-step {
+    flex-shrink: 0; padding: 10px 18px; border-radius: 10px;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 10px;
+    min-width: 130px; background: transparent;
+    border: 2px solid transparent; position: relative;
+  }
+  .jt-step:hover { background: rgba(26,61,36,0.06); }
+  .jt-step .jt-step-icon {
+    font-size: 22px; width: 36px; height: 36px;
+    background: #fff; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; border: 2px solid var(--line); transition: all 0.2s;
+  }
+  .jt-step .jt-step-text { display: flex; flex-direction: column; gap: 2px; }
+  .jt-step .jt-step-name {
+    font-size: 14px; font-weight: 700; color: #555;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .jt-step .jt-step-desc {
+    font-size: 10px; color: #999; white-space: nowrap;
+    max-width: 140px; overflow: hidden; text-overflow: ellipsis; transition: all 0.2s;
+  }
+  .jt-step.jt-active {
+    background: #fff; border-color: var(--primary);
+    box-shadow: 0 4px 16px rgba(26,61,36,0.18); transform: translateY(-2px);
+  }
+  .jt-step.jt-active .jt-step-icon {
+    border-color: var(--primary); background: var(--primary); color: #fff;
+  }
+  .jt-step.jt-active .jt-step-name { color: var(--primary); font-size: 15px; }
+  .jt-step.jt-active .jt-step-desc { color: var(--primary); opacity: 0.8; }
+  .jt-arrow {
+    flex-shrink: 0; font-size: 18px; color: #ccc;
+    padding: 0 4px; display: flex; align-items: center;
+  }
+
+  /* ═══════════════════ 主内容容器 · 与 workspace 一致 ═══════════════════ */
+  .main {
+    max-width: 1000px; margin: 0 auto; padding: 32px 48px;
+  }
+
+  /* ═══════════════════ 价值引导区 · 与 workspace 一致 ═══════════════════ */
+  .value-intro {
+    background: linear-gradient(135deg, var(--primary-bg) 0%, #faf5ea 100%);
+    border-radius: 14px; padding: 24px 28px; margin-bottom: 18px;
+    border: 1px solid rgba(201,169,98,0.3);
+  }
+  .vi-title { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+  .vi-highlight { color: #8a7040; }
+  .vi-sub { font-size: 13px; color: var(--body); margin-bottom: 14px; line-height: 1.6; }
+  .vi-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .vi-btn {
+    padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    text-decoration: none; display: inline-block; cursor: pointer; border: none; transition: all 0.15s;
+  }
+  .vi-btn-primary { background: var(--primary); color: #fff; }
+  .vi-btn-primary:hover { background: var(--primary-light); }
+  .vi-btn-ghost { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+  .vi-btn-ghost:hover { background: var(--primary-bg); }
+  .vi-or { font-size: 12px; color: var(--muted); }
+
+  /* ═══════════════════ 成长进度条 · 与 workspace 一致 ═══════════════════ */
+  .growth-bar {
+    background: linear-gradient(135deg, #1a3d24 0%, #2d5a3d 100%);
+    border-radius: 14px; padding: 18px 22px; margin-bottom: 18px;
+    display: flex; justify-content: space-between; align-items: stretch; gap: 16px;
+    color: #fff; box-shadow: 0 4px 16px rgba(26,61,36,0.15);
+  }
+  .gb-left { flex: 1; min-width: 0; }
+  .gb-right {
+    background: rgba(255,255,255,0.12); border-radius: 10px; padding: 12px 16px;
+    min-width: 200px; border: 1px solid rgba(255,255,255,0.2);
+  }
+  .gb-user { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .gb-avatar { font-size: 20px; }
+  .gb-name { font-size: 15px; font-weight: 700; }
+  .gb-domain {
+    font-size: 11px; color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.12); padding: 2px 8px; border-radius: 10px;
+  }
+  .gb-level-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px; background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); }
+  .gb-progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .gb-progress-bar {
+    flex: 1; height: 8px; background: rgba(255,255,255,0.18); border-radius: 4px; overflow: hidden;
+  }
+  .gb-progress-fill { height: 100%; background: var(--gold); border-radius: 4px; transition: width 0.3s; }
+  .gb-progress-pct { font-size: 11px; color: rgba(255,255,255,0.8); min-width: 36px; text-align: right; }
+  .gb-path { font-size: 11px; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .gb-path-arrow { color: rgba(255,255,255,0.3); }
+  .gb-path-done { color: var(--gold); }
+  .gb-next-label { font-size: 10px; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+  .gb-next-item { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .gb-next-sub { font-size: 11px; color: rgba(255,255,255,0.6); }
+
+  /* ═══════════════════ 循证知识库（折叠低调版）· 与 workspace 一致 ═══════════════════ */
+  .evidence-section {
+    border: 1px solid var(--line); border-radius: 10px; padding: 0;
+    margin-bottom: 14px; background: #fafafa;
+  }
+  .evidence-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; cursor: pointer; user-select: none; transition: background 0.15s;
+  }
+  .evidence-header:hover { background: #f0f0f0; }
+  .evidence-toggle-icon {
+    font-size: 11px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0;
+  }
+  .evidence-toggle-icon.open { transform: rotate(90deg); }
+  .evidence-header-label { font-size: 12px; font-weight: 600; color: var(--muted); flex-shrink: 0; }
+  .evidence-header-badge { font-size: 11px; color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .evidence-content { display: none; border-top: 1px solid var(--line); padding: 12px 14px; background: #fff; }
+  .evidence-content.open { display: block; }
+  .evidence-card { background: #fafafa; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+  .evidence-card:last-child { margin-bottom: 0; }
+  .evidence-card-title { font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px; line-height: 1.4; }
+  .evidence-link { margin-top: 6px; font-size: 11px; color: #8a7040; }
+  .evidence-link a { color: #8a7040; font-weight: 500; text-decoration: none; }
+  .evidence-footer { margin-top: 10px; text-align: right; }
+  .evidence-footer-link { font-size: 11px; color: var(--primary); text-decoration: none; font-weight: 500; }
+  .evidence-footer-link:hover { text-decoration: underline; }
+
+  /* ═══════════════════ 搜索问题入口 · 与 workspace 一致 ═══════════════════ */
+  .search-section {
+    background: var(--card); border-radius: 16px; padding: 28px 32px;
+    margin-bottom: 20px; border: 1px solid var(--line);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  }
+  .search-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .search-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .search-box { display: flex; gap: 10px; }
+  .search-input {
+    flex: 1; padding: 12px 16px; border: 2px solid var(--line); border-radius: 10px;
+    font-size: 14px; outline: none; transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--primary); }
+  .search-btn {
+    background: var(--primary); color: #fff; padding: 12px 24px; border: none;
+    border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .hot-questions { margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .hot-questions span {
+    display: inline-block; background: var(--bg); padding: 4px 12px; border-radius: 16px;
+    margin-right: 6px; margin-top: 6px; cursor: pointer; color: var(--body);
+  }
+  .hot-questions span:hover { background: var(--primary-bg); color: var(--primary); }
+
+  /* ═══════════════════ 三层拆解 layered-section · 与 workspace 完全一致 ═══════════════════ */
+  .layered-section { background: var(--card); border-radius: 16px; border: 1px solid var(--line); margin-bottom: 20px; overflow: hidden; }
+  .layered-header {
+    padding: 14px 20px; display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #f0f5f2 0%, #e8f0ea 100%);
+    transition: background 0.2s; user-select: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .layered-header:hover { background: linear-gradient(135deg, #e5ede7 0%, #f0f5f2 100%); }
+  .layered-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 800; color: var(--primary); }
+  .layered-title span:first-child { font-size: 18px; }
+  .layered-trust {
+    margin-left: auto; font-size: 12px; color: var(--gold);
+    font-weight: 600; background: var(--gold-bg); padding: 3px 10px; border-radius: 10px;
+  }
+  .layered-toggle { font-size: 12px; color: var(--muted); transition: transform 0.2s; }
+  .layered-body { padding: 16px 20px; display: grid; gap: 12px; }
+  .layered-body.collapsed { display: none; }
+
+  /* 赢得托付 · 四条底线 */
+  .values-bar {
+    background: linear-gradient(90deg, #1a3d24 0%, #264653 100%);
+    color: #fff; border-radius: 12px; padding: 10px 16px; margin-bottom: 4px;
+    font-size: 12px; line-height: 1.8;
+  }
+  .values-bar strong { color: #ffd166; font-weight: 700; }
+  .values-bar .vb-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .values-bar .vb-item { display: inline-block; margin-right: 10px; }
+  .values-bar .vb-item::before { content: "▸ "; color: #ffd166; }
+
+  /* bp-card 通用 */
+  .bp-card { border-radius: 10px; padding: 12px 16px; }
+  .bp-head { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .bp-icon { font-size: 16px; }
+  .bp-title { font-size: 14px; font-weight: 700; }
+  .bp-sub { font-size: 11px; color: inherit; opacity: 0.7; margin-left: 4px; }
+
+  /* 核心动作 4 步 */
+  .bp-actions { background: var(--primary); color: #fff; }
+  .bp-actions .bp-head { margin-bottom: 8px; }
+  .bp-actions .bp-title { color: var(--gold); }
+  .bp-actions .bp-icon { color: var(--gold); }
+  .bp-actions-list { padding-left: 20px; margin: 0; }
+  .bp-actions-list li { font-size: 13px; color: rgba(255,255,255,0.92); padding: 4px 0; line-height: 1.65; font-weight: 500; }
+  .bp-actions-list li::marker { color: var(--gold); font-weight: 700; }
+
+  /* 服务者纠结什么 */
+  .bp-confusion { background: #fff8e1; border: 1px solid #ffe082; }
+  .bp-confusion .bp-title { color: #b8860b; }
+  .bp-confusion .bp-icon { color: #d4a017; }
+  .bp-confusion-text { font-size: 12.5px; color: #8a6d00; line-height: 1.6; font-style: italic; }
+
+  /* 为什么这么做 */
+  .bp-why { background: var(--gold-bg); border: 1px solid #e8dcc0; }
+  .bp-why .bp-title { color: #8a7040; }
+  .bp-why .bp-icon { color: #c9a962; }
+  .bp-why-text { font-size: 12.5px; color: #7a6030; line-height: 1.7; font-weight: 500; }
+  .bp-why-text strong { color: #5a4220; }
+
+  /* 练 + 学 并排 */
+  .bp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .bp-practice { background: #eef4f8; border: 1px solid #c5d8e3; }
+  .bp-practice .bp-title { color: #264653; }
+  .bp-practice .bp-icon { color: #264653; }
+  .bp-practice-scene {
+    background: #fff; border: 1px dashed #a8c0d0; border-radius: 8px;
+    padding: 10px 12px; font-size: 12px; color: var(--body);
+    margin-bottom: 10px; line-height: 1.6; font-style: italic;
+  }
+  .bp-learn { background: var(--primary-bg); border: 1px solid #c5d8ca; }
+  .bp-learn .bp-title { color: var(--primary); }
+  .bp-learn .bp-icon { color: var(--primary); }
+  .bp-learn-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+  .bp-learn-item {
+    font-size: 11.5px; color: var(--body); padding: 5px 8px;
+    background: #fff; border-radius: 6px; border-left: 2px solid var(--primary);
+    text-decoration: none; display: block; transition: transform 0.15s; line-height: 1.4;
+  }
+  .bp-learn-item:hover { transform: translateX(2px); color: var(--primary); }
+
+  .bp-cta { display: block; text-align: center; background: #264653; color: #fff; text-decoration: none; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 700; transition: background 0.15s; }
+  .bp-cta:hover { background: #1a343f; }
+  .bp-cta-alt { background: var(--primary); }
+  .bp-cta-alt:hover { background: var(--primary-light); }
+
+  /* 红线 + 小测 */
+  .bp-footer { background: var(--bg); border: 1px solid var(--line); padding: 10px 16px; }
+  .bp-red { font-size: 11px; color: #c44a32; background: #fef0ed; border-radius: 6px; padding: 6px 10px; margin-bottom: 8px; line-height: 1.6; }
+  .bp-red::before { content: "🚫 红线："; font-weight: 700; }
+  .vtag { display: inline-block; background: #264653; color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 4px; letter-spacing: 0.3px; vertical-align: middle; }
+  .bp-check {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; color: var(--muted); flex-wrap: wrap;
+  }
+  .bp-check-icon { font-size: 14px; }
+  .bp-check-text { flex: 1; }
+  .bp-check-link { font-size: 12px; font-weight: 600; color: var(--gold); text-decoration: none; }
+  .bp-check-link:hover { text-decoration: underline; }
+
+  /* 阶段浏览面板 */
+  .stage-browse-panel { margin-top: 14px; animation: fadeIn 0.3s ease; }
+  .stage-browse-hint {
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    letter-spacing: 0.04em; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; user-select: none;
+  }
+  .st-hint-left { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+  .st-hint-left span { color: var(--ink); }
+  .st-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #faf0d7; color: #8a7040; font-size: 11px; font-weight: 700;
+    transition: transform .2s; flex-shrink: 0;
+  }
+  .stage-browse-panel.collapsed .st-toggle { transform: rotate(180deg); }
+  .empty-hint { text-align: center; padding: 30px; color: var(--muted); font-size: 13px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+
+  /* ═══════════════════ 能力画像 · 与 workspace 一致 ═══════════════════ */
+  .ability-section {
+    background: var(--card); border-radius: 14px; padding: 20px 24px;
+    margin-bottom: 20px; border: 1px solid var(--line);
+  }
+  .ability-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+  }
+  .ability-title { font-size: 15px; font-weight: 600; color: var(--primary); }
+  .ability-go-btn { font-size: 12px; color: var(--gold); font-weight: 600; cursor: pointer; text-decoration: none; }
+  .ability-subtitle { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+  .ability-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 10px; margin-bottom: 12px;
+  }
+  .ability-card {
+    background: var(--bg); border-radius: 10px; padding: 12px 14px;
+    cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
+  }
+  .ability-card:hover { border-color: var(--primary); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(26,61,36,0.1); }
+  .ability-card-name { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 3px; }
+  .ability-card-desc { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 6px; }
+  .ability-card-count { font-size: 10px; color: var(--body); font-weight: 500; }
+  .soft-label {
+    font-size: 10px; color: #8a7040; background: var(--gold-bg);
+    padding: 1px 6px; border-radius: 3px; font-weight: 600;
+  }
+  .hard-label {
+    font-size: 10px; color: var(--primary); background: var(--primary-bg);
+    padding: 1px 6px; border-radius: 3px; font-weight: 600;
+  }
+
+  /* ═══════════════════ 底部工具入口 · 与 workspace 一致 ═══════════════════ */
+  .tools-section { margin-bottom: 30px; }
+  .tools-title { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+  .tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .tool-card {
+    background: var(--card); border-radius: 10px; padding: 14px 10px;
+    text-align: center; border: 1px solid #f0ede5; cursor: pointer;
+    text-decoration: none; color: var(--ink); display: block;
+    transition: all 0.15s;
+  }
+  .tool-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,61,36,0.08); }
+  .tool-icon { font-size: 20px; margin-bottom: 4px; }
+  .tool-name { font-size: 13px; font-weight: 600; }
+  .tool-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  /* 页脚 */
+  .footer { padding: 32px 48px; text-align: center; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); }
+
+  /* ═══════════════════ 响应式 · 与 workspace 一致 ═══════════════════ */
+  @media (max-width: 1024px) {
+    .ability-grid { grid-template-columns: repeat(3, 1fr); }
+    .tools-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+  }
+  @media (max-width: 768px) {
+    .top-nav { padding: 10px 14px; flex-wrap: wrap; gap: 8px; row-gap: 10px; }
+    .logo-area { flex: 1 1 100%; gap: 8px; }
+    .logo-icon { width: 30px; height: 30px; font-size: 14px; border-radius: 7px; }
+    .logo-text { font-size: 15px; }
+    .nav-actions { flex: 1 1 100%; gap: 8px; }
+    .nav-actions a { flex: 1 1 0; text-align: center; padding: 9px 6px; font-size: 12px; }
+    .domain-tabs { padding: 0 14px; gap: 18px; }
+    .position-bar, .role-banner, .journey-timeline { padding-left: 14px; padding-right: 14px; }
+    .role-banner { flex-wrap: wrap; }
+    .role-banner .rb-icon { width: 48px; height: 48px; font-size: 28px; border-radius: 12px; }
+    .role-banner .rb-switch { flex: 0 0 100%; }
+    .main { padding: 24px 14px; }
+    .growth-bar { flex-direction: column; }
+    .gb-right { min-width: 0; }
+    .search-section { padding: 20px 16px; }
+    .bp-row { grid-template-columns: 1fr; }
+    .ability-grid { grid-template-columns: repeat(2, 1fr); }
+    .tools-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+
+<link rel="canonical" href="https://fengsheng.tech/home-design/">
+<meta property="og:title" content="风声聚匠星云 · 家装工作台">
+<meta property="og:description" content="家装服务者循证能力建设平台 · 设计师售前SOP + 工长交付SOP · 硬8维 + 软5维 · 学练考评配闭环">
+</head>
+<body>
+
+  <!-- ═══════════════ 1. 顶栏（与 workspace 结构完全一致）═══════════════ -->
+  <div class="top-nav">
+    <div class="logo-area">
+      <div class="logo-icon">风</div>
+      <span class="logo-text">风声聚匠星云</span>
+    </div>
+    <div class="nav-links">
+      <a href="/">首页</a>
+      <a href="/home-design/" class="active">家装工作台</a>
+      <a href="/workspace/">经纪人工作台</a>
+      <a href="/knowledge/">知识底座</a>
+      <a href="/care-test/">能力测评</a>
+      <a href="/academy/">学习成长</a>
+    </div>
+    <div class="nav-actions">
+      <span style="font-size:13px;color:var(--body)">📍 全国 ▾</span>
+      <div class="avatar">🛠</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ 2. 领域 Tab 通栏（DECOR active）═══════════════ -->
+  <div class="domain-tabs">
+    <a href="/workspace/" class="domain-tab">🏠 交易服务</a>
+    <div class="domain-tab">🔑 资产运营 <span class="domain-tag">即将</span></div>
+    <div class="domain-tab active">🛠 家装服务</div>
+    <div class="domain-tab">🔧 后市场服务 <span class="domain-tag">即将</span></div>
+    <div class="domain-tab">🌿 特殊居住 <span class="domain-tag">即将</span></div>
+  </div>
+
+  <!-- ═══════════════ 3. 岗位选择器 ═══════════════ -->
+  <div class="position-bar" id="position-bar">
+    <span class="position-bar-label">选择岗位：</span>
+    <div id="position-pills"></div>
+  </div>
+
+  <!-- ═══════════════ 4. 岗位身份 Banner ═══════════════ -->
+  <div class="role-banner" id="role-banner">
+    <div class="rb-icon" id="rb-icon">🛠</div>
+    <div class="rb-info">
+      <div class="rb-label">当前岗位 / ROLE</div>
+      <div class="rb-name">
+        <span id="rb-name">设计师售前</span>
+        <span class="rb-domain-tag">家装服务</span>
+      </div>
+      <div class="rb-desc" id="rb-desc">从量房到合同签署——站在消费者这边，帮他做出正确的家装决策。</div>
+    </div>
+    <div class="rb-switch">
+      <div class="rb-switch-title">切换其他岗位</div>
+      <div id="rb-switch-pills"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ 5. Timeline（页面主骨架）═══════════════ -->
+  <div class="journey-timeline" id="journey-timeline">
+    <div class="jt-label">💫 客户家装全流程 — 走到哪一步了？</div>
+    <div class="jt-stages" id="jt-stages"></div>
+  </div>
+
+  <!-- ═══════════════ 6. 主内容 ═══════════════ -->
+  <div class="main">
+
+    <!-- 价值引导区 -->
+    <div class="value-intro" id="value-intro">
+      <h2 class="vi-title">这个站就干一件事：<span class="vi-highlight">客户家装走到哪一步了？点一下，我告诉你下一步该干啥</span></h2>
+      <p class="vi-sub">不用背话术，不用瞎摸索。选阶段 → 看 4 个核心动作 → 了解为什么 → 练一把 → 小测验收</p>
+      <div class="vi-actions">
+        <a class="vi-btn vi-btn-primary" href="/care-test/?domain=DECOR">🎯 5 分钟出你的「家装丢单预警」</a>
+        <span class="vi-or">或</span>
+        <span class="vi-btn vi-btn-ghost" onclick="selectStage('d1')">📐 直接点「量房勘测」试试</span>
+      </div>
+    </div>
+
+    <!-- 成长进度总览条 -->
+    <div class="growth-bar" id="growth-bar">
+      <div class="gb-left">
+        <div class="gb-user">
+          <span class="gb-avatar">🏗️</span>
+          <span class="gb-name">家装服务者</span>
+          <span class="gb-domain" id="gb-domain-tag">设计师售前</span>
+          <span class="gb-level-badge" id="gb-level-badge">🥉 见习</span>
+        </div>
+        <div class="gb-progress-row">
+          <div class="gb-progress-bar"><div class="gb-progress-fill" id="gb-progress-fill" style="width:0%"></div></div>
+          <div class="gb-progress-pct" id="gb-progress-pct">0%</div>
+        </div>
+        <div class="gb-path" id="gb-path">
+          <span class="gb-path-step gb-path-done">✅ 测评</span>
+          <span class="gb-path-arrow">→</span>
+          <span class="gb-path-step">🎭 练场景</span>
+          <span class="gb-path-arrow">→</span>
+          <span class="gb-path-step">📚 学课程</span>
+          <span class="gb-path-arrow">→</span>
+          <span class="gb-path-step">🎯 通过考核</span>
+        </div>
+      </div>
+      <div class="gb-right">
+        <div class="gb-next-label">⚡ 下一步推荐</div>
+        <div class="gb-next-item" id="gb-next-item">先选岗位 →</div>
+        <div class="gb-next-sub" id="gb-next-sub">设计师 / 工长 两套 Timeline</div>
+      </div>
+    </div>
+
+    <!-- 循证知识库（折叠版） -->
+    <div class="evidence-section" id="evidence-section">
+      <div class="evidence-header" onclick="document.getElementById('evidence-content').classList.toggle('open'); document.getElementById('evidence-toggle').classList.toggle('open');">
+        <span class="evidence-toggle-icon" id="evidence-toggle">▶</span>
+        <span class="evidence-header-label">🔗 循证依据</span>
+        <span class="evidence-header-badge">家装合同 1426 条 · 工艺标准 324 条 · 物业合规 543 条</span>
+        <span class="evidence-header-sub">· 点击展开</span>
+      </div>
+      <div class="evidence-content" id="evidence-content">
+        <div class="evidence-cards">
+          <div class="evidence-card">
+            <div class="evidence-card-title">📋 家装合同闭口价 · 如何规避增项纠纷</div>
+            <div class="evidence-link">来源：行业协会 2026 · <a href="/knowledge/">进入知识底座 →</a></div>
+          </div>
+          <div class="evidence-card">
+            <div class="evidence-card-title">🔧 水电改造规范 · 强弱电分离走顶走地</div>
+            <div class="evidence-link">来源：国家《住宅室内装饰装修工程质量验收规范》· <a href="/knowledge/">查看 →</a></div>
+          </div>
+          <div class="evidence-card">
+            <div class="evidence-card-title">🏠 物业报备流程 · 哪些工序需要审批</div>
+            <div class="evidence-link">来源：住建部 + 各地物业条例 · <a href="/knowledge/">查看 →</a></div>
+          </div>
+        </div>
+        <div class="evidence-footer">
+          <a href="/knowledge/" class="evidence-footer-link">📚 进入知识底座 →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 搜索问题入口 -->
+    <div class="search-section">
+      <div class="search-title">遇到家装服务的难题了？</div>
+      <div class="search-subtitle">直接问，1 分钟给你专业答案——报价、合同、工艺、物业、验收</div>
+      <div class="search-box">
+        <input type="text" class="search-input" placeholder="比如：闭口价合同怎么签？防水怎么做才不漏水？">
+        <button class="search-btn">搜一下</button>
+      </div>
+      <div class="hot-questions">
+        🔥 热门问题：
+        <span>闭口价 vs 开口价</span>
+        <span>防水质保几年</span>
+        <span>水电走顶还是走地</span>
+        <span>增项怎么算钱</span>
+        <span>竣工验收标准</span>
+        <span>物业报备流程</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════ 7. 三层拆解（核心内容）═══════════════ -->
+    <div class="layered-section" id="layered-section">
+      <div class="layered-header" onclick="document.getElementById('layered-body').classList.toggle('collapsed')">
+        <div class="layered-title">
+          <span id="layered-stage-icon">📐</span>
+          <span id="layered-stage-name">先选岗位和阶段</span>
+        </div>
+        <span class="layered-trust" id="layered-trust">为什么这么做</span>
+        <span class="layered-toggle">▼</span>
+      </div>
+      <div class="layered-body" id="layered-body">
+
+        <!-- 赢得托付 · 家装服务者四条底线（跨岗位共用） -->
+        <div class="values-bar">
+          <div class="vb-title">🏆 赢得托付的四条底线 · 每一次服务都重新赢得</div>
+          <span class="vb-item"><strong>难而正确</strong>：不隐瞒、不编造——客户随时可验证材料报价</span>
+          <span class="vb-item"><strong>消费者中心</strong>：不骚扰、不施压——让客户慢慢决策</span>
+          <span class="vb-item"><strong>专业者赢</strong>：不偷工、不减料——用工艺赢下一单</span>
+          <span class="vb-item"><strong>并肩奋斗</strong>：不抢单、不诋毁——对比自由，选择权在客户</span>
+        </div>
+
+        <!-- 🎯 核心动作 4 步 -->
+        <div class="bp-card bp-actions">
+          <div class="bp-head"><span class="bp-icon">🎯</span><span class="bp-title" id="lc-actions-title">请先选择岗位</span></div>
+          <ol class="bp-actions-list" id="lc-actions">
+            <li>从上方「岗位选择器」选设计师 / 工长 / 项目经理 / 技术工人</li>
+            <li>Timeline 会展示该岗位的专属 6 阶段 SOP</li>
+            <li>点任意阶段，我告诉你这一步该做什么、为什么、红线在哪</li>
+          </ol>
+        </div>
+
+        <!-- 🤔 服务者纠结什么 -->
+        <div class="bp-card bp-confusion" id="bp-confusion-card">
+          <div class="bp-head"><span class="bp-icon">🤔</span><span class="bp-title">我现在最纠结的是</span></div>
+          <div class="bp-confusion-text" id="lc-confusion">先选岗位 → 选阶段，我告诉你这个阶段最纠结的是什么。</div>
+        </div>
+
+        <!-- 💡 为什么这么做 -->
+        <div class="bp-card bp-why">
+          <div class="bp-head"><span class="bp-icon">💡</span><span class="bp-title">为什么这么做</span></div>
+          <div class="bp-why-text" id="lc-why">家装服务的每一步都有行业最佳实践——选岗位后我告诉你背后的道理。</div>
+        </div>
+
+        <!-- 🤖 练一练 + 📖 学一学（并排） -->
+        <div class="bp-row">
+          <div class="bp-card bp-practice">
+            <div class="bp-head"><span class="bp-icon">🤖</span><span class="bp-title">练一练</span><span class="bp-sub">模拟客户</span></div>
+            <div class="bp-practice-scene" id="lc-practice-scene">选岗位后，我给你一段真实客户对话，模拟练一把。</div>
+            <a class="bp-cta" href="/care-test/?domain=DECOR">开始 5 题小测 →</a>
+          </div>
+          <div class="bp-card bp-learn">
+            <div class="bp-head"><span class="bp-icon">📖</span><span class="bp-title">学一学</span><span class="bp-sub">点进知识底座</span></div>
+            <div class="bp-learn-list" id="lc-learn">
+              <a class="bp-learn-item" href="/knowledge/?q=家装合同闭口价">家装合同闭口价怎么签</a>
+              <a class="bp-learn-item" href="/knowledge/?q=水电改造">水电改造规范与报价</a>
+              <a class="bp-learn-item" href="/knowledge/?q=竣工验收">竣工验收标准与流程</a>
+            </div>
+            <a class="bp-cta bp-cta-alt" href="/knowledge/">进入知识底座 →</a>
+          </div>
+        </div>
+
+        <!-- 🚫 红线 + ✅ 小测 -->
+        <div class="bp-card bp-footer">
+          <div class="bp-red" id="lc-red">选岗位后告诉你这个阶段绝对不能踩的红线。</div>
+          <div class="bp-check">
+            <span class="bp-check-icon">✅</span>
+            <span class="bp-check-text">这个阶段的小测 5 分钟就能完成，帮你验收学得怎么样</span>
+            <a class="bp-check-link" href="/care-test/?domain=DECOR&dim=DSGN">去测 →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 阶段浏览面板 -->
+    <div class="stage-browse-panel" id="stage-browse" style="display:none">
+      <div class="stage-browse-hint" onclick="toggleStageBrowse()">
+        <div class="st-hint-left">
+          <span id="browse-stage-name">📐 量房勘测</span>
+          · <span id="browse-stage-count">0</span> 个场景
+        </div>
+        <span class="st-toggle" id="st-toggle">▼</span>
+      </div>
+      <div id="stage-scenario-cards">
+        <div class="empty-hint">📚 本阶段场景话术库建设中，先看上方「三层拆解」里的核心动作和真实场景吧！</div>
+      </div>
+    </div>
+
+    <!-- 能力画像 -->
+    <div class="ability-section">
+      <div class="ability-header">
+        <div class="ability-title">📊 你的家装能力画像</div>
+        <a class="ability-go-btn" href="/care-test/?domain=DECOR">去做测评 →</a>
+      </div>
+      <div class="ability-subtitle">硬 8 维（家装专用）+ 软 5 维（跨领域共用），帮你看清哪里强、哪里弱</div>
+
+      <div class="ability-grid" id="ability-grid">
+        <!-- 硬技能 -->
+        <div class="ability-card">
+          <div class="ability-card-name">① 户型诊断</div>
+          <div class="ability-card-desc">原始户型分析 · 空间利用 · 动线优化</div>
+          <span class="hard-label">DSGN-1</span>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">② 方案呈现</div>
+          <div class="ability-card-desc">平面布局 · 效果图 · 软装搭配</div>
+          <span class="hard-label">DSGN-2</span>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">③ 透明报价</div>
+          <div class="ability-card-desc">三档档次 · 分项明细 · 隐藏项预警</div>
+          <span class="hard-label">DSGN-3</span>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">④ 合同解读</div>
+          <div class="ability-card-desc">闭口价 · 增项条款 · 质保年限</div>
+          <span class="hard-label">DSGN-4</span>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">⑤ 施工管理</div>
+          <div class="ability-card-desc">五大工种衔接 · 材料进场 · 工期把控</div>
+          <span class="hard-label">PROJ-5</span>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">⑥ 验收标准</div>
+          <div class="ability-card-desc">6 阶段 43 项 · 国家规范 · 世赛标准</div>
+          <span class="hard-label">PROJ-6</span>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">⑦ 物业合规</div>
+          <div class="ability-card-desc">装修报备 · 垃圾清运 · 噪音时段</div>
+          <span class="hard-label">PROJ-7</span>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">⑧ 问题处置</div>
+          <div class="ability-card-desc">墙面开裂 · 水管漏水 · 客户投诉应对</div>
+          <span class="hard-label">PROJ-8</span>
+        </div>
+        <!-- 软技能 -->
+        <div class="ability-card">
+          <div class="ability-card-name">⟡ 客户共情</div>
+          <div class="ability-card-desc">听懂客户真实需求 · 站在消费者这边</div>
+          <span class="soft-label">SOFT-1</span>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">⟡ 风险判断</div>
+          <div class="ability-card-desc">报价风险 · 合同陷阱 · 工艺隐患</div>
+          <span class="soft-label">SOFT-2</span>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">⟡ 责任担当</div>
+          <div class="ability-card-desc">出了问题不甩锅 · 主动解决</div>
+          <span class="soft-label">SOFT-3</span>
+        </div>
+        <div class="ability-card">
+          <div class="ability-card-name">⟡ 职业底线</div>
+          <div class="ability-card-desc">不偷工减料 · 不隐瞒材料真相</div>
+          <span class="soft-label">SOFT-4</span>
+        </div>
+        <div class="ability-card" style="grid-column: span 2;">
+          <div class="ability-card-name">⟡ 口碑服务</div>
+          <div class="ability-card-desc">装修完客户愿意转介绍的，才是真专业</div>
+          <span class="soft-label">SOFT-5</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部工具入口 -->
+    <div class="tools-section">
+      <div class="tools-title">🧰 家装常用工具</div>
+      <div class="tools-grid">
+        <a href="/knowledge/" class="tool-card">
+          <div class="tool-icon">📖</div>
+          <div class="tool-name">家装知识底座</div>
+          <div class="tool-sub">1426 条合同条款 · 324 条验收标准</div>
+        </a>
+        <a href="/care-test/?domain=DECOR" class="tool-card">
+          <div class="tool-icon">📊</div>
+          <div class="tool-name">家装能力测评</div>
+          <div class="tool-sub">10 分钟测硬 8 维 + 软 5 维</div>
+        </a>
+        <a href="/academy/" class="tool-card">
+          <div class="tool-icon">🎓</div>
+          <div class="tool-name">学习成长闭环</div>
+          <div class="tool-sub">测学练考评配 · 匠星认证</div>
+        </a>
+        <a href="/knowledge/?q=装修合同" class="tool-card">
+          <div class="tool-icon">📋</div>
+          <div class="tool-name">合同范本 · 工艺标准</div>
+          <div class="tool-sub">闭口价模板 · 水电规范</div>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    风声聚匠星云 · 家装工作台 · 循证服务<br>
+    © 2026 fengsheng.tech
+  </div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   家装服务者 DATA 层
+   结构与 workspace/index.html 的 BROKER/LEASE/NEW_HOME 完全一致
+   
+   每个岗位 = STAGES[] + LAYER{}
+   STAGES[i] = { key, icon, name, desc, kb }
+   LAYER[key] = { actions:[], confusion, why, practiceScene, refs:[], red }
+   ═══════════════════════════════════════════════════════ */
+
+// ───── 岗位元信息 ─────
+var POSITION_META = {
+  DSGN:   { icon:'📐', name:'设计师售前',   desc:'从量房到合同签署——站在消费者这边，帮他做出正确的家装决策' },
+  PROJ:   { icon:'👷', name:'工长交付',     desc:'从现场交底到竣工验收——按标准施工，给客户一个放心的家' },
+  MGR:    { icon:'📋', name:'项目经理管理', desc:'从预算管控到团队协调——管好进度、成本、质量三件事' },
+  TRADES: { icon:'🔧', name:'技术工人',     desc:'水电/泥木/油漆/安装——手艺就是你的饭碗' }
+};
+
+// ───── 1. 设计师售前 DSGN_STAGES ─────
+var DSGN_STAGES = [
+  { key:'d1', icon:'📐', name:'量房勘测',   desc:'现场测绘 · 房屋结构 · 精准尺寸' },
+  { key:'d2', icon:'✏️', name:'方案设计',   desc:'平面布局 · 效果图 · 软装搭配' },
+  { key:'d3', icon:'💰', name:'透明报价',   desc:'三档档次 · 分项明细 · 隐藏项预警' },
+  { key:'d4', icon:'📝', name:'合同解读',   desc:'闭口价 · 增项条款 · 质保年限' },
+  { key:'d5', icon:'🤝', name:'现场交底',   desc:'设计师→工长技术交底 · 工艺节点' },
+  { key:'d6', icon:'🏠', name:'开工准备',   desc:'物业报备 · 材料清单 · 工期排期' }
+];
+
+var DSGN_LAYER = {
+  d1: {
+    actions: [
+      "① 带专业测绘工具（激光测距仪+水平仪）上门，每个墙/窗/门洞都量，不只量大致尺寸",
+      "② 主动跟客户聊：几个人住？有没有小孩老人？做饭频率高不高？先懂他再量他的家",
+      "③ 记录现场缺陷：墙面空鼓、水管漏水、窗户漏风——这些是以后报价的增项来源，必须拍照留底"
+    ],
+    confusion:"客户说「我家就随便装装，不用那么仔细量」，但我知道量不准后面报价肯定出问题——怎么说服他配合？",
+    why:"量房是所有后续工作的起点：尺寸差 5 公分，定制衣柜就装不下；承重墙搞不清，打了要赔。前期花半小时量仔细，后面省 N 倍的麻烦",
+    practiceScene:"客户说：我家就简单刷个墙铺个地板，你不用量那么仔细了，直接按产证面积算吧",
+    refs:["ABIL-GEN-001","ABIL-GEN-002"],
+    red:"🚨 别按产证面积估——产证上的是建筑面积，实际套内可能少 15-20%，估错了你自己贴钱补。<strong class=vtag>【难而正确】</strong>量准才能报准"
+  },
+  d2: {
+    actions: [
+      "① 平面布局先出 2-3 版给客户选：保守版（不改格局）+ 实用版（微调动线）+ 激进版（大改结构），让他看到可能性",
+      "② 效果图要讲人话：别说「这块用岩板」——说「这块 2 米长的整板岩板，做岛台+餐桌一体，你家来朋友能坐 6 个人」",
+      "③ 主动暴露一个缺点：比如「这面墙拆不了，是承重墙，我们做个造型把它包进去当装饰」——说缺点反而显你专业"
+    ],
+    confusion:"客户说「我就想要开放式厨房」但他家厨房只有 3 平米，开放后客厅更挤——怎么既不硬怼又让他接受现实？",
+    why:"客户要的不是「最好看的方案」，是「装完能住得舒服的方案」——你帮他把幻想拉回现实，他下次装修还找你",
+    practiceScene:"客户说：我就要开放式厨房，墙必须砸，不砸我就找别人装",
+    refs:["ABIL-GEN-003"],
+    red:"🚨 别忽悠客户砸承重墙——砸完邻居投诉+物业罚款+结构安全隐患，锅全是你的。<strong class=vtag>【难而正确】</strong>不确定的墙先查物业图纸"
+  },
+  d3: {
+    actions: [
+      "① 报价先讲档次不讲价格：刚需入门 / 品质标准 / 精工品质，先让客户定位自己要哪一档",
+      "② 分项明细一条一条念：墙面多少钱/㎡？瓷砖多少钱/㎡？水管多少钱/米？管理费几个点？让他知道钱花在哪",
+      "③ 主动点出不含项：比如「报价里不含定制柜子和软装家具，这部分大概 2-5 万，你预算要留出来」——说在前头比事后加钱好"
+    ],
+    confusion:"客户看到总价说「太贵了，别人家报的比你少 2 万」，但他拿的那份报价里漏了防水/吊顶/管理费——怎么让他知道我这份才是实价？",
+    why:"客户比的是「总价数字」，你得帮他比「内容」——漏项报价看着便宜，最后增项加完比你的还贵，还闹心",
+    practiceScene:"客户说：你家报价比隔壁贵 2 万，我再考虑考虑",
+    refs:["ABIL-GEN-004","ABIL-GEN-005"],
+    red:"🚨 别为了签单故意漏项报低价——后面增项客户一定投诉，口碑砸了。<strong class=vtag>【专业者赢】</strong>透明报价=长期信任"
+  },
+  d4: {
+    actions: [
+      "① 合同别在客户家签——约到工作室，一条一条念，重点条款（闭口价/增项上限/质保年限）标红",
+      "② 闭口价 vs 开口价讲清楚：闭口=总价包干不增项（客户最爱）；开口=按实结算但可能超预算",
+      "③ 质保年限写进去：水电 5 年/防水 5 年/墙面 2 年——国家最低标准，多给一年是加分项"
+    ],
+    confusion:"客户说「合同太复杂，我不想看了，你帮我填上就行」——我能代签吗？万一后面出问题谁担责？",
+    why:"合同是保护双方的最后一道防线——你越让他看清楚，后面出问题的概率越小，你的责任也越少",
+    practiceScene:"客户说：合同你帮我填吧，我相信你，直接签",
+    refs:["ABIL-GEN-006"],
+    red:"🚨 别替客户签任何文件——签之前必须让他逐条看完，有疑虑当场解答。<strong class=vtag>【难而正确】</strong>不碰客户签字"
+  },
+  d5: {
+    actions: [
+      "① 现场交底 3 方到位：你 + 工长 + 客户，对着图纸一项项对——墙拆不拆？水电走哪？插座留哪？",
+      "② 工艺标准现场演示：比如瓷砖薄贴 vs 厚贴，拿出样板给客户看差别在哪里",
+      "③ 交底完让客户在图纸上签字确认——这是以后增项/改方案的依据"
+    ],
+    confusion:"工长说「设计师画的这个工艺我们做不了」，客户说「我不管能不能做我就要这个效果」——我在中间怎么协调？",
+    why:"交底是设计到施工的关键节点——三方当场对齐，比后面返工便宜 10 倍"
+  },
+  d6: {
+    actions: [
+      "① 物业报备：装修许可证 / 施工人员出入证 / 电梯保护 / 垃圾清运许可——提前 3 天办齐",
+      "② 材料清单给客户过目：品牌/型号/规格/数量，让他签字确认——以后说你用了差材料有依据",
+      "③ 工期排期跟客户对齐：预计多少天完工？节假日停工吗？哪些工序需要他到场确认？"
+    ],
+    confusion:"物业说「周末不能施工」但客户只有周末有空来看，工长说「我周末有事不来」——三方都不配合怎么办？",
+    why:"开工前协调好时间，比施工中停工整改划算多了——物业罚款+工期延误都是成本"
+  }
+};
+
+// ───── 2. 工长交付 PROJ_STAGES ─────
+var PROJ_STAGES = [
+  { key:'p1', icon:'🤝', name:'现场交底',   desc:'设计师→工长技术交底 · 工艺确认' },
+  { key:'p2', icon:'🔨', name:'拆改清运',   desc:'墙体拆改 · 垃圾清运 · 电梯保护' },
+  { key:'p3', icon:'💧', name:'水电隐蔽',   desc:'强弱电分离 · 走顶走地 · 打压测试' },
+  { key:'p4', icon:'🧱', name:'泥木吊顶',   desc:'瓷砖铺贴 · 木作柜体 · 吊顶龙骨' },
+  { key:'p5', icon:'🎨', name:'油漆安装',   desc:'墙面乳胶漆 · 地板安装 · 灯具五金' },
+  { key:'p6', icon:'✅', name:'竣工验收',   desc:'43 项验收清单 · 三方签字 · 质保移交' }
+];
+
+var PROJ_LAYER = {
+  p1: {
+    actions: [
+      "① 交底带齐：施工图 + 材料清单 + 工艺标准书 + 物业报备单，四项缺一不可",
+      "② 跟设计师对工艺：他画的节点大样能不能做？需要什么工具？有没有安全隐患？",
+      "③ 跟客户确认特殊需求：比如「我要装地暖」「我要智能马桶」——这些会影响水电走法"
+    ],
+    confusion:"设计师画了个弧形吊顶节点，但我师傅说做不了——怎么跟设计师沟通改方案，又不让客户觉得我们水平不够？",
+    practiceScene:"设计师说：这个弧形必须 5cm 半径，做不了吗？",
+    red:"🚨 别嘴上答应做不了的工艺——做坏了返工成本是原来的 3 倍。先跟设计师确认再跟客户说"
+  },
+  p2: {
+    actions: [
+      "① 拆改先查：有没有承重墙？有没有水电管埋在墙里？别砸到水管电线",
+      "② 垃圾当天清：拆下来的砖块石膏板当天打包好运走，别堆在走廊挡人",
+      "③ 电梯/公共区域保护：进户门贴保护膜，电梯间铺纸箱——业主邻居投诉扣钱"
+    ],
+    confusion:"物业说我拆的那面墙是承重墙要我恢复原样，但设计师说不是承重墙——听谁的？",
+    practiceScene:"物业说：这面墙是承重墙，必须恢复",
+    red:"🚨 别硬跟物业杠——先让设计师出图纸证明不是承重墙，拿图纸跟物业谈。<strong class=vtag>【难而正确】</strong>尊重权威才能少麻烦"
+  },
+  p3: {
+    actions: [
+      "① 强弱电必须分离：强电走顶 / 弱电走地，间距 ≥ 30cm——不然后面网络信号差",
+      "② 水管改完必须打压测试：0.8MPa 保压 30 分钟不掉压，合格才能封起来",
+      "③ 水电走线拍照留底：每个转角每个线盒都拍——以后客户装家电不知道线在哪"
+    ],
+    confusion:"客户说「我不想走顶，走顶费钱，直接从地上走」——但走地以后漏水要砸地板，怎么说服他？",
+    practiceScene:"客户说：水电走顶太贵了，能不能从地上直接走？",
+    red:"🚨 别偷工减料省工序——比如水电不做打压测试直接封起来，后面漏水砸砖客户要你赔。<strong class=vtag>【专业者赢】</strong>工艺标准=口碑"
+  },
+  p4: {
+    actions: [
+      "① 瓷砖铺贴留缝：无缝砖 1mm / 普通砖 2mm / 仿古砖 3mm——不留缝热胀冷缩会崩",
+      "② 吊顶龙骨间距 ≤ 40cm：超了上面铺石膏板会下垂",
+      "③ 木作做完立刻打磨上底漆——时间长了吸潮变形"
+    ],
+    practiceScene:"客户说：瓷砖缝能不能小一点？太小了不好看"
+  },
+  p5: {
+    actions: [
+      "① 乳胶漆一遍底漆两遍面漆：少一遍后面会透底显花",
+      "② 地板安装前地面找平：用靠尺量 2 米内 ≤ 2mm 落差",
+      "③ 灯具五金安装必须断电作业——安全第一"
+    ],
+    practiceScene:"客户说：能不能只刷一遍漆？赶时间住"
+  },
+  p6: {
+    actions: [
+      "① 按 43 项验收清单一项一项查：水电打压记录 → 瓷砖空鼓率 → 墙面平整度 → 开关插座通电",
+      "② 三方签字：你 + 客户 + 设计师（如有），每一页都签",
+      "③ 质保资料移交：质保手册 + 水电走向图 + 剩余材料清单 + 联系方式"
+    ],
+    practiceScene:"客户说：差不多了吧，我急着住，验收就走过场吧",
+    red:"🚨 别敷衍验收——客户说「差不多了」你就真签字，住进去出问题还是你兜。<strong class=vtag>【难而正确】</strong>签字=全责"
+  }
+};
+
+// ───── 3. 项目经理 MGR_STAGES ─────
+var MGR_STAGES = [
+  { key:'m1', icon:'📊', name:'预算管控', desc:'成本核算 · 材料采购 · 预算跟踪' },
+  { key:'m2', icon:'👥', name:'团队协调', desc:'工种排班 · 工人管理 · 工序衔接' },
+  { key:'m3', icon:'📅', name:'工期推进', desc:'节点检查 · 延期预警 · 业主沟通' },
+  { key:'m4', icon:'🔍', name:'质量巡检', desc:'隐蔽工程验收 · 中期巡检 · 问题整改' }
+];
+
+var MGR_LAYER = {
+  m1: { actions:["① 预算留 10% 应急空间：客户要求加的东西、物业要求改的地方，预算外得有缓冲","② 材料采购比价 3 家：同款瓷砖 A 店比 B 店便宜 5 块/㎡，100 平就差 500","③ 跟设计师对清单：报价上写的材料品牌型号跟实际清单一致，别写「同款」"], why:"预算卡死后面全是矛盾——留缓冲才能有空间解决实际问题", red:"🚨 别为了省成本换差材料——客户发现了一定投诉，品牌砸了" },
+  m2: { actions:["① 工种进场排期：水电→泥木→油漆，前一个工种退场下一个才能进，别交叉打架","② 每天晨会 10 分钟：昨天干了什么、今天干什么、有什么问题","③ 工人工资透明：干一天结一天，别拖欠——拖欠了工人出工不出活"], why:"家装是多人协作，协调不好就窝工，窝工就亏钱", red:"🚨 别让工人同时干两个客户的活——两头跑两头干不好" },
+  m3: { actions:["① 工期节点看板：什么时间到什么阶段，贴在客户家显眼位置","② 延期提前预警：比如「水电要多 2 天才能干好」提前 5 天告诉客户","③ 每周给客户发进度照片：不用他自己跑现场也知道进度"], why:"客户最怕「工地失控」——你主动给他看进度，他就放心了", red:"🚨 别隐瞒延期——拖到最后再说，客户一定会骂" },
+  m4: { actions:["① 隐蔽工程必须验收：水电封起来之前必须拍视频+拍照存档","② 中期巡检带标准书：拿出 324 条工艺标准一条一条查","③ 问题整改闭环：发现问题→发整改单→整改→复查→客户确认签字"], why:"隐蔽工程出问题成本是显性工程的 10 倍——多花一天时间验收，后面省 N 倍", red:"🚨 别替工人瞒问题——墙裂了、水管漏了，客户住进去还是找你" }
+};
+
+// ───── 4. 技术工人 TRADES_STAGES ─────
+var TRADES_STAGES = [
+  { key:'t1', icon:'⚡', name:'水电工',   desc:'管线开槽 · 穿线走管 · 打压测试' },
+  { key:'t2', icon:'🧱', name:'泥瓦工',   desc:'瓷砖铺贴 · 防水涂刷 · 找平抹灰' },
+  { key:'t3', icon:'🪵', name:'木工',     desc:'吊顶龙骨 · 柜体定制 · 成品安装' },
+  { key:'t4', icon:'🎨', name:'油漆工',   desc:'墙面腻子 · 乳胶漆 · 壁纸铺贴' }
+];
+
+var TRADES_LAYER = {
+  t1: { actions:["① 开槽用无尘切割机：灰尘少 90%，业主不投诉","② 强弱电间距 ≥ 30cm：防止电磁干扰影响路由器","③ 水管打压 0.8MPa 保压 30 分钟：不掉压才能封"], why:"水电埋在墙里，修一次砸一次——多花半小时做好测试，客户住 20 年放心", red:"🚨 别省略打压测试——漏水了全是你的锅" },
+  t2: { actions:["① 贴砖前墙面找平：空鼓的根本原因是墙面不平","② 瓷砖泡水 2 小时：不泡水贴完会裂","③ 防水刷 3 遍：墙根+管根+阴阳角重点加厚"], why:"瓷砖空鼓、防水漏水是家装投诉 TOP 2——做好这两步客户给你介绍朋友", red:"🚨 别省防水材料——用差的一年就漏，砸砖重做成本是原来 3 倍" },
+  t3: { actions:["① 龙骨间距 ≤ 40cm：吊顶不晃不变形","② 柜体背板留伸缩缝：热胀冷缩不崩","③ 安装完检查所有螺丝拧紧：门不会掉"], why:"木工是骨架——骨架做歪了后面装什么都歪", red:"🚨 别用劣质龙骨——吊顶塌下来是安全事故" },
+  t4: { actions:["① 腻子刮 2 遍磨 2 遍：墙面才平整","② 底漆面漆各一遍：少一遍后面透底显花","③ 刷漆前保护好地板门窗：沾上了擦不掉"], why:"墙面看着简单，不平不匀一眼就看出来——客户最直观的不满意来源", red:"🚨 别赶工省略工序——客户住进去发现墙面花了一定投诉" }
+};
+
+// ───── 岗位 → Timeline 映射表（与 workspace 完全同结构）─────
+var POSITION_TIMELINE = {
+  DSGN:   { stages: DSGN_STAGES,   layer: DSGN_LAYER   },
+  PROJ:   { stages: PROJ_STAGES,   layer: PROJ_LAYER   },
+  MGR:    { stages: MGR_STAGES,    layer: MGR_LAYER    },
+  TRADES: { stages: TRADES_STAGES, layer: TRADES_LAYER }
+};
+
+var STAGES = DSGN_STAGES.slice();
+var POSITION_STAGES = { DSGN: true, PROJ: true, MGR: true, TRADES: true };
+var currentStage = "d1";
+var currentPosition = "DSGN";
+
+/* ═══════════════════════════════════════════════════════
+   渲染逻辑（复用 workspace 的函数签名）
+   ═══════════════════════════════════════════════════════ */
+
+// 初始化：岗位选择器 + 默认 DSGN active
+(function init(){
+  // 渲染岗位选择 pills
+  var pillsWrap = document.getElementById("position-pills");
+  var meta = POSITION_META;
+  pillsWrap.innerHTML = Object.keys(meta).map(function(pid){
+    var m = meta[pid];
+    return '<span class="position-pill' + (pid === 'DSGN' ? ' active' : '') + '" data-position="' + pid + '" onclick="switchPosition(\'' + pid + '\')">' +
+           '<span style="margin-right:4px">' + m.icon + '</span>' + m.name + '</span>';
+  }).join("");
+
+  // 显示所有页面元素（因为用户是直接进家装服务，不需要领域 Tab 点击动画）
+  document.getElementById("position-bar").classList.add("visible");
+  document.getElementById("role-banner").classList.add("visible");
+  document.getElementById("journey-timeline").classList.add("visible");
+
+  // 渲染默认 DSGN Timeline
+  switchPosition("DSGN");
+})();
+
+// 切换岗位
+function switchPosition(positionId){
+  currentPosition = positionId;
+  var sys = POSITION_TIMELINE[positionId];
+  if(!sys) return;
+  STAGES = sys.stages.slice();
+  currentStage = STAGES[0].key;
+
+  var meta = POSITION_META[positionId];
+
+  // 1. 更新 Banner
+  document.getElementById("rb-icon").textContent = meta.icon;
+  document.getElementById("rb-name").textContent = meta.name;
+  document.getElementById("rb-desc").textContent = meta.desc;
+
+  // 2. 更新成长条标签
+  document.getElementById("gb-domain-tag").textContent = meta.name;
+  document.getElementById("gb-next-item").textContent = "已切到" + meta.name;
+  document.getElementById("gb-next-sub").textContent = "共 " + STAGES.length + " 个阶段 SOP";
+
+  // 3. 重新渲染岗位 pills active
+  document.querySelectorAll(".position-pill").forEach(function(p){
+    p.classList.toggle("active", p.getAttribute("data-position") === positionId);
+  });
+
+  // 4. 渲染 Timeline
+  renderJourneyTimeline();
+
+  // 5. 渲染三层拆解（第一阶段）
+  selectStage(currentStage);
+}
+
+// 渲染 Timeline
+function renderJourneyTimeline(){
+  var wrap = document.getElementById("jt-stages");
+  if(!wrap) return;
+  wrap.innerHTML = STAGES.map(function(s, idx){
+    var arrow = idx < STAGES.length - 1 ? '<span class="jt-arrow">›</span>' : '';
+    var isActive = s.key === currentStage;
+    return '<div class="jt-stage" data-stage="' + s.key + '" onclick="selectStage(\'' + s.key + '\')">' +
+      '<div class="jt-step' + (isActive ? ' jt-active' : '') + '">' +
+        '<div class="jt-step-icon">' + s.icon + '</div>' +
+        '<div class="jt-step-text">' +
+          '<div class="jt-step-name">' + s.name + '</div>' +
+          '<div class="jt-step-desc">' + s.desc + '</div>' +
+        '</div>' +
+      '</div>' +
+      arrow +
+    '</div>';
+  }).join("");
+}
+
+// 切换阶段
+function selectStage(stageKey){
+  currentStage = stageKey;
+  renderJourneyTimeline();
+  renderLayeredView(stageKey);
+  renderStageBrowse();
+}
+
+// 渲染三层拆解（与 workspace 同结构）
+function renderLayeredView(stageKey){
+  var layer = POSITION_TIMELINE[currentPosition].layer;
+  var s = layer[stageKey];
+  if(!s) return;
+
+  var stageMeta = STAGES.find(function(x){ return x.key === stageKey; }) || {};
+
+  // 头部
+  document.getElementById("layered-stage-icon").textContent = stageMeta.icon || "📋";
+  document.getElementById("layered-stage-name").textContent = stageMeta.name + " · 先搞清楚这 4 件事";
+  document.getElementById("layered-trust").textContent = "为什么这么做";
+
+  // 核心动作 4 步
+  var actionsTitle = document.getElementById("lc-actions-title");
+  if(actionsTitle) actionsTitle.textContent = "你现在按顺序做这 " + (s.actions ? s.actions.length : 3) + " 件事";
+  document.getElementById("lc-actions").innerHTML = (s.actions || []).map(function(a){ return "<li>" + a + "</li>"; }).join("");
+
+  // 纠结什么
+  var confEl = document.getElementById("lc-confusion");
+  var confCard = document.getElementById("bp-confusion-card");
+  if(s.confusion){
+    confEl.textContent = s.confusion;
+    confCard.style.display = "";
+  } else {
+    confCard.style.display = "none";
+  }
+
+  // 为什么这么做
+  document.getElementById("lc-why").textContent = s.why || "选岗位后我告诉你背后的道理。";
+
+  // 练一练场景
+  document.getElementById("lc-practice-scene").textContent = s.practiceScene || "选岗位后给你一段真实对话，模拟练一把。";
+
+  // 学一学（简单版本：按阶段给不同链接）
+  var learnItems = [
+    '<a class="bp-learn-item" href="/knowledge/?q=' + encodeURIComponent('家装合同闭口价') + '">家装合同闭口价怎么签</a>',
+    '<a class="bp-learn-item" href="/knowledge/?q=' + encodeURIComponent('水电改造规范') + '">水电改造规范与报价</a>',
+    '<a class="bp-learn-item" href="/knowledge/?q=' + encodeURIComponent('竣工验收标准') + '">竣工验收标准与流程</a>'
+  ];
+  document.getElementById("lc-learn").innerHTML = learnItems.join("");
+
+  // 红线
+  document.getElementById("lc-red").innerHTML = s.red || "🚨 选岗位后告诉你这个阶段的红线。";
+}
+
+// 阶段浏览面板（先给空态，后续迭代加真实场景话术）
+function renderStageBrowse(){
+  var stageMeta = STAGES.find(function(x){ return x.key === currentStage; }) || {};
+  var panel = document.getElementById("stage-browse");
+  panel.style.display = "";
+  document.getElementById("browse-stage-name").textContent = (stageMeta.icon || '📋') + " " + (stageMeta.name || '');
+  document.getElementById("browse-stage-count").textContent = "场景库建设中";
+}
+
+function toggleStageBrowse(){
+  document.getElementById("stage-browse").classList.toggle("collapsed");
+}
+</script>
+
+</body>
+</html>
