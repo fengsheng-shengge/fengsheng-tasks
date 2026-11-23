@@ -53,7 +53,6 @@
   .nav-links a { color: var(--body); text-decoration: none; }
   .nav-links a:hover { color: var(--primary); }
   .nav-actions { display: flex; gap: 12px; align-items: center; }
-  .nav-user { font-size: 13px; color: var(--body); }
   .btn-gold {
     background: var(--gold); color: var(--primary-dark);
     padding: 8px 18px; border-radius: 8px;
@@ -94,7 +93,7 @@
     max-width: 620px; margin: 0 auto 36px;
     line-height: 1.7;
   }
-  .hero-actions { display: flex; gap: 12px; justify-content: center; }
+  .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
   .btn-lg-gold {
     background: var(--gold); color: var(--primary-dark);
     padding: 14px 32px; border-radius: 10px;
@@ -116,7 +115,7 @@
     margin-top: 16px;
   }
 
-  /* ===== 循证锚点条：现在就给你看 ===== */
+  /* ===== 循证锚点条 ===== */
   .proof-strip {
     max-width: 1040px; margin: -30px auto 0;
     padding: 0 48px 40px;
@@ -184,15 +183,8 @@
     color: var(--primary); text-decoration: none;
     font-weight: 600; font-size: 12px;
   }
-  @media (max-width: 768px) {
-    .proof-cards { grid-template-columns: 1fr; }
-  }
 
-  /* 痛点+解决方案 */
-  .pain-section {
-    padding: 64px 48px;
-    max-width: 1000px; margin: 0 auto;
-  }
+  /* ===== 通用 section ===== */
   .section-title {
     text-align: center; font-size: 28px;
     font-weight: 700; margin-bottom: 12px;
@@ -201,80 +193,96 @@
     text-align: center; font-size: 15px;
     color: var(--muted); margin-bottom: 40px;
   }
-  .pain-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 16px; margin-bottom: 32px;
-  }
-  .pain-card {
-    background: var(--card);
-    border-radius: 12px;
-    padding: 20px 16px;
-    border: 1px solid var(--line);
-    text-align: center;
-  }
-  .pain-icon { font-size: 24px; margin-bottom: 8px; }
-  .pain-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
-  .pain-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
 
-  .solution-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+  /* ===== 经纪人工具箱（6 张卡一行） ===== */
+  .tool-section {
+    padding: 64px 48px;
+    background: var(--card);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
   }
-  .solution-card {
-    background: var(--primary);
-    border-radius: 12px;
-    padding: 20px 16px;
-    color: #fff;
+  .tool-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 14px; max-width: 1100px; margin: 0 auto;
+  }
+  .tool-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 14px;
     text-align: center;
     text-decoration: none;
-    display: block;
-    transition: transform 0.2s;
+    display: flex; flex-direction: column;
+    transition: all .15s;
   }
-  .solution-card:hover { transform: translateY(-2px); }
-  .solution-icon { font-size: 24px; margin-bottom: 8px; }
-  .solution-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
-  .solution-desc { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+  .tool-card:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(26,61,36,.15);
+  }
+  .tool-card:hover .tool-icon,
+  .tool-card:hover .tool-name { color: #fff; }
+  .tool-card:hover .tool-desc { color: rgba(255,255,255,0.75); }
+  .tool-icon { font-size: 28px; margin-bottom: 10px; transition: color .15s; }
+  .tool-name { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 6px; transition: color .15s; }
+  .tool-desc { font-size: 12px; color: var(--body); line-height: 1.5; transition: color .15s; }
 
-  /* 五大核心能力 */
-  .ability-section {
+  /* ===== 五大业务领域 ===== */
+  .biz-section {
     padding: 64px 48px;
-    background: var(--primary-bg);
+    max-width: 1100px; margin: 0 auto;
   }
-  .ability-grid {
+  .biz-grid {
     display: grid; grid-template-columns: repeat(5, 1fr);
-    gap: 16px; max-width: 1000px; margin: 0 auto;
+    gap: 16px;
   }
-  .ability-card {
-    background: var(--card);
-    border-radius: 12px;
-    padding: 20px 16px;
+  .biz-card {
+    border-radius: 14px;
+    padding: 24px 16px;
     text-align: center;
-    border: 1px solid var(--line);
+    position: relative;
+    transition: all .2s;
   }
-  .ability-num {
-    font-size: 28px; font-weight: 700;
-    color: var(--primary); margin-bottom: 4px;
+  .biz-card.open {
+    background: var(--primary);
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    border: 2px solid var(--gold);
+    box-shadow: 0 4px 16px rgba(26,61,36,.15);
   }
-  .ability-name {
-    font-size: 14px; font-weight: 600;
-    margin-bottom: 4px;
+  .biz-card.open:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(26,61,36,.2); }
+  .biz-card.locked {
+    background: var(--card);
+    border: 1px dashed var(--line);
+    opacity: .75;
+    cursor: default;
   }
-  .ability-desc {
-    font-size: 12px; color: var(--muted);
-    line-height: 1.5;
+  .biz-icon { font-size: 28px; margin-bottom: 8px; }
+  .biz-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .biz-desc { font-size: 12px; line-height: 1.5; opacity: .8; }
+  .biz-badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    padding: 3px 10px; border-radius: 10px;
+    margin-top: 10px;
   }
+  .biz-card.open .biz-badge { background: var(--gold); color: var(--primary-dark); }
+  .biz-card.locked .biz-badge { background: #f0ede5; color: var(--muted); }
 
-  /* 双主体铁律 */
+  /* ===== 标准来源（4 条权威依据） ===== */
   .rule-section {
     padding: 64px 48px;
-    max-width: 800px; margin: 0 auto;
+    max-width: 820px; margin: 0 auto;
   }
   .rule-card {
     background: var(--card);
-    border-radius: 12px;
-    padding: 24px;
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-bottom: 14px;
+    border: 1px solid var(--line);
     border-left: 4px solid var(--gold);
-    margin-bottom: 16px;
   }
   .rule-title {
     font-size: 16px; font-weight: 600;
@@ -285,7 +293,48 @@
     line-height: 1.7;
   }
 
-  /* CTA */
+  /* ===== 品牌理念 + 合作邀请 ===== */
+  .partner-section {
+    padding: 56px 48px;
+    background: var(--gold-bg);
+  }
+  .partner-inner {
+    max-width: 680px; margin: 0 auto; text-align: center;
+  }
+  .partner-slogan {
+    font-size: 24px; font-weight: 700;
+    color: var(--primary); line-height: 1.5; margin-bottom: 14px;
+  }
+  .partner-desc {
+    font-size: 14px; color: var(--body);
+    line-height: 1.8; margin-bottom: 32px;
+  }
+  .partner-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px;
+    border: 1px solid var(--line);
+  }
+  .partner-card h3 {
+    font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 8px;
+  }
+  .partner-card .pc-sub {
+    font-size: 13px; color: var(--body); margin-bottom: 18px;
+  }
+  .partner-types {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: left;
+  }
+  .partner-types .pt-item {
+    padding: 14px; background: var(--bg); border-radius: 10px;
+  }
+  .partner-types .pt-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .partner-types .pt-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .partner-contact {
+    margin-top: 18px; font-size: 12px; color: var(--muted);
+  }
+  .partner-contact a { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+  /* ===== CTA ===== */
   .cta-section {
     padding: 64px 48px;
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
@@ -310,7 +359,7 @@
     border-top: 1px solid var(--line);
   }
 
-  /* ===== 领域 Tab 通栏（可横向滑动） ===== */
+  /* ===== 领域 Tab 通栏 ===== */
   .domain-tabs {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -319,34 +368,42 @@
   .domain-tabs::-webkit-scrollbar { display: none; }
   .domain-tabs > * { flex: 0 0 auto; white-space: nowrap; }
 
+  /* ===== 领域 Tab 样式 ===== */
+  .tab-active {
+    color: var(--gold); font-weight: 700;
+    padding: 14px 0; text-decoration: none;
+    border-bottom: 2px solid var(--gold);
+  }
+  .tab-inactive {
+    color: rgba(255,255,255,0.55);
+    padding: 14px 0;
+  }
+  .tab-inactive span.tab-tag {
+    font-size: 10px; background: rgba(255,255,255,0.18);
+    padding: 2px 7px; border-radius: 8px; margin-left: 5px;
+  }
+
   /* ===== 响应式：平板 ===== */
+  @media (max-width: 1024px) {
+    .tool-grid { grid-template-columns: repeat(3, 1fr); }
+    .biz-grid { grid-template-columns: repeat(3, 1fr); }
+  }
   @media (max-width: 900px) {
-    .pain-grid, .solution-grid { grid-template-columns: repeat(2, 1fr); }
-    .ability-grid { grid-template-columns: repeat(2, 1fr); }
+    .nav-links { display: none; }
   }
 
   /* ===== 响应式：手机 ===== */
   @media (max-width: 768px) {
-    /* 顶栏：logo 独占一行，按钮另起一行平分宽度 */
     .top-nav {
-      padding: 10px 14px;
-      flex-wrap: wrap;
-      gap: 8px;
-      row-gap: 10px;
-      align-items: center;
+      padding: 10px 14px; flex-wrap: wrap; gap: 8px; row-gap: 10px;
     }
-    .logo-area { flex: 1 1 100%; min-width: 0; gap: 8px; }
-    .logo-icon {
-      width: 30px; height: 30px; font-size: 14px;
-      border-radius: 7px; flex: 0 0 auto;
-    }
+    .logo-area { flex: 1 1 100%; gap: 8px; }
+    .logo-icon { width: 30px; height: 30px; font-size: 14px; border-radius: 7px; }
     .logo-text { display: block; font-size: 15px; line-height: 1.3; }
     .logo-sub { display: none; }
-    .nav-links { display: none; }
     .nav-actions { flex: 1 1 100%; gap: 8px; }
     .nav-actions a {
-      flex: 1 1 0; text-align: center;
-      white-space: nowrap; padding: 9px 6px; font-size: 12px;
+      flex: 1 1 0; text-align: center; white-space: nowrap; padding: 9px 6px; font-size: 12px;
     }
 
     /* 领域 Tab */
@@ -360,20 +417,21 @@
     .hero-actions a { flex: 1 1 100%; text-align: center; }
 
     /* 各区块 */
-    .pain-section, .ability-section, .rule-section, .footer { padding: 40px 18px; }
-    .cta-section { padding: 44px 18px; }
-    .pain-grid, .solution-grid, .ability-grid { gap: 10px; }
+    .tool-section, .biz-section, .rule-section, .partner-section, .cta-section, .footer {
+      padding: 40px 18px;
+    }
     .section-title { font-size: 22px; }
     .section-subtitle { font-size: 14px; margin-bottom: 28px; }
     .cta-title { font-size: 22px; }
     .footer { padding: 28px 16px 32px; }
 
-    /* 覆盖/愿景等内联 padding 的区块 */
-    #coverage { padding: 32px 18px !important; }
-    #vision { padding: 40px 18px !important; }
+    /* 网格 */
+    .proof-cards { grid-template-columns: 1fr; }
+    .tool-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .biz-grid { grid-template-columns: 1fr; gap: 12px; }
+    .partner-types { grid-template-columns: 1fr; }
   }
 
-  /* ===== 响应式：窄屏 ===== */
   @media (max-width: 380px) {
     .logo-text { font-size: 14px; }
     .nav-actions a { font-size: 11px; padding: 8px 4px; }
@@ -412,7 +470,7 @@
 </head>
 <body>
 
-  <!-- 顶栏 -->
+  <!-- ===== 顶栏：logo + 经纪人工具导航 + 2 行动按钮 ===== -->
   <div class="top-nav">
     <div class="logo-area">
       <div class="logo-icon">风</div>
@@ -422,14 +480,12 @@
       </div>
     </div>
     <div class="nav-links">
-      <a href="#pain">痛点</a>
-      <a href="#ability">能力</a>
+      <a href="#tools">工具箱</a>
+      <a href="#biz">业务领域</a>
+      <a href="#rule">标准来源</a>
       <a href="/knowledge/">知识底座</a>
-      <a href="/curation/">策展引擎</a>
-      <a href="/decoder/">话术解码</a>
       <a href="/care-test/">能力测评</a>
       <a href="/scene/">场景导航</a>
-      <a href="/workspace/">工作台</a>
     </div>
     <div class="nav-actions">
       <a href="/wotu/" class="btn-green">🎓 校园招募</a>
@@ -437,18 +493,18 @@
     </div>
   </div>
 
-  <!-- 领域Tab通栏 -->
-  <div class="domain-tabs" style="background: var(--primary); padding: 0 48px; display: flex; align-items: center; gap: 32px; height: 48px;">
-    <div style="color: #fff; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--gold); padding: 12px 0;">🏠 交易服务</div>
-    <div style="color: rgba(255,255,255,0.5); font-size: 14px; padding: 12px 0;">🔑 资产运营 <span style="font-size: 10px; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 8px; margin-left: 4px;">即将</span></div>
-    <div style="color: rgba(255,255,255,0.5); font-size: 14px; padding: 12px 0;">🛠 家装服务 <span style="font-size: 10px; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 8px; margin-left: 4px;">即将</span></div>
-    <div style="color: rgba(255,255,255,0.5); font-size: 14px; padding: 12px 0;">🔧 后市场服务 <span style="font-size: 10px; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 8px; margin-left: 4px;">即将</span></div>
-    <div style="color: rgba(255,255,255,0.5); font-size: 14px; padding: 12px 0;">🌿 特殊居住 <span style="font-size: 10px; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 8px; margin-left: 4px;">即将</span></div>
+  <!-- ===== 领域 Tab 通栏（5 个业务领域，家装 active） ===== -->
+  <div class="domain-tabs" style="background: var(--primary); padding: 0 48px; display: flex; align-items: center; gap: 36px; height: 48px;">
+    <div class="tab-inactive">🏠 交易服务</div>
+    <div class="tab-inactive">🔑 资产运营 <span class="tab-tag">Phase 2</span></div>
+    <a href="/home-design/" class="tab-active">🛠 家装服务</a>
+    <div class="tab-inactive">🔧 后市场 <span class="tab-tag">Phase 2</span></div>
+    <div class="tab-inactive">🌿 特殊居住 <span class="tab-tag">Phase 3</span></div>
   </div>
 
-  <!-- Hero -->
+  <!-- ===== Hero ===== -->
   <div class="hero">
-    <div class="hero-badge">循证服务 · 经纪人工具箱 · 每句话敢点开看依据</div>
+    <div class="hero-badge">循证服务 · 每句话敢点开看依据</div>
     <h1 class="hero-title">
       通过独立价值<br>
       <span>赢得尊严</span>
@@ -458,13 +514,13 @@
       帮服务者变强，帮管理者找到靠谱的人，帮消费者找到放心的服务。
     </p>
     <div class="hero-actions">
-      <a href="/workspace/" class="btn-lg-gold">先从经纪人开始体验</a>
-      <a href="/knowledge/" class="btn-lg-outline">🔍 怎么验证这个人？点开看证据</a>
+      <a href="/workspace/" class="btn-lg-gold">🏠 经纪人工作台</a>
+      <a href="/home-design/" class="btn-lg-outline">🛠 家装服务也开放了</a>
     </div>
     <div class="hero-note">工具生成 · 真人复核 · 每句话敢点开看依据</div>
   </div>
 
-  <!-- 🆕 循证锚点条：现在就给你看（三种核心证据类型） -->
+  <!-- ===== 循证锚点条（差异化展示） ===== -->
   <div class="proof-strip">
     <div class="proof-header">
       <span class="ph-label">🔍 敢点开看依据</span>
@@ -472,7 +528,6 @@
       <span class="ph-count">底座 6143+ 条 · 持续核验中</span>
     </div>
     <div class="proof-cards">
-      <!-- 1. LAW 法律条文 -->
       <div class="proof-card">
         <span class="pc-type law">📜 法律</span>
         <div class="pc-title">违约金怎么算？</div>
@@ -482,17 +537,15 @@
           <a href="/knowledge/?q=违约金怎么算">看依据 →</a>
         </div>
       </div>
-      <!-- 2. DATA 市场数据 -->
       <div class="proof-card">
         <span class="pc-type data">📊 数据</span>
-        <div class="pc-title">2026年8月全国百城二手房均价与成交量</div>
+        <div class="pc-title">2026年8月全国百城二手房均价</div>
         <div class="pc-ref">中指研究院 + 国家统计局双源交叉验证</div>
         <div class="pc-meta">
           <span class="pc-date">🗓 2026-09-18 核验</span>
           <a href="/knowledge/?q=全国百城二手房均价">看依据 →</a>
         </div>
       </div>
-      <!-- 3. POL 政策文件 -->
       <div class="proof-card">
         <span class="pc-type pol">📋 政策</span>
         <div class="pc-title">首付贷合法吗？</div>
@@ -505,173 +558,104 @@
     </div>
   </div>
 
-  <!-- 今天你能拿到什么（脚踏实地） -->
-  <div class="pain-section" id="pain">
-    <h2 class="section-title">客户服务的难题 · 来这里找答案、找方法、练能力</h2>
-    <p class="section-subtitle">先从房产交易赛道开始——遇到难题时的智囊团</p>
-
-    <div class="pain-grid">
-      <div class="pain-card">
-        <div class="pain-icon">⏰</div>
-        <div class="pain-title">写方案太慢</div>
-        <div class="pain-desc">查税费、算贷款、找房源、组织语言，2小时过去了客户都凉了</div>
-      </div>
-      <div class="pain-card">
-        <div class="pain-icon">📚</div>
-        <div class="pain-title">政策记不住</div>
-        <div class="pain-desc">税费政策一变、新盘一开，每次都要现查，客户面前显得不专业</div>
-      </div>
-      <div class="pain-card">
-        <div class="pain-icon">💬</div>
-        <div class="pain-title">沟通没思路</div>
-        <div class="pain-desc">客户问了个问题不知道怎么答，怕说错了丢单</div>
-      </div>
-      <div class="pain-card">
-        <div class="pain-icon">📈</div>
-        <div class="pain-title">能力没人认</div>
-        <div class="pain-desc">干了好几年，专业度没个衡量标准，接不到更好的单</div>
-      </div>
-    </div>
-
-    <div class="solution-grid">
-      <a href="/knowledge/" class="solution-card">
-        <div class="solution-icon">📖</div>
-        <div class="solution-title">知识底座</div>
-        <div class="solution-desc"><span data-count="entries">—</span>条词条，税费政策秒出答案</div>
+  <!-- ===== 经纪人工具箱（6 张卡） ===== -->
+  <div class="tool-section" id="tools">
+    <h2 class="section-title">经纪人工具箱</h2>
+    <p class="section-subtitle">日常接单就能用的 6 个核心工具，点进去直接干活</p>
+    <div class="tool-grid">
+      <a href="/knowledge/" class="tool-card">
+        <div class="tool-icon">📖</div>
+        <div class="tool-name">知识底座</div>
+        <div class="tool-desc"><span data-count="entries">—</span>条词条，税费政策秒出答案</div>
       </a>
-      <a href="/curation/" class="solution-card">
-        <div class="solution-icon">⚡</div>
-        <div class="solution-title">策展引擎</div>
-        <div class="solution-desc">一键生成置业方案，10分钟搞定2小时的活</div>
+      <a href="/curation/" class="tool-card">
+        <div class="tool-icon">⚡</div>
+        <div class="tool-name">策展引擎</div>
+        <div class="tool-desc">一键生成置业方案，10 分钟搞定 2 小时的活</div>
       </a>
-      <a href="/decoder/" class="solution-card">
-        <div class="solution-icon">💬</div>
-        <div class="solution-title">话术解码器</div>
-        <div class="solution-desc">客户问题怎么答，给你专业话术参考</div>
+      <a href="/decoder/" class="tool-card">
+        <div class="tool-icon">💬</div>
+        <div class="tool-name">话术解码器</div>
+        <div class="tool-desc">客户问题怎么答，给你专业话术参考</div>
       </a>
-      <a href="/care-test/" class="solution-card">
-        <div class="solution-icon">📊</div>
-        <div class="solution-title">能力测评</div>
-        <div class="solution-desc">10分钟测出短板，知道该补什么</div>
+      <a href="/care-test/" class="tool-card">
+        <div class="tool-icon">📊</div>
+        <div class="tool-name">能力测评</div>
+        <div class="tool-desc">10 分钟测出短板，知道该补什么</div>
       </a>
-      <a href="/scene/" class="solution-card">
-        <div class="solution-icon">🎬</div>
-        <div class="solution-title">场景导航</div>
-        <div class="solution-desc">买卖/租赁/新房全流程场景剧本，遇到就翻</div>
+      <a href="/scene/" class="tool-card">
+        <div class="tool-icon">🎬</div>
+        <div class="tool-name">场景导航</div>
+        <div class="tool-desc">买卖/租赁/新房全流程剧本，遇到就翻</div>
       </a>
-      <a href="/workspace/" class="solution-card">
-        <div class="solution-icon">🏆</div>
-        <div class="solution-title">经纪人工作台</div>
-        <div class="solution-desc">每一次服务都重新赢得托付，证据链随身带</div>
+      <a href="/workspace/" class="tool-card">
+        <div class="tool-icon">🏆</div>
+        <div class="tool-name">经纪人工作台</div>
+        <div class="tool-desc">每一次服务都重新赢得托付，证据链随身带</div>
       </a>
     </div>
   </div>
 
-  <!-- 五大核心能力 -->
-  <div class="ability-section" id="ability">
-    <h2 class="section-title">五大核心能力</h2>
-    <p class="section-subtitle">不止生成方案，还能帮你持续提升</p>
-
-    <div class="ability-grid">
-      <div class="ability-card">
-        <div class="ability-num">📚</div>
-        <div class="ability-name">知识底座</div>
-        <div class="ability-desc"><span data-count="entries">—</span>条专业词条，税费/贷款/政策全覆盖</div>
+  <!-- ===== 五大业务领域 ===== -->
+  <div class="biz-section" id="biz">
+    <h2 class="section-title">我们覆盖的居住服务领域</h2>
+    <p class="section-subtitle">先从经纪人 + 家装两个领域跑通，再一步步扩到全行业</p>
+    <div class="biz-grid">
+      <div class="biz-card locked">
+        <div class="biz-icon">🏠</div>
+        <div class="biz-name">交易服务</div>
+        <div class="biz-desc">买卖经纪人 · 新房顾问 · 租赁管家</div>
+        <div class="biz-badge">本期开放 · 见上方工具箱</div>
       </div>
-      <div class="ability-card">
-        <div class="ability-num">⚡</div>
-        <div class="ability-name">策展引擎</div>
-        <div class="ability-desc">一键生成完整置业方案，客户画像+房源+税费</div>
+      <div class="biz-card locked">
+        <div class="biz-icon">🔑</div>
+        <div class="biz-name">资产运营</div>
+        <div class="biz-desc">资管经理 · 租房管家</div>
+        <div class="biz-badge">Phase 2</div>
       </div>
-      <div class="ability-card">
-        <div class="ability-num">🤖</div>
-        <div class="ability-name">会用智能工具</div>
-        <div class="ability-desc">会用→善审→能养，用好工具效率越高</div>
+      <a href="/home-design/" class="biz-card open">
+        <div class="biz-icon">🛠</div>
+        <div class="biz-name">家装服务</div>
+        <div class="biz-desc">设计师 · 项目经理 · 工长 · 水暖电工</div>
+        <div class="biz-badge">本期开放 →</div>
+      </a>
+      <div class="biz-card locked">
+        <div class="biz-icon">🔧</div>
+        <div class="biz-name">后市场服务</div>
+        <div class="biz-desc">房屋维修 · 家政保洁 · 家电维修</div>
+        <div class="biz-badge">Phase 2</div>
       </div>
-      <div class="ability-card">
-        <div class="ability-num">📈</div>
-        <div class="ability-name">成长闭环</div>
-        <div class="ability-desc">测→学→练→评→配→反馈，边干边提升</div>
-      </div>
-      <div class="ability-card">
-        <div class="ability-num">⭐</div>
-        <div class="ability-name">匠星认证</div>
-        <div class="ability-desc">能力等级可量化，用得好就能升星接好单</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 品牌理念 + 合作邀请 -->
-  <div style="padding: 48px 48px; background: var(--gold-bg); text-align: center;" id="coverage">
-    <div style="max-width: 600px; margin: 0 auto;">
-      <div style="font-size: 24px; font-weight: 700; color: var(--primary); line-height: 1.4; margin-bottom: 12px;">
-        通过独立价值，赢得尊严
-      </div>
-      <div style="font-size: 14px; color: var(--body); line-height: 1.7; margin-bottom: 32px;">
-        我们相信，居住服务者的尊严，不靠平台流量，不靠话术包装——<br>
-        靠的是实打实的专业能力、客户的真实信任、可被验证的服务质量。
-      </div>
-
-      <div style="background: var(--card); border-radius: 16px; padding: 28px; border: 1px solid var(--line); text-align: center;">
-        <div style="font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">
-          🤝 我们在找同路人
-        </div>
-        <div style="font-size: 13px; color: var(--body); line-height: 1.7; margin-bottom: 16px;">
-          这件事一个人做不成。如果你也认同这个方向，欢迎一起：
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: left;">
-          <div style="padding: 12px; background: var(--bg); border-radius: 8px;">
-            <div style="font-size: 13px; font-weight: 600; margin-bottom: 2px;">👥 产品/技术伙伴</div>
-            <div style="font-size: 11px; color: var(--muted); line-height: 1.5;">
-              认同工具武装人、长期做基础设施
-            </div>
-          </div>
-          <div style="padding: 12px; background: var(--bg); border-radius: 8px;">
-            <div style="font-size: 13px; font-weight: 600; margin-bottom: 2px;">🏫 行业/院校合作</div>
-            <div style="font-size: 11px; color: var(--muted); line-height: 1.5;">
-              职业院校、行业协会，共建能力标准
-            </div>
-          </div>
-          <div style="padding: 12px; background: var(--bg); border-radius: 8px;">
-            <div style="font-size: 13px; font-weight: 600; margin-bottom: 2px;">🌟 种子服务者</div>
-            <div style="font-size: 11px; color: var(--muted); line-height: 1.5;">
-              第一批一起打磨标准的优秀服务者
-            </div>
-          </div>
-        </div>
-        <div style="margin-top: 16px; font-size: 12px; color: var(--muted);">
-          联系我们：<a href="/partner/" style="color:var(--p);text-decoration:none;font-weight:600;">提交合作意向 →</a>（表单直达） · 或邮件 wilson2483lee@163.com · 微信：wilson2483lee
-        </div>
+      <div class="biz-card locked">
+        <div class="biz-icon">🌿</div>
+        <div class="biz-name">特殊居住</div>
+        <div class="biz-desc">旅居顾问 · 适老居住 · 适老化改造</div>
+        <div class="biz-badge">Phase 3</div>
       </div>
     </div>
   </div>
 
-  <!-- 标准来源 -->
+  <!-- ===== 标准来源 ===== -->
   <div class="rule-section" id="rule">
     <h2 class="section-title">我们的标准从哪来？</h2>
-    <p class="section-subtitle">不是我们自己拍脑袋定的，有权威依据</p>
-
+    <p class="section-subtitle">不是自己拍脑袋定的，有权威依据</p>
     <div class="rule-card">
       <div class="rule-title">📋 国家职业分类大典（官方标准）</div>
       <div class="rule-desc">
         房地产经纪专业人员、住房租赁员、室内装饰设计师……我们的能力标准，对齐人社部发布的国家职业分类大典。不是自封的，是国家认可的职业资格体系。
       </div>
     </div>
-
     <div class="rule-card">
       <div class="rule-title">🏆 世界技能大赛（能力天花板）</div>
       <div class="rule-desc">
-        砌筑、瓷砖贴面、电气装置……10个世赛建筑类项目，直接对应我们的工人能力标准。什么叫好手艺？世赛的评分标准就是答案。
+        砌筑、瓷砖贴面、电气装置……10 个世赛建筑类项目，直接对应家装工人能力标准。什么叫好手艺？世赛的评分标准就是答案。
       </div>
     </div>
-
     <div class="rule-card">
       <div class="rule-title">🏢 行业最佳实践（一线验证）</div>
       <div class="rule-desc">
         头部居住服务平台的一线服务经验、真实业务词条、无数经纪人的实战沉淀——我们的标准不是书斋里想出来的，是从一线实战里长出来的。
       </div>
     </div>
-
     <div class="rule-card">
       <div class="rule-title">⭐ 消费者真实评价（市场说了算）</div>
       <div class="rule-desc">
@@ -680,49 +664,42 @@
     </div>
   </div>
 
-  <!-- 我们要去哪（远景） -->
-  <div style="padding: 64px 48px; max-width: 1000px; margin: 0 auto;" id="vision">
-    <h2 class="section-title">我们要去哪</h2>
-    <p class="section-subtitle">先从房产经纪人开始，一步步覆盖全居住服务行业</p>
-
-    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px;">
-      <div style="background: var(--primary); color: #fff; border-radius: 12px; padding: 20px 16px; text-align: center;">
-        <div style="font-size: 24px; margin-bottom: 8px;">🏠</div>
-        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">交易服务</div>
-        <div style="font-size: 11px; color: rgba(255,255,255,0.7);">买卖经纪人、新房顾问、租赁管家</div>
-        <div style="font-size: 10px; background: var(--gold); color: var(--primary-dark); padding: 2px 8px; border-radius: 8px; display: inline-block; margin-top: 8px;">本期开放</div>
+  <!-- ===== 品牌理念 + 合作邀请 ===== -->
+  <div class="partner-section">
+    <div class="partner-inner">
+      <div class="partner-slogan">通过独立价值，赢得尊严</div>
+      <div class="partner-desc">
+        我们相信，居住服务者的尊严，不靠平台流量，不靠话术包装——<br>
+        靠的是实打实的专业能力、客户的真实信任、可被验证的服务质量。
       </div>
-      <div style="background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 16px; text-align: center;">
-        <div style="font-size: 24px; margin-bottom: 8px;">🔑</div>
-        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">资产运营</div>
-        <div style="font-size: 11px; color: var(--muted);">资管经理、租房管家</div>
-        <div style="font-size: 10px; background: #f0ede5; color: var(--muted); padding: 2px 8px; border-radius: 8px; display: inline-block; margin-top: 8px;">Phase 2</div>
-      </div>
-      <div style="background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 16px; text-align: center;">
-        <div style="font-size: 24px; margin-bottom: 8px;">🛠</div>
-        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">家装服务</div>
-        <div style="font-size: 11px; color: var(--muted);">设计师、项目经理、水暖电工、瓦工</div>
-        <div style="font-size: 10px; background: #f0ede5; color: var(--muted); padding: 2px 8px; border-radius: 8px; display: inline-block; margin-top: 8px;">Phase 2</div>
-      </div>
-      <div style="background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 16px; text-align: center;">
-        <div style="font-size: 24px; margin-bottom: 8px;">🌿</div>
-        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">特殊居住</div>
-        <div style="font-size: 11px; color: var(--muted);">旅居顾问、适老居住顾问、适老化改造</div>
-        <div style="font-size: 10px; background: #f0ede5; color: var(--muted); padding: 2px 8px; border-radius: 8px; display: inline-block; margin-top: 8px;">Phase 3</div>
-      </div>
-      <div style="background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 16px; text-align: center;">
-        <div style="font-size: 24px; margin-bottom: 8px;">🔧</div>
-        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">后市场</div>
-        <div style="font-size: 11px; color: var(--muted);">房屋维修、家政保洁、家电维修</div>
-        <div style="font-size: 10px; background: #f0ede5; color: var(--muted); padding: 2px 8px; border-radius: 8px; display: inline-block; margin-top: 8px;">Phase 2</div>
+      <div class="partner-card">
+        <h3>🤝 我们在找同路人</h3>
+        <div class="pc-sub">这件事一个人做不成。如果你也认同这个方向，欢迎一起：</div>
+        <div class="partner-types">
+          <div class="pt-item">
+            <div class="pt-name">👥 产品/技术伙伴</div>
+            <div class="pt-desc">认同工具武装人、长期做基础设施</div>
+          </div>
+          <div class="pt-item">
+            <div class="pt-name">🏫 行业/院校合作</div>
+            <div class="pt-desc">职业院校、行业协会，共建能力标准</div>
+          </div>
+          <div class="pt-item">
+            <div class="pt-name">🌟 种子服务者</div>
+            <div class="pt-desc">第一批一起打磨标准的优秀服务者</div>
+          </div>
+        </div>
+        <div class="partner-contact">
+          联系我们：<a href="/partner/">提交合作意向 →</a>（表单直达） · 或邮件 wilson2483lee@163.com · 微信：wilson2483lee
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- CTA -->
+  <!-- ===== CTA ===== -->
   <div class="cta-section">
     <h2 class="cta-title">今天就试一份方案</h2>
-    <p class="cta-subtitle">拿你最近跟进的一个客户试，10分钟就知道好不好用</p>
+    <p class="cta-subtitle">拿你最近跟进的一个客户试，10 分钟就知道好不好用</p>
     <a href="/curation/" class="btn-lg-gold">◆ 免费生成第一份方案</a>
   </div>
 
@@ -734,27 +711,23 @@
 
 <script>
   // 真实数据绑定：entries.json 计数 → 知识底座词条数
-  // 先渲染静态基线值（避免首屏空占位闪数），再异步从 /api/knowledge-stats 校正
   (function(){
-    // Step 1: 立刻渲染静态基线（SSR-like，保证首屏有值）
     document.querySelectorAll('[data-count="entries"]').forEach(function(el){
       el.textContent = '6,143';
     });
-    // Step 2: 异步校正（数据加载后覆盖基线值）
     fetch('/api/knowledge-stats')
       .then(function(r){ return r.json(); })
       .then(function(data){
         var total = 0;
         if (data && typeof data === 'object' && data.total_entries) { total = data.total_entries; }
-        if (total === 0) { return; } // 无新数据 → 保留基线值
+        if (total === 0) { return; }
         document.querySelectorAll('[data-count="entries"]').forEach(function(el){
           el.textContent = total.toLocaleString();
         });
       })
-      .catch(function(){ /* fetch 失败 → 保留基线值，不闪 0 */ });
+      .catch(function(){ /* 失败保留基线 */ });
   })();
 </script>
-
 
 <footer style="text-align:center;padding:24px 16px 32px;font-size:12px;color:#8a9a90;line-height:1.8;">
   <div></div>
