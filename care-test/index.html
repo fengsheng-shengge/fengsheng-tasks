@@ -204,63 +204,9 @@
     </div>
   </div>
 
-  <div class="intro-body">
-
-    <div class="dim-card">
-      <div class="dim-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">📣</div>
-      <div class="dim-info">
-        <div class="dim-name">获客触达</div>
-        <div class="dim-desc">个人品牌 / 渠道经营 / 转介绍</div>
-      </div>
-    </div>
-
-    <div class="dim-card">
-      <div class="dim-icon" style="background:linear-gradient(135deg,#22d3ee,#0891b2);">🔍</div>
-      <div class="dim-info">
-        <div class="dim-name">需求洞察</div>
-        <div class="dim-desc">客户画像 / 共情挖掘 / 决策链</div>
-      </div>
-    </div>
-
-    <div class="dim-card">
-      <div class="dim-icon" style="background:linear-gradient(135deg,#34d399,#059669);">📐</div>
-      <div class="dim-info">
-        <div class="dim-name">专业方案</div>
-        <div class="dim-desc">税费贷款 / 政策依据 / 方案匹配</div>
-      </div>
-    </div>
-
-    <div class="dim-card">
-      <div class="dim-icon" style="background:linear-gradient(135deg,#fbbf24,#d97706);">🤝</div>
-      <div class="dim-info">
-        <div class="dim-name">带看谈判</div>
-        <div class="dim-desc">表达沟通 / 异议处理 / 价格斡旋</div>
-      </div>
-    </div>
-
-    <div class="dim-card">
-      <div class="dim-icon" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);">📝</div>
-      <div class="dim-info">
-        <div class="dim-name">交易履约</div>
-        <div class="dim-desc">合同流程 / 风险把控 / 交割节点</div>
-      </div>
-    </div>
-
-    <div class="dim-card">
-      <div class="dim-icon" style="background:linear-gradient(135deg,#f472b6,#db2777);">💗</div>
-      <div class="dim-info">
-        <div class="dim-name">售后复购</div>
-        <div class="dim-desc">回访关怀 / 服务跟进 / 转介绍</div>
-      </div>
-    </div>
-
-    <div class="dim-card">
-      <div class="dim-icon" style="background:linear-gradient(135deg,#64748b,#475569);">🤖</div>
-      <div class="dim-info">
-        <div class="dim-name">数字化协同</div>
-        <div class="dim-desc">智能工具 / 真人复核 / 知识沉淀</div>
-      </div>
-    </div>
+  <div class="intro-body" id="intro-dim-cards">
+    <!-- 7 维度卡片：JS 动态渲染（按 CURRENT_DOMAIN） -->
+  </div>
 
     <!-- 角色选择：不同角色侧重不同题型（v2） -->
     <div style="background:#fff;border:1px solid #d4e2d6;border-radius:12px;padding:12px 16px;margin-bottom:14px;text-align:left">
@@ -532,6 +478,41 @@ function updateIntro(){
   }
   if(introSub){
     introSub.textContent = '7 个维度 · 35 道真实情景题 · 约 15 分钟 · 完全免费';
+  }
+
+  // 动态渲染 7 维度卡片到 intro-dim-cards
+  var wrap = document.getElementById('intro-dim-cards');
+  if(wrap){
+    var DESC_MAP = {
+      // 交易域 desc
+      '获客触达':'个人品牌 / 渠道经营 / 转介绍',
+      '需求洞察':'客户画像 / 共情挖掘 / 决策链',
+      '专业方案':'税费贷款 / 政策依据 / 方案匹配',
+      '带看谈判':'表达沟通 / 异议处理 / 价格斡旋',
+      '交易履约':'合同流程 / 风险把控 / 交割节点',
+      '售后复购':'回访关怀 / 服务跟进 / 转介绍',
+      '数字化协同':'智能工具 / 真人复核 / 知识沉淀',
+      // 家装域 desc
+      '品牌获客':'个人品牌 / 案例营销 / 老客户转介绍',
+      '住户画像':'住户结构 / 收纳需求 / 风格偏好 / 预算区间',
+      '全案设计':'硬装布局+软装搭配+效果图+材料选型',
+      '方案呈现':'给客户讲方案 / 比竞品 / 答异议 / 签合同',
+      '施工交底':'三方交底 / 材料封样 / 工期承诺 / 质量巡检',
+      '交付兑现':'合同清单验收 / 软装到位 / 质保移交',
+      '数字化工具':'AI 辅助设计 / 报价计算器 / 客户跟进'
+    };
+    wrap.innerHTML = cfg.dims.map(function(dname){
+      var color = cfg.dim_colors[dname] || '#475569';
+      var icon = cfg.dim_icons[dname] || '📌';
+      var desc = DESC_MAP[dname] || '';
+      return '<div class="dim-card">' +
+        '<div class="dim-icon" style="background:linear-gradient(135deg,' + color + 'cc,' + color + ');">' + icon + '</div>' +
+        '<div class="dim-info">' +
+          '<div class="dim-name">' + dname + '</div>' +
+          '<div class="dim-desc">' + desc + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
   }
 }
 
@@ -1177,17 +1158,12 @@ function drawRadar(avg) {
 // ============================================================
 // ============================================================
 //  v3.0：下一步引导渲染
+//  DIM_TO_ID / DIM_EMOJI / CARETEST_DIM_NAMES 已在 updateIntro() 里
+//  按 CURRENT_DOMAIN 动态生成，这里不再硬编码覆盖
 // ============================================================
-var DIM_TO_ID = {'获客触达':1,'需求洞察':2,'专业方案':3,'带看谈判':4,'交易履约':5,'售后复购':6,'数字化协同':7};
-var DIM_EMOJI = {'获客触达':'📣','需求洞察':'👁️','专业方案':'📐','带看谈判':'💬','交易履约':'📝','售后复购':'🤝','数字化协同':'🤖'};
 
 // ===== 历史测评面板 =====
-var CARETEST_DIM_NAMES = {
-  'DIM-1':'获客触达','DIM-2':'需求洞察','DIM-3':'专业方案','DIM-4':'带看谈判',
-  'DIM-5':'交易履约','DIM-6':'售后复购','DIM-7':'数字化协同',
-  'SOFT-1':'共情能力','SOFT-2':'判断能力','SOFT-3':'责任担当',
-  'SOFT-4':'职业素养','SOFT-5':'服务意识'
-};
+// CARETEST_DIM_NAMES 已在 updateIntro 里按 CURRENT_DOMAIN 动态生成
 
 function showCareTestHistory() {
   var hist;
