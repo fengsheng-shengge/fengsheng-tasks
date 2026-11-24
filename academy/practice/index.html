@@ -413,10 +413,10 @@ var SOFT_SCENES = [
   },
 ];
 
-// ===== 家装硬技能 6 场景（品牌获客/住户画像/全案设计/方案呈现/施工交底/交付兑现）=====
+// ===== 家装硬技能 6 场景（DIM-1~6，覆盖品牌获客/住户画像/全案设计/方案呈现/施工交底/交付兑现）=====
 var DECOR_HARD_SCENES = [
   {
-    id: 'decor-quote-expensive', icon: '💰', scene: '方案呈现',
+    id: 'decor-quote-expensive', icon: '💰', scene: 'DIM-4 方案呈现',
     name: '客户说报价比隔壁贵 2 万', desc: '隔壁装修公司报了 18 万，你报了 20 万。客户说"我再想想"。',
     intro: '客户孙女士，100㎡ 两居室，想做北欧风。隔壁装修公司报价 18 万，你报了 20 万——伟星 PPR 水管、远东国标线、东鹏瓷砖。客户对比后犹豫。',
     turns: [
@@ -435,7 +435,7 @@ var DECOR_HARD_SCENES = [
     endMsg:'你帮客户做了两版报价，她选了 18 万的中间款，后续还给你介绍了闺蜜。'
   },
   {
-    id: 'decor-render-bigger', icon: '🎨', scene: '全案设计',
+    id: 'decor-render-bigger', icon: '🎨', scene: 'DIM-3 全案设计',
     name: '客户说效果图要砸承重墙', desc: '客户要北欧风效果图里的开放式厨房，但要砸的是剪力墙。',
     intro: '客户夫妇喜欢小红书北欧风，效果图里餐厅和厨房打通，要砸的是剪力墙。客户说"效果图就这样，必须砸"。',
     turns: [
@@ -453,7 +453,7 @@ var DECOR_HARD_SCENES = [
     endMsg:'客户接受了半高吧台方案，完工后发了小红书标签#最棒的全案设计师。'
   },
   {
-    id: 'decor-live-budget', icon: '📷', scene: '品牌获客',
+    id: 'decor-live-budget', icon: '📷', scene: 'DIM-1 品牌获客',
     name: '客户发朋友圈问"装修要不要找设计师"', desc: '老客户转介绍来的，朋友圈刚发完，评论区吵翻了。',
     intro: '老客户张姐介绍来的新客户小李，刚加你微信，他朋友圈发了"装修到底要不要找设计师？评论区吵翻了"。',
     turns: [
@@ -470,7 +470,7 @@ var DECOR_HARD_SCENES = [
     endMsg:'周末量房顺利，客户当场交了 3000 定金。'
   },
   {
-    id: 'decor-waterproof', icon: '🔧', scene: '施工交底',
+    id: 'decor-waterproof', icon: '🔧', scene: 'DIM-5 施工交底',
     name: '工长说防水不用做满 1.8 米', desc: '施工交底，工长说"大家都做 1.2 米，1.8 米费料费工"。',
     intro: '工长老李干了 15 年装修，现场交底时说"卫生间防水刷 1.2 米够了，没必要做满 1.8 米"。你看他的经验可能有道理，但业主家有小孩会踩马桶。',
     turns: [
@@ -488,7 +488,7 @@ var DECOR_HARD_SCENES = [
     endMsg:'业主后来漏水的邻居后悔没做满 1.8 米，专门给你发消息感谢。'
   },
   {
-    id: 'decor-furniture-late', icon: '🛋️', scene: '软装定制',
+    id: 'decor-furniture-late', icon: '🛋️', scene: 'DIM-3 全案设计',
     name: '客户说软装等硬装完再说', desc: '硬装快干完了，你问软装什么时候进场，客户说"先把硬装搞完，软装以后再说"。',
     intro: '硬装接近尾声，客户突然说"软装先不装了，家具以后慢慢买"。但你之前给的全案设计里软装是整体效果的一部分，合同里也包含软装部分。',
     turns: [
@@ -505,7 +505,7 @@ var DECOR_HARD_SCENES = [
     endMsg:'客户后来软装分两次进，但对你的专业度印象深刻，介绍了 2 个亲戚。'
   },
   {
-    id: 'decor-handoff-rush', icon: '✅', scene: '交付兑现',
+    id: 'decor-handoff-rush', icon: '✅', scene: 'DIM-6 交付兑现',
     name: '客户要赶紧签字搬进去', desc: '客户说"我明天要搬进去了，今天赶紧验收签字吧"，但你看到 3 处小问题。',
     intro: '验收当天客户要赶明天的搬家车，说"差不多了赶紧签了吧"。但你看到客厅踢脚线有 2 处缝隙超过 3mm（合同要求 ≤2mm），卫生间台盆玻璃胶有气泡，餐厅吊顶有 3 个钉眼没补。',
     turns: [

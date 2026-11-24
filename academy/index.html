@@ -21,6 +21,15 @@ a{text-decoration:none;color:inherit}
 .fs-top-actions{display:flex;gap:10px;align-items:center;font-size:13px;flex-shrink:0}
 .fs-top-city{cursor:pointer;color:#555}
 .fs-top-avatar{width:30px;height:30px;background:#faf5ea;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px}
+
+/* 🆕 领域切换器 */
+.domain-switcher{display:flex;align-items:center;gap:6px;font-size:12px;background:#f0ece2;border-radius:20px;padding:3px;margin-right:8px}
+.ds-label{color:#999;padding-right:4px}
+.ds-tab{padding:5px 12px;border-radius:16px;cursor:pointer;font-weight:500;color:#666;transition:all .18s;white-space:nowrap}
+.ds-tab.active{background:#fff;color:#1a3d24;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.ds-decor.active{color:#8b4513}
+@media(max-width:960px){.fs-top-links,.fs-top-city,.ds-label{display:none}}
+@media(max-width:960px){.ds-tab{padding:5px 8px;font-size:11px}}
 @media(max-width:960px){.fs-top-links,.fs-top-city{display:none}}
 
 /* ====== Hero ====== */
@@ -165,7 +174,13 @@ a{text-decoration:none;color:inherit}
     <a class="active" href="/academy/">学习成长</a>
   </div>
   <div class="fs-top-actions">
-    <span class="fs-top-city" onclick="alert('当前以北京为样板城市，多城市数据接入中')">📍 北京 ▾</span>
+    <!-- 🆕 领域切换器：家装服务 vs 交易服务 -->
+    <div class="domain-switcher" id="domain-switcher">
+      <span class="ds-label">服务领域</span>
+      <a class="ds-tab ds-tr active" onclick="switchDomain('TRANSACTION')" id="ds-tr">🏠 交易服务</a>
+      <a class="ds-tab ds-decor" onclick="switchDomain('DECOR')" id="ds-decor">🛠 家装服务</a>
+    </div>
+    <span class="fs-top-city">📍 全国 ▾</span>
     <span class="fs-top-avatar">👤</span>
   </div>
 </nav>
@@ -363,6 +378,37 @@ a{text-decoration:none;color:inherit}
       }
     });
   } catch(e) {}
+})();
+</script>
+
+<!-- 🆕 Domain 切换器核心逻辑：所有环节 URL 动态带 ?domain=DECOR -->
+<script>
+(function(){
+  var DEFAULT_DOMAIN = 'TRANSACTION';
+  var DOMAIN_LABELS = {
+    TRANSACTION: { label: '交易服务', dims: 7, scenes: 18, exam_qs: 120, role: '经纪人' },
+    DECOR:       { label: '家装服务', dims: 7, scenes: 6,  exam_qs: 35,  role: '设计师·工长·项目经理' }
+  };
+  var params = new URLSearchParams(location.search);
+  var CURRENT_DOMAIN = params.get('domain') || DEFAULT_DOMAIN;
+  window.switchDomain = function(d){ params.set('domain', d); location.search = params.toString(); };
+  window.applyDomain = function(){
+    document.getElementById('ds-tr').classList.toggle('active', CURRENT_DOMAIN === 'TRANSACTION');
+    document.getElementById('ds-decor').classList.toggle('active', CURRENT_DOMAIN === 'DECOR');
+    var links = document.querySelectorAll('.loop-strip a, .tc-step .tc-go, .plans a, .hero-ctas a');
+    links.forEach(function(a){
+      var href = a.getAttribute('href');
+      if(!href || href.startsWith('#') || href.indexOf('?domain=') !== -1) return;
+      if(CURRENT_DOMAIN === DEFAULT_DOMAIN) return;
+      a.setAttribute('href', href + (href.indexOf('?') === -1 ? '?' : '&') + 'domain=' + CURRENT_DOMAIN);
+    });
+    var info = DOMAIN_LABELS[CURRENT_DOMAIN];
+    var h1 = document.querySelector('.hero h1');
+    if(h1) h1.textContent = info.label + ' · 学习成长中心';
+    var trust = document.querySelector('.hero-trust');
+    if(trust) trust.textContent = '硬 ' + info.dims + ' 维 + 软 5 维 · ' + info.scenes + ' 个场景 · ' + info.exam_qs + ' 道考核题 · ' + info.role;
+  };
+  applyDomain();
 })();
 </script>
 
