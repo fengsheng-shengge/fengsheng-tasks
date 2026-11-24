@@ -4586,9 +4586,11 @@ export default {
       '/management', '/management/',
       '/okr', '/okr/',
       '/standard', '/standard/',
-      '/quality-test', '/quality-test/',
+      // 2026-11-24 移除 quality-test/survey 的门禁：它们是面向公众的产品页（canonical+og 完整），
+      // reply/skills 等公共页面都引用了 survey，用户点进去会被 gate 墙挡住 → "进不去"
+      // '/quality-test', '/quality-test/',
       '/s1-report', '/s1-report/',
-      '/survey', '/survey/',
+      // '/survey', '/survey/',
     ]);
     if (PROTECTED_PAGES.has(decodedPath)) {
       const cookieHeader = request.headers.get('Cookie') || '';
