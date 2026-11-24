@@ -413,6 +413,128 @@ var SOFT_SCENES = [
   },
 ];
 
+// ===== 家装硬技能 6 场景（品牌获客/住户画像/全案设计/方案呈现/施工交底/交付兑现）=====
+var DECOR_HARD_SCENES = [
+  {
+    id: 'decor-quote-expensive', icon: '💰', scene: '方案呈现',
+    name: '客户说报价比隔壁贵 2 万', desc: '隔壁装修公司报了 18 万，你报了 20 万。客户说"我再想想"。',
+    intro: '客户孙女士，100㎡ 两居室，想做北欧风。隔壁装修公司报价 18 万，你报了 20 万——伟星 PPR 水管、远东国标线、东鹏瓷砖。客户对比后犹豫。',
+    turns: [
+      {speaker:'client', text:'你这比隔壁贵 2 万，我再考虑考虑。'},
+      {choices:[
+        {text:'"理解，我给您对比一下两家的材料明细——水管品牌、电线规格、瓷砖等级都不一样，我把清单列出来给您。"', feedback:'good', fbText:'✅ 好做法！先共情，再用清单量化差异。'},
+        {text:'"我们这真不算贵，您看看隔壁用的什么材料，后期肯定返工。"', feedback:'bad', fbText:'❌ 踩竞品容易引起反感，专注自家价值。'},
+        {text:'"行吧，18 万也能做，不过材料要降一级"', feedback:'bad', fbText:'❌ 直接降价等于告诉客户你之前虚高。'},
+      ]},
+      {speaker:'client', text:'那你先列出来我看看，不过我预算确实有限。'},
+      {choices:[
+        {text:'"我给您出两版：20 万标准款 + 16 万预算款，您对比着选"', feedback:'good', fbText:'✅ 给客户选择权，同时展示你的专业度。'},
+        {text:'"您这房子 100 平，20 万真的是底线了"', feedback:'bad', fbText:'❌ 把压力全给客户了。'},
+      ]},
+    ],
+    endMsg:'你帮客户做了两版报价，她选了 18 万的中间款，后续还给你介绍了闺蜜。'
+  },
+  {
+    id: 'decor-render-bigger', icon: '🎨', scene: '全案设计',
+    name: '客户说效果图要砸承重墙', desc: '客户要北欧风效果图里的开放式厨房，但要砸的是剪力墙。',
+    intro: '客户夫妇喜欢小红书北欧风，效果图里餐厅和厨房打通，要砸的是剪力墙。客户说"效果图就这样，必须砸"。',
+    turns: [
+      {speaker:'client', text:'效果图就这样，墙必须砸！不然不装了！'},
+      {choices:[
+        {text:'"我特别理解这个效果确实好看。但这堵墙是剪力墙，砸了房子结构有问题，物业也通不过。我给您想个别的方案——"', feedback:'good', fbText:'✅ 先共情认同审美，再讲红线，再给替代方案。'},
+        {text:'"这墙砸不了，物业不让"', feedback:'bad', fbText:'❌ 直接说不行，客户觉得你不专业。'},
+        {text:'"那行吧，我帮你想想办法"', feedback:'bad', fbText:'❌ 踩红线的事不能妥协。'},
+      ]},
+      {speaker:'client', text:'那你说怎么办？我就是要开放式厨房的感觉。'},
+      {choices:[
+        {text:'"我给您出个方案：不砸墙，做半高吧台+轨道灯，效果是开放式但墙不动。我今天就能画草图"', feedback:'good', fbText:'✅ 给具体的替代方案，不让客户空等。'},
+      ]},
+    ],
+    endMsg:'客户接受了半高吧台方案，完工后发了小红书标签#最棒的全案设计师。'
+  },
+  {
+    id: 'decor-live-budget', icon: '📷', scene: '品牌获客',
+    name: '客户发朋友圈问"装修要不要找设计师"', desc: '老客户转介绍来的，朋友圈刚发完，评论区吵翻了。',
+    intro: '老客户张姐介绍来的新客户小李，刚加你微信，他朋友圈发了"装修到底要不要找设计师？评论区吵翻了"。',
+    turns: [
+      {speaker:'client', text:'你好，张姐推荐的。我刚发了条朋友圈想问装修找不找设计师，评论区一半说要一半说不要。'},
+      {choices:[
+        {text:'"哈哈我看到了！张姐家也是我做的，她应该跟你说过我——找设计师值不值看两点：户型好不好改、预算够不够出效果。你家户型咋样？"', feedback:'good', fbText:'✅ 先拉关系（张姐背书），再给判断框架，引导对方说户型。'},
+        {text:'"设计师必须找！不然装出来全是错的"', feedback:'bad', fbText:'❌ 太绝对，客户有抵触。'},
+      ]},
+      {speaker:'client', text:'我家 90 平小三居，户型还行，但我妈要装中式风我老婆要装北欧风，我头大。'},
+      {choices:[
+        {text:'"哈哈婆媳风格大战！这就是设计师存在的意义——我帮你做一版融合方案，中式木元素+北欧浅色系，双方都满意。周末有空去你家量房？"', feedback:'good', fbText:'✅ 幽默化解矛盾，展示你处理风格冲突的能力，顺势要约量房。'},
+      ]},
+    ],
+    endMsg:'周末量房顺利，客户当场交了 3000 定金。'
+  },
+  {
+    id: 'decor-waterproof', icon: '🔧', scene: '施工交底',
+    name: '工长说防水不用做满 1.8 米', desc: '施工交底，工长说"大家都做 1.2 米，1.8 米费料费工"。',
+    intro: '工长老李干了 15 年装修，现场交底时说"卫生间防水刷 1.2 米够了，没必要做满 1.8 米"。你看他的经验可能有道理，但业主家有小孩会踩马桶。',
+    turns: [
+      {speaker:'worker', text:'李总你听我的，15 年了，大家都做 1.2 米，1.8 米那都是噱头。'},
+      {choices:[
+        {text:'"老李，我信你的经验。但这业主家有个 4 岁儿子会踩马桶玩，我跟业主承诺了做满 1.8 米——你按我们合同来，材料我加钱不亏你。"', feedback:'good', fbText:'✅ 尊重老工长经验，但站在客户角度，合同说话。'},
+        {text:'"不行必须 1.8 米，合同写了"', feedback:'bad', fbText:'❌ 生硬，老工长会记恨。'},
+      ]},
+      {speaker:'worker', text:'行行行，按你说的来。'},
+      {speaker:'client-overhear', text:'（走过来）老李你刚才说什么？防水做多少？'},
+      {choices:[
+        {text:'"没事没事，我们约定了 1.8 米，老李刚才跟我确认材料够不够。"', feedback:'good', fbText:'✅ 客户面前维护团队。'},
+      ]},
+    ],
+    endMsg:'业主后来漏水的邻居后悔没做满 1.8 米，专门给你发消息感谢。'
+  },
+  {
+    id: 'decor-furniture-late', icon: '🛋️', scene: '软装定制',
+    name: '客户说软装等硬装完再说', desc: '硬装快干完了，你问软装什么时候进场，客户说"先把硬装搞完，软装以后再说"。',
+    intro: '硬装接近尾声，客户突然说"软装先不装了，家具以后慢慢买"。但你之前给的全案设计里软装是整体效果的一部分，合同里也包含软装部分。',
+    turns: [
+      {speaker:'client', text:'软装先停一下吧，我最近手头紧，硬装完先住进去，软装以后再说。'},
+      {choices:[
+        {text:'"特别理解，装修超支是常态。不过咱们合同里软装是闭口价，现在停了等于之前白设计了——我给你出个方案：软装里的大件（沙发床垫）先进，窗帘灯具等你缓过来再装，效果出来了住着也舒服。"', feedback:'good', fbText:'✅ 共情预算压力，再把合同摆出来，给折中方案。'},
+        {text:'"那不行，合同签了必须做"', feedback:'bad', fbText:'❌ 合同是双方的，硬来客户会投诉。'},
+      ]},
+      {speaker:'client', text:'嗯……也行吧，但我真的要缓一缓，软装里的那个定制衣柜能不能先装？'},
+      {choices:[
+        {text:'"好的！定制衣柜必须先装——它是硬装和软装的衔接点，不装衣柜墙面都没法收尾。我安排下周三进场。"', feedback:'good', fbText:'✅ 专业解释为什么衣柜先装，给客户信心。'},
+      ]},
+    ],
+    endMsg:'客户后来软装分两次进，但对你的专业度印象深刻，介绍了 2 个亲戚。'
+  },
+  {
+    id: 'decor-handoff-rush', icon: '✅', scene: '交付兑现',
+    name: '客户要赶紧签字搬进去', desc: '客户说"我明天要搬进去了，今天赶紧验收签字吧"，但你看到 3 处小问题。',
+    intro: '验收当天客户要赶明天的搬家车，说"差不多了赶紧签了吧"。但你看到客厅踢脚线有 2 处缝隙超过 3mm（合同要求 ≤2mm），卫生间台盆玻璃胶有气泡，餐厅吊顶有 3 个钉眼没补。',
+    turns: [
+      {speaker:'client', text:'差不多了赶紧签吧，我明天要搬了，工人等着走。'},
+      {choices:[
+        {text:'"我特别理解你着急搬进去。这 3 处问题我也不想耽误你——但合同里写了验收不达标我要返工，不能糊弄你。这样：我让老李今晚加个小班把这 3 处改完，明天早上你搬的时候就好了，今晚我带你去看改完的效果拍照片给你。"', feedback:'good', fbText:'✅ 共情+站客户角度+具体可行的快速解决办法+承诺。'},
+        {text:'"行，签吧"（内心知道有问题）', feedback:'bad', fbText:'❌ 放过红线，客户入住后出问题你赔。'},
+        {text:'"不行，必须改完才能签"', feedback:'bad', fbText:'❌ 客户明天搬，你要解决问题而不是坚持原则。'},
+      ]},
+    ],
+    endMsg:'客户晚上看到改完的照片，当场签了字。入住后特意给你发微信说"你是我遇到最靠谱的设计师"。'
+  }
+];
+
+// ===== domain 切换（?domain=DECOR → 家装场景）=====
+var CURRENT_DOMAIN_PRACTICE = (new URLSearchParams(location.search)).get('domain') || 'TRANSACTION';
+var HARD_SCENES_DOMAIN = CURRENT_DOMAIN_PRACTICE === 'DECOR' ? DECOR_HARD_SCENES : HARD_SCENES;
+
+// 动态更新页面 title 和 label
+(function updatePracticeLabels(){
+  if(CURRENT_DOMAIN_PRACTICE === 'DECOR'){
+    var titleEl = document.querySelector('h1');
+    if(titleEl) titleEl.innerHTML = '🎭 家装场景练习 · 6 个真实装修服务对话';
+    document.title = '家装场景练习 · 风声聚匠星云';
+    var desc = document.querySelector('.hero-desc');
+    if(desc) desc.textContent = '量房/报价/交底/软装/验收——每个场景都是家装设计师/项目经理天天遇到的真实情况。';
+  }
+})();
+
 // ===== 画像分数读取（用于弱项推荐排序）=====
 function getPracticeProfileScores() {
   var scores = {};
@@ -455,14 +577,15 @@ function render() {
   var hasProfile = Object.keys(profileScores).length > 0;
 
   if (!state.sceneId) {
-    var hardDone = HARD_SCENES.filter(function(s){ return doneMap[s.id]; }).length;
+    var hardList = HARD_SCENES_DOMAIN;
+    var hardDone = hardList.filter(function(s){ return doneMap[s.id]; }).length;
     var softDone = SOFT_SCENES.filter(function(s){ return doneMap[s.id]; }).length;
     var totalDone = hardDone + softDone;
-    var totalAll = HARD_SCENES.length + SOFT_SCENES.length;
+    var totalAll = hardList.length + SOFT_SCENES.length;
     var pct = totalDone > 0 ? Math.round(totalDone / totalAll * 100) : 0;
 
     // 按画像弱项排序
-    var sortedHard = HARD_SCENES.slice();
+    var sortedHard = hardList.slice();
     var sortedSoft = SOFT_SCENES.slice();
     if (hasProfile) {
       sortedHard.sort(function(a,b){
@@ -503,12 +626,12 @@ function render() {
         '<div style="background:#f0ece2;border-radius:6px;height:8px;overflow:hidden">' +
           '<div style="background:linear-gradient(90deg,#2d5a3d,#4a8c5f);height:100%;border-radius:6px;width:' + pct + '%"></div>' +
         '</div>' +
-        '<div style="font-size:11px;color:#888;margin-top:6px">硬技能 ' + hardDone + '/' + HARD_SCENES.length + ' · 软技能 ' + softDone + '/' + SOFT_SCENES.length + '</div>' +
+        '<div style="font-size:11px;color:#888;margin-top:6px">硬技能 ' + hardDone + '/' + hardList.length + ' · 软技能 ' + softDone + '/' + SOFT_SCENES.length + '</div>' +
       '</div>';
     }
 
     html += '<div class="grid">' +
-      '<div class="p-grid-label">📐 专业硬技能 · 客户服务时间线（' + HARD_SCENES.length + ' 场景，覆盖 DIM-1~7）</div>' +
+      '<div class="p-grid-label">📐 专业硬技能 · ' + (CURRENT_DOMAIN_PRACTICE === 'DECOR' ? '家装服务 6 场景（报价/效果图/交底/软装/验收）' : '客户服务时间线（' + hardList.length + ' 场景，覆盖 DIM-1~7）') + '</div>' +
       sortedHard.map(function(s) {
         var done = doneMap[s.id];
         var dimCode = sceneDim(s.scene);
@@ -548,7 +671,7 @@ function render() {
       }).join('') +
       '</div></div>';
   } else {
-    var ALL_SCENES = HARD_SCENES.concat(SOFT_SCENES);
+    var ALL_SCENES = HARD_SCENES_DOMAIN.concat(SOFT_SCENES);
     var scene = ALL_SCENES.find(function(s){ return s.id === state.sceneId; });
     if (!scene) { state.sceneId = null; render(); return; }
     var turns = scene.turns;
@@ -650,13 +773,13 @@ function backToList() { state.sceneId = null; render(); }
   var sceneId = params.get('scene');
   var dim = params.get('dim');
   if (sceneId) {
-    var all = HARD_SCENES.concat(SOFT_SCENES);
+    var all = HARD_SCENES_DOMAIN.concat(SOFT_SCENES);
     for (var i = 0; i < all.length; i++) {
       if (all[i].id === sceneId) { state.sceneId = sceneId; break; }
     }
   }
   if (!state.sceneId && dim) {
-    var all2 = HARD_SCENES.concat(SOFT_SCENES);
+    var all2 = HARD_SCENES_DOMAIN.concat(SOFT_SCENES);
     for (var j = 0; j < all2.length; j++) {
       if (all2[j].scene && all2[j].scene.indexOf(dim) >= 0) {
         state.sceneId = all2[j].id; break;
