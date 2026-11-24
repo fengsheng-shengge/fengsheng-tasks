@@ -101,36 +101,7 @@
     margin-left: 4px;
   }
 
-  /* ═══════════════════ 岗位选择器 · 与 workspace 一致 ═══════════════════ */
-  .position-bar {
-    background: white;
-    border-bottom: 1px solid var(--line);
-    padding: 14px 48px;
-    display: none;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-  }
-  .position-bar.visible { display: flex; animation: fadeIn 0.3s ease; }
-  .position-bar-label { font-size: 12px; color: var(--muted); margin-right: 4px; font-weight: 500; }
-  .position-pill {
-    padding: 6px 14px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 500;
-    background: #f5f3ec;
-    color: var(--body);
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .position-pill:hover { background: var(--primary-bg); color: var(--primary); }
-  .position-pill.active {
-    background: var(--gold-bg);
-    color: var(--primary);
-    border-color: var(--gold);
-    font-weight: 600;
-  }
+  /* ═══════════════════ 岗位选择器（已移去顶部 bar，唯一入口：Banner 右侧 rb-switch-pills）════════════════════ */
 
   /* ═══════════════════ 岗位身份 Banner · 与 workspace 一致 ═══════════════════ */
   .role-banner {
@@ -565,7 +536,7 @@
 
 <link rel="canonical" href="https://fengsheng.tech/home-design/">
 <meta property="og:title" content="风声聚匠星云 · 家装工作台">
-<meta property="og:description" content="家装服务者循证能力建设平台 · 设计师售前SOP + 工长交付SOP · 硬8维 + 软5维 · 学练考评配闭环">
+<meta property="og:description" content="家装服务者循证能力建设平台 · 全案设计师SOP（硬装+软装+交付兑现）+ 工长交付SOP · 硬8维 + 软5维 · 学练考评配闭环">
 </head>
 <body>
 
@@ -598,22 +569,16 @@
     <div class="domain-tab">🌿 特殊居住 <span class="domain-tag">即将</span></div>
   </div>
 
-  <!-- ═══════════════ 3. 岗位选择器 ═══════════════ -->
-  <div class="position-bar" id="position-bar">
-    <span class="position-bar-label">选择岗位：</span>
-    <div id="position-pills"></div>
-  </div>
-
-  <!-- ═══════════════ 4. 岗位身份 Banner ═══════════════ -->
+  <!-- ═══════════════ 3. 岗位身份 Banner（唯一岗位入口：右侧 rb-switch-pills）═══════════════ -->
   <div class="role-banner" id="role-banner">
     <div class="rb-icon" id="rb-icon">🛠</div>
     <div class="rb-info">
       <div class="rb-label">当前岗位 / ROLE</div>
       <div class="rb-name">
-        <span id="rb-name">设计师售前</span>
+        <span id="rb-name">全案设计师</span>
         <span class="rb-domain-tag">家装服务</span>
       </div>
-      <div class="rb-desc" id="rb-desc">从量房到合同签署——站在消费者这边，帮他做出正确的家装决策。</div>
+      <div class="rb-desc" id="rb-desc">从量房到软装交付——硬装+软装全案定制，对消费者承诺拎包入住，合同约定的交付如实兑现。</div>
     </div>
     <div class="rb-switch">
       <div class="rb-switch-title">切换其他岗位</div>
@@ -647,7 +612,7 @@
         <div class="gb-user">
           <span class="gb-avatar">🏗️</span>
           <span class="gb-name">家装服务者</span>
-          <span class="gb-domain" id="gb-domain-tag">设计师售前</span>
+          <span class="gb-domain" id="gb-domain-tag">全案设计师</span>
           <span class="gb-level-badge" id="gb-level-badge">🥉 见习</span>
         </div>
         <div class="gb-progress-row">
@@ -951,88 +916,94 @@
 
 // ───── 岗位元信息 ─────
 var POSITION_META = {
-  DSGN:   { icon:'📐', name:'设计师售前',   desc:'从量房到合同签署——站在消费者这边，帮他做出正确的家装决策' },
+  DSGN:   { icon:'📐', name:'全案设计师',   desc:'从量房到软装交付——硬装+软装全案定制，对消费者承诺拎包入住，合同约定的交付如实兑现' },
   PROJ:   { icon:'👷', name:'工长交付',     desc:'从现场交底到竣工验收——按标准施工，给客户一个放心的家' },
   MGR:    { icon:'📋', name:'项目经理管理', desc:'从预算管控到团队协调——管好进度、成本、质量三件事' },
   TRADES: { icon:'🔧', name:'技术工人',     desc:'水电/泥木/油漆/安装——手艺就是你的饭碗' }
 };
 
-// ───── 1. 设计师售前 DSGN_STAGES ─────
+// ───── 1. 全案设计师 DSGN_STAGES（硬装+软装+交付兑现）─────
 var DSGN_STAGES = [
-  { key:'d1', icon:'📐', name:'量房勘测',   desc:'现场测绘 · 房屋结构 · 精准尺寸' },
-  { key:'d2', icon:'✏️', name:'方案设计',   desc:'平面布局 · 效果图 · 软装搭配' },
-  { key:'d3', icon:'💰', name:'透明报价',   desc:'三档档次 · 分项明细 · 隐藏项预警' },
-  { key:'d4', icon:'📝', name:'合同解读',   desc:'闭口价 · 增项条款 · 质保年限' },
-  { key:'d5', icon:'🤝', name:'现场交底',   desc:'设计师→工长技术交底 · 工艺节点' },
-  { key:'d6', icon:'🏠', name:'开工准备',   desc:'物业报备 · 材料清单 · 工期排期' }
+  { key:'d1', icon:'📐', name:'现场勘测',   desc:'量房测绘 · 住户画像 · 缺陷记录' },
+  { key:'d2', icon:'✏️', name:'全案方案',   desc:'硬装布局 · 软装搭配 · 效果图' },
+  { key:'d3', icon:'📝', name:'合同&报价',  desc:'闭口价 · 分项明细 · 增项上限 · 质保' },
+  { key:'d4', icon:'🏗️', name:'硬装交底',  desc:'图纸工艺交底 · 材料封样 · 工期承诺' },
+  { key:'d5', icon:'🛋️', name:'软装定制',  desc:'家具选样 · 窗帘灯具 · 饰品搭配' },
+  { key:'d6', icon:'✅', name:'验收交付',   desc:'合同清单逐项验收 · 软装到位 · 质保移交' }
 ];
 
 var DSGN_LAYER = {
   d1: {
     actions: [
-      "① 带专业测绘工具（激光测距仪+水平仪）上门，每个墙/窗/门洞都量，不只量大致尺寸",
-      "② 主动跟客户聊：几个人住？有没有小孩老人？做饭频率高不高？先懂他再量他的家",
-      "③ 记录现场缺陷：墙面空鼓、水管漏水、窗户漏风——这些是以后报价的增项来源，必须拍照留底"
+      "① 带激光测距仪+水平仪上门，每个墙/窗/门洞都量，不只量大致尺寸",
+      "② 主动聊住户画像：几个人住？有没有小孩老人？做饭频率？收纳需求？先懂他再量他的家",
+      "③ 记录现场缺陷：墙面空鼓、水管漏水、窗户漏风、燃气表位置——拍照留底，以后报价要体现这些"
     ],
-    confusion:"客户说「我家就随便装装，不用那么仔细量」，但我知道量不准后面报价肯定出问题——怎么说服他配合？",
-    why:"量房是所有后续工作的起点：尺寸差 5 公分，定制衣柜就装不下；承重墙搞不清，打了要赔。前期花半小时量仔细，后面省 N 倍的麻烦",
-    practiceScene:"客户说：我家就简单刷个墙铺个地板，你不用量那么仔细了，直接按产证面积算吧",
+    confusion:"客户说「我家就简单装装，不用那么仔细量」——但量不准后面软装家具尺寸肯定出问题，怎么说服他？",
+    why:"量房是全案的起点：尺寸差 5 公分，定制衣柜就装不下；承重墙搞不清，打了要赔。前期半小时量仔细，后面省 N 倍麻烦",
+    practiceScene:"客户说：我家就简单刷个墙铺个地板，直接按产证面积算吧",
     refs:["DSGN-1 户型诊断","DSGN-3 透明报价","SOFT-1 客户共情"],
-    red:"🚨 别按产证面积估——产证上的是建筑面积，实际套内可能少 15-20%，估错了你自己贴钱补。<strong class=vtag>【难而正确】</strong>量准才能报准"
+    red:"🚨 别按产证面积估——产证上是建筑面积，实际套内可能少 15-20%。<strong class=vtag>【难而正确】</strong>量准才能报准"
   },
   d2: {
     actions: [
-      "① 平面布局先出 2-3 版给客户选：保守版（不改格局）+ 实用版（微调动线）+ 激进版（大改结构），让他看到可能性",
-      "② 效果图要讲人话：别说「这块用岩板」——说「这块 2 米长的整板岩板，做岛台+餐桌一体，你家来朋友能坐 6 个人」",
-      "③ 主动暴露一个缺点：比如「这面墙拆不了，是承重墙，我们做个造型把它包进去当装饰」——说缺点反而显你专业"
+      "① 全案方案先出 2 版：保守版（不改格局，软装配色为主）+ 实用版（微调动线+硬装优化+软装定制），让客户看到可能性",
+      "② 效果图带软装：别只画硬装——家具、窗帘、灯具、饰品都画进去，客户一眼就能看到「装完就是这个样子」",
+      "③ 主动暴露一个约束：比如「这面墙拆不了，我们用软装造型把它包进去当装饰」——说缺点反而显你专业"
     ],
-    confusion:"客户说「我就想要开放式厨房」但他家厨房只有 3 平米，开放后客厅更挤——怎么既不硬怼又让他接受现实？",
-    why:"客户要的不是「最好看的方案」，是「装完能住得舒服的方案」——你帮他把幻想拉回现实，他下次装修还找你",
-    practiceScene:"客户说：我就要开放式厨房，墙必须砸，不砸我就找别人装",
+    confusion:"客户说「我要北欧风」但他家采光只有北窗，北欧风需要大量自然光——怎么既不硬怼又让他接受现实？",
+    why:"客户要的不是「最好看的方案」，是「装完拎包入住都舒服的方案」——全案设计从硬装到软装都要想清楚",
+    practiceScene:"客户说：我就要北欧风，照效果图来，墙必须砸",
     refs:["DSGN-2 方案呈现","SOFT-2 风险判断"],
-    red:"🚨 别忽悠客户砸承重墙——砸完邻居投诉+物业罚款+结构安全隐患，锅全是你的。<strong class=vtag>【难而正确】</strong>不确定的墙先查物业图纸"
+    red:"🚨 别为了签单忽悠客户砸承重墙或选不适合的风格——装完客户不满意，锅全是你的。<strong class=vtag>【难而正确】</strong>全案=从硬装到软装都要负责"
   },
   d3: {
     actions: [
-      "① 报价先讲档次不讲价格：刚需入门 / 品质标准 / 精工品质，先让客户定位自己要哪一档",
-      "② 分项明细一条一条念：墙面多少钱/㎡？瓷砖多少钱/㎡？水管多少钱/米？管理费几个点？让他知道钱花在哪",
-      "③ 主动点出不含项：比如「报价里不含定制柜子和软装家具，这部分大概 2-5 万，你预算要留出来」——说在前头比事后加钱好"
+      "① 报价跟合同绑定：闭口价+分项明细+增项上限（建议 ≤ 5%）写入合同，别拆成两份文件",
+      "② 分项明细要包含硬装+软装：墙面/瓷砖/水电 + 家具/窗帘/灯具/饰品，客户看到总价知道钱花在哪",
+      "③ 质保年限写进合同：硬装 5 年/软装定制家具 2 年/灯具 1 年——按国家最低标准，多给一年是加分项"
     ],
-    confusion:"客户看到总价说「太贵了，别人家报的比你少 2 万」，但他拿的那份报价里漏了防水/吊顶/管理费——怎么让他知道我这份才是实价？",
-    why:"客户比的是「总价数字」，你得帮他比「内容」——漏项报价看着便宜，最后增项加完比你的还贵，还闹心",
-    practiceScene:"客户说：你家报价比隔壁贵 2 万，我再考虑考虑",
+    confusion:"客户看到总价说「太贵了，别人家报的比你少 3 万」，但他那份是硬装裸价不含软装——怎么让他知道我这份才是全案拎包价？",
+    why:"全案的价值就是「一个合同搞定硬装+软装，客户拎包入住」——你报价拆了他就找两家了，你的优势没了",
+    practiceScene:"客户说：你这是拎包入住价？能不能只报硬装？",
     refs:["DSGN-3 透明报价","DSGN-4 合同解读","SOFT-4 职业底线"],
-    red:"🚨 别为了签单故意漏项报低价——后面增项客户一定投诉，口碑砸了。<strong class=vtag>【专业者赢】</strong>透明报价=长期信任"
+    red:"🚨 别为了签单拆报价或故意漏软装项——后面增项客户一定投诉。<strong class=vtag>【专业者赢】</strong>全案的核心是「一个合同，全搞定」"
   },
   d4: {
     actions: [
-      "① 合同别在客户家签——约到工作室，一条一条念，重点条款（闭口价/增项上限/质保年限）标红",
-      "② 闭口价 vs 开口价讲清楚：闭口=总价包干不增项（客户最爱）；开口=按实结算但可能超预算",
-      "③ 质保年限写进去：水电 5 年/防水 5 年/墙面 2 年——国家最低标准，多给一年是加分项"
+      "① 硬装交底 3 方到位：你 + 工长 + 客户，对着图纸一项项对——墙拆不拆？水电走哪？插座留哪？",
+      "② 关键材料现场封样：瓷砖/板材/水管各取一块，三方签字——以后说你换了材料有依据",
+      "③ 工期承诺写进合同：预计多少天完工？哪些工序需要客户到场确认？逾期每天扣多少？"
     ],
-    confusion:"客户说「合同太复杂，我不想看了，你帮我填上就行」——我能代签吗？万一后面出问题谁担责？",
-    why:"合同是保护双方的最后一道防线——你越让他看清楚，后面出问题的概率越小，你的责任也越少",
-    practiceScene:"客户说：合同你帮我填吧，我相信你，直接签",
-    refs:["DSGN-4 合同解读","SOFT-3 责任担当"],
-    red:"🚨 别替客户签任何文件——签之前必须让他逐条看完，有疑虑当场解答。<strong class=vtag>【难而正确】</strong>不碰客户签字"
+    confusion:"工长说「这个工艺我们做不了」，客户说「我不管能不能做我就要这个效果」——我在中间怎么协调？",
+    why:"交底是设计到施工的关键节点——三方当场对齐，比后面返工便宜 10 倍。材料封样是防止材料纠纷的保险丝",
+    practiceScene:"工长说：这个弧形吊顶我们师傅做不了，能不能改一下？",
+    refs:["DSGN-5 交底协调","SOFT-1 客户共情"],
+    red:"🚨 别嘴上答应做不了的工艺——做坏了返工成本是原来的 3 倍。先跟工长确认可行性再跟客户说"
   },
   d5: {
     actions: [
-      "① 现场交底 3 方到位：你 + 工长 + 客户，对着图纸一项项对——墙拆不拆？水电走哪？插座留哪？",
-      "② 工艺标准现场演示：比如瓷砖薄贴 vs 厚贴，拿出样板给客户看差别在哪里",
-      "③ 交底完让客户在图纸上签字确认——这是以后增项/改方案的依据"
+      "① 软装进工地前 1 个月开始选样：家具先选大件（沙发/床/餐桌），再搭小件（台灯/绿植/饰品）",
+      "② 家具进场要卡硬装工期：硬装刷完墙才能量窗帘尺寸，地板铺完才能进家具——别让家具到了没地方放",
+      "③ 软装色彩跟硬装整体协调：墙是米白色，沙发选灰色，窗帘选深蓝——别各选各的，装完像拼凑的"
     ],
-    confusion:"工长说「设计师画的这个工艺我们做不了」，客户说「我不管能不能做我就要这个效果」——我在中间怎么协调？",
-    why:"交底是设计到施工的关键节点——三方当场对齐，比后面返工便宜 10 倍"
+    confusion:"客户说「硬装还没干完呢，软装急什么？」但软装选不好硬装完了才发现尺寸不对——怎么说服他提前选？",
+    why:"全案设计师的核心价值就在软装——硬装哪家都能装，软装搭配是你的护城河。客户拎包入住的体验 80% 来自软装",
+    practiceScene:"客户说：软装等硬装完了再说，先把硬装搞完",
+    refs:["DSGN-6 软装搭配","SOFT-2 风险判断"],
+    red:"🚨 别等硬装完才想软装——硬装插座位置、墙色都影响软装选品。<strong class=vtag>【全案专属】</strong>软装不是后补，是同步设计"
   },
   d6: {
     actions: [
-      "① 物业报备：装修许可证 / 施工人员出入证 / 电梯保护 / 垃圾清运许可——提前 3 天办齐",
-      "② 材料清单给客户过目：品牌/型号/规格/数量，让他签字确认——以后说你用了差材料有依据",
-      "③ 工期排期跟客户对齐：预计多少天完工？节假日停工吗？哪些工序需要他到场确认？"
+      "① 按合同清单逐项验收：硬装验收（43 项）+ 软装置业（家具/窗帘/灯具/饰品清单逐项核对），一项一项勾",
+      "② 三方签字：你 + 客户 + 工长，每一页都签——这是合同兑现的最后确认",
+      "③ 质保资料移交：质保手册 + 水电走向图 + 软装家具保修卡 + 剩余材料清单 + 24 小时联系电话"
     ],
-    confusion:"物业说「周末不能施工」但客户只有周末有空来看，工长说「我周末有事不来」——三方都不配合怎么办？",
-    why:"开工前协调好时间，比施工中停工整改划算多了——物业罚款+工期延误都是成本"
+    confusion:"客户说「差不多了吧，我急着住，验收就走过场吧」——但我知道有几处小问题没改，签了就是我的责任",
+    why:"验收是合同兑现的收官——客户说「差不多」你就真签字，住进去出问题还是你兜。签字=全责，必须如实写",
+    practiceScene:"客户说：我明天要搬进去了，今天赶紧验收签字吧",
+    refs:["DSGN-7 交付验收","SOFT-3 责任担当","SOFT-4 职业底线"],
+    red:"🚨 别替客户替验收清单打勾——合同承诺的东西必须如实兑现。<strong class=vtag>【难而正确】</strong>签字=全责，必须诚实"
   }
 };
 
@@ -1154,19 +1125,10 @@ var currentPosition = "DSGN";
 // 初始化：岗位选择器 + 默认 DSGN active
 (function init(){
   var meta = POSITION_META;
-  // 渲染岗位选择 pills（bar 内）
-  var pillsWrap = document.getElementById("position-pills");
-  pillsWrap.innerHTML = Object.keys(meta).map(function(pid){
-    var m = meta[pid];
-    return '<span class="position-pill' + (pid === 'DSGN' ? ' active' : '') + '" data-position="' + pid + '" onclick="switchPosition(\'' + pid + '\')">' +
-           '<span style="margin-right:4px">' + m.icon + '</span>' + m.name + '</span>';
-  }).join("");
-
-  // 渲染 Banner 内的 rb-switch-pills（跟 position pills 联动）
+  // 渲染 Banner 内的 rb-switch-pills（唯一岗位入口）
   renderRBSwitchPills();
 
-  // 显示所有页面元素（因为用户是直接进家装服务，不需要领域 Tab 点击动画）
-  document.getElementById("position-bar").classList.add("visible");
+  // 显示所有页面元素
   document.getElementById("role-banner").classList.add("visible");
   document.getElementById("journey-timeline").classList.add("visible");
 
@@ -1205,10 +1167,7 @@ function switchPosition(positionId){
   document.getElementById("gb-next-item").textContent = "已切到" + meta.name;
   document.getElementById("gb-next-sub").textContent = "共 " + STAGES.length + " 个阶段 SOP";
 
-  // 3. 重新渲染岗位 pills active + Banner 切换 pills active
-  document.querySelectorAll(".position-pill").forEach(function(p){
-    p.classList.toggle("active", p.getAttribute("data-position") === positionId);
-  });
+  // 3. 重新渲染 Banner 切换 pills active
   renderRBSwitchPills();
 
   // 4. 渲染 Timeline
