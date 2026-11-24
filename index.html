@@ -377,6 +377,11 @@
   .tab-inactive {
     color: rgba(255,255,255,0.55);
     padding: 14px 0;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .tab-inactive:hover {
+    color: var(--gold);
   }
   .tab-inactive span.tab-tag {
     font-size: 10px; background: rgba(255,255,255,0.18);
@@ -493,11 +498,11 @@
     </div>
   </div>
 
-  <!-- ===== 领域 Tab 通栏（5 个业务领域，家装 active） ===== -->
+  <!-- ===== 领域 Tab 通栏（纯导航入口，首页不标 active，点 tab 跳对应 SPA） ===== -->
   <div class="domain-tabs" style="background: var(--primary); padding: 0 48px; display: flex; align-items: center; gap: 36px; height: 48px;">
-    <div class="tab-inactive">🏠 交易服务</div>
+    <a href="/workspace/" class="tab-inactive" style="text-decoration:none">🏠 交易服务</a>
+    <a href="/home-design/" class="tab-inactive" style="text-decoration:none">🛠 家装服务</a>
     <div class="tab-inactive">🔑 资产运营 <span class="tab-tag">Phase 2</span></div>
-    <a href="/home-design/" class="tab-active">🛠 家装服务</a>
     <div class="tab-inactive">🔧 后市场 <span class="tab-tag">Phase 2</span></div>
     <div class="tab-inactive">🌿 特殊居住 <span class="tab-tag">Phase 3</span></div>
   </div>
@@ -515,7 +520,7 @@
     </p>
     <div class="hero-actions">
       <a href="/workspace/" class="btn-lg-gold">🏠 经纪人工作台</a>
-      <a href="/home-design/" class="btn-lg-outline">🛠 家装服务也开放了</a>
+      <a href="/home-design/" class="btn-lg-gold" style="box-shadow:0 4px 16px rgba(26,61,36,0.2);background:var(--primary);color:#fff">🛠 家装工作台</a>
     </div>
     <div class="hero-note">工具生成 · 真人复核 · 每句话敢点开看依据</div>
   </div>
@@ -558,10 +563,10 @@
     </div>
   </div>
 
-  <!-- ===== 经纪人工具箱（6 张卡） ===== -->
+  <!-- ===== 平台工具箱（跨领域共用 4 件 + 分领域工作台入口） ===== -->
   <div class="tool-section" id="tools">
-    <h2 class="section-title">经纪人工具箱</h2>
-    <p class="section-subtitle">日常接单就能用的 6 个核心工具，点进去直接干活</p>
+    <h2 class="section-title">平台工具箱</h2>
+    <p class="section-subtitle">跨两个业务领域通用的 4 件工具，加两个领域专属工作台入口——点进去直接干活</p>
     <div class="tool-grid">
       <a href="/knowledge/" class="tool-card">
         <div class="tool-icon">📖</div>
@@ -596,29 +601,29 @@
     </div>
   </div>
 
-  <!-- ===== 五大业务领域 ===== -->
+  <!-- ===== 五大业务领域（两个 open active 并列） ===== -->
   <div class="biz-section" id="biz">
     <h2 class="section-title">我们覆盖的居住服务领域</h2>
-    <p class="section-subtitle">先从经纪人 + 家装两个领域跑通，再一步步扩到全行业</p>
+    <p class="section-subtitle">两个领域已经跑通，还有三个在路上——先用起来再一起迭代</p>
     <div class="biz-grid">
-      <div class="biz-card locked">
+      <a href="/workspace/" class="biz-card open">
         <div class="biz-icon">🏠</div>
         <div class="biz-name">交易服务</div>
         <div class="biz-desc">买卖经纪人 · 新房顾问 · 租赁管家</div>
-        <div class="biz-badge">本期开放 · 见上方工具箱</div>
-      </div>
-      <div class="biz-card locked">
-        <div class="biz-icon">🔑</div>
-        <div class="biz-name">资产运营</div>
-        <div class="biz-desc">资管经理 · 租房管家</div>
-        <div class="biz-badge">Phase 2</div>
-      </div>
+        <div class="biz-badge">本期开放 →</div>
+      </a>
       <a href="/home-design/" class="biz-card open">
         <div class="biz-icon">🛠</div>
         <div class="biz-name">家装服务</div>
         <div class="biz-desc">设计师 · 项目经理 · 工长 · 水暖电工</div>
         <div class="biz-badge">本期开放 →</div>
       </a>
+      <div class="biz-card locked">
+        <div class="biz-icon">🔑</div>
+        <div class="biz-name">资产运营</div>
+        <div class="biz-desc">资管经理 · 租房管家</div>
+        <div class="biz-badge">Phase 2</div>
+      </div>
       <div class="biz-card locked">
         <div class="biz-icon">🔧</div>
         <div class="biz-name">后市场服务</div>
