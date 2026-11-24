@@ -515,8 +515,19 @@ var DIM_COLORS = DOMAIN_CONFIGS.TRANSACTION.dim_colors;
 var DIM_ICONS  = DOMAIN_CONFIGS.TRANSACTION.dim_icons;
 var DIM_ID_TO_NAME = DOMAIN_CONFIGS.TRANSACTION.dim_id_to_name;
 
+// ⬇️ 这 4 个变量之前从未 var 声明 → 报告页空白（showReport/calcScores/drawRadar 全都引用）
+var DIMS = DOMAIN_CONFIGS.TRANSACTION.dims;
+var DIM_TO_ID = {};   // {维度名: 1-7}
+var DIM_EMOJI = {};   // {维度名: emoji}
+var CARETEST_DIM_NAMES = {}; // {DIM-N: 维度名} 给历史报告复查用
+
 // 通用软技能维度（两个 domain 共用）
 var SOFT_DIMS = ['客户共情','风险判断','责任担当','职业底线','口碑服务'];
+
+// 全局能力画像/建议/解决方案（按 CURRENT_DOMAIN 在 boot()/updateIntro() 动态赋值）
+var ABILITY_PROFILES = DOMAIN_CONFIGS.TRANSACTION.ability_profiles || {};
+var SUGGESTIONS = DOMAIN_CONFIGS.TRANSACTION.suggestions || {};
+var SOLUTIONS = DOMAIN_CONFIGS.TRANSACTION.solutions || {};
 
 // ============================================================
 //  题目数据加载（按 CURRENT_DOMAIN 选 quiz.json 或 quiz_decor.json）
