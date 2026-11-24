@@ -305,7 +305,7 @@ a{text-decoration:none;color:inherit}
 <script>
 // ======== 维度定义（硬 7 + 软 5，双轨模型）========
 var HARD_DIMS = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
-var SOFT_DIMS = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
+var SOFT_DIMS = ['共情力','判断力','担当心','职业素养','服务意识'];
 var ALL_DIMS = HARD_DIMS.concat(SOFT_DIMS);
 
 // 岗位类型定义（硬 7 维权重）
@@ -351,11 +351,12 @@ var ROLES = [
 // ======== 数据源加载 ========
 function loadScores() {
   var hardScores = {}, softScores = {};
-  var care = null, examResults = {};
+  var care = null, examResults = {}, softResults = {};
   try { care = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
   try { examResults = JSON.parse(localStorage.getItem('fs_exam_results')) || {}; } catch(e) {}
+  try { softResults = JSON.parse(localStorage.getItem('fs_soft_exam_results')) || {}; } catch(e) {}
 
-  // 硬 7 维：care.dim_scores + examResults['DIM-N'].pct 取 max
+  // 硬 7 维：care + exam 取 max
   for (var i = 0; i < 7; i++) {
     var name = HARD_DIMS[i];
     var cs = care && care.dim_scores ? care.dim_scores[name] : null;
@@ -367,15 +368,13 @@ function loadScores() {
     else hardScores[name] = null;
   }
 
-  // 软 5 维：care.soft_dim_scores + examResults['SOFT-N'].pct 取 max
-  // ⚠️ 注意：care-test 写入的是 soft_dim_scores（不是 soft_scores）
-  // ⚠️ exam 页把软技能考核也存入 fs_exam_results（SOFT-1~5 为 key），没有单独的软技能 exam storage
-  var softCare = care && care.soft_dim_scores ? care.soft_dim_scores : null;
+  // 软 5 维：care.soft_scores + softExam 取 max
+  var softCare = care && care.soft_scores ? care.soft_scores : null;
   for (var j = 0; j < 5; j++) {
     var sname = SOFT_DIMS[j];
     var scs = softCare ? softCare[sname] : null;
     var skey = 'SOFT-' + (j+1);
-    var ses = examResults[skey] ? examResults[skey].pct : null;
+    var ses = softResults[skey] ? softResults[skey].pct : null;
     if (scs != null && ses != null) softScores[sname] = Math.max(scs, ses);
     else if (scs != null) softScores[sname] = scs;
     else if (ses != null) softScores[sname] = ses;
@@ -393,11 +392,11 @@ function renderAgentProof(info) {
   if (!info.hasData) {
     root.innerHTML = '<div class="agent-proof">' +
       '<h2>🧑‍💼 还没有能力数据' +
-      '<span>先测一次就能看到你的双轨能力证明</span></h2>' +
-      '<p style="font-size:12px;opacity:.8;margin-bottom:14px">35 题能力测评（~15 分钟，硬 7 维 × 3 + 软 5 维 × 2）+ 12 维度考核 → 自动生成能力证明</p>' +
-      '<div style="display:flex;gap:8px">' +
-        '<a href="/care-test/" style="background:#fff;color:#1a3d24;font-weight:700;font-size:13px;padding:8px 18px;border-radius:8px;display:inline-block">📋 开始测评 →</a>' +
-        '<a href="/academy/exam/" style="background:rgba(255,255,255,.15);color:#fff;font-weight:600;font-size:13px;padding:8px 18px;border-radius:8px;display:inline-block;border:1px solid rgba(255,255,255,.3)">📝 去考核</a>' +
+      '<span>配是六环节的最后一步，先走前面五步再来</span></h2>' +
+      '<p style="font-size:12px;opacity:.8;margin-bottom:14px">📋 测七维能力 → 📖 学核心课 → 🎭 练场景 → 📝 考考核 → 📊 看画像 → 最后来这里配岗位</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        '<a href="/academy/" style="background:#fff;color:#1a3d24;font-weight:700;font-size:13px;padding:8px 18px;border-radius:8px;display:inline-block">🗺️ 回学习中心看完整路径</a>' +
+        '<a href="/care-test/" style="background:rgba(255,255,255,.15);color:#fff;font-weight:600;font-size:13px;padding:8px 18px;border-radius:8px;display:inline-block;border:1px solid rgba(255,255,255,.3)">📋 从测评开始</a>' +
       '</div></div>';
     return;
   }
@@ -406,8 +405,8 @@ function renderAgentProof(info) {
   var hardTotal = 0, hardN = 0, softTotal = 0, softN = 0;
   HARD_DIMS.forEach(function(n){ if (info.hard[n] != null) { hardTotal += info.hard[n]; hardN++; } });
   SOFT_DIMS.forEach(function(n){ if (info.soft[n] != null) { softTotal += info.soft[n]; softN++; } });
-  var hardAvg = hardN > 0 ? Math.round(hardTotal/hardN) : null;
-  var softAvg = softN > 0 ? Math.round(softTotal/softN) : null;
+  var hardAvg = hardN > 0 ? Math.round(hardTotal/hardN) : 0;
+  var softAvg = softN > 0 ? Math.round(softTotal/softN) : 0;
 
   // 认证徽章（exam ≥ 80 = gold，≥ 70 = silver）
   var certs = [];
@@ -422,7 +421,7 @@ function renderAgentProof(info) {
 
   var html = '<div class="agent-proof">' +
     '<h2>🧑‍💼 我的能力证明' +
-      '<span>硬技能 ' + (hardAvg != null ? hardAvg + ' 分' : '—') + ' · 软技能 ' + (softAvg != null ? softAvg + ' 分' : '—') + ' · 双轨雷达</span></h2>' +
+      '<span>硬技能 ' + hardAvg + ' 分 · 软技能 ' + softAvg + ' 分 · 双轨雷达</span></h2>' +
     '<div class="ap-meta">数据来源：能力测评 + 岗位考核 · 自动累积 · 可分享给机构雇主</div>' +
     '<div class="ap-body">' +
       '<div class="rail-block hard"><h3>🛠️ 硬技能 · 7 维</h3>' +
@@ -466,7 +465,7 @@ function computeRoleScore(role, info) {
 function renderMatchCards(info) {
   var root = document.getElementById('match-cards');
   if (!info.hasData) {
-    root.innerHTML = '<div class="empty-state">没有能力数据，先测一次再来匹配<br><a href="/care-test/" style="color:#1a3d24;font-weight:700">📋 去测评 →</a></div>';
+    root.innerHTML = '<div class="empty-state">还没有能力数据<br>先走完 <b>测→学→练→考→评</b> 五步再来配<br><a href="/academy/" style="color:#1a3d24;font-weight:700">🗺️ 回到学习中心</a></div>';
     return;
   }
 
@@ -539,7 +538,7 @@ function updateJDWeight(i, v) { customJDWeights[i] = parseInt(v); renderJDWeight
 
 function computeCustomJD() {
   var info = loadScores();
-  if (!info.hasData) { alert('先去测评一次吧～'); return; }
+  if (!info.hasData) { alert('先走完 测→学→练→考→评 五步再来配哦～'); return; }
   var hTotal = 0, hwSum = 0;
   for (var i = 0; i < 7; i++) {
     var s = info.hard[HARD_DIMS[i]];
@@ -664,23 +663,23 @@ function defaultAgentPool() {
   return [
     { id:'a1', name:'李经纪', role:'综合型经纪人',
       hard: {'获客触达':72,'需求洞察':85,'专业方案':78,'带看谈判':88,'交易履约':82,'售后复购':68,'数字化协同':65},
-      soft: {'共情能力':80,'判断能力':75,'责任担当':78,'职业素养':85,'服务意识':82},
+      soft: {'共情力':80,'判断力':75,'担当心':78,'职业素养':85,'服务意识':82},
       certs:['DIM-4🥇','DIM-2🥈'], updatedAt: now },
     { id:'a2', name:'王经纪', role:'获客型经纪人',
       hard: {'获客触达':92,'需求洞察':78,'专业方案':55,'带看谈判':65,'交易履约':60,'售后复购':70,'数字化协同':88},
-      soft: {'共情能力':85,'判断能力':60,'责任担当':70,'职业素养':80,'服务意识':75},
+      soft: {'共情力':85,'判断力':60,'担当心':70,'职业素养':80,'服务意识':75},
       certs:['DIM-1🥇','DIM-7🥈'], updatedAt: now },
     { id:'a3', name:'张经纪', role:'谈判型经纪人',
       hard: {'获客触达':60,'需求洞察':75,'专业方案':88,'带看谈判':95,'交易履约':72,'售后复购':55,'数字化协同':50},
-      soft: {'共情能力':65,'判断能力':88,'责任担当':85,'职业素养':78,'服务意识':60},
+      soft: {'共情力':65,'判断力':88,'担当心':85,'职业素养':78,'服务意识':60},
       certs:['DIM-4🥇','DIM-3🥇'], updatedAt: now },
     { id:'a4', name:'赵经纪', role:'服务型经纪人',
       hard: {'获客触达':55,'需求洞察':82,'专业方案':65,'带看谈判':60,'交易履约':78,'售后复购':95,'数字化协同':70},
-      soft: {'共情能力':92,'判断能力':70,'责任担当':65,'职业素养':85,'服务意识':95},
+      soft: {'共情力':92,'判断力':70,'担当心':65,'职业素养':85,'服务意识':95},
       certs:['DIM-6🥇','SOFT-5🥇'], updatedAt: now },
     { id:'a5', name:'陈经纪', role:'综合型经纪人',
       hard: {'获客触达':70,'需求洞察':72,'专业方案':75,'带看谈判':78,'交易履约':80,'售后复购':72,'数字化协同':75},
-      soft: {'共情能力':78,'判断能力':80,'责任担当':82,'职业素养':75,'服务意识':78},
+      soft: {'共情力':78,'判断力':80,'担当心':82,'职业素养':75,'服务意识':78},
       certs:['DIM-5🥈'], updatedAt: now },
   ];
 }

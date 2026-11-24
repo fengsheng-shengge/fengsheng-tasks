@@ -4586,9 +4586,11 @@ export default {
       '/management', '/management/',
       '/okr', '/okr/',
       '/standard', '/standard/',
-      '/quality-test', '/quality-test/',
+      // 2026-11-24 移除 quality-test/survey 的门禁：它们是面向公众的产品页（canonical+og 完整），
+      // reply/skills 等公共页面都引用了 survey，用户点进去会被 gate 墙挡住 → "进不去"
+      // '/quality-test', '/quality-test/',
       '/s1-report', '/s1-report/',
-      '/survey', '/survey/',
+      // '/survey', '/survey/',
     ]);
     if (PROTECTED_PAGES.has(decodedPath)) {
       const cookieHeader = request.headers.get('Cookie') || '';
@@ -4665,6 +4667,8 @@ export default {
         '/academy/match', '/academy/match/',
         '/academy/ext-courses', '/academy/ext-courses/',
         '/design-prototype', '/design-prototype/',
+        // 家装服务工作台（DECOR 领域 · 2026-11-23 重建为 SPA 范式）
+        '/home-design', '/home-design/',
         // 预备经纪人招生（沃土计划）
         '/wotu', '/wotu/',
         // P1: 门店智能接待新页面

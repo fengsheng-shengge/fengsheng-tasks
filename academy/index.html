@@ -186,12 +186,12 @@ a{text-decoration:none;color:inherit}
 <!-- ====== 六环 loop-strip ====== -->
 <div class="loop">
   <div class="loop-strip">
-    <a class="loop-step" href="/care-test/"><span class="ls-icon">📋</span><span class="ls-name">测</span><span class="ls-sub">能力测评</span><span class="ls-go">去测 →</span></a>
-    <a class="loop-step hl" href="/academy/core-courses/"><span class="ls-icon">📖</span><span class="ls-name">学</span><span class="ls-sub">核心课 · 外部课</span><span class="ls-go">去学 →</span></a>
-    <a class="loop-step hl" href="/academy/practice/"><span class="ls-icon">🎭</span><span class="ls-name">练</span><span class="ls-sub">场景模拟</span><span class="ls-go">去练 →</span></a>
-    <a class="loop-step" href="/academy/exam/"><span class="ls-icon">📝</span><span class="ls-name">考</span><span class="ls-sub">岗位考核</span><span class="ls-go">去考 →</span></a>
-    <a class="loop-step" href="/academy/profile/"><span class="ls-icon">📊</span><span class="ls-name">评</span><span class="ls-sub">能力画像</span><span class="ls-go">去评 →</span></a>
-    <a class="loop-step" href="/academy/match/"><span class="ls-icon">🎯</span><span class="ls-name">配</span><span class="ls-sub">人岗匹配</span><span class="ls-go">去配 →</span></a>
+    <a class="loop-step" data-loop="test" href="/care-test/"><span class="ls-icon">📋</span><span class="ls-name">测</span><span class="ls-sub">能力测评</span><span class="ls-go">去测 →</span></a>
+    <a class="loop-step" data-loop="learn" href="/academy/core-courses/"><span class="ls-icon">📖</span><span class="ls-name">学</span><span class="ls-sub">核心课 · 外部课</span><span class="ls-go">去学 →</span></a>
+    <a class="loop-step" data-loop="practice" href="/academy/practice/"><span class="ls-icon">🎭</span><span class="ls-name">练</span><span class="ls-sub">场景模拟</span><span class="ls-go">去练 →</span></a>
+    <a class="loop-step" data-loop="exam" href="/academy/exam/"><span class="ls-icon">📝</span><span class="ls-name">考</span><span class="ls-sub">岗位考核</span><span class="ls-go">去考 →</span></a>
+    <a class="loop-step" data-loop="profile" href="/academy/profile/"><span class="ls-icon">📊</span><span class="ls-name">评</span><span class="ls-sub">能力画像</span><span class="ls-go">去评 →</span></a>
+    <a class="loop-step" data-loop="match" href="/academy/match/"><span class="ls-icon">🎯</span><span class="ls-name">配</span><span class="ls-sub">人岗匹配</span><span class="ls-go">去配 →</span></a>
   </div>
 </div>
 
@@ -324,6 +324,43 @@ a{text-decoration:none;color:inherit}
       if (i === stepIndex) s.classList.add('tc-now');
       else if (i < stepIndex) {} // 已完成的不标记
       else s.classList.add('tc-locked');
+    });
+  } catch(e) {}
+})();
+
+// loop-strip 动态渲染：根据 localStorage 完成状态加 ✓ 标记
+(function(){
+  try {
+    var care = JSON.parse(localStorage.getItem('fs_care_profile') || 'null');
+    var careHist = JSON.parse(localStorage.getItem('fs_care_history') || '[]');
+    var exam = JSON.parse(localStorage.getItem('fs_exam_results') || '{}');
+    var practice = JSON.parse(localStorage.getItem('fs_practice_done') || '{}');
+    var courses = JSON.parse(localStorage.getItem('fs_course_progress') || '{}');
+
+    var isDone = {
+      test: !!(care || careHist.length > 0),
+      learn: Object.keys(courses).length > 0,
+      practice: Object.keys(practice).length > 0,
+      exam: Object.keys(exam).length > 0,
+      profile: !!(care || Object.keys(exam).length > 0),
+      match: !!(care || Object.keys(exam).length > 0),
+    };
+
+    document.querySelectorAll('.loop-step').forEach(function(step){
+      var loop = step.getAttribute('data-loop');
+      if (isDone[loop]) {
+        step.classList.add('done');
+        var goSpan = step.querySelector('.ls-go');
+        if (goSpan && !step.querySelector('.ls-check')) {
+          var check = document.createElement('span');
+          check.className = 'ls-check';
+          check.textContent = '✓ 已完成 · ';
+          check.style.cssText = 'font-size:10px;font-weight:700;color:#2d5a3d;display:block;margin-top:4px;letter-spacing:.5px;';
+          step.insertBefore(check, goSpan);
+          goSpan.textContent = '再做一次 →';
+          goSpan.style.fontSize = '10px';
+        }
+      }
     });
   } catch(e) {}
 })();
