@@ -1486,8 +1486,8 @@
   <!-- 领域Tab -->
   <div class="domain-tabs" id="domain-tabs">
     <div class="domain-tab active" data-domain="TRANSACTION" data-phase="NOW">🏠 交易服务</div>
+    <div class="domain-tab" data-domain="DECOR" data-phase="NOW">🛠 家装服务</div>
     <div class="domain-tab" data-domain="ASSET" data-phase="P2">🔑 资产运营 <span class="domain-tag">即将</span></div>
-    <div class="domain-tab" data-domain="DECOR" data-phase="P2">🛠 家装服务 <span class="domain-tag">即将</span></div>
     <div class="domain-tab" data-domain="AFTER" data-phase="P2">🔧 后市场服务 <span class="domain-tag">即将</span></div>
     <div class="domain-tab" data-domain="SPECIAL" data-phase="P3">🌿 特殊居住 <span class="domain-tag">即将</span></div>
   </div>
@@ -2950,6 +2950,11 @@
         tab.addEventListener("click", function(){
           var phase = this.getAttribute("data-phase");
           var domain = this.getAttribute("data-domain");
+          // 🆕 DECOR → 跳家装工作台（独立 SPA）
+          if(domain === "DECOR"){
+            location.href = "/home-design/";
+            return;
+          }
           if(phase !== "NOW"){
             // 🆕 暂不开放：锁定态，不切换、不渲染错误内容，只提示
             flashToast("「" + this.textContent.replace("即将","").trim() + "」模块内容建设中，当前可体验：交易服务");
