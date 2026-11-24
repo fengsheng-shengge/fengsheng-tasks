@@ -1341,22 +1341,35 @@ function renderStageBrowse(){
   panel.style.display = "";
   document.getElementById("browse-stage-name").textContent = (stageMeta.icon || '📋') + " " + (stageMeta.name || '');
 
-  // 从 LAYER 里取当前 stage 及相邻 stage 的 practiceScene
+  // 从 LAYER 里取场景：优先当前 stage + 前后各 1 个相邻 stage
   var layer = POSITION_TIMELINE[currentPosition] && POSITION_TIMELINE[currentPosition].layer;
   var sceneList = [];
   if(layer){
-    for(var sk in layer){
+    // 优先当前 stage 及相邻 stage key 排序
+    var stageKeys = STAGES.map(function(s){ return s.key; });
+    var curIdx = stageKeys.indexOf(currentStage);
+    // 生成优先顺序：当前 → 前1 → 后1 → 其余全按原序
+    var priorityKeys = [currentStage];
+    if(curIdx > 0) priorityKeys.push(stageKeys[curIdx - 1]);
+    if(curIdx < stageKeys.length - 1) priorityKeys.push(stageKeys[curIdx + 1]);
+    for(var i = 0; i < stageKeys.length; i++){
+      if(priorityKeys.indexOf(stageKeys[i]) === -1) priorityKeys.push(stageKeys[i]);
+    }
+    for(var pi = 0; pi < priorityKeys.length; pi++){
+      var sk = priorityKeys[pi];
       var scene = layer[sk] && layer[sk].practiceScene;
       if(scene){
         var sMeta = STAGES.find(function(x){ return x.key === sk; }) || {};
-        sceneList.push({ key: sk, icon: sMeta.icon || '🎬', name: sMeta.name || sk, text: scene });
+        var isCurrent = sk === currentStage;
+        sceneList.push({ key: sk, icon: sMeta.icon || '🎬', name: sMeta.name || sk, text: scene, isCurrent: isCurrent });
       }
     }
   }
-  // 渲染场景列表（最多 6 条）
+  // 渲染场景列表（最多 6 条，当前 stage 的排最前）
   var html = sceneList.slice(0, 6).map(function(s){
-    return '<div style="padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;font-size:12.5px;line-height:1.6">' +
-      '<div style="font-weight:700;color:var(--primary);margin-bottom:4px">' + s.icon + ' ' + s.name + '</div>' +
+    var badge = s.isCurrent ? '<span style="margin-left:6px;font-size:9px;background:var(--gold);color:#fff;padding:1px 6px;border-radius:4px;font-weight:600">当前阶段</span>' : '';
+    return '<div style="padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;font-size:12.5px;line-height:1.6' + (s.isCurrent ? ';border-color:var(--gold);background:rgba(201,169,98,0.05)' : '') + '">' +
+      '<div style="font-weight:700;color:var(--primary);margin-bottom:4px">' + s.icon + ' ' + s.name + badge + '</div>' +
       '<div style="color:var(--ink-3)">' + s.text + '</div>' +
       '<a href="/care-test/?domain=DECOR" style="display:inline-block;margin-top:6px;font-size:11px;color:var(--gold);font-weight:600;text-decoration:none">🎯 去测 →</a>' +
     '</div>';
