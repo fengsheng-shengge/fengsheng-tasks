@@ -653,7 +653,9 @@ var EXAM_DB_DECOR = {
   },
 };
 
-// DECOR 域的维度顺序（跟 EXAM_DB 共用 DIM_ORDER / SOFT_DIM_ORDER）
+// ===== 双轨维度排序定义（必须在 bootstrap 之前定义）=====
+var DIM_ORDER = ['DIM-1','DIM-2','DIM-3','DIM-4','DIM-5','DIM-6','DIM-7'];
+var SOFT_DIM_ORDER = ['SOFT-1','SOFT-2','SOFT-3','SOFT-4','SOFT-5'];
 
 // ===== 统一题库抽取引擎 =====
 // 从 /data/v3/quiz.json（180 题）按维度拉题，和硬编码题库合并
