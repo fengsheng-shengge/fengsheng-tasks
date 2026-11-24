@@ -208,18 +208,13 @@
     <!-- 7 维度卡片：JS 动态渲染（按 CURRENT_DOMAIN） -->
   </div>
 
-    <!-- 角色选择：不同角色侧重不同题型（v2） -->
+    <!-- 角色选择：不同角色侧重不同题型（按 domain 动态） -->
     <div style="background:#fff;border:1px solid #d4e2d6;border-radius:12px;padding:12px 16px;margin-bottom:14px;text-align:left">
-      <div style="font-size:13px;font-weight:700;color:#1a3d24;margin-bottom:8px">👥 选择服务的主要客户角色（测你的"对口画像"）</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">
-        <button class="role-btn active" data-role="all" onclick="selectRole(this,'all')">全部角色（综合画像）</button>
-        <button class="role-btn" data-role="buyer" onclick="selectRole(this,'buyer')">买家</button>
-        <button class="role-btn" data-role="seller" onclick="selectRole(this,'seller')">卖家</button>
-        <button class="role-btn" data-role="renter" onclick="selectRole(this,'renter')">租客</button>
-        <button class="role-btn" data-role="landlord" onclick="selectRole(this,'landlord')">业主</button>
-        <button class="role-btn" data-role="investor" onclick="selectRole(this,'investor')">投资客</button>
+      <div style="font-size:13px;font-weight:700;color:#1a3d24;margin-bottom:8px">👥 <span id="role-selector-title">选择服务的主要客户角色（测你的"对口画像"）</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px" id="role-selector-buttons">
+        <!-- JS 按 CURRENT_DOMAIN 动态渲染 -->
       </div>
-      <div id="role-hint" style="font-size:11px;color:#888;margin-top:6px">综合画像：60 题，覆盖所有角色的通用题</div>
+      <div id="role-hint" style="font-size:11px;color:#888;margin-top:6px"></div>
     </div>
 
     <button class="start-btn" onclick="startQuiz()">开始测评</button>
@@ -428,7 +423,17 @@ var DOMAIN_CONFIGS = {
       courses_href: '/academy/core-courses/',
       profile_href: '/academy/profile/',
       next_step_ask_href: '/workspace/'
-    }
+    },
+    // 角色选择器（客户类型）
+    role_title: '选择服务的主要客户角色（测你的"对口画像"）',
+    roles: [
+      {key:'all', label:'全部角色（综合画像）', hint:'综合画像：60 题，覆盖所有角色的通用题'},
+      {key:'buyer', label:'买家', hint:'买家画像：侧重首付/贷款/验房/压价相关题'},
+      {key:'seller', label:'卖家', hint:'卖家画像：侧重挂价/反价/独家委托/调价相关题'},
+      {key:'renter', label:'租客', hint:'租客画像：侧重租金/押一付三/续租/退租相关题'},
+      {key:'landlord', label:'业主（出租）', hint:'出租业主画像：侧重出租/租金/维修/房东义务相关题'},
+      {key:'investor', label:'投资客', hint:'投资客画像：侧重回报率/杠杆/以租养贷相关题'}
+    ]
   },
   DECOR: {
     domain_label: '家装服务',
@@ -491,7 +496,16 @@ var DOMAIN_CONFIGS = {
       courses_href: '/home-design/',
       profile_href: '/home-design/',
       next_step_ask_href: '/home-design/'
-    }
+    },
+    // 角色选择器（家装客户类型——全是自住宅主）
+    role_title: '选择服务的主要客户角色（测你的"对口画像"）',
+    roles: [
+      {key:'all', label:'全部客户（综合画像）', hint:'综合画像：35 题，覆盖所有自住宅主的通用题'},
+      {key:'new_home', label:'新房收房业主', hint:'新房画像：侧重户型优化/预算分配/硬装软装搭配'},
+      {key:'upgrade', label:'改善置换业主', hint:'改善画像：侧重收纳/动线/风格升级/老人小孩'},
+      {key:'reno', label:'二手房翻新业主', hint:'二手房画像：侧重拆改/墙顶基层/水电老化处理'},
+      {key:'luxury', label:'别墅/大平层业主', hint:'高端画像：侧重全案定制/智能系统/软装艺术搭配'}
+    ]
   }
 };
 
@@ -647,6 +661,31 @@ function updateIntro(){
       nextAsk.innerHTML = '🔍 还有别的问题？去家装工作台继续 →';
     }
   }
+
+  // ★ 渲染角色选择器（按 domain 动态）
+  renderRoleSelector(cfg);
+}
+
+// ============================================================
+//  角色选择器渲染（按 CURRENT_DOMAIN 切换客户角色）
+// ============================================================
+function renderRoleSelector(cfg){
+  var titleEl = document.getElementById('role-selector-title');
+  var btnBox = document.getElementById('role-selector-buttons');
+  var hintEl = document.getElementById('role-hint');
+  if(!btnBox) return;
+  if(titleEl) titleEl.textContent = cfg.role_title || '选择服务的主要客户角色';
+
+  var roles = cfg.roles || [];
+  var html = roles.map(function(r){
+    var isActive = CURRENT_ROLE === r.key ? ' active' : '';
+    return '<button class="role-btn' + isActive + '" data-role="' + r.key + '" onclick="selectRole(this,\'' + r.key + '\')">' + r.label + '</button>';
+  }).join('');
+  btnBox.innerHTML = html;
+
+  // 角色提示（默认为全部角色的 hint）
+  var defaultHint = roles.find(function(r){ return r.key === 'all'; });
+  if(hintEl) hintEl.textContent = defaultHint ? defaultHint.hint : '';
 }
 
 // 全局变量：updateIntro 里按 CURRENT_DOMAIN 动态赋值
@@ -754,17 +793,10 @@ function selectRole(btn, role) {
   document.querySelectorAll('.role-btn').forEach(function(el){
     el.classList.toggle('active', el.dataset.role === role);
   });
-  // 更新提示
-  var roleNames = {buyer:'买家',seller:'卖家',renter:'租客',landlord:'业主',investor:'投资客',all:'综合画像'};
-  var hints = {
-    buyer:'买家画像：侧重首付/贷款/验房/压价相关题',
-    seller:'卖家画像：侧重挂价/反价/独家委托/调价相关题',
-    renter:'租客画像：侧重租金/押一付三/续租/退租相关题',
-    landlord:'业主画像：侧重出租/租金/维修/房东义务相关题',
-    investor:'投资客画像：侧重回报率/杠杆/以租养贷相关题',
-    all:'综合画像：60 题，覆盖所有角色的通用题',
-  };
-  document.getElementById('role-hint').textContent = hints[role] || '';
+  // 从当前 domain 的配置里取 hint（动态）
+  var cfg = DOMAIN_CONFIGS[CURRENT_DOMAIN];
+  var roleObj = (cfg.roles || []).find(function(r){ return r.key === role; });
+  document.getElementById('role-hint').textContent = roleObj ? roleObj.hint : '';
 }
 
 function filterQuestionsByRole(qs, role) {
