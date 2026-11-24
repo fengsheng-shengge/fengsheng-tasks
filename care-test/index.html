@@ -361,7 +361,7 @@
 //  服务者能力画像测评 - 核心数据（7维度 · 35题，按 domain 切换）
 // ============================================================
 
-// 每个 domain 的维度配置（名字/颜色/图标/id→名映射）
+// 每个 domain 的维度配置（名字/颜色/图标/id→名映射 + 解决方案 + 改善建议 + 报告跳转）
 var DOMAIN_CONFIGS = {
   TRANSACTION: {
     domain_label: '交易服务',
@@ -369,7 +369,66 @@ var DOMAIN_CONFIGS = {
     dim_colors: { '获客触达':'#2563eb','需求洞察':'#0891b2','专业方案':'#059669','带看谈判':'#d97706','交易履约':'#7c3aed','售后复购':'#db2777','数字化协同':'#475569' },
     dim_icons:  { '获客触达':'📣','需求洞察':'🔍','专业方案':'📐','带看谈判':'🤝','交易履约':'📝','售后复购':'💗','数字化协同':'🤖' },
     dim_id_to_name: { 1:'获客触达',2:'需求洞察',3:'专业方案',4:'带看谈判',5:'交易履约',6:'售后复购',7:'数字化协同' },
-    quiz_path: '/data/v3/quiz.json'
+    quiz_path: '/data/v3/quiz.json',
+    // 报告页每个维度的"你是XX型"人格化评语
+    ability_profiles: {
+      '获客触达': '你是【开拓型】服务者：获客渠道主动且多元，不依赖公司分客。把你的获客动作沉淀成可复制的方法，淡季也能稳定进线。',
+      '需求洞察': '你是【共情型】服务者：听得懂客户没说出口的需求。补上专业方案的硬知识，你的判断会更有底气。',
+      '专业方案': '你是【专家型】服务者：税费贷款、政策依据张口就来。把专业度翻译成客户听得懂的话，签单转化会更高。',
+      '带看谈判': '你是【交锋型】服务者：带看和谈判是你的主场。把每次谈判中有效的话术沉淀下来，它会变成你的个人资产。',
+      '交易履约': '你是【稳健型】服务者：流程和风险把控让人放心。往前走一步，把售后做成长期客户的入口。',
+      '售后复购': '你是【长跑型】服务者：客户愿意回头找你。把转介绍的路径系统化，老客户会成为你最稳的业绩来源。',
+      '数字化协同': '你是【善假于物】型服务者：会用工具，更守得住"工具生成·真人复核"的底线。把你的用法教给同伴，效率差距会越拉越大。'
+    },
+    // 报告页改善建议（每个维度一条具体可执行建议）
+    suggestions: {
+      '获客触达': '本周先做一件事：在知识底座"工具模板"域里抓一条收房核验清单，转发到朋友圈。内容稳、口径准、转发自带权威。',
+      '需求洞察': '下次带看前，把客户的通勤、家庭结构、换房原因记成一页需求笔记，带着画像去看房——而不是带着房源去看客户。',
+      '专业方案': '打开知识底座"工具模板"域，把购房方案模板套一遍：客户画像+片区对比+税费+贷款+风险提示，10分钟出初稿。',
+      '带看谈判': '知识底座搜"异议处理"，把最常见的3个压价回应背下来——"房子贵"的标准回应在底座里现成可查。',
+      '交易履约': '"工具模板"域里有现成的交易节点清单（签约→贷款→过户→交房），每单打勾执行，不丢任何一步。',
+      '售后复购': '交房后推荐客户看知识底座的"后市场"域——房屋维修/家装/家电问题都能在这里查到。帮老客户解决居住问题，转介绍自然来。',
+      '数字化协同': '用策展引擎生成一份方案，逐条核对后再发客户，走完"工具生成 · 真人复核"的完整闭环：工具负责放大，你负责拍板。'
+    },
+    // 报告页每个维度的解决方案（站内工具推荐）
+    solutions: {
+      '获客触达': [
+        {title:'知识底座', desc:'收房核验清单/老客户经营SOP/房源对比模板，内容现成拿来就发', link:'/knowledge/'},
+        {title:'策展引擎', desc:'用一份专业方案展示你的价值，撬动老客户转介绍', link:'/curation/'}
+      ],
+      '需求洞察': [
+        {title:'话术解码器', desc:'客户问题怎么答，把"再看看"背后的真实顾虑挖出来', link:'/decoder/'},
+        {title:'知识底座·客户解码', desc:'75条客户解码词条——听懂话外音，识别真实顾虑', link:'/knowledge/'}
+      ],
+      '专业方案': [
+        {title:'知识底座', desc:'购房方案模板/税费测算/政策口径秒查，6,135条业务知识', link:'/knowledge/'},
+        {title:'策展引擎', desc:'一键生成含月供、税费、资金计划的完整置业方案', link:'/curation/'}
+      ],
+      '带看谈判': [
+        {title:'话术解码器', desc:'异议处理与价格斡旋话术参考，谈判前先备弹药', link:'/decoder/'},
+        {title:'知识底座', desc:'带看SOP/房源核验清单/合同风险点逐条过', link:'/knowledge/'}
+      ],
+      '交易履约': [
+        {title:'知识底座', desc:'交易节点SOP/过户清单/交房验房流程，合同条款对照查', link:'/knowledge/'},
+        {title:'话术解码器', desc:'资金监管、税费追问怎么答——交易环节疑问应对参考', link:'/decoder/'}
+      ],
+      '售后复购': [
+        {title:'策展引擎', desc:'给老客户生成一份居住方案——把回访做成专业触达', link:'/curation/'},
+        {title:'知识底座', desc:'后市场维修/家装改造/资产运营词条，帮老客户解决居住问题', link:'/knowledge/'}
+      ],
+      '数字化协同': [
+        {title:'策展引擎', desc:'完整体验"工具生成 · 真人复核 · 方才发送"的作业闭环', link:'/curation/'},
+        {title:'学习成长', desc:'测完按你的短板维度推核心课与场景练习，学练回写画像', link:'/academy/'}
+      ]
+    },
+    // 报告页跳转路径配置（按 domain 切换）
+    report_actions: {
+      practice_href: '/academy/practice/',
+      search_href: '/workspace/',
+      courses_href: '/academy/core-courses/',
+      profile_href: '/academy/profile/',
+      next_step_ask_href: '/workspace/'
+    }
   },
   DECOR: {
     domain_label: '家装服务',
@@ -377,7 +436,62 @@ var DOMAIN_CONFIGS = {
     dim_colors: { '品牌获客':'#2563eb','住户画像':'#0891b2','全案设计':'#059669','方案呈现':'#d97706','施工交底':'#7c3aed','交付兑现':'#db2777','数字化工具':'#475569' },
     dim_icons:  { '品牌获客':'📣','住户画像':'👁️','全案设计':'📐','方案呈现':'🎨','施工交底':'🏗️','交付兑现':'✅','数字化工具':'🤖' },
     dim_id_to_name: { 1:'品牌获客',2:'住户画像',3:'全案设计',4:'方案呈现',5:'施工交底',6:'交付兑现',7:'数字化工具' },
-    quiz_path: '/data/v3/quiz_decor.json'
+    quiz_path: '/data/v3/quiz_decor.json',
+    ability_profiles: {
+      '品牌获客': '你是【种子型】设计师：个人品牌和客户转介绍是你的核心获客渠道。把小红书/朋友圈的真实家装案例系统化，淡旺季都能稳定来单。',
+      '住户画像': '你是【共情型】设计师：看得懂客户没说出来的需求——收纳、动线、谁常在家、旧家具留不留。补上硬装软装预算分配的硬知识，你的方案会更有说服力。',
+      '全案设计': '你是【专家型】设计师：硬装布局+软装搭配+材料选型一眼就懂。把专业术语翻译成客户听得懂的话，签单转化会更高。',
+      '方案呈现': '你是【讲故事型】设计师：给客户讲方案不是念 PPT——"为什么这个沙发放这""这个弧形怎么省预算"。把每次谈单的有效话术沉淀下来。',
+      '施工交底': '你是【靠谱型】设计师：三方交底、材料封样、工期承诺一个都不丢。把施工现场的照片拍给客户，让他随时知道进度。',
+      '交付兑现': '你是【较真型】设计师：合同清单逐项验收，软装必须全部到位才算交。你这种较真的劲儿正是客户要的——拎包入住说好了就要做到。',
+      '数字化工具': '你是【善假于物】型设计师：用 AI 辅助设计/报价计算器，更守得住"工具生成·真人复核"的底线。把你的用法教给同事，效率差距会越来越大。'
+    },
+    suggestions: {
+      '品牌获客': '小红书发一条"装修避坑"真实案例：量房→方案→报价→施工→验收，每阶段一个坑。带话题#家装干货#，攒够10条就有客户找你。',
+      '住户画像': '下次量房时，除了尺寸，额外问 3 个问题：1）谁常在家？2）收纳最头疼的地方？3）有没有必须保留的旧家具？把答案记在量房本的首页。',
+      '全案设计': '打开知识底座搜"硬装软装预算分配"，参照别人的配比给客户出方案——硬装 50%+软装 30%+家电 20% 的经验值现成可查。',
+      '方案呈现': '知识底座搜"报价贵了怎么回应"，把"比隔壁贵 2 万"的 3 种标准回应背下来：先共情→再讲材料差异→最后给老客户案例。',
+      '施工交底': '现场交底时，别只跟工长说——把客户也拉进来，三方一起确认水电走向、瓷砖贴法、工期节点。交底完拍视频发客户群。',
+      '交付兑现': '验收时别让客户自己找问题——你拿合同清单逐条打勾，主动说"这条没做到，扣 2000"。签字前软装必须全部到位。',
+      '数字化工具': '用策展引擎生成一份"全屋硬装+软装预算清单"，让 AI 先出初稿，你再核对细节。10 分钟就能给客户一份能拍板的方案。'
+    },
+    solutions: {
+      '品牌获客': [
+        {title:'家装工作台', desc:'全案设计师/工长的 6 阶段 SOP，每个阶段给你动作清单', link:'/home-design/'},
+        {title:'知识底座', desc:'家装避坑案例/小红书装修话术/老客户转介绍 SOP', link:'/knowledge/'}
+      ],
+      '住户画像': [
+        {title:'家装工作台', desc:'量房阶段的住户画像模板——3 类问题必问', link:'/home-design/'},
+        {title:'策展引擎', desc:'输入客户画像，一键生成硬装软装预算方案初稿', link:'/curation/'}
+      ],
+      '全案设计': [
+        {title:'知识底座', desc:'硬装软装预算分配/材料选型/效果图规范，6000+ 条家装知识', link:'/knowledge/'},
+        {title:'策展引擎', desc:'AI 辅助全案设计——输入户型+预算+风格偏好，10 分钟出初稿', link:'/curation/'}
+      ],
+      '方案呈现': [
+        {title:'话术解码器', desc:'"报价贵了""能不能只装硬装"等家装异议的标准回应', link:'/decoder/'},
+        {title:'家装工作台', desc:'合同&报价阶段的核心动作+常见陷阱', link:'/home-design/'}
+      ],
+      '施工交底': [
+        {title:'家装工作台', desc:'硬装交底阶段：三方交底+材料封样+工期承诺+质量巡检', link:'/home-design/'},
+        {title:'知识底座', desc:'水电改造规范/瓷砖铺贴标准/防水验收标准', link:'/knowledge/'}
+      ],
+      '交付兑现': [
+        {title:'家装工作台', desc:'验收交付阶段：合同清单逐项验收+软装到位+质保移交', link:'/home-design/'},
+        {title:'知识底座', desc:'竣工验收标准/质保条款/拎包入住交付清单', link:'/knowledge/'}
+      ],
+      '数字化工具': [
+        {title:'策展引擎', desc:'硬装软装预算清单 AI 生成·真人复核闭环', link:'/curation/'},
+        {title:'家装工作台', desc:'全案设计师成长条——看你的 6 阶段进度', link:'/home-design/'}
+      ]
+    },
+    report_actions: {
+      practice_href: '/home-design/',
+      search_href: '/home-design/',
+      courses_href: '/home-design/',
+      profile_href: '/home-design/',
+      next_step_ask_href: '/home-design/'
+    }
   }
 };
 
@@ -471,6 +585,10 @@ function updateIntro(){
     CARETEST_DIM_NAMES['DIM-' + did] = dname;
   }
 
+  // 全局 SOLUTIONS / SUGGESTIONS 已在上方 cfg.solutions / cfg.suggestions 定义，
+  // 根据 CURRENT_DOMAIN 动态切换，updateIntro 末尾会赋值。
+  // 不再需要单独 var SOLUTIONS / var SUGGESTIONS 覆盖
+
   var introTitle = document.getElementById('intro-title');
   var introSub = document.getElementById('intro-subtitle');
   if(introTitle){
@@ -514,7 +632,27 @@ function updateIntro(){
       '</div>';
     }).join('');
   }
+
+  // ★ 按 CURRENT_DOMAIN 同步全局变量（供报告页、建议区、下一步推荐使用）
+  SOLUTIONS = cfg.solutions || {};
+  ABILITY_PROFILES = cfg.ability_profiles || {};
+  // SUGGESTIONS 存纯字符串，渲染时从 dim_icons/dim_colors 取 icon/color
+  SUGGESTIONS_TEXT = cfg.suggestions || {};
+  // 更新报告页底部"还有别的问题？回去搜问题"链接
+  var nextAsk = document.getElementById('next-step-ask');
+  if(nextAsk && cfg.report_actions){
+    nextAsk.href = cfg.report_actions.next_step_ask_href;
+    // DECOR 域时，提示文字也改一下
+    if(CURRENT_DOMAIN === 'DECOR'){
+      nextAsk.innerHTML = '🔍 还有别的问题？去家装工作台继续 →';
+    }
+  }
 }
+
+// 全局变量：updateIntro 里按 CURRENT_DOMAIN 动态赋值
+var SOLUTIONS = {};
+var ABILITY_PROFILES = {};
+var SUGGESTIONS_TEXT = {};
 
 // 解析 URL 参数：?dim=4（专项 5 题）/ ?domain=&position=（岗位）
 function processUrlParams(){
@@ -566,60 +704,8 @@ function processUrlParams(){
   }
 }
 
-
-// 能力画像映射（按最强维度归型）
-var ABILITY_PROFILES = {
-  '获客触达': '你是【开拓型】服务者：获客渠道主动且多元，不依赖公司分客。把你的获客动作沉淀成可复制的方法，淡季也能稳定进线。',
-  '需求洞察': '你是【共情型】服务者：听得懂客户没说出口的需求。补上专业方案的硬知识，你的判断会更有底气。',
-  '专业方案': '你是【专家型】服务者：税费贷款、政策依据张口就来。把专业度翻译成客户听得懂的话，签单转化会更高。',
-  '带看谈判': '你是【交锋型】服务者：带看和谈判是你的主场。把每次谈判中有效的话术沉淀下来，它会变成你的个人资产。',
-  '交易履约': '你是【稳健型】服务者：流程和风险把控让人放心。往前走一步，把售后做成长期客户的入口。',
-  '售后复购': '你是【长跑型】服务者：客户愿意回头找你。把转介绍的路径系统化，老客户会成为你最稳的业绩来源。',
-  '数字化协同': '你是【善假于物】型服务者：会用工具，更守得住"工具生成·真人复核"的底线。把你的用法教给同伴，效率差距会越拉越大。'
-};
-
-// 解决方案推荐（对应站内真实工具）
-var SOLUTIONS = {
-  '获客触达': [
-    {title:'知识底座', desc:'收房核验清单/老客户经营SOP/房源对比模板，内容现成拿来就发', type:'free', link:'/knowledge/'},
-    {title:'策展引擎', desc:'用一份专业方案展示你的价值，撬动老客户转介绍', type:'free', link:'/curation/'}
-  ],
-  '需求洞察': [
-    {title:'话术解码器', desc:'客户问题怎么答，把"再看看"背后的真实顾虑挖出来', type:'free', link:'/decoder/'},
-    {title:'知识底座·客户解码', desc:'75条客户解码词条——听懂话外音，识别真实顾虑', type:'free', link:'/knowledge/'}
-  ],
-  '专业方案': [
-    {title:'知识底座', desc:'购房方案模板/税费测算/政策口径秒查，6,135条业务知识', type:'free', link:'/knowledge/'},
-    {title:'策展引擎', desc:'一键生成含月供、税费、资金计划的完整置业方案', type:'free', link:'/curation/'}
-  ],
-  '带看谈判': [
-    {title:'话术解码器', desc:'异议处理与价格斡旋话术参考，谈判前先备弹药', type:'free', link:'/decoder/'},
-    {title:'知识底座', desc:'带看SOP/房源核验清单/合同风险点逐条过', type:'free', link:'/knowledge/'}
-  ],
-  '交易履约': [
-    {title:'知识底座', desc:'交易节点SOP/过户清单/交房验房流程，合同条款对照查', type:'free', link:'/knowledge/'},
-    {title:'话术解码器', desc:'资金监管、税费追问怎么答——交易环节疑问应对参考', type:'free', link:'/decoder/'}
-  ],
-  '售后复购': [
-    {title:'策展引擎', desc:'给老客户生成一份居住方案——把回访做成专业触达', type:'free', link:'/curation/'},
-    {title:'知识底座', desc:'后市场维修/家装改造/资产运营词条，帮老客户解决居住问题', type:'free', link:'/knowledge/'}
-  ],
-  '数字化协同': [
-    {title:'策展引擎', desc:'完整体验"工具生成 · 真人复核 · 方才发送"的作业闭环', type:'free', link:'/curation/'},
-    {title:'学习成长', desc:'测完按你的短板维度推核心课与场景练习，学练回写画像', type:'free', link:'/academy/'}
-  ]
-};
-
-// 改善建议
-var SUGGESTIONS = {
-  '获客触达': {icon:'📣', color:'#2563eb', text:'本周先做一件事：在知识底座"工具模板"域里抓一条收房核验清单，转发到朋友圈。内容稳、口径准、转发自带权威。'},
-  '需求洞察': {icon:'🔍', color:'#0891b2', text:'下次带看前，把客户的通勤、家庭结构、换房原因记成一页需求笔记，带着画像去看房——而不是带着房源去看客户。'},
-  '专业方案': {icon:'📐', color:'#059669', text:'打开知识底座"工具模板"域，把购房方案模板套一遍：客户画像+片区对比+税费+贷款+风险提示，10分钟出初稿。'},
-  '带看谈判': {icon:'🤝', color:'#d97706', text:'知识底座搜"异议处理"，把最常见的3个压价回应背下来——"房子贵"的标准回应在底座里现成可查。'},
-  '交易履约': {icon:'📝', color:'#7c3aed', text:'"工具模板"域里有现成的交易节点清单（签约→贷款→过户→交房），每单打勾执行，不丢任何一步。'},
-  '售后复购': {icon:'💗', color:'#db2777', text:'交房后推荐客户看知识底座的"后市场"域——房屋维修/家装/家电问题都能在这里查到。帮老客户解决居住问题，转介绍自然来。'},
-  '数字化协同': {icon:'🤖', color:'#475569', text:'用策展引擎生成一份方案，逐条核对后再发客户，走完"工具生成 · 真人复核"的完整闭环：工具负责放大，你负责拍板。'}
-};
+// SOLUTIONS / SUGGESTIONS / ABILITY_PROFILES 已移到 DOMAIN_CONFIGS，
+// 在 updateIntro 里按 CURRENT_DOMAIN 动态赋值，不再单独声明
 
 // ============================================================
 //  状态变量
@@ -1072,13 +1158,15 @@ function showReport() {
   for (var ri = 0; ri < Math.min(3, revSorted.length); ri++) {
     var rsdim = revSorted[ri];
     var rss = avg[rsdim];
-    var sug = SUGGESTIONS[rsdim];
-    if (!sug) continue;
+    var sugText = SUGGESTIONS_TEXT[rsdim];
+    if (!sugText) continue;
+    var sugIcon = DIM_ICONS[rsdim] || '💡';
+    var sugColor = DIM_COLORS[rsdim] || '#475569';
     var label = ri === 0 ? '🔴 最需改善' : (ri === 1 ? '🟡 重点考虑' : '🟢 保持关注');
     sugEl.innerHTML +=
       '<div class="sug-item">' +
-        '<div class="sug-icon" style="background:' + sug.color + '">' + sug.icon + '</div>' +
-        '<div class="sug-text"><b>' + label + ' · ' + rsdim + '（' + rss + '分）</b><br>' + sug.text + '</div>' +
+        '<div class="sug-icon" style="background:' + sugColor + '">' + sugIcon + '</div>' +
+        '<div class="sug-text"><b>' + label + ' · ' + rsdim + '（' + rss + '分）</b><br>' + sugText + '</div>' +
       '</div>';
   }
 
@@ -1317,26 +1405,26 @@ function renderNextSteps(avg, lowest, secondLowest){
   var grid = document.getElementById('next-step-grid');
   if(!grid) return;
 
-  // 两个最弱维度 → 去练 + 去搜问题
+  // 两个最弱维度 → 去练 + 去搜问题（路径按 CURRENT_DOMAIN 动态切换）
   var dims = [lowest, secondLowest].filter(function(d){ return avg[d] !== undefined; });
   if(dims.length === 0){ dims = DIMS.slice(0, 2); }
 
+  var act = DOMAIN_CONFIGS[CURRENT_DOMAIN].report_actions;
   var cards = [];
 
   // 每个最弱维度给 2 个入口：🎭去练 / 🔍搜问题
   for(var i = 0; i < dims.length; i++){
     var dim = dims[i];
-    var dimId = DIM_TO_ID[dim];
     var emoji = DIM_EMOJI[dim] || '💡';
     var score = avg[dim] || 0;
     var color = score < 50 ? '#e74c3c' : (score < 70 ? '#f39c12' : '#2ecc71');
 
-    // 🎭 去练（场景练习——跳 workspace 搜问题 + 带维度参数）
+    // 🎭 去练场景（DECOR → home-design/；TRANSACTION → academy/practice/）
     cards.push({
       emoji: emoji + '🎭',
       title: dim + ' · 去练场景',
-      desc: '模拟真实客户对话，练这个维度的实战',
-      href: '/academy/practice/',
+      desc: CURRENT_DOMAIN === 'DECOR' ? '家装真实场景模拟：全案设计/报价/交底/验收' : '模拟真实客户对话，练这个维度的实战',
+      href: act.practice_href,
       color: color
     });
 
@@ -1344,8 +1432,8 @@ function renderNextSteps(avg, lowest, secondLowest){
     cards.push({
       emoji: emoji + '🔍',
       title: dim + ' · 搜问题找答案',
-      desc: '输入客户常说的话，直接给可复制的话术',
-      href: '/workspace/',
+      desc: CURRENT_DOMAIN === 'DECOR' ? '去家装工作台看完整 SOP 动作清单' : '输入客户常说的话，直接给可复制的话术',
+      href: act.search_href,
       color: color
     });
   }
@@ -1354,16 +1442,16 @@ function renderNextSteps(avg, lowest, secondLowest){
   if(cards.length < 4){
     cards.push({
       emoji: '📚',
-      title: '去学核心课',
-      desc: dims[0] + '入门 · 系统补强',
-      href: '/academy/core-courses/',
+      title: CURRENT_DOMAIN === 'DECOR' ? '看家装 SOP' : '去学核心课',
+      desc: dims[0] + ' · 系统补强',
+      href: act.courses_href,
       color: '#1a3d24'
     });
     cards.push({
       emoji: '📊',
       title: '查看能力画像',
       desc: '7 维雷达图 · 综合分 · 历史趋势',
-      href: '/academy/profile/',
+      href: act.profile_href,
       color: '#c9a962'
     });
   }
