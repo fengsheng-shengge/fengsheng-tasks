@@ -4,15 +4,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>服务者能力画像测评 | 风声</title>
 <meta property="og:title" content="服务者能力画像测评 · 风声信息咨询">
-<meta property="og:description" content="7个维度35道题每题4选项，测出你在获客、洞察、方案、谈判、履约、复购、数字化的真实水平，并标出服务阶段的优势与断点。专为房产经纪人设计。">
+<meta property="og:description" content="7 维度 · 35 道情景题 · 按 domain 切换题库（交易/家装），测出真实水平与断点，完全免费。">
 <meta property="og:image" content="https://fengsheng.tech/og-image.png">
 <meta property="og:url" content="https://fengsheng.tech/care-test/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="7个维度35道题（每题4选项）约15分钟，按获客/洞察/方案/带看/交易/售后的服务阶段，测出房产经纪人的真实优势与断点，附缺口分析与工具推荐。免费自测。">
-<meta name="keywords" content="房产经纪人能力测评,经纪人能力画像,获客能力测评,带看谈判测评,房产经纪自测,服务者能力画像">
+<meta name="description" content="7 维度 35 题（约 15 分钟），按 domain 切换（交易服务/家装服务），测出真实优势与断点，附缺口分析与工具推荐。完全免费。">
+<meta name="keywords" content="服务者能力测评,居住服务能力画像,家装能力测评,经纪人能力测评,学练考评配">
 <link rel="canonical" href="https://fengsheng.tech/care-test/">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"服务者能力画像测评","url":"https://fengsheng.tech/care-test/","applicationCategory":"EducationApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"description":"7维度测出房产经纪人的能力画像：获客·洞察·方案·谈判·履约·复购·数字化协同"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"服务者能力画像测评","url":"https://fengsheng.tech/care-test/","applicationCategory":"EducationApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"description":"7 维度测出居住服务者能力画像：按 domain 切换题库（交易/家装），完全免费"}</script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif; background: #f5f3ee; min-height: 100vh; }
@@ -179,7 +179,7 @@
 <div class="page active" id="page-intro">
   <div class="intro-header">
     <h1>服务者能力<br>画像测评</h1>
-    <p style="opacity:.9">7 个维度 · 35 道题 · 约 15 分钟<br>专为一线经纪人设计 · 完全免费</p>
+    <p style="opacity:.9">7 个维度 · 35 道真实情景题 · 约 15 分钟<br>按 domain 切换题库 · 完全免费</p>
   </div>
 
   <!-- ========== 为什么要测 / 测完能干啥 / 有啥帮助 ========== -->
@@ -295,7 +295,7 @@
         <div>
           <div style="font-weight:700;color:#1a3d24;margin-bottom:4px">✅ 怎么测</div>
           <ul style="margin:0;padding-left:16px;line-height:1.7">
-            <li><b>情景判断题</b>：每道题都是真实经纪人会遇到的场景</li>
+            <li><b>情景判断题</b>：每道题都是真实服务场景（按 domain 切换题库）</li>
             <li><b>按你平时怎么做来答</b>：没有"标准答案"，测的是你</li>
             <li><b>每次顺序/选项随机</b>：重测永远是新卷</li>
           </ul>
@@ -412,80 +412,116 @@
 
 <script>
 // ============================================================
-//  服务者能力画像测评 - 核心数据（7维度 · 35题，对齐能力画像）
+//  服务者能力画像测评 - 核心数据（7维度 · 35题，按 domain 切换）
 // ============================================================
 
-var DIMS = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
-
-var DIM_COLORS = {
-  '获客触达': '#2563eb',
-  '需求洞察': '#0891b2',
-  '专业方案': '#059669',
-  '带看谈判': '#d97706',
-  '交易履约': '#7c3aed',
-  '售后复购': '#db2777',
-  '数字化协同': '#475569'
+// 每个 domain 的维度配置（名字/颜色/图标/id→名映射）
+var DOMAIN_CONFIGS = {
+  TRANSACTION: {
+    domain_label: '交易服务',
+    dims: ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'],
+    dim_colors: { '获客触达':'#2563eb','需求洞察':'#0891b2','专业方案':'#059669','带看谈判':'#d97706','交易履约':'#7c3aed','售后复购':'#db2777','数字化协同':'#475569' },
+    dim_icons:  { '获客触达':'📣','需求洞察':'🔍','专业方案':'📐','带看谈判':'🤝','交易履约':'📝','售后复购':'💗','数字化协同':'🤖' },
+    dim_id_to_name: { 1:'获客触达',2:'需求洞察',3:'专业方案',4:'带看谈判',5:'交易履约',6:'售后复购',7:'数字化协同' },
+    quiz_path: '/data/v3/quiz.json'
+  },
+  DECOR: {
+    domain_label: '家装服务',
+    dims: ['品牌获客','住户画像','全案设计','方案呈现','施工交底','交付兑现','数字化工具'],
+    dim_colors: { '品牌获客':'#2563eb','住户画像':'#0891b2','全案设计':'#059669','方案呈现':'#d97706','施工交底':'#7c3aed','交付兑现':'#db2777','数字化工具':'#475569' },
+    dim_icons:  { '品牌获客':'📣','住户画像':'👁️','全案设计':'📐','方案呈现':'🎨','施工交底':'🏗️','交付兑现':'✅','数字化工具':'🤖' },
+    dim_id_to_name: { 1:'品牌获客',2:'住户画像',3:'全案设计',4:'方案呈现',5:'施工交底',6:'交付兑现',7:'数字化工具' },
+    quiz_path: '/data/v3/quiz_decor.json'
+  }
 };
 
-var DIM_ICONS = {
-  '获客触达': '📣',
-  '需求洞察': '🔍',
-  '专业方案': '📐',
-  '带看谈判': '🤝',
-  '交易履约': '📝',
-  '售后复购': '💗',
-  '数字化协同': '🤖'
-};
+// 默认：交易域
+var CURRENT_DOMAIN = 'TRANSACTION';
+var DIM_COLORS = DOMAIN_CONFIGS.TRANSACTION.dim_colors;
+var DIM_ICONS  = DOMAIN_CONFIGS.TRANSACTION.dim_icons;
+var DIM_ID_TO_NAME = DOMAIN_CONFIGS.TRANSACTION.dim_id_to_name;
+
+// 通用软技能维度（两个 domain 共用）
+var SOFT_DIMS = ['客户共情','风险判断','责任担当','职业底线','口碑服务'];
 
 // ============================================================
-//  题目数据加载（v3.0：从 /data/v3/quiz.json fetch，35 题 × 7 维）
+//  题目数据加载（按 CURRENT_DOMAIN 选 quiz.json 或 quiz_decor.json）
 // ============================================================
 var QUESTIONS = [];     // 运行时填充
 var quizDataRaw = null; // 保存原始 quiz.json 数据供后续用
 
-// dim_id → 中文维度名（和 quiz.json 的 dim_name 对齐）
-var DIM_ID_TO_NAME = {
-  1:'获客触达', 2:'需求洞察', 3:'专业方案', 4:'带看谈判',
-  5:'交易履约', 6:'售后复购', 7:'数字化协同'
-};
-
 function convertQuiz(rawQuestions){
+  var fallbackDim = Object.values(DIM_ID_TO_NAME)[0] || '品牌获客';
   return rawQuestions.map(function(q){
     return {
       id: q.id,
-      dim: q.dim_name || DIM_ID_TO_NAME[q.dim_id] || '带看谈判',
-      stage: null,  // quiz.json 没 stage 字段
-      dimColor: DIM_COLORS[q.dim_name] || DIM_COLORS['带看谈判'],
+      dim: q.dim_name || DIM_ID_TO_NAME[q.dim_id] || fallbackDim,
+      stage: null,
+      dimColor: (DIM_COLORS[q.dim_name] || DIM_COLORS[fallbackDim] || '#475569'),
       title: 'Question ' + q.id,
       subtitle: q.question,
       options: q.options.map(function(text, idx){
         return { text: text, score: idx === q.correct ? 5 : 1 };
       }),
-      // 额外：保存原始信息供报告页用
       _explanation: q.explanation,
       _standard: q.standard_ref,
       _type: q.type,
       _dim_id: q.dim_id,
       _dim_code: q.dim_code,
-      _roles: q.roles || [],  // v2：角色字段
+      _roles: q.roles || [],
     };
   });
 }
 
-// 启动时加载
-fetch('/data/v3/quiz.json')
-  .then(function(r){ return r.ok ? r.json() : null; })
-  .then(function(data){
-    if(!data || !data.questions) return;
-    quizDataRaw = data;
-    QUESTIONS = convertQuiz(data.questions);
-    // URL 参数处理 + 更新 Intro 页标题
-    processUrlParams();
-  })
-  .catch(function(){});
+// 启动：先解析 URL domain 参数 → 选题库 → 加载
+(function boot(){
+  var params = new URLSearchParams(window.location.search);
+  var domainParam = (params.get('domain') || 'TRANSACTION').toUpperCase();
+  if(DOMAIN_CONFIGS[domainParam]) CURRENT_DOMAIN = domainParam;
+
+  // 切换维度配置
+  var cfg = DOMAIN_CONFIGS[CURRENT_DOMAIN];
+  DIM_COLORS = cfg.dim_colors;
+  DIM_ICONS = cfg.dim_icons;
+  DIM_ID_TO_NAME = cfg.dim_id_to_name;
+
+  fetch(cfg.quiz_path)
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if(!data || !data.questions) {
+        // DECOR 题库加载失败回退经纪人题库
+        if(CURRENT_DOMAIN !== 'TRANSACTION'){
+          fetch(DOMAIN_CONFIGS.TRANSACTION.quiz_path)
+            .then(function(r){ return r.ok ? r.json() : null; })
+            .then(function(d){ if(d && d.questions){ quizDataRaw = d; QUESTIONS = convertQuiz(d.questions); updateIntro(); } })
+            .catch(function(){});
+        }
+        return;
+      }
+      quizDataRaw = data;
+      QUESTIONS = convertQuiz(data.questions);
+      processUrlParams();
+    })
+    .catch(function(){});
+})();
+
+// 根据 CURRENT_DOMAIN 更新 intro 文案
+function updateIntro(){
+  var cfg = DOMAIN_CONFIGS[CURRENT_DOMAIN];
+  var introTitle = document.getElementById('intro-title');
+  var introSub = document.getElementById('intro-subtitle');
+  if(introTitle){
+    introTitle.textContent = cfg.domain_label + ' · 能力画像测评';
+  }
+  if(introSub){
+    introSub.textContent = '7 个维度 · 35 道真实情景题 · 约 15 分钟 · 完全免费';
+  }
+}
 
 // 解析 URL 参数：?dim=4（专项 5 题）/ ?domain=&position=（岗位）
 function processUrlParams(){
+  updateIntro(); // 先确保 domain 文案已更新
+
   var params = new URLSearchParams(window.location.search);
   var dimParam = params.get('dim');
   var domainParam = params.get('domain');
@@ -494,20 +530,18 @@ function processUrlParams(){
   var introTitle = document.getElementById('intro-title');
   var introSub = document.getElementById('intro-subtitle');
   var startBtn = document.querySelector('.start-btn');
+  var cfg = DOMAIN_CONFIGS[CURRENT_DOMAIN];
 
   // 岗位信息（可选，影响显示文案）
-  if(domainParam || positionParam){
-    // 等 dimensions_multi.json 加载完显示岗位名
+  if(positionParam){
     fetch('/data/v3/dimensions_multi.json')
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(dm){
         if(!dm) return;
         var posName = '';
-        if(positionParam){
-          for(var dk in dm.domains){
-            var pos = dm.domains[dk].positions.find(function(p){ return p.position_id === positionParam; });
-            if(pos){ posName = pos.position_name; break; }
-          }
+        for(var dk in dm.domains){
+          var pos = dm.domains[dk].positions.find(function(p){ return p.position_id === positionParam; });
+          if(pos){ posName = pos.position_name; break; }
         }
         if(posName && introSub){
           introSub.textContent = posName + '的7维度专项画像——' + introSub.textContent;
@@ -515,18 +549,18 @@ function processUrlParams(){
       }).catch(function(){});
   }
 
-  // 专项模式：只加载某个维度的 5 题
+  // 专项模式：只加载某个维度的 5 题（dim=1~7 按 dim_id 筛选；dim=DSGN 等字符串按 DIM_ID_TO_NAME fallback）
   if(dimParam){
     var dimId = parseInt(dimParam);
-    var dimName = DIM_ID_TO_NAME[dimId] || '带看谈判';
-    // 筛选这个维度的前 5 题
+    var fallbackDim = cfg.dims ? cfg.dims[0] : '品牌获客';
+    var dimName = DIM_ID_TO_NAME[dimId] || cfg.dim_id_to_name[dimParam] || fallbackDim;
     var filtered = QUESTIONS.filter(function(q){ return q.dim === dimName; });
     QUESTIONS = filtered.slice(0, 5);
     if(introTitle){
-      introTitle.textContent = dimName + ' · 专项能力测评';
+      introTitle.textContent = cfg.domain_label + ' · ' + dimName + ' 专项测评';
     }
     if(introSub){
-      introSub.textContent = '5 道情景题 · 2 分钟出结果 · 测完告诉你短板在哪';
+      introSub.textContent = '5 道真实情景题 · 2 分钟出结果 · 测完告诉你短板在哪';
     }
     if(startBtn){
       startBtn.textContent = '开始专项 5 题 →';
