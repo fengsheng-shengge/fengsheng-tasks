@@ -1239,12 +1239,37 @@ function renderLayeredView(stageKey){
   // 练一练场景
   document.getElementById("lc-practice-scene").textContent = s.practiceScene || "选岗位后给你一段真实对话，模拟练一把。";
 
-  // 学一学（简单版本：按阶段给不同链接）
-  var learnItems = [
-    '<a class="bp-learn-item" href="/knowledge/?q=' + encodeURIComponent('家装合同闭口价') + '">家装合同闭口价怎么签</a>',
-    '<a class="bp-learn-item" href="/knowledge/?q=' + encodeURIComponent('水电改造规范') + '">水电改造规范与报价</a>',
-    '<a class="bp-learn-item" href="/knowledge/?q=' + encodeURIComponent('竣工验收标准') + '">竣工验收标准与流程</a>'
-  ];
+  // 学一学：按当前 stage 给对应的家装知识词条（从 LAYER 的 refs 字段推导）
+  var layer = POSITION_TIMELINE[currentPosition] && POSITION_TIMELINE[currentPosition].layer;
+  var stageLayer = layer && layer[currentStage];
+  var learnSet = new Set();
+  // 收集所有 stage 的 practiceScene 关键词，推导出搜索词条
+  var stageLearnMap = {
+    'd1': ['量房注意事项', '住户画像模板', '家装收纳需求'],
+    'd2': ['硬装软装预算分配', '北欧风设计要点', '小空间怎么显大'],
+    'd3': ['家装合同闭口价', '报价清单怎么看', '装修增项上限'],
+    'd4': ['三方交底注意事项', '水电改造规范', '瓷砖铺贴标准'],
+    'd5': ['软装怎么选', '窗帘灯具搭配', '家具进场顺序'],
+    'd6': ['竣工验收标准', '装修质保期限', '软装到位清单'],
+    'p1': ['现场勘测 SOP', '硬装流程', '水电走线规范'],
+    'p2': ['全案设计交底', '工长图纸确认', '材料封样流程'],
+    'p3': ['现场管理', '工期节点把控', '安全施工红线'],
+    'p4': ['中期验收', '隐蔽工程验收', '瓷砖空鼓原因'],
+    'p5': ['硬装验收标准', '木地板安装验收', '油漆乳胶漆验收'],
+    'p6': ['整体验收交付', '尾款结算', '质保移交'],
+    'm1': ['项目启动会', '家装项目经理职责', '团队分工'],
+    'm2': ['工期计划管理', '多人多阶段协同', '客户沟通频率'],
+    'm3': ['现场巡检流程', '隐蔽工程监管', '质量追溯机制'],
+    'm4': ['竣工结算', '软装安装协调', '质保期管理'],
+    't1': ['开槽规范', '水电开槽注意事项', '承重墙不能动'],
+    't2': ['木工吊顶工艺', '轻钢龙骨规范', '柜门安装'],
+    't3': ['瓦工贴砖标准', '瓷砖空鼓原因', '美缝怎么做'],
+    't4': ['乳胶漆施工', '腻子打磨', '墙面找平']
+  };
+  var queries = (stageLearnMap[currentStage] || stageLearnMap['d1']).slice(0, 3);
+  var learnItems = queries.map(function(q){
+    return '<a class="bp-learn-item" href="/knowledge/?q=' + encodeURIComponent(q) + '">' + q + '</a>';
+  });
   document.getElementById("lc-learn").innerHTML = learnItems.join("");
 
   // 红线
@@ -1309,13 +1334,41 @@ function renderKBStagePicks(stageKey, positionId){
   }).join("");
 }
 
-// 阶段浏览面板（先给空态，后续迭代加真实场景话术）
+// 阶段浏览面板：从 LAYER 数据里取 practiceScene 列表（家装每个阶段都有真实场景）
 function renderStageBrowse(){
   var stageMeta = STAGES.find(function(x){ return x.key === currentStage; }) || {};
   var panel = document.getElementById("stage-browse");
   panel.style.display = "";
   document.getElementById("browse-stage-name").textContent = (stageMeta.icon || '📋') + " " + (stageMeta.name || '');
-  document.getElementById("browse-stage-count").textContent = "场景库建设中";
+
+  // 从 LAYER 里取当前 stage 及相邻 stage 的 practiceScene
+  var layer = POSITION_TIMELINE[currentPosition] && POSITION_TIMELINE[currentPosition].layer;
+  var sceneList = [];
+  if(layer){
+    for(var sk in layer){
+      var scene = layer[sk] && layer[sk].practiceScene;
+      if(scene){
+        var sMeta = STAGES.find(function(x){ return x.key === sk; }) || {};
+        sceneList.push({ key: sk, icon: sMeta.icon || '🎬', name: sMeta.name || sk, text: scene });
+      }
+    }
+  }
+  // 渲染场景列表（最多 6 条）
+  var html = sceneList.slice(0, 6).map(function(s){
+    return '<div style="padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;font-size:12.5px;line-height:1.6">' +
+      '<div style="font-weight:700;color:var(--primary);margin-bottom:4px">' + s.icon + ' ' + s.name + '</div>' +
+      '<div style="color:var(--ink-3)">' + s.text + '</div>' +
+      '<a href="/care-test/?domain=DECOR" style="display:inline-block;margin-top:6px;font-size:11px;color:var(--gold);font-weight:600;text-decoration:none">🎯 去测 →</a>' +
+    '</div>';
+  }).join('');
+  if(html) {
+    panel.classList.remove('empty-state');
+    panel.innerHTML = html + '<div style="text-align:center;margin-top:10px"><a href="/care-test/?domain=DECOR" style="font-size:12px;color:var(--primary);font-weight:600;text-decoration:none">完整家装能力测评（35 题）→</a></div>';
+    document.getElementById("browse-stage-count").textContent = sceneList.length + " 个场景";
+  } else {
+    panel.innerHTML = '<div style="text-align:center;padding:14px;color:var(--ink-3);font-size:12px">📚 当前岗位的场景库加载中，先看上方「三层拆解」里的核心动作吧！</div>';
+    document.getElementById("browse-stage-count").textContent = "加载中";
+  }
 }
 
 function toggleStageBrowse(){
