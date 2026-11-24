@@ -558,6 +558,12 @@ function convertQuiz(rawQuestions){
   DIM_COLORS = cfg.dim_colors;
   DIM_ICONS = cfg.dim_icons;
   DIM_ID_TO_NAME = cfg.dim_id_to_name;
+  DIMS = cfg.dims;                          // ← BUG FIX: showReport() 用到 DIMS，之前从未赋值
+  for(var i=0;i<DIMS.length;i++){
+    DIM_TO_ID[DIMS[i]] = (i+1);
+    DIM_EMOJI[DIMS[i]] = (cfg.dim_icons && cfg.dim_icons[DIMS[i]]) || '';
+    CARETEST_DIM_NAMES[i+1] = DIMS[i];
+  }
 
   fetch(cfg.quiz_path)
     .then(function(r){ return r.ok ? r.json() : null; })
