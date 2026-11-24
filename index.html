@@ -194,7 +194,7 @@
     color: var(--muted); margin-bottom: 40px;
   }
 
-  /* ===== 经纪人工具箱（6 张卡一行） ===== */
+  /* ===== 平台工具箱（5 张卡一行 · 跨领域共用工具，不含工作台） ===== */
   .tool-section {
     padding: 64px 48px;
     background: var(--card);
@@ -202,7 +202,7 @@
     border-bottom: 1px solid var(--line);
   }
   .tool-grid {
-    display: grid; grid-template-columns: repeat(6, 1fr);
+    display: grid; grid-template-columns: repeat(5, 1fr);
     gap: 14px; max-width: 1100px; margin: 0 auto;
   }
   .tool-card {
@@ -245,18 +245,18 @@
     transition: all .2s;
   }
   .biz-card.open {
-    background: var(--primary);
-    color: #fff;
+    background: var(--primary-bg);
+    color: var(--primary);
     text-decoration: none;
     display: block;
-    border: 2px solid var(--gold);
-    box-shadow: 0 4px 16px rgba(26,61,36,.15);
+    border: 1px solid rgba(26,61,36,.25);
+    box-shadow: none;
   }
-  .biz-card.open:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(26,61,36,.2); }
+  .biz-card.open:hover { background: rgba(26,61,36,.12); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,61,36,.08); }
   .biz-card.locked {
     background: var(--card);
-    border: 1px dashed var(--line);
-    opacity: .75;
+    border: 1px solid var(--line);
+    opacity: .55;
     cursor: default;
   }
   .biz-icon { font-size: 28px; margin-bottom: 8px; }
@@ -268,7 +268,7 @@
     padding: 3px 10px; border-radius: 10px;
     margin-top: 10px;
   }
-  .biz-card.open .biz-badge { background: var(--gold); color: var(--primary-dark); }
+  .biz-card.open .biz-badge { background: var(--primary); color: #fff; }
   .biz-card.locked .biz-badge { background: #f0ede5; color: var(--muted); }
 
   /* ===== 标准来源（4 条权威依据） ===== */
@@ -390,7 +390,7 @@
 
   /* ===== 响应式：平板 ===== */
   @media (max-width: 1024px) {
-    .tool-grid { grid-template-columns: repeat(3, 1fr); }
+    .tool-grid { grid-template-columns: repeat(5, 1fr); gap: 10px; }
     .biz-grid { grid-template-columns: repeat(3, 1fr); }
   }
   @media (max-width: 900px) {
@@ -563,10 +563,10 @@
     </div>
   </div>
 
-  <!-- ===== 平台工具箱（跨领域共用 4 件 + 分领域工作台入口） ===== -->
+  <!-- ===== 平台工具箱（跨两个业务领域通用的 5 件工具，工作台入口只在 Hero 区和业务领域展示） ===== -->
   <div class="tool-section" id="tools">
     <h2 class="section-title">平台工具箱</h2>
-    <p class="section-subtitle">跨两个业务领域通用的 4 件工具，加两个领域专属工作台入口——点进去直接干活</p>
+    <p class="section-subtitle">跨两个业务领域通用的 5 件工具——干活时离不开的东西</p>
     <div class="tool-grid">
       <a href="/knowledge/" class="tool-card">
         <div class="tool-icon">📖</div>
@@ -592,11 +592,6 @@
         <div class="tool-icon">🎬</div>
         <div class="tool-name">场景导航</div>
         <div class="tool-desc">买卖/租赁/新房全流程剧本，遇到就翻</div>
-      </a>
-      <a href="/workspace/" class="tool-card">
-        <div class="tool-icon">🏆</div>
-        <div class="tool-name">经纪人工作台</div>
-        <div class="tool-desc">每一次服务都重新赢得托付，证据链随身带</div>
       </a>
     </div>
   </div>
