@@ -18,7 +18,11 @@ a{text-decoration:none;color:inherit}
 .fs-top-links a{color:#555;white-space:nowrap}
 .fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
 .fs-top-actions{display:flex;gap:10px;align-items:center;font-size:13px;flex-shrink:0}
-@media(max-width:960px){.fs-top-links,.fs-top-actions{display:none}}
+.domain-switcher{display:flex;align-items:center;gap:4px;font-size:12px;background:#f0ece2;border-radius:20px;padding:2px;margin-right:6px}
+.ds-label{color:#999;padding-right:2px}
+.ds-tab{padding:4px 10px;border-radius:14px;cursor:pointer;font-weight:500;color:#666;transition:all .18s;white-space:nowrap}
+.ds-tab.active{background:#fff;color:#1a3d24;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+@media(max-width:960px){.ds-label{display:none}.ds-tab{padding:4px 6px;font-size:11px}.fs-top-links{display:none}}
 
 /* loop strip */
 .loop-strip{max-width:880px;margin:24px auto 0;background:#fff;border:1px solid #e8e4da;border-radius:14px;display:flex;overflow:hidden}
@@ -134,7 +138,15 @@ a{text-decoration:none;color:inherit}
     <a href="/assessment/">能力测评</a>
     <a class="active" href="/academy/">学习成长</a>
   </div>
-  <div class="fs-top-actions"><span class="fs-top-avatar">👤</span></div>
+  <div class="fs-top-actions">
+    <div class="domain-switcher" id="domain-switcher">
+      <span class="ds-label">领域</span>
+      <a class="ds-tab ds-tr active" onclick="switchDomain('TRANSACTION')" id="ds-tr">🏠 交易</a>
+      <a class="ds-tab ds-decor" onclick="switchDomain('DECOR')" id="ds-decor">🛠 家装</a>
+    </div>
+    <span class="fs-top-city">📍 全国</span>
+    <span class="fs-top-avatar">👤</span>
+  </div>
 </nav>
 
 <div class="loop-strip">
@@ -504,6 +516,60 @@ a{text-decoration:none;color:inherit}
       tip.innerHTML = '⚠️ <b>画像提示</b>：推荐你先学 <b>' + weakCodes.slice(0,3).join(' · ') + '</b>（画像分 < 70，优先补强提分最快）';
       firstCard.parentElement.insertBefore(tip, firstCard);
     }
+  }
+})();
+</script>
+<script>
+(function(){
+  var params = new URLSearchParams(location.search);
+  var CURRENT_DOMAIN = params.get('domain') || 'TRANSACTION';
+  window.switchDomain = function(d){ params.set('domain', d); location.search = params.toString(); };
+  window.applyDomain = function(){
+    var t=document.getElementById('ds-tr'), d=document.getElementById('ds-decor');
+    if(t) t.classList.toggle('active', CURRENT_DOMAIN==='TRANSACTION');
+    if(d) d.classList.toggle('active', CURRENT_DOMAIN==='DECOR');
+    var DEFAULT='TRANSACTION';
+    var links=document.querySelectorAll('a[href^="/"]');
+    links.forEach(function(a){
+      var href=a.getAttribute('href');
+      if(!href||href.indexOf('?domain=')!==-1)return;
+      if(CURRENT_DOMAIN===DEFAULT)return;
+      if(href.indexOf('?')===-1)a.setAttribute('href',href+'?domain='+CURRENT_DOMAIN);
+      else a.setAttribute('href',href+'&domain='+CURRENT_DOMAIN);
+    });
+  };
+  applyDomain();
+
+  // 家装领域硬技能课程名称覆盖
+  if (CURRENT_DOMAIN === 'DECOR') {
+    var decorNames = ['品牌获客','住户画像','全案设计','方案呈现','施工交底','交付兑现','数字化工具'];
+    var decorDescs = [
+      '家装企业品牌获客方法论——抖音/小红书内容矩阵、线下样板间引流、老客口碑裂变。',
+      '家装客户画像——房型/预算/风格偏好/家庭成员结构，从显性需求到隐性焦虑。',
+      '全案设计方法论——平面方案+效果+材料搭配+预算控制，从设计到施工的系统思考。',
+      '方案呈现技能——3D效果图讲解、材料样板对比、成本透明化呈现，让客户看懂方案。',
+      '施工交底流程——图纸会审、工种衔接、工期节点、客户验收标准，把设计方案落地。',
+      '交付兑现流程——竣工验收、售后质保、客户满意度管理、老客复购与转介绍触发。',
+      '家装数字化工具——设计软件、项目管理系统、客户跟进 CRM 的高效使用。'
+    ];
+    var dims = document.querySelectorAll('.card .c-dim');
+    dims.forEach(function(span){
+      var txt = span.textContent.trim();
+      var m = txt.match(/^DIM-(\d+)/);
+      if (m) {
+        var idx = parseInt(m[1]) - 1;
+        if (idx >= 0 && idx < decorNames.length) {
+          span.textContent = 'DIM-' + (idx+1) + ' ' + decorNames[idx];
+          var card = span.closest('.card');
+          if (card) {
+            var nameEl = card.querySelector('.c-name');
+            if (nameEl) nameEl.textContent = decorNames[idx];
+            var descEl = card.querySelector('.c-desc');
+            if (descEl) descEl.textContent = decorDescs[idx];
+          }
+        }
+      }
+    });
   }
 })();
 </script>

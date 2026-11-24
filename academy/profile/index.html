@@ -24,7 +24,12 @@ a{text-decoration:none;color:inherit}
 .fs-top-links{display:flex;gap:14px;font-size:13px;flex-wrap:wrap;flex:1;justify-content:center}
 .fs-top-links a{color:#555;white-space:nowrap}
 .fs-top-links a:hover,.fs-top-links a.active{color:#1a3d24;font-weight:600}
-@media(max-width:960px){.fs-top-links{display:none}}
+.fs-top-actions{display:flex;gap:10px;align-items:center;font-size:13px;flex-shrink:0}
+.domain-switcher{display:flex;align-items:center;gap:4px;font-size:12px;background:#f0ece2;border-radius:20px;padding:2px;margin-right:6px}
+.ds-label{color:#999;padding-right:2px}
+.ds-tab{padding:4px 10px;border-radius:14px;cursor:pointer;font-weight:500;color:#666;transition:all .18s;white-space:nowrap}
+.ds-tab.active{background:#fff;color:#1a3d24;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+@media(max-width:960px){.ds-label{display:none}.ds-tab{padding:4px 6px;font-size:11px}.fs-top-links{display:none}}
 
 .loop-strip{max-width:920px;margin:24px auto 0;background:#fff;border:1px solid #e8e4da;border-radius:14px;display:flex;overflow:hidden}
 .loop-strip a{flex:1;padding:12px 4px;text-align:center;font-size:12px;color:#666;border-right:1px dashed #e8e4da}
@@ -184,6 +189,15 @@ a{text-decoration:none;color:inherit}
     <a href="/decoder/">话术解码</a>
     <a href="/assessment/">能力测评</a>
     <a class="active" href="/academy/">学习成长</a>
+  </div>
+  <div class="fs-top-actions">
+    <div class="domain-switcher" id="domain-switcher">
+      <span class="ds-label">领域</span>
+      <a class="ds-tab ds-tr active" onclick="switchDomain('TRANSACTION')" id="ds-tr">🏠 交易</a>
+      <a class="ds-tab ds-decor" onclick="switchDomain('DECOR')" id="ds-decor">🛠 家装</a>
+    </div>
+    <span class="fs-top-city">📍 全国</span>
+    <span class="fs-top-avatar">👤</span>
   </div>
 </nav>
 
@@ -405,10 +419,21 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <script>
+// 领域感知初始化（TRANSACTION / DECOR）
+var __pp = new URLSearchParams(location.search);
+var CURRENT_DOMAIN = __pp.get('domain') || 'TRANSACTION';
+
 // ========== 维度定义 ==========
-var HARD_DIMS = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
-var HARD_CODES = {'获客触达':'DIM-1','需求洞察':'DIM-2','专业方案':'DIM-3','带看谈判':'DIM-4','交易履约':'DIM-5','售后复购':'DIM-6','数字化协同':'DIM-7'};
-var HARD_ICONS = {'获客触达':'📣','需求洞察':'🔍','专业方案':'📐','带看谈判':'🤝','交易履约':'📝','售后复购':'💗','数字化协同':'🤖'};
+var HARD_DIMS, HARD_CODES, HARD_ICONS;
+if (CURRENT_DOMAIN === 'DECOR') {
+  HARD_DIMS = ['品牌获客','住户画像','全案设计','方案呈现','施工交底','交付兑现','数字化工具'];
+  HARD_CODES = {'品牌获客':'DIM-1','住户画像':'DIM-2','全案设计':'DIM-3','方案呈现':'DIM-4','施工交底':'DIM-5','交付兑现':'DIM-6','数字化工具':'DIM-7'};
+  HARD_ICONS = {'品牌获客':'📣','住户画像':'👤','全案设计':'🎨','方案呈现':'📐','施工交底':'🔧','交付兑现':'💯','数字化工具':'🤖'};
+} else {
+  HARD_DIMS = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
+  HARD_CODES = {'获客触达':'DIM-1','需求洞察':'DIM-2','专业方案':'DIM-3','带看谈判':'DIM-4','交易履约':'DIM-5','售后复购':'DIM-6','数字化协同':'DIM-7'};
+  HARD_ICONS = {'获客触达':'📣','需求洞察':'🔍','专业方案':'📐','带看谈判':'🤝','交易履约':'📝','售后复购':'💗','数字化协同':'🤖'};
+}
 
 var SOFT_DIMS = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
 var SOFT_CODES = {'共情能力':'SOFT-1','判断能力':'SOFT-2','责任担当':'SOFT-3','职业素养':'SOFT-4','服务意识':'SOFT-5'};
@@ -578,9 +603,10 @@ function computeFiveSources(d, hard, soft) {
   var src3Src = '通用技能（态度/价值观）· judgement 评分 · 对应人社职业能力第(一)条';
 
   // === Layer 4: Case Analysis（案例分析 · 综合评审 · 权重 10%）===
-  // 数据源：当前用硬技能中"专业方案"+"交易履约"平均分（最接近案例决策能力）
-  // 预留：exam 开放题（用户写决策理由）+ LLM 批改 + 真实业绩数据
-  var caseDim1 = hard['专业方案'], caseDim2 = hard['交易履约'];
+  // DECOR 域：全案设计 + 方案呈现；TRANSACTION 域：专业方案 + 交易履约
+  var caseDim1Name = CURRENT_DOMAIN === 'DECOR' ? '全案设计' : '专业方案';
+  var caseDim2Name = CURRENT_DOMAIN === 'DECOR' ? '方案呈现' : '交易履约';
+  var caseDim1 = hard[caseDim1Name], caseDim2 = hard[caseDim2Name];
   var src4;
   if (caseDim1 != null && caseDim2 != null) src4 = Math.round((caseDim1 + caseDim2) / 2);
   else if (caseDim1 != null) src4 = caseDim1;
@@ -1112,6 +1138,28 @@ function renderCE(d) {
 }
 
 render();
+</script>
+<script>
+(function(){
+  var params = new URLSearchParams(location.search);
+  var CURRENT_DOMAIN = params.get('domain') || 'TRANSACTION';
+  window.switchDomain = function(d){ params.set('domain', d); location.search = params.toString(); };
+  window.applyDomain = function(){
+    var t=document.getElementById('ds-tr'), d=document.getElementById('ds-decor');
+    if(t) t.classList.toggle('active', CURRENT_DOMAIN==='TRANSACTION');
+    if(d) d.classList.toggle('active', CURRENT_DOMAIN==='DECOR');
+    var DEFAULT='TRANSACTION';
+    var links=document.querySelectorAll('a[href^="/"]');
+    links.forEach(function(a){
+      var href=a.getAttribute('href');
+      if(!href||href.indexOf('?domain=')!==-1)return;
+      if(CURRENT_DOMAIN===DEFAULT)return;
+      if(href.indexOf('?')===-1)a.setAttribute('href',href+'?domain='+CURRENT_DOMAIN);
+      else a.setAttribute('href',href+'&domain='+CURRENT_DOMAIN);
+    });
+  };
+  applyDomain();
+})();
 </script>
 </body>
 </html>
