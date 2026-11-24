@@ -508,6 +508,23 @@ function convertQuiz(rawQuestions){
 // 根据 CURRENT_DOMAIN 更新 intro 文案
 function updateIntro(){
   var cfg = DOMAIN_CONFIGS[CURRENT_DOMAIN];
+  // 动态更新 intro h1（页面大标题）
+  var introH1 = document.querySelector('#page-intro .intro-header h1');
+  if(introH1){
+    introH1.innerHTML = cfg.domain_label + '<br>能力画像测评';
+  }
+  // 更新页面 title
+  try { document.title = cfg.domain_label + ' · 能力画像测评 | 风声'; } catch(e){}
+
+  // 更新 DIM_TO_ID / DIM_EMOJI / CARETEST_DIM_NAMES 为当前 domain 版本
+  DIM_TO_ID = {}; DIM_EMOJI = {}; CARETEST_DIM_NAMES = {};
+  for(var did in cfg.dim_id_to_name){
+    var dname = cfg.dim_id_to_name[did];
+    DIM_TO_ID[dname] = parseInt(did);
+    DIM_EMOJI[dname] = cfg.dim_icons[dname] || '📌';
+    CARETEST_DIM_NAMES['DIM-' + did] = dname;
+  }
+
   var introTitle = document.getElementById('intro-title');
   var introSub = document.getElementById('intro-subtitle');
   if(introTitle){
