@@ -3,361 +3,195 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>数字员工训练方法论工具包 · 风声智能体学院</title>
-<meta name="description" content="一套完整的数字员工训练方法论工具包，从入职、分工、考核到协作，让每个门店拥有一支高效的数字员工团队。">
+<title>居住服务工具箱 · 风声聚匠星云 · 循证服务 · 每句话敢点开看依据</title>
+<meta name="description" content="居住服务者的现场工具箱：经纪人工作台、家装工作台、6231 条循证知识底座、能力测评、话术解码。">
+<link rel="canonical" href="https://37ltrxxqw2xzsigbxv9.traesite.cn/toolkit/">
+<meta property="og:title" content="居住服务工具箱 · 风声聚匠星云">
+<meta property="og:description" content="经纪人 + 设计师双领域，5 件平台工具 + 2 个现场工作台，每句话敢点开看依据。">
 <style>
-:root{--bg:#f7f5f0;--bg2:#e6ede7;--card:#fff;--p:#1a3d24;--p-d:#12291a;--p-l:#6b8f70;--accent:#1a3d24;--accent-l:#12291a;--dk:#1a1a1a;--tx:#555;--ts:#7a8478;--td:#a8b0a6;--r:4px}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;-webkit-font-smoothing:antialiased;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-a{color:var(--p);text-decoration:none}
-/* 导航 */
-.nav{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 5%;background:linear-gradient(135deg,#1a3d24 0%,#12291a 100%);color:#fff;position:sticky;top:0;z-index:100}
-.nav-l{display:flex;align-items:center;gap:8px}
-.nav-l a{color:rgba(255,255,255,.7);font-size:13px}
-.nav-l a:hover{color:#fff}
-.nav-r{display:flex;align-items:center;gap:8px;font-size:13px}
-/* 封面 */
-.cover{text-align:center;padding:80px 5% 60px;background:linear-gradient(180deg,rgba(26,61,36,.06) 0%,transparent 100%);border-bottom:1px solid rgba(26,61,36,.08)}
-.cover .badge{display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(26,61,36,.1);color:var(--p);font-size:12px;font-weight:600;margin-bottom:16px;letter-spacing:1px}
-.cover h1{font-size:clamp(28px,4vw,38px);font-weight:800;color:var(--p-d);line-height:1.3;margin-bottom:12px}
-.cover h1 span{color:var(--accent)}
-.cover .sub{font-size:clamp(15px,2vw,17px);color:var(--ts);max-width:600px;margin:0 auto 24px;line-height:1.7}
-.cover .meta{font-size:13px;color:var(--td);display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
-.cover .meta span{display:flex;align-items:center;gap:4px}
-/* 内容区 */
-.content{max-width:800px;margin:0 auto;padding:50px 5% 60px}
-.content h2{font-size:clamp(20px,2.5vw,26px);color:var(--p-d);margin:48px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--bg2);display:flex;align-items:center;gap:10px}
-.content h2:first-of-type{margin-top:0}
-.content h3{font-size:16px;color:var(--p-d);margin:24px 0 8px;font-weight:700}
-.content p{font-size:14px;color:var(--tx);line-height:1.8;margin-bottom:12px}
-.content ul,.content ol{padding-left:20px;margin-bottom:16px}
-.content li{font-size:14px;color:var(--tx);line-height:1.8;margin-bottom:4px}
-/* 方法卡片 */
-.method-card{background:var(--card);border-radius:var(--r);padding:24px;margin-bottom:16px;border:1px solid rgba(26,61,36,.08);box-shadow:0 1px 6px rgba(44,68,48,.04)}
-.method-card .mc-header{display:flex;gap:14px;align-items:flex-start;margin-bottom:10px}
-.method-card .mc-num{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
-.method-card .mc-title{font-size:15px;font-weight:700;color:var(--p-d);padding-top:5px}
-.method-card .mc-body{font-size:13px;color:var(--tx);line-height:1.7;padding-left:46px}
-/* 生命周期卡片 */
-.lc-strip{display:flex;gap:0;margin:20px 0 24px;overflow-x:auto;padding-bottom:8px}
-.lc-step{flex:1;min-width:120px;text-align:center;padding:16px 12px;background:var(--card);border:1px solid rgba(26,61,36,.08);border-right:none}
-.lc-step:first-child{border-radius:var(--r) 0 0 var(--r)}
-.lc-step:last-child{border-radius:0 var(--r) var(--r) 0;border-right:1px solid rgba(26,61,36,.08)}
-.lc-step .lci{font-size:22px;margin-bottom:6px}
-.lc-step h4{font-size:13px;color:var(--p-d);margin-bottom:4px;font-weight:700}
-.lc-step p{font-size:11px;color:var(--ts);line-height:1.4}
-/* 考核维度 */
-.dim-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0 24px}
-.dim-card{background:var(--card);border-radius:var(--r);padding:16px;border:1px solid rgba(26,61,36,.08);text-align:center}
-.dim-card .d-icon{font-size:24px;margin-bottom:6px}
-.dim-card h4{font-size:13px;color:var(--p-d);margin-bottom:4px;font-weight:700}
-.dim-card p{font-size:12px;color:var(--ts);line-height:1.5}
-/* 高亮框 */
-.highlight-box{background:rgba(26,61,36,.06);border-radius:var(--r);padding:20px 24px;margin:16px 0 24px;border-left:4px solid var(--p)}
-.highlight-box p{font-size:13px;color:var(--tx);margin-bottom:0}
-.highlight-box strong{color:var(--p-d)}
-/* 案例卡片 */
-.case-card{background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:12px;border:1px solid rgba(26,61,36,.08)}
-.case-card .cc-title{font-size:14px;font-weight:700;color:var(--p-d);margin-bottom:4px}
-.case-card .cc-meta{font-size:12px;color:var(--td);margin-bottom:8px}
-.case-card p{font-size:13px;color:var(--tx);line-height:1.6;margin-bottom:0}
-/* 底部CTA */
-.cta-section{text-align:center;padding:50px 5%;background:linear-gradient(180deg,transparent 0%,rgba(26,61,36,.06) 100%);border-top:1px solid rgba(26,61,36,.08)}
-.cta-section h2{font-size:clamp(20px,3vw,26px);color:var(--p-d);margin-bottom:8px;border:none;padding:0}
-.cta-section p{color:var(--ts);max-width:500px;margin:0 auto 24px;font-size:14px}
-.cta-section .contact-block{display:inline-flex;align-items:center;gap:14px;padding:16px 28px;background:var(--card);border-radius:var(--r);border:1px solid rgba(26,61,36,.1);box-shadow:0 2px 8px rgba(0,0,0,.04);margin-bottom:12px}
-.cta-section .contact-block .cb-label{font-size:12px;color:var(--ts)}
-.cta-section .contact-block .cb-value{font-size:15px;font-weight:700;color:var(--p-d)}
-.cta-section .contact-block .cb-note{font-size:11px;color:var(--td)}
-/* 页脚 */
-.footer{text-align:center;padding:20px 5%;color:var(--td);font-size:12px;border-top:1px solid rgba(0,0,0,.04);background:var(--card)}
-/* 打印样式 */
-@media print{
-  .nav{display:none}
-  .cover{padding:40px 5% 30px;page-break-after:avoid}
-  .content{padding:30px 5%}
-  .method-card,.case-card,.dim-card{break-inside:avoid}
-  .cta-section{page-break-before:avoid}
+:root{
+  --primary:#1a3d24; --primary-dark:#0e2114; --gold:#c9a84c;
+  --bg:#faf8f4; --card:#fff; --line:#e8e4db; --muted:#8a9a90; --body:#333;
 }
-@media(max-width:640px){
-  .cover{padding:40px 5% 30px}
-  .content{padding:30px 5%}
-  .method-card{padding:16px;margin-bottom:12px}
-  .method-card .mc-body{padding-left:0;margin-top:8px}
-  .lc-step{min-width:100px;padding:12px 8px}
-  .lc-step p{display:none}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--primary);text-decoration:none}
+a:hover{color:var(--primary-dark)}
+
+/* ===== Nav ===== */
+.nav{display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 48px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:100}
+.nav-l{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--primary)}
+.nav-l .brand-icon{width:32px;height:32px;background:var(--primary);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.nav-l .brand-text .title{font-size:15px}
+.nav-l .brand-text .sub{font-size:11px;color:var(--muted);font-weight:400}
+.nav-links{display:flex;gap:28px;font-size:14px}
+.nav-links a{color:var(--body)}
+.nav-links a:hover{color:var(--primary)}
+.nav-links a.active{color:var(--primary);font-weight:600}
+.nav-r .btn-gold{background:var(--gold);color:var(--primary-dark);padding:8px 18px;border-radius:8px;font-weight:600;font-size:14px}
+.nav-r .btn-gold:hover{opacity:.9}
+
+/* ===== Hero ===== */
+.hero{padding:72px 48px 48px;text-align:center;background:linear-gradient(180deg,rgba(26,61,36,.04) 0%,transparent 100%)}
+.hero .tag{display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(26,61,36,.08);color:var(--primary);font-size:12px;font-weight:600;margin-bottom:20px;letter-spacing:1px}
+.hero h1{font-size:clamp(26px,4vw,40px);font-weight:800;color:var(--primary-dark);line-height:1.3;margin-bottom:12px}
+.hero .sub{font-size:clamp(15px,2vw,17px);color:var(--muted);max-width:600px;margin:0 auto 28px;line-height:1.7}
+.hero .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.hero .cta{padding:12px 28px;border-radius:10px;font-weight:600;font-size:15px;transition:all .2s}
+.hero .cta-primary{background:var(--gold);color:var(--primary-dark)}
+.hero .cta-primary:hover{opacity:.9;transform:translateY(-1px)}
+.hero .cta-secondary{background:var(--card);border:1px solid var(--line);color:var(--body)}
+.hero .cta-secondary:hover{border-color:var(--primary)}
+
+/* ===== Workspace Card — 核心入口 ===== */
+.workspace-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:0 48px 48px}
+.ws-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px;transition:all .25s;cursor:pointer;text-decoration:none;color:inherit;display:block}
+.ws-card:hover{box-shadow:0 8px 24px rgba(26,61,36,.08);transform:translateY(-2px)}
+.ws-card .ws-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px}
+.ws-card .ws-icon.tr{background:rgba(26,61,36,.08)}
+.ws-card .ws-icon.dec{background:rgba(201,168,76,.15)}
+.ws-card h3{font-size:18px;font-weight:700;margin-bottom:6px;color:var(--primary-dark)}
+.ws-card .ws-desc{font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6}
+.ws-card .ws-stages{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.ws-card .ws-stage{font-size:12px;padding:3px 10px;background:#f5f2ea;border-radius:6px;color:var(--primary-dark)}
+.ws-card .ws-cta{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--primary)}
+.ws-card .ws-cta:hover{gap:10px}
+
+/* ===== Tool Grid ===== */
+.tool-section{padding:0 48px 64px}
+.tool-section h2{font-size:20px;font-weight:700;color:var(--primary-dark);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.tool-section h2 .count{background:var(--primary);color:#fff;font-size:12px;padding:3px 10px;border-radius:12px;font-weight:500}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.tool-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;transition:all .2s;text-decoration:none;color:inherit;display:block}
+.tool-card:hover{border-color:var(--primary);box-shadow:0 4px 16px rgba(26,61,36,.06)}
+.tool-card .t-icon{font-size:28px;margin-bottom:12px}
+.tool-card h4{font-size:15px;font-weight:700;margin-bottom:4px;color:var(--primary-dark)}
+.tool-card .t-desc{font-size:13px;color:var(--muted);line-height:1.5}
+.tool-card .t-badge{display:inline-block;margin-top:10px;font-size:11px;color:var(--primary);font-weight:600}
+
+/* ===== Footer ===== */
+footer{text-align:center;padding:28px 16px 32px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
+
+/* ===== Responsive ===== */
+@media(max-width:900px){
+  .nav{padding:0 20px}
+  .nav-links{display:none}
+  .hero{padding:48px 20px 32px}
+  .workspace-row{grid-template-columns:1fr;padding:0 20px 32px}
+  .tool-section{padding:0 20px 48px}
 }
 </style>
 </head>
 <body>
 
-<div class="nav">
+<!-- Nav -->
+<nav class="nav">
   <div class="nav-l">
-    <a href="/">← 首页</a>
-    <span style="opacity:.3">|</span>
-    <a href="/agent-academy/">智能体学院</a>
-    <span style="opacity:.3">|</span>
-    <span style="opacity:.6;font-size:13px">方法论工具包</span>
+    <div class="brand-icon">风</div>
+    <div class="brand-text">
+      <div class="title">风声聚匠星云</div>
+      <div class="sub">循证服务 · 居住服务工具箱</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="/workspace/">工具箱</a>
+    <a href="/standard/">能力标准</a>
+    <a href="/knowledge/">知识底座</a>
+    <a href="/care-test/">能力测评</a>
+    <a href="/workspace/" class="active">工作台</a>
   </div>
   <div class="nav-r">
-    <a href="javascript:window.print()" style="color:rgba(255,255,255,.7);display:flex;align-items:center;gap:4px;font-size:13px">🖨️ 下载/打印</a>
+    <a href="/workspace/" class="btn-gold">🚀 进入工作台</a>
   </div>
-</div>
+</nav>
 
-<!-- 封面 -->
-<div class="cover">
-  <div class="badge">🧠 风声智能体学院</div>
-  <h1>数字员工训练 <span>方法论工具包</span></h1>
-  <p class="sub">一套完整的数字员工训练方法论——从入职、分工、考核到协作，<br>让每个门店都能拥有一支高效的数字员工团队。</p>
-  <div class="meta">
-    <span>📅 2026 年 9 月</span>
-    <span>📄 版本 V1.0</span>
-    <span>🏢 风声信息咨询 · 经纪人智能作业工具</span>
+<!-- Hero -->
+<section class="hero">
+  <div class="tag">📦 居住服务工具箱</div>
+  <h1>干活现场的工具箱<br>每句话敢点开看依据</h1>
+  <p class="sub">经纪人 + 设计师双领域，2 个工作台 + 5 件平台工具，学练考评配全链路。</p>
+  <div class="cta-row">
+    <a href="/workspace/" class="cta cta-primary">🏠 经纪人工作台</a>
+    <a href="/home-design/" class="cta cta-secondary">🛠 家装工作台</a>
+    <a href="/care-test/?role=all" class="cta cta-secondary">📊 免费测短板</a>
   </div>
-</div>
+</section>
 
-<!-- 内容区 -->
-<div class="content">
+<!-- Workspace Cards — 核心入口 -->
+<section class="workspace-row">
+  <a href="/workspace/" class="ws-card">
+    <div class="ws-icon tr">🏠</div>
+    <h3>经纪人工作台</h3>
+    <p class="ws-desc">从房源开发到过户交房，6 阶段循证服务。买卖经纪人 / 租赁管家 / 新房置业三套岗位 Timeline。</p>
+    <div class="ws-stages">
+      <span class="ws-stage">📢 房源开发</span>
+      <span class="ws-stage">🔍 需求洞察</span>
+      <span class="ws-stage">🎨 方案呈现</span>
+      <span class="ws-stage">🤝 谈判斡旋</span>
+      <span class="ws-stage">📋 交易履约</span>
+      <span class="ws-stage">🔑 过户交房</span>
+    </div>
+    <div class="ws-cta">进入 →</div>
+  </a>
 
-  <h2>📖 一、什么是数字员工？</h2>
-  <p>数字员工是基于智能体技术构建的虚拟员工。与传统自动化工具不同，数字员工拥有<b>岗位职责、知识能力和考核标准</b>，可以像真人一样独立完成工作任务。</p>
-  <p>一个门店的数字员工团队通常由多个分工明确的智能体组成：客服智能体负责客户咨询，知识智能体负责知识检索，报告智能体负责生成分析报告。它们各司其职、自动协作，7×24 小时不间断运行。</p>
+  <a href="/home-design/" class="ws-card">
+    <div class="ws-icon dec">🛠️</div>
+    <h3>家装工作台</h3>
+    <p class="ws-desc">从量房到拎包入住，设计师 + 工长双角色覆盖全案。21 阶段学习 Map + 88 条家装循证知识。</p>
+    <div class="ws-stages">
+      <span class="ws-stage">📐 量房诊断</span>
+      <span class="ws-stage">🎨 方案设计</span>
+      <span class="ws-stage">💰 透明报价</span>
+      <span class="ws-stage">🏗️ 交底施工</span>
+      <span class="ws-stage">✅ 验收交付</span>
+      <span class="ws-stage">🔧 售后质保</span>
+    </div>
+    <div class="ws-cta">进入 →</div>
+  </a>
+</section>
 
-  <div class="highlight-box">
-    <p><strong>核心认知：</strong>数字员工不是替代经纪人，而是替代重复性工作。让经纪人从标准化事务中解放出来，专注高价值判断和客户关系维护。一个门店配置 3-5 个数字员工，效率可提升 200% 以上。</p>
+<!-- Tool Grid — 5 件平台工具 -->
+<section class="tool-section">
+  <h2>🛠 跨领域平台工具 <span class="count">5 件</span></h2>
+  <div class="tool-grid">
+    <a href="/knowledge/" class="tool-card">
+      <div class="t-icon">📖</div>
+      <h4>知识底座</h4>
+      <p class="t-desc">6,231 条循证知识，每条可点开看法条/国标/判例出处</p>
+      <span class="t-badge">6,231 条 →</span>
+    </a>
+    <a href="/care-test/" class="tool-card">
+      <div class="t-icon">📊</div>
+      <h4>能力测评</h4>
+      <p class="t-desc">60 题 20 分钟自适应测评，7 维度能力画像告诉你哪里弱</p>
+      <span class="t-badge">免费测 →</span>
+    </a>
+    <a href="/academy/exam/" class="tool-card">
+      <div class="t-icon">📝</div>
+      <h4>在线考试</h4>
+      <p class="t-desc">按岗位配置的专项考试，模拟真实客户场景练手</p>
+      <span class="t-badge">去考 →</span>
+    </a>
+    <a href="/academy/practice/" class="tool-card">
+      <div class="t-icon">🎬</div>
+      <h4>场景练习</h4>
+      <p class="t-desc">6 阶段客户场景对话模拟，敢开口才会干活</p>
+      <span class="t-badge">练手 →</span>
+    </a>
+    <a href="/academy/profile/" class="tool-card">
+      <div class="t-icon">📈</div>
+      <h4>能力画像</h4>
+      <p class="t-desc">测学练三环节聚合的 7 维度能力曲线，看自己哪项拖后腿</p>
+      <span class="t-badge">查画像 →</span>
+    </a>
   </div>
+</section>
 
-  <h2>📋 二、数字员工五步训练方法论</h2>
-  <p>以下五步方法论是风声智能体学院的核心训练框架，按照顺序执行即可完成数字员工的配置和优化。</p>
-
-  <div class="method-card">
-    <div class="mc-header">
-      <div class="mc-num">1</div>
-      <div class="mc-title">岗位职责定义 · 给数字员工写 JD</div>
-    </div>
-    <div class="mc-body">
-      每个数字员工需要一份清晰的岗位说明书：这个智能体负责什么、需要什么知识、输出什么成果。例如「客服智能体」负责回答客户咨询，「报告智能体」负责生成生命周期报告。<br><br>
-      <b>操作要点：</b>
-      <ul>
-        <li>列出门店当前重复性工作清单，按类型分组</li>
-        <li>为每组工作定义一个数字员工岗位</li>
-        <li>明确岗位的知识边界和输出标准</li>
-        <li>模板直接套用，10 分钟完成配置</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="method-card">
-    <div class="mc-header">
-      <div class="mc-num">2</div>
-      <div class="mc-title">知识投喂 · 让数字员工懂业务</div>
-    </div>
-    <div class="mc-body">
-      数字员工的能力取决于知识质量。将门店的 SOP、话术、案例、政策文档投喂给智能体，让它真正懂业务。<br><br>
-      <b>操作要点：</b>
-      <ul>
-        <li>收集门店现有的标准文档（SOP、话术本、案例库）</li>
-        <li>接入风声知识库，6,143 条专业词条可直接授权</li>
-        <li>按岗位分配知识权限，每个数字员工只访问需要的知识</li>
-        <li>每周更新知识库，保持数据新鲜度</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="method-card">
-    <div class="mc-header">
-      <div class="mc-num">3</div>
-      <div class="mc-title">分工协作 · 组建你的数字团队</div>
-    </div>
-    <div class="mc-body">
-      一个门店不需要一个全能的智能体，而是需要多个专业分工的数字员工。各司其职，自动协作。<br><br>
-      <b>标准配置：</b>
-      <ul>
-        <li><b>客服智能体：</b>7×24 小时回答客户咨询，自动跟进</li>
-        <li><b>知识智能体：</b>知识检索、政策解读、术语查询</li>
-        <li><b>报告智能体：</b>自动生成客户生命周期报告、数据分析</li>
-        <li><b>分析智能体：</b>市场分析、竞品分析、业绩统计</li>
-        <li><b>运营智能体：</b>日常任务调度、工作流管理</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="method-card">
-    <div class="mc-header">
-      <div class="mc-num">4</div>
-      <div class="mc-title">五把尺子考核 · 量化评估数字员工</div>
-    </div>
-    <div class="mc-body">
-      通过五个维度评估数字员工表现，评分自动生成，排名一目了然。<br><br>
-      <b>考核维度：</b>
-      <ul>
-        <li><b>产出量：</b>完成的任务数、生成的报告数、处理的咨询量</li>
-        <li><b>任务复杂度：</b>处理问题的难度层级，从简单问答到复杂分析</li>
-        <li><b>技能复用：</b>跨场景适用性，能否在不同业务场景中发挥作用</li>
-        <li><b>运行时长：</b>在线服务时间、响应速度、可用率</li>
-        <li><b>并发能力：</b>同时处理多任务的能力，峰值负载表现</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="method-card">
-    <div class="mc-header">
-      <div class="mc-num">5</div>
-      <div class="mc-title">持续迭代 · 数字员工进化指南</div>
-    </div>
-    <div class="mc-body">
-      根据考核数据和用户反馈，持续优化数字员工。<br><br>
-      <b>迭代周期：</b>
-      <ul>
-        <li><b>每周：</b>查看考核数据，调整知识权重</li>
-        <li><b>每月：</b>优化训练参数，补充新知识</li>
-        <li><b>每季：</b>复盘数字员工整体表现，调整岗位配置</li>
-        <li>风声提供迭代建议模板，按步骤操作即可</li>
-      </ul>
-    </div>
-  </div>
-
-  <h2>🔄 三、数字员工全生命周期管理</h2>
-  <p>从入职到评价，一套完整的数字员工管理体系，让每个智能体各司其职、高效协作。</p>
-
-  <div class="lc-strip">
-    <div class="lc-step">
-      <div class="lci">📋</div>
-      <h4>1. 入职</h4>
-      <p>定义岗位职责、能力边界、知识范围</p>
-    </div>
-    <div class="lc-step">
-      <div class="lci">🎯</div>
-      <h4>2. 分工</h4>
-      <p>分配不同角色，各司其职</p>
-    </div>
-    <div class="lc-step">
-      <div class="lci">🏅</div>
-      <h4>3. 考核</h4>
-      <p>五把尺子量化评估</p>
-    </div>
-    <div class="lc-step">
-      <div class="lci">🤝</div>
-      <h4>4. 协作</h4>
-      <p>多智能体协同工作</p>
-    </div>
-    <div class="lc-step">
-      <div class="lci">⭐</div>
-      <h4>5. 评价</h4>
-      <p>定期复盘，持续迭代</p>
-    </div>
-  </div>
-
-  <h2>🏅 四、五把尺子考核体系详解</h2>
-  <p>数字员工的绩效评估通过五个维度进行量化评分，每个维度 0-100 分，综合评分反映数字员工的整体表现。</p>
-
-  <div class="dim-grid">
-    <div class="dim-card">
-      <div class="d-icon">📊</div>
-      <h4>产出量</h4>
-      <p>完成任务数、生成报告量、处理咨询量，反映数字员工的工作效率</p>
-    </div>
-    <div class="dim-card">
-      <div class="d-icon">🧩</div>
-      <h4>任务复杂度</h4>
-      <p>从简单问答到多步推理，反映数字员工的问题处理能力</p>
-    </div>
-    <div class="dim-card">
-      <div class="d-icon">🔄</div>
-      <h4>技能复用</h4>
-      <p>跨场景、跨业务线的适用性，反映数字员工的通用能力</p>
-    </div>
-    <div class="dim-card">
-      <div class="d-icon">⏱️</div>
-      <h4>运行时长</h4>
-      <p>在线时间、响应速度、可用率，反映数字员工的稳定性</p>
-    </div>
-    <div class="dim-card">
-      <div class="d-icon">⚡</div>
-      <h4>并发能力</h4>
-      <p>同时处理多任务的能力，峰值负载下的表现</p>
-    </div>
-  </div>
-
-  <div class="highlight-box">
-    <p><strong>评分公式：</strong>综合评分 = 产出量×25% + 任务复杂度×20% + 技能复用×20% + 运行时长×20% + 并发能力×15%。权重可根据门店实际需求调整。</p>
-  </div>
-
-  <h2>📚 五、学习参考 · 成功案例</h2>
-  <p style="font-size:12px;color:var(--td);margin-bottom:16px">以下为脱敏后的典型场景与任务案例，供参考对照。</p>
-
-  <h3>🧍 单独完成 · 一个数字员工独立交付</h3>
-
-  <div class="case-card">
-    <div class="cc-title">🏠 独立经纪人 · 客户咨询即时应答</div>
-    <div class="cc-meta">客服智能体 · 全天候单任务</div>
-    <p>数字员工独立承接微信/电话咨询，基于门店知识库秒回房源、政策、流程问题，并自动归档对话、输出客户意向标签与待跟进清单。</p>
-  </div>
-
-  <div class="case-card">
-    <div class="cc-title">📄 独立经纪人 · 楼书一键生成</div>
-    <div class="cc-meta">报告智能体 · 单任务</div>
-    <p>输入楼盘基础信息，自动生成结构化楼书（地段 / 配套 / 户型 / 卖点 / 竞品对比），产出可直接转发客户的图文楼书，替代手工整料的数小时。</p>
-  </div>
-
-  <div class="case-card">
-    <div class="cc-title">🎬 独立经纪人 · 自媒体内容批量产出</div>
-    <div class="cc-meta">内容智能体 · 日更单任务</div>
-    <p>结合当日热点与在售房源，独立生成短视频脚本与朋友圈文案，一天产出多条可发布内容，稳定维持线上获客节奏。</p>
-  </div>
-
-  <h3>👥 协同组合完成 · 多个数字员工分工协作</h3>
-
-  <div class="case-card">
-    <div class="cc-title">🏪 某连锁门店 · 客户全流程跟进</div>
-    <div class="cc-meta">客服智能体 + 知识智能体 + 报告智能体</div>
-    <p>客服智能体承接咨询 → 知识智能体实时调取知识库作答 → 报告智能体输出跟进方案与客户画像，串成一条自动化跟进链。配置 3 个数字员工后，客户响应时间从 2 小时缩短到 3 分钟。</p>
-  </div>
-
-  <div class="case-card">
-    <div class="cc-title">🏢 中型门店 · 门店经营周报</div>
-    <div class="cc-meta">分析智能体 + 报告智能体 + 运营智能体</div>
-    <p>分析智能体汇总带看 / 成交 / 咨询数据并归因 → 报告智能体成稿 → 运营智能体拆解下周动作。管理者通过看板一目了然每个数字员工的产出与效率，每周迭代优化训练策略。</p>
-  </div>
-
-  <div class="case-card">
-    <div class="cc-title">🏬 区域门店 · 新品入市推广</div>
-    <div class="cc-meta">知识智能体 + 内容智能体 + 客服智能体</div>
-    <p>知识智能体梳理楼盘卖点与政策口径 → 内容智能体批量产出推广素材 → 客服智能体承接入市后的咨询高峰，覆盖从准备到承接的完整推广闭环。</p>
-  </div>
-
-  <h2>📌 六、快速上手 · 第一步做什么</h2>
-  <ol>
-    <li><b>打开智能体学院：</b>在线浏览方法论全部内容（免费）</li>
-    <li><b>试用数字员工：</b>使用 3 次免费体验机会，感受数字员工的工作方式</li>
-    <li><b>评估门店需求：</b>列出门店需要数字员工协助的工作场景</li>
-    <li><b>预约线下辅导：</b>如果希望落地到自己的门店，联系导师定制方案</li>
-  </ol>
-</div>
-
-<!-- 底部 CTA -->
-<div class="cta-section">
-  <h2>想在自己的门店落地数字员工？</h2>
-  <p>加微信聊聊，帮你定制门店专属的数字员工方案。</p>
-  <div class="contact-block">
-    <span style="font-size:20px">📱</span>
-    <div style="text-align:left">
-      <div class="cb-label">微信号</div>
-      <div class="cb-value">wilson2483lee</div>
-      <div class="cb-note">添加请备注「智能体学院」</div>
-    </div>
-  </div>
-  <p style="font-size:12px;color:var(--td);margin-top:8px">线上功能全部免费使用，觉得有用再联系</p>
-</div>
-
-<div class="footer">
-  风声信息咨询 · 经纪人智能作业工具 · <a href="/">首页</a> · <a href="/agent-academy/">智能体学院</a>
-</div>
-
-<footer style="text-align:center;padding:24px 16px 32px;font-size:12px;color:#8a9a90;line-height:1.8;">
-  <div></div>
-  <div><a href="https://beian.miit.gov.cn" target="_blank" rel="noopener" style="color:#8a9a90;text-decoration:none;">京ICP备2026044043号-2</a></div>
-  <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802051263" rel="noreferrer" target="_blank" style="color:#8a9a90;text-decoration:none;"><img src="/assets/beian/beian-icon.png" alt="" style="width:14px;height:14px;vertical-align:-2px;margin-right:3px;">京公网安备11010802051263号</a>
+<!-- Footer -->
+<footer>
+  <div>风声聚匠星云 · 循证服务 · 居住服务工具箱</div>
+  <div style="margin-top:4px">经纪人 + 设计师双领域 · 每句话敢点开看依据</div>
 </footer>
+
 </body>
 </html>

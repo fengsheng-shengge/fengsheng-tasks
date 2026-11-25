@@ -4585,7 +4585,8 @@ export default {
       '/agent-assessment', '/agent-assessment/',
       '/management', '/management/',
       '/okr', '/okr/',
-      '/standard', '/standard/',
+      // 2026-11-25 移除 standard 的门禁：它是面向公众的产品页（能力标准对外公开）
+      // '/standard', '/standard/',
       // 2026-11-24 移除 quality-test/survey 的门禁：它们是面向公众的产品页（canonical+og 完整），
       // reply/skills 等公共页面都引用了 survey，用户点进去会被 gate 墙挡住 → "进不去"
       // '/quality-test', '/quality-test/',

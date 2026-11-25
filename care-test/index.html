@@ -3,13 +3,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>服务者能力画像测评 | 风声</title>
-<meta property="og:title" content="服务者能力画像测评 · 风声信息咨询">
-<meta property="og:description" content="7 维度 · 35 道情景题 · 按 domain 切换题库（交易/家装），测出真实水平与断点，完全免费。">
+<meta property="og:title" content="服务者能力画像测评 · 风声聚匠星云">
+<meta property="og:description" content="7 维硬技能 + 5 维软技能 · 60 道真实情景题（交易/家装），测出真实水平与断点，完全免费。">
 <meta property="og:image" content="https://fengsheng.tech/og-image.png">
 <meta property="og:url" content="https://fengsheng.tech/care-test/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="7 维度 35 题（约 15 分钟），按 domain 切换（交易服务/家装服务），测出真实优势与断点，附缺口分析与工具推荐。完全免费。">
+<meta name="description" content="7 维硬技能 + 5 维软技能 · 60 题（约 20 分钟），按 domain 切换（交易服务/家装服务），测出真实优势与断点，附缺口分析与工具推荐。完全免费。">
 <meta name="keywords" content="服务者能力测评,居住服务能力画像,家装能力测评,经纪人能力测评,测学练考评">
 <link rel="canonical" href="https://fengsheng.tech/care-test/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"服务者能力画像测评","url":"https://fengsheng.tech/care-test/","applicationCategory":"EducationApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"description":"7 维度测出居住服务者能力画像：按 domain 切换题库（交易/家装），完全免费"}</script>
@@ -144,7 +144,7 @@
 <nav class="fs-top-nav">
   <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声聚匠星云</span></a>
   <div class="fs-top-links">
-    <a href="/toolkit/">工具箱</a>
+    <a href="/workspace/">工具箱</a>
     <a href="/standard/">能力标准</a>
     <a href="/knowledge/">知识底座</a>
     <a href="/care-test/">能力测评</a>
@@ -177,7 +177,7 @@
 <div class="page active" id="page-intro">
   <div class="intro-header">
     <h1>服务者能力<br>画像测评</h1>
-    <p style="opacity:.9">7 个维度 · <span id="intro-question-count">35 题</span> · <span id="intro-time-count">约 15 分钟</span><br>按 domain 切换题库 · 完全免费</p>
+    <p style="opacity:.9">7 个维度 · <span id="intro-question-count">60 题</span> · <span id="intro-time-count">约 20 分钟</span><br>按 domain 切换题库 · 完全免费</p>
     <!-- ★ Issue 1 修复：首屏快速开始按钮 -->
     <div style="text-align:center;margin:20px 0 6px;">
       <button id="start-test-top" onclick="scrollToTest()" style="background:#1a3d24;color:#fff;border:none;padding:14px 42px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(26,61,36,0.35);transition:all .2s;">开始测评 →</button>
@@ -186,11 +186,11 @@
 
   <!-- ========== 为什么要测 / 测完能干啥 / 有啥帮助 ========== -->
   <div style="background:linear-gradient(135deg,#fdf9ef,#fffbf3);border:1px solid #e8e4da;border-radius:12px;padding:14px 16px;margin-bottom:16px">
-    <div style="font-size:12px;color:#8a7040;font-weight:700;margin-bottom:10px;letter-spacing:1px">💡 先看一眼 · 你为什么要花这 15 分钟</div>
+    <div style="font-size:12px;color:#8a7040;font-weight:700;margin-bottom:10px;letter-spacing:1px">💡 先看一眼 · 你为什么要花这 20 分钟</div>
     <div style="display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;gap:8px;font-size:13px;color:#555">
         <span style="color:#2d5a3d;font-weight:700;flex-shrink:0">① 测完你会看到</span>
-        <span>7 维雷达图 · 哪强哪弱一目了然 · 综合分数位 · 35 题每题的正确答案 + 专业解析</span>
+        <span>7 维雷达图 · 哪强哪弱一目了然 · 综合分数位 · 60 题每题的正确答案 + 专业解析</span>
       </div>
       <div style="display:flex;gap:8px;font-size:13px;color:#555">
         <span style="color:#2d5a3d;font-weight:700;flex-shrink:0">② 直接帮到你的</span>
@@ -275,7 +275,7 @@
   </div>
   <div class="quiz-body">
     <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-    <div class="q-counter" id="q-counter">第 1 题 / 共 35 题</div>
+    <div class="q-counter" id="q-counter">第 1 题 / 共 60 题</div>
     <div id="q-options"></div>
     <div class="quiz-nav">
       <button class="nav-btn nav-prev" id="prev-btn" onclick="prevQuestion()" disabled>上一题</button>
@@ -363,7 +363,7 @@
 
 <script>
 // ============================================================
-//  服务者能力画像测评 - 核心数据（7维度 · 35题，按 domain 切换）
+//  服务者能力画像测评 - 核心数据（7维度 · 60 题（硬 35 + 软 25），按 domain 切换）
 // ============================================================
 
 // 每个 domain 的维度配置（名字/颜色/图标/id→名映射 + 解决方案 + 改善建议 + 报告跳转）
@@ -510,7 +510,7 @@ var DOMAIN_CONFIGS = {
     // 角色选择器（家装客户类型——全是自住宅主）
     role_title: '选择服务的主要客户角色（测你的"对口画像"）',
     roles: [
-      {key:'all', label:'全部客户（综合画像）', hint:'综合画像：35 题，覆盖所有自住宅主的通用题'},
+      {key:'all', label:'全部客户（综合画像）', hint:'综合画像：60 题（硬 35 + 软 25），覆盖所有自住宅主的通用题'},
       {key:'new_home', label:'新房收房业主', hint:'新房画像：侧重户型优化/预算分配/硬装软装搭配'},
       {key:'upgrade', label:'改善置换业主', hint:'改善画像：侧重收纳/动线/风格升级/老人小孩'},
       {key:'reno', label:'二手房翻新业主', hint:'二手房画像：侧重拆改/墙顶基层/水电老化处理'},
@@ -643,7 +643,7 @@ function updateIntro(){
     introTitle.textContent = cfg.domain_label + ' · 能力画像测评';
   }
   if(introSub){
-    introSub.textContent = '7 个维度 · 35 道真实情景题 · 约 15 分钟 · 完全免费';
+    introSub.textContent = '7 维硬技能 + 5 维软技能 · 60 道真实情景题 · 约 20 分钟 · 完全免费';
   }
 
   // 动态渲染 7 维度卡片到 intro-dim-cards
@@ -858,10 +858,10 @@ function updateIntroStats() {
     if (CURRENT_DOMAIN === 'TRANSACTION') {
       stats = { qCount: '60 题', time: '约 20 分钟', footer: '约 20 分钟 · 60 题（硬技能 35 + 软技能 25）· 中途可退出，下次自动续答' };
     } else {
-      stats = { qCount: '35 题', time: '约 15 分钟', footer: '约 15 分钟 · 35 题 · 中途可退出，下次自动续答' };
+      stats = { qCount: '60 题', time: '约 20 分钟', footer: '约 20 分钟 · 60 题 · 中途可退出，下次自动续答' };
     }
   } else {
-    stats = { qCount: '35 题', time: '约 15 分钟', footer: '约 15 分钟 · 35 题 · 聚焦当前客户画像 · 中途可退出，下次自动续答' };
+    stats = { qCount: '60 题', time: '约 20 分钟', footer: '约 20 分钟 · 60 题 · 聚焦当前客户画像 · 中途可退出，下次自动续答' };
   }
   // hero 顶部（Issue 1 里已加 id）
   var qEl = document.getElementById('intro-question-count');
@@ -1706,7 +1706,7 @@ window.addEventListener('beforeunload', function() {
     <br>📚 分数合并到岗位考核（双源取最高分）</p>
 
     <h4>怎么用（3 步）</h4>
-    <ol class="fs-guide-steps"><li>点开始测评 · 35 题约 15 分钟；</li><li>按你平时怎么做来答（没有标准答案，测的是你）；</li><li>出报告 → 跳画像 → 按推荐去学练考。</li></ol>
+    <ol class="fs-guide-steps"><li>点开始测评 · 60 题约 20 分钟；</li><li>按你平时怎么做来答（没有标准答案，测的是你）；</li><li>出报告 → 跳画像 → 按推荐去学练考。</li></ol>
 
     <div class="fs-guide-tip">🎲 每次重测题目和选项随机打乱 · 永久保存在你的浏览器 · 换设备要重测（本地存储）</div>
   </div>
