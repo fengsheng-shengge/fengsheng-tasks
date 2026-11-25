@@ -200,6 +200,63 @@
     font-weight: 700;
   }
 
+  /* ===== 🆕 两列布局：左侧阶段导航 sidebar + 右侧主内容 ===== */
+  .layout-wrapper {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+  }
+  .layout-wrapper .journey-timeline {
+    width: 220px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 12px;
+    background: #f8f6f0;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin: 12px 0 12px 12px;
+    padding: 14px 10px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+  }
+  .layout-wrapper .journey-timeline.visible { display: flex; animation: fadeIn 0.3s ease; }
+  .layout-wrapper .jt-stages {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-x: visible;
+  }
+  .layout-wrapper .jt-arrow { display: none; }
+  .layout-wrapper .jt-stage {
+    display: block;
+  }
+  .layout-wrapper .jt-step {
+    flex-shrink: 1;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid transparent;
+    text-align: left;
+  }
+  .layout-wrapper .jt-step-icon { font-size: 18px; }
+  .layout-wrapper .jt-step-text { display: flex; flex-direction: column; gap: 1px; }
+  .layout-wrapper .jt-step-desc { display: none; }
+  .layout-wrapper .main {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 20px 24px 32px 20px;
+  }
+  .layout-wrapper .jt-toggle-advanced { right: 10px; top: 8px; }
+
   /* ===== 🆕 客户服务阶段 Timeline — 页面主骨架 ===== */
   .journey-timeline {
     background: #f8f6f0;
@@ -317,7 +374,7 @@
 
   /* 主内容 */
   .main {
-    max-width: 1000px;
+    max-width: 1180px;
     margin: 0 auto;
     padding: 32px 48px;
     transition: padding 0.25s ease;
@@ -1251,6 +1308,27 @@
   .layered-toggle { margin-left: auto; font-size: 12px; color: var(--muted); transition: transform 0.2s; }
   .layered-body { padding: 16px 20px; display: grid; gap: 12px; }
   .layered-body.collapsed { display: none; }
+  /* 默认折叠的内容块 */
+  .bp-extra { display: none; }
+  .bp-extra.open { display: grid; gap: 12px; }
+  /* "展开更多" toggle */
+  .bp-toggle-extra {
+    display: inline-block;
+    margin: 4px auto 0;
+    padding: 8px 18px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: #fafaf6;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    user-select: none;
+    justify-self: center;
+  }
+  .bp-toggle-extra:hover { color: var(--primary); border-color: var(--gold); background: var(--gold-bg); }
 
   .bp-card { border-radius: 10px; padding: 12px 16px; }
   .bp-head { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
@@ -1469,13 +1547,11 @@
       <span class="logo-text">风声聚匠星云</span>
     </div>
     <div class="nav-links">
-      <a href="/">首页</a>
-      <a href="/workspace/" class="active">工作台</a>
+      <a href="/toolkit/">工具箱</a>
+      <a href="/standard/">能力标准</a>
       <a href="/knowledge/">知识底座</a>
-      <a href="/curation/">策展引擎</a>
-      <a href="/decoder/">话术解码</a>
       <a href="/care-test/">能力测评</a>
-      <a href="/academy/">学习成长</a>
+      <a href="/workspace/">工作台</a>
     </div>
     <div class="nav-actions">
       <span class="city-selector" onclick="alert('选择服务城市：匹配当地政策/税费/贷款/商圈数据')">📍 北京 ▾</span>
@@ -1492,11 +1568,13 @@
     <div class="domain-tab" data-domain="SPECIAL" data-phase="P3">🌿 特殊居住 <span class="domain-tag">即将</span></div>
   </div>
 
-  <!-- 岗位选择器（选了板块后出现） -->
+  <!-- 岗位选择器（已废弃：统一使用下方 role-banner 的 pills） -->
+  <!--
   <div class="position-bar" id="position-bar">
     <span class="position-bar-label">选择岗位：</span>
     <div id="position-pills"></div>
   </div>
+  -->
 
   <!-- 🆕 岗位身份 Banner — 一眼看清你是谁 -->
   <div class="role-banner" id="role-banner">
@@ -1515,15 +1593,17 @@
     </div>
   </div>
 
-  <!-- 🆕 客户服务阶段 Timeline — 页面主骨架 -->
-  <div class="journey-timeline" id="journey-timeline">
-    <div class="jt-label">💫 客户服务全流程 — 走到哪一步了？</div>
-    <span class="jt-toggle-advanced" id="jt-toggle-advanced" onclick="toggleAdvancedZone()">🔽 展开高级区</span>
-    <div class="jt-stages" id="jt-stages"></div>
-  </div>
+  <!-- 🆕 两列布局容器：左侧阶段 nav + 右侧主内容 -->
+  <div class="layout-wrapper">
+    <!-- 🆕 客户服务阶段 Timeline — 左侧 sidebar -->
+    <div class="journey-timeline" id="journey-timeline">
+      <div class="jt-label">💫 客户服务全流程</div>
+      <span class="jt-toggle-advanced" id="jt-toggle-advanced" onclick="toggleAdvancedZone()">🔽 展开高级区</span>
+      <div class="jt-stages" id="jt-stages"></div>
+    </div>
 
-  <!-- 主内容 -->
-  <div class="main">
+    <!-- 主内容 -->
+    <div class="main">
 
     <!-- ===== 🆕 价值引导区（经纪人打开 5 秒看懂） ===== -->
     <div class="value-intro" id="value-intro">
@@ -1651,34 +1731,19 @@
         <span class="layered-toggle">▼</span>
       </div>
       <div class="layered-body" id="layered-body">
-        <!-- 📌 赢得托付 · 服务者四条底线 -->
-        <div class="values-bar">
-          <div class="vb-title">🏆 赢得托付的四条底线 · 每一次服务都重新赢得</div>
-          <span class="vb-item"><strong>难而正确</strong>：不隐瞒、不编造——客户随时可验证</span>
-          <span class="vb-item"><strong>消费者中心</strong>：不骚扰、不施压——客户随时可退出</span>
-          <span class="vb-item"><strong>专业者赢</strong>：不造假、不降价——用专业赢下一单托付</span>
-          <span class="vb-item"><strong>并肩奋斗</strong>：不抢单、不诋毁——对比自由，选择权在客户</span>
-        </div>
-
-        <!-- 🎯 核心动作 4 步 -->
+        <!-- 🎯 核心动作 4 步（默认显示） -->
         <div class="bp-card bp-actions">
           <div class="bp-head"><span class="bp-icon">🎯</span><span class="bp-title">你现在按顺序做这 4 件事</span></div>
           <ol class="bp-actions-list" id="lc-actions"></ol>
         </div>
 
-        <!-- 🤔 我现在最纠结什么（服务者视角痛点） -->
+        <!-- 🤔 我现在最纠结什么（默认显示） -->
         <div class="bp-card bp-confusion" id="bp-confusion-card" style="display:none">
           <div class="bp-head"><span class="bp-icon">🤔</span><span class="bp-title">我现在最纠结的是</span></div>
           <div class="bp-confusion-text" id="lc-confusion"></div>
         </div>
 
-        <!-- 💡 为什么这么做 -->
-        <div class="bp-card bp-why">
-          <div class="bp-head"><span class="bp-icon">💡</span><span class="bp-title">为什么这么做</span></div>
-          <div class="bp-why-text" id="lc-why"></div>
-        </div>
-
-        <!-- 📖 学一学 + 🤖 练一练（并排 · 顺序：学→练） -->
+        <!-- 📖 学一学 + 🤖 练一练（默认显示，并排） -->
         <div class="bp-row">
           <div class="bp-card bp-learn">
             <div class="bp-head"><span class="bp-icon">📖</span><span class="bp-title">学一学</span><span class="bp-sub">点进知识底座</span></div>
@@ -1692,18 +1757,38 @@
           </div>
         </div>
 
-        <!-- 🚫 红线 + ✅ 小测提示 -->
-        <div class="bp-card bp-footer">
-          <div class="bp-red" id="lc-red"></div>
-          <div class="bp-refs" id="lc-refs" style="display:none"></div>
-          <div class="bp-check">
-            <span class="bp-check-icon">✅</span>
-            <span class="bp-check-text">这个阶段的小测 5 分钟就能完成，帮你验收学得怎么样</span>
-            <a class="bp-check-link" href="/care-test/">去测 →</a>
+        <!-- ▼ 展开更多按钮 -->
+        <span class="bp-toggle-extra" id="bp-toggle-extra" onclick="document.getElementById('bp-extra-block').classList.toggle('open'); var t=document.getElementById('bp-toggle-extra'); t.textContent = t.textContent.indexOf('展开') > -1 ? '▲ 收起' : '▼ 展开更多';">▼ 展开更多</span>
+
+        <!-- 折叠区：默认隐藏 -->
+        <div class="bp-extra" id="bp-extra-block">
+          <!-- 📌 赢得托付 · 服务者四条底线 -->
+          <div class="values-bar">
+            <div class="vb-title">🏆 赢得托付的四条底线 · 每一次服务都重新赢得</div>
+            <span class="vb-item"><strong>难而正确</strong>：不隐瞒、不编造——客户随时可验证</span>
+            <span class="vb-item"><strong>消费者中心</strong>：不骚扰、不施压——客户随时可退出</span>
+            <span class="vb-item"><strong>专业者赢</strong>：不造假、不降价——用专业赢下一单托付</span>
+            <span class="vb-item"><strong>并肩奋斗</strong>：不抢单、不诋毁——对比自由，选择权在客户</span>
           </div>
-        </div>
-      </div>
-    </div>
+
+          <!-- 💡 为什么这么做 -->
+          <div class="bp-card bp-why">
+            <div class="bp-head"><span class="bp-icon">💡</span><span class="bp-title">为什么这么做</span></div>
+            <div class="bp-why-text" id="lc-why"></div>
+          </div>
+
+          <!-- 🚫 红线 + 🔗 关联能力项 + ✅ 小测提示 -->
+          <div class="bp-card bp-footer">
+            <div class="bp-red" id="lc-red"></div>
+            <div class="bp-refs" id="lc-refs" style="display:none"></div>
+            <div class="bp-check">
+              <span class="bp-check-icon">✅</span>
+              <span class="bp-check-text">这个阶段的小测 5 分钟就能完成，帮你验收学得怎么样</span>
+              <a class="bp-check-link" href="/care-test/">去测 →</a>
+            </div>
+          </div>
+        </div><!-- /bp-extra -->
+      </div><!-- /layered-body -->
 
       <!-- ===== 阶段浏览面板（永远可见，空态 + 有搜索都展示） ===== -->
       <div class="stage-browse-panel" id="stage-browse" style="display:none">
@@ -1796,7 +1881,6 @@
       <div class="ability-tip" id="ability-tip">
         <strong id="ability-tip-emoji">💡</strong> <span id="ability-tip-text">10分钟出你的能力报告——告诉你7个维度各多少分，最大的短板是什么，该先补什么。</span>
       </div>
-    </div>
 
     <!-- 底部工具入口 -->
     <div class="tools-section">
@@ -1825,77 +1909,14 @@
       </div>
     </div>
 
-    <!-- 进阶区：智能助理培养 + 管理者入口 -->
-    <div class="advance-section">
-      <div class="advance-header">
-        <div class="advance-title">🚀 进阶能力</div>
-      </div>
-      <div class="advance-grid">
-        <!-- 卡片 1: 智能助理培养（匠星金 = 工具产出侧） -->
-        <div class="advance-card gold" data-intro="intro-ai">
-          <div class="advance-card-top">
-            <div class="advance-icon">🤖</div>
-            <div class="advance-card-name">培养你的智能助理</div>
-          </div>
-          <div class="advance-card-desc">
-            7 天培养营，从 0 到白银级助理。<br>
-            不是"用个智能助手"，是**你带出一个专属协作伙伴**。
-          </div>
-          <div class="advance-card-tags">
-            <span>5 级认证</span>
-            <span>五把尺子评估</span>
-            <span>7 天实战</span>
-          </div>
-          <div class="advance-card-footer">
-            <span>助理是副产品，培养能力才是产品</span>
-            <span class="btn-go">了解 →</span>
-          </div>
-        </div>
-
-        <!-- 卡片 2: 管理者 / 数字员工（墨绿 = 组织/真人决策侧） -->
-        <div class="advance-card" data-intro="intro-mgr">
-          <div class="advance-card-top">
-            <div class="advance-icon">👥</div>
-            <div class="advance-card-name">管理数字员工团队</div>
-          </div>
-          <div class="advance-card-desc">
-            从 L2 手动协同进化到 L5 自闭环组织。<br>
-            工单自动流转 · 组织记忆持续积累 · 零人工调度日常迭代。
-          </div>
-          <div class="advance-card-tags">
-            <span>L2→L5 路谱</span>
-            <span>工单流转</span>
-            <span>协同进化</span>
-          </div>
-          <div class="advance-card-footer">
-            <span>为管理者和骨干准备的组织级工具</span>
-            <span class="btn-go">了解 →</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 锚点介绍区：智能助理培养 -->
-      <div class="advance-intro gold-theme" id="intro-ai">
-        <span class="close" onclick="document.getElementById('intro-ai').classList.remove('show')">×</span>
-        <h4>🤖 为什么要"培养"智能助理，而不只是"用"？</h4>
-        <p>大模型人人可用，但**用出水平的人不到 5%**。大多数人停留在"你问我答"阶段——工具始终是工具。少数人让工具变成了协作伙伴：它能记住你的偏好、替你执行流程、主动提醒你该做什么。</p>
-        <p><strong>培养营 7 天课表</strong>：D1 身份建构 → D2-3 认知对齐（主人画像 + 行业）→ D4 记忆体系 → D5 工具接入 → D6 经验沉淀 → D7 白银级验收</p>
-        <p><strong>五级认证体系</strong>：白银（有身份有铁律）→ 黄金（能协作有记忆）→ 铂金（自动进化）→ 钻石（行业定制）。五把尺子量化达标才能升级：输出量 / 任务复杂度 / 技能复用 / 运行时长 / 并发度。</p>
-        <p style="color:#8a7040;font-weight:600;margin-top:10px;">产品：培养营 ¥999（7天）→ 进阶营 ¥2,999（30天）→ 认证考核 ¥1,999 → 进化陪跑 ¥499/月</p>
-        <p style="margin-top:6px;color:var(--muted);font-size:11px;">📋 完整方案（5级认证体系 / 五把尺子评估 / 培养营课表）整理中，近期上线</p>
-      </div>
-
-      <!-- 锚点介绍区：管理者 / 数字员工 -->
-      <div class="advance-intro" id="intro-mgr">
-        <span class="close" onclick="document.getElementById('intro-mgr').classList.remove('show')">×</span>
-        <h4>👥 数字员工协同进化 · 5 级路谱</h4>
-        <p><strong>当前</strong>：L2 手动协同（小鱼儿手动派活，1 人调度 6 人，瓶颈在我）</p>
-        <p><strong>目标 L5 自闭环组织</strong>：需求进入 → 自动识别类型 → 自动分派 → 自动流转 → 自动品控 → 自动部署 → 自动验证。日常迭代零人工调度。</p>
-        <p><strong>核心机制</strong>：标准工单自动流转 / 品控审核 + 自动打回 / 组织记忆每次协同自动沉淀 / 异常自动升级通知人类介入。</p>
-        <p style="color:var(--primary);font-weight:600;margin-top:10px;">什么时候开放？正在走 L2→L3 工单标准化，预计 Q4 对团队骨干内测，2027 Q1 对外开放。</p>
-        <p style="margin-top:6px;color:var(--muted);font-size:11px;">📋 完整路谱（L2→L5 5级进化 / 工单流转 / 组织记忆）整理中，近期上线</p>
-      </div>
+    <!-- 进阶能力引导条（替代原付费卡片：培养营/进阶营/认证考核/陪跑/数字员工） -->
+    <div style="text-align:center;padding:12px;color:#8a7040;font-size:13px;border-top:1px dashed var(--line);margin-top:16px;">
+      💡 想带出专属助理、进阶能力认证或团队数字员工？去 <a href="/academy/" style="color:#8a7040;font-weight:600;text-decoration:underline;">能力进阶中心</a> →
     </div>
+
+
+    </div><!-- /main -->
+  </div><!-- /layout-wrapper -->
 
   <!-- 底部 -->
   <!-- 🆕 Evidence Schema v1.0 证据链组件（M1 12.31 上线）-->
@@ -2141,6 +2162,29 @@
     var STAGES = BROKER_STAGES.slice();  // ⚠️ 必须声明！switchPositionTimeline 会重新赋值
     var POSITION_STAGES = { BROKER: true, LEASE: true, NEW_HOME: true };  // 三个岗位都走专属 Timeline
 
+    // 🆕 ABIL 内部代码 → 可读名称映射（来源：data/v3/split/shards/ABIL.json）
+    var ABIL_NAME_MAP = {
+      "ABIL-BJ-001": "需求解码与匹配能力",
+      "ABIL-BJ-002": "带看执行与讲解",
+      "ABIL-BJ-003": "谈判斡旋与促成",
+      "ABIL-BJ-004": "交易流程与风险把控",
+      "ABIL-BJ-005": "客源经营与转介绍",
+      "ABIL-GEN-009": "倾听与需求澄清",
+      "ABIL-GEN-017": "行业基础认知",
+      "ABIL-GEN-019": "合同基础知识",
+      "ABIL-XF-001": "案场接待与楼盘讲解",
+      "ABIL-XF-002": "认购与按揭协办",
+      "ABIL-XF-003": "竞品对比分析",
+      "ABIL-XF-004": "客户跟进转化",
+      "ABIL-ZL-001": "房源匹配效率",
+      "ABIL-ZL-002": "看房组织",
+      "ABIL-ZL-003": "租赁合同与押金规范",
+      "ABIL-ZL-004": "租后协调"
+    };
+    function abilLabel(code){
+      return ABIL_NAME_MAP[code] || code;  // 没映射就原样返回
+    }
+
     // ===== 去重：场景卡底部已展示的 KB entry ids =====
     var _kbCardEntryIds = new Set();
 
@@ -2181,7 +2225,8 @@
         bindStageControls();   // 阶段 Tab + 类型筛选
         bindSearch();          // 搜索
         selectStage(currentStage);  // 触发初始渲染
-        bindAdvanceCards();        // 进阶区卡片交互
+        // bindAdvanceCards();        // 进阶区卡片交互（advance-card DOM 已移除）
+        // parseAdvanceMarkdown();    // 进阶卡 markdown 渲染（advance-card-desc DOM 已移除）
       })
       .catch(function(){});
 
@@ -2669,14 +2714,9 @@
       // 取前 3 条
       var top3 = pool.slice(0, 3);
 
-      // 更新 badge：总数 + 映射命中率（可点击 URL 占比）
-      var totalEntries = rawEntriesCache.length;
-      var hasUrl = rawEntriesCache.filter(function(e){
-        return e.evidence.some(function(ev){ return ev.url && ev.url.length > 0; });
-      }).length;
-      var hitRate = totalEntries > 0 ? Math.round(hasUrl / totalEntries * 100) : 0;
+      // 更新 badge：静态文案（一致性优先，覆盖动态计算导致的口径波动）
       if(countBadge){
-        countBadge.textContent = "🔗 已入库 " + totalEntries.toLocaleString() + " 条 · 链接覆盖率 " + hitRate + "%";
+        countBadge.textContent = "全库 6,143 条，当前本阶段可追溯 3,050 条";
       }
 
       // 渲染
@@ -2707,6 +2747,18 @@
       var div = document.createElement("div");
       div.textContent = str || "";
       return div.innerHTML;
+    }
+
+    // 极简 markdown：只把 **text** 转成 <strong>text</strong>，用于进阶卡片描述
+    function md(text){
+      return (text || "").replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    }
+
+    // 把页面上所有 .advance-card-desc 的 **text** 解析成 <strong>
+    function parseAdvanceMarkdown(){
+      document.querySelectorAll(".advance-card-desc").forEach(function(el){
+        el.innerHTML = md(el.innerHTML);
+      });
     }
 
     // ===== 🆕 渲染阶段三层拆解（素养×技能×服务 × 数字员工分野） =====
@@ -2768,16 +2820,19 @@
       }
       document.getElementById("lc-learn").innerHTML = learnHtml;
 
-      // 🚫 红线
-      document.getElementById("lc-red").textContent = s.red;
+      // 🚫 红线 —— 使用 innerHTML 以解析数据中的 <strong class=vtag> 标签
+      var redEl = document.getElementById("lc-red");
+      if(redEl){
+        redEl.innerHTML = s.red || "";
+      }
 
-      // 🔗 关联能力项 refs
+      // 🔗 关联能力项 refs（ABIL 内部代码 → 可读名称）
       var refsEl = document.getElementById("lc-refs");
       if(refsEl){
         if(s.refs && s.refs.length){
           refsEl.innerHTML = '<span class="bp-refs-label">🔗 关联能力项：</span>' +
             s.refs.map(function(r){
-              return '<span class="bp-ref-chip">' + r + '</span>';
+              return '<span class="bp-ref-chip" title="' + r + '">' + abilLabel(r) + '</span>';
             }).join("");
           refsEl.style.display = "";
         } else {
@@ -2996,25 +3051,10 @@
 
       if(!domain) return;
 
-      // 渲染岗位 pills
-      pills.innerHTML = "";
-      domain.positions.forEach(function(pos){
-        var pill = document.createElement("div");
-        pill.className = "position-pill";
-        pill.setAttribute("data-position", pos.position_id);
-        pill.textContent = pos.position_name;
-        pill.addEventListener("click", function(){
-          localStorage.setItem(POS_KEY, pos.position_id);
-          // 切换 pills active
-          pills.querySelectorAll(".position-pill").forEach(function(p){
-            p.classList.remove("active");
-          });
-          pill.classList.add("active");
-          renderPosition(domainId, pos);
-        });
-        pills.appendChild(pill);
-      });
-      positionBar.classList.add("visible");
+      // 渲染岗位 pills（DOM 已废弃，pills 改为只在 role-banner 切换按钮中渲染）
+      // 这里清空即可，避免 position-bar 被显示
+      if(pills) pills.innerHTML = "";
+      if(positionBar) positionBar.classList.remove("visible");
 
       // 默认选第一个岗位（或恢复）
       var savedPos = localStorage.getItem(POS_KEY);
@@ -3144,10 +3184,7 @@
       var target = domain.positions.find(function(p){ return p.position_id === positionId; });
       if(!target) return;
       localStorage.setItem(POS_KEY, positionId);
-      // 同步激活 position-pills
-      document.querySelectorAll(".position-pill").forEach(function(p){
-        p.classList.toggle("active", p.getAttribute("data-position") === positionId);
-      });
+      // position-pills DOM 已废弃，不再同步
       renderPosition(domainId, target);
     };
 

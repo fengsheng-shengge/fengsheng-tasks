@@ -142,17 +142,13 @@
 <body>
 <!-- 风声统一导航栏 -->
 <nav class="fs-top-nav">
-  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声</span></a>
+  <a class="fs-top-logo" href="/"><span class="fs-top-mark">风</span><span class="fs-top-name">风声聚匠星云</span></a>
   <div class="fs-top-links">
-    <a href="/">首页</a>
-    <a href="/workspace/">工作台</a>
+    <a href="/toolkit/">工具箱</a>
+    <a href="/standard/">能力标准</a>
     <a href="/knowledge/">知识底座</a>
-    <a href="/curation/">策展引擎</a>
-    <a href="/decoder/">话术解码</a>
-    <a class="active" href="/care-test/">能力测评</a>
-    <a href="/scene/">场景导航</a>
-    <a href="/ai-advisor/">话术陪练</a>
-    <a href="/academy/">学习成长</a>
+    <a href="/care-test/">能力测评</a>
+    <a href="/workspace/">工作台</a>
   </div>
   <div class="fs-top-actions">
     <span class="fs-top-city" onclick="alert('当前以北京为样板城市，多城市数据接入中')">📍 北京 ▾</span>
@@ -181,7 +177,11 @@
 <div class="page active" id="page-intro">
   <div class="intro-header">
     <h1>服务者能力<br>画像测评</h1>
-    <p style="opacity:.9">7 个维度 · 35 道真实情景题 · 约 15 分钟<br>按 domain 切换题库 · 完全免费</p>
+    <p style="opacity:.9">7 个维度 · <span id="intro-question-count">35 题</span> · <span id="intro-time-count">约 15 分钟</span><br>按 domain 切换题库 · 完全免费</p>
+    <!-- ★ Issue 1 修复：首屏快速开始按钮 -->
+    <div style="text-align:center;margin:20px 0 6px;">
+      <button id="start-test-top" onclick="scrollToTest()" style="background:#1a3d24;color:#fff;border:none;padding:14px 42px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(26,61,36,0.35);transition:all .2s;">开始测评 →</button>
+    </div>
   </div>
 
   <!-- ========== 为什么要测 / 测完能干啥 / 有啥帮助 ========== -->
@@ -261,7 +261,7 @@
         </div>
       </div>
       <div style="margin-top:10px;padding-top:10px;border-top:1px dashed #e8e4da;font-size:11px;color:#999">
-        ⏱ 约 20 分钟 · 60 题（硬技能 35 + 软技能 25）· 中途可退出，下次自动续答
+        ⏱ <span data-intro-footer-time>约 20 分钟 · 60 题（硬技能 35 + 软技能 25）· 中途可退出，下次自动续答</span>
       </div>
     </div>
   </div>
@@ -342,7 +342,15 @@
   <div class="save-modal">
     <h3>保存你的能力报告</h3>
     <p>留下手机号，下次可以直接查看历史记录</p>
+    <!-- ★ Issue 3 + Issue 4 修复：隐私声明 + 同意勾选（覆盖 PIPL 合规） -->
+    <div style="font-size:12px;color:#666;margin:6px 0 8px;line-height:1.6;text-align:left;">
+      🔒 手机号仅用于下次免登查看历史测评记录，不会向任何第三方共享。
+    </div>
     <input type="tel" class="save-phone-input" id="save-phone-input" placeholder="输入手机号（选填）" maxlength="11">
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#888;margin:4px 0 12px;text-align:left;cursor:pointer;">
+      <input type="checkbox" id="phone-consent" required style="accent-color:#1a3d24;">
+      我同意风声聚匠星云按以上用途保存我的手机号
+    </label>
     <div class="save-modal-btns">
       <button class="save-btn-close" onclick="closeSaveModal()">跳过</button>
       <button class="save-btn-confirm" onclick="saveAndClose()">保存</button>
@@ -398,7 +406,7 @@ var DOMAIN_CONFIGS = {
         {title:'知识底座·客户解码', desc:'75条客户解码词条——听懂话外音，识别真实顾虑', link:'/knowledge/'}
       ],
       '专业方案': [
-        {title:'知识底座', desc:'购房方案模板/税费测算/政策口径秒查，6,135条业务知识', link:'/knowledge/'},
+        {title:'知识底座', desc:'购房方案模板/税费测算/政策口径秒查，6,143条业务知识', link:'/knowledge/'},
         {title:'策展引擎', desc:'一键生成含月供、税费、资金计划的完整置业方案', link:'/curation/'}
       ],
       '带看谈判': [
@@ -690,6 +698,8 @@ function updateIntro(){
 
   // ★ 渲染角色选择器（按 domain 动态）
   renderRoleSelector(cfg);
+  // ★ Issue 2 修复：初始渲染也按 CURRENT_ROLE 更新顶部数字
+  updateIntroStats();
 }
 
 // ============================================================
@@ -809,6 +819,19 @@ function showPage(pageId) {
   document.getElementById(pageId).classList.add('active');
 }
 
+// ★ Issue 1 修复：首屏"开始测评"快速跳转
+function scrollToTest() {
+  var btn = document.querySelector('.start-btn');
+  if (btn && btn.scrollIntoView) {
+    btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // 轻微高亮提示用户
+    setTimeout(function(){ btn.style.boxShadow = '0 0 0 3px #c9a962, 0 4px 15px rgba(26,61,36,0.35)'; }, 350);
+    setTimeout(function(){ btn.style.boxShadow = ''; }, 1200);
+  } else {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }
+}
+
 // ============================================================
 //  开始测评
 // ============================================================
@@ -823,6 +846,31 @@ function selectRole(btn, role) {
   var cfg = DOMAIN_CONFIGS[CURRENT_DOMAIN];
   var roleObj = (cfg.roles || []).find(function(r){ return r.key === role; });
   document.getElementById('role-hint').textContent = roleObj ? roleObj.hint : '';
+  // ★ Issue 2 修复：联动更新顶部题目数/时间显示
+  updateIntroStats();
+}
+
+// ★ Issue 2 修复：根据 CURRENT_DOMAIN + CURRENT_ROLE 计算并更新 hero/底部显示
+function updateIntroStats() {
+  var cfg = DOMAIN_CONFIGS[CURRENT_DOMAIN];
+  var stats;
+  if (CURRENT_ROLE === 'all') {
+    if (CURRENT_DOMAIN === 'TRANSACTION') {
+      stats = { qCount: '60 题', time: '约 20 分钟', footer: '约 20 分钟 · 60 题（硬技能 35 + 软技能 25）· 中途可退出，下次自动续答' };
+    } else {
+      stats = { qCount: '35 题', time: '约 15 分钟', footer: '约 15 分钟 · 35 题 · 中途可退出，下次自动续答' };
+    }
+  } else {
+    stats = { qCount: '35 题', time: '约 15 分钟', footer: '约 15 分钟 · 35 题 · 聚焦当前客户画像 · 中途可退出，下次自动续答' };
+  }
+  // hero 顶部（Issue 1 里已加 id）
+  var qEl = document.getElementById('intro-question-count');
+  var tEl = document.getElementById('intro-time-count');
+  if (qEl) qEl.textContent = stats.qCount;
+  if (tEl) tEl.textContent = stats.time;
+  // 底部"测评说明"footer 静态文案（原 intro-body 底部）
+  var footers = document.querySelectorAll('[data-intro-footer-time]');
+  for (var i = 0; i < footers.length; i++) { footers[i].textContent = stats.footer; }
 }
 
 function filterQuestionsByRole(qs, role) {
@@ -1552,11 +1600,18 @@ function restart() {
 // ============================================================
 function saveAndClose() {
   var phone = document.getElementById('save-phone-input').value.trim();
-  if (phone && phone.length < 11) {
-    showToast('请输入正确的手机号');
-    return;
-  }
+  // ★ Issue 3 + Issue 4 修复：隐私同意校验
+  var consent = document.getElementById('phone-consent');
+  var consented = consent ? consent.checked : true;
   if (phone) {
+    if (phone.length < 11) {
+      showToast('请输入正确的手机号');
+      return;
+    }
+    if (!consented) {
+      showToast('请先勾选同意以上隐私说明');
+      return;
+    }
     localStorage.setItem('care_test_phone', phone);
     showToast('报告已保存');
   }
