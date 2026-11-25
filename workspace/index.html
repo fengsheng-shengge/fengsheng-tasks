@@ -975,6 +975,22 @@
     color: var(--primary);
     font-weight: 500;
   }
+  /* V1.3: Person 分数徽章 */
+  .ability-score {
+    font-size: 11px;
+    font-weight: 600;
+    color: #1a3d24;
+    background: linear-gradient(135deg, #e8f0ea 0%, #d4e1d7 100%);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .ability-score-empty {
+    background: #f0efe8;
+    color: #8a9a90;
+    font-weight: 400;
+  }
   .ability-card-full {
     grid-column: span 3;
   }
@@ -3074,15 +3090,46 @@
       var tipText = document.getElementById("ability-tip-text");
       var goBtn = document.getElementById("ability-go-btn");
 
+      // V1.3: Person 数据初始化 + alias 解析
+      var person = null;
+      var personScores = {}; // cfgDim.id → score
+      try {
+        if (typeof Person !== 'undefined' && typeof window.DOMAIN_CONFIG !== 'undefined') {
+          person = new Person();
+          var profile = person.getAbilityProfile();
+          var cfgDims = window.DOMAIN_CONFIG.getDims('TRANSACTION');
+          cfgDims.forEach(function(cd){
+            var m = profile.find(function(p){ return p.dimId === cd.id; });
+            if (m) personScores[cd.id] = m.score;
+          });
+        }
+      } catch(e) { /* Person 不可用 → 降级 */ }
+
       // 渲染 7 维度卡
       grid.innerHTML = "";
       position.dimensions.forEach(function(dim){
         var weight = Math.round(dim.weight * 100);
+
+        // V1.3: 用 alias 翻译到 SSOT
+        var cfgDim = (typeof window.DOMAIN_CONFIG !== 'undefined')
+          ? window.DOMAIN_CONFIG.getDimByAlias(dim.dim_key, 'TRANSACTION') : null;
+        var dimScore = cfgDim ? personScores[cfgDim.id] : null;
+
         var card = document.createElement("div");
         card.className = "ability-card" + (dim.dim_key === "DIGITAL" ? " ability-card-full" : "");
-        card.setAttribute("data-dim-key", dim.dim_key); // 🆕 供阶段联动用
+        card.setAttribute("data-dim-key", dim.dim_key);
+        if (cfgDim) card.setAttribute("data-cfg-dim", cfgDim.id);
+
+        // V1.3: Person 分数徽章
+        var scoreBadge = dimScore !== undefined && dimScore !== null
+          ? '<span class="ability-score">📊 你 ' + dimScore + '分</span>'
+          : '<span class="ability-score ability-score-empty">📊 未测评</span>';
+
+        var displayName = cfgDim ? cfgDim.name : dim.dim_name;
+        var displayEmoji = cfgDim ? cfgDim.emoji : dim.dim_icon;
+
         card.innerHTML =
-          '<div class="ability-card-name">' + dim.dim_icon + " " + dim.dim_name + '</div>' +
+          '<div class="ability-card-name">' + displayEmoji + " " + displayName + scoreBadge + '</div>' +
           '<div class="ability-card-desc">' + dim.dim_desc + '</div>' +
           '<div class="ability-card-count">📋 ' + dim.standard_count + '条能力标准 · 权重 ' + weight + '%</div>';
         grid.appendChild(card);

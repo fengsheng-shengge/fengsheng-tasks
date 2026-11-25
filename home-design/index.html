@@ -477,6 +477,22 @@
   .ability-card-name { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 3px; }
   .ability-card-desc { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 6px; }
   .ability-card-count { font-size: 10px; color: var(--body); font-weight: 500; }
+  /* V1.3: Person 分数徽章 */
+  .ability-score {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--primary);
+    background: rgba(26,61,36,0.08);
+    padding: 1px 7px;
+    border-radius: 8px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .ability-score-empty {
+    background: #f0efe8;
+    color: var(--muted);
+    font-weight: 400;
+  }
   .soft-label {
     font-size: 10px; color: #8a7040; background: var(--gold-bg);
     padding: 1px 6px; border-radius: 3px; font-weight: 600;
@@ -1174,7 +1190,41 @@ var currentPosition = "DSGN";
 
   // 渲染默认 DSGN Timeline
   switchPosition("DSGN");
+
+  // V1.3: Person 能力分数徽章
+  renderAbilityScores();
 })();
+
+// V1.3: 遍历所有 ability-card → alias 翻译 → Person 查分 → 加徽章
+function renderAbilityScores(){
+  if (typeof window.DOMAIN_CONFIG === 'undefined' || typeof Person === 'undefined') return;
+  var person = new Person();
+  var profile = person.getAbilityProfile();
+  var cards = document.querySelectorAll('.ability-card');
+  cards.forEach(function(card){
+    // 读 hard-label / soft-label 的文本（DSGN-1, PROJ-5 等）
+    var label = card.querySelector('.hard-label, .soft-label');
+    if (!label) return;
+    var aliasId = label.textContent.trim();
+    if (!aliasId) return;
+
+    // alias 翻译到 domain-config
+    var cfgDim = window.DOMAIN_CONFIG.getDimByAlias(aliasId, 'DECOR');
+    if (!cfgDim) return;
+
+    // 查 Person 分数
+    var score = null;
+    var match = profile.find(function(p){ return p.dimId === cfgDim.id; });
+    if (match) score = match.score;
+
+    // 加徽章
+    var badge = document.createElement('span');
+    badge.className = 'ability-score' + (score === null ? ' ability-score-empty' : '');
+    badge.textContent = score !== null ? '📊 你 ' + score + '分' : '📊 未测评';
+    var nameEl = card.querySelector('.ability-card-name');
+    if (nameEl) nameEl.appendChild(badge);
+  });
+}
 
 function renderRBSwitchPills(){
   var meta = POSITION_META;
