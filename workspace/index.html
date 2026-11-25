@@ -116,6 +116,89 @@
     font-weight: 600;
   }
 
+  /* ===== V1.5 四段选择带：域 › 角色 › 消费者 › 阶段 ===== */
+  .four-step-bar {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .four-step-bar .fstep {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 auto;
+    min-width: 200px;
+  }
+  .four-step-bar .fstep-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 48px;
+  }
+  .four-step-bar .fstep select {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--bg);
+    color: var(--primary-dark);
+    cursor: pointer;
+  }
+  .four-step-bar .fstep-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .four-step-bar .fstep-pill {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--body);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .four-step-bar .fstep-pill:hover { border-color: var(--primary); }
+  .four-step-bar .fstep-pill.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+  .fstep-decor-banner {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(201,168,76,.1) 0%, rgba(201,168,76,.03) 100%);
+    border: 1px solid rgba(201,168,76,.3);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .fstep-decor-banner .db-icon { font-size: 28px; }
+  .fstep-decor-banner .db-info { flex: 1; }
+  .fstep-decor-banner .db-info .db-title { font-size: 15px; font-weight: 700; color: #8a7040; }
+  .fstep-decor-banner .db-info .db-desc { font-size: 12px; color: #8a7040; opacity: .8; margin-top: 3px; }
+  .fstep-decor-banner .db-btn {
+    background: #8a7040;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
   /* ===== 🆕 岗位身份 Banner — 第一眼看清楚你是谁 ===== */
   .role-banner {
     background: linear-gradient(135deg, #1a3d24 0%, #2d5a3f 50%, #3a6b4d 100%);
@@ -830,7 +913,8 @@
   }
 
   /* ===== Consumer filter (type chips) — 强化版 ===== */
-  .consumer-filter { display: none !important; } /* 2026-11-11 隐藏：每个岗位只有一套固定 Timeline，不再需要"选服务对象" */
+  /* V1.5: 启用 consumer-filter — 四段选择带的第三段 */
+  .consumer-filter { display: flex !important; }
   .consumer-filter-retained { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   /* consumer-filter 原始样式已废弃，保留类名避免历史 JS 报错 */
   .consumer-filter .cf-chip {
@@ -1594,6 +1678,50 @@
     <div id="position-pills"></div>
   </div>
   -->
+
+  <!-- V1.5: DECOR domain 过渡 banner（workspace 检测到 ?domain=DECOR 时显示）-->
+  <div class="fstep-decor-banner" id="decor-banner" style="display:none">
+    <div class="db-icon">🎨</div>
+    <div class="db-info">
+      <div class="db-title">家装工作台内容</div>
+      <div class="db-desc">交易工作台与家装工作台的合并正在进行中。为不中断你当下的工作，请先进入独立的家装工作台版本。</div>
+    </div>
+    <a href="/home-design/" class="db-btn">进入家装工作台 →</a>
+  </div>
+
+  <!-- V1.5: 四段选择带 — 域 › 角色 › 消费者 › 阶段 -->
+  <div class="four-step-bar" id="four-step-bar">
+    <div class="fstep">
+      <span class="fstep-label">① 业务域</span>
+      <div class="fstep-pills" id="fstep-domain-pills">
+        <span class="fstep-pill active" data-domain="TRANSACTION" onclick="switchDomain('TRANSACTION')">🏠 交易服务</span>
+        <span class="fstep-pill" data-domain="DECOR" onclick="switchDomain('DECOR')">🎨 家装服务</span>
+      </div>
+    </div>
+    <div class="fstep">
+      <span class="fstep-label">② 角色</span>
+      <select id="fstep-role" onchange="switchRoleByFstep(this.value)">
+        <option value="BROKER">买卖经纪人</option>
+        <option value="LEASE">租赁管家</option>
+        <option value="NEW_HOME">新房置业</option>
+      </select>
+    </div>
+    <div class="fstep">
+      <span class="fstep-label">③ 消费者</span>
+      <div class="fstep-pills" id="fstep-consumer-pills">
+        <span class="fstep-pill active" data-consumer="buyer" onclick="switchConsumer('buyer')">👤 购房</span>
+        <span class="fstep-pill" data-consumer="seller" onclick="switchConsumer('seller')">🏠 售房</span>
+        <span class="fstep-pill" data-consumer="renter" onclick="switchConsumer('renter')">🧑 租房</span>
+        <span class="fstep-pill" data-consumer="landlord" onclick="switchConsumer('landlord')">🔑 出租</span>
+      </div>
+    </div>
+    <div class="fstep">
+      <span class="fstep-label">④ 阶段</span>
+      <select id="fstep-stage" onchange="switchStageByFstep(this.value)">
+        <!-- 动态生成 -->
+      </select>
+    </div>
+  </div>
 
   <!-- 🆕 岗位身份 Banner — 一眼看清你是谁 -->
   <div class="role-banner" id="role-banner">
@@ -2658,6 +2786,134 @@
         renderLayeredView(currentStage);
         document.getElementById("result-panel").classList.remove("show");
       }
+    }
+
+    // ════════════════════════════════════════════════════════
+    // V1.5: URL 参数解析 + 四段选择带 + DECOR domain 检测
+    // ════════════════════════════════════════════════════════
+
+    var V15_STATE = {
+      domain: "TRANSACTION",
+      role: "BROKER",
+      consumer: "buyer",
+      stage: "b1"
+    };
+
+    // 1. 解析 URL 参数
+    (function parseV15Params(){
+      var p = new URLSearchParams(location.search);
+      if(p.get("domain") === "DECOR"){
+        V15_STATE.domain = "DECOR";
+        V15_STATE.role = "DSGN"; // 家装默认全案设计师
+      } else if(p.get("domain") === "TRANSACTION"){
+        V15_STATE.domain = "TRANSACTION";
+      }
+      if(p.get("role")) V15_STATE.role = p.get("role");
+      if(p.get("consumer")) V15_STATE.consumer = p.get("consumer");
+      if(p.get("stage")) V15_STATE.stage = p.get("stage");
+    })();
+
+    // 2. 如果是 DECOR domain，显示过渡 banner + 隐藏交易内容
+    if(V15_STATE.domain === "DECOR"){
+      (function handleDecor(){
+        var banner = document.getElementById("decor-banner");
+        var fstepBar = document.getElementById("four-step-bar");
+        if(banner) banner.style.display = "flex";
+        if(fstepBar){
+          // 把域 pills 里 DECOR 设为 active
+          fstepBar.querySelectorAll(".fstep-pill[data-domain]").forEach(function(p){
+            p.classList.toggle("active", p.dataset.domain === "DECOR");
+          });
+        }
+      })();
+    }
+
+    // 3. 四段选择带交互函数
+    function switchDomain(domain){
+      V15_STATE.domain = domain;
+      var pills = document.querySelectorAll(".fstep-pill[data-domain]");
+      pills.forEach(function(p){ p.classList.toggle("active", p.dataset.domain === domain); });
+
+      if(domain === "DECOR"){
+        // 家装域 → 跳到独立 home-design（暂时的过渡方案）
+        var next = new URL(location.href);
+        next.searchParams.set("domain", "DECOR");
+        location.href = "/home-design/" + (location.search ? location.search : "");
+        return;
+      } else {
+        // 交易域 → 刷新页面（保持当前 role/consumer/stage）
+        var next = new URL(location.href);
+        next.searchParams.delete("domain");
+        location.href = next.pathname + next.search;
+      }
+    }
+
+    function switchRoleByFstep(roleId){
+      V15_STATE.role = roleId;
+      // 同步调用原有 switchPositionTimeline
+      if(typeof switchPositionTimeline === "function"){
+        switchPositionTimeline(roleId);
+      }
+      // 更新 role-banner pills
+      var url = new URL(location.href);
+      url.searchParams.set("role", roleId);
+      history.replaceState(null, "", url.pathname + url.search);
+    }
+
+    function switchConsumer(consumerId){
+      V15_STATE.consumer = consumerId;
+      var pills = document.querySelectorAll(".fstep-pill[data-consumer]");
+      pills.forEach(function(p){ p.classList.toggle("active", p.dataset.consumer === consumerId); });
+      // 同步更新原有 consumer-filter chips
+      document.querySelectorAll(".consumer-filter .cf-chip").forEach(function(c){
+        c.classList.toggle("active", c.dataset.consumer === consumerId);
+      });
+      var url = new URL(location.href);
+      url.searchParams.set("consumer", consumerId);
+      history.replaceState(null, "", url.pathname + url.search);
+    }
+
+    function switchStageByFstep(stageKey){
+      V15_STATE.stage = stageKey;
+      if(typeof switchStageTab === "function"){
+        switchStageTab(stageKey);
+      } else {
+        // 找到 stage tab 并点击
+        var tab = document.querySelector('.jt-stage[data-key="' + stageKey + '"]');
+        if(tab) tab.click();
+      }
+      var url = new URL(location.href);
+      url.searchParams.set("stage", stageKey);
+      history.replaceState(null, "", url.pathname + url.search);
+    }
+
+    // 4. 四段选择带初始化（DOM 就绪后执行）
+    function initV15Fstep(){
+      // 初始化域 pills active
+      document.querySelectorAll(".fstep-pill[data-domain]").forEach(function(p){
+        p.classList.toggle("active", p.dataset.domain === V15_STATE.domain);
+      });
+      // 初始化消费者 pills active
+      document.querySelectorAll(".fstep-pill[data-consumer]").forEach(function(p){
+        p.classList.toggle("active", p.dataset.consumer === V15_STATE.consumer);
+      });
+      // 初始化阶段 select
+      var stageSel = document.getElementById("fstep-stage");
+      if(stageSel && typeof STAGES !== "undefined"){
+        stageSel.innerHTML = STAGES.map(function(s){
+          return '<option value="' + s.key + '">' + s.key + ' ' + s.name + '</option>';
+        }).join("");
+        stageSel.value = V15_STATE.stage;
+      }
+      // 初始化 role select
+      var roleSel = document.getElementById("fstep-role");
+      if(roleSel) roleSel.value = V15_STATE.role;
+    }
+
+    if(document.readyState === "loading"){
+      document.addEventListener("DOMContentLoaded", initV15Fstep);
+    } else {
+      initV15Fstep();
     }
 
     // 岗位切换 → 加载该岗位固定 Timeline

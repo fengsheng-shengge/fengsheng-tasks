@@ -3,23 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>居住服务工具箱 · 风声聚匠星云 · 循证服务 · 每句话敢点开看依据</title>
-<meta name="description" content="居住服务者的现场工具箱：经纪人工作台、家装工作台、6231 条循证知识底座、能力测评、话术解码。">
+<title>居住服务工具箱 · 风声聚匠星云</title>
+<meta name="description" content="居住服务者的现场工具箱：知识底座、能力测评、在线考试、场景练习、话术解码。">
 <link rel="canonical" href="https://37ltrxxqw2xzsigbxv9.traesite.cn/toolkit/">
-<meta property="og:title" content="居住服务工具箱 · 风声聚匠星云">
-<meta property="og:description" content="经纪人 + 设计师双领域，5 件平台工具 + 2 个现场工作台，每句话敢点开看依据。">
 <style>
 :root{
   --primary:#1a3d24; --primary-dark:#0e2114; --gold:#c9a84c;
   --bg:#faf8f4; --card:#fff; --line:#e8e4db; --muted:#8a9a90; --body:#333;
-  --bg2:#f3f0e8; --border:rgba(26,61,36,.09);
+  --bg2:#f3f0e8;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--body);line-height:1.6}
 a{color:var(--primary);text-decoration:none}
-a:hover{color:var(--primary-dark)}
 
-/* ===== Nav — 与全站统一 ===== */
+/* Nav */
 .nav{display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 48px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:100}
 .nav-l{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--primary)}
 .nav-l .brand-icon{width:32px;height:32px;background:var(--primary);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
@@ -30,77 +27,46 @@ a:hover{color:var(--primary-dark)}
 .nav-links a:hover{color:var(--primary)}
 .nav-links a.active{color:var(--primary);font-weight:600}
 .nav-r .btn-gold{background:var(--gold);color:var(--primary-dark);padding:8px 18px;border-radius:8px;font-weight:600;font-size:14px}
-.nav-r .btn-gold:hover{opacity:.9}
 
-/* ===== Hero — 简洁，不重复首页 ===== */
-.hero{padding:56px 48px 40px;background:linear-gradient(180deg,rgba(26,61,36,.03) 0%,transparent 100%);text-align:center}
-.hero .tag{display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(26,61,36,.08);color:var(--primary);font-size:12px;font-weight:600;margin-bottom:16px;letter-spacing:1px}
-.hero h1{font-size:clamp(24px,3.5vw,34px);font-weight:800;color:var(--primary-dark);line-height:1.3;margin-bottom:10px}
-.hero .sub{font-size:clamp(14px,1.8vw,16px);color:var(--muted);max-width:560px;margin:0 auto;line-height:1.7}
+/* Hero */
+.hero{padding:56px 48px 40px;text-align:center}
+.hero .tag{display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(26,61,36,.08);color:var(--primary);font-size:12px;font-weight:600;margin-bottom:16px}
+.hero h1{font-size:clamp(24px,3.5vw,34px);font-weight:800;color:var(--primary-dark);margin-bottom:10px}
+.hero .sub{font-size:16px;color:var(--muted);max-width:560px;margin:0 auto}
 
-/* ===== 身份入口 — 最优先：我是谁 ===== */
-.identity-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;padding:0 48px 40px}
-.identity-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;transition:all .2s;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:8px}
+/* 身份入口 */
+.identity-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 48px 40px}
+.identity-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;transition:all .2s;text-decoration:none;color:inherit}
 .identity-card:hover{border-color:var(--primary);box-shadow:0 4px 20px rgba(26,61,36,.06);transform:translateY(-1px)}
 .identity-card .ic-icon{font-size:28px}
-.identity-card h3{font-size:16px;font-weight:700;color:var(--primary-dark)}
-.identity-card p{font-size:13px;color:var(--muted);line-height:1.6}
-.identity-card .ic-badge{font-size:11px;color:var(--primary);font-weight:600;margin-top:auto}
-.identity-card.role-tr{background:linear-gradient(135deg,rgba(26,61,36,.04) 0%,transparent 100%)}
-.identity-card.role-dec{background:linear-gradient(135deg,rgba(201,168,76,.07) 0%,transparent 100%)}
-.identity-card.role-test{background:linear-gradient(135deg,rgba(26,61,36,.02) 0%,transparent 100%)}
+.identity-card h3{font-size:16px;font-weight:700;color:var(--primary-dark);margin:8px 0 4px}
+.identity-card p{font-size:13px;color:var(--muted)}
+.identity-card .ic-badge{font-size:12px;color:var(--primary);font-weight:600;margin-top:10px;display:block}
 
-/* ===== Section Header ===== */
+/* 五件工具 */
 .section{padding:0 48px 56px}
-.section-title{font-size:18px;font-weight:700;color:var(--primary-dark);margin-bottom:20px;display:flex;align-items:center;gap:10px}
-.section-title .count{background:var(--primary);color:#fff;font-size:12px;padding:3px 10px;border-radius:12px;font-weight:500}
-
-/* ===== 平台工具（扁平栅格） ===== */
-.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
-.tool-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;transition:all .15s;text-decoration:none;color:inherit;display:block}
-.tool-card:hover{border-color:var(--primary);transform:translateY(-2px)}
-.tool-card .t-icon{font-size:24px;margin-bottom:10px}
-.tool-card h4{font-size:14px;font-weight:700;color:var(--primary-dark);margin-bottom:3px}
-.tool-card .t-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px}
+.section-title{font-size:18px;font-weight:700;color:var(--primary-dark);margin-bottom:20px}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.tool-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;transition:all .15s;text-decoration:none;color:inherit;display:block}
+.tool-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 4px 16px rgba(26,61,36,.06)}
+.tool-card .t-icon{font-size:26px;margin-bottom:12px}
+.tool-card h4{font-size:15px;font-weight:700;color:var(--primary-dark);margin-bottom:6px}
+.tool-card .t-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px}
 .tool-card .t-badge{font-size:11px;color:var(--primary);font-weight:600}
 
-/* ===== 经纪人阶段工具包 — 核心价值 ===== */
-.stage-bundle{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;margin-bottom:20px}
-.stage-bundle .bundle-title{font-size:15px;font-weight:700;color:var(--primary-dark);margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.stage-bundle .bundle-meta{font-size:12px;color:var(--muted);font-weight:400}
-.stage-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-.stage-item{background:var(--bg2);border-radius:10px;padding:14px 14px 12px;transition:all .15s}
-.stage-item:hover{background:rgba(26,61,36,.06)}
-.stage-item .si-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.stage-item .si-num{font-size:11px;font-weight:700;color:var(--primary);background:rgba(26,61,36,.08);padding:2px 8px;border-radius:10px}
-.stage-item h5{font-size:13px;font-weight:700;color:var(--primary-dark)}
-.stage-item .si-tools{display:flex;flex-direction:column;gap:4px;margin-top:8px}
-.stage-item .si-tool{font-size:11px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:4px;padding:3px 0}
-.stage-item .si-tool:hover{color:var(--primary)}
-.stage-item .si-tool .arrow{opacity:0;transition:opacity .15s}
-.stage-item .si-tool:hover .arrow{opacity:1}
-
-/* ===== Decoration ===== */
-.divider{border:none;border-top:1px dashed var(--line);margin:0 48px 40px}
-.gray-section{background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%)}
-
-/* ===== Footer ===== */
+/* Footer */
 footer{text-align:center;padding:28px 16px 32px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
 
-/* ===== Responsive ===== */
 @media(max-width:900px){
-  .nav{padding:0 20px}
-  .nav-links{display:none}
+  .nav{padding:0 20px}.nav-links{display:none}
   .hero{padding:40px 20px 32px}
   .identity-row{grid-template-columns:1fr;padding:0 20px 32px}
   .section{padding:0 20px 40px}
-  .stage-bundle{padding:20px}
 }
 </style>
 </head>
 <body>
 
-<!-- Nav — active on 工具箱 -->
 <nav class="nav">
   <div class="nav-l">
     <div class="brand-icon">风</div>
@@ -121,38 +87,29 @@ footer{text-align:center;padding:28px 16px 32px;font-size:12px;color:var(--muted
   </div>
 </nav>
 
-<!-- Hero — 简洁 -->
 <section class="hero">
   <div class="tag">📦 居住服务工具箱</div>
-  <h1>干活现场需要的一切<br>按场景摆好</h1>
-  <p class="sub">经纪人从房源到过户、设计师从量房到质保，每个阶段要用什么工具、去哪查依据，一眼看到。</p>
+  <h1>干活要用的工具，按类型摆好</h1>
+  <p class="sub">知识底座、能力测评、在线考试、场景练习、话术解码——五件工具，经纪人 + 设计师都能用。</p>
 </section>
 
-<!-- ===== 第一桶：你是谁 ===== -->
 <section class="identity-row">
-  <a href="/workspace/" class="identity-card role-tr">
+  <a href="/workspace/" class="identity-card">
     <div class="ic-icon">🏠</div>
-    <h3>经纪人 · 要干活</h3>
-    <p>6 阶段循证服务 Timeline，买卖/租赁/新房三套岗位</p>
-    <div class="ic-badge">进入工作台 →</div>
+    <h3>经纪人要干活</h3>
+    <p>买卖/租赁/新房三套岗位 Timeline，6 阶段循证服务</p>
+    <span class="ic-badge">进入工作台 →</span>
   </a>
-  <a href="/home-design/" class="identity-card role-dec">
+  <a href="/home-design/" class="identity-card">
     <div class="ic-icon">🎨</div>
-    <h3>设计师 · 要干活</h3>
-    <p>21 阶段 stageLearnMap + 88 条家装循证知识</p>
-    <div class="ic-badge">进入工作台 →</div>
-  </a>
-  <a href="/care-test/?role=all" class="identity-card role-test">
-    <div class="ic-icon">📊</div>
-    <h3>先测 · 再干活</h3>
-    <p>60 题 20 分钟测能力画像，告诉你哪强哪弱</p>
-    <div class="ic-badge">免费测 →</div>
+    <h3>设计师要干活</h3>
+    <p>量房→方案→报价→交底→施工→验收 6 阶段 SOP</p>
+    <span class="ic-badge">进入工作台 →</span>
   </a>
 </section>
 
-<!-- ===== 第二桶：跨领域平台工具 ===== -->
 <section class="section">
-  <h2 class="section-title">🛠 跨领域平台工具 <span class="count">5 件</span></h2>
+  <h2 class="section-title">🛠 五件平台工具</h2>
   <div class="tool-grid">
     <a href="/knowledge/" class="tool-card">
       <div class="t-icon">📖</div>
@@ -178,125 +135,17 @@ footer{text-align:center;padding:28px 16px 32px;font-size:12px;color:var(--muted
       <p class="t-desc">6 阶段客户场景对话模拟，敢开口才会干活</p>
       <span class="t-badge">练手 →</span>
     </a>
-    <a href="/academy/profile/" class="tool-card">
-      <div class="t-icon">📈</div>
-      <h4>能力画像</h4>
-      <p class="t-desc">测学练三环节聚合，7 维度能力曲线看自己哪项拖后腿</p>
-      <span class="t-badge">查画像 →</span>
+    <a href="/decoder/" class="tool-card">
+      <div class="t-icon">💬</div>
+      <h4>话术解码器</h4>
+      <p class="t-desc">一句话 → 三种版本（专业/共情/直接），敢说才会签</p>
+      <span class="t-badge">去解码 →</span>
     </a>
   </div>
 </section>
 
-<hr class="divider">
-
-<!-- ===== 第三桶：经纪人阶段工具包 ===== -->
-<section class="section">
-  <h2 class="section-title">🧭 经纪人 · 6 阶段工具包 <span class="count">21 件组合</span></h2>
-  <div class="stage-bundle">
-    <div class="bundle-title">🏠 买卖经纪人 Timeline · 每个阶段该用什么 <span class="bundle-meta">租赁管家 / 新房置业 进工作台切换</span></div>
-    <div class="stage-row">
-      <div class="stage-item">
-        <div class="si-header"><span class="si-num">b1</span><h5>房源开发核验</h5></div>
-        <div class="si-tools">
-          <a class="si-tool" href="/knowledge/?q=房源核验">📖 知识底座"房源核验" <span class="arrow">→</span></a>
-          <a class="si-tool" href="/academy/exam/?dim=ACQUISITION">📝 考试获客触达 <span class="arrow">→</span></a>
-        </div>
-      </div>
-      <div class="stage-item">
-        <div class="si-header"><span class="si-num">b2</span><h5>客户需求解码</h5></div>
-        <div class="si-tools">
-          <a class="si-tool" href="/knowledge/?q=需求解码">📖 知识底座"客户洞察" <span class="arrow">→</span></a>
-          <a class="si-tool" href="/academy/practice/?scene=b2">🎬 场景练习"需求挖掘" <span class="arrow">→</span></a>
-        </div>
-      </div>
-      <div class="stage-item">
-        <div class="si-header"><span class="si-num">b3</span><h5>带看讲解</h5></div>
-        <div class="si-tools">
-          <a class="si-tool" href="/knowledge/?q=带看讲解">📖 知识底座"带看准备" <span class="arrow">→</span></a>
-          <a class="si-tool" href="/academy/exam/?dim=SOLUTION">📝 考试专业方案 <span class="arrow">→</span></a>
-        </div>
-      </div>
-      <div class="stage-item">
-        <div class="si-header"><span class="si-num">b4</span><h5>谈判斡旋</h5></div>
-        <div class="si-tools">
-          <a class="si-tool" href="/knowledge/?q=谈判技巧">📖 知识底座"谈判策略" <span class="arrow">→</span></a>
-          <a class="si-tool" href="/academy/practice/?scene=b4">🎬 场景练习"双边博弈" <span class="arrow">→</span></a>
-        </div>
-      </div>
-      <div class="stage-item">
-        <div class="si-header"><span class="si-num">b5</span><h5>签约协办</h5></div>
-        <div class="si-tools">
-          <a class="si-tool" href="/knowledge/?q=定金">📖 知识底座"定金合同" <span class="arrow">→</span></a>
-          <a class="si-tool" href="/academy/exam/?dim=FULFILLMENT">📝 考试交易履约 <span class="arrow">→</span></a>
-        </div>
-      </div>
-      <div class="stage-item">
-        <div class="si-header"><span class="si-num">b6</span><h5>过户交房</h5></div>
-        <div class="si-tools">
-          <a class="si-tool" href="/knowledge/?q=交房">📖 知识底座"交房注意" <span class="arrow">→</span></a>
-          <a class="si-tool" href="/workspace/">🧭 进工作台看完整 Timeline <span class="arrow">→</span></a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== 第四桶：设计师阶段工具包 ===== -->
-<section class="section gray-section">
-  <h2 class="section-title">🎨 设计师 · 6 阶段工具包 <span class="count">12 件组合</span></h2>
-  <div class="stage-bundle">
-    <div class="bundle-title">🏗️ 全案设计师 Timeline · 每个阶段该用什么 <span class="bundle-meta">项目经理 / 工长 / 技术工人 进工作台切换</span></div>
-    <div class="stage-row">
-      <div class="stage-item">
-        <div class="si-header"><span class="si-num">d1</span><h5>量房诊断</h5></div>
-        <div class="si-tools">
-          <a class="si-tool" href="/knowledge/?q=量房">📖 知识底座"量房流程" <span class="arrow">→</span></a>
-          <a class="si-tool" href="/academy/exam/?domain=DECOR">📝 家装专项考试 <span class="arrow">→</span></a>
-        </div>
-      </div>
-      <div class="stage-item">
-        <div class="si-header"><span class="si-num">d2</span><h5>方案设计</h5></div>
-        <div class="si-tools">
-          <a class="si-tool" href="/knowledge/?q=户型优化">📖 知识底座"户型优化" <span class="arrow">→</span></a>
-          <a class="si-tool" href="/academy/practice/?domain=DECOR">🎬 场景练习 <span class="arrow">→</span></a>
-        </div>
-      </div>
-      <div class="stage-item">
-        <div class="si-header"><span class="si-num">d3</span><h5>透明报价</h5></div>
-        <div class="si-tools">
-          <a class="si-tool" href="/knowledge/?q=闭口价">📖 知识底座"闭口价" <span class="arrow">→</span></a>
-          <a class="si-tool" href="/home-design/">🧭 进工作台看报价模板 <span class="arrow">→</span></a>
-        </div>
-      </div>
-      <div class="stage-item">
-        <div class="si-header"><span class="si-num">d4</span><h5>合同交底</h5></div>
-        <div class="si-tools">
-          <a class="si-tool" href="/knowledge/?q=装饰合同">📖 知识底座"家装合同" <span class="arrow">→</span></a>
-          <a class="si-tool" href="/academy/exam/?domain=DECOR&dim=DSGN-4">📝 合同解读专项 <span class="arrow">→</span></a>
-        </div>
-      </div>
-      <div class="stage-item">
-        <div class="si-header"><span class="si-num">d5</span><h5>施工管理</h5></div>
-        <div class="si-tools">
-          <a class="si-tool" href="/knowledge/?q=JGJ">📖 知识底座"施工规范 JGJ" <span class="arrow">→</span></a>
-          <a class="si-tool" href="/academy/practice/?domain=DECOR&scene=施工">🎬 工地沟通练习 <span class="arrow">→</span></a>
-        </div>
-      </div>
-      <div class="stage-item">
-        <div class="si-header"><span class="si-num">d6</span><h5>验收交付</h5></div>
-        <div class="si-tools">
-          <a class="si-tool" href="/knowledge/?q=验收标准">📖 知识底座"GB 50242" <span class="arrow">→</span></a>
-          <a class="si-tool" href="/home-design/">🧭 进工作台看完整 Timeline <span class="arrow">→</span></a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Footer -->
 <footer>
-  <div>风声聚匠星云 · 循证服务 · 居住服务工具箱</div>
-  <div style="margin-top:4px">经纪人 + 设计师双领域 · 每句话敢点开看依据</div>
+  风声聚匠星云 · 循证服务 · 经纪人 + 设计师双领域
 </footer>
 
 </body>

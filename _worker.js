@@ -4236,6 +4236,27 @@ export default {
       return Response.redirect('https://fengsheng.tech/knowledge/quiz/', 301);
     }
 
+    // V1.5 路由收敛：死路由 → 活路由 + home-design 并入 workspace/?domain=DECOR
+    const v15RouteMap = {
+      '/assessment':    '/care-test/',
+      '/assessment/':   '/care-test/',
+      '/reply':         '/decoder/',
+      '/reply/':        '/decoder/',
+      '/breeder':       '/academy/',
+      '/breeder/':      '/academy/',
+      '/skills':        '/toolkit/',
+      '/skills/':       '/toolkit/',
+    };
+    if (v15RouteMap[path]) {
+      return Response.redirect(`https://fengsheng.tech${v15RouteMap[path]}`, 301);
+    }
+    // home-design → workspace/?domain=DECOR（带 query 参数，单独处理）
+    if (path === '/home-design' || path === '/home-design/') {
+      const qs = new URL(request.url).searchParams;
+      const extra = qs.toString() ? '&' + qs.toString() : '';
+      return Response.redirect(`https://fengsheng.tech/workspace/?domain=DECOR${extra}`, 301);
+    }
+
     // IP Design POST (before trailing-slash redirect)
     if (path === '/ip-design' && request.method === 'POST') {
       return handleIpDesign(request, env);
