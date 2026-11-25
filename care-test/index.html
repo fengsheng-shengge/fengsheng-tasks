@@ -136,6 +136,8 @@
 
   .hidden { display: none !important; }
 </style>
+<script src="/js/domain-config.js"></script>
+<script src="/js/person.js"></script>
 </head>
 <body>
 <!-- 风声统一导航栏 -->
@@ -573,7 +575,14 @@ function convertQuiz(rawQuestions){
   for(var i=0;i<DIMS.length;i++){
     DIM_TO_ID[DIMS[i]] = (i+1);
     DIM_EMOJI[DIMS[i]] = (cfg.dim_icons && cfg.dim_icons[DIMS[i]]) || '';
-    CARETEST_DIM_NAMES[i+1] = DIMS[i];
+  }
+
+  // 从统一配置读维度名
+  var _cfg = (window.DOMAIN_CONFIG && window.DOMAIN_CONFIG.getDims) ? window.DOMAIN_CONFIG : null;
+  CARETEST_DIM_NAMES = {};
+  if (_cfg) {
+    var _cdims = _cfg.getDims(CURRENT_DOMAIN);
+    _cdims.forEach(function(d,i){ CARETEST_DIM_NAMES['DIM-'+(i+1)] = d.name; });
   }
 
   fetch(cfg.quiz_path)
@@ -1098,6 +1107,18 @@ function showReport() {
       mode: QUESTIONS.length <= 7 ? 'focused' : 'full'
     };
     localStorage.setItem('fs_care_profile', JSON.stringify(profile));
+    // 新架构：Person 聚合层写入
+    if (window.Person && typeof window.Person === 'function') {
+      try {
+        var _pscores = {};
+        for (var _dn in dimScores) {
+          var _did = DIM_TO_ID[_dn];
+          if (_did) _pscores['DIM-' + _did] = dimScores[_dn];
+        }
+        var _p = new window.Person();
+        _p.submitCareTest(_pscores);
+      } catch(e) { /* 忽略聚合层错误，不影响原有功能 */ }
+    }
     // v3.2：累积历史记录（供 profile 页画维度趋势图 + 完整答题留痕）
     try {
       var hist = JSON.parse(localStorage.getItem('fs_care_history') || '[]');

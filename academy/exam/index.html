@@ -139,6 +139,8 @@ a{text-decoration:none;color:inherit}
   ]
   }
   </script>
+<script src="/js/domain-config.js"></script>
+<script src="/js/person.js"></script>
 </head>
 <body>
 
@@ -889,9 +891,13 @@ function getProfileScores() {
   var HARD_NAMES = (typeof CURRENT_DOMAIN !== 'undefined' && CURRENT_DOMAIN === 'DECOR') ?
     (typeof HARD_NAMES_DECOR !== 'undefined' ? HARD_NAMES_DECOR : ['品牌获客','住户画像','全案设计','方案呈现','施工交底','交付兑现','数字化工具']) :
     ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
+  // 新架构：从统一配置读硬技能维度名（fallback 到 HARD_NAMES）
+  var _cfg = window.DOMAIN_CONFIG;
+  var _dims = (_cfg && _cfg.getDims) ? _cfg.getDims() : [];
   var SOFT_NAMES = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
   for (var i = 0; i < 7; i++) {
-    var code = 'DIM-' + (i+1), name = HARD_NAMES[i];
+    var code = 'DIM-' + (i+1);
+    var name = (_dims[i] && _dims[i].name) ? _dims[i].name : (HARD_NAMES ? HARD_NAMES[i] : EXAM_DB[code].name);
     var cs = care && care.dim_scores ? care.dim_scores[name] : null;
     var es = examR[code] ? examR[code].pct : null;
     if (cs != null && es != null) scores[code] = Math.max(cs, es);
@@ -1155,6 +1161,14 @@ function submitExam() {
 
   // 存 localStorage
   saveResults(currentExam.dim, score, total, currentExam.answers);
+
+  // 新架构：Person 聚合层
+  if (window.Person && typeof window.Person === 'function') {
+    try {
+      var _p = new window.Person();
+      _p.submitExam(currentExam.dim, Math.round(pct));
+    } catch(e) { /* 忽略 */ }
+  }
 
   // 结果渲染
   var reviewHtml = '';
