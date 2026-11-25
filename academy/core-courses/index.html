@@ -124,6 +124,8 @@ a{text-decoration:none;color:inherit}
   ]
   }
   </script>
+<script src="/js/domain-config.js"></script>
+<script src="/js/person.js"></script>
 </head>
 <body>
 
@@ -542,7 +544,9 @@ a{text-decoration:none;color:inherit}
 
   // 家装领域硬技能课程名称覆盖
   if (CURRENT_DOMAIN === 'DECOR') {
-    var decorNames = ['品牌获客','住户画像','全案设计','方案呈现','施工交底','交付兑现','数字化工具'];
+    var _cfg2 = window.DOMAIN_CONFIG;
+    var _dims = (_cfg2 && _cfg2.getDims) ? _cfg2.getDims('DECOR') : [];
+    var decorNames = _dims.length ? _dims.map(function(d){ return d.name; }) : ['品牌获客','住户画像','全案设计','方案呈现','施工交底','交付兑现','数字化工具'];
     var decorDescs = [
       '家装企业品牌获客方法论——抖音/小红书内容矩阵、线下样板间引流、老客口碑裂变。',
       '家装客户画像——房型/预算/风格偏好/家庭成员结构，从显性需求到隐性焦虑。',

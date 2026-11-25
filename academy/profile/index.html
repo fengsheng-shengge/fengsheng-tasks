@@ -176,6 +176,8 @@ a{text-decoration:none;color:inherit}
   .ph-right{grid-column:1 / -1;text-align:center;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.2)}
 }
 </style>
+<script src="/js/domain-config.js"></script>
+<script src="/js/person.js"></script>
 </head>
 <body>
 
@@ -423,17 +425,14 @@ a{text-decoration:none;color:inherit}
 var __pp = new URLSearchParams(location.search);
 var CURRENT_DOMAIN = __pp.get('domain') || 'TRANSACTION';
 
-// ========== 维度定义 ==========
-var HARD_DIMS, HARD_CODES, HARD_ICONS;
-if (CURRENT_DOMAIN === 'DECOR') {
-  HARD_DIMS = ['品牌获客','住户画像','全案设计','方案呈现','施工交底','交付兑现','数字化工具'];
-  HARD_CODES = {'品牌获客':'DIM-1','住户画像':'DIM-2','全案设计':'DIM-3','方案呈现':'DIM-4','施工交底':'DIM-5','交付兑现':'DIM-6','数字化工具':'DIM-7'};
-  HARD_ICONS = {'品牌获客':'📣','住户画像':'👤','全案设计':'🎨','方案呈现':'📐','施工交底':'🔧','交付兑现':'💯','数字化工具':'🤖'};
-} else {
-  HARD_DIMS = ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
-  HARD_CODES = {'获客触达':'DIM-1','需求洞察':'DIM-2','专业方案':'DIM-3','带看谈判':'DIM-4','交易履约':'DIM-5','售后复购':'DIM-6','数字化协同':'DIM-7'};
-  HARD_ICONS = {'获客触达':'📣','需求洞察':'🔍','专业方案':'📐','带看谈判':'🤝','交易履约':'📝','售后复购':'💗','数字化协同':'🤖'};
-}
+// ========== 维度定义（新架构：从 DOMAIN_CONFIG 统一读取 ==========
+var _cfg = window.DOMAIN_CONFIG || {};
+var _dims = _cfg.getDims ? _cfg.getDims(CURRENT_DOMAIN) : [];
+var HARD_DIMS  = _dims.map(function(d){ return d.name; });
+var HARD_CODES = {};
+var HARD_ICONS = {};
+_dims.forEach(function(d){ HARD_CODES[d.name] = d.id; });
+_dims.forEach(function(d){ HARD_ICONS[d.name] = d.emoji; });
 
 var SOFT_DIMS = ['共情能力','判断能力','责任担当','职业素养','服务意识'];
 var SOFT_CODES = {'共情能力':'SOFT-1','判断能力':'SOFT-2','责任担当':'SOFT-3','职业素养':'SOFT-4','服务意识':'SOFT-5'};
@@ -462,7 +461,26 @@ var LEVELS = [
     formula:'Layer1×0.25 + Layer2×0.40 + Layer3×0.25 + Layer4×0.10' },
 ];
 
-// ========== 数据源加载 ==========
+// ========== 新架构：Person 统一聚合层 ==========
+var _person = (window.Person && typeof window.Person === 'function') ? new window.Person() : null;
+var profileScores = {};   // dimId → 加权综合分（Person.getAbilityProfile）
+var ethicsScores = {};    // ethicsId → 分（Person.getEthicsProfile）
+var breakdowns = {};      // dimId → {baseline, exam, practice} 贡献分解
+var weakDims = [];        // 最弱 2 个 dimId
+var growth = [];          // Person 快照历史
+
+if (_person && _cfg.getDims) {
+  var _ap = _person.getAbilityProfile();
+  _ap.forEach(function(p){
+    profileScores[p.dimId] = p.score;
+    breakdowns[p.dimId] = p.breakdown;
+  });
+  _person.getEthicsProfile().forEach(function(e){ ethicsScores[e.id] = e.score; });
+  weakDims = _person.getWeakDims();
+  growth = _person.getGrowth();
+}
+
+// ========== 数据源加载（旧 localStorage 手动聚合 + Person 增强覆盖）==========
 function loadAllData() {
   var care = null, examResults = {}, history = [], practiceDone = [], courseProgress = {}, reviewTags = {}, aiUsage = {};
   try { care = JSON.parse(localStorage.getItem('fs_care_profile')); } catch(e) {}
@@ -477,6 +495,21 @@ function loadAllData() {
   try { courseProgress = JSON.parse(localStorage.getItem('fs_course_progress')) || {}; } catch(e) {}
   try { reviewTags = JSON.parse(localStorage.getItem('fs_review_tags')) || {}; } catch(e) {}
   try { aiUsage = JSON.parse(localStorage.getItem('fs_ai_tool_usage')) || {}; } catch(e) {}
+
+  // ===== Person 增强：用统一聚合层覆盖硬技能数据（与旧 loadAllData 结构兼容）=====
+  if (_person && _cfg.getDims) {
+    var _ap2 = _person.getAbilityProfile();
+    _ap2.forEach(function(p) {
+      if (!care) care = {};
+      if (!care.dim_scores) care.dim_scores = {};
+      // Person 的 score 是加权综合（baseline*0.3 + exam*0.4 + practice*0.3），覆盖旧 care-test
+      care.dim_scores[p.dimName] = p.score;
+      // examResults 也用 Person 综合分覆盖，让 computeHardScores 取 max 后还是 Person 的分
+      examResults[p.dimId] = { pct: p.score };
+    });
+    // 软技能无 Person 聚合，保留 examResults 里原有的 SOFT-x 键（由旧 localStorage 填）
+  }
+
   return { care:care, exam:examResults, history:history, practiceCount:practiceDoneCount, courses:courseProgress, reviews:reviewTags, ai_usage:aiUsage };
 }
 
@@ -1001,8 +1034,17 @@ function renderDimTable(rootId, scores, dims, codes) {
     if (s == null) return '';
     var cls = s >= 65 ? 'strong' : (s >= 45 ? 'medium' : 'weak');
     var code = codes[n];
+    // Change 4: 新架构 breakdown tooltip — 悬停显示 baseline/exam/practice 三源贡献
+    var _tip = '';
+    if (code && window.breakdowns && window.breakdowns[code]) {
+      var _bd = window.breakdowns[code];
+      _tip = ' title="baseline=' + (_bd.baseline!=null?_bd.baseline:'—') +
+             ' · exam=' + (_bd.exam!=null?_bd.exam:'—') +
+             ' · practice=' + (_bd.practice!=null?_bd.practice:'—') +
+             ' (Person 加权)"';
+    }
     return '<div class="dim-row">' +
-      '<div class="d-name">' + n + '</div>' +
+      '<div class="d-name"' + _tip + '>' + n + '</div>' +
       '<div class="d-bar"><div class="d-fill ' + cls + '" style="width:' + s + '%"></div></div>' +
       '<div class="d-score ' + cls + '">' + s + '</div>' +
       '<div class="d-action"><a href="/academy/core-courses/learn/?dim=' + code + '">补→</a></div>' +

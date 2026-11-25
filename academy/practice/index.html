@@ -110,6 +110,8 @@ a{text-decoration:none;color:inherit}
   ]
   }
   </script>
+<script src="/js/domain-config.js"></script>
+<script src="/js/person.js"></script>
 </head>
 <body>
 
@@ -148,7 +150,7 @@ a{text-decoration:none;color:inherit}
 //  P3 进度: 练习进度条 + 已练标记
 // ============================================================
 
-var state = { sceneId: null, turnIdx: 0, stepIdx: 0, feedbackShown: false };
+var state = { sceneId: null, turnIdx: 0, stepIdx: 0, feedbackShown: false, goodCount: 0, choiceCount: 0 };
 
 // ===== 硬技能 8 场景（客户服务时间线 DIM-1~7）=====
 var HARD_SCENES = [
@@ -735,6 +737,15 @@ function render() {
         }
       } catch(e) {}
 
+      // 新架构：Person 聚合层
+      if (window.Person) {
+        try {
+          var _score = state.choiceCount > 0 ? Math.round(state.goodCount / state.choiceCount * 100) : 100;
+          var _p = new window.Person();
+          _p.submitPractice(scene.id, _score);
+        } catch(e2) {}
+      }
+
       html += '<div class="feedback" style="margin-top:20px">' +
         '<div class="fback-title">🏁 场景结局 <span style="font-size:10px;background:#e8f4ec;color:#2d5a3d;padding:2px 8px;border-radius:10px;margin-left:8px">✓ 已解锁徽章</span></div>' +
         '<div class="fback-body">' + scene.endMsg + '</div>' +
@@ -754,10 +765,18 @@ function render() {
 
 function enterScene(id) {
   state.sceneId = id; state.turnIdx = 0; state.stepIdx = 0; state.feedbackShown = false;
+  state.goodCount = 0; state.choiceCount = 0;
   render();
 }
 function chooseOption(i) {
-  state.stepIdx = i; state.feedbackShown = true; render();
+  state.stepIdx = i; state.feedbackShown = true;
+  var ALL_SCENES = HARD_SCENES_DOMAIN.concat(SOFT_SCENES);
+  var scene = ALL_SCENES.find(function(s){ return s.id === state.sceneId; });
+  if (scene && scene.turns[state.turnIdx] && scene.turns[state.turnIdx].choices && scene.turns[state.turnIdx].choices[i]) {
+    state.choiceCount++;
+    if (scene.turns[state.turnIdx].choices[i].feedback === 'good') state.goodCount++;
+  }
+  render();
 }
 function nextTurn() {
   state.turnIdx++; state.stepIdx = 0; state.feedbackShown = false; render();

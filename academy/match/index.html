@@ -189,6 +189,8 @@ a{text-decoration:none;color:inherit}
 .footer-note{max-width:920px;margin:40px auto 0;padding:22px 24px 34px;border-top:1px solid #e8e4da;font-size:12px;color:#999;text-align:center;line-height:1.9}
 .footer-note a{color:#1a3d24;font-weight:600}
 </style>
+<script src="/js/domain-config.js"></script>
+<script src="/js/person.js"></script>
 </head>
 <body>
 
@@ -322,9 +324,9 @@ var __mp = new URLSearchParams(location.search);
 var CURRENT_DOMAIN = __mp.get('domain') || 'TRANSACTION';
 
 // ======== 维度定义（硬 7 + 软 5，双轨模型）========
-var HARD_DIMS = (CURRENT_DOMAIN === 'DECOR') ?
-  ['品牌获客','住户画像','全案设计','方案呈现','施工交底','交付兑现','数字化工具'] :
-  ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
+var _cfg = window.DOMAIN_CONFIG;
+var HARD_DIMS  = (_cfg && _cfg.getDims) ? _cfg.getDims().map(function(d){ return d.name; }) : ['获客触达','需求洞察','专业方案','带看谈判','交易履约','售后复购','数字化协同'];
+var HARD_ICONS = (_cfg && _cfg.getDims) ? _cfg.getDims().map(function(d){ return d.emoji; }) : ['📣','👁️','📐','🤝','📋','🔄','🤖'];
 var SOFT_DIMS = ['共情力','判断力','担当心','职业素养','服务意识'];
 var ALL_DIMS = HARD_DIMS.concat(SOFT_DIMS);
 

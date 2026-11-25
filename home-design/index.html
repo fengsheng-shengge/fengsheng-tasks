@@ -537,6 +537,8 @@
 <link rel="canonical" href="https://fengsheng.tech/home-design/">
 <meta property="og:title" content="风声聚匠星云 · 家装工作台">
 <meta property="og:description" content="家装服务者循证能力建设平台 · 全案设计师SOP（硬装+软装+交付兑现）+ 工长交付SOP · 硬8维 + 软5维 · 学练考评配闭环">
+<script src="/js/domain-config.js"></script>
+<script src="/js/person.js"></script>
 </head>
 <body>
 
@@ -917,12 +919,35 @@
    ═══════════════════════════════════════════════════════ */
 
 // ───── 岗位元信息 ─────
+var _cfg = window.DOMAIN_CONFIG;
+var _decorRoles = (_cfg && _cfg.getRoles) ? _cfg.getRoles('DECOR') : [
+  { id:'R-design',  name:'全案设计师', icon:'🎨', primaryDims:['DIM-3','DIM-4','DIM-2','DIM-7'] },
+  { id:'R-project', name:'项目经理',   icon:'📋', primaryDims:['DIM-5','DIM-6','DIM-2','DIM-7'] },
+  { id:'R-foreman', name:'工长',       icon:'🔧', primaryDims:['DIM-5','DIM-6','DIM-7'] },
+  { id:'R-trades',  name:'技术工人',   icon:'⚒️', primaryDims:['DIM-5','DIM-7'] },
+];
 var POSITION_META = {
   DSGN:   { icon:'📐', name:'全案设计师',   desc:'从量房到软装交付——硬装+软装全案定制，对消费者承诺拎包入住，合同约定的交付如实兑现' },
   PROJ:   { icon:'👷', name:'工长交付',     desc:'从现场交底到竣工验收——按标准施工，给客户一个放心的家' },
   MGR:    { icon:'📋', name:'项目经理管理', desc:'从预算管控到团队协调——管好进度、成本、质量三件事' },
   TRADES: { icon:'🔧', name:'技术工人',     desc:'水电/泥木/油漆/安装——手艺就是你的饭碗' }
 };
+// 从 DOMAIN_CONFIG 覆盖岗位名和图标（保持 POSITION_META key 不变）
+(function(){
+  var _map = { Rdesign:'DSGN', Rforeman:'PROJ', Rproject:'MGR', Rtrades:'TRADES' };
+  if (_decorRoles && _decorRoles.length) {
+    var keys = Object.keys(_map);
+    for (var i = 0; i < _decorRoles.length; i++) {
+      var role = _decorRoles[i];
+      // POSITION_META 顺序: 全案设计师, 项目经理/工长, 工长, 技术工人（约等于 role 数组顺序）
+      var posKey = ['DSGN','MGR','PROJ','TRADES'][i];
+      if (posKey && POSITION_META[posKey]) {
+        POSITION_META[posKey].name = role.name || POSITION_META[posKey].name;
+        POSITION_META[posKey].icon = role.icon || POSITION_META[posKey].icon;
+      }
+    }
+  }
+})();
 
 // ───── 1. 全案设计师 DSGN_STAGES（硬装+软装+交付兑现）─────
 var DSGN_STAGES = [
