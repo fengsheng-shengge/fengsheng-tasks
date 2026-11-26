@@ -1708,7 +1708,7 @@
   </div>
   -->
 
-  <!-- V1.6: 三段选择带 — 模块 › 角色 › 旅程段（消费者放阶段卡内） -->
+  <!-- V2.2: 四段选择带 — 模块 › 消费者 › 旅程段（角色切换放横幅右侧 rb-switch-pills） -->
   <div class="three-step-bar" id="three-step-bar">
     <div class="tstep">
       <span class="tstep-label">模块</span>
@@ -1718,11 +1718,13 @@
       </div>
     </div>
     <div class="tstep">
-      <span class="tstep-label">角色</span>
-      <select id="tstep-role" onchange="switchRole(this.value)">
-        <option value="BROKER">买卖经纪人</option>
-        <option value="LEASE">租赁管家</option>
-        <option value="NEW_HOME">新房置业</option>
+      <span class="tstep-label">消费者</span>
+      <select id="tstep-consumer" onchange="selectConsumer(this.value)">
+        <option value="all">👥 全部双边</option>
+        <option value="buyer">👤 购房客户</option>
+        <option value="seller">🏠 业主（售房）</option>
+        <option value="renter">🧑 租房客</option>
+        <option value="landlord">🔑 房东（出租）</option>
       </select>
     </div>
     <div class="tstep">
@@ -1825,10 +1827,11 @@
       <div class="evidence-content" id="evidence-content">
         <!-- 🆕 四层闭环 Tab -->
         <div class="evidence-layer-tabs" id="evidence-layer-tabs">
-          <button class="evidence-layer-tab active" data-layer="L1" onclick="switchEvidenceLayer('L1')">📋 服务流程 <span class="elt-count" id="elt-count-L1"></span></button>
+          <!-- V2.2: 顺序按「依据→动作→能力→素养」+ 默认 active 改 L4 循证依据 -->
+          <button class="evidence-layer-tab active" data-layer="L4" onclick="switchEvidenceLayer('L4')">📜 循证依据 <span class="elt-count" id="elt-count-L4"></span></button>
+          <button class="evidence-layer-tab" data-layer="L1" onclick="switchEvidenceLayer('L1')">📋 服务流程 <span class="elt-count" id="elt-count-L1"></span></button>
           <button class="evidence-layer-tab" data-layer="L2" onclick="switchEvidenceLayer('L2')">🎯 能力矩阵 <span class="elt-count" id="elt-count-L2"></span></button>
           <button class="evidence-layer-tab" data-layer="L3" onclick="switchEvidenceLayer('L3')">💚 素养底线</button>
-          <button class="evidence-layer-tab" data-layer="L4" onclick="switchEvidenceLayer('L4')">📜 循证依据 <span class="elt-count" id="elt-count-L4"></span></button>
         </div>
         <div class="evidence-cards" id="evidence-cards">
           <!-- EvidenceLink 动态渲染 -->
@@ -2126,7 +2129,7 @@
 
     // 🔴 必须挂 window 的全局状态 —— IIFE 内 var 声明但 HTML onclick 需要 window 访问
     var currentPosition = null;       // 当前岗位（switchPositionTimeline 里赋值）
-    var currentEvidenceLayer = "L1";  // 当前 Evidence 层
+    var currentEvidenceLayer = "L4";  // 当前 Evidence 层 — V2.2 默认循证依据优先
     var currentStage = null;          // 当前阶段
     var currentConsumer = null;       // 当前消费者类型
 
@@ -2904,10 +2907,23 @@
       } catch(e) {}
     }
 
-    // 简化：consumer-filter 不再驱动 Timeline 切换（每个岗位只有一套固定工作流）
+    // V2.2: consumer 现在在四段选择带（模块 → 消费者 → 阶段）+ URL ?c= 同步
     function selectConsumer(consumerKey, suppressRender){
       currentConsumer = consumerKey;
+      // 🆕 同步顶部四段选择带的 consumer select（双向同步）
+      var topSel = document.getElementById("tstep-consumer");
+      if(topSel && topSel.value !== consumerKey) topSel.value = consumerKey;
+      // 🆕 URL ?c= 参数
+      var url = new URL(location.href);
+      url.searchParams.set("c", consumerKey || "all");
+      history.replaceState(null, "", url.pathname + url.search);
+
       syncStageTabHighlight();
+      // 同步底部 consumer-filter chips（如果还在 DOM 里）
+      document.querySelectorAll(".consumer-filter .cf-chip").forEach(function(chip){
+        chip.classList.toggle("active", chip.getAttribute("data-consumer") === consumerKey);
+      });
+
       if(!suppressRender){
         renderStageTabs();
         renderStageBrowse();
@@ -2982,12 +2998,13 @@
       sel.value = exists ? currentStage : sys.stages[0].key;
     }
 
-    // V1.6 初始化（修复 V1.5 没调 switchPositionTimeline 的根因）
+    // V2.2 四段选择带初始化：模块 / 角色 / 消费者 / 阶段
     function initV16Workspace(){
       // 1. 解析 URL 参数
       var p = new URLSearchParams(location.search);
       var mod = p.get("m") || p.get("domain") || "TRANSACTION";
       var role = p.get("role") || "BROKER";
+      var consumer = p.get("c") || "all";
       var stage = p.get("stage");
 
       // 2. DECOR → 跳 home-design（暂不合并两套模板）
@@ -3000,19 +3017,26 @@
 
       // 3. TRANSACTION → 正确初始化所有区块
       if(typeof switchPositionTimeline === "function"){
-        switchPositionTimeline(role);  // ← V1.5 缺失的关键调用！
+        switchPositionTimeline(role);
       }
 
-      // 4. 三段选择带 pills active 状态
+      // 4. 四段选择带 — 模块 pills active
       document.querySelectorAll(".tstep-pill[data-module]").forEach(function(p){
         p.classList.toggle("active", p.dataset.module === mod);
       });
 
-      // 5. 角色 select
-      var roleSel = document.getElementById("tstep-role");
-      if(roleSel) roleSel.value = role;
+      // 5. 🆕 四段选择带 — 消费者 select（V2.2 新增）
+      var consumerSel = document.getElementById("tstep-consumer");
+      if(consumerSel){
+        var validConsumers = ["all","buyer","seller","renter","landlord"];
+        if(validConsumers.indexOf(consumer) >= 0){
+          consumerSel.value = consumer;
+        }
+        // 同步 currentConsumer（但不触发全链渲染，等 timeline/stage 都搞定了再统一 renderLayeredView）
+        currentConsumer = consumer;
+      }
 
-      // 6. 阶段 select（动态生成）
+      // 6. 阶段 select（动态生成，随 role 变化）
       initV16StageSelect(role);
       var stageSel = document.getElementById("tstep-stage");
       if(stageSel && stage){
@@ -3020,6 +3044,11 @@
           stageSel.value = stage;
           if(typeof selectStage === "function") selectStage(stage);
         }
+      }
+
+      // 7. 🆕 消费者 c 参数触发全链渲染（等 timeline/stage 都初始化完）
+      if(typeof selectConsumer === "function" && consumer && consumer !== "all"){
+        selectConsumer(consumer, false);  // 触发 Evidence/场景卡/KB Picks 全链联动
       }
     }
 
@@ -3035,6 +3064,17 @@
       var pid = positionId || "BROKER";
       var system = POSITION_TIMELINE[pid];
       currentPosition = pid;  // ← 同步全局，Evidence 区能取到正确岗位
+
+      // 🆕 V2.2: 切 role 时如果 consumer 不在有效范围内，重置为 all
+      // BROKER 有 buyer/seller，LEASE 有 renter/landlord，NEW_HOME 主要 buyer
+      var roleConsumers = { BROKER:["all","buyer","seller"], LEASE:["all","renter","landlord"], NEW_HOME:["all","buyer","renter"] };
+      var validC = roleConsumers[pid] || ["all","buyer","seller","renter","landlord"];
+      if(validC.indexOf(currentConsumer) < 0){
+        currentConsumer = "all";
+        // 同步顶部四段选择带
+        var topSel = document.getElementById("tstep-consumer");
+        if(topSel) topSel.value = "all";
+      }
 
       // V1.6: 更新 role-banner（三段选择带切换后 banner 要跟着变）
       var bannerMeta = POSITION_META[pid];
