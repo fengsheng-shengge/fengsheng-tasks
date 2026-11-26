@@ -435,19 +435,13 @@
     padding: 32px 48px;
     transition: padding 0.25s ease;
   }
-  /* 岗位选中后 compact 模式：Timeline 和解决方案紧贴 */
+  /* 岗位选中后 compact 模式：Timeline 和解决方案紧贴。
+     注意：只隐藏引导性区块，功能性区块（搜索/阶段/能力/成长/证据）保留！ */
   .main.compact { padding-top: 8px; }
   .main.compact > #value-intro,
-  .main.compact > #growth-bar,
   .main.compact > #welcome-back-bar,
-  .main.compact > .search-section,
-  .main.compact > .result-panel,
-  .main.compact > #stage-tabs,
-  .main.compact > .ability-section,
   .main.compact > .tools-section,
-  .main.compact > .advance-section,
-  .main.compact > .footer-note,
-  .main.compact > .stage-browse-panel { display: none !important; }
+  .main.compact > .advance-section { display: none !important; }
 
   /* 🔽 展开/收起高级区切换按钮 */
   .jt-toggle-advanced {
@@ -1693,7 +1687,7 @@
       <span class="tstep-label">模块</span>
       <div class="tstep-pills" id="tstep-module-pills">
         <span class="tstep-pill active" data-module="TRANSACTION" onclick="switchModule('TRANSACTION')">🏠 交易服务</span>
-        <span class="tstep-pill" data-module="DECOR" onclick="switchModule('DECOR')">🎨 家装服务</span>
+        <span class="tstep-pill" style="opacity:.45;cursor:not-allowed;border-style:dashed;" title="点上方「🛠 家装服务」领域 Tab 去家装工作台">🎨 家装服务</span>
       </div>
     </div>
     <div class="tstep">
@@ -1804,10 +1798,10 @@
       <div class="evidence-content" id="evidence-content">
         <!-- 🆕 四层闭环 Tab -->
         <div class="evidence-layer-tabs" id="evidence-layer-tabs">
-          <button class="evidence-layer-tab active" data-layer="L4" onclick="switchEvidenceLayer('L4')">📜 循证依据 <span class="elt-count" id="elt-count-L4"></span></button>
-          <button class="evidence-layer-tab" data-layer="L1" onclick="switchEvidenceLayer('L1')">📋 服务流程 <span class="elt-count" id="elt-count-L1"></span></button>
+          <button class="evidence-layer-tab active" data-layer="L1" onclick="switchEvidenceLayer('L1')">📋 服务流程 <span class="elt-count" id="elt-count-L1"></span></button>
           <button class="evidence-layer-tab" data-layer="L2" onclick="switchEvidenceLayer('L2')">🎯 能力矩阵 <span class="elt-count" id="elt-count-L2"></span></button>
           <button class="evidence-layer-tab" data-layer="L3" onclick="switchEvidenceLayer('L3')">💚 素养底线</button>
+          <button class="evidence-layer-tab" data-layer="L4" onclick="switchEvidenceLayer('L4')">📜 循证依据 <span class="elt-count" id="elt-count-L4"></span></button>
         </div>
         <div class="evidence-cards" id="evidence-cards">
           <!-- EvidenceLink 动态渲染 -->
@@ -2424,8 +2418,9 @@
       .then(function(r){ return r.ok ? r.json() : Promise.reject("no manifest"); })
       .then(function(manifest){
         _evidenceManifest = manifest;
-        var defaultTypes = (manifest.role_preference_map && manifest.role_preference_map.BROKER) || ["LAW","RISK","CASE"];
-        return ensureEvidenceShards(defaultTypes);
+        // 初始预拉所有四层需要的类型（L1+L2+L4），避免切换 Tab 时再等 fetch
+        var allTypes = ["PROC","SCRIPT","JOB","ABIL","KNOWLEDGE","LAW","RISK","CASE","STD","POL","DATA"];
+        return ensureEvidenceShards(allTypes);
       })
       .then(function(){ renderWorkspaceEvidence("BROKER"); })
       .catch(function(err){
@@ -2909,6 +2904,7 @@
     function switchPositionTimeline(positionId){
       var pid = positionId || "BROKER";
       var system = POSITION_TIMELINE[pid];
+      currentPosition = pid;  // ← 同步全局，Evidence 区能取到正确岗位
 
       // V1.6: 更新 role-banner（三段选择带切换后 banner 要跟着变）
       var bannerMeta = POSITION_META[pid];
@@ -3525,11 +3521,12 @@
       });
       renderDomain(savedDomain);
 
-      // 🆕 恢复用户上次的 compact/展开偏好（默认 compact）
+      // 🆕 恢复用户上次的 compact/展开偏好（默认展开，让用户看到完整功能）
       var savedCompact = localStorage.getItem("fs_compact_mode");
-      if(savedCompact === "0"){
-        setTimeout(function(){ applyCompactMode(false); }, 0);
+      if(savedCompact === "1"){
+        setTimeout(function(){ applyCompactMode(true); }, 0);
       }
+      // 默认不 compact，让搜索/阶段 Tab/成长进度条/能力区全部可见
     }
 
     function renderDomain(domainId){
