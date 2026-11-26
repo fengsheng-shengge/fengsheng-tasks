@@ -2777,9 +2777,11 @@
     }
 
     function switchStageSelect(stageKey){
-      if(typeof switchStageTab === "function"){
-        switchStageTab(stageKey);
+      // selectStage 是真正的阶段切换函数（含 renderLayeredView 触发）
+      if(typeof selectStage === "function"){
+        selectStage(stageKey);
       } else {
+        // 降级：直接触发点击
         var tab = document.querySelector('.jt-stage[data-key="' + stageKey + '"]');
         if(tab) tab.click();
       }
@@ -2837,7 +2839,7 @@
       if(stageSel && stage){
         if([...stageSel.options].some(function(o){ return o.value === stage; })){
           stageSel.value = stage;
-          if(typeof switchStageTab === "function") switchStageTab(stage);
+          if(typeof selectStage === "function") selectStage(stage);
         }
       }
     }
@@ -2853,6 +2855,19 @@
     function switchPositionTimeline(positionId){
       var pid = positionId || "BROKER";
       var system = POSITION_TIMELINE[pid];
+
+      // V1.6: 更新 role-banner（三段选择带切换后 banner 要跟着变）
+      var bannerMeta = POSITION_META[pid];
+      if(bannerMeta){
+        var rbIcon = document.getElementById("rb-icon");
+        var rbName = document.getElementById("rb-name");
+        var rbDesc = document.getElementById("rb-desc");
+        var rbDomainTag = document.getElementById("rb-domain-tag");
+        if(rbIcon) rbIcon.textContent = bannerMeta.icon;
+        if(rbName) rbName.textContent = bannerMeta.name;
+        if(rbDesc) rbDesc.textContent = bannerMeta.desc;
+        if(rbDomainTag) rbDomainTag.textContent = "交易服务";
+      }
 
       if(system){
         STAGES = system.stages.slice();
