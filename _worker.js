@@ -4236,26 +4236,25 @@ export default {
       return Response.redirect('https://fengsheng.tech/knowledge/quiz/', 301);
     }
 
-    // V1.5 路由收敛：死路由 → 活路由 + home-design 并入 workspace/?domain=DECOR
-    const v15RouteMap = {
-      '/assessment':    '/care-test/',
-      '/assessment/':   '/care-test/',
-      '/reply':         '/decoder/',
-      '/reply/':        '/decoder/',
-      '/breeder':       '/academy/',
-      '/breeder/':      '/academy/',
-      '/skills':        '/toolkit/',
-      '/skills/':       '/toolkit/',
+    // V1.6 路由收敛（按方案 v1.1 第四节 18 条处置）
+    // 12 个月 301 兼容旧链接
+    const v16RouteMap = {
+      // 孤儿页 → 活路由
+      '/assessment':    '/care-test/',      '/assessment/':   '/care-test/',
+      '/reply':         '/decoder/',         '/reply/':        '/decoder/',
+      '/breeder':       '/academy/',         '/breeder/':      '/academy/',
+      // dictionary 并入知识底座 "全量浏览" 视图（暂用 /knowledge/ 承接）
+      '/dictionary':    '/knowledge/',       '/dictionary/':   '/knowledge/',
+      // scene / curation / decoder / toolkit / standard 都独立存在，不加 301
+      // skills 归档 → 直接 301 到 toolkit
+      '/skills':        '/toolkit/',         '/skills/':       '/toolkit/',
     };
-    if (v15RouteMap[path]) {
-      return Response.redirect(`https://fengsheng.tech${v15RouteMap[path]}`, 301);
+    if (v16RouteMap[path]) {
+      return Response.redirect(`https://fengsheng.tech${v16RouteMap[path]}`, 301);
     }
-    // home-design → workspace/?domain=DECOR（带 query 参数，单独处理）
-    if (path === '/home-design' || path === '/home-design/') {
-      const qs = new URL(request.url).searchParams;
-      const extra = qs.toString() ? '&' + qs.toString() : '';
-      return Response.redirect(`https://fengsheng.tech/workspace/?domain=DECOR${extra}`, 301);
-    }
+    // home-design 独立存在（方案 v1.1: "合并前两模板并存"）
+    // 不 301 → workspace/?m=DECOR，避免死循环（workspace init 会跳回来）
+    // workspace 三段选择带里点 DECOR 模块 → 手动 location.href = "/home-design/"
 
     // IP Design POST (before trailing-slash redirect)
     if (path === '/ip-design' && request.method === 'POST') {
