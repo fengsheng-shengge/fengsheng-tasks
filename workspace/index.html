@@ -2354,17 +2354,14 @@
     var currentStage = "b1";  // 默认 BROKER 第一阶段，switchPositionTimeline 会覆盖
 
     // 1. 加载维度模型
-    console.log("[DEBUG] IIFE start, fetch dimensions_multi.json...");
     fetch("/data/v3/dimensions_multi.json")
-      .then(function(r){ console.log("[DEBUG] dimensions fetch status:", r.status, "ok:", r.ok); return r.ok ? r.json() : null; })
+      .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(data){
-        console.log("[DEBUG] dimensions data:", data ? ("domains=" + Object.keys(data.domains||{}).join(',')) : "NULL");
-        if(!data){ console.warn("[DEBUG] dimensions data is null, init() SKIPPED"); return; }
+        if(!data) return;
         modelData = data;
         init();
-        console.log("[DEBUG] init() called, modelData set");
       })
-      .catch(function(e){ console.error("[DEBUG] dimensions fetch ERR:", e.message); });
+      .catch(function(){});
 
     // 2. 加载问题拆解引擎
     fetch("/data/v3/question_map.json")
@@ -3543,8 +3540,6 @@
       var tipText = document.getElementById("ability-tip-text");
       var goBtn = document.getElementById("ability-go-btn");
 
-      console.log("[DEBUG] renderDomain(", domainId, ") domain=", !!domain, "pills=", !!pills, "grid=", !!grid);
-
       if(!domain) return;
 
       // 渲染岗位 pills（DOM 已废弃，pills 改为只在 role-banner 切换按钮中渲染）
@@ -3555,7 +3550,6 @@
       // 默认选第一个岗位（或恢复）
       var savedPos = localStorage.getItem(POS_KEY);
       var target = domain.positions.find(function(p){ return p.position_id === savedPos; }) || domain.positions[0];
-      console.log("[DEBUG] renderDomain target:", target && target.position_id, "dims:", target && target.dimensions && target.dimensions.length);
       // 高亮 pill（加 null 保护，pills 在 V1.6 已废弃）
       if(pills && pills.querySelectorAll){
         pills.querySelectorAll(".position-pill").forEach(function(p){
@@ -3570,10 +3564,8 @@
       var tipText = document.getElementById("ability-tip-text");
       var goBtn = document.getElementById("ability-go-btn");
 
-      console.log("[DEBUG] renderPosition(", domainId, ") grid=", !!grid, "tipText=", !!tipText, "position=", !!position);
-
-      if(!grid){ console.warn("[DEBUG] ability-grid not found, renderPosition ABORT"); return; }
-      if(!position || !position.dimensions){ console.warn("[DEBUG] position.dimensions missing, renderPosition ABORT"); return; }
+      if(!grid){ console.warn("[init] ability-grid not found, renderPosition ABORT"); return; }
+      if(!position || !position.dimensions){ console.warn("[init] position.dimensions missing, renderPosition ABORT"); return; }
 
       // V1.3: Person 数据初始化 + alias 解析
       var person = null;
