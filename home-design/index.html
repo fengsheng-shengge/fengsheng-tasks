@@ -103,6 +103,61 @@
 
   /* ═══════════════════ 岗位选择器（已移去顶部 bar，唯一入口：Banner 右侧 rb-switch-pills）════════════════════ */
 
+  /* ═══════════════════ 三段选择带 V1.6 — 模块›角色›旅程段 · 与 workspace 统一 ═══════════════════ */
+  .three-step-bar {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .three-step-bar .tstep {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .three-step-bar .tstep-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .three-step-bar .tstep select {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--bg);
+    color: var(--primary-dark);
+    cursor: pointer;
+  }
+  .three-step-bar .tstep-pills {
+    display: flex;
+    gap: 6px;
+  }
+  .three-step-bar .tstep-pill {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--body);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .three-step-bar .tstep-pill:hover { border-color: var(--primary); }
+  .three-step-bar .tstep-pill.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
   /* ═══════════════════ 岗位身份 Banner · 与 workspace 一致 ═══════════════════ */
   .role-banner {
     background: linear-gradient(135deg, #1a3d24 0%, #2d5a3f 50%, #3a6b4d 100%);
@@ -586,7 +641,33 @@
     <div class="domain-tab">🌿 特殊居住 <span class="domain-tag">即将</span></div>
   </div>
 
-  <!-- ═══════════════ 3. 岗位身份 Banner（唯一岗位入口：右侧 rb-switch-pills）═══════════════ -->
+  <!-- ═══════════════ V1.6: 三段选择带 — 模块›角色›旅程段（与 workspace 统一）═══════════════ -->
+  <div class="three-step-bar" id="three-step-bar">
+    <div class="tstep">
+      <span class="tstep-label">模块</span>
+      <div class="tstep-pills">
+        <span class="tstep-pill" onclick="location.href='/workspace/'">🏠 交易服务</span>
+        <span class="tstep-pill active">🎨 家装服务</span>
+      </div>
+    </div>
+    <div class="tstep">
+      <span class="tstep-label">角色</span>
+      <select id="tstep-role" onchange="switchPositionTstep(this.value)">
+        <option value="DSGN">全案设计师</option>
+        <option value="PROJ">工长交付</option>
+        <option value="MGR">项目经理</option>
+        <option value="TRADES">技术工人</option>
+      </select>
+    </div>
+    <div class="tstep">
+      <span class="tstep-label">旅程段</span>
+      <select id="tstep-stage" onchange="selectStage(this.value)">
+        <!-- 动态生成 -->
+      </select>
+    </div>
+  </div>
+
+  <!-- ═══════════════ 3. 岗位身份 Banner（辅助信息：banner 右侧 pills 也能切换）═══════════════ -->
   <div class="role-banner" id="role-banner">
     <div class="rb-icon" id="rb-icon">🛠</div>
     <div class="rb-info">
@@ -1181,19 +1262,51 @@ var currentPosition = "DSGN";
 // 初始化：岗位选择器 + 默认 DSGN active
 (function init(){
   var meta = POSITION_META;
-  // 渲染 Banner 内的 rb-switch-pills（唯一岗位入口）
+  // 渲染 Banner 内的 rb-switch-pills
   renderRBSwitchPills();
 
   // 显示所有页面元素
   document.getElementById("role-banner").classList.add("visible");
   document.getElementById("journey-timeline").classList.add("visible");
 
-  // 渲染默认 DSGN Timeline
-  switchPosition("DSGN");
+  // V1.6: URL 参数解析（?role=DSGN / ?stage=d3）
+  var urlParams = new URLSearchParams(location.search);
+  var initRole = urlParams.get("role") || "DSGN";
+  var initStage = urlParams.get("stage");
+
+  // 渲染岗位 Timeline
+  switchPosition(initRole);
+
+  // V1.6: 三段选择带初始化
+  var tstepRole = document.getElementById("tstep-role");
+  if(tstepRole) tstepRole.value = initRole;
+  initTstepStageSelect(initRole, initStage);
 
   // V1.3: Person 能力分数徽章
   renderAbilityScores();
 })();
+
+// V1.6: 三段选择带 — 角色切换（HTML onclick 入口）
+function switchPositionTstep(positionId){
+  switchPosition(positionId);
+  var url = new URL(location.href);
+  url.searchParams.set("role", positionId);
+  history.replaceState(null, "", url.pathname + url.search);
+}
+
+// V1.6: 三段选择带 — 旅程段 select 动态生成
+function initTstepStageSelect(roleId, selectStageKey){
+  var sys = POSITION_TIMELINE[roleId];
+  if(!sys) return;
+  var sel = document.getElementById("tstep-stage");
+  if(!sel) return;
+  sel.innerHTML = sys.stages.map(function(s){
+    return '<option value="' + s.key + '">' + s.key + ' ' + s.name + '</option>';
+  }).join("");
+  var defaultKey = selectStageKey && sys.stages.some(function(s){ return s.key === selectStageKey; })
+    ? selectStageKey : sys.stages[0].key;
+  sel.value = defaultKey;
+}
 
 // V1.3: 遍历所有 ability-card → alias 翻译 → Person 查分 → 加徽章
 function renderAbilityScores(){
@@ -1265,6 +1378,14 @@ function switchPosition(positionId){
 
   // 5. 渲染三层拆解（第一阶段）
   selectStage(currentStage);
+
+  // V1.6: 同步三段选择带（双入口一致性）
+  var tstepRole = document.getElementById("tstep-role");
+  var tstepStage = document.getElementById("tstep-stage");
+  if(tstepRole) tstepRole.value = positionId;
+  if(tstepStage){
+    initTstepStageSelect(positionId, currentStage);
+  }
 }
 
 // 渲染 Timeline
@@ -1293,6 +1414,13 @@ function selectStage(stageKey){
   renderJourneyTimeline();
   renderLayeredView(stageKey);
   renderStageBrowse();
+
+  // V1.6: 同步 URL + tstep-stage select（双入口一致性）
+  var url = new URL(location.href);
+  url.searchParams.set("stage", stageKey);
+  history.replaceState(null, "", url.pathname + url.search);
+  var tstepStage = document.getElementById("tstep-stage");
+  if(tstepStage) tstepStage.value = stageKey;
 }
 
 // 渲染三层拆解（与 workspace 同结构）
