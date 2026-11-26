@@ -2257,6 +2257,15 @@
       NEW_HOME: { stages: NEW_HOME_STAGES, dims: NEW_HOME_DIMS, layer: NEW_HOME_LAYER }
     };
 
+    // V1.6 Evidence 三维过滤用：岗位阶段 key → 底层 domain stage_tags 映射
+    // NEW_HOME (开发商销售) 购房场景与 BROKER 共用知识底座，但阶段命名不同
+    // n1 渠道获客 ≈ b1 房源开发 | n2 案场破冰 ≈ b2 客户解码 | n3/n4 沙盘/样板 ≈ b3 带看
+    // n5 认购锁定 ≈ b4 谈判斡旋 | n6 签约履约 ≈ b5 签约协办（+ b6 部分过户内容）
+    var STAGE_SEARCH_KEYS = {
+      BROKER:   { b1:['b1'],          b2:['b2'],          b3:['b3'],          b4:['b4'],          b5:['b5'],          b6:['b6'] },
+      LEASE:    { l1:['l1'],          l2:['l2'],          l3:['l3'],          l4:['l4'],          l5:['l5'],          l6:['l6'] },
+      NEW_HOME: { n1:['b1'],          n2:['b2'],          n3:['b3'],          n4:['b3'],          n5:['b4'],          n6:['b5','b6'] }
+    };
 
     var STAGE_TO_DIMS = JSON.parse(JSON.stringify(BROKER_DIMS));  // 默认 BROKER，后续 switchPositionTimeline 会覆盖
     var STAGES = BROKER_STAGES.slice();  // ⚠️ 必须声明！switchPositionTimeline 会重新赋值
@@ -2737,6 +2746,8 @@
         loadKBStagePicks();
         highlightAbilityForStage();
         renderLayeredView(currentStage);
+        // V1.6: consumer-filter → Evidence 区也重新按 consumer_tags 筛选
+        renderWorkspaceEvidence(typeof currentPosition !== "undefined" ? currentPosition : "BROKER");
         document.getElementById("result-panel").classList.remove("show");
       }
     }
@@ -2916,10 +2927,37 @@
           return;
         }
 
-      // 按策略筛选：偏好类型 + 有 evidence + 非占位
+      // 按策略筛选：偏好类型 + 有 evidence + 非占位 + consumer_tags/stage_tags/module_tags 三维过滤
+      var CONSUMER_MODULE_MAP = { BROKER:"TRANSACTION", LEASE:"TRANSACTION", NEW_HOME:"TRANSACTION" };
+      var roleModule = CONSUMER_MODULE_MAP[pid] || "TRANSACTION";
+
       var pool = rawEntriesCache.filter(function(e){
-        return strat.preferTypes.indexOf(e.entry_type) >= 0 &&
-               e.evidence && e.evidence.length >= 1;
+        // 基础：entry_type + evidence
+        var baseOk = strat.preferTypes.indexOf(e.entry_type) >= 0 &&
+                     e.evidence && e.evidence.length >= 1;
+        if(!baseOk) return false;
+
+        // V1.6: module_tags 匹配当前岗位所属模块
+        var modules = e.module_tags || [];
+        var moduleOk = modules.length === 0 || modules.indexOf(roleModule) >= 0;
+        if(!moduleOk) return false;
+
+        // V1.6: consumer_tags 匹配（all = 不过滤）
+        if(currentConsumer && currentConsumer !== "all"){
+          var consumers = e.consumer_tags || [];
+          if(consumers.length > 0 && consumers.indexOf(currentConsumer) < 0) return false;
+        }
+
+        // V1.6: stage_tags 匹配当前阶段（支持跨岗位阶段别名映射）
+        // 每个岗位的阶段 key 映射到底层 domain 的 stage_tags（NEW_HOME nX → BROKER bX）
+        var stages = e.stage_tags || [];
+        if(stages.length > 0){
+          var searchKeys = (STAGE_SEARCH_KEYS && STAGE_SEARCH_KEYS[pid] && STAGE_SEARCH_KEYS[pid][currentStage]) || [currentStage];
+          var stageHit = searchKeys.some(function(k){ return stages.indexOf(k) >= 0; });
+          if(!stageHit) return false;
+        }
+
+        return true;
       });
 
       // 排序：authority_level A 优先 > severity hard 优先

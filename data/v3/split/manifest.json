@@ -1,65 +1,142 @@
 {
- "version": "v1.1",
- "generated_at": "2026-11-20",
- "source": "entries.json",
- "source_md5": "c1f765270543577a9ca996701eef7b27",
- "total_entries": 6143,
- "split_strategy": "by_entryType",
- "note": "GAP第一批authority+source落库版（bc614c84→c1f76527）; authority expect_count 6122（CITY 21 条 CONDITIONAL 不落，authority 空）; authority_note=法源待复核 830 条; source_raw 5078 条溯源保留; RISK 丁方案定版见 content-supply/DICTIONARY.md v1.3.3",
- "shards": {
-  "CASE": {
-   "file": "shards/CASE.json",
-   "count": 871,
-   "size_bytes": 2368291,
-   "md5": "4b7666c8b23b6326e8f877774bd0eab1"
+  "version": "v1.2",
+  "generated_at": "2026-11-26",
+  "source": "entries.json",
+  "source_md5": "5263e9168899fdfbf241c5f42f308e68",
+  "total_entries": 6206,
+  "split_strategy": "by_entryType",
+  "note": "V1.6 重分片: 新增 module_tags/consumer_tags/stage_tags 三层标签（基于 domain 字段反推）",
+  "shards": {
+    "ABIL": {
+      "file": "shards/ABIL.json",
+      "count": 124,
+      "size_bytes": 137147,
+      "md5": "f115b940197f3fef516ef5b670304808"
+    },
+    "CASE": {
+      "file": "shards/CASE.json",
+      "count": 871,
+      "size_bytes": 2637963,
+      "md5": "e0fc6889a3d89ea18710de8180fa1df3"
+    },
+    "CERT": {
+      "file": "shards/CERT.json",
+      "count": 6,
+      "size_bytes": 9397,
+      "md5": "0101ea59f3e98d605a54cd44a46b39bf"
+    },
+    "CITY": {
+      "file": "shards/CITY.json",
+      "count": 21,
+      "size_bytes": 39150,
+      "md5": "aa2b950dc381179dfef8fcecf73edd45"
+    },
+    "DATA": {
+      "file": "shards/DATA.json",
+      "count": 28,
+      "size_bytes": 75632,
+      "md5": "bbc6c27550560a042c45a5e6b3b1fd0e"
+    },
+    "INFO": {
+      "file": "shards/INFO.json",
+      "count": 51,
+      "size_bytes": 152399,
+      "md5": "fe71593c61d5e0c715c03834945a7858"
+    },
+    "JOB": {
+      "file": "shards/JOB.json",
+      "count": 26,
+      "size_bytes": 33452,
+      "md5": "376cb09afe2fcd6725a9a951e9c4b792"
+    },
+    "KNOWLEDGE": {
+      "file": "shards/KNOWLEDGE.json",
+      "count": 71,
+      "size_bytes": 176008,
+      "md5": "29c89a1458db439947ed73e4fa714b01"
+    },
+    "LAW": {
+      "file": "shards/LAW.json",
+      "count": 1226,
+      "size_bytes": 3424653,
+      "md5": "1f5233bd9581c0bd47d0d95f43344a01"
+    },
+    "POL": {
+      "file": "shards/POL.json",
+      "count": 476,
+      "size_bytes": 1292147,
+      "md5": "c2d2df9d102be0e287e8bd32242c05b7"
+    },
+    "PROC": {
+      "file": "shards/PROC.json",
+      "count": 1319,
+      "size_bytes": 3735177,
+      "md5": "ec62961df5a2554fbf4c20696cea5408"
+    },
+    "QUIZ": {
+      "file": "shards/QUIZ.json",
+      "count": 30,
+      "size_bytes": 41231,
+      "md5": "9ddb0eef5a432168e48ba7719f7d5a58"
+    },
+    "RISK": {
+      "file": "shards/RISK.json",
+      "count": 970,
+      "size_bytes": 2922325,
+      "md5": "9e80018f7c0302f1d5559c18ad0b861c"
+    },
+    "SCRIPT": {
+      "file": "shards/SCRIPT.json",
+      "count": 26,
+      "size_bytes": 52838,
+      "md5": "8932a9d7f8e0ece3e7ffed8e165d2514"
+    },
+    "STD": {
+      "file": "shards/STD.json",
+      "count": 467,
+      "size_bytes": 1182263,
+      "md5": "5dd13367507527c5891d75e2befb178d"
+    },
+    "SUM": {
+      "file": "shards/SUM.json",
+      "count": 40,
+      "size_bytes": 48743,
+      "md5": "ff76a8230e625e6a5429e2f7aa23518d"
+    },
+    "TERM": {
+      "file": "shards/TERM.json",
+      "count": 454,
+      "size_bytes": 1211306,
+      "md5": "81d0e16d3e5081e40f5d1a2b85b94d38"
+    }
   },
-  "LAW": {
-   "file": "shards/LAW.json",
-   "count": 1226,
-   "size_bytes": 3045733,
-   "md5": "74214a18fd0e2503dcf00df38489c093"
+  "role_preference_map": {
+    "BROKER": [
+      "LAW",
+      "RISK",
+      "CASE"
+    ],
+    "LEASE": [
+      "LAW",
+      "RISK",
+      "POL"
+    ],
+    "NEW_HOME": [
+      "LAW",
+      "RISK",
+      "DATA"
+    ]
   },
-  "RISK": {
-   "file": "shards/RISK.json",
-   "count": 953,
-   "size_bytes": 2592473,
-   "md5": "87b6646645c75456725d925790e25bee"
-  },
-  "POL": {
-   "file": "shards/POL.json",
-   "count": 476,
-   "size_bytes": 1148478,
-   "md5": "04f025b4fa59331618ca5958cb9349ad"
-  },
-  "STD": {
-   "file": "shards/STD.json",
-   "count": 453,
-   "size_bytes": 1014377,
-   "md5": "5d05e974f03320da234a2c6d29b78281"
-  },
-  "PROC": {
-   "file": "shards/PROC.json",
-   "count": 1301,
-   "size_bytes": 3301937,
-   "md5": "de8bce10c4114be44c87286114de982b"
-  },
-  "TERM": {
-   "file": "shards/TERM.json",
-   "count": 454,
-   "size_bytes": 1067493,
-   "md5": "7df9b797cdaf09301849df23702d2092"
-  },
-  "OTHER": {
-   "file": "shards/OTHER.json",
-   "count": 285,
-   "size_bytes": 534523,
-   "md5": "39a4633cc14926e83535a8b5c5be88b8"
-  },
-  "ABIL": {
-   "file": "shards/ABIL.json",
-   "count": 124,
-   "size_bytes": 117088,
-   "md5": "f627b612ecfea47984a95d34dac9b7c3"
-  }
- }
+  "consumer_tags": [
+    "buyer",
+    "seller",
+    "renter",
+    "landlord"
+  ],
+  "module_tags": [
+    "TRANSACTION",
+    "DECOR",
+    "ASSET",
+    "SUPPORT"
+  ]
 }
