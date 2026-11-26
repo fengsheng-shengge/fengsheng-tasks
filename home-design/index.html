@@ -233,6 +233,63 @@
     display: none;
   }
   .journey-timeline.visible { display: block; animation: fadeIn 0.3s ease; }
+
+  /* ═══════════════════ Layout Wrapper — 左侧 Timeline + 右侧主内容（与 workspace 对齐）═══════════════ */
+  .layout-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+  }
+  .layout-wrapper .journey-timeline {
+    display: flex;
+    width: 200px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 12px;
+    background: #f8f6f0;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin: 12px 0 12px 12px;
+    padding: 14px 10px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+  }
+  .layout-wrapper .journey-timeline.visible { display: flex; animation: fadeIn 0.3s ease; }
+  .layout-wrapper .jt-stages {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-x: visible;
+  }
+  .layout-wrapper .jt-arrow { display: none; }
+  .layout-wrapper .jt-stage { display: block; }
+  .layout-wrapper .jt-step {
+    flex-shrink: 1;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid transparent;
+    text-align: left;
+    min-width: unset;
+  }
+  .layout-wrapper .jt-step-icon { font-size: 18px; width: auto; height: auto; }
+  .layout-wrapper .jt-step-text { display: flex; flex-direction: column; gap: 1px; }
+  .layout-wrapper .jt-step-desc { display: none; }
+  .layout-wrapper .jt-step-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
+  .layout-wrapper .main {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 20px 24px 32px 20px;
+  }
   .jt-label {
     font-size: 11px; color: var(--muted); font-weight: 600;
     letter-spacing: 0.08em; text-transform: uppercase;
@@ -685,7 +742,8 @@
     </div>
   </div>
 
-  <!-- ═══════════════ 5. Timeline（页面主骨架）═══════════════ -->
+  <!-- ═══════════════ 5. Timeline（页面主骨架 · 与 workspace 同左侧栏）═══════════════ -->
+  <div class="layout-wrapper">
   <div class="journey-timeline" id="journey-timeline">
     <div class="jt-label">💫 客户家装全流程 — 走到哪一步了？</div>
     <div class="jt-stages" id="jt-stages"></div>
@@ -999,6 +1057,7 @@
     </div>
 
   </div>
+  </div><!-- /layout-wrapper -->
 
   <div class="footer">
     风声聚匠星云 · 家装工作台 · 循证服务<br>
