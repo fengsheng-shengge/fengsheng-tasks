@@ -1497,6 +1497,33 @@
   .bp-check-link { color: var(--primary); font-weight: 700; text-decoration: none; }
   .bp-check-link:hover { text-decoration: underline; }
 
+  /* 🆕 深入内容：消费者双视角 */
+  .bp-buyer-view { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.25); }
+  .bp-buyer-view .bp-title { color: #2563eb; }
+  .bp-buyer-view .bp-icon { color: #3b82f6; }
+  .bp-seller-view { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); }
+  .bp-seller-view .bp-title { color: #b45309; }
+  .bp-seller-view .bp-icon { color: #f59e0b; }
+  .bp-view-list { display: flex; flex-direction: column; gap: 6px; }
+  .bp-view-item { font-size: 12px; color: #475569; line-height: 1.65; padding: 4px 0; font-weight: 500; }
+  .bp-buyer-view .bp-view-item { color: #1e40af; }
+  .bp-seller-view .bp-view-item { color: #78350f; }
+
+  /* 🆕 深入内容：Checklist */
+  .bp-checklist { background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.25); }
+  .bp-checklist .bp-title { color: #15803d; }
+  .bp-checklist .bp-icon { color: #22c55e; }
+  .bp-checklist-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+  .bp-checklist-list li { font-size: 12px; color: #166534; line-height: 1.7; padding: 3px 0; font-weight: 500; }
+
+  /* 🆕 深入内容：常见误区 */
+  .bp-pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); }
+  .bp-pitfall .bp-title { color: #b91c1c; }
+  .bp-pitfall .bp-icon { color: #ef4444; }
+  .bp-pitfall-list { display: flex; flex-direction: column; gap: 10px; }
+  .bp-pitfall-item { font-size: 12px; color: #991b1b; line-height: 1.8; padding: 8px 10px; background: rgba(255,255,255,0.6); border-radius: 6px; font-weight: 500; }
+  .bp-pitfall-item strong { color: #7f1d1d; }
+
   /* ===== 响应式：平板 ===== */
   @media (max-width: 900px) {
     .ability-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1908,6 +1935,30 @@
             <span class="vb-item"><strong>并肩奋斗</strong>：不抢单、不诋毁——对比自由，选择权在客户</span>
           </div>
 
+          <!-- 🆕 👤 消费者双视角：买家在想什么 / 卖家在想什么 -->
+          <div class="bp-row bp-consumer-split">
+            <div class="bp-card bp-buyer-view" id="bp-buyer-card" style="display:none">
+              <div class="bp-head"><span class="bp-icon">👤</span><span class="bp-title">买家视角</span><span class="bp-sub">他在想什么</span></div>
+              <div class="bp-view-list" id="lc-buyer-view"></div>
+            </div>
+            <div class="bp-card bp-seller-view" id="bp-seller-card" style="display:none">
+              <div class="bp-head"><span class="bp-icon">🏠</span><span class="bp-title">卖家视角</span><span class="bp-sub">他在想什么</span></div>
+              <div class="bp-view-list" id="lc-seller-view"></div>
+            </div>
+          </div>
+
+          <!-- 🆕 ✅ 这个阶段做完了吗？ Checklist -->
+          <div class="bp-card bp-checklist" id="bp-checklist-card" style="display:none">
+            <div class="bp-head"><span class="bp-icon">✅</span><span class="bp-title">可执行清单</span><span class="bp-sub">每做完一项打个勾</span></div>
+            <ul class="bp-checklist-list" id="lc-checklist"></ul>
+          </div>
+
+          <!-- 🆕 ⚠️ 常见误区 & 反例 -->
+          <div class="bp-card bp-pitfall" id="bp-pitfall-card" style="display:none">
+            <div class="bp-head"><span class="bp-icon">⚠️</span><span class="bp-title">常见误区</span><span class="bp-sub">别踩这些坑</span></div>
+            <div class="bp-pitfall-list" id="lc-pitfall"></div>
+          </div>
+
           <!-- 💡 为什么这么做 -->
           <div class="bp-card bp-why">
             <div class="bp-head"><span class="bp-icon">💡</span><span class="bp-title">为什么这么做</span></div>
@@ -2104,52 +2155,141 @@
     var BROKER_LAYER = {
       b1: { actions: ["① 每天固定 2 小时扫盘：同小区近 3 天新挂牌、成交价多少、谁在挂牌——行情熟才敢接业主委托",
                        "② 业主委托先查档：房产证真假、有没有抵押/查封、是不是本人——别替业主兜底",
-                       "③ 房源核验拍照留底：房产证页、业主身份证、户型图、现状——存系统里，以后纠纷有证据"],
+                       "③ 房源核验拍照留底：房产证页、业主身份证、户型图、现状——存系统里，以后纠纷有证据",
+                       "④ 给业主做「小区价值报告」：近 6 个月成交价、同户型挂牌量、学区变化、地铁规划——用数据建立专业信任",
+                       "⑤ 挂牌价给区间不给单点：「同小区最近成交 480-490 万，您家精装修可以挂 495」——给区间让业主有安全感"],
             confusion:"我带业主去看同小区成交价，他说「我家比他家好，我要卖 500 万」，怎么回应让他接受市场价？",
-            why:"业主往往觉得自己家是独一无二的——你得用同户型、同楼层、同装修的近期成交价去对比，他才服",
+            why:"业主往往觉得自己家是独一无二的——你得用同户型、同楼层、同装修的近期成交价去对比，他才服。核心是让他觉得「你站在我的角度帮我卖高价，而不是想快点成交拿佣金」",
             practiceScene:"业主说：小区挂牌都 480 万以上，你帮我挂 500 万，两个月必须卖出去",
             refs: ["ABIL-BJ-001","ABIL-BJ-002"],
-            red:"🚨 别替业主承诺「两个月肯定卖」——只说「我帮你挂 498 万，2 周没带看我们一起调价」。<strong class=vtag>【难而正确】</strong>短期舒服换长期信任崩塌" },
+            red:"🚨 别替业主承诺「两个月肯定卖」——只说「我帮你挂 498 万，2 周没带看我们一起调价」。<strong class=vtag>【难而正确】</strong>短期舒服换长期信任崩塌",
+            // 🆕 深入内容：消费者双视角 + checklist + 常见误区
+            buyerView: ["还没轮到买家——但房源假照片/假价格是买家最大痛点。你在这个阶段把房源拍实、信息填全、价格报准，后面带看成交率翻倍",
+                       "买家最怕「挂 480 万实际要 500 万」——你给业主做价值报告的时候，顺便帮业主想清楚这个价为什么合理，后面跟买家说的时候也有底气"],
+            sellerView: ["业主最在意 3 件事：① 我家值多少钱？② 多久能卖掉？③ 你靠不靠谱？——你要先搞定第 ③ 再谈 ① ②",
+                        "业主常说「我家装修花了 30 万」——装修是给下一家做的，不是给你加价的。你要委婉说「我理解您投入很多，但成交价看的是同户型同楼层的实际成交」",
+                        "急售业主（换房/出国）是黄金信号——提前跟他谈好「降价机制」：2 周没带看降 3%，4 周降 5%"],
+            checklist: ["☐ 同小区近 3 天挂牌/成交数据拉齐（链家+贝壳+安居客三方交叉验证）",
+                       "☐ 业主查档完成：房产证 + 抵押登记 + 身份核验三单齐全",
+                       "☐ 房源核验：至少 8 张照片（外立面/客厅/主卧/次卧/厨房/卫生间/户型图/小区环境）",
+                       "☐ 挂牌价给了「区间」和「调价机制」，业主确认签字",
+                       "☐ 业主签署居间服务协议，明确服务内容和佣金比例"],
+            pitfall: ["陷阱 1：业主说「就挂 499 万，别多问」——你真挂了，后面发现同户型都在 470 万，半年卖不掉。<strong>解法</strong>：用数据报告说话，宁可丢这单也别接注定卖不掉的委托",
+                     "陷阱 2：业主不是本人（代卖/继承未过户）——你让他签合同了，后面真业主出来说不知道，麻烦大了。<strong>解法</strong>：必须见房产证本人或公证书"] },
       b2: { actions: ["① 别直接问「预算多少」——先聊：哥/姐家里几口人？买房给谁住？工作在哪？学区在意吗？",
                        "② 挖潜台词：他说「总价 450 万以内」实际可能能凑到 480 万；他说「近地铁就行」其实想走路不超过 5 分钟",
-                       "③ 客户画像写下来：来源渠道、购房动机、家庭结构、首付来源、贷款资格——记清楚不遗忘"],
+                       "③ 客户画像写下来：来源渠道、购房动机、家庭结构、首付来源、贷款资格——记清楚不遗忘",
+                       "④ 带他算三笔账：首付多少、月供多少、税费中介费多少——数字摆出来比空聊管用",
+                       "⑤ 识别决策人：他自己能拍板吗？还是老婆/爸妈说了算？要跟真决策人建立联系"],
             confusion:"客户说「我就想买个差不多的」但又不肯说具体需求，怎么挖他的真实预算和学区偏好？",
-            why:"客户自己也说不清楚要什么是常态——你的价值在于把模糊的「差不多」变成具体的「XX 小区 3 居 450 万 地铁 5 分钟」",
+            why:"客户自己也说不清楚要什么是常态——你的价值在于把模糊的「差不多」变成具体的「XX 小区 3 居 450 万 地铁 5 分钟」。不挖坑不施压，而是帮他把脑子里的模糊想法整理成可操作的清单",
             practiceScene:"客户说：我想买个差不多的，预算也没什么特别的，你给我推荐几套就行",
             refs: ["ABIL-BJ-003","ABIL-BJ-004"],
-            red:"🚨 别在需求没挖清楚之前就推房子——推错了浪费双方时间，客户只会觉得你不懂他。<strong class=vtag>【消费者中心】</strong>先理解，再推荐" },
+            red:"🚨 别在需求没挖清楚之前就推房子——推错了浪费双方时间，客户只会觉得你不懂他。<strong class=vtag>【消费者中心】</strong>先理解，再推荐",
+            buyerView: ["买家怕被宰、怕买错、怕买贵——你第一次见面就说「我帮您算清楚首付月供税费，您自己决定要不要买」，他立刻放下戒备",
+                       "刚需首套 vs 改善换房 vs 纯投资——三种买家关注的点完全不同，你分不清就推荐错：刚需在乎通勤时间，改善在乎学区和面积，投资在乎租售比和升值",
+                       "买家不说预算可能是真没概念——他之前可能没买过房。你带他算完账，他说「哦原来我只能买 420 万的」，这才是真实预算"],
+            sellerView: ["这个阶段还没碰卖家——但你要提前给卖家铺垫：「哥，我手上有 3 个客户都在看这个小区，其中一个刚需首付 200 万到位了」——让卖家知道有人在认真看",
+                        "别带错价格预期：你跟买家说「这个小区 470 万能买到」，转头跟卖家说「有人出 450 万」——两边都觉得你在搞鬼。要统一口径"],
+            checklist: ["☐ 来源渠道 + 购房动机 + 家庭结构 — 三要素齐全",
+                       "☐ 首付来源 + 贷款资格 — 金融能力摸底完成（首套/二套/公积金/商贷）",
+                       "☐ 帮客户算过「购房三件套」：首付表 + 月供表 + 税费表（手写签字确认）",
+                       "☐ 确认决策人：是否需要跟配偶/父母一起沟通",
+                       "☐ 推荐房源不超过 5 套，匹配度 80% 以上（超过 5 套说明需求没挖透）"],
+            pitfall: ["陷阱 1：客户说「预算 450 万」你就当真了——他可能是「首付 150 万」，按 30% 首付算实际能买 500 万。<strong>解法</strong>：首付比总价靠谱，先聊首付",
+                     "陷阱 2：只跟客户一个人聊，老婆/爸妈完全没参与——签合同前老婆说不同意，白忙一场。<strong>解法</strong>：第一次约带看就问「要不要叫嫂子/爸妈一起来看看？」"] },
       b3: { actions: ["① 带看路线先想清楚：从小区大门到房子一路上能路过什么好设施（地铁/超市/小学）先给他指出来",
                        "② 带看不只看房子：敲一家邻居门问问住得怎么样、看楼道干不干净、看楼下保安态度——让他感受到这个社区",
-                       "③ 带完让他自己待 5 分钟：别一直跟着叨叨，让他坐在客厅里感受一下采光和通风"],
+                       "③ 带完让他自己待 5 分钟：别一直跟着叨叨，让他坐在客厅里感受一下采光和通风",
+                       "④ 看「真实使用感」：打开水龙头试水压、开冰箱听噪音、摸墙看有没有渗水——用细节建立信任",
+                       "⑤ 带完做「即时反馈」：不是「您觉得怎么样」，而是「三个点您最在意哪个？我帮您详细讲」——帮他聚焦决策点"],
             confusion:"带看路上客户一直没说话，看完说「再想想吧」——我怎么判断他到底是真犹豫还是根本没看上？",
-            why:"客户说「再想想」有 70% 是觉得贵或有顾虑——你得主动问「是觉得哪方面不太满意？」而不是等着他主动说",
+            why:"客户说「再想想」有 70% 是觉得贵或有顾虑——你得主动问「是觉得哪方面不太满意？」而不是等着他主动说。带看不是展示房子的好，是帮客户确认「这套房子能不能解决我的问题」",
             practiceScene:"客户看完说：房子还行，但我感觉有点小贵，再想想吧",
             refs: ["ABIL-BJ-005","ABIL-BJ-004"],
-            red:"🚨 别替业主砍价——砍价是谈判阶段的事，带看只负责让客户喜欢上这套。<strong class=vtag>【难而正确】</strong>分阶段做正确的事" },
+            red:"🚨 别替业主砍价——砍价是谈判阶段的事，带看只负责让客户喜欢上这套。<strong class=vtag>【难而正确】</strong>分阶段做正确的事",
+            buyerView: ["买家带看时在想：这个小区安全吗？邻居好相处吗？以后涨价吗？——你敲邻居门、看楼道、聊学区，就是在帮他验证这些",
+                       "很多买家是第一次进这类小区——你走在前面带路，一路上路过什么都指：那是幼儿园、那是生鲜超市、那是地铁口，给他「生活画面感」",
+                       "买家不说不代表没想法——他沉默可能在算账，也可能在想哪里不对。你可以说「哥您在想什么？我帮您解答」"],
+            sellerView: ["卖家最担心带看被砍价、被说坏话——你跟卖家提前打预防针：「姐我不带他砍价，只让他看房子。有问题回来我帮您筛」",
+                       "别当着买家面说卖家家的缺点——漏水、渗水、墙裂这些，你跟卖家沟通修完再带看，或者诚实跟买家说「房东愿意修」",
+                       "带看后给卖家反馈「客户说采光好但楼层低了点，他想看看同小区高楼层」——具体而不是「客户说一般」"],
+            checklist: ["☐ 带看路线提前规划：地铁口/小区大门 → 沿途好设施 → 房子（走路 5-8 分钟最佳）",
+                       "☐ 带看前跟业主约好：钥匙/密码/时间 → 准时到",
+                       "☐ 带完让客户独处至少 5 分钟（坐在客厅/阳台/卧室里感受）",
+                       "☐ 带完立即追问真实反馈：三个方面打分（价格/位置/户型）——哪个最低就是真实顾虑",
+                       "☐ 同一客户带看 3 套以内（超过 3 套他会犹豫，说明需求没挖透或确实没好房）"],
+            pitfall: ["陷阱 1：带看一路跟着叨叨「这房子好啊」「我跟你说这小区绝了」——客户被你烦死了，根本听不进去。<strong>解法</strong>：走在前面带路，路过好设施指一下，进门说一句「您先看看，我在门口等着」",
+                     "陷阱 2：不敢敲邻居门——其实邻居很乐意聊，尤其是好小区。你说「哥您好，我带这位客户看看 5 层那套房，您住这儿感觉怎么样？」没人会拒绝你"] },
       b4: { actions: ["① 双边分别摸底：跟买家摸最高能出多少、首付什么时候到；跟业主摸最低能接多少、急不急卖——中间差多少、谁愿意让一步",
                        "② 给业主「买家画像」：别说「有人出价 465 万」——说「买家是刚需首套，首付 200 万已到位，看了 3 次真心想买」",
-                       "③ 让业主觉得「是他在谈」：别说「买家只肯出 465 万」——说「买家出 465 万但能再凑 5 万，您看 470 万能接受吗」"],
+                       "③ 让业主觉得「是他在谈」：别说「买家只肯出 465 万」——说「买家出 465 万但能再凑 5 万，您看 470 万能接受吗」",
+                       "④ 制造「时间压力」但不制造焦虑：「买家月底要搬，您这个月底交房刚好」——用买家的时间节点作为谈判筹码",
+                       "⑤ 分小步谈，不一步到位：先谈总价 → 再谈付款方式 → 再谈中介费 → 最后谈交房时间——每一步都让双方觉得自己赢了点"],
             confusion:"买家出价 465 万、业主最低 475 万，中间差 10 万，谁都不肯让——我怎么撮合？中介费还能不能保住？",
-            why:"业主最烦你拿买家压他「人家就出 465 万你看着办」——你得让他觉得你在帮他争取，而不是帮买家砍他价",
+            why:"业主最烦你拿买家压他「人家就出 465 万你看着办」——你得让他觉得你在帮他争取，而不是帮买家砍他价。谈判不是零和博弈，是帮双方找到一个「都能接受的方案」。10 万差不一定全靠砍价，中介费能不能优惠？交房时间能不能晚？都是可以交换的筹码",
             practiceScene:"买家出价 465 万，业主说「低于 475 万不卖，急用钱 480 万净得」，两边僵住了",
             refs: ["ABIL-BJ-005"],
-            red:"🚨 别替自己减佣「我给你打 8 折」——中介费是你的专业价值，要么给服务升级要么不打折。<strong class=vtag>【专业者赢】</strong>降价=贬值" },
+            red:"🚨 别替自己减佣「我给你打 8 折」——中介费是你的专业价值，要么给服务升级要么不打折。<strong class=vtag>【专业者赢】</strong>降价=贬值",
+            buyerView: ["买家觉得贵，但不敢说「太贵了」——他怕你笑他买不起。你要主动给他台阶：「这套 475 万确实超预算，我手上还有一套同户型 460 万的，要不要看看？」",
+                       "买家最担心「被卖家坑」——你告诉他「我已经跟业主确认过，他急用钱，最低 475 万是净得价，税费另算」，让他觉得你在帮他把关",
+                       "买家想砍价但不知道怎么开口——你可以教他：「哥您跟业主说『我真想买，但首付只能凑 468 万，您看能不能让 7 万』」"],
+            sellerView: ["业主觉得买家出价低，不想卖——你要给他看数据：「同小区这套户型上个月成交 463 万，现在这个买家给 465 万已经算高了，而且他首付已经到位了」",
+                       "业主想「再等等更高价」——你要帮他算：等一个月 +10 万？还是现在卖 -5 万但省心？机会成本你帮他分析清楚",
+                       "业主要求「净得价 480 万」——你要帮买家拆解：480 万净得 = 买家实付 480 + 中介费 2.4 + 税费约 10 = 492.4 万，帮两边算透明"],
+            checklist: ["☐ 双边摸底完成：买家最高价/首付时间、业主最低价/卖房急迫度",
+                       "☐ 差距拆解：差在哪（总价？税费？中介费？交房时间？户口？家具？）——不止价格一个变量",
+                       "☐ 给双方「对方画像」：不是「有人出价」而是「什么样的人、看了几次、首付多少、为什么想要」",
+                       "☐ 至少 2 轮双边沟通后再约见面谈（别一上来就拉一起，容易谈崩）",
+                       "☐ 双方同意的条款写下来（哪怕是口头约定也要有文字记录）"],
+            pitfall: ["陷阱 1：替某一方说话太明显——买家说「你是不是收业主钱了？」业主说「你是不是跟买家一伙的？」<strong>解法</strong>：每次沟通都复述对方的话「业主说最低 475 万，因为他要等钱换房」",
+                     "陷阱 2：中介费先谈不下来就一直拖——其实总价谈妥了再谈中介费更容易。先把 475 万谈成了，中介费 2% 顺理成章"] },
       b5: { actions: ["① 签约别在业主家或买家家——去门店，合同一条条念，重点条款标红",
                        "② 重点条款讲清楚：成交价多少、定金多少什么时候付、首付什么时候到、尾款怎么付、谁出中介费",
-                       "③ 签约后立刻跟进：定金有没有打进来？打进来了告诉业主「XX 哥/姐，5 万定金今天到您账了」"],
+                       "③ 签约后立刻跟进：定金有没有打进来？打进来了告诉业主「XX 哥/姐，5 万定金今天到您账了」",
+                       "④ 资金监管详细讲：钱进银行监管账户，过户完银行自动打给业主——打消买家怕被骗的顾虑",
+                       "⑤ 签完给双方一张「时间节点表」：网签 X 号、面签 X 号、过户 X 号、放款后 X 天内交接——白纸黑字，大家不会忘"],
             confusion:"买家说「我得再想想能不能今天先不签」，业主那边已经等了 3 天了——怎么平衡两边的情绪？",
-            why:"签约那一刻两边都紧张——你越透明越稳，签约后主动反馈能让两边都踏实",
+            why:"签约那一刻两边都紧张——买家怕买贵了、怕有坑；业主怕卖便宜了、怕买家变卦。你越透明越稳，签约后主动反馈能让两边都踏实。这时候最忌讳你也慌了说「今天必须签，不然这房子就没了」——反而吓走客户",
             practiceScene:"签约当天买家说：首付还差 20 万得卖一套房子凑，贷款能先申请着吗？",
             refs: ["ABIL-GEN-009"],
-            red:"🚨 别替买家给业主打包票「他肯定能凑齐首付」——万一凑不齐锅你背。<strong class=vtag>【难而正确】</strong>只陈述事实，不做担保" },
+            red:"🚨 别替买家给业主打包票「他肯定能凑齐首付」——万一凑不齐锅你背。<strong class=vtag>【难而正确】</strong>只陈述事实，不做担保",
+            buyerView: ["买家签合同的时候手心冒汗——你递一杯水，说「哥我帮您一条一条过，不懂就问，不急」，比催他签字管用",
+                       "买家怕资金监管是骗局——你打开银行 app 给他看监管账户长什么样、流程怎么走、钱什么时候到，让他踏实",
+                       "买家怕首付凑不齐违约金——你给他算清楚违约金比例，建议他「合同里可以加一条，如果贷款批不下来不算违约」"],
+            sellerView: ["业主怕买家变卦——你跟他说「定金 5 万已经进我账户了，我今天就转给您。合同里写了买家违约定金不退」，让他踏实",
+                       "业主怕过户完尾款拿不到——你打开监管账户协议给他看「过户完银行 3 个工作日内自动打给您」",
+                       "业主怕中介费太高——你跟他说「中介费是我全程帮您协调网签、贷款、过户、验房的服务费，您后面验房我也跟着」"],
+            checklist: ["☐ 合同一条条念过（重点条款标红：成交价/付款时间/违约责任/资金监管）",
+                       "☐ 定金已收到（买家转账给业主或监管账户，截图存档）",
+                       "☐ 资金监管流程讲清楚（双方确认银行账户和到账时间）",
+                       "☐ 时间节点表发给双方（网签/面签/过户/交房各 1 条短信 + 微信消息）",
+                       "☐ 中介费发票 + 居间服务协议签好（别后补）"],
+            pitfall: ["陷阱 1：跳过资金监管，让买家直接打给业主——业主可能把钱花了，后面不过户，买家血本无归，中介赔。<strong>解法</strong>：必须走监管，这也是中介的护城河",
+                     "陷阱 2：合同上的交房日期没写清楚——写「过户后 N 天内」比写「10 月」靠谱"] },
       b6: { actions: ["① 网签前跟两边确认：贷款批了吗？批了多少？首付什么时候到？别等网签那天才说没批下来",
                        "② 过户当天全程跟着：带齐证件，帮着填表格、跟银行面签、跟房管局对接——两边只需要签字",
-                       "③ 尾款到账第一时间通知业主：「XX 哥/姐，尾款 400 万今天到您账号了，查一下，交接完成」"],
+                       "③ 尾款到账第一时间通知业主：「XX 哥/姐，尾款 400 万今天到您账号了，查一下，交接完成」",
+                       "④ 交房验房一项项核对：水/电/燃气/物业/户口/维修基金/钥匙门禁卡——打勾打勾打勾",
+                       "⑤ 过户后 3 天内回访：「XX 哥/姐，房子住得怎么样？有什么问题随时找我」——留个伏笔下次再卖/介绍朋友"],
             confusion:"业主说过户完了但尾款迟迟没到，买家那边说银行还在走流程——我怎么催银行又不让业主觉得我在敷衍他？",
-            why:"过户是业主最操心的环节——他怕尾款拿不到、贷款出问题。你帮他盯着每一步，他下次卖还找你，还会介绍朋友",
+            why:"过户是业主最操心的环节——他怕尾款拿不到、贷款出问题。你帮他盯着每一步，他下次卖还找你，还会介绍朋友。这时候你就是业主的「银行联系人」+「房管局联系人」——主动跟进比等他问强 100 倍",
             practiceScene:"业主说：过户完了，尾款什么时候能到？我等着钱换房呢",
             refs: ["ABIL-GEN-017"],
-            red:"🚨 别替买家垫资「我先帮你出 30 万」——垫了还不上你认栽，还违反中介规定。<strong class=vtag>【难而正确】</strong>不碰客户资金，只做专业服务" },
+            red:"🚨 别替买家垫资「我先帮你出 30 万」——垫了还不上你认栽，还违反中介规定。<strong class=vtag>【难而正确】</strong>不碰客户资金，只做专业服务",
+            buyerView: ["买家过户完最想「赶紧住进去」——但交房前还有很多事：物业过户、水电燃气过户、维修基金过户。你提前准备好所有表格，让他只需要签字",
+                       "买家验房时最容易忽略：物业费欠没欠、水表电表燃气表数对不对、维修基金有没有交清——你一项项核对，比他自己验仔细 10 倍",
+                       "买家不知道「户口怎么迁」——你告诉他需要哪些材料、去哪迁、怎么查原业主户口有没有迁出。帮他查清楚户口页"],
+            sellerView: ["业主过户完想「赶紧拿钱走人」——但尾款要等 3-7 天。你每天给他发「银行已审批，今天进入放款流程」，别让他瞎等",
+                       "业主怕交房后买家说「东西坏了要你赔」——你提前跟买家说「验房时发现的问题今天说，过了明天就不算了」，保护业主",
+                       "业主可能忘了把维修基金过户——你主动提醒他，别让买家找上来"],
+            checklist: ["☐ 网签确认：贷款审批函到位、首付已入监管账户、双方证件齐全",
+                       "☐ 过户当天：提前 30 分钟到、证件清单核对、银行面签 + 房管局过户一步到位",
+                       "☐ 尾款追踪：每天跟银行联系进度，当天到账当天通知业主",
+                       "☐ 交房验房：水/电/燃气/物业/户口/维修基金/钥匙 — 7 项全核对打勾",
+                       "☐ 过户后 3 天内回访（短信 + 微信），住得好不好有问题随时找我"],
+            pitfall: ["陷阱 1：业主户口没迁出就交房——买家户口落不上，孩子上不了学，回来找你赔。<strong>解法</strong>：合同里加「户口迁出时间 + 违约金」条款，压几万尾款等户口迁出再放",
+                     "陷阱 2：以为过户完就完事了——交房回访、户口跟进、维修基金过户、物业费结算一个都不能少。少一个都是以后的坑"] },
     };
 
     // ───── 2. 租赁顾问 LEASE ─────
@@ -2310,6 +2450,29 @@
       NEW_HOME: { n1:['b1'],          n2:['b2'],          n3:['b3'],          n4:['b3'],          n5:['b4'],          n6:['b5','b6'] }
     };
 
+    // 🆕 新旧 stage key 双向映射（question_map 用旧体系，BROKER_LAYER 用新体系）
+    var STAGE_KEY_ALIAS = {
+      // BROKER 买卖经纪人
+      b1: "prepare", prepare: "b1",
+      b2: "market",   market:  "b2",
+      b3: "invite",   invite:  "b3",
+      b4: "negotiate", negotiate: "b4",
+      b5: "transaction", transaction: "b5",
+      b6: "closing",  closing: "b6",
+      // LEASE 租赁 —— 复用旧 key（question_map 暂未覆盖租赁专属场景）
+      l1: "prepare", l2: "market", l3: "invite", l4: "negotiate", l5: "transaction", l6: "closing",
+      // NEW_HOME 新房
+      n1: "prepare", n2: "market", n3: "invite", n4: "invite", n5: "negotiate", n6: "transaction"
+    };
+    // 🆕 给定一个 stage key，返回它在 question_map / entries 里可能出现的所有别名
+    function resolveStageAliases(stageKey){
+      if(!stageKey) return [];
+      var aliases = [stageKey];
+      var a = STAGE_KEY_ALIAS[stageKey];
+      if(a && aliases.indexOf(a) < 0) aliases.push(a);
+      return aliases;
+    }
+
     var STAGE_TO_DIMS = JSON.parse(JSON.stringify(BROKER_DIMS));  // 默认 BROKER，后续 switchPositionTimeline 会覆盖
     var STAGES = BROKER_STAGES.slice();  // ⚠️ 必须声明！switchPositionTimeline 会重新赋值
     var POSITION_STAGES = { BROKER: true, LEASE: true, NEW_HOME: true };  // 三个岗位都走专属 Timeline
@@ -2442,69 +2605,28 @@
     // 原始买卖经纪人三层数据备份（供岗位切换后恢复）
     var BASE_STAGE_LAYER_DATA = null;
 
-                function initStageLayerData(){
-      var data = {
-        prepare: {
-          actions: [
-            "① 先问清楚：他买房是为啥？结婚？孩子上学？换大的？还是纯投资？",
-            "② 把钱算透：首付掏多少？每月还多少？首套二套差几万？税+中介费一共要花多少？",
-            "③ 资格和坑先摸清：社保够不够？限不限购？学区对口哪个学校？现在利率多少？"
-          ],
-          why:"客户现在最慌的是「我能不能买得起」——你先把数字摆出来，比带看 10 套房都管用",
-          practiceScene:"客户问：公积金能贷多少？首套和二套差多少？",
-          red:"🚨 别替客户做「首套二套」决策——只给数字让他选。<strong class=vtag>【消费者中心】</strong>给信息不替选"
-        },
-        market: {
-          actions: [
-            "① 先搞清楚他最在意啥：要学区？还是总价不能超？还是一定要地铁口？",
-            "② 拉真实成交价对比：挂牌价是蒙人的，看真实成交！周边 3 个小区对比一下",
-            "③ 主动说缺点：别只吹好的，每个小区说一个真缺点——有噪音？车位少？学区可能变？"
-          ],
-          why:"客户觉得你靠谱，不是因为你懂，是因为你说的话「有根有据」——别拿挂牌价瞎蒙人",
-          practiceScene:"客户问：要对比周边小区怎么办？这个学区到底怎么样？",
-          red:"🚨 别跟客户说「这个学区最好」——只给数据和来源。<strong class=vtag>【难而正确】</strong>用数据说话，不主观评价"
-        },
-        invite: {
-          actions: [
-            "① 先接住他的抗拒：他说忙，你别逼问什么时候有空，先说「哥您忙我理解」",
-            "② 给选项别给问题：别说「你啥时候有空」，直接问「周二晚7点？还是周六上午10点？」",
-            "③ 先发点东西过去：户型图/小区实拍视频/报价表，让他在家先看看"
-          ],
-          why:"客户不愿出来不是讨厌你，是还没信你——接住他的抗拒比硬叫他管用",
-          practiceScene:"客户说：最近太忙了，等有空再说吧",
-          red:"🚨 别让工具自己约带看时间——必须真人发消息。<strong class=vtag>【专业者赢】</strong>系统辅助不替代服务"
-        },
-        negotiate: {
-          actions: [
-            "① 先接情绪再谈钱：他说太贵了，你第一句别提价格，先说「哥我理解，这个得慎重」",
-            "② 给差额给意义：别说「贵20万」，说「贵20万=每月多还X块，但这个学区明年对口Y中学」",
-            "③ 给选项不是逼他走：A 今天定我帮你争取减5万 / B 旁边那套便宜15万但楼层差——让他选不是让他滚"
-          ],
-          why:"客户犹豫 = 情绪没接住。先接情绪再给数据，最后那一锤必须真人上",
-          practiceScene:"客户说：太贵了，回去商量一下。",
-          red:"🚨 情绪安抚必须真人来——系统算数据但不替你共情。<strong class=vtag>【消费者中心】</strong>专业有温度"
-        },
-        transaction: {
-          actions: [
-            "① 合同一条一条念：别让他直接签，说「这条是付款时间，这条是违约责任我帮你标红了」",
-            "② 资金监管说清楚：钱打给银行监管账户，过户完银行自动打给业主——打消他怕被骗的顾虑",
-            "③ 税费算到分 + 时间排死：一张表签字，网签/面签/过户/放款每个节点谁干啥都写清楚"
-          ],
-          why:"客户签约那一刻最紧张——你越透明他越敢签。模糊的钱和模糊的时间都是恐惧源",
-          practiceScene:"客户问：资金监管安全吗？我应该先签还是先交钱？",
-          red:"🚨 别替客户签合同——合同必须真人口头过一遍。<strong class=vtag>【难而正确】</strong>重要环节亲力亲为"
-        },
-        closing: {
-          actions: [
-            "① 交房时一项项核对：物业/水电/燃气/户口/维修基金，一项项打勾别漏",
-            "② 户口迁出写合同里压钱：口头说会迁没用，白纸黑字+压几万块尾款",
-            "③ 过户后别失联：银行放款进度/房管局消息每周说一声，别签完就消失"
-          ],
-          why:"交房不是终点——今天这个客户，就是明天给你介绍新客户的人",
-          practiceScene:"客户问：过户后户口怎么迁？物业交接要注意什么？",
-          red:"🚨 别替客户承诺「户口一定能迁」——看合同写没写。<strong class=vtag>【难而正确】</strong>只讲合同约定的事"
-        }
-      };
+    // 🆕 从 sales-sop.json 获取补充数据（用于增强 BROKER_LAYER，不覆盖）
+    function initStageLayerData(){
+      if(!sopData){ renderLayeredView(currentStage); return; }
+      var sopStages = sopData.sop_stages || {};
+
+      // 如果当前 stageLayerData 已经被 switchPositionTimeline 正确赋值（BROKER_LAYER b1-b6），
+      // 则用 sales-sop 的数据**补充增强**，而不是**覆盖**
+      // 场景：initStageLayerData 异步回来时 switchPositionTimeline 已先执行过
+      if(stageLayerData && stageLayerData[currentStage]){
+        // 当前阶段有数据 → 跳过覆盖，只刷新渲染确保页面正确显示
+        // （因为 initStageLayerData 可能在 switchPositionTimeline 的 renderLayeredView 之后才到达）
+        renderLayeredView(currentStage);
+        return;
+      }
+
+      // stageLayerData 还是 null 或当前阶段找不到 → 用 sales-sop 旧数据兜底（理论上不会走到这里）
+      var data = {};
+      var oldToNew = { prepare:'b1', market:'b2', invite:'b3', negotiate:'b4', transaction:'b5', closing:'b6' };
+      Object.keys(oldToNew).forEach(function(oldKey){
+        var newKey = oldToNew[oldKey];
+        if(sopStages[oldKey]) data[newKey] = sopStages[oldKey];
+      });
       BASE_STAGE_LAYER_DATA = JSON.parse(JSON.stringify(data));
       stageLayerData = data;
       renderLayeredView(currentStage);
@@ -2739,8 +2861,9 @@
 
     function countScenesInStage(stageKey){
       if(!questionMap) return 0;
+      var aliases = resolveStageAliases(stageKey);
       var list = questionMap.mapping.filter(function(m){
-        if(m.stage !== stageKey) return false;
+        if(aliases.indexOf(m.stage) < 0) return false;  // 🆕 支持新旧两套 stage key
         if(currentConsumer !== "all" && m.consumer !== currentConsumer) return false;
         return true;
       });
@@ -2749,8 +2872,9 @@
 
     function filterScenes(){
       if(!questionMap) return [];
+      var aliases = resolveStageAliases(currentStage);  // 🆕 支持新旧两套 stage key
       return questionMap.mapping.filter(function(m){
-        if(m.stage !== currentStage) return false;
+        if(aliases.indexOf(m.stage) < 0) return false;
         if(currentConsumer !== "all" && m.consumer !== currentConsumer) return false;
         return true;
       });
@@ -3293,23 +3417,23 @@
       var pl = document.getElementById("lc-practice-link");
       if(pl) pl.href = "/ai-advisor/?stage=" + stageKey;
 
-      // 📖 学一学：从 question_map 动态筛 3 条（去 CAP-SKILL 编号，只显示问题标题）
+      // 📖 学一学：从 question_map 动态筛 3 条（支持新旧 stage key 别名匹配）
       var learnHtml = "";
       var pid = (document.querySelector(".position-pill.active") || {}).getAttribute ? (document.querySelector(".position-pill.active").getAttribute("data-position") || "") : "";
-      var isPositionStage = !!POSITION_STAGES[pid];
-      if(questionMap && !isPositionStage){
+      var stageAliases = resolveStageAliases(stageKey);  // 🆕 支持新旧两套 stage key
+      if(questionMap){
         var stageSkills = questionMap.mapping.filter(function(m){
-          return m.stage === stageKey && (currentConsumer === "all" || m.consumer === currentConsumer);
+          return stageAliases.indexOf(m.stage) >= 0 && (currentConsumer === "all" || m.consumer === currentConsumer);
         }).slice(0, 3);
-        learnHtml = stageSkills.map(function(m){
-          return '<a class="bp-learn-item" href="/knowledge/?stage=' + stageKey + '" onclick="markLearned(\'' + stageKey + '\',\'' + encodeURIComponent(m.title) + '\')">' +
-                 m.title + '</a>';
-        }).join("");
+        if(stageSkills.length > 0){
+          learnHtml = stageSkills.map(function(m){
+            return '<a class="bp-learn-item" href="/knowledge/?stage=' + m.stage + '" onclick="markLearned(\'' + stageKey + '\',\'' + encodeURIComponent(m.title) + '\')">' +
+                   m.title + '</a>';
+          }).join("");
+        }
       }
       if(!learnHtml){
-        learnHtml = isPositionStage
-          ? '<div style="font-size:11px;color:#999">📚 租赁/新房专属知识库建设中<br>模拟练一练已为本阶段开放</div>'
-          : '<div style="font-size:11px;color:#999">暂无本阶段知识条目</div>';
+        learnHtml = '<div style="font-size:11px;color:#999">📚 更多本阶段知识条目正在补充中<br>试试上方「循证依据」Tab 查看法条判例</div>';
       }
       document.getElementById("lc-learn").innerHTML = learnHtml;
 
@@ -3332,6 +3456,44 @@
           refsEl.style.display = "none";
         }
       }
+
+      // 🆕 👤 消费者双视角
+      var buyerCard = document.getElementById("bp-buyer-card");
+      var buyerViewEl = document.getElementById("lc-buyer-view");
+      var sellerCard = document.getElementById("bp-seller-card");
+      var sellerViewEl = document.getElementById("lc-seller-view");
+      if(buyerCard && buyerViewEl && s.buyerView && s.buyerView.length){
+        buyerViewEl.innerHTML = s.buyerView.map(function(b, i){
+          return '<div class="bp-view-item">' + (i+1) + '. ' + b + '</div>';
+        }).join("");
+        buyerCard.style.display = "";
+      } else if(buyerCard){ buyerCard.style.display = "none"; }
+      if(sellerCard && sellerViewEl && s.sellerView && s.sellerView.length){
+        sellerViewEl.innerHTML = s.sellerView.map(function(b, i){
+          return '<div class="bp-view-item">' + (i+1) + '. ' + b + '</div>';
+        }).join("");
+        sellerCard.style.display = "";
+      } else if(sellerCard){ sellerCard.style.display = "none"; }
+
+      // 🆕 ✅ Checklist
+      var clCard = document.getElementById("bp-checklist-card");
+      var clEl = document.getElementById("lc-checklist");
+      if(clCard && clEl && s.checklist && s.checklist.length){
+        clEl.innerHTML = s.checklist.map(function(item){
+          return '<li>' + item + '</li>';
+        }).join("");
+        clCard.style.display = "";
+      } else if(clCard){ clCard.style.display = "none"; }
+
+      // 🆕 ⚠️ 常见误区
+      var pitCard = document.getElementById("bp-pitfall-card");
+      var pitEl = document.getElementById("lc-pitfall");
+      if(pitCard && pitEl && s.pitfall && s.pitfall.length){
+        pitEl.innerHTML = s.pitfall.map(function(p){
+          return '<div class="bp-pitfall-item">' + p + '</div>';
+        }).join("");
+        pitCard.style.display = "";
+      } else if(pitCard){ pitCard.style.display = "none"; }
     }
 
     // 学习进度回写（去重计数，与成长档案同一口径）
