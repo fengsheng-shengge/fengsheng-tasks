@@ -172,6 +172,14 @@ function checkRateLimit(request) {
 }
 
 function checkGlobalRateLimit(request) {
+  const url = new URL(request.url);
+  const path = url.pathname;
+  // 只对 API / 搜索 / 内部工具 做全局限流，普通 HTML 页面放行
+  const isPageRequest = !path.startsWith('/api/') && !path.startsWith('/mentor-api/')
+    && !path.startsWith('/search') && !path.startsWith('/gate')
+    && path !== '/workspace/' && path !== '/home-design/';  // 工作台核心路径永远放行
+  if (isPageRequest) return true;
+
   const ip = getClientIP(request);
   const now = Date.now();
   const key = `global_${ip}`;
@@ -4075,6 +4083,13 @@ export default {
     try {
     const url = new URL(request.url);
     const path = url.pathname;
+
+    // Layer -1: Query-param 级别路由修正（在 rate limit 之前！JS 还没执行就搞定）
+    // /workspace/?domain=DECOR 或 /workspace/?m=DECOR → 301 /home-design/
+    if ((path === '/workspace/' || path === '/workspace')
+        && (url.searchParams.get('domain') === 'DECOR' || url.searchParams.get('m') === 'DECOR')) {
+      return Response.redirect('https://fengsheng.tech/home-design/', 301);
+    }
 
     // Periodic memory cleanup (cheap, runs max once per 5 min)
     cleanupRateLimitMaps();
