@@ -2354,14 +2354,17 @@
     var currentStage = "b1";  // 默认 BROKER 第一阶段，switchPositionTimeline 会覆盖
 
     // 1. 加载维度模型
+    console.log("[DEBUG] IIFE start, fetch dimensions_multi.json...");
     fetch("/data/v3/dimensions_multi.json")
-      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(r){ console.log("[DEBUG] dimensions fetch status:", r.status, "ok:", r.ok); return r.ok ? r.json() : null; })
       .then(function(data){
-        if(!data) return;
+        console.log("[DEBUG] dimensions data:", data ? ("domains=" + Object.keys(data.domains||{}).join(',')) : "NULL");
+        if(!data){ console.warn("[DEBUG] dimensions data is null, init() SKIPPED"); return; }
         modelData = data;
         init();
+        console.log("[DEBUG] init() called, modelData set");
       })
-      .catch(function(){});
+      .catch(function(e){ console.error("[DEBUG] dimensions fetch ERR:", e.message); });
 
     // 2. 加载问题拆解引擎
     fetch("/data/v3/question_map.json")
