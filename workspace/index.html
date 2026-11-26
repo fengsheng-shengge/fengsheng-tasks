@@ -2073,6 +2073,12 @@
     var stageLayerData = null; // 阶段三层拆解数据
     var rawEntriesCache = null; // 🆕 Evidence entries.json 缓存（M1 12.31）
 
+    // 🔴 必须挂 window 的全局状态 —— IIFE 内 var 声明但 HTML onclick 需要 window 访问
+    var currentPosition = null;       // 当前岗位（switchPositionTimeline 里赋值）
+    var currentEvidenceLayer = "L1";  // 当前 Evidence 层
+    var currentStage = null;          // 当前阶段
+    var currentConsumer = null;       // 当前消费者类型
+
     // ===== 三套岗位固定 Timeline（服务者视角，严格对齐 data/domains/岗位体系.json 的 coreScenes）=====
     // 每个岗位一套，不再分服务对象分支——服务者在工作中是同时对接双方的
 
@@ -4056,6 +4062,13 @@
     panel.classList.toggle("collapsed");
   }
   window.toggleStageBrowse = toggleStageBrowse;
+
+  // 🔴 HTML onclick/onchange 需要 window 访问的函数 —— 之前漏了导致 6 处控制台错误
+  window.switchRole = switchRole;
+  window.switchStageSelect = switchStageSelect;
+  window.switchModule = switchModule;
+  window.switchEvidenceLayer = switchEvidenceLayer;
+  window.getKeyword = getKeyword;
 
   async function loadKBStagePicks() {
     var stageInfo = STAGES.find(function(s){ return s.key === currentStage; });
