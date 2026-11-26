@@ -3543,6 +3543,8 @@
       var tipText = document.getElementById("ability-tip-text");
       var goBtn = document.getElementById("ability-go-btn");
 
+      console.log("[DEBUG] renderDomain(", domainId, ") domain=", !!domain, "pills=", !!pills, "grid=", !!grid);
+
       if(!domain) return;
 
       // 渲染岗位 pills（DOM 已废弃，pills 改为只在 role-banner 切换按钮中渲染）
@@ -3553,10 +3555,13 @@
       // 默认选第一个岗位（或恢复）
       var savedPos = localStorage.getItem(POS_KEY);
       var target = domain.positions.find(function(p){ return p.position_id === savedPos; }) || domain.positions[0];
-      // 高亮 pill
-      pills.querySelectorAll(".position-pill").forEach(function(p){
-        if(p.getAttribute("data-position") === target.position_id) p.classList.add("active");
-      });
+      console.log("[DEBUG] renderDomain target:", target && target.position_id, "dims:", target && target.dimensions && target.dimensions.length);
+      // 高亮 pill（加 null 保护，pills 在 V1.6 已废弃）
+      if(pills && pills.querySelectorAll){
+        pills.querySelectorAll(".position-pill").forEach(function(p){
+          if(p.getAttribute("data-position") === target.position_id) p.classList.add("active");
+        });
+      }
       renderPosition(domainId, target);
     }
 
@@ -3564,6 +3569,11 @@
       var grid = document.getElementById("ability-grid");
       var tipText = document.getElementById("ability-tip-text");
       var goBtn = document.getElementById("ability-go-btn");
+
+      console.log("[DEBUG] renderPosition(", domainId, ") grid=", !!grid, "tipText=", !!tipText, "position=", !!position);
+
+      if(!grid){ console.warn("[DEBUG] ability-grid not found, renderPosition ABORT"); return; }
+      if(!position || !position.dimensions){ console.warn("[DEBUG] position.dimensions missing, renderPosition ABORT"); return; }
 
       // V1.3: Person 数据初始化 + alias 解析
       var person = null;
@@ -3612,9 +3622,10 @@
 
       // 更新测评引导文案
       var domainName = modelData.domains[domainId].domain_name;
-      tipText.textContent = "针对「" + domainName + "·" + position.position_name + "」" +
+      var tipMsg = "针对「" + domainName + "·" + position.position_name + "」" +
         "的7维度专项测评——10分钟出能力报告，告诉你哪里强哪里弱，该先补什么。";
-      goBtn.href = "/care-test/?domain=" + domainId + "&position=" + position.position_id;
+      if(tipText) tipText.textContent = tipMsg;
+      if(goBtn) goBtn.href = "/care-test/?domain=" + domainId + "&position=" + position.position_id;
 
       // 🆕 岗位切换 → 加载该岗位固定 Timeline + 全板刷新
       switchPositionTimeline(position.position_id);
