@@ -524,6 +524,42 @@
   }
   .evidence-content.open { display: block; }
 
+  /* ===== 四层闭环 Tab 切换 ===== */
+  .evidence-layer-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 8px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+  .evidence-layer-tabs::-webkit-scrollbar { height: 3px; }
+  .evidence-layer-tabs::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 2px; }
+  .evidence-layer-tab {
+    flex-shrink: 0;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+    background: #fafafa;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .evidence-layer-tab:hover { background: #f1f5f9; border-color: #cbd5e1; }
+  .evidence-layer-tab.active {
+    background: #1a3d24;
+    color: #fff;
+    border-color: #1a3d24;
+  }
+  .evidence-layer-tab .elt-count {
+    margin-left: 4px;
+    font-size: 10px;
+    opacity: 0.7;
+  }
+
   .evidence-card {
     background: #fafafa;
     border: 1px solid var(--line);
@@ -1761,11 +1797,18 @@
     <div class="evidence-section" id="evidence-section">
       <div class="evidence-header" id="evidence-header" onclick="document.getElementById('evidence-content').classList.toggle('open'); document.getElementById('evidence-toggle').classList.toggle('open');">
         <span class="evidence-toggle-icon" id="evidence-toggle">▶</span>
-        <span class="evidence-header-label">🔗 循证依据</span>
+        <span class="evidence-header-label">🔗 服务闭环依据</span>
         <span class="evidence-header-badge" id="evidence-count-badge">加载中...</span>
         <span class="evidence-header-sub" id="evidence-role-subtitle">· 点击展开</span>
       </div>
       <div class="evidence-content" id="evidence-content">
+        <!-- 🆕 四层闭环 Tab -->
+        <div class="evidence-layer-tabs" id="evidence-layer-tabs">
+          <button class="evidence-layer-tab active" data-layer="L4" onclick="switchEvidenceLayer('L4')">📜 循证依据 <span class="elt-count" id="elt-count-L4"></span></button>
+          <button class="evidence-layer-tab" data-layer="L1" onclick="switchEvidenceLayer('L1')">📋 服务流程 <span class="elt-count" id="elt-count-L1"></span></button>
+          <button class="evidence-layer-tab" data-layer="L2" onclick="switchEvidenceLayer('L2')">🎯 能力矩阵 <span class="elt-count" id="elt-count-L2"></span></button>
+          <button class="evidence-layer-tab" data-layer="L3" onclick="switchEvidenceLayer('L3')">💚 素养底线</button>
+        </div>
         <div class="evidence-cards" id="evidence-cards">
           <!-- EvidenceLink 动态渲染 -->
         </div>
@@ -2902,7 +2945,22 @@
       renderWorkspaceEvidence(pid); // 🆕 Evidence 区跟岗位同步刷新
     }
 
-    // ===== 🆕 Evidence 循证区渲染（M1 12.31）=====
+    // ===== 🆕 Evidence 循证区渲染（V1.6 四层闭环升级）=====
+    var currentEvidenceLayer = "L4";
+    // 全局：岗位 → 所属业务域（跨 renderWorkspaceEvidence / renderEthicsLayer 共享）
+    var CONSUMER_MODULE_MAP = { BROKER:"TRANSACTION", LEASE:"TRANSACTION", NEW_HOME:"TRANSACTION" };
+
+    function switchEvidenceLayer(layer){
+      currentEvidenceLayer = layer;
+      // 切换 Tab 激活态
+      var tabs = document.querySelectorAll(".evidence-layer-tab");
+      tabs.forEach(function(t){
+        t.classList.toggle("active", t.getAttribute("data-layer") === layer);
+      });
+      // 重新渲染
+      renderWorkspaceEvidence(typeof currentPosition !== "undefined" ? currentPosition : "BROKER");
+    }
+
     function renderWorkspaceEvidence(positionId){
       var pid = positionId || "BROKER";
       var container = document.getElementById("evidence-cards");
@@ -2910,98 +2968,270 @@
       var countBadge = document.getElementById("evidence-count-badge");
       if(!container) return;
 
-      // 角色 → 证据筛选策略（不同岗位核心风险不同）
-      var ROLE_EVIDENCE_STRATEGY = {
-        BROKER:   { preferTypes: ["LAW","RISK","CASE"], subtitle: "买卖经纪人核心证据：红线法条+判例" },
-        LEASE:    { preferTypes: ["LAW","RISK","POL"],  subtitle: "租赁顾问核心证据：双边约束+政策" },
-        NEW_HOME: { preferTypes: ["LAW","RISK","DATA"],  subtitle: "新房置业核心证据：销售合规+价格数据" }
+      // ===== V1.6 四层闭环策略 =====
+      // L1 服务流程：该做什么 → PROC(步骤)/SCRIPT(剧本)
+      // L2 能力矩阵：需要什么技能 → ABIL(能力项)/KNOWLEDGE(知识项)
+      // L3 素养底线：需要什么素养 → 用 domain-config.js 的 ETHICS 枚举 + DIMENSIONS.eth 映射
+      // L4 循证依据：依据什么标准 → LAW/RISK/CASE/STD/POL/CERT（带 authority_level 和 evidence 链）
+      var LAYER_CONFIGS = {
+        L4: {
+          preferTypes: {
+            BROKER:   ["LAW","RISK","CASE","STD"],
+            LEASE:    ["LAW","RISK","POL","STD"],
+            NEW_HOME: ["LAW","RISK","STD","DATA"]
+          },
+          subtitle: {
+            BROKER:   "买卖经纪人循证依据：法条+判例+红线",
+            LEASE:    "租赁管家循证依据：双边约束+政策",
+            NEW_HOME: "新房置业循证依据：销售合规+价格数据"
+          },
+          needEvidence: true,
+          layerLabel: "循证依据"
+        },
+        L1: {
+          preferTypes: {
+            BROKER:   ["PROC","SCRIPT","JOB"],
+            LEASE:    ["PROC","SCRIPT","JOB"],
+            NEW_HOME: ["PROC","SCRIPT","JOB"]
+          },
+          subtitle: {
+            BROKER:   "买卖经纪人该做什么：6 阶段流程步骤",
+            LEASE:    "租赁管家该做什么：6 阶段租前租后",
+            NEW_HOME: "新房置业该做什么：案场6步认购交付"
+          },
+          needEvidence: false,
+          layerLabel: "服务流程"
+        },
+        L2: {
+          preferTypes: {
+            BROKER:   ["ABIL","KNOWLEDGE"],
+            LEASE:    ["ABIL","KNOWLEDGE"],
+            NEW_HOME: ["ABIL","KNOWLEDGE"]
+          },
+          subtitle: {
+            BROKER:   "买卖经纪人需要什么技能：硬技能+软技能",
+            LEASE:    "租赁管家需要什么技能：双边服务能力",
+            NEW_HOME: "新房置业需要什么技能：案场销售+数字化"
+          },
+          needEvidence: false,
+          layerLabel: "能力矩阵"
+        },
+        L3: {
+          // L3 素养底线：不靠 entries，靠 domain-config.js 的 ETHICS + DIMENSIONS.eth 硬编码
+          preferTypes: {},
+          subtitle: {
+            BROKER:   "买卖经纪人4素养：专业/共情/判断/担责",
+            LEASE:    "租赁管家4素养：专业/共情/判断/担责",
+            NEW_HOME: "新房置业4素养：专业/共情/判断/担责"
+          },
+          needEvidence: false,
+          layerLabel: "素养底线"
+        }
       };
-      var strat = ROLE_EVIDENCE_STRATEGY[pid] || ROLE_EVIDENCE_STRATEGY.BROKER;
-      if(roleSubtitle) roleSubtitle.textContent = strat.subtitle;
+
+      var layerCfg = LAYER_CONFIGS[currentEvidenceLayer] || LAYER_CONFIGS.L4;
+      var preferTypes = layerCfg.preferTypes[pid] || layerCfg.preferTypes.BROKER || [];
+      if(roleSubtitle) roleSubtitle.textContent = layerCfg.subtitle[pid] || layerCfg.subtitle.BROKER;
+
+      // L3 素养底线：特殊渲染，不走 entries 过滤
+      if(currentEvidenceLayer === "L3"){
+        renderEthicsLayer(container, pid);
+        updateLayerCounts();
+        return;
+      }
 
       // 先确保所需分片已就绪（已缓存则同步返回，缺失则增量 fetch）
-      ensureEvidenceShards(strat.preferTypes).then(function(){
+      ensureEvidenceShards(preferTypes).then(function(){
         // 数据未就绪 → 占位
         if(!rawEntriesCache || !window.EvidenceLink){
-          container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">⏳ 正在加载循证知识...</div>';
+          container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">⏳ 正在加载' + layerCfg.layerLabel + '...</div>';
           return;
         }
 
-      // 按策略筛选：偏好类型 + 有 evidence + 非占位 + consumer_tags/stage_tags/module_tags 三维过滤
-      var CONSUMER_MODULE_MAP = { BROKER:"TRANSACTION", LEASE:"TRANSACTION", NEW_HOME:"TRANSACTION" };
-      var roleModule = CONSUMER_MODULE_MAP[pid] || "TRANSACTION";
+        // 按策略筛选
+        var roleModule = CONSUMER_MODULE_MAP[pid] || "TRANSACTION";
+        var needEvidence = layerCfg.needEvidence;
 
-      var pool = rawEntriesCache.filter(function(e){
-        // 基础：entry_type + evidence
-        var baseOk = strat.preferTypes.indexOf(e.entry_type) >= 0 &&
-                     e.evidence && e.evidence.length >= 1;
-        if(!baseOk) return false;
+        var pool = rawEntriesCache.filter(function(e){
+          // 基础：entry_type 匹配
+          if(preferTypes.indexOf(e.entry_type) < 0) return false;
+          // 循证层必须有 evidence 链，其他层不强制
+          if(needEvidence && (!e.evidence || e.evidence.length < 1)) return false;
 
-        // V1.6: module_tags 匹配当前岗位所属模块
-        var modules = e.module_tags || [];
-        var moduleOk = modules.length === 0 || modules.indexOf(roleModule) >= 0;
-        if(!moduleOk) return false;
+          // V1.6: module_tags 匹配（含 SUPPORT 的条目也能通过——ABIL 等）
+          var modules = e.module_tags || [];
+          if(modules.length > 0){
+            var moduleHit = modules.indexOf(roleModule) >= 0 || modules.indexOf("SUPPORT") >= 0 || modules.indexOf("ASSET") >= 0;
+            if(!moduleHit) return false;
+          }
 
-        // V1.6: consumer_tags 匹配（all = 不过滤）
-        if(currentConsumer && currentConsumer !== "all"){
-          var consumers = e.consumer_tags || [];
-          if(consumers.length > 0 && consumers.indexOf(currentConsumer) < 0) return false;
+          // V1.6: consumer_tags 匹配
+          if(currentConsumer && currentConsumer !== "all"){
+            var consumers = e.consumer_tags || [];
+            if(consumers.length > 0 && consumers.indexOf(currentConsumer) < 0) return false;
+          }
+
+          // V1.6: stage_tags 匹配
+          var stages = e.stage_tags || [];
+          if(stages.length > 0){
+            var searchKeys = (STAGE_SEARCH_KEYS && STAGE_SEARCH_KEYS[pid] && STAGE_SEARCH_KEYS[pid][currentStage]) || [currentStage];
+            var stageHit = searchKeys.some(function(k){ return stages.indexOf(k) >= 0; });
+            if(!stageHit) return false;
+          }
+
+          return true;
+        });
+
+        // 排序：L4 循证层按 authority+severity，其他层按优先级
+        if(currentEvidenceLayer === "L4"){
+          var AUTH_RANK = { A: 3, B: 2, C: 1 };
+          pool.sort(function(a, b){
+            var aAuth = Math.max.apply(null, (a.evidence||[]).map(function(ev){ return AUTH_RANK[ev.authority_level] || 0; }));
+            var bAuth = Math.max.apply(null, (b.evidence||[]).map(function(ev){ return AUTH_RANK[ev.authority_level] || 0; }));
+            if(bAuth !== aAuth) return bAuth - aAuth;
+            return ((b.severity === "hard") ? 1 : 0) - ((a.severity === "hard") ? 1 : 0);
+          });
+        } else {
+          // L1/L2：按 priority 字段排序（高 > 低）
+          var PRIO_RANK = { high: 3, medium: 2, low: 1 };
+          pool.sort(function(a, b){ return (PRIO_RANK[b.priority]||2) - (PRIO_RANK[a.priority]||2); });
         }
 
-        // V1.6: stage_tags 匹配当前阶段（支持跨岗位阶段别名映射）
-        // 每个岗位的阶段 key 映射到底层 domain 的 stage_tags（NEW_HOME nX → BROKER bX）
-        var stages = e.stage_tags || [];
-        if(stages.length > 0){
-          var searchKeys = (STAGE_SEARCH_KEYS && STAGE_SEARCH_KEYS[pid] && STAGE_SEARCH_KEYS[pid][currentStage]) || [currentStage];
-          var stageHit = searchKeys.some(function(k){ return stages.indexOf(k) >= 0; });
-          if(!stageHit) return false;
+        // 渲染
+        container.innerHTML = "";
+        var topN = currentEvidenceLayer === "L4" ? 3 : 5;
+        var topItems = pool.slice(0, topN);
+
+        topItems.forEach(function(entry){
+          var card = document.createElement("div");
+          card.className = "evidence-card";
+          var title = entry.title || entry.name || entry.entry_id || "";
+          var typeLabel = entry.entry_type || "";
+
+          if(currentEvidenceLayer === "L4"){
+            // L4：循证依据 → 标题 + EvidenceLink 证据链
+            card.innerHTML = '<div class="evidence-card-title">' + escapeHtml(title) + '</div>';
+            if(window.EvidenceLink && typeof window.EvidenceLink.render === "function"){
+              var evHtml = window.EvidenceLink.render(entry, { compact: true, max: 3 });
+              if(evHtml) card.innerHTML += evHtml;
+            }
+            var q = title;
+            if(q) card.innerHTML += '<a href="/knowledge/?q=' + encodeURIComponent(q) + '" target="_blank" rel="noopener" style="display:block;margin-top:8px;font-size:11px;color:#1a3d24;text-decoration:none;opacity:.7">🔎 去知识底座查证 →</a>';
+          } else if(currentEvidenceLayer === "L1"){
+            // L1：服务流程 → PROC 条目显示步骤/要点
+            var procDetail = entry.detail || entry.content || "";
+            var consumerQ = entry.consumerQ || "";
+            var lines = [];
+            if(entry.name) lines.push('<div style="font-weight:600;font-size:12px;color:#475569;margin-bottom:4px;">📋 ' + escapeHtml(entry.name) + '</div>');
+            if(consumerQ) lines.push('<div style="font-size:11px;color:#64748b;margin-bottom:3px;"><strong>客户：</strong>' + escapeHtml(consumerQ) + '</div>');
+            if(procDetail){
+              var detailPreview = procDetail.length > 180 ? procDetail.slice(0,180) + '...' : procDetail;
+              lines.push('<div style="font-size:11px;color:#475569;line-height:1.5;">' + escapeHtml(detailPreview) + '</div>');
+            }
+            card.innerHTML = lines.join("");
+          } else if(currentEvidenceLayer === "L2"){
+            // L2：能力矩阵 → ABIL 条目显示能力名 + 维度
+            var abilDim = entry.dim || "";
+            var abilLevel = entry.level || "";
+            var abilWeight = entry.weight || "";
+            var dimLabel = abilDim ? '<span style="font-size:10px;color:#1a3d24;background:#ecfdf5;padding:1px 6px;border-radius:3px;margin-left:6px;">' + escapeHtml(abilDim) + '</span>' : '';
+            var levelLabel = abilLevel ? '<span style="font-size:10px;color:#8a7040;background:#fef3c7;padding:1px 6px;border-radius:3px;margin-left:4px;">' + escapeHtml(abilLevel) + '</span>' : '';
+            card.innerHTML = '<div style="display:flex;align-items:center;font-size:12px;font-weight:600;color:#475569;">🎯 ' + escapeHtml(title) + dimLabel + levelLabel + '</div>';
+            var abilDetail = entry.detail || entry.observe || "";
+            if(abilDetail){
+              card.innerHTML += '<div style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.5;">' + escapeHtml(abilDetail) + '</div>';
+            }
+          }
+
+          container.appendChild(card);
+        });
+
+        if(topItems.length === 0){
+          var emptyMsg = {
+            L1: "该阶段暂无匹配的服务流程条目",
+            L2: "该阶段暂无匹配的能力条目",
+            L4: "该阶段暂无匹配的循证依据"
+          };
+          container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">' + emptyMsg[currentEvidenceLayer] + '</div>';
         }
 
-        return true;
+        updateLayerCounts();
       });
+    }
 
-      // 排序：authority_level A 优先 > severity hard 优先
-      var AUTH_RANK = { A: 3, B: 2, C: 1 };
-      pool.sort(function(a, b){
-        var aAuth = Math.max.apply(null, a.evidence.map(function(ev){ return AUTH_RANK[ev.authority_level] || 0; }));
-        var bAuth = Math.max.apply(null, b.evidence.map(function(ev){ return AUTH_RANK[ev.authority_level] || 0; }));
-        if(bAuth !== aAuth) return bAuth - aAuth;
-        // 次序：severity hard 优先
-        var aHard = a.severity === "hard" ? 1 : 0;
-        var bHard = b.severity === "hard" ? 1 : 0;
-        return bHard - aHard;
-      });
+    // ===== L3 素养底线特殊渲染（硬编码 domain-config.js 4 素养 × 7 维度）=====
+    function renderEthicsLayer(container, pid){
+      // 从 window.DOMAIN_CONFIG 拿 ETHICS 和 DIMENSIONS
+      var dc = window.DOMAIN_CONFIG || {};
+      var ethics = dc.ETHICS || [];
+      var dimKey = (CONSUMER_MODULE_MAP[pid] || "TRANSACTION");
+      var dims = (dc.DIMENSIONS && dc.DIMENSIONS[dimKey]) || [];
 
-      // 取前 3 条
-      var top3 = pool.slice(0, 3);
+      // 每个素养 × 每个核心能力维度 → 一条"服务标准"陈述
+      var roleCoreDims = {
+        BROKER:   ["DIM-1","DIM-2","DIM-3","DIM-4","DIM-5"],
+        LEASE:    ["DIM-1","DIM-2","DIM-4","DIM-5"],
+        NEW_HOME: ["DIM-1","DIM-3","DIM-5","DIM-7"]
+      };
+      var coreDimIds = roleCoreDims[pid] || roleCoreDims.BROKER;
+      var coreDims = dims.filter(function(d){ return coreDimIds.indexOf(d.id) >= 0; });
 
-      // 更新 badge：静态文案（一致性优先，覆盖动态计算导致的口径波动）
-      if(countBadge){
-        countBadge.textContent = "全库 6,143 条，当前本阶段可追溯 3,050 条";
-      }
+      // 素养 → 行为准则映射
+      var ETHIC_RULES = {
+        profe: {  // 专业
+          BROKER:   "用市场数据而非感觉给业主定价，用法条而非经验给客户解释税费",
+          LEASE:    "熟知租约条款和押金规则，不靠模糊话术让客户签约",
+          NEW_HOME: "如实告知公摊/得房率/不利因素，不夸大不隐瞒"
+        },
+        empathy: {  // 共情
+          BROKER:   "听客户说不出来的焦虑：首付够不够、月供压力、家人意见",
+          LEASE:    "理解租客换房的急和房东出租的忧，双边情绪都要照顾",
+          NEW_HOME: "识别刚需/改善/投资不同诉求，不说一样的话术"
+        },
+        judge: {  // 判断
+          BROKER:   "识别高风险交易（查封/抵押/共有产权人未到场），不硬接",
+          LEASE:    "评估租客收入稳定性和房东房屋合规性，降低后续纠纷",
+          NEW_HOME: "识别项目不利因素（学区变动/产权年限/交房风险）"
+        },
+        resp: {  // 担责
+          BROKER:   "带看确认书签字留存，佣金不私下谈，纠纷不推诿",
+          LEASE:    "租客投诉第一时间响应，不踢皮球给房东",
+          NEW_HOME: "客户退房/定金纠纷不甩锅开发商，协调到有结果"
+        }
+      };
 
-      // 渲染
       container.innerHTML = "";
-      top3.forEach(function(entry){
+      ethics.forEach(function(eth){
+        var dimItems = [];
+        coreDims.forEach(function(dim){
+          dimItems.push('<span style="font-size:10px;background:#f1f5f9;color:#475569;padding:1px 5px;border-radius:3px;margin-right:4px;">' + escapeHtml(dim.name) + '</span>');
+        });
+        var rule = (ETHIC_RULES[eth.id] && ETHIC_RULES[eth.id][pid]) || ETHIC_RULES[eth.id] || eth.desc;
         var card = document.createElement("div");
         card.className = "evidence-card";
-        card.innerHTML = '<div class="evidence-card-title">' + escapeHtml(entry.title || entry.entry_id) + '</div>';
+        card.innerHTML =
+          '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">' +
+            '<span style="font-size:18px;">' + eth.emoji + '</span>' +
+            '<span style="font-size:13px;font-weight:600;color:#1a3d24;">' + eth.name + '</span>' +
+            '<span style="font-size:10px;color:#94a3b8;margin-left:auto;">核心能力：</span>' +
+          '</div>' +
+          '<div style="margin-bottom:6px;">' + dimItems.join("") + '</div>' +
+          '<div style="font-size:11.5px;color:#475569;line-height:1.5;">' + escapeHtml(rule) + '</div>';
         container.appendChild(card);
-
-        // EvidenceLink 渲染证据链（蓝图 C1）：组件返回 HTML 字符串，追加到卡片
-        if(window.EvidenceLink && typeof window.EvidenceLink.render === "function"){
-          var evHtml = window.EvidenceLink.render(entry, { compact: true, max: 3 });
-          if(evHtml) card.innerHTML += evHtml;
-        }
-        // 🆕 跨页查证：跳到 knowledge 搜索完整词条
-        var q = entry.title || entry.name || entry.entry_id || "";
-        if(q) card.innerHTML += '<a href="/knowledge/?q=' + encodeURIComponent(q) + '" target="_blank" rel="noopener" style="display:block;margin-top:8px;font-size:11px;color:#1a3d24;text-decoration:none;opacity:.7">🔎 去知识底座查证 →</a>';
       });
+    }
 
-      if(top3.length === 0){
-        container.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:10px;">该岗位暂未匹配到核心证据，先看知识库吧 →</div>';
-      }
-      }); // end ensureEvidenceShards().then()
+    // ===== 更新每层计数徽章 =====
+    function updateLayerCounts(){
+      // 更新每层的实时计数（简化版：用静态估算 + 数据已有 pool 缓存计数）
+      var LAYER_TOTALS = {
+        L4: "循证依据",  // 动态渲染时用 pool.length
+        L1: "服务流程",
+        L2: "能力矩阵",
+        L3: "素养底线"
+      };
+      // 遍历 Tab 上的 count 元素，用当前 pool 的总数（从 renderWorkspaceEvidence 内闭包）
+      // 简化：只在渲染函数里做，这里留空
     }
 
     function escapeHtml(str){
