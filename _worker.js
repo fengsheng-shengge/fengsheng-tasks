@@ -4248,6 +4248,8 @@ export default {
       // scene / curation / decoder / toolkit / standard 都独立存在，不加 301
       // skills 归档 → 直接 301 到 toolkit
       '/skills':        '/toolkit/',         '/skills/':       '/toolkit/',
+      // methods 方案设想迁移地址 → 实际长文仍在 /toolkit/methodology/
+      '/methods':       '/toolkit/methodology/',  '/methods/':  '/toolkit/methodology/',
     };
     if (v16RouteMap[path]) {
       return Response.redirect(`https://fengsheng.tech${v16RouteMap[path]}`, 301);
