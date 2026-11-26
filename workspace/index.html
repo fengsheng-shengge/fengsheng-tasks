@@ -4183,5 +4183,15 @@
   <div><a href="https://beian.miit.gov.cn" target="_blank" rel="noopener" style="color:#8a9a90;text-decoration:none;">京ICP备2026044043号-2</a></div>
   <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802051263" rel="noreferrer" target="_blank" style="color:#8a9a90;text-decoration:none;"><img src="/assets/beian/beian-icon.png" alt="" style="width:14px;height:14px;vertical-align:-2px;margin-right:3px;">京公网安备11010802051263号</a>
 </footer>
+
+<!-- 兜底：不管上面 HTML 解析/Worker 改写/JS 时序如何，强制把 footer 移到 body 末尾 -->
+<script>
+(function(){
+  var fn = document.querySelector('.footer-note');
+  var ft = document.querySelector('footer');
+  if(fn && fn.parentElement !== document.body){ document.body.appendChild(fn); }
+  if(ft && ft.parentElement !== document.body){ document.body.appendChild(ft); }
+})();
+</script>
 </body>
 </html>
