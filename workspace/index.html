@@ -27,13 +27,7 @@
     background: var(--bg);
     color: var(--ink);
     line-height: 1.6;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
   }
-
-  /* 让 main 区占满剩余空间，footer 沉底 */
-  body > .layout-wrapper { flex: 1; }
 
   /* 顶栏 */
   .top-nav {
@@ -263,7 +257,7 @@
 
   /* ===== 🆕 两列布局：左侧阶段导航 sidebar + 右侧主内容 ===== */
   .layout-wrapper {
-    max-width: 1400px;
+    max-width: 1180px;
     margin: 0 auto;
     display: flex;
     gap: 0;
@@ -271,7 +265,7 @@
   }
   .layout-wrapper .journey-timeline {
     display: flex;
-    width: 180px;
+    width: 220px;
     flex-shrink: 0;
     position: sticky;
     top: 12px;
@@ -279,13 +273,12 @@
     border: 1px solid var(--line);
     border-radius: 10px;
     margin: 12px 0 12px 12px;
-    padding: 12px 8px;
+    padding: 14px 10px;
     display: none;
     flex-direction: column;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     max-height: calc(100vh - 24px);
     overflow-y: auto;
-    font-size: 12px;
   }
   .layout-wrapper .journey-timeline.visible { display: flex; animation: fadeIn 0.3s ease; }
   .layout-wrapper .jt-stages {
@@ -316,7 +309,7 @@
     flex: 1;
     min-width: 0;
     margin: 0;
-    padding: 16px 20px 28px 16px;
+    padding: 20px 24px 32px 20px;
   }
   .layout-wrapper .jt-toggle-advanced { right: 10px; top: 8px; }
 
