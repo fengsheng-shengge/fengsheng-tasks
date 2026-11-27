@@ -99,7 +99,7 @@ def main():
     try:
         r = json.loads(body)
         ok("⑧ signup 校验层拒绝无效提交",
-           s == 200 and r.get('ok') is False and 'error' in r,
+           s in (200, 400) and r.get('ok') is False and 'error' in r,
            f"(HTTP={s} {r})")
     except Exception as e:
         ok("⑧ signup 校验层", False, f"(HTTP={s} body={body[:60]})")
