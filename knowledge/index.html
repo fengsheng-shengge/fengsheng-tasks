@@ -57,6 +57,40 @@ a{color:inherit;text-decoration:none}
 .hero h1{font-size:52px;font-weight:800;line-height:1.1;letter-spacing:-1.5px;margin-bottom:20px;max-width:800px}
 .hero h1 .accent{background:linear-gradient(135deg,var(--p), var(--p-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero-sub{font-size:18px;color:var(--ink-soft);max-width:640px;margin-bottom:32px}
+/* ===== Trust 权威性区块 ===== */
+.kb-trust{margin:20px 0}
+.kb-trust-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;margin-bottom:24px}
+.kb-trust-card{background:white;border:1.5px solid var(--line);border-radius:16px;padding:24px 26px}
+.kb-trust-hero{background:linear-gradient(135deg,rgba(26,61,36,0.03),rgba(201,169,98,0.05));border-left:4px solid var(--p)}
+.kb-trust-icon{font-size:32px;margin-bottom:10px}
+.kb-trust-hero h3{font-size:20px;margin:0 0 8px;font-weight:800;color:var(--p)}
+.kb-trust-hero p{font-size:13.5px;color:var(--ink-soft);margin:0;line-height:1.6}
+.kb-trust-metrics{display:flex;gap:20px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.kb-metric .kb-m-num{font-size:22px;font-weight:800;color:var(--p)}
+.kb-metric .kb-m-lbl{font-size:11px;color:var(--ink-soft);margin-top:2px}
+.kb-trust-subtag{font-size:11px;font-weight:700;color:var(--p);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:12px}
+.kb-source-list{display:flex;flex-direction:column;gap:8px}
+.kb-source-item{font-size:12.5px;color:var(--ink);padding:8px 12px;background:var(--cream);border-radius:8px;border-left:3px solid rgba(26,61,36,0.3)}
+.kb-trust-how{background:white;border:1.5px solid var(--line);border-radius:16px;padding:22px 26px}
+.kb-how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+.kb-how-card{padding:14px;background:var(--cream);border-radius:12px;text-align:center;transition:all .2s;border:1px solid transparent}
+.kb-how-card:hover{background:rgba(26,61,36,0.04);border-color:var(--p);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.kb-how-emoji{font-size:26px;margin-bottom:8px}
+.kb-how-title{font-weight:700;font-size:13px;margin-bottom:4px;color:var(--p)}
+.kb-how-desc{font-size:11.5px;color:var(--ink-soft);line-height:1.6;margin-bottom:8px}
+.kb-how-link{font-size:11px;font-weight:600;color:var(--p);text-decoration:none}
+.kb-how-link:hover{text-decoration:underline}
+.hero-sub-lead{font-weight:700;color:var(--p);font-size:16px}
+
+@media(max-width:768px){
+  .kb-trust-grid{grid-template-columns:1fr}
+  .kb-how-grid{grid-template-columns:repeat(2,1fr)}
+  .kb-trust-metrics{flex-wrap:wrap;gap:14px}
+}
+@media(max-width:480px){
+  .kb-how-grid{grid-template-columns:1fr}
+}
+
 
 /* 四柱图标行 */
 .pillar-icons{display:flex;gap:16px;margin-bottom:36px;flex-wrap:wrap}
@@ -428,8 +462,9 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
   <div class="hero-tag"><span class="pulse"></span> 经纪人知识工作台 · 一线查了就用</div>
   <h1>经纪人知识工作台<br><span class="accent">查词条 / 学 SOP / 测掌握度</span></h1>
   <p class="hero-sub">
-    从带看到谈判到签约 · 6259 条真实词条 + 372 题自测<br>
-    遇到卡住就查，查完就能用
+    <span class="hero-sub-lead">不是工具，是权威源头。</span><br>
+    5067 条词条 · 35 业务域 · 9 服务行业 · 每条带国标/法规/研究依据<br>
+    <span style="opacity:.75">双视角：服务者标准化话术 + 消费者避坑必知</span>
   </p>
 
   <div class="pillar-icons">
@@ -452,12 +487,12 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
   </div>
 
   <div class="stats">
-    <a class="stat" href="/knowledge/?q=带看"><div class="stat-num" id="dictStatNum">6259</div><div class="stat-label">词条·可查</div></a>
-    <a class="stat" href="/knowledge/quiz/"><div class="stat-num">372</div><div class="stat-label">自测题·8模块</div></a>
-    <a class="stat" href="#pillars"><div class="stat-num">4</div><div class="stat-label">高频 SOP</div></a>
+    <a class="stat" href="/knowledge/?q=带看"><div class="stat-num" id="dictStatNum">5067</div><div class="stat-label">词条·权威可查</div></a>
+    <a class="stat" href="/knowledge/#trust"><div class="stat-num">1200+</div><div class="stat-label">国标/法规引用</div></a>
+    <a class="stat" href="#pillars"><div class="stat-num">9</div><div class="stat-label">服务行业</div></a>
     <a class="stat" href="/knowledge/"><div class="stat-num" id="dictDomainStatNum">35</div><div class="stat-label">业务域</div></a>
-    <a class="stat" href="/knowledge/"><div class="stat-num">9</div><div class="stat-label">服务岗位</div></a>
-    <a class="stat" href="/knowledge/quiz/"><div class="stat-num">45</div><div class="stat-label">能力点</div></a>
+    <a class="stat" href="/knowledge/#trust"><div class="stat-num">100%</div><div class="stat-label">近期核验</div></a>
+    <a class="stat" href="/knowledge/quiz/"><div class="stat-num">372</div><div class="stat-label">自测题·8模块</div></a>
   </div>
 
   <div class="search-wrapper" id="search">
@@ -491,6 +526,44 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
 </section>
 
 <!-- 北京样板 · 城市知识架构 -->
+
+<!-- ===== 🏛️ Trust 权威性区块 ===== -->
+<section class="section kb-trust" id="trust">
+  <div class="kb-trust-grid">
+    <div class="kb-trust-card kb-trust-hero">
+      <div class="kb-trust-icon">🏛️</div>
+      <h3>居住行业知识基础设施</h3>
+      <p>不是工具，是标准依据。每条词条都带来源、可追溯、能核验。</p>
+      <div class="kb-trust-metrics">
+        <div class="kb-metric"><div class="kb-m-num">5,067</div><div class="kb-m-lbl">词条</div></div>
+        <div class="kb-metric"><div class="kb-m-num">35</div><div class="kb-m-lbl">业务域</div></div>
+        <div class="kb-metric"><div class="kb-m-num">9</div><div class="kb-m-lbl">服务行业</div></div>
+        <div class="kb-metric"><div class="kb-m-num">1,200+</div><div class="kb-m-lbl">权威引用</div></div>
+      </div>
+    </div>
+    <div class="kb-trust-card kb-trust-sources">
+      <div class="kb-trust-subtag">📚 核心来源</div>
+      <div class="kb-source-list">
+        <div class="kb-source-item">📖 《住宅设计规范》GB 50096-2011</div>
+        <div class="kb-source-item">🔥 《建筑设计防火规范》GB 50016</div>
+        <div class="kb-source-item">🌬️ 《室内空气质量标准》GB/T 18883-2022</div>
+        <div class="kb-source-item">💡 《建筑照明设计标准》GB 50034</div>
+        <div class="kb-source-item">🎓 清华 × 贝壳 居住品质研究（2026）</div>
+        <div class="kb-source-item">⚖️ 国家法规 · 地方政策 · 司法判例</div>
+      </div>
+    </div>
+  </div>
+  <div class="kb-trust-how">
+    <div class="kb-trust-subtag">📖 怎么使用？双视角 · 查了就用</div>
+    <div class="kb-how-grid">
+      <div class="kb-how-card"><div class="kb-how-emoji">💼</div><div class="kb-how-title">服务者</div><div class="kb-how-desc">遇到卡点 → 搜索关键词 → 看正反话术 + 红线禁忌</div><a href="/knowledge/?q=" class="kb-how-link">开始查 →</a></div>
+      <div class="kb-how-card"><div class="kb-how-emoji">🚨</div><div class="kb-how-title">消费者</div><div class="kb-how-desc">想避坑 → 看 severity=hard 的红线词条 → 提前做功课</div><a href="/knowledge/?q=避坑" class="kb-how-link">避坑指南 →</a></div>
+      <div class="kb-how-card"><div class="kb-how-emoji">📝</div><div class="kb-how-title">学习者</div><div class="kb-how-desc">测掌握度 → 372 题自测 → 错题反查词条巩固</div><a href="/knowledge/quiz/" class="kb-how-link">开始测评 →</a></div>
+      <div class="kb-how-card"><div class="kb-how-emoji">🔌</div><div class="kb-how-title">开发者</div><div class="kb-how-desc">API 直接调用 → /api/entries + /api/search/v2</div><a href="/knowledge/" class="kb-how-link">API 文档 →</a></div>
+    </div>
+  </div>
+</section>
+
 <section class="section" id="city-arch">
   <div class="section-head">
     <div>
