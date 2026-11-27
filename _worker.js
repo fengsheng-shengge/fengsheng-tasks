@@ -119,7 +119,7 @@ const SECURITY_HEADERS = {
   'Cross-Origin-Resource-Policy': 'same-origin',
 };
 
-const CSP_HEADER_STATIC = "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests";
+const CSP_HEADER_STATIC = "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://challenges.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https: blob:; font-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests";
 
 function applySecurityHeaders(resp, isHtml = false) {
   const newResp = new Response(resp.body, resp);
