@@ -243,6 +243,14 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <!-- EvidenceAdapter + EvidenceLink（蓝图 C1，追溯面板 step 4 真实证据链渲染） -->
 <script src="/lib/evidence/data-adapter.js" defer></script>
 <script src="/lib/evidence/evidence-link.js" defer></script>
+
+<script src="/tracker.js" defer></script>
+<script>
+(function(){
+  function fsTrackSafe(name, data) { try { if (typeof window.fsTrack === 'function') window.fsTrack(name, data || {}); } catch(e){} }
+  fsTrackSafe('pageview', { path: location.pathname });
+})();
+</script>
 </body>
 
 <script>

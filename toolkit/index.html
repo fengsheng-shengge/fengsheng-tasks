@@ -148,5 +148,13 @@ footer{text-align:center;padding:28px 16px 32px;font-size:12px;color:var(--muted
   风声聚匠星云 · 循证服务 · 经纪人 + 设计师双领域
 </footer>
 
+
+<script src="/tracker.js" defer></script>
+<script>
+(function(){
+  function fsTrackSafe(name, data) { try { if (typeof window.fsTrack === 'function') window.fsTrack(name, data || {}); } catch(e){} }
+  fsTrackSafe('pageview', { path: location.pathname });
+})();
+</script>
 </body>
 </html>

@@ -339,5 +339,13 @@ ${content}
   };
 })();
 </script>
+
+<script src="/tracker.js" defer></script>
+<script>
+(function(){
+  function fsTrackSafe(name, data) { try { if (typeof window.fsTrack === 'function') window.fsTrack(name, data || {}); } catch(e){} }
+  fsTrackSafe('pageview', { path: location.pathname });
+})();
+</script>
 </body>
 </html>

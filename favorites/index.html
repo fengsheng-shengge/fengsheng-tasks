@@ -339,5 +339,13 @@ footer{background:var(--cream-deep);padding:30px 32px 20px;color:var(--ink-soft)
 
 <!-- 本地 fallback：Worker API 不可用时降级到 entries.json -->
 <script src="/lib/evidence/local-fallback.js" defer></script>
+
+<script src="/tracker.js" defer></script>
+<script>
+(function(){
+  function fsTrackSafe(name, data) { try { if (typeof window.fsTrack === 'function') window.fsTrack(name, data || {}); } catch(e){} }
+  fsTrackSafe('pageview', { path: location.pathname });
+})();
+</script>
 </body>
 </html>
