@@ -701,6 +701,8 @@
   .scenario-body { display: none; padding: 14px 18px 18px; border-top: 1px solid var(--line); }
   .scenario-card.open .scenario-body { display: block; }
   .solution-line { font-size: 13px; color: var(--body); padding: 8px 12px; background: #fafaf7; border-radius: 6px; border-left: 3px solid var(--muted); margin-bottom: 12px; }
+  .anti-pattern-box { font-size: 12px; color: #b91c1c; padding: 8px 12px; background: rgba(239,68,68,0.06); border-radius: 6px; border: 1px solid rgba(239,68,68,0.25); margin-bottom: 12px; line-height: 1.7; }
+  .anti-pattern-box strong { color: #7f1d1d; }
   .speech-list { margin-bottom: 14px; }
   .speech-variant { background: #fafaf7; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; position: relative; transition: border-color 0.2s; }
   .speech-variant.collapsed { border-color: var(--line); background: #fdfcf8; }
@@ -2123,6 +2125,7 @@
     var POS_KEY = "fs_workspace_position";
     var modelData = null;
     var questionMap = null;
+    var sceneCards = null;   // 🆕 V2.2 K-03 精选场景卡（优先于 question_map 旧数据源）
     var sopData = null;        // 🆕 sales-sop.json
     var stageLayerData = null; // 阶段三层拆解数据
     var rawEntriesCache = null; // 🆕 Evidence entries.json 缓存（M1 12.31）
@@ -2548,6 +2551,16 @@
       })
       .catch(function(){});
 
+    // 🆕 2.5 加载 V2.2 K-03 精选场景卡（比 question_map 新，优先使用）
+    fetch("/data/v3/scene_cards.json")
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(data){
+        if(!data) return;
+        sceneCards = data;
+        console.log("[scene_cards] 加载成功：" + data.total_cards + " 张精选卡");
+      })
+      .catch(function(){});
+
     // 3. 加载 sales-sop.json + 初始化阶段三层数据
     fetch("/data/v3/sales-sop.json")
       .then(function(r){ return r.ok ? r.json() : null; })
@@ -2862,11 +2875,27 @@
       });
     }
 
+    // 🆕 V2.2 K-03 数据源选择：sceneCards 优先 → question_map 回退
+    function getScenesSource(){
+      // sceneCards 加载成功了且有数据 → 用 sceneCards.cards
+      if(sceneCards && sceneCards.cards && sceneCards.cards.length > 0){
+        return { data: sceneCards.cards, fromSceneCards: true };
+      }
+      // 回退 question_map 旧数据源
+      if(questionMap && questionMap.mapping){
+        return { data: questionMap.mapping, fromSceneCards: false };
+      }
+      return { data: [], fromSceneCards: false };
+    }
+
     function countScenesInStage(stageKey){
-      if(!questionMap) return 0;
+      var src = getScenesSource();
+      if(!src.data.length) return 0;
       var aliases = resolveStageAliases(stageKey);
-      var list = questionMap.mapping.filter(function(m){
-        if(aliases.indexOf(m.stage) < 0) return false;  // 🆕 支持新旧两套 stage key
+      var list = src.data.filter(function(m){
+        // 新数据源 sceneCards: m.stage 是 b1-b6，m.stageAlias 是 prepare/market
+        // 旧数据源 question_map: m.stage 是 prepare/market/invite...
+        if(aliases.indexOf(m.stage) < 0 && !(m.stageAlias && aliases.indexOf(m.stageAlias) >= 0)) return false;
         if(currentConsumer !== "all" && m.consumer !== currentConsumer) return false;
         return true;
       });
@@ -2874,13 +2903,19 @@
     }
 
     function filterScenes(){
-      if(!questionMap) return [];
-      var aliases = resolveStageAliases(currentStage);  // 🆕 支持新旧两套 stage key
-      return questionMap.mapping.filter(function(m){
-        if(aliases.indexOf(m.stage) < 0) return false;
+      var src = getScenesSource();
+      if(!src.data.length) return [];
+      var aliases = resolveStageAliases(currentStage);
+      var filtered = src.data.filter(function(m){
+        if(aliases.indexOf(m.stage) < 0 && !(m.stageAlias && aliases.indexOf(m.stageAlias) >= 0)) return false;
         if(currentConsumer !== "all" && m.consumer !== currentConsumer) return false;
         return true;
       });
+      // 🆕 sceneCards 优先展示 + 标上来源（给 buildCardHTML 加"精选"徽标）
+      if(src.fromSceneCards){
+        filtered.forEach(function(c){ c._isSceneCard = true; });
+      }
+      return filtered;
     }
 
     function selectStage(stageKey, suppressRender){
@@ -3589,6 +3624,14 @@
 
     // ===== 共用：构建场景卡 HTML =====
     function buildCardHTML(m, isOpen){
+      // 🆕 K-03: sceneCards 没有 dim_id/dim_name/skill_standard，补默认值
+      var DIM_BY_STAGE = { b1:{id:1,name:"房源开发核验"}, b2:{id:2,name:"客户需求解码"}, b3:{id:3,name:"带看讲解"}, b4:{id:4,name:"谈判斡旋"}, b5:{id:5,name:"签约协办"}, b6:{id:6,name:"过户交房"} };
+      var aliasKey = m.stageAlias || m.stage;
+      var dim = DIM_BY_STAGE[m.stage] || (DIM_BY_STAGE[aliasKey] || {});
+      var dim_id = m.dim_id || dim.id || 4;
+      var dim_name = m.dim_name || dim.name || "";
+      var skill_standard = m.skill_standard || (m._isSceneCard ? "精选场景" : "");
+
       var variants = m.speech_variants || [];
       var tools = (m.tools || []).map(function(t){ return '<div class="secondary-item">' + t + ' →</div>'; }).join("");
       var consumerInfo = CONSUMER_NAMES[m.consumer] || CONSUMER_NAMES.buyer;
@@ -3606,14 +3649,15 @@
 
       return '<div class="scenario-card ' + (isOpen ? "open" : "") + '">' +
         '<div class="scenario-head" onclick="onScToggle(this)">' +
-          '<div class="scenario-icon">' + getDimIcon(m.dim_id) + '</div>' +
+          '<div class="scenario-icon">' + getDimIcon(dim_id) + '</div>' +
           '<div class="scenario-main">' +
             '<div class="scenario-title">' + m.title +
+              (m._isSceneCard ? '<span style="font-size:9px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:white;padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:600;">⭐ 精选</span>' : '') +
               '<span style="font-size:10px;background:var(--gold-bg);color:#8a7040;padding:1px 7px;border-radius:3px;margin-left:6px;font-weight:500;">' + consumerInfo.icon + ' ' + consumerInfo.label + '</span>' +
             '</div>' +
             '<div class="scenario-meta">' +
-              '<span class="sc-dim">' + m.dim_name + '</span>' +
-              '<span style="font-family:monospace;opacity:.6;">' + (m.skill_standard || "") + '</span>' +
+              '<span class="sc-dim">' + dim_name + '</span>' +
+              '<span style="font-family:monospace;opacity:.6;">' + skill_standard + '</span>' +
               '<span>' + variants.length + ' 个话术版本</span>' +
             '</div>' +
           '</div>' +
@@ -3621,6 +3665,8 @@
         '</div>' +
         '<div class="scenario-body">' +
           '<div class="solution-line">' + m.solution + '</div>' +
+          // 🆕 K-03: sceneCards 独有的"别这么做"警示
+          (m.antiPattern ? '<div class="anti-pattern-box">⚠️ ' + m.antiPattern + '</div>' : "") +
           '<div class="speech-list">' + speechBlocks + '</div>' +
           (tools ?
             '<div class="secondary-row"><div class="secondary-col"><div class="secondary-title">Tools</div>' + tools + '</div></div>' : ""
