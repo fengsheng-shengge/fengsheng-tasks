@@ -3767,8 +3767,8 @@
 
     function init(){
       var tabs = document.querySelectorAll("#domain-tabs .domain-tab");
-      var positionBar = document.getElementById("position-bar");
-      var pills = document.getElementById("position-pills");
+      // [DEPRECATED] position-bar DOM removed: was always null
+      // [DEPRECATED] position-pills DOM removed
       var grid = document.getElementById("ability-grid");
       var tipText = document.getElementById("ability-tip-text");
       var goBtn = document.getElementById("ability-go-btn");
@@ -3832,8 +3832,8 @@
 
     function renderDomain(domainId){
       var domain = modelData.domains[domainId];
-      var pills = document.getElementById("position-pills");
-      var positionBar = document.getElementById("position-bar");
+      // [DEPRECATED] position-pills DOM removed
+      // [DEPRECATED] position-bar DOM removed: was always null
       var grid = document.getElementById("ability-grid");
       var tipText = document.getElementById("ability-tip-text");
       var goBtn = document.getElementById("ability-go-btn");
