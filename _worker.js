@@ -178,7 +178,8 @@ function checkGlobalRateLimit(request) {
   const isPageRequest = !path.startsWith('/api/') && !path.startsWith('/mentor-api/')
     && !path.startsWith('/search') && !path.startsWith('/gate')
     && !path.startsWith('/evidence')
-    && path !== '/workspace/' && path !== '/home-design/';  // 工作台核心路径永远放行
+    && !path.startsWith('/wotu/')
+    && path !== '/workspace/' && path !== '/home-design/' && path !== '/wotu';  // 工作台核心路径永远放行
   if (isPageRequest) return true;
 
   const ip = getClientIP(request);
@@ -4280,6 +4281,17 @@ export default {
       const evTarget = '/evidence/?id=' + encodeURIComponent(evId) + (evQuery ? '&' + evQuery : '');
       return Response.redirect('https://fengsheng.tech' + evTarget, 301);
     }
+    // V2.2 K-12: /wotu/JOB → /wotu/?job=JOB（友好 URL 风格）
+    // 支持 /wotu/broker, /wotu/lease, /wotu/broker/ 等
+    const wotuJobs = ['broker', 'lease', 'new_home'];
+    const wotuMatch = path.match(/^\/wotu\/(broker|lease|new_home)\/?$/);
+    if (wotuMatch) {
+      const wotuJob = wotuMatch[1];
+      const wotuQuery = url.searchParams.toString();
+      const wotuTarget = '/wotu/?job=' + wotuJob + (wotuQuery ? '&' + wotuQuery : '');
+      return Response.redirect('https://fengsheng.tech' + wotuTarget, 301);
+    }
+
 
     // V2.2 K-05: evidence 独立依据页 — 直接 Worker 返回（不依赖 Pages 部署）
     if (path === '/evidence/' || path.startsWith('/evidence/?') || path === '/evidence') {
