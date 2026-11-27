@@ -4555,6 +4555,58 @@ export default {
     // /api/chats — dedicated chat count endpoint (fix chats=0 root cause)
     if (path === '/api/chats') return handleChats(request, env, ctx);
 
+    // V2.2 Issue #258 API 契约对齐（alias / 新增）
+    // GET /api/scene-cards — 读取 data/v3/scene_cards.json
+    if (path === '/api/scene-cards') {
+      try {
+        const assetResp = await env.ASSETS.fetch(new Request('https://fakehost/data/v3/scene_cards.json'));
+        if (assetResp.ok) {
+          const text = await assetResp.text();
+          return jsonResponse({ version: '1.0', generated_at: new Date().toISOString().slice(0,10), count: (text.match(/\"id\"/g)||[]).length, data: JSON.parse(text) });
+        }
+        return jsonResponse({ error: 'scene_cards not found' }, 404);
+      } catch (e) { return jsonResponse({ error: e.message }, 500); }
+    }
+    // GET /api/wotu/packs — 读取 data/v3/packs.json
+    if (path === '/api/wotu/packs') {
+      try {
+        const assetResp = await env.ASSETS.fetch(new Request('https://fakehost/data/v3/packs.json'));
+        if (assetResp.ok) {
+          return new Response(await assetResp.text(), {
+            status: 200, headers: { 'Content-Type': 'application/json;charset=UTF-8', 'Access-Control-Allow-Origin': 'https://fengsheng.tech', 'Cache-Control': 'public, max-age=300' }
+          });
+        }
+        return jsonResponse({ error: 'packs not found' }, 404);
+      } catch (e) { return jsonResponse({ error: e.message }, 500); }
+    }
+    // GET /api/stats/evidence — 证据统计（verifiable 计数 + entry 总数）
+    if (path === '/api/stats/evidence') {
+      try {
+        const assetResp = await env.ASSETS.fetch(new Request('https://fakehost/data/v3/entries.json'));
+        if (assetResp.ok) {
+          const entries = JSON.parse(await assetResp.text());
+          const total = entries.length;
+          const verifiable = entries.filter(e => e && (Array.isArray(e.legalRef) && e.legalRef.length || Array.isArray(e.caseRef) && e.caseRef.length || Array.isArray(e.dataRef) && e.dataRef.length)).length;
+          const byDomain = {};
+          for (const e of entries) { const d = (e.domain || e.DOMAIN || 'unknown').toUpperCase(); byDomain[d] = (byDomain[d] || 0) + 1; }
+          return jsonResponse({ total, verifiable, verifiable_rate: total ? +(verifiable/total*100).toFixed(1) : 0, by_domain: byDomain });
+        }
+        return jsonResponse({ error: 'entries not found' }, 404);
+      } catch (e) { return jsonResponse({ error: e.message }, 500); }
+    }
+    // POST /api/wotu/apply — alias 到 handleWotuSignup
+    if (path === '/api/wotu/apply' && request.method === 'POST') {
+      return handleWotuSignup(request, env);
+    }
+    // GET /api/evidence/{id} — path-based alias 到 /api/entry?id={id}
+    const evPathMatch = path.match(/^\/api\/evidence\/([A-Za-z0-9_-]+)\/?$/);
+    if (evPathMatch) {
+      const newUrl = new URL('/api/entry?id=' + encodeURIComponent(evPathMatch[1]), request.url);
+      newUrl.search = request.url.split('?')[1] || '';
+      const newReq = new Request(newUrl, request);
+      return handleEntryDetail(newReq, env, ctx);
+    }
+
     // /api/mini/entry/:id — path-based routing
     if (path.startsWith('/api/mini/entry/')) return handleMiniEntryDetail(request, env, ctx);
     // /api/mini/entry fallback (?id=XXX)
