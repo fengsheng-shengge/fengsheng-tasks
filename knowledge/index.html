@@ -520,7 +520,43 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
     .topbar, .top-nav, .fs-top-nav { padding-top: max(16px, env(safe-area-inset-top)); }
   }
   
-  /* === 7. 禁止用户缩放的 viewport 自动补充（如果页面有 user-scalable=no 就去掉）=== */
+  /* === 7. 汉堡菜单（mobile hamburger）=== */
+  .__fs_hamburger_cb { position: absolute; opacity: 0; pointer-events: none; }
+  .__fs_hamburger_btn { display: none; }
+  .__fs_mobile_menu { display: none; }
+
+  @media (max-width: 960px) {
+    /* 原 .fs-top-links 已在 @media(max-width:960px){.fs-top-links{display:none}} 隐藏 */
+    /* 汉堡按钮显示 */
+    .__fs_hamburger_btn {
+      display: flex !important; flex-direction: column; justify-content: center; align-items: center;
+      width: 44px; height: 44px; gap: 5px; cursor: pointer; border: none; background: transparent;
+      border-radius: 8px; transition: background .2s;
+    }
+    .__fs_hamburger_btn:hover { background: rgba(0,0,0,0.04); }
+    .__fs_hamburger_btn span {
+      display: block; width: 22px; height: 2px; background: #1a3d24;
+      border-radius: 2px; transition: all .25s ease;
+    }
+    .__fs_hamburger_cb:checked ~ .__fs_hamburger_btn span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .__fs_hamburger_cb:checked ~ .__fs_hamburger_btn span:nth-child(2) { opacity: 0; }
+    .__fs_hamburger_cb:checked ~ .__fs_hamburger_btn span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .__fs_hamburger_cb:checked ~ .__fs_mobile_menu { display: flex !important; }
+    .fs-top-nav .__fs_mobile_menu {
+      position: absolute; top: 100%; left: 0; right: 0;
+      background: var(--bg, #f7f5f0); border-bottom: 1px solid var(--border, #e8e4da);
+      flex-direction: column; padding: 8px 16px 16px; z-index: 99; gap: 2px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08); animation: __fs_fade .2s ease;
+    }
+    .__fs_mobile_menu a {
+      padding: 12px 8px; font-size: 15px; font-weight: 500; color: #555;
+      text-decoration: none; border-radius: 8px; transition: background .15s;
+    }
+    .__fs_mobile_menu a:hover { background: rgba(26,61,36,0.06); color: #1a3d24; }
+  }
+  @keyframes __fs_fade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+  /* === 8. 禁止用户缩放的 viewport 自动补充 === */
 </style>
 
 </head>
@@ -538,6 +574,18 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
   <div class="fs-top-actions">
     <span class="fs-top-city" onclick="alert('当前以北京为样板城市，多城市数据接入中')">📍 北京 ▾</span>
     <span class="fs-top-avatar">👤</span>
+  </div>
+  <!-- 汉堡菜单 -->
+  <input type="checkbox" id="__fs_hamburger_cb" class="__fs_hamburger_cb">
+  <label for="__fs_hamburger_cb" class="__fs_hamburger_btn" aria-label="打开菜单">
+    <span></span><span></span><span></span>
+  </label>
+  <div class="__fs_mobile_menu">
+    <a href="/">🏠 首页</a>
+    <a href="/workspace/">💼 工作台</a>
+    <a href="/knowledge/">📚 知识底座</a>
+    <a href="/care-test/">📝 能力测评</a>
+    <a href="/academy/">🎓 学习成长</a>
   </div>
 </nav>
 
@@ -1765,5 +1813,14 @@ loadCityArch();     // 北京样板城市知识架构
 
 <!-- 本地 fallback：Worker API 不可用时降级到 entries.json -->
 <script src="/lib/evidence/local-fallback.js" defer></script>
+<!-- 汉堡菜单 JS 兜底 -->
+<script>
+document.addEventListener('click', function(e) {
+  var cb = document.getElementById('__fs_hamburger_cb');
+  if (!cb || !cb.checked) return;
+  if (e.target.closest('.__fs_mobile_menu a')) { cb.checked = false; return; }
+  if (!e.target.closest('.top-nav, .fs-top-nav')) { cb.checked = false; }
+});
+</script>
 </body>
 </html>

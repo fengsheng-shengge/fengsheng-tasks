@@ -745,7 +745,52 @@
     .topbar, .top-nav, .fs-top-nav { padding-top: max(16px, env(safe-area-inset-top)); }
   }
   
-  /* === 7. 禁止用户缩放的 viewport 自动补充（如果页面有 user-scalable=no 就去掉）=== */
+  /* === 7. 汉堡菜单（mobile hamburger）=== */
+  /* 确保 .top-nav / .fs-top-nav 是 position:relative，下拉菜单 absolute 才能相对于它 */
+  .top-nav { position: relative; }
+  .__fs_hamburger_cb { position: absolute; opacity: 0; pointer-events: none; }
+  .__fs_hamburger_btn { display: none; }
+  .__fs_mobile_menu { display: none; }
+
+  @media (max-width: 900px) {
+    /* 原 nav-links 在移动端隐藏 */
+    .top-nav .nav-links { display: none !important; }
+    /* 汉堡按钮显示 */
+    .__fs_hamburger_btn {
+      display: flex !important; flex-direction: column; justify-content: center; align-items: center;
+      width: 44px; height: 44px; gap: 5px; cursor: pointer; border: none; background: transparent;
+      border-radius: 8px; transition: background .2s;
+    }
+    .__fs_hamburger_btn:hover { background: rgba(0,0,0,0.04); }
+    .__fs_hamburger_btn span {
+      display: block; width: 22px; height: 2px; background: var(--primary, #1a3d24);
+      border-radius: 2px; transition: all .25s ease;
+    }
+    .__fs_hamburger_cb:checked ~ .__fs_hamburger_btn span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .__fs_hamburger_cb:checked ~ .__fs_hamburger_btn span:nth-child(2) { opacity: 0; }
+    .__fs_hamburger_cb:checked ~ .__fs_hamburger_btn span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .__fs_hamburger_cb:checked ~ .__fs_mobile_menu { display: flex !important; }
+    .top-nav .__fs_mobile_menu {
+      position: absolute; top: 100%; left: 0; right: 0;
+      background: var(--bg); border-bottom: 1px solid var(--line);
+      flex-direction: column; padding: 8px 16px 16px; z-index: 99; gap: 2px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08); animation: __fs_fade .2s ease;
+    }
+    .fs-top-nav .__fs_mobile_menu {
+      position: absolute; top: 100%; left: 0; right: 0;
+      background: var(--bg, #f7f5f0); border-bottom: 1px solid var(--border, #e8e4da);
+      flex-direction: column; padding: 8px 16px 16px; z-index: 99; gap: 2px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08); animation: __fs_fade .2s ease;
+    }
+    .__fs_mobile_menu a {
+      padding: 12px 8px; font-size: 15px; font-weight: 500; color: var(--body);
+      text-decoration: none; border-radius: 8px; transition: background .15s;
+    }
+    .__fs_mobile_menu a:hover { background: rgba(26,61,36,0.06); color: var(--primary); }
+  }
+  @keyframes __fs_fade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+  /* === 8. 禁止用户缩放的 viewport 自动补充 === */
 </style>
 
 </head>
@@ -767,6 +812,18 @@
     <div class="nav-actions">
       <span style="font-size:13px;color:var(--body)">📍 全国 ▾</span>
       <div class="avatar">🛠</div>
+    </div>
+    <!-- 汉堡菜单 -->
+    <input type="checkbox" id="__fs_hamburger_cb" class="__fs_hamburger_cb">
+    <label for="__fs_hamburger_cb" class="__fs_hamburger_btn" aria-label="打开菜单">
+      <span></span><span></span><span></span>
+    </label>
+    <div class="__fs_mobile_menu">
+      <a href="/">🏠 首页</a>
+      <a href="/workspace/">💼 工作台</a>
+      <a href="/knowledge/">📚 知识底座</a>
+      <a href="/care-test/">📝 能力测评</a>
+      <a href="/academy/">🎓 学习成长</a>
     </div>
   </div>
 
@@ -1760,6 +1817,15 @@ function toggleStageBrowse(){
   function fsTrackSafe(name, data) { try { if (typeof window.fsTrack === 'function') window.fsTrack(name, data || {}); } catch(e){} }
   fsTrackSafe('pageview', { path: location.pathname });
 })();
+</script>
+<!-- 汉堡菜单 JS 兜底 -->
+<script>
+document.addEventListener('click', function(e) {
+  var cb = document.getElementById('__fs_hamburger_cb');
+  if (!cb || !cb.checked) return;
+  if (e.target.closest('.__fs_mobile_menu a')) { cb.checked = false; return; }
+  if (!e.target.closest('.top-nav, .fs-top-nav')) { cb.checked = false; }
+});
 </script>
 </body>
 </html>
