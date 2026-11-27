@@ -435,8 +435,12 @@
   </div>
 </footer>
 
+<!-- V2.2 Issue #258 七事件埋点 SDK -->
+<script src="/tracker.js" defer></script>
 <script>
 (function(){
+  function fsTrackSafe(name, data) { try { if (typeof window.fsTrack === 'function') window.fsTrack(name, data || {}); } catch(e){} }
+
   // ===== 解析 URL 参数 =====
   const params = new URLSearchParams(location.search);
   const requestedJob = params.get('job');
@@ -474,6 +478,8 @@
   // ===== 切换岗位 =====
   function switchJob(jobId) {
     if (jobId === currentJobId) return;
+    // V2.2 七事件埋点: scene_open（岗位切换也代表场景变化）
+    fsTrackSafe('scene_open', { scene: 'job_switch', job: jobId });
     currentJobId = jobId;
     history.pushState(null, '', '/wotu/?job=' + jobId);
     renderAll();
@@ -733,6 +739,8 @@
         });
         const result = await resp.json();
         if (result.ok) {
+          // V2.2 七事件埋点: wotu_apply（后端校验通过）
+          fsTrackSafe('wotu_apply', { job: data.job || currentJobId, job_name: (packsData.jobs[currentJobId] || {}).name || '', name_len: (data.name || '').length, has_phone: !!(data.phone), city: data.city || '', grad_year: data.grad_year || '', signup_id: result.signupId || '', source: 'api' });
           showSignupResult(true, result.signupId);
         } else {
           showSignupResult(false, result.error || '提交失败，请稍后重试');
@@ -746,6 +754,8 @@
           const saved = JSON.parse(localStorage.getItem('wotu_signups') || '[]');
           saved.push({ ...data, signupId: mockId, ts: Date.now() });
           localStorage.setItem('wotu_signups', JSON.stringify(saved));
+          // V2.2 七事件埋点: wotu_apply（后端不可用时本地 mock 也算一次 apply 动作）
+          fsTrackSafe('wotu_apply', { job: data.job || currentJobId, job_name: (packsData.jobs[currentJobId] || {}).name || '', source: 'local_mock', signup_id: mockId });
           showSignupResult(true, mockId, true); // mock 标记
         } catch (e) {
           showSignupResult(false, '网络错误，请稍后重试');

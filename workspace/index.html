@@ -2071,11 +2071,18 @@
   <!-- 🆕 Evidence Schema v1.0 证据链组件（M1 12.31 上线）-->
   <script src="/lib/evidence/data-adapter.js" defer></script>
   <script src="/lib/evidence/evidence-link.js" defer></script>
+  <!-- V2.2 Issue #258 七事件埋点 SDK -->
+  <script src="/tracker.js" defer></script>
 
   <!-- 能力模型切换 JS -->
   <script>
   (function(){
     "use strict";
+
+    // ===== V2.2 七事件埋点 helper =====
+    function fsTrackSafe(name, data) {
+      try { if (typeof window.fsTrack === 'function') window.fsTrack(name, data || {}); } catch(e){}
+    }
 
     var DOM_KEY = "fs_workspace_domain";
     var POS_KEY = "fs_workspace_position";
@@ -3023,6 +3030,8 @@
     }
 
     function switchRole(roleId){
+      // V2.2 七事件埋点: scene_open（角色切换也代表场景变化）
+      fsTrackSafe('scene_open', { scene: 'role_switch', role: roleId });
       if(typeof switchPositionTimeline === "function"){
         switchPositionTimeline(roleId);
       }
@@ -3036,6 +3045,8 @@
     }
 
     function switchStageSelect(stageKey){
+      // V2.2 七事件埋点: scene_open
+      fsTrackSafe('scene_open', { scene: 'stage_switch', stage: stageKey });
       // selectStage 是真正的阶段切换函数（含 renderLayeredView 触发）
       if(typeof selectStage === "function"){
         selectStage(stageKey);
@@ -4443,6 +4454,33 @@
   window.switchModule = switchModule;
   window.switchEvidenceLayer = switchEvidenceLayer;
   window.getKeyword = getKeyword;
+
+  // ===== V2.2 七事件埋点 — evidence_click + action_copy 事件代理 =====
+  document.addEventListener('click', function(ev){
+    var el = ev.target;
+    // evidence_click: 点到 href 含 /evidence/?id= 的 a 标签
+    while(el && el !== document){
+      // evidence 链接 <a href="/evidence/?id=XXX">
+      if(el.tagName === 'A' && el.href && el.href.indexOf('/evidence/') !== -1){
+        var m = el.href.match(/[?&]id=([^&#]+)/);
+        if(m){ fsTrackSafe('evidence_click', { ref_id: decodeURIComponent(m[1]), from: 'workspace' }); }
+        return;
+      }
+      // copy 按钮 speech-variant-copy
+      if(el.classList && el.classList.contains('speech-variant-copy')){
+        var tx = el.getAttribute('data-text'); if(tx) tx = decodeURIComponent(tx);
+        fsTrackSafe('action_copy', { action: 'speech_copy', length: (tx || '').length });
+        return;
+      }
+      // bp-ref-chip ability 里的 evidence 跳转
+      if(el.classList && el.classList.contains('bp-ref-chip')){
+        var m2 = (el.getAttribute('href') || '').match(/[?&]id=([^&#]+)/);
+        if(m2){ fsTrackSafe('evidence_click', { ref_id: decodeURIComponent(m2[1]), from: 'ability_ref' }); }
+        return;
+      }
+      el = el.parentElement;
+    }
+  }, true);
 
   async function loadKBStagePicks() {
     var stageInfo = STAGES.find(function(s){ return s.key === currentStage; });

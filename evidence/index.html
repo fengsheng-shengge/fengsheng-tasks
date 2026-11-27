@@ -310,8 +310,12 @@
   </div>
 </div>
 
+<!-- V2.2 Issue #258 七事件埋点 SDK -->
+<script src="/tracker.js" defer></script>
 <script>
 (function(){
+  function fsTrackSafe(name, data) { try { if (typeof window.fsTrack === 'function') window.fsTrack(name, data || {}); } catch(e){} }
+
   // 从 URL 取 id（支持 /evidence/?id=XXX 和 /evidence/XXX 被 rewrite 过来）
   const params = new URLSearchParams(location.search);
   const id = params.get('id') || params.get('entry');
@@ -475,6 +479,7 @@
 
   window.copyLink = function(){
     const url = location.origin + '/evidence/' + id;
+    fsTrackSafe('action_copy', { action: 'evidence_link', ref_id: id, length: url.length });
     navigator.clipboard.writeText(url).then(()=>{
       const btn = document.querySelector('.btn-primary');
       const orig = btn.textContent;
@@ -482,6 +487,22 @@
       setTimeout(()=> btn.textContent = orig, 1500);
     });
   };
+
+  // V2.2 七事件埋点: evidence_click（页面加载即算一次 evidence 查看）
+  fsTrackSafe('evidence_click', { ref_id: id || '', from: 'evidence_page_open' });
+
+  // 关联证据点击代理
+  document.addEventListener('click', function(ev){
+    var el = ev.target;
+    while(el && el !== document){
+      if(el.tagName === 'A' && el.href && el.href.indexOf('/evidence/') !== -1 && el.href.indexOf('id=') !== -1){
+        var m = el.href.match(/[?&]id=([^&#]+)/);
+        if(m){ fsTrackSafe('evidence_click', { ref_id: decodeURIComponent(m[1]), from: 'related_evidence' }); }
+        return;
+      }
+      el = el.parentElement;
+    }
+  }, true);
 
   // 更新标题
   document.title = '依据 ' + id + ' · 风声聚匠星云';
