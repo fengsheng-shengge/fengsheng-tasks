@@ -4269,6 +4269,17 @@ export default {
     if (v16RouteMap[path]) {
       return Response.redirect(`https://fengsheng.tech${v16RouteMap[path]}`, 301);
     }
+
+    // V2.2 K-05: /evidence/ENTRY_ID → /evidence/?id=ENTRY_ID
+    // 支持友好 URL（slug 风格）和 query param 风格并存
+    const evMatch = path.match(/^\/evidence\/([A-Za-z0-9_-]+)\/?$/);
+    if (evMatch) {
+      const evId = evMatch[1];
+      const evQuery = url.searchParams.toString();
+      const evTarget = '/evidence/?id=' + encodeURIComponent(evId) + (evQuery ? '&' + evQuery : '');
+      return Response.redirect('https://fengsheng.tech' + evTarget, 301);
+    }
+
     // home-design 独立存在（方案 v1.1: "合并前两模板并存"）
     // 不 301 → workspace/?m=DECOR，避免死循环（workspace init 会跳回来）
     // workspace 三段选择带里点 DECOR 模块 → 手动 location.href = "/home-design/"

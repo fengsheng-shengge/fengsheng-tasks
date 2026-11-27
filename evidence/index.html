@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>循证依据 · 风声聚匠星云</title>
+<style>
+  /* ═══════════════════════════════════════════════════════
+     主题变量 · 与 workspace 完全一致
+     ═══════════════════════════════════════════════════════ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #1a3d24;
+    --primary-light: #2d5a3d;
+    --primary-dark: #12291a;
+    --primary-bg: #e8f0e9;
+    --gold: #c9a962;
+    --gold-bg: #faf5ea;
+    --ink: #1a1a1a;
+    --body: #555;
+    --muted: #999;
+    --line: #e8e4da;
+    --bg: #f7f5f0;
+    --card: #ffffff;
+    --warning: #e67e22;
+    --success: #27ae60;
+    --danger: #c0392b;
+  }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+    padding: 0;
+  }
+
+  /* Nav */
+  .nav {
+    background: var(--primary);
+    color: white;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav .brand { font-weight: 700; font-size: 15px; }
+  .nav .breadcrumb {
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+  }
+  .nav .breadcrumb a { color: rgba(255,255,255,0.9); text-decoration: none; }
+  .nav .breadcrumb a:hover { text-decoration: underline; }
+  .nav .spacer { flex: 1; }
+  .nav .back-btn {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .nav .back-btn:hover { background: rgba(255,255,255,0.25); }
+
+  /* Container */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+  .loading .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--line);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Error */
+  .error-box {
+    background: #fff5f5;
+    border: 1px solid #fcc;
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    color: var(--danger);
+  }
+  .error-box h3 { margin-bottom: 8px; }
+  .error-box a {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+
+  /* Hero card */
+  .hero-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 32px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+    border-top: 4px solid var(--primary);
+  }
+  .hero-card .type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .type-LAW { background: #e8f0ff; color: #1a3d8f; }
+  .type-CASE { background: #fff0e8; color: #b8541a; }
+  .type-RISK { background: #ffe8e8; color: var(--danger); }
+  .type-STD { background: #e8f5e8; color: var(--success); }
+  .type-PROC { background: #f0e8ff; color: #5a2a8f; }
+  .type-SCRIPT { background: #fff8e8; color: #8f6a1a; }
+  .type-JOB { background: #e8f5ff; color: #1a5a8f; }
+  .type-ABIL { background: var(--primary-bg); color: var(--primary-dark); }
+  .type-KNOWLEDGE { background: var(--gold-bg); color: #6b5015; }
+  .type-default { background: #f0f0f0; color: #555; }
+
+  .hero-card h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .hero-card .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    font-size: 13px;
+    color: var(--body);
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .hero-card .meta .severity {
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 4px;
+  }
+  .severity-hard { background: #ffe8e8; color: var(--danger); }
+  .severity-medium { background: #fff5e8; color: var(--warning); }
+  .severity-soft { background: #e8f5e8; color: var(--success); }
+
+  /* Detail */
+  .detail-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+  }
+  .detail-card h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .detail-card h2::before {
+    content: '';
+    width: 4px; height: 18px;
+    background: var(--primary);
+    border-radius: 2px;
+  }
+  .detail-card p {
+    color: var(--body);
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 12px;
+  }
+  .detail-card .detail-content {
+    font-size: 15px;
+    line-height: 1.9;
+    color: var(--ink);
+  }
+
+  /* Law/Case refs */
+  .ref-list {
+    list-style: none;
+  }
+  .ref-list li {
+    padding: 10px 14px;
+    background: var(--primary-bg);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--primary-dark);
+  }
+  .ref-list li.empty {
+    background: #f5f5f5;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* Tags */
+  .tag-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    font-size: 12px;
+    color: var(--body);
+  }
+  .tag.module-TRANSACTION { background: #e8f0e9; color: var(--primary); border-color: var(--primary-bg); }
+  .tag.module-SUPPORT { background: #e8f0ff; color: #1a3d8f; border-color: #d0e0f0; }
+  .tag.module-ASSET { background: var(--gold-bg); color: #6b5015; border-color: #f0e0c0; }
+
+  /* Related entries */
+  .related-list { list-style: none; }
+  .related-list li {
+    padding: 12px 16px;
+    background: var(--bg);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .related-list li a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .related-list li a:hover { text-decoration: underline; }
+  .related-list li .related-type {
+    display: inline-block;
+    padding: 1px 8px;
+    font-size: 11px;
+    border-radius: 3px;
+    margin-left: 8px;
+    background: #ddd;
+    color: #555;
+  }
+
+  /* Actions */
+  .actions-bar {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 12px;
+    position: sticky;
+    bottom: 20px;
+  }
+  .actions-bar button, .actions-bar a {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-light); }
+  .btn-ghost { background: transparent; color: var(--body); border: 1px solid var(--line); }
+  .btn-ghost:hover { background: var(--bg); }
+  .actions-bar .spacer { flex: 1; }
+
+  @media (max-width: 600px) {
+    .container { padding: 16px 12px 80px; }
+    .hero-card, .detail-card { padding: 20px; }
+    .hero-card h1 { font-size: 20px; }
+    .actions-bar { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <span class="brand">🌿 风声聚匠星云</span>
+  <span class="breadcrumb">
+    <a href="/">首页</a> /
+    <a href="/workspace/">工作台</a> /
+    循证依据
+  </span>
+  <span class="spacer"></span>
+  <a class="back-btn" href="javascript:history.back()">← 返回</a>
+</nav>
+
+<!-- Main -->
+<div class="container" id="main">
+  <!-- Loading state -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>正在加载循证依据…</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  // 从 URL 取 id（支持 /evidence/?id=XXX 和 /evidence/XXX 被 rewrite 过来）
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id') || params.get('entry');
+
+  const main = document.getElementById('main');
+  const loading = document.getElementById('loading');
+
+  // 没有 id → 友好提示
+  if(!id){
+    loading.remove();
+    main.innerHTML = `
+      <div class="error-box">
+        <h3>🔍 缺少依据 ID</h3>
+        <p>请通过工作台 Evidence 区点击具体依据条目进入此页面。</p>
+        <p style="margin-top:12px;"><a href="/workspace/">← 回到工作台</a></p>
+      </div>`;
+    return;
+  }
+
+  // fetch entry
+  fetch('/api/entry?id=' + encodeURIComponent(id))
+    .then(r => r.json())
+    .then(data => {
+      loading.remove();
+      if(!data || !data.id){
+        main.innerHTML = `
+          <div class="error-box">
+            <h3>❌ 依据不存在</h3>
+            <p>ID <code>${id}</code> 在知识底座中未找到。</p>
+            <p style="margin-top:12px;"><a href="/workspace/">← 回到工作台</a></p>
+          </div>`;
+        return;
+      }
+      renderEntry(data);
+      // fetch related
+      fetchRelated(id);
+    })
+    .catch(err => {
+      loading.remove();
+      main.innerHTML = `
+        <div class="error-box">
+          <h3>⚠️ 加载失败</h3>
+          <p>${err.message || '网络异常，请稍后重试'}</p>
+          <p style="margin-top:12px;"><a href="javascript:location.reload()">🔄 刷新</a> · <a href="/workspace/">← 工作台</a></p>
+        </div>`;
+    });
+
+  function renderEntry(e){
+    // hero card
+    const hero = `
+      <div class="hero-card">
+        ${typeBadge(e.entryType)}
+        <h1>${e.name || e.title || '未命名依据'}</h1>
+        <div class="meta">
+          ${e.severity ? `<span class="severity severity-${e.severity}">${severityLabel(e.severity)}</span>` : ''}
+          <span>🆔 ${e.id}</span>
+          ${e.source ? `<span>📚 来源: ${e.source}</span>` : ''}
+          ${e.lastVerified ? `<span>✅ 核实: ${e.lastVerified}</span>` : ''}
+        </div>
+      </div>`;
+
+    // detail card
+    let detailHtml = '';
+    if(e.detail){
+      detailHtml += `
+        <div class="detail-card">
+          <h2>📖 详细说明</h2>
+          <div class="detail-content">${formatDetail(e.detail)}</div>
+        </div>`;
+    }
+
+    // 法律依据 / 案例参考
+    if(e.legalRef && (Array.isArray(e.legalRef) ? e.legalRef.length : e.legalRef)){
+      const refs = Array.isArray(e.legalRef) ? e.legalRef : [e.legalRef];
+      detailHtml += `
+        <div class="detail-card">
+          <h2>⚖️ 法律依据</h2>
+          <ul class="ref-list">
+            ${refs.map(r => `<li>${r}</li>`).join('')}
+          </ul>
+        </div>`;
+    }
+
+    if(e.caseRef && (Array.isArray(e.caseRef) ? e.caseRef.length : e.caseRef) && !String(e.caseRef).includes('待补充')){
+      const cases = Array.isArray(e.caseRef) ? e.caseRef : [e.caseRef];
+      detailHtml += `
+        <div class="detail-card">
+          <h2>🏛️ 相关判例</h2>
+          <ul class="ref-list">
+            ${cases.map(c => `<li>${c}</li>`).join('')}
+          </ul>
+        </div>`;
+    }
+
+    // 标签
+    const allTags = [];
+    (e.module_tags || []).forEach(t => allTags.push({cls:'module-'+t, label:'模块: '+t}));
+    (e.stage_tags || []).forEach(t => allTags.push({cls:'stage', label:'阶段: '+t}));
+    (e.consumer_tags || []).forEach(t => allTags.push({cls:'consumer', label:'对象: '+t}));
+    if(allTags.length){
+      detailHtml += `
+        <div class="detail-card">
+          <h2>🏷️ 标签</h2>
+          <div class="tag-group">
+            ${allTags.map(t => `<span class="tag ${t.cls}">${t.label}</span>`).join('')}
+          </div>
+        </div>`;
+    }
+
+    // 操作栏
+    const actions = `
+      <div class="actions-bar">
+        <button class="btn-ghost" onclick="history.back()">← 返回</button>
+        <span class="spacer"></span>
+        <a class="btn-ghost" href="/workspace/?eid=${e.id}">🔗 工作台上下文</a>
+        <button class="btn-primary" onclick="copyLink()">📋 复制链接</button>
+      </div>`;
+
+    main.innerHTML = hero + detailHtml + `<div id="related"></div>` + actions;
+  }
+
+  function fetchRelated(id){
+    fetch('/api/entry/related?id=' + encodeURIComponent(id) + '&limit=8')
+      .then(r => r.json())
+      .then(data => {
+        const container = document.getElementById('related');
+        if(!container || !data || !data.related || !data.related.length) return;
+        const items = data.related.map(r => `
+          <li>
+            <a href="/evidence/${r.id}">${r.name || r.title || r.id}</a>
+            <span class="related-type">${r.entryType || ''}</span>
+          </li>`).join('');
+        container.innerHTML = `
+          <div class="detail-card">
+            <h2>🔗 相关依据</h2>
+            <ul class="related-list">${items}</ul>
+          </div>`;
+      })
+      .catch(()=>{}); // related 加载失败不影响主内容
+  }
+
+  function typeBadge(t){
+    const cls = 'type-' + (t || 'default');
+    const labelMap = {
+      LAW: '📜 法律依据', CASE: '🏛️ 判例', RISK: '⚠️ 风险提示',
+      STD: '📏 行业标准', PROC: '📋 服务流程', SCRIPT: '💬 话术模板',
+      JOB: '📋 作业指导', ABIL: '🎯 能力项', KNOWLEDGE: '📚 知识点',
+      POL: '📋 政策', DATA: '📊 数据', SUM: '📋 摘要'
+    };
+    return `<span class="type-badge ${cls}">${labelMap[t] || (t || '依据')}</span>`;
+  }
+
+  function severityLabel(s){
+    return {hard:'🔴 硬约束（必须遵守）', medium:'🟡 中风险（建议遵守）', soft:'🟢 软参考（可参考）'}[s] || s;
+  }
+
+  function formatDetail(text){
+    // 简单换行处理
+    return String(text).replace(/\n/g, '<br>');
+  }
+
+  window.copyLink = function(){
+    const url = location.origin + '/evidence/' + id;
+    navigator.clipboard.writeText(url).then(()=>{
+      const btn = document.querySelector('.btn-primary');
+      const orig = btn.textContent;
+      btn.textContent = '✅ 已复制';
+      setTimeout(()=> btn.textContent = orig, 1500);
+    });
+  };
+
+  // 更新标题
+  document.title = '依据 ' + id + ' · 风声聚匠星云';
+})();
+</script>
+
+</body>
+</html>
