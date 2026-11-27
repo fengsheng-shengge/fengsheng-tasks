@@ -177,6 +177,7 @@ function checkGlobalRateLimit(request) {
   // 只对 API / 搜索 / 内部工具 做全局限流，普通 HTML 页面放行
   const isPageRequest = !path.startsWith('/api/') && !path.startsWith('/mentor-api/')
     && !path.startsWith('/search') && !path.startsWith('/gate')
+    && !path.startsWith('/evidence')
     && path !== '/workspace/' && path !== '/home-design/';  // 工作台核心路径永远放行
   if (isPageRequest) return true;
 
