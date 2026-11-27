@@ -3497,7 +3497,7 @@
 
       // 📖 学一学：从 question_map 动态筛 3 条（支持新旧 stage key 别名匹配）
       var learnHtml = "";
-      var pid = (document.querySelector(".position-pill.active") || {}).getAttribute ? (document.querySelector(".position-pill.active").getAttribute("data-position") || "") : "";
+      var pid = localStorage.getItem(POS_KEY) || "";
       var stageAliases = resolveStageAliases(stageKey);  // 🆕 支持新旧两套 stage key
       if(questionMap){
         var stageSkills = questionMap.mapping.filter(function(m){
@@ -3607,7 +3607,7 @@
       if(tagEl) tagEl.textContent = consumerInfo.icon + " " + consumerInfo.label;
 
       if(scenes.length === 0){
-        var pid = (document.querySelector(".position-pill.active") || {}).getAttribute ? (document.querySelector(".position-pill.active").getAttribute("data-position") || "") : "";
+        var pid = localStorage.getItem(POS_KEY) || "";
         var isPositionStage = !!POSITION_STAGES[pid];
         if(isPositionStage){
           cardsWrap.innerHTML = '<div class="empty-hint">📚 本阶段场景话术库建设中，先看上方「三层拆解」里的核心动作和真实场景吧！</div>';
