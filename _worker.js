@@ -751,6 +751,10 @@ const PUBLIC_API_PREFIXES = new Set([
   '/api/verify', '/api/ip-design',
   // 支付回调（第三方服务端调用，无法带 Token）
   '/mentor-api/payment',
+  // V2.2 Issue #258: 循证公开 API 契约
+  '/api/scene-cards', '/api/wotu/packs', '/api/stats/evidence',
+  '/api/wotu/signup', '/api/wotu/apply',
+  '/api/entry', '/api/entry/related',
 ]);
 
 function requiresApiAuth(path) {
