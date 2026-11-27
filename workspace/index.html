@@ -3561,7 +3561,7 @@
         if(s.refs && s.refs.length){
           refsEl.innerHTML = '<span class="bp-refs-label">🔗 关联能力项：</span>' +
             s.refs.map(function(r){
-              return '<span class="bp-ref-chip" title="' + r + '">' + abilLabel(r) + '</span>';
+              return '<a class="bp-ref-chip" title="点击查看依据详情" href="/evidence/?id=' + encodeURIComponent(r) + '" target="_blank">' + abilLabel(r) + '</a>';
             }).join("");
           refsEl.style.display = "";
         } else {
@@ -3684,7 +3684,7 @@
         '</div>';
       }).join("");
 
-      return '<div class="scenario-card ' + (isOpen ? "open" : "") + '">' +
+      return '<div class="scenario-card ' + (isOpen ? "open" : "") + '" data-stage="' + (m.stage || '') + '" data-consumer="' + (m.consumer || '') + '" data-card-id="' + (m.id || '') + '">' +
         '<div class="scenario-head" onclick="onScToggle(this)">' +
           '<div class="scenario-icon">' + getDimIcon(dim_id) + '</div>' +
           '<div class="scenario-main">' +
@@ -3914,11 +3914,19 @@
         // 🆕 K-04: 点击 ability-card → Evidence 区过滤 ABIL+KNOWLEDGE 类型
         card.onclick = (function(dk){
           return function(){
-            if(typeof switchEvidenceLayer === "function"){
+            // 🆕 深挖 3: active 高亮切换（再点一次取消）
+            var wasActive = card.classList.contains('active');
+            document.querySelectorAll('.ability-card.active').forEach(function(c){ c.classList.remove('active'); });
+            if(wasActive){
+              // 取消 active → Evidence 恢复全量
+              if(typeof switchEvidenceLayer === "function") switchEvidenceLayer("L2");
+            } else {
+              card.classList.add('active');
               // 切到 L2 能力矩阵（ABIL+KNOWLEDGE）
-              switchEvidenceLayer("L2");
-              // 同时让 dim_key 过滤生效（Evidence 区的 dim 关联由 entries.json 的 dim 字段驱动）
-              console.log("[ability-grid] 点击维度", dk, "→ Evidence 切 L2 能力矩阵");
+              if(typeof switchEvidenceLayer === "function"){
+                switchEvidenceLayer("L2");
+                console.log("[ability-grid] 点击维度", dk, "→ Evidence 切 L2 能力矩阵 + 高亮");
+              }
             }
           };
         })(dim.dim_key);
@@ -4289,14 +4297,70 @@
     const card = headEl.parentElement;
     card.classList.toggle('open');
     if (card.classList.contains('open')) {
-      // 展开时触发知识底座加载
       const kbEl = card.querySelector('.kb-relations');
       if (kbEl && !_loadedKbCards.has(kbEl)) {
-        const kw = kbEl.dataset.kbKeyword || '';
-        if (kw) loadKBRelations(kbEl, kw);
+        // 🆕 深挖：优先用 entries.json 本地匹配（stage + consumer + entryType 三维精确）
+        const stage = card.getAttribute('data-stage') || '';
+        const consumer = card.getAttribute('data-consumer') || '';
+        const cardId = card.getAttribute('data-card-id') || '';
+        const keyword = kbEl.dataset.kbKeyword || '';
+        if (rawEntriesCache && rawEntriesCache.length) {
+          loadKBRelationsV2(kbEl, { stage: stage, consumer: consumer, cardId: cardId, keyword: keyword });
+        } else if (keyword) {
+          loadKBRelations(kbEl, keyword);
+        } else {
+          // entries 还没加载完 + 没关键词 → 显示等待
+          kbEl.innerHTML = '<div class="kb-relations-header"><span>📚 来自知识底座</span><span class="kb-relations-hint kb-loading">知识底座加载中...</span></div>';
+        }
         _loadedKbCards.add(kbEl);
       }
     }
+  }
+
+  // 🆕 深挖 2: 本地 entries.json 精确匹配（stage_tags + consumer_tags + entryType）
+  function loadKBRelationsV2(kbEl, ctx) {
+    var matches = [];
+    var stage = ctx.stage || '';
+    var consumer = ctx.consumer || '';
+    var keyword = ctx.keyword || '';
+    var cardId = ctx.cardId || '';
+
+    if (rawEntriesCache && rawEntriesCache.length) {
+      matches = rawEntriesCache.filter(function(e){
+        // stage 匹配（支持旧别名）
+        var stageOk = !stage || (e.stage_tags || []).indexOf(stage) >= 0;
+        // consumer 匹配
+        var consumerOk = !consumer || consumer === 'all' || (e.consumer_tags || []).indexOf(consumer) >= 0;
+        // module 默认 TRANSACTION
+        var moduleOk = (e.module_tags || []).indexOf('TRANSACTION') >= 0;
+        return stageOk && consumerOk && moduleOk;
+      }).slice(0, 6);
+    }
+
+    if (matches.length === 0) {
+      kbEl.innerHTML =
+        '<div class="kb-relations-header">' +
+          '<span>📚 知识底座</span>' +
+          '<span class="kb-relations-hint">暂无本阶段相关依据</span>' +
+        '</div>';
+      return;
+    }
+
+    var itemsHTML = matches.map(function(e){
+      var typeBadge = '<span class="kb-item-type kb-type-' + e.entryType + '">' + (e.entryType || '') + '</span>';
+      var dimHint = '';
+      if (e.dim) dimHint = '<div class="kb-item-cp">🎯 能力维度：' + e.dim + '</div>';
+      return '<div class="kb-item" onclick="window.open(\'/evidence/?id=' + e.id + '\',\'_blank\')">' +
+        '<div class="kb-item-name">' + typeBadge + ' ' + (e.name || e.title || e.id) + '</div>' +
+        dimHint +
+      '</div>';
+    }).join('');
+
+    kbEl.innerHTML =
+      '<div class="kb-relations-header">' +
+        '<span>📚 相关循证依据</span>' +
+        '<span class="kb-relations-hint">' + matches.length + ' 条关联</span>' +
+      '</div>' + itemsHTML;
   }
 
   // ===== 单个话术版本折叠/展开 =====
