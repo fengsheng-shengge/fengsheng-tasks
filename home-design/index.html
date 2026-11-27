@@ -750,6 +750,7 @@
   .__fs_hamburger_cb { position: absolute; opacity: 0; pointer-events: none; }
   .__fs_hamburger_btn { display: none; }
   .__fs_mobile_menu { display: none; }
+  .__fs_mobile_mask { display: none; }
 
   .__fs_hamburger_btn {
     display: none; flex-direction: column; justify-content: center; align-items: center;
@@ -784,11 +785,22 @@
   .__fs_mobile_menu a:hover { background: rgba(26,61,36,0.06); color: var(--primary); }
 
   .__fs_hamburger_cb:checked ~ .__fs_mobile_menu { display: flex !important; }
+  .__fs_hamburger_cb:checked ~ .__fs_mobile_mask { display: block !important; }
 
   @media (max-width: 900px) {
     .top-nav .nav-links { display: none !important; }
     .__fs_hamburger_btn { display: flex !important; }
   }
+  /* 遮罩层 */
+  .__fs_mobile_mask {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+    z-index: 98; animation: __fs_mask_in .2s ease; cursor: pointer;
+  }
+  @keyframes __fs_mask_in { from { opacity: 0; } to { opacity: 1; } }
+
+  /* body 防滚动锁 */
+  body.__fs_menu_open { overflow: hidden !important; }
+
   @keyframes __fs_fade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
   /* === 8. 禁止用户缩放的 viewport 自动补充 === */
@@ -1819,14 +1831,28 @@ function toggleStageBrowse(){
   fsTrackSafe('pageview', { path: location.pathname });
 })();
 </script>
-<!-- 汉堡菜单 JS 兜底 -->
+<!-- 汉堡菜单 JS 兜底：遮罩点击关闭 + body 防滚动 + ESC 关闭 + 菜单项收起 -->
 <script>
-document.addEventListener('click', function(e) {
+(function() {
   var cb = document.getElementById('__fs_hamburger_cb');
-  if (!cb || !cb.checked) return;
-  if (e.target.closest('.__fs_mobile_menu a')) { cb.checked = false; return; }
-  if (!e.target.closest('.top-nav, .fs-top-nav')) { cb.checked = false; }
-});
+  if (!cb) return;
+  cb.addEventListener('change', function() {
+    document.body.classList.toggle('__fs_menu_open', cb.checked);
+  });
+  document.addEventListener('click', function(e) {
+    if (!cb.checked) return;
+    if (e.target.closest('.__fs_mobile_menu a') || e.target.closest('.__fs_mobile_mask')) {
+      cb.checked = false;
+      document.body.classList.remove('__fs_menu_open');
+    }
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && cb.checked) {
+      cb.checked = false;
+      document.body.classList.remove('__fs_menu_open');
+    }
+  });
+})();
 </script>
 </body>
 </html>

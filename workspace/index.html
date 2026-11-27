@@ -1719,6 +1719,7 @@
   .__fs_hamburger_cb { position: absolute; opacity: 0; pointer-events: none; }
   .__fs_hamburger_btn { display: none; }
   .__fs_mobile_menu { display: none; }
+  .__fs_mobile_mask { display: none; }
 
   /* 汉堡按钮三横线 + 点击变 X —— 基础样式（桌面端也保留，只是按钮本身不显示） */
   .__fs_hamburger_btn {
@@ -1757,6 +1758,17 @@
 
   /* checkbox:checked —— 下拉菜单展开（基础规则！不受 media query 限制） */
   .__fs_hamburger_cb:checked ~ .__fs_mobile_menu { display: flex !important; }
+  .__fs_hamburger_cb:checked ~ .__fs_mobile_mask { display: block !important; }
+
+  /* 遮罩层（点击可关闭菜单） */
+  .__fs_mobile_mask {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+    z-index: 98; animation: __fs_mask_in .2s ease; cursor: pointer;
+  }
+  @keyframes __fs_mask_in { from { opacity: 0; } to { opacity: 1; } }
+
+  /* body 防滚动锁 —— JS 在 checked 时自动加 class */
+  body.__fs_menu_open { overflow: hidden !important; }
 
   /* ===== 移动端断点：只做「显示按钮 + 隐藏原导航」===== */
   @media (max-width: 768px) {
@@ -1800,6 +1812,7 @@
       <a href="/care-test/">📝 能力测评</a>
       <a href="/academy/">🎓 学习成长</a>
     </div>
+    <div class="__fs_mobile_mask" aria-hidden="true"></div>
   </div>
 
   <!-- 领域Tab -->
@@ -4752,16 +4765,31 @@
   if(ft && ft.parentElement !== document.body){ document.body.appendChild(ft); }
 })();
 </script>
-<!-- 汉堡菜单 JS 兜底：菜单项点击自动收起 -->
+<!-- 汉堡菜单 JS 兜底：遮罩点击关闭 + body 防滚动 + ESC 关闭 + 菜单项收起 -->
 <script>
-document.addEventListener('click', function(e) {
+(function() {
   var cb = document.getElementById('__fs_hamburger_cb');
-  if (!cb || !cb.checked) return;
-  // 点击菜单项 → 关闭
-  if (e.target.closest('.__fs_mobile_menu a')) { cb.checked = false; return; }
-  // 点击导航栏外 → 关闭
-  if (!e.target.closest('.top-nav, .fs-top-nav')) { cb.checked = false; }
-});
+  if (!cb) return;
+  // checkbox 变化时加/去 body 锁滚动
+  cb.addEventListener('change', function() {
+    document.body.classList.toggle('__fs_menu_open', cb.checked);
+  });
+  // 全局点击：菜单项/遮罩/导航外 → 关闭
+  document.addEventListener('click', function(e) {
+    if (!cb.checked) return;
+    if (e.target.closest('.__fs_mobile_menu a') || e.target.closest('.__fs_mobile_mask')) {
+      cb.checked = false;
+      document.body.classList.remove('__fs_menu_open');
+    }
+  });
+  // ESC 键关闭
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && cb.checked) {
+      cb.checked = false;
+      document.body.classList.remove('__fs_menu_open');
+    }
+  });
+})();
 </script>
 </body>
 </html>

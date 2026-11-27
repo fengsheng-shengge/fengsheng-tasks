@@ -367,9 +367,15 @@ function render() {
     var dim = getQueryDim();
     if (dim) id = findCourseIdByDim(dim);
   }
+  // v3：无参数 fallback 跳转到 DIM-1 获客触达
   if (!id || !COURSES[id]) {
+    var hasAnyQuery = location.search.length > 0;
+    if (!hasAnyQuery) {
+      location.replace('/academy/core-courses/learn/?id=1');
+      return;
+    }
     root.innerHTML = '<div class="back-bar"><a href="/academy/core-courses/">← 返回核心课列表</a></div>' +
-      '<div class="no-course">课程不存在 · <a href="/academy/core-courses/">查看全部 7 门课 →</a></div>';
+      '<div class="no-course">课程不存在 · <a href="/academy/core-courses/">查看全部 12 门课 →</a></div>';
     return;
   }
   var course = COURSES[id];
