@@ -243,7 +243,10 @@ a{text-decoration:none;color:inherit}
 
 <div class="footer-note"><br>© 2026 fengsheng.tech</div>
 
+<script src="/tracker.js" defer></script>
 <script>
+function fsTrackSafe(name, data) { try { if (typeof window.fsTrack === 'function') window.fsTrack(name, data || {}); } catch(e){} }
+
 // ============================================================
 //  岗位考核 · 完整引擎
 //  - 题库硬编码（基于知识底座真实条目改写）
@@ -1163,6 +1166,9 @@ function submitExam() {
 
   // 存 localStorage
   saveResults(currentExam.dim, score, total, currentExam.answers);
+
+  // V2.2 七事件埋点: test_submit
+  fsTrackSafe('test_submit', { dim: currentExam.dim, dim_name: (db && db.name) || '', score: score, total: total, pct: pct, grade: grade, correct_count: score, wrong_count: total - score });
 
   // 新架构：Person 聚合层
   if (window.Person && typeof window.Person === 'function') {

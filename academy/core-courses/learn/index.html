@@ -108,7 +108,10 @@ a{text-decoration:none;color:inherit}
   © 2026 fengsheng.tech
 </div>
 
+<script src="/tracker.js" defer></script>
 <script>
+function fsTrackSafe(name, data) { try { if (typeof window.fsTrack === 'function') window.fsTrack(name, data || {}); } catch(e){} }
+
 // ===== 课程数据（基于知识底座真实条目）=====
 var COURSES = {
   1: {
@@ -361,6 +364,9 @@ function render() {
 
 function toggleChapter(el) {
   el.classList.toggle('chapter-open');
+  // V2.2 七事件埋点: course_start（展开章节 = 开始学习）
+  var title = el.querySelector('.ch-title');
+  fsTrackSafe('course_start', { chapter: title ? title.textContent.trim() : '', action: 'toggle_open' });
 }
 function markDone(courseId, chIndex) {
   event.stopPropagation();
@@ -368,6 +374,8 @@ function markDone(courseId, chIndex) {
   var done = getProgress(course.dim);
   var pos = done.indexOf(chIndex);
   if (pos >= 0) done.splice(pos, 1); else done.push(chIndex);
+  // V2.2 七事件埋点: course_start（完成/撤销完成 = 学习动作）
+  fsTrackSafe('course_start', { course: course.name, dim: course.dim, chapter_idx: chIndex, action: pos >= 0 ? 'undo_done' : 'mark_done' });
   saveProgress(course.dim, done);
   render();
 }
