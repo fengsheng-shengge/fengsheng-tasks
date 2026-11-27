@@ -2502,8 +2502,32 @@
       "ABIL-ZL-003": "租赁合同与押金规范",
       "ABIL-ZL-004": "租后协调"
     };
+    // 🆕 K-04: dimensions_multi.json 的 dim_key → entries.json 的 dim 中文名映射（用于动态统计）
+    var DIM_TO_ENTRY_DIMS = {
+      "ACQUISITION": ["标准作业", "客户经营"],
+      "INSIGHT":     ["专业知识", "沟通谈判"],
+      "SOLUTION":    ["专业知识", "标准作业"],
+      "NEGOTIATION": ["沟通谈判", "专业知识"],
+      "FULFILLMENT": ["合规风控", "标准作业"],
+      "AFTERSALE":   ["客户经营", "合规风控"],
+      "DIGITAL":     ["工具智能"]
+    };
+    // 🆕 ABIL 条目按 dim_key 动态统计结果（fetch entries.json 后填充）
+    var abilCountByDim = {};
+
     function abilLabel(code){
       return ABIL_NAME_MAP[code] || code;  // 没映射就原样返回
+    }
+
+    // 🆕 K-04: 计算某个 dim_key 下的 ABIL + KNOWLEDGE 条目数
+    function countEntriesForDim(entriesArr, dimKey){
+      if(!entriesArr || !entriesArr.length) return 0;
+      var targetDims = DIM_TO_ENTRY_DIMS[dimKey] || [];
+      return entriesArr.filter(function(e){
+        return targetDims.indexOf(e.dim) >= 0 && (
+          e.entryType === "ABIL" || e.entryType === "KNOWLEDGE"
+        );
+      }).length;
     }
 
     // ===== 去重：场景卡底部已展示的 KB entry ids =====
@@ -2595,6 +2619,29 @@
       for (var t in evidenceShardCache) { all = all.concat(evidenceShardCache[t]); }
       if (all.length > 0 && window.EvidenceAdapter) {
         rawEntriesCache = window.EvidenceAdapter.filterAndAdaptAll(all, { drop_hard: false });
+        // 🆕 K-04: 预计算每个 dim_key 下的 ABIL+KNOWLEDGE 条目数
+        if (Object.keys(DIM_TO_ENTRY_DIMS).length && rawEntriesCache) {
+          abilCountByDim = {};
+          Object.keys(DIM_TO_ENTRY_DIMS).forEach(function(dk){
+            abilCountByDim[dk] = countEntriesForDim(rawEntriesCache, dk);
+          });
+          // 如果 ability-grid 已经渲染过，刷新数字
+          if (document.getElementById("ability-grid")) {
+            document.querySelectorAll("#ability-grid .ability-card").forEach(function(card){
+              var dk = card.getAttribute("data-dim-key");
+              var countEl = card.querySelector(".ability-card-count");
+              if(dk && countEl && abilCountByDim[dk] !== undefined){
+                var staticCount = parseInt(countEl.getAttribute("data-static-count") || "0", 10);
+                var dynamic = abilCountByDim[dk];
+                if(dynamic > 0){
+                  countEl.innerHTML = '📋 ' + dynamic + '条能力条目（动态统计） · 权重 ' + card.getAttribute("data-weight") + '%';
+                } else {
+                  countEl.innerHTML = '📋 ' + staticCount + '条能力标准（标准框架） · 权重 ' + card.getAttribute("data-weight") + '%';
+                }
+              }
+            });
+          }
+        }
       }
     }
 
@@ -3848,6 +3895,11 @@
         card.setAttribute("data-dim-key", dim.dim_key);
         if (cfgDim) card.setAttribute("data-cfg-dim", cfgDim.id);
 
+        // 🆕 K-04: 加 data 属性供 _rebuildRawCache 动态刷新
+        card.setAttribute("data-static-count", dim.standard_count);
+        card.setAttribute("data-weight", weight);
+        card.style.cursor = "pointer";  // 可点击提示
+
         // V1.3: Person 分数徽章
         var scoreBadge = dimScore !== undefined && dimScore !== null
           ? '<span class="ability-score">📊 你 ' + dimScore + '分</span>'
@@ -3856,10 +3908,30 @@
         var displayName = cfgDim ? cfgDim.name : dim.dim_name;
         var displayEmoji = cfgDim ? cfgDim.emoji : dim.dim_icon;
 
+        // 🆕 K-04: 动态条目数（如果 abilCountByDim 已有数据就用动态数，否则用静态标准数）
+        var dynamicCount = abilCountByDim[dim.dim_key];
+        var countLine;
+        if(dynamicCount && dynamicCount > 0){
+          countLine = '<div class="ability-card-count">📋 ' + dynamicCount + '条能力条目（动态统计） · 权重 ' + weight + '% · <span style="color:var(--primary);font-weight:600;">点击查看 →</span></div>';
+        } else {
+          countLine = '<div class="ability-card-count">📋 ' + dim.standard_count + '条能力标准 · 权重 ' + weight + '%</div>';
+        }
+
         card.innerHTML =
           '<div class="ability-card-name">' + displayEmoji + " " + displayName + scoreBadge + '</div>' +
           '<div class="ability-card-desc">' + dim.dim_desc + '</div>' +
-          '<div class="ability-card-count">📋 ' + dim.standard_count + '条能力标准 · 权重 ' + weight + '%</div>';
+          countLine;
+        // 🆕 K-04: 点击 ability-card → Evidence 区过滤 ABIL+KNOWLEDGE 类型
+        card.onclick = (function(dk){
+          return function(){
+            if(typeof switchEvidenceLayer === "function"){
+              // 切到 L2 能力矩阵（ABIL+KNOWLEDGE）
+              switchEvidenceLayer("L2");
+              // 同时让 dim_key 过滤生效（Evidence 区的 dim 关联由 entries.json 的 dim 字段驱动）
+              console.log("[ability-grid] 点击维度", dk, "→ Evidence 切 L2 能力矩阵");
+            }
+          };
+        })(dim.dim_key);
         grid.appendChild(card);
       });
 
