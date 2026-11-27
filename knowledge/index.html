@@ -84,6 +84,48 @@ a{color:inherit;text-decoration:none}
 .search-box svg{color:var(--ink-soft);flex-shrink:0}
 .search-box input{flex:1;border:none;outline:none;font-size:15px;color:var(--ink);background:transparent;font-family:inherit}
 .search-box input::placeholder{color:var(--ink-soft)}
+/* ===== SOP Pillar Panel 样式 ===== */
+.kb-sop-section{margin-bottom:24px}
+.kb-sop-title{font-size:15px;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--pillar-culture)}
+.kb-sop-list{margin:0;padding-left:18px;font-size:13.5px;line-height:1.85;color:var(--ink)}
+.kb-sop-list li{margin-bottom:3px}
+.kb-sop-entries{margin-top:10px;font-size:12px;color:var(--ink-soft)}
+.kb-sop-entries a{color:var(--p);text-decoration:none;font-weight:500}
+.kb-sop-entries a:hover{text-decoration:underline}
+.kb-sop-steps{display:flex;flex-direction:column;gap:10px}
+.kb-step{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;background:var(--cream);border-radius:10px;font-size:13.5px}
+.kb-step-num{width:26px;height:26px;background:var(--pillar-culture);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.kb-sop-dialog{background:var(--cream);border-radius:10px;padding:14px;border-left:4px solid var(--pillar-mission)}
+.kb-customer{font-size:13.5px;color:var(--ink);margin-bottom:6px;font-style:italic;font-weight:500}
+.kb-wrong{font-size:12.5px;color:#c8423f;margin-bottom:6px;padding:6px 10px;background:rgba(200,66,63,0.06);border-radius:6px}
+.kb-right{font-size:12.5px;color:var(--p);padding:8px 12px;background:rgba(26,61,36,0.05);border-radius:6px;line-height:1.7}
+.kb-sop-red{background:rgba(200,66,63,0.06);color:#c8423f;padding:10px 14px;border-radius:10px;font-size:12.5px;font-weight:500;margin:16px 0;border-left:3px solid #c8423f}
+.kb-sop-cal{display:flex;flex-direction:column;gap:8px}
+.kb-cal-block{background:var(--cream);border-radius:10px;padding:10px 14px}
+.kb-cal-phase{font-weight:700;color:var(--p);margin-bottom:4px;font-size:13.5px}
+.kb-cal-block ul{margin:0;padding-left:14px;font-size:12.5px;line-height:1.7;color:var(--ink)}
+.kb-sop-signals{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.kb-signal{background:var(--cream);padding:8px 12px;border-radius:8px;font-size:12.5px;color:var(--ink)}
+.kb-sop-cta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;padding-top:14px;border-top:1px dashed var(--line)}
+.kb-cta-btn{padding:9px 14px;border-radius:9px;font-size:12.5px;font-weight:600;text-decoration:none;transition:all .2s;cursor:pointer;border:none;display:inline-block}
+.kb-cta-workspace{background:#1a3d24;color:white}
+.kb-cta-workspace:hover{background:#2c6b3f;transform:translateY(-1px)}
+.kb-cta-academy{background:#8a5a2b;color:white}
+.kb-cta-academy:hover{background:#b87a3a;transform:translateY(-1px)}
+.kb-cta-kb{background:white;color:var(--p);border:1.5px solid var(--p)}
+.kb-cta-kb:hover{background:var(--p);color:white;transform:translateY(-1px)}
+
+/* ===== Search Typeahead ===== */
+.search-wrapper{position:relative}
+.search-typeahead{position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid var(--line);border-top:none;border-radius:0 0 14px 14px;box-shadow:var(--shadow-md);max-height:320px;overflow-y:auto;z-index:50;display:none}
+.search-typeahead.show{display:block}
+.ta-item{padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;font-size:14px;transition:background .15s}
+.ta-item:hover{background:var(--cream)}
+.ta-item .ta-type{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--cream);color:var(--ink-soft);font-weight:600;flex-shrink:0}
+.ta-item .ta-title{flex:1;color:var(--ink)}
+.ta-item:last-child{border-bottom:none}
+.ta-loading{padding:14px 16px;color:var(--ink-soft);font-size:13px}
+
 .search-tip-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--ink-soft)}
 .tip-chip{padding:4px 10px;border-radius:100px;background:white;border:1px solid var(--line);font-size:12px;cursor:pointer;transition:all .15s;color:var(--ink)}
 .tip-chip:hover{background:var(--p);color:white;border-color:var(--p)}
@@ -383,39 +425,39 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
 
 <!-- Hero -->
 <section class="hero">
-  <div class="hero-tag"><span class="pulse"></span> 通过独立价值获得尊重</div>
-  <h1>风声知识底座<br><span class="accent">四柱撑起"美好居住"</span></h1>
+  <div class="hero-tag"><span class="pulse"></span> 经纪人知识工作台 · 一线查了就用</div>
+  <h1>经纪人知识工作台<br><span class="accent">查词条 / 学 SOP / 测掌握度</span></h1>
   <p class="hero-sub">
-    文化 · 使命 · 愿景 · 价值观 —— 四个支柱，上面长产品<br>
-    美好居住 = 物质得到保障 + 情感得到满足 + 精神得到尊重
+    从带看到谈判到签约 · 6259 条真实词条 + 372 题自测<br>
+    遇到卡住就查，查完就能用
   </p>
 
   <div class="pillar-icons">
     <div class="pillar-icon-card" data-pillar="culture" onclick="switchPillar('culture')">
-      <span class="pi-emoji">🌱</span>
-      <div><div class="pi-label">文化</div><div class="pi-sub">损有余而补不足</div></div>
+      <span class="pi-emoji">📋</span>
+      <div><div class="pi-label">带看 SOP</div><div class="pi-sub">前中后 Checklist · 禁忌红线</div></div>
     </div>
     <div class="pillar-icon-card" data-pillar="mission" onclick="switchPillar('mission')">
-      <span class="pi-emoji">🎯</span>
-      <div><div class="pi-label">使命</div><div class="pi-sub">帮服务者贴近消费者认知</div></div>
+      <span class="pi-emoji">🤝</span>
+      <div><div class="pi-label">谈判斡旋</div><div class="pi-sub">议价/报价/砍价 · 4 场景话术</div></div>
     </div>
     <div class="pillar-icon-card" data-pillar="vision" onclick="switchPillar('vision')">
-      <span class="pi-emoji">🔭</span>
-      <div><div class="pi-label">愿景</div><div class="pi-sub">人人美好居住</div></div>
+      <span class="pi-emoji">✍️</span>
+      <div><div class="pi-label">签约协办</div><div class="pi-sub">网签/监管/过户 · 四步走</div></div>
     </div>
     <div class="pillar-icon-card" data-pillar="value" onclick="switchPillar('value')">
-      <span class="pi-emoji">⚖️</span>
-      <div><div class="pi-label">价值观</div><div class="pi-sub">长而不宰</div></div>
+      <span class="pi-emoji">🧑</span>
+      <div><div class="pi-label">服务跟进</div><div class="pi-sub">入住/维修/复购 · 100 天计划</div></div>
     </div>
   </div>
 
   <div class="stats">
-    <a class="stat" href="#pillars"><div class="stat-num">4</div><div class="stat-label">核心支柱</div></a>
-    <a class="stat" href="/knowledge/"><div class="stat-num" id="dictStatNum">6143</div><div class="stat-label">词条·已就绪</div></a>
-    <a class="stat" href="/knowledge/"><div class="stat-num" id="dictDomainStatNum">34</div><div class="stat-label">业务域</div></a>
+    <a class="stat" href="/knowledge/?q=带看"><div class="stat-num" id="dictStatNum">6259</div><div class="stat-label">词条·可查</div></a>
+    <a class="stat" href="/knowledge/quiz/"><div class="stat-num">372</div><div class="stat-label">自测题·8模块</div></a>
+    <a class="stat" href="#pillars"><div class="stat-num">4</div><div class="stat-label">高频 SOP</div></a>
+    <a class="stat" href="/knowledge/"><div class="stat-num" id="dictDomainStatNum">35</div><div class="stat-label">业务域</div></a>
     <a class="stat" href="/knowledge/"><div class="stat-num">9</div><div class="stat-label">服务岗位</div></a>
-    <a class="stat" href="/knowledge/"><div class="stat-num">45</div><div class="stat-label">岗位能力点</div></a>
-    <a class="stat" href="#search"><div class="stat-num">3</div><div class="stat-label">应用产品</div></a>
+    <a class="stat" href="/knowledge/quiz/"><div class="stat-num">45</div><div class="stat-label">能力点</div></a>
   </div>
 
   <div class="search-wrapper" id="search">
@@ -475,327 +517,210 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
 
   <div class="pillar-tabs">
     <div class="pillar-tab active" data-pillar="culture" onclick="switchPillar('culture')">
-      <span class="tab-emoji">🌱</span>文化<span class="tab-en">Culture</span>
+      <span class="tab-emoji">📋</span>带看 SOP<span class="tab-en">Viewing SOP</span>
     </div>
     <div class="pillar-tab" data-pillar="mission" onclick="switchPillar('mission')">
-      <span class="tab-emoji">🎯</span>使命<span class="tab-en">Mission</span>
+      <span class="tab-emoji">🤝</span>谈判斡旋<span class="tab-en">Negotiation</span>
     </div>
     <div class="pillar-tab" data-pillar="vision" onclick="switchPillar('vision')">
-      <span class="tab-emoji">🔭</span>愿景<span class="tab-en">Vision</span>
+      <span class="tab-emoji">✍️</span>签约协办<span class="tab-en">Transaction</span>
     </div>
     <div class="pillar-tab" data-pillar="value" onclick="switchPillar('value')">
-      <span class="tab-emoji">⚖️</span>价值观<span class="tab-en">Values</span>
+      <span class="tab-emoji">🧑</span>服务跟进<span class="tab-en">Follow-up</span>
     </div>
   </div>
 
   <div class="pillar-body">
 
-    <!-- ========== 文化柱 ========== -->
+    <!-- ========== 📋 带看 SOP ========== -->
     <div class="pillar-panel active" id="panel-culture">
-      <div class="pp-head">
-        <div class="pp-title" style="color:var(--pillar-culture)">🌱 文化 · 我们是谁</div>
-        <div class="pp-sub">风声的哲学根基来自道德经四层。不是技术公司，是用知识帮服务者获得尊重的文化组织。</div>
-        <div class="pp-quote" style="background:rgba(26,61,36,0.04);border-left:4px solid var(--pillar-culture);color:var(--ink)">
-          "人是感情动物，有些东西说不出来描述不清楚，框架清晰就容易拆分开。" —— 风声
+      <h3 style="margin:0 0 20px;font-size:22px;color:var(--pillar-culture)">📋 带看 SOP · 专业方案呈现 + 带看技巧</h3>
+
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">【带看前 · 准备清单】</div>
+        <ul class="kb-sop-list">
+          <li>🏠 房屋资料三件套（产证复印件 + 业主报价 + 近期成交参考）</li>
+          <li>👤 客户画像卡（购房动机 / 预算 / 决策人 / 时间线）</li>
+          <li>🗺️ 路线规划（3 套看房顺序：同小区对比 → 同价位对比 → 升级/降级）</li>
+          <li>📝 带看确认书（提前微信发送，到店签字）</li>
+          <li>⚠️ 安全提示（老旧小区电梯 / 高空坠物 / 水电燃气）</li>
+        </ul>
+        <div class="kb-sop-entries">高频词条：
+          <a href="/knowledge/?q=带看+确认书" target="_blank">带看没签确认书</a> · 
+          <a href="/knowledge/?q=VR+带看" target="_blank">VR 带看怎么操作</a> · 
+          <a href="/knowledge/?q=带看+安全" target="_blank">带看安全提示义务</a>
         </div>
       </div>
 
-      <div class="pp-cards">
-        <div class="pp-card" data-entry="DDJ-001">
-          <div class="pp-card-icon">⚖️</div>
-          <div class="pp-card-title">损有余而补不足</div>
-          <div class="pp-card-desc">信息差必崩，补不足者存。帮服务者（信息差弱者）补足认知，而不是为客户做嫁衣。</div>
-          <div class="pp-card-tag">30/70 原则</div>
-        </div>
-        <div class="pp-card" data-entry="DDJ-002">
-          <div class="pp-card-icon">💧</div>
-          <div class="pp-card-title">水善利万物而不争</div>
-          <div class="pp-card-desc">人要的不是安全，是尊严。工具是放大能力，不是替代决策。</div>
-          <div class="pp-card-tag">不做工具判断</div>
-        </div>
-        <div class="pp-card" data-entry="DDJ-003">
-          <div class="pp-card-icon">🔍</div>
-          <div class="pp-card-title">知人者智，自知者明</div>
-          <div class="pp-card-desc">放大人不替代人，支持不替代决策。服务者先被看见：9岗位 × 5维度 = 45能力点。</div>
-          <div class="pp-card-tag">服务者先被看见</div>
-        </div>
-        <div class="pp-card" data-entry="DDJ-004">
-          <div class="pp-card-icon">🌿</div>
-          <div class="pp-card-title">长而不宰</div>
-          <div class="pp-card-desc">让人觉得自主决定，方向恰好对。知识底座帮客户做认知，不替客户做决定。</div>
-          <div class="pp-card-tag">知识底座 ≠ 决策工具</div>
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">【带看中 · 三步法】</div>
+        <div class="kb-sop-steps">
+          <div class="kb-step"><div class="kb-step-num">1</div><div><b>破冰</b>（5min）："今天看的这套，业主自住 8 年，保养得特别好"</div></div>
+          <div class="kb-step"><div class="kb-step-num">2</div><div><b>带看</b>（20min）：入户玄关→客厅采光→厨房油烟→卧室隔音→卫生间防水</div></div>
+          <div class="kb-step"><div class="kb-step-num">3</div><div><b>锚定</b>（10min）："您提到孩子明年上学，这套对口学区是..."</div></div>
         </div>
       </div>
 
-      <div class="product-section">
-        <div class="product-section-title">🏗 从文化柱长出的产品</div>
-        <div class="product-cards">
-          <div class="product-card">
-            <div class="pc-icon">📚</div>
-            <div class="pc-name">知识底座（核心资产）</div>
-            <div class="pc-desc">9 岗位 × 34 业务域 —— 底层资产，不是产品。所有产品从这里长出来。</div>
-            <div class="pc-status">基石</div>
-          </div>
-        </div>
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">【带看后 · 跟进 SOP】</div>
+        <ul class="kb-sop-list">
+          <li>✅ 当天发带看报告（实勘图 + 报价分析 + 竞品对比）</li>
+          <li>📞 24h 内电话回访（3 问：整体印象 / 最大顾虑 / 要不要约业主）</li>
+          <li>🆕 3 天内二次带看或逼单</li>
+          <li>📉 7 天未跟进自动降级</li>
+        </ul>
+      </div>
+
+      <div class="kb-sop-red">🚫 带看禁忌：不说"这套超好" → 说"3 个亮点 + 1 个需注意"；不说"小区最便宜" → 说"近 30 天成交 8 套，这套排第 3"</div>
+
+      <div class="kb-sop-cta">
+        <a class="kb-cta-btn kb-cta-workspace" href="/workspace/?dim=DIM-3" target="_blank">💼 工作台：专业方案助手</a>
+        <a class="kb-cta-btn kb-cta-academy" href="/academy/exam/?dim=DIM-4" target="_blank">🎓 测带看谈判能力</a>
+        <a class="kb-cta-btn kb-cta-kb" href="/knowledge/?q=带看+SOP" target="_blank">📚 查带看词条</a>
       </div>
     </div>
 
-    <!-- ========== 使命柱 ========== -->
+    <!-- ========== 🤝 谈判斡旋 ========== -->
     <div class="pillar-panel" id="panel-mission">
-      <div class="pp-head">
-        <div class="pp-title" style="color:var(--pillar-mission)">🎯 使命 · 帮助服务者贴近消费者的认知</div>
-        <div class="pp-sub">认知一拉齐，服务上就相对容易满足。之前就是都很模糊，客户觉得这样，服务又是那样，对不齐。</div>
-        <div class="pp-quote" style="background:rgba(196,106,58,0.06);border-left:4px solid var(--pillar-mission);color:var(--ink)">
-          "终极目标就是美好居住，所有产品都指向它。" —— 风声
+      <h3 style="margin:0 0 20px;font-size:22px;color:var(--pillar-mission)">🤝 谈判斡旋 · 议价 / 报价 / 砍价 / 客户嫌贵</h3>
+
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">场景 ① 客户嫌贵（最常见）</div>
+        <div class="kb-sop-dialog">
+          <div class="kb-customer">客户："这套太贵了，能不能便宜点？"</div>
+          <div class="kb-wrong">❌ "已经是底价了" — 关闭谈判</div>
+          <div class="kb-right">✅ 三步法：<br>Step 1 共情："我理解，您看了 3 套都超预算，肯定纠结"<br>Step 2 锚定："业主报 580 万，同户型上月成交 568 万"<br>Step 3 选项："A 全款谈 570 万；B 公积金拉长周期让业主让价"</div>
         </div>
       </div>
 
-      <!-- "美好居住"三层 -->
-      <div style="margin-bottom:8px;font-size:16px;font-weight:700;color:var(--pillar-mission)">🏠 "美好居住"三层定义</div>
-      <div style="font-size:13px;color:var(--ink-soft);margin-bottom:16px">美好居住 = 物质上得到保障 + 情感上得到满足 + 精神上得到尊重 · 三层递进，不可跳级</div>
-
-      <div class="three-layers">
-        <div class="layer-card matter" data-entry="DIM-PHYSICAL">
-          <div class="lc-emoji">🛡</div>
-          <div class="lc-question">能住吗？</div>
-          <div class="lc-title">物质层 · 得到保障</div>
-          <div class="lc-dims">
-            <b>安全保障</b>：会不会出事？<br>
-            <b>健康无害</b>：会不会慢性伤身？<br>
-            <b>功能有序</b>：东西有没有地方放？
-          </div>
-          <div class="lc-feeling">"住着踏实"</div>
-        </div>
-        <div class="layer-card emotion" data-entry="DIM-EMOTION">
-          <div class="lc-emoji">💗</div>
-          <div class="lc-question">想住吗？</div>
-          <div class="lc-title">情感层 · 得到满足</div>
-          <div class="lc-dims">
-            <b>温度归属</b>：想不想回家？<br>
-            <b>审美愉悦</b>：看着舒不舒服？<br>
-            <b>秩序安定</b>：心里慌不慌？<br>
-            <b>被懂被看见</b>：有没有人懂我？
-          </div>
-          <div class="lc-feeling">"推开门就想坐下"</div>
-        </div>
-        <div class="layer-card spirit" data-entry="DIM-SPIRIT">
-          <div class="lc-emoji">✨</div>
-          <div class="lc-question">值吗？</div>
-          <div class="lc-title">精神层 · 得到尊重</div>
-          <div class="lc-dims">
-            <b>生活品质</b>：日子过得好不好？<br>
-            <b>选择自由</b>：我能不能选？<br>
-            <b>尊严认同</b>：值不值？<br>
-            <b>自我实现</b>：我是谁？
-          </div>
-          <div class="lc-feeling">"住得像自己"</div>
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">场景 ② 业主不肯降价</div>
+        <div class="kb-sop-dialog">
+          <div class="kb-customer">业主："这个价已经是小区最低了"</div>
+          <div class="kb-right">✅ 破局："报价合理我同意。但客户首付能出 60%，您要不要考虑全款到账快的优势？"</div>
         </div>
       </div>
 
-      <!-- 品质词条卡片 -->
-      <div style="margin-top:24px;font-size:15px;font-weight:700;margin-bottom:12px">🏷 品质维度词条（7维 → 三层）</div>
-      <div class="pp-cards" id="qualityCards"></div>
-
-      <div class="product-section">
-        <div class="product-section-title">🏗 从使命柱长出的产品</div>
-        <div class="product-cards">
-          <div class="product-card">
-            <div class="pc-icon">🔍</div>
-            <div class="pc-name">客户解码器</div>
-            <div class="pc-desc">客户说一句话 → 工具告诉你他在哪条线×哪个阶段×卡在哪层。帮服务者30秒读懂客户。</div>
-            <div class="pc-status">P1</div>
-          </div>
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">场景 ③ 竞品对比</div>
+        <div class="kb-sop-dialog">
+          <div class="kb-customer">"隔壁小区比这便宜 20 万"</div>
+          <div class="kb-right">✅ 回应："隔壁便宜 20 万，但 3 个差异：① 隔壁是老破小没电梯；② 这套对口学区重点；③ 隔壁物业费 4.5 元/平，这套 2.8。您算算账——"</div>
         </div>
+      </div>
+
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">场景 ④ 谈佣金</div>
+        <div class="kb-sop-dialog">
+          <div class="kb-customer">"中介费能不能打折？"</div>
+          <div class="kb-right">✅ 回应："佣金公司规定，但我可以帮您争取 3 个增值：① 免费代办过户；② 免费评估贷款额度；③ 后续续租/出售优先服务。"</div>
+        </div>
+      </div>
+
+      <div class="kb-sop-red">🚫 谈判禁忌：不了解客户底牌就开谈；不让业主和客户直接私聊；口头承诺任何条件 → 微信文字确认！</div>
+
+      <div class="kb-sop-cta">
+        <a class="kb-cta-btn kb-cta-workspace" href="/workspace/?dim=DIM-4" target="_blank">💼 工作台：谈判场景助手</a>
+        <a class="kb-cta-btn kb-cta-academy" href="/academy/exam/?dim=DIM-4" target="_blank">🎓 测谈判能力</a>
+        <a class="kb-cta-btn kb-cta-kb" href="/knowledge/?q=谈判+议价" target="_blank">📚 查谈判词条</a>
       </div>
     </div>
 
-    <!-- ========== 愿景柱 ========== -->
+    <!-- ========== ✍️ 签约协办 ========== -->
     <div class="pillar-panel" id="panel-vision">
-      <div class="pp-head">
-        <div class="pp-title" style="color:var(--pillar-vision)">🔭 愿景 · 人人美好居住</div>
-        <div class="pp-sub">根据不同业务域，客户处在不同人生阶段，会选择什么业务，对应的服务者能力要求是什么，什么岗位，提供什么服务——这不就都匹配上了吗？</div>
-        <div class="pp-quote" style="background:rgba(107,95,168,0.06);border-left:4px solid var(--pillar-vision);color:var(--ink)">
-          "美好居住不是一次性交付，是持续运营的结果。" —— 从阿那亚提炼
+      <h3 style="margin:0 0 20px;font-size:22px;color:var(--pillar-vision)">✍️ 签约协办 · 网签 / 资金监管 / 过户 / 税费</h3>
+
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">Step 1 签约前 · 资质核验（必做！不做 = 你担责）</div>
+        <ul class="kb-sop-list">
+          <li>👤 买方：身份证 + 购房资格（社保/个税连续缴纳）+ 征信报告</li>
+          <li>🏠 卖方：房产证 + 身份证 + 银行结清证明（无抵押）</li>
+          <li>🔒 房屋：无查封无冻结（查档）+ 共有人同意出售证明</li>
+        </ul>
+        <div class="kb-sop-red">⚠️ 红线：客户没购房资格促成签约 = 你要担责！无证带看签合同 = 被查处罚款！</div>
+        <div class="kb-sop-entries">高频词条：
+          <a href="/knowledge/?q=购房资格+中介" target="_blank">没购房资格要担责吗</a> · 
+          <a href="/knowledge/?q=经纪人证+带看" target="_blank">无证带看会怎样</a> · 
+          <a href="/knowledge/?q=签约+资质+核验" target="_blank">签约前资质核验流程</a>
         </div>
       </div>
 
-      <!-- 人生6阶段 -->
-      <div style="font-size:16px;font-weight:700;color:var(--pillar-vision);margin-bottom:4px">📍 人生6阶段 · "谁在住？"</div>
-      <div style="font-size:13px;color:var(--ink-soft);margin-bottom:16px">阶段看状态不看年龄。每个阶段对应不同的"美好居住"重点。</div>
-
-      <div class="life-stages">
-        <div class="stage-card" data-entry="STAGE-1">
-          <div class="sc-num">①</div>
-          <div class="sc-name">独立起步</div>
-          <div class="sc-age">20-28 岁</div>
-          <div class="sc-domains">
-            <span class="sc-domain">域2·租赁</span>
-          </div>
-        </div>
-        <div class="stage-card" data-entry="STAGE-2">
-          <div class="sc-num">②</div>
-          <div class="sc-name">成家置业</div>
-          <div class="sc-age">28-35 岁</div>
-          <div class="sc-domains">
-            <span class="sc-domain">域1·交易</span>
-            <span class="sc-domain">域7·金融</span>
-          </div>
-        </div>
-        <div class="stage-card" data-entry="STAGE-3">
-          <div class="sc-num">③</div>
-          <div class="sc-name">子女教育</div>
-          <div class="sc-age">30-45 岁</div>
-          <div class="sc-domains">
-            <span class="sc-domain">域1·交易</span>
-            <span class="sc-domain">域3·整装</span>
-          </div>
-        </div>
-        <div class="stage-card" data-entry="STAGE-4">
-          <div class="sc-num">④</div>
-          <div class="sc-name">改善升级</div>
-          <div class="sc-age">35-50 岁</div>
-          <div class="sc-domains">
-            <span class="sc-domain">域1·交易</span>
-            <span class="sc-domain">域3·整装</span>
-          </div>
-        </div>
-        <div class="stage-card" data-entry="STAGE-5">
-          <div class="sc-num">⑤</div>
-          <div class="sc-name">资产配置</div>
-          <div class="sc-age">50-65 岁</div>
-          <div class="sc-domains">
-            <span class="sc-domain">域1·交易</span>
-            <span class="sc-domain">域7·金融</span>
-          </div>
-        </div>
-        <div class="stage-card" data-entry="STAGE-6">
-          <div class="sc-num">⑥</div>
-          <div class="sc-name">适老安享</div>
-          <div class="sc-age">65+ 岁</div>
-          <div class="sc-domains">
-            <span class="sc-domain">域3·适老</span>
-            <span class="sc-domain">域4·家政</span>
-            <span class="sc-domain">域6·社区</span>
-          </div>
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">Step 2 签约中 · 合同三审</div>
+        <div class="kb-sop-steps">
+          <div class="kb-step"><div class="kb-step-num">①</div><div><b>一审</b>：买卖双方身份信息（身份证号/联系方式/紧急联系人）</div></div>
+          <div class="kb-step"><div class="kb-step-num">②</div><div><b>二审</b>：核心条款（成交价/首付比例/贷款方式/交房日期/违约责任）</div></div>
+          <div class="kb-step"><div class="kb-step-num">③</div><div><b>三审</b>：附件清单（家具家电/装修现状/物业费结清/户口迁出）</div></div>
         </div>
       </div>
 
-      <!-- 三维映射表 -->
-      <div style="font-size:15px;font-weight:700;margin-top:24px;margin-bottom:12px">🔗 三维锁定 · 业务域 × 人生阶段 × 服务者岗位</div>
-      <div class="mapping-section">
-        <table class="mapping-table">
-          <thead>
-            <tr><th>人生阶段</th><th>客户选什么业务</th><th>服务者岗位</th><th>帮客户实现哪层"美好居住"</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>①独立起步</td><td>租房 / 合租</td><td><span class="td-tag">租赁顾问</span></td><td><span class="td-tag">物质·安全</span> <span class="td-tag">情感·独立感</span></td></tr>
-            <tr><td>②成家置业</td><td>买房 / 按揭 / 装修</td><td><span class="td-tag">经纪人</span> <span class="td-tag">按揭顾问</span> <span class="td-tag">整装设计师</span></td><td><span class="td-tag fire">三层全覆</span></td></tr>
-            <tr><td>③子女教育</td><td>学区房 / 儿童房改造</td><td><span class="td-tag">经纪人</span> <span class="td-tag">整装设计师</span></td><td><span class="td-tag fire">三层全覆</span></td></tr>
-            <tr><td>④改善升级</td><td>换房 / 整装翻新</td><td><span class="td-tag">经纪人</span> <span class="td-tag">整装设计师</span></td><td><span class="td-tag fire">三层全覆</span></td></tr>
-            <tr><td>⑤资产配置</td><td>投资 / 资产优化 / 适老规划</td><td><span class="td-tag">经纪人</span> <span class="td-tag">估价师</span></td><td><span class="td-tag">物质·资产安全</span> <span class="td-tag">精神·选择自由</span></td></tr>
-            <tr><td>⑥适老安享</td><td>适老改造 / 居家照护 / 社区医养</td><td><span class="td-tag">整装设计师</span> <span class="td-tag">家政师</span> <span class="td-tag">社区管家</span></td><td><span class="td-tag">物质·安全能住</span> <span class="td-tag">情感·被陪被记挂</span> <span class="td-tag">精神·尊严</span></td></tr>
-          </tbody>
-        </table>
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">Step 3 网签 + 资金监管</div>
+        <ul class="kb-sop-list">
+          <li>📝 网签：去房管局官方系统签示范合同（不能自己打印！）</li>
+          <li>🏦 资金监管：首付/贷款进监管账户，过户完成后自动到账</li>
+        </ul>
       </div>
 
-      <!-- 每个阶段的"美好居住"重点 -->
-      <div style="font-size:15px;font-weight:700;margin-top:28px;margin-bottom:12px">🎯 每个阶段的"美好居住"重点</div>
-      <div class="mapping-section">
-        <table class="mapping-table">
-          <thead>
-            <tr><th>阶段</th><th>物质层重点</th><th>情感层重点</th><th>精神层重点</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>①独立起步</td><td>安全底线+基本功能</td><td>独立感"终于有自己的空间"</td><td>选择自由"我能决定住哪"</td></tr>
-            <tr><td>②成家置业</td><td>安全+健康（孕婴关注）</td><td>温度归属"给家人一个家"</td><td>尊严认同"我有能力安家"</td></tr>
-            <tr><td>③子女教育</td><td>学区安全+成长空间</td><td>被懂被看见"不只是学区"</td><td>选择自由+尊严认同</td></tr>
-            <tr><td>④改善升级</td><td>品质升级+功能完善</td><td>审美愉悦+被懂被看见</td><td>生活品质+自我实现</td></tr>
-            <tr><td>⑤资产配置</td><td>风险控制+资产安全</td><td>秩序安定"别出岔子"</td><td>选择自由+尊严认同</td></tr>
-            <tr><td>⑥适老安享</td><td>适老安全+无障碍</td><td>温度归属+秩序安定</td><td>尊严认同+选择自由</td></tr>
-          </tbody>
-        </table>
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">Step 4 过户 + 税费</div>
+        <ul class="kb-sop-list">
+          <li>💵 买方缴税费：契税 1-3% / 个税 20% / 增值税 5.3%（满二免）</li>
+          <li>🔑 卖方配合过户：到场签字 / 授权委托</li>
+          <li>📄 领新产权证 + 水电燃气过户</li>
+        </ul>
       </div>
 
-      <div class="product-section">
-        <div class="product-section-title">🏗 从愿景柱长出的产品</div>
-        <div class="product-cards">
-          <div class="product-card">
-            <div class="pc-icon">✅</div>
-            <div class="pc-name">品质评估</div>
-            <div class="pc-desc">六维品质体系 → 品质报告（可发给客户）→ 品质→推荐话术。帮服务者用专业判断帮客户做决策。</div>
-            <div class="pc-status">P2</div>
-          </div>
-          <div class="product-card">
-            <div class="pc-icon">📋</div>
-            <div class="pc-name">带看报告</div>
-            <div class="pc-desc">带看时随手记 → 自动关联三层 + 品质评分 → 可发给客户的PDF。一份报告 = 一次专业背书。</div>
-            <div class="pc-status">P2</div>
-          </div>
-        </div>
+      <div class="kb-sop-red">🚫 签约禁忌：不让客户看完整合同就催签；合同空白处事后补填；替客户保管身份证/房产证原件！</div>
+
+      <div class="kb-sop-cta">
+        <a class="kb-cta-btn kb-cta-workspace" href="/workspace/?dim=DIM-5" target="_blank">💼 工作台：交易履约助手</a>
+        <a class="kb-cta-btn kb-cta-academy" href="/academy/exam/?dim=DIM-5" target="_blank">🎓 测签约履约能力</a>
+        <a class="kb-cta-btn kb-cta-kb" href="/knowledge/?q=签约流程" target="_blank">📚 查签约词条</a>
       </div>
     </div>
 
-    <!-- ========== 价值观柱 ========== -->
+    <!-- ========== 🧑 服务跟进 ========== -->
     <div class="pillar-panel" id="panel-value">
-      <div class="pp-head">
-        <div class="pp-title" style="color:var(--pillar-value)">⚖️ 价值观 · 长而不宰</div>
-        <div class="pp-sub">运营能力是核心竞争力。价值观筛选客户。每份反馈都是金矿。服务者先被看见，才能帮客户被看见。</div>
-        <div class="pp-quote" style="background:rgba(200,149,109,0.08);border-left:4px solid var(--pillar-value);color:var(--ink)">
-          "认知一拉齐，服务上就相对容易满足。之前就是都很模糊，客户觉得这样，服务又是那样，对不齐。" —— 风声
+      <h3 style="margin:0 0 20px;font-size:22px;color:var(--pillar-value)">🧑 服务跟进 · 入住 / 维修 / 续租 / 老客复购</h3>
+
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">成交后 100 天跟进计划</div>
+        <div class="kb-sop-cal">
+          <div class="kb-cal-block"><div class="kb-cal-phase">📦 Day 1-7 · 交付期</div>
+            <ul>交房当天：陪验房 + 拍照留底 + 交接钥匙水电卡<br>3 天内：水电燃气过户 + 物业报备<br>7 天内：入住温馨回访</ul>
+          </div>
+          <div class="kb-cal-block"><div class="kb-cal-phase">🏠 Day 8-30 · 适应期</div>
+            <ul>第 14 天：深度回访 — 有没有遇到问题？<br>第 28 天：推荐社区服务 — 附近幼儿园/医院/超市</ul>
+          </div>
+          <div class="kb-cal-block"><div class="kb-cal-phase">🌱 Day 31-100 · 稳定期</div>
+            <ul>第 60 天：需求变化跟进 — 工作变了？需要换房？<br>第 90 天：老客维护 — 介绍新朋友？推荐出售时机？</ul>
+          </div>
         </div>
       </div>
 
-      <!-- 服务者价值3句话 -->
-      <div style="font-size:16px;font-weight:700;color:var(--pillar-value);margin-bottom:16px">🫶 服务者核心价值</div>
-      <div class="pp-cards">
-        <div class="pp-card" style="border-left:4px solid var(--p)">
-          <div class="pp-card-icon">🫶</div>
-          <div class="pp-card-title">你是被服务的对象</div>
-          <div class="pp-card-desc">不是工具人。风声先服务服务者，服务者才能服务客户。</div>
-        </div>
-        <div class="pp-card" style="border-left:4px solid var(--wood)">
-          <div class="pp-card-icon">💪</div>
-          <div class="pp-card-title">你的能力被认可</div>
-          <div class="pp-card-desc">一线经验被收录进字典。9岗位 × 5能力维度 = 45能力点，每一项都有据可查。</div>
-        </div>
-        <div class="pp-card" style="border-left:4px solid var(--fire)">
-          <div class="pp-card-icon">🚀</div>
-          <div class="pp-card-title">你的成长被支持</div>
-          <div class="pp-card-desc">3个助手副驾 + 1套培养体系 + 客户对你的好评价。用独立价值获得尊重。</div>
+      <div class="kb-sop-section">
+        <div class="kb-sop-title">老客复购 · 5 个跟进触发信号</div>
+        <div class="kb-sop-signals">
+          <div class="kb-signal">🎂 朋友圈晒娃/结婚照 → 升级换三房时机</div>
+          <div class="kb-signal">✈️ 朋友圈发工作变动/城市迁移 → 可能卖房</div>
+          <div class="kb-signal">📉 政策利好（降息/落户放宽）→ 推送买房机会</div>
+          <div class="kb-signal">🎁 老客生日/乔迁/节日 → 个性化问候</div>
+          <div class="kb-signal">📈 小区成交新高 → "你家小区最近涨了 8%"</div>
         </div>
       </div>
 
-      <!-- 服务者9岗位 -->
-      <div style="font-size:15px;font-weight:700;margin-top:28px;margin-bottom:12px">👥 9岗位 · 服务者能力图谱</div>
-      <div class="di-roles" id="rolesList"></div>
+      <div class="kb-sop-red">🚫 服务禁忌：成交就消失 — 售后是口碑来源；节日群发祝福 — 个性化才有温度；催老客卖房 — 专业建议 > 销售</div>
 
-      <!-- 服务者品质词条 -->
-      <div style="font-size:15px;font-weight:700;margin-top:28px;margin-bottom:12px">🏷 服务者品质词条</div>
-      <div class="pp-cards" id="serverQualityCards"></div>
-
-      <div class="product-section">
-        <div class="product-section-title">🏗 从价值观柱长出的产品</div>
-        <div class="product-cards">
-          <div class="product-card">
-            <div class="pc-icon">🛠</div>
-            <div class="pc-name">场景助手</div>
-            <div class="pc-desc">按岗位×按环节，每个场景有完整的"痛点→工具做什么→话术→关联知识→效果验证"。先做租赁线9环节。</div>
-            <div class="pc-status">P0</div>
-          </div>
-          <div class="product-card">
-            <div class="pc-icon">📊</div>
-            <div class="pc-name">能力认证（内嵌）</div>
-            <div class="pc-desc">用完场景助手 → "你在XX环节的能力得分：85分，超过72%的人"。暂缓独立产品，先做内嵌验证。</div>
-            <div class="pc-status">暂缓</div>
-          </div>
-        </div>
+      <div class="kb-sop-cta">
+        <a class="kb-cta-btn kb-cta-workspace" href="/workspace/?dim=DIM-6" target="_blank">💼 工作台：售后复购助手</a>
+        <a class="kb-cta-btn kb-cta-academy" href="/academy/practice/?scene=售后" target="_blank">🎓 学售后跟进</a>
+        <a class="kb-cta-btn kb-cta-kb" href="/knowledge/?q=客户维护" target="_blank">📚 查服务词条</a>
       </div>
     </div>
 
   </div>
-</section>
 
-<!-- 业务域索引 -->
 <section class="section" id="dictIndex">
   <div class="section-head">
     <div>
@@ -1155,7 +1080,50 @@ function switchPillar(pillar){
 
 /* ===== 搜索（新版在下方，支持结果列表） ===== */
 
+
+// ===== Typeahead 搜索建议 =====
+(function(){
+  var input = document.getElementById('searchInput');
+  if(!input) return;
+  var wrapper = input.closest('.search-wrapper');
+  if(!wrapper) return;
+  var box = document.createElement('div');
+  box.className = 'search-typeahead';
+  wrapper.appendChild(box);
+  var debounce;
+  input.addEventListener('input', function(){
+    var q = input.value.trim();
+    clearTimeout(debounce);
+    if(q.length < 2){ box.classList.remove('show'); return; }
+    debounce = setTimeout(function(){
+      box.innerHTML = '<div class="ta-loading">🔍 搜索中...</div>';
+      box.classList.add('show');
+      fetch('/api/search/v2?q='+encodeURIComponent(q)+'&pageSize=5')
+        .then(r=>r.json())
+        .then(d=>{
+          var entries = (d.data && d.data.entries) || [];
+          if(!entries.length){ box.innerHTML = '<div class="ta-loading">未找到相关词条</div>'; return; }
+          box.innerHTML = entries.map(function(e){
+            return '<div class="ta-item"><span class="ta-type">'+(e.type||'')+'</span><span class="ta-title">'+(e.title||e.name||'')+'</span></div>';
+          }).join('');
+          box.querySelectorAll('.ta-item').forEach(function(item){
+            item.addEventListener('click', function(){
+              input.value = q; box.classList.remove('show');
+              input.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'}));
+            });
+          });
+        })
+        .catch(()=>{ box.classList.remove('show'); });
+    }, 200);
+  });
+  document.addEventListener('click', function(e){
+    if(!wrapper.contains(e.target)) box.classList.remove('show');
+  });
+})();
+
 document.getElementById('searchInput').addEventListener('keydown',e=>{
+  document.querySelector('.search-typeahead')?.classList.remove('show');
+
   if(e.key==='Enter') doSearch(e.target.value);
 });
 
