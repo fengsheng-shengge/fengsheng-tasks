@@ -80,41 +80,7 @@
     border-bottom-color: var(--gold);
     font-weight: 600;
   }
-  /* ===== 岗位选择器 ===== */
-  .position-bar {
-    background: white;
-    border-bottom: 1px solid var(--line);
-    padding: 14px 48px;
-    display: none; /* 默认隐藏，JS 控制 */
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-  }
-  .position-bar.visible { display: flex; animation: fadeIn 0.3s ease; }
-  .position-bar-label {
-    font-size: 12px;
-    color: var(--muted);
-    margin-right: 4px;
-    font-weight: 500;
-  }
-  .position-pill {
-    padding: 6px 14px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 500;
-    background: #f5f3ec;
-    color: var(--body);
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .position-pill:hover { background: var(--primary-bg); color: var(--primary); }
-  .position-pill.active {
-    background: var(--gold-bg);
-    color: var(--primary);
-    border-color: var(--gold);
-    font-weight: 600;
-  }
+
 
   /* ===== V1.6 三段选择带：模块 › 角色 › 旅程段（消费者放阶段卡内）===== */
   .three-step-bar {
@@ -1570,8 +1536,6 @@
     .domain-tabs::-webkit-scrollbar { display: none; }
     .domain-tab { flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
 
-    .position-bar { padding: 12px 14px; }
-
     /* 🆕 岗位 Banner + Timeline 响应式 */
     .role-banner { padding: 16px 14px; flex-wrap: wrap; gap: 12px; }
     .role-banner .rb-icon { width: 48px; height: 48px; font-size: 28px; border-radius: 12px; }
@@ -1701,14 +1665,6 @@
     <div class="domain-tab" data-domain="AFTER" data-phase="P2">🔧 后市场服务 <span class="domain-tag">即将</span></div>
     <div class="domain-tab" data-domain="SPECIAL" data-phase="P3">🌿 特殊居住 <span class="domain-tag">即将</span></div>
   </div>
-
-  <!-- 岗位选择器（已废弃：统一使用下方 role-banner 的 pills） -->
-  <!--
-  <div class="position-bar" id="position-bar">
-    <span class="position-bar-label">选择岗位：</span>
-    <div id="position-pills"></div>
-  </div>
-  -->
 
   <!-- V2.2: 四段选择带 — 模块 › 消费者 › 旅程段（角色切换放横幅右侧 rb-switch-pills） -->
   <div class="three-step-bar" id="three-step-bar">
