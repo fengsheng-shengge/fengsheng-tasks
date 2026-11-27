@@ -49,9 +49,10 @@ a{color:inherit;text-decoration:none}
 .nav-cta:hover{background:var(--p-light);transform:translateY(-1px);box-shadow:var(--shadow-md)}
 
 /* ===== Hero ===== */
-  .hero{position:relative;padding:80px 32px 60px;max-width:1240px;margin:0 auto;overflow:hidden;border-radius:0 0 24px 24px;background:
-      linear-gradient(135deg,rgba(26,61,36,0.75),rgba(201,169,98,0.25)),
-      url("https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20cozy%20living%20room%20interior%20green%20plants%20wooden%20furniture%20scandinavian%20warm%20cream%20sage%20green&image_size=landscape_16_9") center/cover no-repeat fixed}
+  .hero{position:relative;padding:80px 32px 60px;max-width:1240px;margin:0 auto;overflow:hidden;border-radius:0 0 24px 24px;background-image: linear-gradient(135deg,rgba(26,61,36,0.75),rgba(201,169,98,0.25)), url("https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20cozy%20living%20room%20interior%20green%20plants%20wooden%20furniture%20scandinavian%20warm%20cream%20sage%20green&image_size=landscape_16_9");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;}
   .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(26,61,36,0.35),transparent 60%);pointer-events:none;z-index:0}
   .hero > *{position:relative;z-index:1;color:white}
   .hero-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;background:rgba(255,255,255,0.18);color:white;font-size:13px;font-weight:500;margin-bottom:24px;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
