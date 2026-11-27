@@ -1,680 +1,670 @@
-<!--
-===============================================================================
-  风声·聚满匠星云 首页 站内升级版 v1 · 2026-10-21
-  给小扣子的开发基准文件
-
-  说明：
-  1. 本文件是 v1.1 参考实现，含全部实际改动
-  2. 小扣子的任务：对照本文件，把改动迁移到 fengsheng-tasks/index.html
-  3. 所有色值/间距/圆角在 :root 变量里，直接改变量即可
-  4. 禁止改动：全局导航 fs-nav.js、领域 Tab 切换逻辑、角色三切换、所有真实链接、今日知识/AI对话/反馈
-
-  上位依据：
-  - PRD v1.1：/风声管理/优化路线图PRD_v1.0_20261020.html
-  - 产品设计 v1.1：.uploads/092b1f83-3aba-44f0-be0f-8d8469479bec__!DOCTYPE....txt
-  - 开发对接文档：fengsheng-tasks/docs/首页聚满匠星云升级_开发对接文档_v1_给小扣子_20261021.md
-===============================================================================
--->
-
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>风声·聚满匠星云 | 服务者工作台</title>
-<!-- 
-  开发说明：
-  1. 本文件是服务者工作台首页的完整开发版
-  2. 所有色值、间距、圆角都定义在 :root CSS变量里，直接改这里就能调主题
-  3. 组件全部用语义化class命名，开发可以直接拆成Vue/React组件
-  4. 所有交互状态（hover/active/disabled）都已实现
--->
-<style>
-  /* ========== VI设计系统 - CSS变量 ========== */
-  :root {
-    /* 主色 - 深墨绿（真人动作色） */
-    --primary: #1a3d24;
-    --primary-light: #2d5a3d;
-    --primary-dark: #12291a;
-    --primary-bg: #e8f0e9;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>风声聚匠星云 · 循证居住服务工具箱</title>
+    <style id="theme-vars">
+/* 风声聚匠星云 VI 视觉系统 — Design Tokens */
+/* brandPrefix: fs (fengsheng) */
 
-    /* 点缀色 - 匠星金（AI产出色） */
-    --gold: #c9a962;
-    --gold-light: #d4b876;
-    --gold-bg: #faf5ea;
+@theme inline {
+  /* === 语义变量（Tailwind 映射）=== */
+  --color-background: var(--fs-background);
+  --color-foreground: var(--fs-foreground);
+  --color-card: var(--fs-card);
+  --color-card-foreground: var(--fs-card-foreground);
+  --color-popover: var(--fs-popover);
+  --color-popover-foreground: var(--fs-popover-foreground);
+  --color-primary: var(--fs-primary);
+  --color-primary-foreground: var(--fs-primary-foreground);
+  --color-muted: var(--fs-muted);
+  --color-muted-foreground: var(--fs-muted-foreground);
+  --color-secondary: var(--fs-secondary);
+  --color-secondary-foreground: var(--fs-secondary-foreground);
+  --color-accent: var(--fs-accent);
+  --color-accent-foreground: var(--fs-accent-foreground);
+  --color-border: var(--fs-border);
+  --color-input: var(--fs-input);
+  --color-ring: var(--fs-ring);
 
-    /* 中性色 */
-    --ink: #1a1a1a;
-    --body: #555;
-    --muted: #999;
-    --line: #e8e4da;
-    --bg: #f7f5f0;
-    --card: #ffffff;
+  /* === 风声品牌变量 === */
+  --fs-background: #F7F5F0;
+  --fs-foreground: #1A1A1A;
+  --fs-card: #FFFFFF;
+  --fs-card-foreground: #1A1A1A;
+  --fs-popover: #FFFFFF;
+  --fs-popover-foreground: #1A1A1A;
+  --fs-primary: #1A3D24;
+  --fs-primary-foreground: #FFFFFF;
+  --fs-muted: #EFEBE2;
+  --fs-muted-foreground: #6B6B6B;
+  --fs-secondary: #E8F0E9;
+  --fs-secondary-foreground: #1A3D24;
+  --fs-accent: #C9A962;
+  --fs-accent-foreground: #1A1A1A;
+  --fs-border: #E5E1D6;
+  --fs-input: #EFEBE2;
+  --fs-ring: rgba(26, 61, 36, 0.25);
 
-    /* 功能色 */
-    --danger: #c0392b;
-    --danger-bg: #fdecea;
-    --warning: #e67e22;
-    --warning-bg: #fef3e2;
-    --success: #27ae60;
-    --success-bg: #e8f5e9;
+  /* === 补充色彩 === */
+  --fs-bg-warm: #F7F5F0;
+  --fs-bg-soft: #FAF7F2;
+  --fs-surface: #FFFFFF;
+  --fs-ink-primary: #1A1A1A;
+  --fs-ink-secondary: #5C5C5C;
+  --fs-ink-tertiary: #8A8A8A;
+  --fs-divider: #E5E1D6;
+  --fs-primary-light: #2D5A3A;
+  --fs-primary-dark: #0F2416;
+  --fs-accent-light: #D4B978;
+  --fs-green-soft: #E8F0E9;
+  --fs-gold-soft: #FAF5EA;
+  --fs-gold-deep: #B8944F;
 
-    /* 间距系统 - 4px基准 */
-    --space-xs: 4px;
-    --space-sm: 8px;
-    --space-md: 16px;
-    --space-lg: 24px;
-    --space-xl: 32px;
-    --space-2xl: 48px;
+  /* === 字体 === */
+  --fs-font-sans: "Inter", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+  --fs-font-display: "PingFang SC", "Noto Sans SC", "Inter", system-ui, sans-serif;
 
-    /* 圆角 */
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 20px;
+  /* === 圆角 === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --fs-radius-sm: 4px;
+  --fs-radius-md: 8px;
+  --fs-radius-lg: 16px;
+
+  /* === 阴影 === */
+  --shadow-fs-soft: 0 1px 2px rgba(26, 61, 36, 0.04), 0 1px 1px rgba(26, 61, 36, 0.03);
+  --shadow-fs-card: 0 2px 8px -2px rgba(26, 61, 36, 0.06), 0 1px 2px rgba(26, 61, 36, 0.04);
+  --shadow-fs-float: 0 8px 24px -8px rgba(26, 61, 36, 0.18);
+
+  /* === 字重 === */
+  --fs-weight-normal: 400;
+  --fs-weight-medium: 500;
+  --fs-weight-semibold: 600;
+}
+
+/* === Light mode === */
+html.light {
+  --fs-background: #F7F5F0;
+  --fs-foreground: #1A1A1A;
+  --fs-card: #FFFFFF;
+  --fs-card-foreground: #1A1A1A;
+  --fs-popover: #FFFFFF;
+  --fs-popover-foreground: #1A1A1A;
+  --fs-primary: #1A3D24;
+  --fs-primary-foreground: #FFFFFF;
+  --fs-muted: #EFEBE2;
+  --fs-muted-foreground: #6B6B6B;
+  --fs-secondary: #E8F0E9;
+  --fs-secondary-foreground: #1A3D24;
+  --fs-accent: #C9A962;
+  --fs-accent-foreground: #1A1A1A;
+  --fs-border: #E5E1D6;
+  --fs-input: #EFEBE2;
+  --fs-ring: rgba(26, 61, 36, 0.25);
+}
+
+/* === Base 样式 === */
+@layer base {
+  * {
+    border-color: var(--fs-border);
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
-    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    line-height: 1.6;
+    font-family: var(--fs-font-sans);
+    background-color: var(--fs-background);
+    color: var(--fs-foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+}
 
-  /* ========== 顶部导航 ========== */
-  .top-nav {
-    background: var(--bg);
-    padding: var(--space-md) var(--space-xl);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--fs-background);
+    --color-foreground: var(--fs-foreground);
+    --color-card: var(--fs-card);
+    --color-card-foreground: var(--fs-card-foreground);
+    --color-popover: var(--fs-popover);
+    --color-popover-foreground: var(--fs-popover-foreground);
+    --color-primary: var(--fs-primary);
+    --color-primary-foreground: var(--fs-primary-foreground);
+    --color-muted: var(--fs-muted);
+    --color-muted-foreground: var(--fs-muted-foreground);
+    --color-secondary: var(--fs-secondary);
+    --color-secondary-foreground: var(--fs-secondary-foreground);
+    --color-accent: var(--fs-accent);
+    --color-accent-foreground: var(--fs-accent-foreground);
+    --color-border: var(--fs-border);
+    --color-input: var(--fs-input);
+    --color-ring: var(--fs-ring);
+    --radius-sm: var(--fs-radius-sm);
+    --radius-md: var(--fs-radius-md);
+    --radius-lg: var(--fs-radius-lg);
   }
-  .logo-area {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
+  @layer base {
+    body { background: var(--fs-background); color: var(--fs-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
   }
-  .logo-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--primary);
-    color: #fff;
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    font-weight: 700;
-  }
-  .logo-text {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--primary);
-  }
-  .logo-sub {
-    font-size: 13px;
-    color: var(--muted);
-    margin-left: var(--space-xs);
-    font-weight: 400;
-  }
-  .user-area {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    font-size: 14px;
-    color: var(--body);
-  }
-  .user-avatar {
-    width: 36px;
-    height: 36px;
-    background: var(--gold-bg);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-  }
-
-  /* ========== 领域Tab通栏 ========== */
-  .domain-tabs {
-    background: var(--primary);
-    padding: 0 var(--space-xl);
-    display: flex;
-    align-items: center;
-    gap: 40px;
-    height: 56px;
-  }
-  .domain-tab {
-    color: rgba(255,255,255,0.6);
-    font-size: 15px;
-    cursor: pointer;
-    padding: 16px 0;
-    border-bottom: 3px solid transparent;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-  }
-  .domain-tab:hover {
-    color: rgba(255,255,255,0.85);
-  }
-  .domain-tab.active {
-    color: #fff;
-    border-bottom-color: var(--gold);
-    font-weight: 600;
-  }
-  .domain-tag {
-    font-size: 10px;
-    background: rgba(255,255,255,0.15);
-    padding: 2px 8px;
-    border-radius: 10px;
-    color: rgba(255,255,255,0.5);
-  }
-
-  /* ========== 主内容区 ========== */
-  .main-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--space-xl);
-  }
-
-  /* ========== 角色选择器 ========== */
-  .role-selector {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    margin-bottom: var(--space-xl);
-  }
-  .role-label {
-    font-size: 15px;
-    color: var(--body);
-  }
-  .role-btn {
-    padding: 10px 28px;
-    border-radius: 24px;
-    background: var(--card);
-    border: 1.5px solid var(--line);
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .role-btn:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-  .role-btn.active {
-    background: var(--primary);
-    color: #fff;
-    border-color: var(--primary);
-    font-weight: 500;
-  }
-
-  /* ========== 问候语 ========== */
-  .greeting {
-    margin-bottom: var(--space-xl);
-  }
-  .greeting h1 {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: var(--space-sm);
-  }
-  .greeting p {
-    font-size: 15px;
-    color: var(--body);
-  }
-  .greeting strong {
-    color: var(--primary);
-    font-weight: 600;
-  }
-
-  /* ========== 黄金主任务卡 ========== */
-  .hero-card {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-    border-radius: var(--radius-xl);
-    padding: var(--space-2xl);
-    margin-bottom: var(--space-lg);
-    position: relative;
-    overflow: hidden;
-    border: 2px solid var(--gold);
-    box-shadow: 0 8px 32px rgba(26,61,36,0.2);
-  }
-  .hero-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -20%;
-    width: 60%;
-    height: 200%;
-    background: radial-gradient(ellipse, rgba(201,169,98,0.1) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--gold);
-    color: var(--primary-dark);
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: var(--space-md);
-  }
-  .hero-subtitle {
-    color: rgba(255,255,255,0.6);
-    font-size: 14px;
-    margin-bottom: var(--space-md);
-  }
-  .hero-title {
-    font-size: 36px;
-    font-weight: 700;
-    color: #fff;
-    line-height: 1.2;
-    margin-bottom: var(--space-md);
-    letter-spacing: -0.5px;
-  }
-  .hero-desc {
-    font-size: 16px;
-    color: rgba(255,255,255,0.7);
-    line-height: 1.7;
-    margin-bottom: var(--space-2xl);
-    max-width: 600px;
-  }
-  .hero-actions {
-    display: flex;
-    gap: var(--space-md);
-    align-items: center;
-  }
-  .btn-primary-gold {
-    background: var(--gold);
-    color: var(--primary-dark);
-    padding: 14px 32px;
-    border-radius: var(--radius-sm);
-    font-size: 16px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
-    box-shadow: 0 4px 16px rgba(201,169,98,0.3);
-  }
-  .btn-primary-gold:hover {
-    background: var(--gold-light);
-    transform: translateY(-1px);
-  }
-  .btn-outline-white {
-    background: transparent;
-    color: #fff;
-    padding: 14px 32px;
-    border-radius: var(--radius-sm);
-    font-size: 16px;
-    font-weight: 500;
-    border: 1.5px solid rgba(255,255,255,0.3);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-outline-white:hover {
-    border-color: rgba(255,255,255,0.6);
-  }
-  .hero-footer {
-    position: absolute;
-    bottom: var(--space-xl);
-    right: var(--space-2xl);
-    color: rgba(255,255,255,0.4);
-    font-size: 13px;
-  }
-
-  /* ========== 次任务卡 ========== */
-  .sub-tasks {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-md);
-    margin-bottom: var(--space-xl);
-  }
-  .sub-task-card {
-    background: var(--card);
-    border-radius: var(--radius-lg);
-    padding: var(--space-xl);
-    border: 1px solid var(--line);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .sub-task-card:hover {
-    border-color: var(--primary);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-  }
-  .sub-task-icon {
-    width: 48px;
-    height: 48px;
-    background: var(--primary-bg);
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: var(--space-md);
-  }
-  .sub-task-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: var(--space-xs);
-  }
-  .sub-task-desc {
-    font-size: 14px;
-    color: var(--muted);
-  }
-
-  /* ========== 七环节成长闭环 ========== */
-  .loop-section {
-    background: var(--card);
-    border-radius: var(--radius-lg);
-    padding: var(--space-xl);
-    margin-bottom: var(--space-lg);
-    border: 1px solid var(--line);
-  }
-  .loop-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-lg);
-  }
-  .loop-title {
-    font-size: 16px;
-    font-weight: 600;
-  }
-  .loop-progress {
-    font-size: 13px;
-    color: var(--primary);
-    font-weight: 500;
-  }
-  .loop-steps {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .loop-step {
-    text-align: center;
-    flex: 1;
-  }
-  .loop-step-circle {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #f0ede5;
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    margin: 0 auto var(--space-sm);
-  }
-  .loop-step.done .loop-step-circle {
-    background: var(--primary-bg);
-    color: var(--primary);
-  }
-  .loop-step.active .loop-step-circle {
-    background: var(--primary);
-    color: #fff;
-    box-shadow: 0 0 0 4px rgba(26,61,36,0.15);
-  }
-  .loop-step-name {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--body);
-  }
-  .loop-step.done .loop-step-name { color: var(--primary); }
-  .loop-step.active .loop-step-name { color: var(--primary); }
-
-  /* ========== 数据信任区 ========== */
-  .trust-bar {
-    background: var(--card);
-    border-radius: var(--radius-lg);
-    padding: var(--space-xl);
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    text-align: center;
-    border: 1px solid var(--line);
-    margin-bottom: var(--space-lg);
-  }
-  .trust-num {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--primary);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.5px;
-  }
-  .trust-num.gold { color: var(--gold); }
-  .trust-label {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: var(--space-xs);
-  }
-
-  /* ========== 底部工具区 ========== */
-  .tools-section {
-    margin-bottom: 60px;
-  }
-  .tools-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-md);
-  }
-  .tools-header h3 {
-    font-size: 15px;
-    color: var(--body);
-    font-weight: 600;
-  }
-  .tools-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-sm);
-  }
-  .tool-card {
-    background: var(--card);
-    border-radius: var(--radius-md);
-    padding: var(--space-md) var(--space-sm);
-    text-align: center;
-    border: 1px solid #f0ede5;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .tool-card:hover {
-    border-color: var(--line);
-    background: #fafaf7;
-  }
-  .tool-icon { font-size: 24px; margin-bottom: var(--space-sm); }
-  .tool-name { font-size: 13px; font-weight: 500; }
-  .tool-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-</style>
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--fs-background); }
+      .text-background { color: var(--fs-background); }
+      .border-background { border-color: var(--fs-background); }
+      .ring-background { --tw-ring-color: var(--fs-background); }
+      .bg-foreground { background-color: var(--fs-foreground); }
+      .text-foreground { color: var(--fs-foreground); }
+      .border-foreground { border-color: var(--fs-foreground); }
+      .ring-foreground { --tw-ring-color: var(--fs-foreground); }
+      .bg-card { background-color: var(--fs-card); }
+      .text-card { color: var(--fs-card); }
+      .border-card { border-color: var(--fs-card); }
+      .ring-card { --tw-ring-color: var(--fs-card); }
+      .bg-card-foreground { background-color: var(--fs-card-foreground); }
+      .text-card-foreground { color: var(--fs-card-foreground); }
+      .border-card-foreground { border-color: var(--fs-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--fs-card-foreground); }
+      .bg-popover { background-color: var(--fs-popover); }
+      .text-popover { color: var(--fs-popover); }
+      .border-popover { border-color: var(--fs-popover); }
+      .ring-popover { --tw-ring-color: var(--fs-popover); }
+      .bg-popover-foreground { background-color: var(--fs-popover-foreground); }
+      .text-popover-foreground { color: var(--fs-popover-foreground); }
+      .border-popover-foreground { border-color: var(--fs-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--fs-popover-foreground); }
+      .bg-primary { background-color: var(--fs-primary); }
+      .text-primary { color: var(--fs-primary); }
+      .border-primary { border-color: var(--fs-primary); }
+      .ring-primary { --tw-ring-color: var(--fs-primary); }
+      .bg-primary-foreground { background-color: var(--fs-primary-foreground); }
+      .text-primary-foreground { color: var(--fs-primary-foreground); }
+      .border-primary-foreground { border-color: var(--fs-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--fs-primary-foreground); }
+      .bg-muted { background-color: var(--fs-muted); }
+      .text-muted { color: var(--fs-muted); }
+      .border-muted { border-color: var(--fs-muted); }
+      .ring-muted { --tw-ring-color: var(--fs-muted); }
+      .bg-muted-foreground { background-color: var(--fs-muted-foreground); }
+      .text-muted-foreground { color: var(--fs-muted-foreground); }
+      .border-muted-foreground { border-color: var(--fs-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--fs-muted-foreground); }
+      .bg-secondary { background-color: var(--fs-secondary); }
+      .text-secondary { color: var(--fs-secondary); }
+      .border-secondary { border-color: var(--fs-secondary); }
+      .ring-secondary { --tw-ring-color: var(--fs-secondary); }
+      .bg-secondary-foreground { background-color: var(--fs-secondary-foreground); }
+      .text-secondary-foreground { color: var(--fs-secondary-foreground); }
+      .border-secondary-foreground { border-color: var(--fs-secondary-foreground); }
+      .ring-secondary-foreground { --tw-ring-color: var(--fs-secondary-foreground); }
+      .bg-accent { background-color: var(--fs-accent); }
+      .text-accent { color: var(--fs-accent); }
+      .border-accent { border-color: var(--fs-accent); }
+      .ring-accent { --tw-ring-color: var(--fs-accent); }
+      .bg-accent-foreground { background-color: var(--fs-accent-foreground); }
+      .text-accent-foreground { color: var(--fs-accent-foreground); }
+      .border-accent-foreground { border-color: var(--fs-accent-foreground); }
+      .ring-accent-foreground { --tw-ring-color: var(--fs-accent-foreground); }
+      .bg-border { background-color: var(--fs-border); }
+      .text-border { color: var(--fs-border); }
+      .border-border { border-color: var(--fs-border); }
+      .ring-border { --tw-ring-color: var(--fs-border); }
+      .bg-input { background-color: var(--fs-input); }
+      .text-input { color: var(--fs-input); }
+      .border-input { border-color: var(--fs-input); }
+      .ring-input { --tw-ring-color: var(--fs-input); }
+      .bg-ring { background-color: var(--fs-ring); }
+      .text-ring { color: var(--fs-ring); }
+      .border-ring { border-color: var(--fs-ring); }
+      .ring-ring { --tw-ring-color: var(--fs-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
 </head>
-<body>
+<body class="min-h-screen font-sans antialiased">
 
-  <!-- 顶部导航 -->
-  <div class="top-nav">
-    <div class="logo-area">
-      <div class="logo-icon">风</div>
-      <div>
-        <span class="logo-text">风声·聚满匠星云</span>
-        <span class="logo-sub">服务者工作台</span>
+  <!-- Nav -->
+  <nav id="fs-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2.5 text-foreground">
+        <div class="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
+          <i data-lucide="wind" class="w-4 h-4 text-primary-foreground"></i>
+        </div>
+        <span class="font-semibold text-base tracking-tight">风声聚匠星云</span>
+        <span class="hidden lg:inline text-xs text-muted-foreground ml-1">循证服务 · 居住服务工具箱</span>
+      </a>
+      <div class="hidden md:flex items-center gap-7">
+        <a href="#" class="text-sm text-foreground font-medium">首页</a>
+        <a href="#" class="text-sm text-muted-foreground hover:text-foreground transition-colors">工作台</a>
+        <a href="#" class="text-sm text-muted-foreground hover:text-foreground transition-colors">知识底座</a>
+        <a href="#" class="text-sm text-muted-foreground hover:text-foreground transition-colors">能力测评</a>
+        <a href="#" class="text-sm text-muted-foreground hover:text-foreground transition-colors">学习成长</a>
+        <a href="#standards" class="text-sm text-muted-foreground hover:text-foreground transition-colors">能力标准</a>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <a href="#" class="hidden sm:inline text-sm text-muted-foreground hover:text-foreground transition-colors">校园招募</a>
+        <a href="#" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+          <i data-lucide="rocket" class="w-3.5 h-3.5"></i>
+          进入工作台
+        </a>
       </div>
     </div>
-    <div class="user-area">
-      <span>李师傅 · 买卖经纪人</span>
-      <div class="user-avatar">👤</div>
-    </div>
-  </div>
+  </nav>
 
-  <!-- 领域Tab通栏 -->
-  <div class="domain-tabs">
-    <div class="domain-tab active">🏠 交易服务</div>
-    <div class="domain-tab">🔑 资产运营 <span class="domain-tag">即将</span></div>
-    <div class="domain-tab">🛠 家装服务 <span class="domain-tag">即将</span></div>
-    <div class="domain-tab">🌿 特殊居住 <span class="domain-tag">即将</span></div>
-  </div>
+  <main>
 
-  <!-- 主内容区 -->
-  <div class="main-content">
+    <!-- Hero -->
+    <section id="hero" class="pt-32 pb-20 md:pt-40 md:pb-28 bg-background overflow-hidden">
+      <div class="max-w-7xl mx-auto px-6 lg:px-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          <div class="lg:col-span-7">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary text-secondary-foreground text-xs font-medium mb-8">
+              <i data-lucide="badge-check" class="w-3.5 h-3.5"></i>
+              循证服务 · 每句话敢点开看依据
+            </div>
+            <p class="text-muted-foreground text-base md:text-lg mb-4">居住服务者的能力标准与现场工具箱</p>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.15] text-foreground mb-6">
+              通过独立价值<br>赢得尊严
+            </h1>
+            <p class="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl mb-10">
+              我们为居住服务行业建立统一的能力标准——测评、学习、认证、匹配，帮服务者变强，帮管理者找到靠谱的人，帮消费者找到放心的服务。
+            </p>
+            <div class="flex flex-wrap gap-3">
+              <a href="#" class="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-accent text-accent-foreground font-medium hover:bg-accent/90 transition-colors">
+                <i data-lucide="home" class="w-4 h-4"></i>经纪人工作台
+              </a>
+              <a href="#" class="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+                <i data-lucide="wrench" class="w-4 h-4"></i>家装工作台
+              </a>
+              <a href="#" class="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border text-foreground font-medium hover:bg-muted transition-colors">
+                <i data-lucide="bar-chart-3" class="w-4 h-4"></i>免费测一次短板
+              </a>
+            </div>
+          </div>
+          <div class="lg:col-span-5">
+            <div class="relative">
+              <div class="absolute -inset-4 bg-primary/5 rounded-2xl -z-10"></div>
+              <div class="absolute top-6 -left-4 w-24 h-24 bg-accent/20 rounded-2xl -z-10 rotate-6"></div>
+              <div class="absolute bottom-6 -right-2 w-16 h-16 bg-secondary rounded-xl -z-10 -rotate-12"></div>
+              <div class="relative rounded-2xl overflow-hidden border border-border bg-card shadow-[0_20px_60px_-20px_rgba(26,61,36,0.15)]">
+                <img src="assets/hero-craftsmanship.jpg" alt="专业工匠在施工现场检查材料质量" class="w-full h-auto object-cover" loading="eager" />
+                <div class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-foreground/70 via-foreground/30 to-transparent">
+                  <p class="text-white text-sm font-medium flex items-center gap-2">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>标准化 · 可验证 · 有依据
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <!-- 角色选择 -->
-    <div class="role-selector">
-      <span class="role-label">我的角色：</span>
-      <div class="role-btn active">买卖经纪人</div>
-      <div class="role-btn" style="opacity: 0.5; cursor: not-allowed;">租赁经纪人 <span style="font-size: 10px; background: #f0ede5; padding: 1px 6px; border-radius: 8px; margin-left: 4px;">即将</span></div>
-      <div class="role-btn" style="opacity: 0.5; cursor: not-allowed;">门店管理者 <span style="font-size: 10px; background: #f0ede5; padding: 1px 6px; border-radius: 8px; margin-left: 4px;">即将</span></div>
-    </div>
+    <!-- Evidence Cards 证据卡片 -->
+    <section id="evidence" class="py-16 md:py-20 bg-card border-y border-border">
+      <div class="max-w-7xl mx-auto px-6 lg:px-10">
+        <div class="max-w-3xl mb-10">
+          <p class="text-sm font-medium text-accent mb-3">工具生成 · 真人复核 · 每句话敢点开看依据</p>
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground leading-tight mb-3">
+            敢点开看依据
+          </h2>
+          <p class="text-muted-foreground leading-relaxed">
+            现在就给你看三条——每一条都带源、带时效 · 底座 <span class="text-primary font-semibold">6143+</span> 条 · 持续核验中
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="rounded-xl border border-border bg-background p-6 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-shadow">
+            <div class="flex items-center gap-2 text-xs font-medium text-accent mb-3">
+              <i data-lucide="scroll-text" class="w-3.5 h-3.5"></i>法律
+            </div>
+            <h3 class="font-semibold text-foreground mb-2">违约金怎么算？</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed mb-4">
+              《中华人民共和国民法典》第585条 · 工具生成+行业惯例复核
+            </p>
+            <div class="flex items-center justify-between pt-3 border-t border-border">
+              <span class="text-xs text-muted-foreground flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i>2026-07-23 核验</span>
+              <a href="#" class="text-xs font-medium text-primary hover:underline flex items-center gap-1">看依据 <i data-lucide="arrow-up-right" class="w-3 h-3"></i></a>
+            </div>
+          </div>
+          <div class="rounded-xl border border-border bg-background p-6 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-shadow">
+            <div class="flex items-center gap-2 text-xs font-medium text-accent mb-3">
+              <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>数据
+            </div>
+            <h3 class="font-semibold text-foreground mb-2">2026年8月全国百城二手房均价</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed mb-4">
+              中指研究院 + 国家统计局双源交叉验证
+            </p>
+            <div class="flex items-center justify-between pt-3 border-t border-border">
+              <span class="text-xs text-muted-foreground flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i>2026-09-18 核验</span>
+              <a href="#" class="text-xs font-medium text-primary hover:underline flex items-center gap-1">看依据 <i data-lucide="arrow-up-right" class="w-3 h-3"></i></a>
+            </div>
+          </div>
+          <div class="rounded-xl border border-border bg-background p-6 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-shadow">
+            <div class="flex items-center gap-2 text-xs font-medium text-accent mb-3">
+              <i data-lucide="file-text" class="w-3.5 h-3.5"></i>政策
+            </div>
+            <h3 class="font-semibold text-foreground mb-2">首付贷合法吗？</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed mb-4">
+              《关于规范购房融资和加强反洗钱工作的通知》第2条
+            </p>
+            <div class="flex items-center justify-between pt-3 border-t border-border">
+              <span class="text-xs text-muted-foreground flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i>2026-07-23 核验</span>
+              <a href="#" class="text-xs font-medium text-primary hover:underline flex items-center gap-1">看依据 <i data-lucide="arrow-up-right" class="w-3 h-3"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <!-- 问候语 -->
-    <div class="greeting">
-      <h1>晚上好，李师傅</h1>
-      <p>你今天已生成 <strong>3</strong> 份方案，复核率 <strong>100%</strong>，继续保持。</p>
-    </div>
+    <!-- Tool Grid 平台工具箱 -->
+    <section id="tools" class="py-20 md:py-28 bg-background">
+      <div class="max-w-7xl mx-auto px-6 lg:px-10">
+        <div class="mb-14">
+          <div class="relative rounded-2xl overflow-hidden border border-border shadow-[0_8px_32px_-12px_rgba(26,61,36,0.12)]">
+            <img src="assets/tools-flatlay.jpg" alt="专业工具箱展示" class="w-full h-48 md:h-60 object-cover" loading="lazy" />
+            <div class="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-background/30"></div>
+            <div class="absolute inset-0 flex items-center px-8 lg:px-12">
+              <div>
+                <p class="text-sm font-medium text-accent mb-2">平台工具箱</p>
+                <h2 class="text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground leading-tight">
+                  干活时离不开的 5 件工具
+                </h2>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-muted-foreground leading-relaxed max-w-2xl mb-10 -mt-4">
+          跨两个业务领域通用——干活时离不开的东西
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div class="rounded-xl border border-border bg-card p-5 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-all hover:-translate-y-0.5">
+            <div class="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-3">
+              <i data-lucide="book-open" class="w-5 h-5 text-primary"></i>
+            </div>
+            <h3 class="font-semibold text-foreground mb-1.5">知识底座</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">6,259 条词条，税费政策秒出答案</p>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-5 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-all hover:-translate-y-0.5">
+            <div class="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-3">
+              <i data-lucide="zap" class="w-5 h-5 text-primary"></i>
+            </div>
+            <h3 class="font-semibold text-foreground mb-1.5">策展引擎</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">一键生成置业方案，10 分钟搞定 2 小时的活</p>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-5 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-all hover:-translate-y-0.5">
+            <div class="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-3">
+              <i data-lucide="message-square-text" class="w-5 h-5 text-primary"></i>
+            </div>
+            <h3 class="font-semibold text-foreground mb-1.5">话术解码器</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">客户问题怎么答，给你专业话术参考</p>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-5 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-all hover:-translate-y-0.5">
+            <div class="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-3">
+              <i data-lucide="bar-chart-3" class="w-5 h-5 text-primary"></i>
+            </div>
+            <h3 class="font-semibold text-foreground mb-1.5">能力测评</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">10 分钟测出短板，知道该补什么</p>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-5 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-all hover:-translate-y-0.5">
+            <div class="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-3">
+              <i data-lucide="film" class="w-5 h-5 text-primary"></i>
+            </div>
+            <h3 class="font-semibold text-foreground mb-1.5">场景导航</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">买卖/租赁/新房全流程剧本，遇到就翻</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <!-- 黄金主任务卡 -->
-    <div class="hero-card">
-      <div class="hero-tag">◆ 黄金主任务</div>
-      <div class="hero-subtitle">此刻最该做的事 · 策展引擎 + 智能内容编辑器（P0核心）</div>
-      <div class="hero-title">刚接到新客户？<br>一键生成置业方案建议书</div>
-      <div class="hero-desc">
-        输入客户需求，AI帮你结构化梳理画像、匹配房源、测算税费贷款，你负责判断与终审。所有生成内容进入编辑器，复核后方可发送。
+    <!-- Coverage 覆盖领域 -->
+    <section id="coverage" class="py-20 md:py-24 bg-muted">
+      <div class="max-w-7xl mx-auto px-6 lg:px-10">
+        <div class="max-w-2xl mb-12">
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground leading-tight mb-3">
+            我们覆盖的居住服务领域
+          </h2>
+          <p class="text-muted-foreground leading-relaxed">两个领域已经跑通，还有三个在路上——先用起来再一起迭代</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+          <div class="rounded-xl border border-border bg-card p-6 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2 text-primary">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <h3 class="font-semibold text-lg text-foreground">交易服务</h3>
+              </div>
+              <span class="text-xs font-medium text-foreground bg-accent/20 px-2 py-0.5 rounded text-accent-foreground">本期开放</span>
+            </div>
+            <p class="text-sm text-muted-foreground leading-relaxed">买卖经纪人 · 新房顾问 · 租赁管家</p>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-6 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2 text-primary">
+                <i data-lucide="hammer" class="w-5 h-5"></i>
+                <h3 class="font-semibold text-lg text-foreground">家装服务</h3>
+              </div>
+              <span class="text-xs font-medium text-accent-foreground bg-accent/20 px-2 py-0.5 rounded">本期开放</span>
+            </div>
+            <p class="text-sm text-muted-foreground leading-relaxed">全案设计师 · 工长 · 硬装+软装定制 · 拎包入住</p>
+          </div>
+        </div>
+        <p class="text-sm text-muted-foreground flex items-center gap-2">
+          <i data-lucide="more-horizontal" class="w-4 h-4"></i>另有 <span class="text-primary font-medium">3 个领域规划中</span>
+        </p>
       </div>
-      <div class="hero-actions">
-        <button class="btn-primary-gold">◆ 开始生成方案</button>
-        <button class="btn-outline-white">查看我的待办</button>
-      </div>
-      <div class="hero-footer">AI产出 · 真人复核 · 方可发送</div>
-    </div>
+    </section>
 
-    <!-- 次任务卡 -->
-    <div class="sub-tasks">
-      <div class="sub-task-card">
-        <div class="sub-task-icon">📚</div>
-        <div class="sub-task-title">提升专业能力</div>
-        <div class="sub-task-desc">测短板 → 学课程 → 练场景 → 考认证</div>
+    <!-- Standards 标准来源 -->
+    <section id="standards" class="py-20 md:py-28 bg-background">
+      <div class="max-w-7xl mx-auto px-6 lg:px-10">
+        <div class="max-w-2xl mb-14">
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground leading-tight mb-4">
+            我们的标准从哪来？
+          </h2>
+          <p class="text-muted-foreground leading-relaxed">不是自己拍脑袋定的，有权威依据</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="rounded-xl border border-border bg-card p-6 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-shadow">
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="clipboard-list" class="w-4 h-4 text-accent"></i>
+              <span class="text-xs font-medium text-accent tracking-wide">官方标准</span>
+            </div>
+            <h3 class="font-semibold text-foreground mb-2">国家职业分类大典</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              房地产经纪专业人员、住房租赁员、室内装饰设计师……我们的能力标准，对齐人社部发布的国家职业分类大典。不是自封的，是国家认可的职业资格体系。
+            </p>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-6 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-shadow">
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="trophy" class="w-4 h-4 text-accent"></i>
+              <span class="text-xs font-medium text-accent tracking-wide">能力天花板</span>
+            </div>
+            <h3 class="font-semibold text-foreground mb-2">世界技能大赛</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              砌筑、瓷砖贴面、电气装置……10 个世赛建筑类项目，直接对应家装工人能力标准。什么叫好手艺？世赛的评分标准就是答案。
+            </p>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-6 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-shadow">
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="building-2" class="w-4 h-4 text-accent"></i>
+              <span class="text-xs font-medium text-accent tracking-wide">一线验证</span>
+            </div>
+            <h3 class="font-semibold text-foreground mb-2">行业最佳实践</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              头部居住服务平台的一线服务经验、真实业务词条、无数一线服务者的实战沉淀——我们的标准不是书斋里想出来的，是从一线实战里长出来的。
+            </p>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-6 hover:shadow-[0_8px_24px_-12px_rgba(26,61,36,0.15)] transition-shadow">
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="star" class="w-4 h-4 text-accent"></i>
+              <span class="text-xs font-medium text-accent tracking-wide">市场说了算</span>
+            </div>
+            <h3 class="font-semibold text-foreground mb-2">消费者真实评价</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              你的星级不是我们评的，是客户用脚投票出来的——好评率、复购率、带看转化率。什么叫专业？消费者认可的才是真专业。
+            </p>
+          </div>
+        </div>
       </div>
-      <div class="sub-task-card">
-        <div class="sub-task-icon">💬</div>
-        <div class="sub-task-title">回复客户消息</div>
-        <div class="sub-task-desc">AI对话 → 生成初稿 → 真人复核 → 发送</div>
-      </div>
-    </div>
+    </section>
 
-    <!-- 七环节成长闭环 -->
-    <div class="loop-section">
-      <div class="loop-header">
-        <div class="loop-title">🔄 我的能力成长闭环</div>
-        <div class="loop-progress">当前进度：已完成「测」，进入「学」</div>
+    <!-- Mission + Partners 使命与同路人 -->
+    <section id="mission" class="relative py-20 md:py-28 bg-primary text-primary-foreground overflow-hidden" style="background-image: linear-gradient(rgba(26,61,36,0.85), rgba(26,61,36,0.90)), url('assets/mission-livingroom.jpg'); background-size: cover; background-position: center; background-attachment: fixed;">
+      <div class="absolute inset-0 bg-gradient-to-b from-primary via-primary/90 to-primary/95"></div>
+      <div class="relative max-w-5xl mx-auto px-6 lg:px-10">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight mb-8">
+          通过独立价值，赢得尊严
+        </h2>
+        <p class="text-lg md:text-xl text-primary-foreground/80 leading-relaxed mb-16 max-w-3xl">
+          我们相信，居住服务者的尊严，不靠平台流量，不靠话术包装——靠的是实打实的专业能力、客户的真实信任、可被验证的服务质量。
+        </p>
+        <div class="border-t border-primary-foreground/20 pt-12">
+          <p class="text-sm text-primary-foreground/60 mb-4">我们在找同路人</p>
+          <h3 class="text-2xl md:text-3xl font-semibold mb-3">这件事一个人做不成</h3>
+          <p class="text-primary-foreground/70 mb-10">如果你也认同这个方向，欢迎一起：</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 p-6">
+              <div class="w-10 h-10 rounded-lg bg-primary-foreground/10 flex items-center justify-center mb-4">
+                <i data-lucide="users" class="w-5 h-5 text-accent-foreground"></i>
+              </div>
+              <h4 class="font-semibold mb-2">产品 / 技术伙伴</h4>
+              <p class="text-sm text-primary-foreground/70 leading-relaxed">认同工具武装人、长期做基础设施</p>
+            </div>
+            <div class="rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 p-6">
+              <div class="w-10 h-10 rounded-lg bg-primary-foreground/10 flex items-center justify-center mb-4">
+                <i data-lucide="school" class="w-5 h-5 text-accent-foreground"></i>
+              </div>
+              <h4 class="font-semibold mb-2">行业 / 院校合作</h4>
+              <p class="text-sm text-primary-foreground/70 leading-relaxed">职业院校、行业协会，共建能力标准</p>
+            </div>
+            <div class="rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 p-6">
+              <div class="w-10 h-10 rounded-lg bg-primary-foreground/10 flex items-center justify-center mb-4">
+                <i data-lucide="sparkles" class="w-5 h-5 text-accent-foreground"></i>
+              </div>
+              <h4 class="font-semibold mb-2">种子服务者</h4>
+              <p class="text-sm text-primary-foreground/70 leading-relaxed">第一批一起打磨标准的优秀服务者</p>
+            </div>
+          </div>
+          <div class="mt-10">
+            <a href="#" class="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-accent text-accent-foreground font-medium hover:bg-accent/90 transition-colors">
+              <i data-lucide="send" class="w-4 h-4"></i>提交合作意向
+            </a>
+          </div>
+        </div>
       </div>
-      <div class="loop-steps">
-        <div class="loop-step done">
-          <div class="loop-step-circle">📊</div>
-          <div class="loop-step-name">测</div>
-        </div>
-        <div class="loop-step active">
-          <div class="loop-step-circle">📚</div>
-          <div class="loop-step-name">学</div>
-        </div>
-        <div class="loop-step" style="opacity: 0.4;">
-          <div class="loop-step-circle">🎯</div>
-          <div class="loop-step-name">练 <span style="font-size: 9px; color: var(--muted);">即将</span></div>
-        </div>
-        <div class="loop-step" style="opacity: 0.4;">
-          <div class="loop-step-circle">📝</div>
-          <div class="loop-step-name">考 <span style="font-size: 9px; color: var(--muted);">即将</span></div>
-        </div>
-        <div class="loop-step" style="opacity: 0.4;">
-          <div class="loop-step-circle">⭐</div>
-          <div class="loop-step-name">评 <span style="font-size: 9px; color: var(--muted);">即将</span></div>
-        </div>
-        <div class="loop-step" style="opacity: 0.4;">
-          <div class="loop-step-circle">🤝</div>
-          <div class="loop-step-name">配 <span style="font-size: 9px; color: var(--muted);">即将</span></div>
-        </div>
-        <div class="loop-step" style="opacity: 0.4;">
-          <div class="loop-step-circle">💬</div>
-          <div class="loop-step-name">反馈 <span style="font-size: 9px; color: var(--muted);">即将</span></div>
-        </div>
-      </div>
-    </div>
+    </section>
 
-    <!-- 数据信任区 -->
-    <div class="trust-bar">
-      <div>
-        <div class="trust-num">1,286</div>
-        <div class="trust-label">已生成客户报告</div>
+    <!-- Bottom CTA -->
+    <section id="bottom-cta" class="py-20 md:py-28 bg-background">
+      <div class="max-w-4xl mx-auto px-6 lg:px-10 text-center">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-foreground leading-tight mb-5">
+          今天就试一份方案
+        </h2>
+        <p class="text-muted-foreground text-lg md:text-xl leading-relaxed mb-8">
+          拿你最近跟进的一个客户试，10 分钟就知道好不好用
+        </p>
+        <a href="#" class="inline-flex items-center gap-2 px-8 py-4 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors text-base">
+          <i data-lucide="wand-2" class="w-5 h-5"></i>免费生成第一份方案
+        </a>
       </div>
-      <div>
-        <div class="trust-num">342</div>
-        <div class="trust-label">服务过的匠人</div>
-      </div>
-      <div>
-        <div class="trust-num">96%</div>
-        <div class="trust-label">报告采纳率</div>
-      </div>
-      <div>
-        <div class="trust-num gold">★★ 优秀级</div>
-        <div class="trust-label">匠星认证体系</div>
-      </div>
-    </div>
-    <div style="text-align: center; font-size: 11px; color: #ccc; margin-top: -12px; margin-bottom: 24px;">
-      * 以上为示例数据，上线前替换为真实统计
-    </div>
+    </section>
 
-    <!-- 底部工具区 -->
-    <div class="tools-section">
-      <div class="tools-header">
-        <h3>🧰 全部工具</h3>
+    <!-- Footer -->
+    <footer class="bg-primary text-primary-foreground pt-16 pb-8">
+      <div class="max-w-7xl mx-auto px-6 lg:px-10">
+        <div class="border-b border-primary-foreground/15 pb-8 mb-10">
+          <p class="text-primary-foreground/70 text-sm flex items-center gap-2">
+            <i data-lucide="wind" class="w-4 h-4"></i>
+            风声聚匠星云 · 循证服务 · 居住服务工具箱 · © 2026 fengsheng.tech
+          </p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+          <div class="col-span-2 md:col-span-1">
+            <p class="font-semibold text-sm mb-4">风声聚匠星云</p>
+            <p class="text-xs text-primary-foreground/50 leading-relaxed max-w-[140px]">通过独立价值，赢得尊严</p>
+          </div>
+          <div>
+            <p class="text-xs font-medium text-primary-foreground/50 mb-4 uppercase tracking-wide">产品</p>
+            <ul class="space-y-2.5 text-sm text-primary-foreground/70">
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">交易工作台</a></li>
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">家装工作台</a></li>
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">知识底座</a></li>
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">居住工具箱</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="text-xs font-medium text-primary-foreground/50 mb-4 uppercase tracking-wide">能力与成长</p>
+            <ul class="space-y-2.5 text-sm text-primary-foreground/70">
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">能力测评</a></li>
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">学习成长</a></li>
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">能力标准</a></li>
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">策展引擎</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="text-xs font-medium text-primary-foreground/50 mb-4 uppercase tracking-wide">关于</p>
+            <ul class="space-y-2.5 text-sm text-primary-foreground/70">
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">关于我们</a></li>
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">合作入口</a></li>
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">沃土实训营</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="text-xs font-medium text-primary-foreground/50 mb-4 uppercase tracking-wide">条款</p>
+            <ul class="space-y-2.5 text-sm text-primary-foreground/70">
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">隐私政策</a></li>
+              <li><a href="#" class="hover:text-primary-foreground transition-colors">用户协议</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="pt-6 border-t border-primary-foreground/10 text-xs text-primary-foreground/40 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+          <span>© 2026 fengsheng.tech · 风声聚匠星云</span>
+          <div class="flex flex-wrap gap-x-4 gap-y-1">
+            <span>京ICP备2026044043号-2</span>
+            <span>京公网安备11010802051263号</span>
+          </div>
+        </div>
       </div>
-      <div class="tools-grid">
-        <div class="tool-card">
-          <div class="tool-icon">👥</div>
-          <div class="tool-name">客户管理</div>
-          <div class="tool-sub">客户档案管理</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">📊</div>
-          <div class="tool-name">带看报告</div>
-          <div class="tool-sub">带看数据报告</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">📖</div>
-          <div class="tool-name">知识库</div>
-          <div class="tool-sub">5843条专业词条</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">🔍</div>
-          <div class="tool-name">品质测评</div>
-          <div class="tool-sub">服务品质评估</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">🎯</div>
-          <div class="tool-name">场景库</div>
-          <div class="tool-sub">76个服务场景</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">👨‍🏫</div>
-          <div class="tool-name">AI导师</div>
-          <div class="tool-sub">一对一指导</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">⭐</div>
-          <div class="tool-name">我的收藏</div>
-          <div class="tool-sub">常用词条/话术</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">🕘</div>
-          <div class="tool-name">历史记录</div>
-          <div class="tool-sub">最近浏览/生成</div>
-        </div>
-      </div>
-    </div>
+    </footer>
 
-  </div>
+  </main>
 
+  <!-- Nav scroll effect -->
+  <script>
+    (function() {
+      const nav = document.getElementById('fs-nav');
+      function updateNav() {
+        if (window.scrollY > 20) {
+          nav.style.backgroundColor = 'rgba(247, 245, 240, 0.85)';
+          nav.style.backdropFilter = 'blur(12px)';
+          nav.style.borderBottomColor = 'rgba(26, 61, 36, 0.08)';
+        } else {
+          nav.style.backgroundColor = 'transparent';
+          nav.style.backdropFilter = 'none';
+          nav.style.borderBottomColor = 'transparent';
+        }
+      }
+      updateNav();
+      window.addEventListener('scroll', updateNav, { passive: true });
+    })();
+    lucide.createIcons();
+  </script>
 </body>
 </html>
