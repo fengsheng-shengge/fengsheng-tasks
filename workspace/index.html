@@ -2092,6 +2092,35 @@
     var currentStage = null;          // 当前阶段
     var currentConsumer = null;       // 当前消费者类型
 
+    // 🆕 K-02 URL 参数统一管理
+    // 参数别名：s = stage（正式名），兼容旧的 stage 参数
+    // 四段筛选 URL 签名: /workspace/?m=TRANSACTION&role=BROKER&c=buyer&s=b4
+    function getWorkspaceURLParams(){
+      var p = new URLSearchParams(location.search);
+      return {
+        m: p.get("m") || p.get("domain"),          // 模块（兼容旧 domain 别名）
+        role: p.get("role"),
+        c: p.get("c"),
+        s: p.get("s") || p.get("stage"),           // 🆕 s 正式名，stage 兼容
+        eid: p.get("eid")                          // 🆕 evidence entry id（从 evidence 页跳回关联）
+      };
+    }
+    // 🆕 K-02 统一 URL 更新 helper（所有切换函数都用它）
+    // patch: {m?, role?, c?, s?, eid?}，null/undefined 表示不改
+    function updateURLPatch(patch){
+      var url = new URL(location.href);
+      var aliases = { stage: "s" };  // 旧参数 → 正式名（只写，不读）
+      Object.keys(patch).forEach(function(k){
+        var v = patch[k];
+        if(v === null || v === undefined) return;
+        // 旧 stage 参数也同步更新（兼容老浏览器历史记录）
+        var canon = aliases[k] || k;
+        url.searchParams.set(canon, String(v));
+        if(aliases[k]) url.searchParams.set(k, String(v));
+      });
+      history.replaceState(null, "", url.pathname + url.search);
+    }
+
     // ===== 三套岗位固定 Timeline（服务者视角，严格对齐 data/domains/岗位体系.json 的 coreScenes）=====
     // 每个岗位一套，不再分服务对象分支——服务者在工作中是同时对接双方的
 
@@ -2951,10 +2980,8 @@
       // 🆕 同步顶部四段选择带的 consumer select（双向同步）
       var topSel = document.getElementById("tstep-consumer");
       if(topSel && topSel.value !== consumerKey) topSel.value = consumerKey;
-      // 🆕 URL ?c= 参数
-      var url = new URL(location.href);
-      url.searchParams.set("c", consumerKey || "all");
-      history.replaceState(null, "", url.pathname + url.search);
+      // 🆕 K-02 统一 URL helper
+      updateURLPatch({ c: consumerKey || "all" });
 
       syncStageTabHighlight();
       // 同步底部 consumer-filter chips（如果还在 DOM 里）
@@ -2987,21 +3014,20 @@
         location.href = "/home-design/";
         return;
       }
-      // TRANSACTION: 刷新页面（确保全量重新初始化）
-      var url = new URL(location.href);
-      url.searchParams.delete("m");
-      url.searchParams.set("m", "TRANSACTION");
-      location.href = url.pathname + url.search;
+      // TRANSACTION: 🆕 K-02 改成 replaceState（不刷新页面，全量重新 render）
+      updateURLPatch({ m: "TRANSACTION" });
+      // 重新渲染所有区块（不刷新页面）
+      if(typeof switchPositionTimeline === "function"){
+        switchPositionTimeline(currentPosition || "BROKER");
+      }
     }
 
     function switchRole(roleId){
       if(typeof switchPositionTimeline === "function"){
         switchPositionTimeline(roleId);
       }
-      // 同步更新 URL
-      var url = new URL(location.href);
-      url.searchParams.set("role", roleId);
-      history.replaceState(null, "", url.pathname + url.search);
+      // 🆕 K-02 统一 URL helper
+      updateURLPatch({ role: roleId });
       // 同步更新 role-banner pills（如果有）
       var rp = document.querySelectorAll(".role-banner .rb-switch-pill");
       rp.forEach(function(p){ p.classList.toggle("active", p.dataset.position === roleId); });
@@ -3018,9 +3044,8 @@
         var tab = document.querySelector('.jt-stage[data-key="' + stageKey + '"]');
         if(tab) tab.click();
       }
-      var url = new URL(location.href);
-      url.searchParams.set("stage", stageKey);
-      history.replaceState(null, "", url.pathname + url.search);
+      // 🆕 K-02 统一 URL helper — s 正式名 + stage 兼容
+      updateURLPatch({ s: stageKey });
     }
 
     function initV16StageSelect(roleId){
@@ -3038,12 +3063,13 @@
 
     // V2.2 四段选择带初始化：模块 / 角色 / 消费者 / 阶段
     function initV16Workspace(){
-      // 1. 解析 URL 参数
-      var p = new URLSearchParams(location.search);
-      var mod = p.get("m") || p.get("domain") || "TRANSACTION";
-      var role = p.get("role") || "BROKER";
-      var consumer = p.get("c") || "all";
-      var stage = p.get("stage");
+      // 1. 🆕 K-02 统一 URL 解析（getWorkspaceURLParams 已兼容所有别名）
+      var up = getWorkspaceURLParams();
+      var mod = up.m || "TRANSACTION";
+      var role = up.role || "BROKER";
+      var consumer = up.c || "all";
+      var stage = up.s;                    // 🆕 s 正式名（已兼容旧 stage 参数）
+      var eid = up.eid;                    // 🆕 evidence entry id（从 evidence 页跳回关联）
 
       // 2. DECOR → 跳 home-design（暂不合并两套模板）
       if(mod === "DECOR"){
@@ -3087,6 +3113,14 @@
       // 7. 🆕 消费者 c 参数触发全链渲染（等 timeline/stage 都初始化完）
       if(typeof selectConsumer === "function" && consumer && consumer !== "all"){
         selectConsumer(consumer, false);  // 触发 Evidence/场景卡/KB Picks 全链联动
+      }
+
+      // 🆕 K-02: ?eid= 参数 — 从 evidence 页跳回 workspace，Evidence 自动切 L4 循证依据
+      if(eid && typeof switchEvidenceLayer === "function"){
+        // 延迟一点让 entries 先加载完
+        setTimeout(function(){
+          try { switchEvidenceLayer("L4"); } catch(e) {}
+        }, 500);
       }
     }
 
