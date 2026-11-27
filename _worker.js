@@ -1014,6 +1014,78 @@ async function handleWxLogin(request, env) {
 }
 
 // ============================================================
+//  V2.2 K-13: 沃土实训营报名 API
+// ============================================================
+const VALID_WOTU_JOBS = new Set(['broker', 'lease', 'new_home']);
+const VALID_PHONE_RE = /^1[3-9]\d{9}$/;
+
+async function handleWotuSignup(request, env) {
+  try {
+    const body = await parseBodyJson(request);
+    if (!body) return jsonResponse({ ok: false, error: '请求体为空' }, 400);
+
+    // 字段提取 & trim
+    const name = (body.name || '').toString().trim();
+    const phone = (body.phone || '').toString().trim();
+    const job = (body.job || '').toString().trim();
+    const city = (body.city || '').toString().trim();
+    const gradYear = (body.grad_year || body.gradYear || '').toString().trim();
+
+    // 必填校验
+    if (!name || name.length < 2) return jsonResponse({ ok: false, error: '请输入有效姓名（至少 2 个字）' }, 400);
+    if (!VALID_PHONE_RE.test(phone)) return jsonResponse({ ok: false, error: '手机号格式不正确（需要 11 位 1 开头）' }, 400);
+    if (!job || !VALID_WOTU_JOBS.has(job)) return jsonResponse({ ok: false, error: '请选择有效岗位' }, 400);
+    if (!city || city.length < 1) return jsonResponse({ ok: false, error: '请输入所在城市' }, 400);
+
+    // 可选字段校验
+    if (gradYear && !/^\d{4}$/.test(gradYear)) return jsonResponse({ ok: false, error: '毕业年份请输入 4 位数字' }, 400);
+
+    // 生成报名 ID
+    const ts = Date.now();
+    const signupId = 'WTU-' + ts.toString().slice(-8);
+
+    // 构建记录
+    const record = {
+      signupId,
+      name,
+      phone,
+      job,
+      city,
+      grad_year: gradYear || null,
+      client_ip: getClientIP(request),
+      ua: request.headers.get('User-Agent') || '',
+      ts,
+      created_at: Math.floor(ts / 1000),
+    };
+
+    // 持久化：优先 D1 → fallback KV → fallback console
+    let persisted = false;
+    // 尝试 KV 存储（先 WOTU_SIGNUPS，再 PARTNER_LEADS）
+    const kvBindings = [env.WOTU_SIGNUPS, env.PARTNER_LEADS];
+    for (const kv of kvBindings) {
+      if (kv) {
+        try {
+          const key = `wotu:${record.ts}:${Math.random().toString(36).slice(2, 6)}`;
+          await kv.put(key, JSON.stringify(record), { expirationTtl: 60 * 60 * 24 * 365 });
+          persisted = true;
+          break;
+        } catch (err) {
+          console.error('wotu_signup: KV put failed:', err.message);
+        }
+      }
+    }
+    if (!persisted) {
+      console.log('[WOTU SIGNUP] (not persisted, logging):', JSON.stringify(record));
+    }
+
+    return jsonResponse({ ok: true, signupId, persisted });
+  } catch (e) {
+    console.error('WotuSignup error:', e);
+    return jsonResponse({ ok: false, error: '服务繁忙，请稍后重试' }, 500);
+  }
+}
+
+// ============================================================
 //  WeChat Mini Program QR Code (getwxacodeunlimit)
 // ============================================================
 async function handleWxQrCode(request, env) {
@@ -4357,6 +4429,11 @@ export default {
     // WeChat login
     if (path === '/api/auth/wx-login' && request.method === 'POST') {
       return handleWxLogin(request, env);
+    }
+
+    // V2.2 K-13: 沃土实训营报名
+    if (path === '/api/wotu/signup' && request.method === 'POST') {
+      return handleWotuSignup(request, env);
     }
 
     // Mentor chat (authenticated + anonymous)
