@@ -707,8 +707,124 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
       <div class="kb-how-card"><div class="kb-how-emoji">💼</div><div class="kb-how-title">服务者</div><div class="kb-how-desc">遇到卡点 → 搜索关键词 → 看正反话术 + 红线禁忌</div><a href="/knowledge/?q=" class="kb-how-link">开始查 →</a></div>
       <div class="kb-how-card"><div class="kb-how-emoji">🚨</div><div class="kb-how-title">消费者</div><div class="kb-how-desc">想避坑 → 看 severity=hard 的红线词条 → 提前做功课</div><a href="/knowledge/?q=避坑" class="kb-how-link">避坑指南 →</a></div>
       <div class="kb-how-card"><div class="kb-how-emoji">📝</div><div class="kb-how-title">学习者</div><div class="kb-how-desc">测掌握度 → 372 题自测 → 错题反查词条巩固</div><a href="/knowledge/quiz/" class="kb-how-link">开始测评 →</a></div>
-      <div class="kb-how-card"><div class="kb-how-emoji">🔌</div><div class="kb-how-title">开发者</div><div class="kb-how-desc">API 直接调用 → /api/entries + /api/search/v2</div><a href="/knowledge/" class="kb-how-link">API 文档 →</a></div>
+      <div class="kb-how-card"><div class="kb-how-emoji">🔌</div><div class="kb-how-title">开发者</div><div class="kb-how-desc">API 直接调用 → /api/entries + /api/search/v2</div><a href="#api-open" class="kb-how-link">开放能力 →</a></div>
     </div>
+  </div>
+</section>
+
+<style>
+  /* ===== 🔓 开放数据 · API 区块 ===== */
+  .qa-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
+  .qa-card{background:white;border:1px solid var(--line);border-radius:14px;padding:18px 16px;transition:box-shadow .2s}
+  .qa-card:hover{box-shadow:var(--shadow-md,0 6px 18px rgba(26,61,36,.08))}
+  .qa-dim{font-size:13px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:6px;margin-bottom:6px}
+  .qa-score{font-size:34px;font-weight:800;color:var(--p);line-height:1.1}
+  .qa-score small{font-size:14px;font-weight:600;color:var(--ink-soft)}
+  .qa-bar{height:6px;border-radius:3px;background:var(--cream);margin:10px 0 12px;overflow:hidden}
+  .qa-bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--p),#c9a962)}
+  .qa-m{font-size:12px;color:var(--ink-soft);line-height:1.75}
+  .qa-m b{color:var(--ink);font-weight:700}
+  .qa-rule{font-size:10.5px;color:var(--ink-soft);opacity:.75;margin-top:10px;padding-top:8px;border-top:1px dashed var(--line)}
+  .api-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;align-items:stretch}
+  .api-panel{background:white;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .api-panel-h{padding:12px 16px;font-size:13px;font-weight:800;color:var(--ink);background:var(--cream);border-bottom:1px solid var(--line)}
+  .api-table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .api-table td{padding:9px 14px;border-top:1px solid var(--line);vertical-align:top}
+  .api-table tr:first-child td{border-top:none}
+  .api-table code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:var(--p);background:rgba(26,61,36,.06);padding:2px 6px;border-radius:5px;white-space:nowrap}
+  .api-table .use{color:var(--ink);font-weight:600;white-space:nowrap}
+  .api-table .ret{color:var(--ink-soft)}
+  .api-doc{padding:14px 16px;font-size:12.5px;color:var(--ink-soft);line-height:1.8}
+  .api-doc b{color:var(--ink)}
+  .api-doc .row{padding:7px 0;border-bottom:1px dashed var(--line)}
+  .api-doc .row:last-child{border-bottom:none}
+  .api-code{margin-top:10px;background:#0f2416;color:#d7e4da;border-radius:10px;padding:12px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;line-height:1.7;overflow-x:auto;white-space:pre}
+  .api-code .c1{color:#c9a962}
+  .qa-transparency{margin-top:14px;background:linear-gradient(135deg,rgba(26,61,36,.03),rgba(201,169,98,.05));border:1px solid var(--line);border-left:4px solid var(--fire,#c9a962);border-radius:12px;padding:14px 18px;font-size:12.5px;color:var(--ink-soft);line-height:1.8}
+  .qa-transparency b{color:var(--ink)}
+  .qa-coming{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:100px;background:rgba(201,169,98,.12);color:#8a6d1f;font-size:12px;font-weight:700;margin-top:10px}
+  @media(max-width:1024px){.qa-grid{grid-template-columns:repeat(2,1fr)}.api-grid{grid-template-columns:1fr}}
+  @media(max-width:640px){.qa-grid{grid-template-columns:1fr}.api-table code{white-space:normal}}
+</style>
+
+<!-- ===== 🔓 开放数据 · API 区块 ===== -->
+<section class="section" id="api-open">
+  <div class="section-head">
+    <div>
+      <div class="section-tag">🔓 开放数据 · API</div>
+      <h2 class="section-title">全量评估 · 开放可调</h2>
+      <p class="section-sub">五维质量实测披露，端点与频次透明——知识底座即将对外开放 API，任何系统可随时调取经过核验的居住服务知识</p>
+      <span class="qa-coming">🛠 API 开放公测筹备中 · 接入规范即将发布</span>
+    </div>
+  </div>
+
+  <div class="qa-grid">
+    <div class="qa-card">
+      <div class="qa-dim">📐 广度</div>
+      <div class="qa-score">88<small> /100</small></div>
+      <div class="qa-bar"><i style="width:88%"></i></div>
+      <div class="qa-m"><b>35</b> 业务域 · <b>241</b> 服务场景<br><b>20</b> 类内容类型 · <b>9</b> 服务行业<br><b>6,260</b> 条词条全量收录</div>
+      <div class="qa-rule">计分口径：40 个规划业务域满配线性计分</div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-dim">📏 深度</div>
+      <div class="qa-score">97<small> /100</small></div>
+      <div class="qa-bar"><i style="width:97%"></i></div>
+      <div class="qa-m">一句话答案覆盖 <b>93.2%</b><br>词条平均 <b>207</b> 字<br>「道·法·术·器」四层组织</div>
+      <div class="qa-rule">计分口径：答案覆盖率与内容均长加权</div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-dim">✅ 准确性</div>
+      <div class="qa-score">99.6<small> /100</small></div>
+      <div class="qa-bar"><i style="width:99.6%"></i></div>
+      <div class="qa-m">权威分级覆盖 <b>99.6%</b><br>核验日期覆盖 <b>100%</b><br>2026 年内核验 <b>98.7%</b></div>
+      <div class="qa-rule">计分口径：authority 五值枚举全库覆盖率</div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-dim">🏛 权威性</div>
+      <div class="qa-score">97<small> /100</small></div>
+      <div class="qa-bar"><i style="width:97%"></i></div>
+      <div class="qa-m">法源引证位覆盖 <b>94.2%</b><br>官方法规 <b>1,747</b> · 司法判例 <b>879</b><br>国标/行业标准 <b>908</b></div>
+      <div class="qa-rule">计分口径：引证覆盖率与 official+court 占比加权</div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-dim">🔎 真实性</div>
+      <div class="qa-score">98<small> /100</small></div>
+      <div class="qa-bar"><i style="width:98%"></i></div>
+      <div class="qa-m">来源字段覆盖 <b>98.1%</b><br>真实司法案号 <b>23</b> 例<br>全源可追溯 · 逐条可核验</div>
+      <div class="qa-rule">计分口径：source 字段覆盖率，原文链接分批接入中</div>
+    </div>
+  </div>
+
+  <div class="api-grid">
+    <div class="api-panel">
+      <div class="api-panel-h">🔌 可调用端点（同源免鉴权 · 对外接入走 Token 申请制）</div>
+      <table class="api-table">
+        <tr><td><code>GET /api/knowledge-stats</code></td><td class="use">全库统计</td><td class="ret">总数 / 35 域计数 / 样本</td></tr>
+        <tr><td><code>GET /api/entries?domain=</code></td><td class="use">按域取词条</td><td class="ret">词条数组</td></tr>
+        <tr><td><code>GET /api/entry?id=</code></td><td class="use">单条详情</td><td class="ret">完整词条含引证</td></tr>
+        <tr><td><code>GET /api/search/v2?q=</code></td><td class="use">全文检索</td><td class="ret">命中词条 + 高亮</td></tr>
+        <tr><td><code>GET /api/dictionary</code></td><td class="use">业务字典</td><td class="ret">词条 + 筛选维度</td></tr>
+        <tr><td><code>GET /api/scene</code></td><td class="use">场景词条包</td><td class="ret">场景 × 生命周期</td></tr>
+        <tr><td><code>GET /api/stats/evidence</code></td><td class="use">循证统计</td><td class="ret">凭证层分布</td></tr>
+      </table>
+    </div>
+    <div class="api-panel">
+      <div class="api-panel-h">📋 接入规范</div>
+      <div class="api-doc">
+        <div class="row"><b>鉴权</b>：站内同源免鉴权；外部系统凭 <b>Bearer Token</b> 调用（申请制）</div>
+        <div class="row"><b>频次</b>：搜索类 30s 防抖限流；统计类 5min 边缘缓存（Cache-Control 300）；公测期公平使用</div>
+        <div class="row"><b>格式</b>：JSON · UTF-8 · 支持 ETag 协商缓存</div>
+        <div class="row"><b>字段契约</b>：每条词条含 id / domain / authority / source / lastVerified / legalRef</div>
+      </div>
+      <div class="api-code"><span class="c1"># 示例：取全库统计</span>
+curl -H "Authorization: Bearer &lt;TOKEN&gt;" \
+  https://fengsheng.tech/api/knowledge-stats</div>
+    </div>
+  </div>
+
+  <div class="qa-transparency">
+    <b>🪞 质量治理透明度（客观呈现，含改进中项）</b>：931 条带升级通道标记（法源复核中，AI 引用自动降级）；官方原文链接（source_url）首批 50 部法规分批接入；全部评分口径与字段定义收录于数据字典 v1.3.7（单一事实源，可审计）。我们只展示可验证的数字——包括还没做完的。
   </div>
 </section>
 
@@ -941,6 +1057,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
     </div>
 
   </div>
+</section>
 
 <section class="section" id="dictIndex">
   <div class="section-head">
