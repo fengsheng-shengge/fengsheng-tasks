@@ -681,7 +681,7 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
     <div class="kb-trust-card kb-trust-hero">
       <div class="kb-trust-icon">🏛️</div>
       <h3>居住行业知识基础设施</h3>
-      <p>不是工具，是标准依据。每条词条都带来源、可追溯、能核验。</p>
+      <p>无依据不发布——每条词条经至少三轮交叉验证，带来源、可追溯、能核验。</p>
       <div class="kb-trust-metrics">
         <div class="kb-metric"><div class="kb-m-num">6,260</div><div class="kb-m-lbl">词条</div></div>
         <div class="kb-metric"><div class="kb-m-num">35</div><div class="kb-m-lbl">业务域</div></div>
@@ -820,6 +820,26 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
       <div class="api-code"><span class="c1"># 示例：取全库统计</span>
 curl -H "Authorization: Bearer &lt;TOKEN&gt;" \
   https://fengsheng.tech/api/knowledge-stats</div>
+    </div>
+  </div>
+
+  <div class="api-grid">
+    <div class="api-panel">
+      <div class="api-panel-h">⚙ 数据集工程规模（逐项实测）</div>
+      <div class="api-doc">
+        <div class="row"><b>结构化字段 93 类</b> · 凭证字段 7 组（source / authority / legalRef / caseRef / dataRef / source_url / lastVerified）</div>
+        <div class="row"><b>知识正文 210 万字</b>（条均 335 字）· 主库 JSON 44.7 万行 / 15.5 MB · 分域文件 39 个共 116.5 MB</div>
+        <div class="row"><b>语义别名 34,278</b> · 治理标签 23,398 · 同义问法、口语叫法全部入索引</div>
+        <div class="row"><b>每条词条的字段级契约</b>：id / domain / subScene / entryType / ola / authority / source / lastVerified 全量可机读</div>
+      </div>
+    </div>
+    <div class="api-panel">
+      <div class="api-panel-h">🛡 发布门槛 · 无依据不发</div>
+      <div class="api-doc">
+        <div class="row"><b>无依据，不发布</b>——每条词条必须带齐「来源 + 权威分级 + 核验日期」三件套；缺依据的内容不进可引用层，只进升级通道治理</div>
+        <div class="row"><b>至少三轮交叉验证</b>：① 生成端「铸卡三闸」自查（边界 / 应用 / 反例）② 独立审核员逐条审核 ③ 机器预检器全量校验 + 抽检复验（md5 溯源）</div>
+        <div class="row"><b>分级放行</b>：official / court 徽章只随语义层证据走——凭证数字够不等于可展示，绿徽章从不高估</div>
+      </div>
     </div>
   </div>
 
