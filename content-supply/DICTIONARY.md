@@ -1,4 +1,4 @@
-# 风声知识底座 · 数据字典 v1.3.6
+# 风声知识底座 · 数据字典 v1.3.7
 
 > **单一事实源** | 维护：小眼镜 | 生效：2026-11-24 10:05（v1.3.6）
 > 此后所有口径以本字典为准。修改口径必须：改字典 → 记变更日志 → 群通知，三步缺一不可。飞书消息不再作为口径依据。
@@ -21,6 +21,7 @@
 | `legalRef` / `caseRef` / `dataRef` | — | 引证位（法条/判例/数据引用） | 95.0% / 95.1%（**其中 99.3% 为占位符，真实判例仅 38 条**）/ 95.6% | E4b 凭证线 794 条已解锁；caseRef 结构=内部编号(真实案号)混排，第二批拆分规范化 |
 | `law_version` / `superseded` | —（新字段，v1.3.5 登记） | 法源版本与废止标记：law_version 标法源版本口径（如 `现行`/`被替代`+替代文号）；superseded 登记受废止影响的条目批次。首批数据=财税〔2016〕23号废止影响 21 条（小马丫 2026-11-21 全量扫描，preview 待审：多法源 6 剔除失效文件取剩余首法源、单法源 15 改引财政部等三部门公告 2024 年第 16 号） | 21/6143（首批扫描） | preview 批次落位 updates/preview/superseded_batch1_2016_23_20261122.json（md5 e371ff86），过审后转正 data/ |
 | `trust_level` / `approval_source` / `bypass_audit` | —（新字段，v1.3.6 登记） | 特批链路字段：trust_level 置信度（特批 0.85/常规 0.95）；approval_source 特批依据（生哥指令+日期）；bypass_audit=true 跳过常规审核直入（仅生哥明确指令适用，小马丫等外部采集不适用）。首批数据=家装服务域 P0 批 1 七条 derived 定义词条（JZ-SUM-001+JZ-ABIL-DSGN/PROJ/SOFT 13 条，生哥 11-24“开始跑吧”） | 25/家装域（域从 0 建设首批） | preview 备案 updates/preview/家装P0_batch1_特批_20261124.json，小酒窝儿复核中 |
+| `cap_std_ref` | —（新字段，v1.3.7 登记） | 岗位卡→问答侧标准号（区间制 010-214）桥接字段。与主库 `cap_skills`（段号制 001-601，2354 条在用）**并行不复用**——回执_能力库交接 2026-11-05 定案：两套编号 9 处撞名 7 处语义不同（205 最危险），同名字段混装会让跨表 join 串味且不报错。首批数据=JOB-MJX-001 经纪人 56 条 + JOB-DE-001 数字员工 7 条（补丁 _selftest：56 条均存于 61 条标准内，无重复无越界） | 2/岗位体系卡 | 补丁_岗位卡_20261105.json v1.1 落库（生哥 11-28 指令"知识底座升级更新"） |
 
 ## 二、authority 五值枚举定版（拍板：小眼镜 2026-11-20）
 
@@ -82,6 +83,7 @@
 | 11-20 12:25 | **v1.3.4 修订**：新增 stance 字段登记（小豆子 12.31 清单归口）——v1 全库机构级默认值正式化立场签，真人级前置条件=生产归属映射表（主库无 owner 字段，不虚承诺）；技术线 #245 里程碑对接：EvidenceLink 徽章 PASS（LAW official/DATA data/KNOWLEDGE derived 三值域验证），Worker 9 endpoint 审计完成，12.31 开发侧硬指标全达成 | om_本轮群发 |
 | 11-20 12:10 | **GAP 第一批 commit 落库**：主库 bc614c84→c1f76527（expect_count 6122，CITY CONDITIONAL 不落、authority 保持空），组件交付件 authority.json 5d927195；新回执规则=禁止手抄统计数字、必须贴预检器原始输出（对齐规则第 6 条） | om_x100b60c8cc767caccd09ee34776265d |
 | 11-20 10:25 | **v1.3.3 修订（丁方案定版）**：小马丫 P 档 758 全量判定回报——后果型仅 58.0%（区间 53.5%-64.1%），甲拆分前提（85-90%）崩塌失效；乙降门再否决（语义稀释=换一种虚高）；丁采纳=RISK 830 条 derived+authority_note='法源待复核'、4 条双凭证露出 court（8 条全验真）；候选文件 v2 8c8f50f8→**v3 d1387551**，分布 official 1723/court 879/industry 907/derived 2606/data 28；EXEC_PENDING 解除（丁方案落地即定案）；commit 恢复待小酒窝儿审核（今晚一次性，expect_count 6122） | om_x100b60cec88f0ca8df1b49be74dd66c（v1.3.2 拍板）+ om_x100b60cf5b7dd4a0c051423b1e9ae4f |
+| 11-28 | **v1.3.7 修订**：岗位卡补丁落库（补丁_岗位卡_20261105.json v1.1，生哥指令"跟小眼镜对一下做知识底座升级"）——JOB-MJX-001 经纪人 abilityRefs 7→62 + cap_std_ref 56 条 + lastVerified 2026-11-05；JOB-DE-001 数字员工（线上接待）卡新建（ABIL-DE 7 条桥接，category 交易服务）；`cap_std_ref` 字段 v1.3.7 登记（与 cap_skills 段号制并行不复用，cap_skills 保持 [] 不掺第二套语义）；岗位体系域 26→27 卡，全库 6259→6260（manifest total/counts + 7 页 10 处静态基线同步：knowledge/dictionary/decoder/scene/wotu/workspace/evidence-test） | 补丁文件 _selftest + 回执_能力库交接_20261105（字段三选一定案：新增 cap_std_ref） |
 
 ## 六、对齐规则（即时生效）
 
