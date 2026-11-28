@@ -701,6 +701,37 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
       </div>
     </div>
   </div>
+
+  <!-- 真实词条样本 · 全部字段取自库内真实数据（JZ-STD-AIR-002），可点开核验 -->
+  <div class="kb-sample-grid">
+    <div class="kb-sample-card">
+      <span class="kb-sample-tag">📖 真实词条样本 · id JZ-STD-AIR-002</span>
+      <div class="kb-sample-title">入住前室内空气标准：GB/T 18883-2022 甲醛≤0.08mg/m³</div>
+      <div class="kb-badges">
+        <span class="kb-badge official">🏛 official · 国标 + 政府消费提示</span>
+        <span class="kb-badge date">🗓 核验 2026-11-24</span>
+        <span class="kb-badge plain">家装服务 · 空气质量</span>
+        <span class="kb-badge plain">trust_level 0.95</span>
+      </div>
+      <div class="kb-sample-row"><span class="lbl">消费者问</span>「甲醛检测 0.07 和 0.08 到底按哪个？」</div>
+      <div class="kb-sample-row"><span class="lbl">一句话答案</span>入住前家庭自测按 GB/T 18883-2022《室内空气质量标准》：甲醛 1 小时均值≤0.08mg/m³，采样前密闭门窗 12 小时——与 GB 50325-2020 的竣工验收口径（Ⅰ类 0.07、Ⅱ类 0.08）用途不同，别混用。</div>
+      <div class="kb-sample-row"><span class="lbl">正文节选</span>两个国标口径用途不同：GB 50325-2020 用于工程竣工验收（完工 7 天后至交付使用前）；GB/T 18883-2022 用于已投入使用住宅（含家具、生活状态），更贴近实际居住。……家装场景常见纠纷：竣工验收（50325）合格，家具进场后（18883）超标——因为活动家具对室内甲醛贡献率约 30%。</div>
+      <div class="kb-sample-evidence">
+        ⚖ 引用：GB/T 18883-2022《室内空气质量标准》（甲醛 1h 均值≤0.08mg/m³）· GB 50325-2020 表 6.0.4<br>
+        🔗 <a href="https://www.shifang.gov.cn/gk/zwgk/jczwgkml/aqsc/hzgl/dtxx/3020353.htm" target="_blank" rel="noopener">政府消费提示原文（可点开核验）</a> · <a href="/knowledge/?q=甲醛标准">在库检索 →</a> · <a href="/api/entry?id=JZ-STD-AIR-002" target="_blank" rel="noopener">API /api/entry?id=JZ-STD-AIR-002</a>
+      </div>
+    </div>
+    <div class="kb-auth-card">
+      <div class="kb-trust-subtag">🏛 权威分级分布 · 全库 6,260 条实测</div>
+      <div class="auth-row"><span class="an">🏛 official · 官方法规/国标</span><div class="bar"><i style="width:65.3%;background:var(--p)"></i></div><span class="av">1,747</span></div>
+      <div class="auth-row"><span class="an">⚖ court · 司法判例</span><div class="bar"><i style="width:32.9%;background:#8a5a2a"></i></div><span class="av">879</span></div>
+      <div class="auth-row"><span class="an">📏 industry · 行业标准</span><div class="bar"><i style="width:34%;background:#c9a962"></i></div><span class="av">908</span></div>
+      <div class="auth-row"><span class="an">📊 data · 数据引用</span><div class="bar"><i style="width:1.1%;background:#4a7ba6"></i></div><span class="av">28</span></div>
+      <div class="auth-row"><span class="an">🔎 derived · 经验沉淀</span><div class="bar"><i style="width:100%;background:#9aa8a0"></i></div><span class="av">2,676</span></div>
+      <div class="auth-foot">authority 覆盖率 <b>99.65%</b>（22 条字段补齐中）· official + court 合计 <b>2,626 条 / 42%</b> · 五值枚举口径见数据字典 v1.3.7 · derived 级 AI 引用自动降级</div>
+    </div>
+  </div>
+
   <div class="kb-trust-how">
     <div class="kb-trust-subtag">📖 怎么使用？双视角 · 查了就用</div>
     <div class="kb-how-grid">
@@ -713,6 +744,49 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
 </section>
 
 <style>
+  /* ===== Trust 真实词条样本 + authority 分布 ===== */
+  .kb-sample-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-bottom:14px}
+  .kb-sample-card{background:white;border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:0 2px 8px rgba(26,61,36,.05)}
+  .kb-sample-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:var(--p);background:rgba(26,61,36,.06);border-radius:100px;padding:4px 10px}
+  .kb-sample-title{font-size:16.5px;font-weight:800;color:var(--ink);margin:10px 0 8px;line-height:1.45}
+  .kb-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .kb-badge{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:100px}
+  .kb-badge.official{background:rgba(26,61,36,.08);color:var(--p)}
+  .kb-badge.date{background:rgba(201,169,98,.14);color:#8a6d1f}
+  .kb-badge.plain{background:var(--cream);color:var(--ink-soft)}
+  .kb-sample-row{font-size:12.8px;color:var(--ink-soft);line-height:1.8;margin-bottom:9px}
+  .kb-sample-row .lbl{font-weight:800;color:var(--ink);margin-right:6px}
+  .kb-sample-evidence{border-top:1px dashed var(--line);margin-top:12px;padding-top:11px;font-size:12px;color:var(--ink-soft);line-height:1.9}
+  .kb-sample-evidence a{color:var(--p);font-weight:700;text-decoration:none}
+  .kb-sample-evidence a:hover{text-decoration:underline}
+  .kb-auth-card{background:white;border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .auth-row{display:grid;grid-template-columns:178px 1fr 54px;align-items:center;gap:10px;margin-bottom:9px;font-size:12px}
+  .auth-row .an{font-weight:700;color:var(--ink);white-space:nowrap;font-size:11.8px}
+  .auth-row .bar{height:9px;border-radius:5px;background:var(--cream);overflow:hidden}
+  .auth-row .bar i{display:block;height:100%;border-radius:5px}
+  .auth-row .av{text-align:right;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+  .auth-foot{border-top:1px dashed var(--line);margin-top:11px;padding-top:9px;font-size:11.5px;color:var(--ink-soft);line-height:1.75}
+  .auth-foot b{color:var(--ink)}
+  .kb-pillar-data{margin:0 0 18px;font-size:12.5px;color:var(--ink-soft);background:rgba(26,61,36,.04);border:1px dashed var(--line);border-radius:8px;padding:7px 12px;display:table}
+  .kb-pillar-data b{color:var(--p)}
+  /* ===== API Tab 切换 ===== */
+  .api-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+  .api-tab{border:1px solid var(--line);background:white;color:var(--ink-soft);font-size:13px;font-weight:700;padding:9px 16px;border-radius:100px;cursor:pointer;transition:all .15s}
+  .api-tab:hover{color:var(--p)}
+  .api-tab.active{background:var(--p);border-color:var(--p);color:white}
+  .api-pane{display:none}
+  .api-pane.active{display:block}
+  /* ===== 五维卡折叠 ===== */
+  .qa-card summary{list-style:none;cursor:pointer}
+  .qa-card summary::-webkit-details-marker{display:none}
+  .qa-card summary::after{content:'▾';float:right;font-size:12px;color:var(--ink-soft);opacity:.6;transition:transform .15s}
+  .qa-card[open] summary::after{transform:rotate(180deg)}
+  .qa-card summary .qa-dim{margin-bottom:10px;padding-right:20px}
+  .qa-card summary .qa-bar{margin:10px 0 2px}
+  .qa-card[open] summary{padding-bottom:12px;border-bottom:1px dashed var(--line);margin-bottom:12px}
+  @media(max-width:1024px){.kb-sample-grid{grid-template-columns:1fr}}
+  @media(max-width:640px){.auth-row{grid-template-columns:1fr 52px;grid-template-areas:'n v' 'b b'}.auth-row .an{grid-area:n}.auth-row .bar{grid-area:b}.auth-row .av{grid-area:v}}
+
   /* ===== 🔓 开放数据 · API 区块 ===== */
   .qa-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
   .qa-card{background:white;border:1px solid var(--line);border-radius:14px;padding:18px 16px;transition:box-shadow .2s}
@@ -759,44 +833,61 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
   </div>
 
   <div class="qa-grid">
-    <div class="qa-card">
-      <div class="qa-dim">📐 广度</div>
-      <div class="qa-score">88<small> /100</small></div>
-      <div class="qa-bar"><i style="width:88%"></i></div>
+    <details class="qa-card" open>
+      <summary>
+        <div class="qa-dim">📐 广度</div>
+        <div class="qa-score">88<small> /100</small></div>
+        <div class="qa-bar"><i style="width:88%"></i></div>
+      </summary>
       <div class="qa-m"><b>35</b> 业务域 · <b>241</b> 服务场景<br><b>20</b> 类内容类型 · <b>9</b> 服务行业<br><b>6,260</b> 条词条全量收录</div>
       <div class="qa-rule">计分口径：40 个规划业务域满配线性计分</div>
-    </div>
-    <div class="qa-card">
-      <div class="qa-dim">📏 深度</div>
-      <div class="qa-score">97<small> /100</small></div>
-      <div class="qa-bar"><i style="width:97%"></i></div>
+    </details>
+    <details class="qa-card">
+      <summary>
+        <div class="qa-dim">📏 深度</div>
+        <div class="qa-score">97<small> /100</small></div>
+        <div class="qa-bar"><i style="width:97%"></i></div>
+      </summary>
       <div class="qa-m">一句话答案覆盖 <b>93.2%</b><br>词条平均 <b>207</b> 字<br>「道·法·术·器」四层组织</div>
       <div class="qa-rule">计分口径：答案覆盖率与内容均长加权</div>
-    </div>
-    <div class="qa-card">
-      <div class="qa-dim">✅ 准确性</div>
-      <div class="qa-score">99.6<small> /100</small></div>
-      <div class="qa-bar"><i style="width:99.6%"></i></div>
+    </details>
+    <details class="qa-card">
+      <summary>
+        <div class="qa-dim">✅ 准确性</div>
+        <div class="qa-score">99.6<small> /100</small></div>
+        <div class="qa-bar"><i style="width:99.6%"></i></div>
+      </summary>
       <div class="qa-m">权威分级覆盖 <b>99.6%</b><br>核验日期覆盖 <b>100%</b><br>2026 年内核验 <b>98.7%</b></div>
       <div class="qa-rule">计分口径：authority 五值枚举全库覆盖率</div>
-    </div>
-    <div class="qa-card">
-      <div class="qa-dim">🏛 权威性</div>
-      <div class="qa-score">97<small> /100</small></div>
-      <div class="qa-bar"><i style="width:97%"></i></div>
+    </details>
+    <details class="qa-card">
+      <summary>
+        <div class="qa-dim">🏛 权威性</div>
+        <div class="qa-score">97<small> /100</small></div>
+        <div class="qa-bar"><i style="width:97%"></i></div>
+      </summary>
       <div class="qa-m">法源引证位覆盖 <b>94.2%</b><br>官方法规 <b>1,747</b> · 司法判例 <b>879</b><br>国标/行业标准 <b>908</b></div>
       <div class="qa-rule">计分口径：引证覆盖率与 official+court 占比加权</div>
-    </div>
-    <div class="qa-card">
-      <div class="qa-dim">🔎 真实性</div>
-      <div class="qa-score">98<small> /100</small></div>
-      <div class="qa-bar"><i style="width:98%"></i></div>
+    </details>
+    <details class="qa-card">
+      <summary>
+        <div class="qa-dim">🔎 真实性</div>
+        <div class="qa-score">98<small> /100</small></div>
+        <div class="qa-bar"><i style="width:98%"></i></div>
+      </summary>
       <div class="qa-m">来源字段覆盖 <b>98.1%</b><br>真实司法案号 <b>23</b> 例<br>全源可追溯 · 逐条可核验</div>
       <div class="qa-rule">计分口径：source 字段覆盖率，原文链接分批接入中</div>
-    </div>
+    </details>
   </div>
 
-  <div class="api-grid">
+  <div class="api-tabs" role="tablist" aria-label="开放数据 API 明细">
+    <button type="button" class="api-tab active" data-pane="endpoints" onclick="switchApiTab('endpoints')">🔌 端点契约</button>
+    <button type="button" class="api-tab" data-pane="spec" onclick="switchApiTab('spec')">📋 接入规范</button>
+    <button type="button" class="api-tab" data-pane="scale" onclick="switchApiTab('scale')">⚙ 数据集工程规模</button>
+    <button type="button" class="api-tab" data-pane="gate" onclick="switchApiTab('gate')">🛡 发布门槛</button>
+  </div>
+
+  <div class="api-pane active" id="apiPane-endpoints">
     <div class="api-panel">
       <div class="api-panel-h">🔌 可调用端点（同源免鉴权 · 对外接入走 Token 申请制）</div>
       <table class="api-table">
@@ -809,6 +900,9 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
         <tr><td><code>GET /api/stats/evidence</code></td><td class="use">循证统计</td><td class="ret">凭证层分布</td></tr>
       </table>
     </div>
+  </div>
+
+  <div class="api-pane" id="apiPane-spec">
     <div class="api-panel">
       <div class="api-panel-h">📋 接入规范</div>
       <div class="api-doc">
@@ -817,13 +911,15 @@ footer{background:var(--cream-deep);padding:40px 32px 24px;color:var(--ink-soft)
         <div class="row"><b>格式</b>：JSON · UTF-8 · 支持 ETag 协商缓存</div>
         <div class="row"><b>字段契约</b>：每条词条含 id / domain / authority / source / lastVerified / legalRef</div>
       </div>
-      <div class="api-code"><span class="c1"># 示例：取全库统计</span>
+      <div style="padding:0 16px 14px">
+        <div class="api-code" style="margin-top:0"><span class="c1"># 示例：取全库统计</span>
 curl -H "Authorization: Bearer &lt;TOKEN&gt;" \
   https://fengsheng.tech/api/knowledge-stats</div>
+      </div>
     </div>
   </div>
 
-  <div class="api-grid">
+  <div class="api-pane" id="apiPane-scale">
     <div class="api-panel">
       <div class="api-panel-h">⚙ 数据集工程规模（逐项实测）</div>
       <div class="api-doc">
@@ -833,6 +929,9 @@ curl -H "Authorization: Bearer &lt;TOKEN&gt;" \
         <div class="row"><b>每条词条的字段级契约</b>：id / domain / subScene / entryType / ola / authority / source / lastVerified 全量可机读</div>
       </div>
     </div>
+  </div>
+
+  <div class="api-pane" id="apiPane-gate">
     <div class="api-panel">
       <div class="api-panel-h">🛡 发布门槛 · 无依据不发</div>
       <div class="api-doc">
@@ -842,6 +941,13 @@ curl -H "Authorization: Bearer &lt;TOKEN&gt;" \
       </div>
     </div>
   </div>
+
+  <script>
+    function switchApiTab(k){
+      document.querySelectorAll('.api-tab').forEach(function(t){t.classList.toggle('active',t.dataset.pane===k)});
+      document.querySelectorAll('.api-pane').forEach(function(p){p.classList.toggle('active',p.id==='apiPane-'+k)});
+    }
+  </script>
 
   <div class="qa-transparency">
     <b>🪞 质量治理透明度（客观呈现，含改进中项）</b>：931 条带升级通道标记（法源复核中，AI 引用自动降级）；官方原文链接（source_url）首批 50 部法规分批接入；全部评分口径与字段定义收录于数据字典 v1.3.7（单一事实源，可审计）。我们只展示可验证的数字——包括还没做完的。
@@ -892,6 +998,7 @@ curl -H "Authorization: Bearer &lt;TOKEN&gt;" \
     <!-- ========== 📋 带看 SOP ========== -->
     <div class="pillar-panel active" id="panel-culture">
       <h3 style="margin:0 0 20px;font-size:22px;color:var(--pillar-culture)">📋 带看 SOP · 专业方案呈现 + 带看技巧</h3>
+      <div class="kb-pillar-data">🏷 底座支撑 · 签约前域 <b>858</b> 条 · 带看服务专域 <b>42</b> 条 · 核验至 <b>2026-10</b></div>
 
       <div class="kb-sop-section">
         <div class="kb-sop-title">【带看前 · 准备清单】</div>
@@ -940,6 +1047,7 @@ curl -H "Authorization: Bearer &lt;TOKEN&gt;" \
     <!-- ========== 🤝 谈判斡旋 ========== -->
     <div class="pillar-panel" id="panel-mission">
       <h3 style="margin:0 0 20px;font-size:22px;color:var(--pillar-mission)">🤝 谈判斡旋 · 议价 / 报价 / 砍价 / 客户嫌贵</h3>
+      <div class="kb-pillar-data">🏷 底座支撑 · 签约中域 <b>668</b> 条 · 谈判斡旋专域 <b>150</b> 条 · 核验至 <b>2026-08</b></div>
 
       <div class="kb-sop-section">
         <div class="kb-sop-title">场景 ① 客户嫌贵（最常见）</div>
@@ -986,6 +1094,7 @@ curl -H "Authorization: Bearer &lt;TOKEN&gt;" \
     <!-- ========== ✍️ 签约协办 ========== -->
     <div class="pillar-panel" id="panel-vision">
       <h3 style="margin:0 0 20px;font-size:22px;color:var(--pillar-vision)">✍️ 签约协办 · 网签 / 资金监管 / 过户 / 税费</h3>
+      <div class="kb-pillar-data">🏷 底座支撑 · 签约中域 <b>668</b> 条 · 签约后域 <b>713</b> 条 · 核验至 <b>2026-08</b></div>
 
       <div class="kb-sop-section">
         <div class="kb-sop-title">Step 1 签约前 · 资质核验（必做！不做 = 你担责）</div>
@@ -1040,6 +1149,7 @@ curl -H "Authorization: Bearer &lt;TOKEN&gt;" \
     <!-- ========== 🧑 服务跟进 ========== -->
     <div class="pillar-panel" id="panel-value">
       <h3 style="margin:0 0 20px;font-size:22px;color:var(--pillar-value)">🧑 服务跟进 · 入住 / 维修 / 续租 / 老客复购</h3>
+      <div class="kb-pillar-data">🏷 底座支撑 · 居住中域 <b>493</b> 条 · 资产持有与运营域 <b>631</b> 条 · 核验至 <b>2026-10</b></div>
 
       <div class="kb-sop-section">
         <div class="kb-sop-title">成交后 100 天跟进计划</div>
